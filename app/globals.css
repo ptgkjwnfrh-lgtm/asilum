@@ -349,8 +349,11 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   }
   .wordmark em, .sfoot { display: none; }
   .wordmark { font-size: 18px; }
-  .snavs { display: flex; margin: 0 0 0 8px; border: none; flex: 1; justify-content: space-around; }
-  .snav { border: none; padding: 6px 0; font-size: 10px; }
+  /* base .snavs/.snav form a column of 44px rows — flatten back to a row here
+     or the nine items overflow the 56px bottom bar and float over the page */
+  .snavs { display: flex; flex-direction: row; align-items: center; margin: 0 0 0 8px; border: none; flex: 1; justify-content: space-around; overflow-x: auto; }
+  .snav { flex: none; width: auto; min-height: 0; border: none; padding: 6px 4px; font-size: 10px; white-space: nowrap; }
+  .snav.cur { margin: 0; padding: 6px 8px; }
   .marquee { left: 0; }
   .main { margin-left: 0; padding: calc(var(--mq-h) + 18px) 14px 130px; }
   .grid { columns: 2 150px; column-gap: 12px; }
