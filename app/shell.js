@@ -50,13 +50,16 @@ export default function Shell({ children }) {
   const [fit, setFit] = useState(EMPTY_FIT);
   const [connecting, setConnecting] = useState("");
   const [connected, setConnected] = useState("");
+  const [connectMsg, setConnectMsg] = useState("");
   const [follows, setFollows] = useState({ brands: [], users: [] });
   const debounceRef = useRef(null);
 
   useEffect(() => {
     setUid(getUid() || "");
     setFit(loadFitProfile());
-    try { setConnected(window.localStorage.getItem("asilum-connected") || ""); } catch {}
+    // Clear the stale "connected" flag from the old simulated import — no
+    // real connection exists until a real OAuth adapter ships.
+    try { window.localStorage.removeItem("asilum-connected"); } catch {}
     const sync = () => setBag(bagList());
     const syncFollows = () => setFollows({ brands: followedBrands(), users: followedUsers() });
     sync();
@@ -104,16 +107,20 @@ export default function Shell({ children }) {
     setConnecting(platform);
     try {
       const res = await postJSON("/api/connect", { user: getUid(), platform });
-      const d = await res.json();
-      if (d.imported) {
+      const d = await res.json().catch(() => null);
+      if (d && d.imported) {
         try {
           window.localStorage.setItem("asilum-connected", platform);
           window.localStorage.setItem("asilum-onboarded", "1");
         } catch {}
         setConnected(platform);
         window.location.href = "/";
+      } else {
+        setConnectMsg((d && d.message) || platform + " linking is coming soon — real account setup required");
       }
-    } catch {}
+    } catch {
+      setConnectMsg(platform + " linking is coming soon — real account setup required");
+    }
     setConnecting("");
   }
 
@@ -325,6 +332,7 @@ export default function Shell({ children }) {
               ))}
             </div>
           )}
+          {connectMsg && <div className="acctline">{connectMsg}</div>}
 
           <div className="psub">SIZING — stored only on this device</div>
           <div className="fitform">

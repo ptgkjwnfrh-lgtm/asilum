@@ -1,79 +1,40 @@
 // app/api/connect/route.js
 // POST /api/connect  { user, platform }
-// "Buyer history scan": connecting an associated marketplace account imports
-// the user's purchase history and trains the brain from it — the strongest
-// possible cold-start. Real platform OAuth adapters plug in here; until those
-// credentials exist this generates a deterministic simulated history per
-// (user, platform) from the catalog so the flow, learning, and graph writes
-// are all real.
+// Account linking. Real platform OAuth adapters plug in here (eBay Browse,
+// Pinterest OAuth, Shopify Storefront). Until real credentials + adapters
+// exist, this endpoint honestly reports the connection as unavailable —
+// it must NOT simulate imported purchase history (see CONSTITUTION.md).
 
 import { NextResponse } from "next/server";
-import { learn } from "../../../lib/brain/index.js";
-import { noteActivity } from "../../../lib/brain/memory.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
-import {
-  getProfile, saveProfile, recordInteraction,
-  bumpEdges, bumpPopularity, withUserLock,
-} from "../../../lib/db/index.js";
 
 export const dynamic = "force-dynamic";
 
 const PLATFORMS = new Set(["grailed", "depop", "ssense", "ebay", "pinterest"]);
-const IMPORT_COUNT = 8;
 
-// Deterministic per-account sampling so reconnecting gives the same history.
-function hashStr(s) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
+// Env vars that would power each platform's real adapter, once built.
+const ADAPTER_ENV = {
+  ebay: ["EBAY_CLIENT_ID", "EBAY_CLIENT_SECRET"],
+  pinterest: ["PINTEREST_CLIENT_ID", "PINTEREST_CLIENT_SECRET"],
+};
 
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const userId = body.user || "guest";
   const platform = String(body.platform || "").toLowerCase();
   if (!PLATFORMS.has(platform)) {
     return NextResponse.json({ error: "unknown platform" }, { status: 400 });
   }
 
-  // TODO(real integration): exchange OAuth token, fetch order history via the
-  // platform's official API, normalize to catalog item shape.
-  const seed = hashStr(userId + ":" + platform);
-  const purchases = [];
-  const used = new Set();
-  for (let i = 0; purchases.length < IMPORT_COUNT && i < 64; i++) {
-    const idx = hashStr(seed + ":" + i) % CATALOG.length;
-    if (used.has(idx)) continue;
-    used.add(idx);
-    purchases.push(CATALOG[idx]);
-  }
+  const envNeeded = ADAPTER_ENV[platform];
+  const hasCreds = envNeeded && envNeeded.every((k) => process.env[k]);
+  const message = envNeeded
+    ? hasCreds
+      ? `${platform} credentials detected — the OAuth adapter isn't enabled yet. coming soon.`
+      : `${platform} linking is coming soon — it requires real OAuth setup (${envNeeded.join(", ")}).`
+    : `${platform} linking is coming soon — no partnership or official API access yet.`;
 
-  const edgePairs = [];
-  await withUserLock(userId, async () => {
-    let profile = (await getProfile(userId)) || {};
-    let prevId = null;
-    for (const it of purchases) {
-      profile = learn(profile, it, "bag");
-      profile = noteActivity(profile, it, "purchase");
-      if (prevId) edgePairs.push({ a: prevId, b: it.id, w: 2 });
-      prevId = it.id;
-    }
-    await saveProfile(userId, profile);
-  });
-  await Promise.all([
-    bumpEdges(edgePairs),
-    bumpPopularity(purchases.map((it) => ({ id: it.id, eng: 1 }))),
-    ...purchases.map((it) => recordInteraction(userId, it.id, "bag")),
-  ]);
-
-  return NextResponse.json({
-    userId,
-    platform,
-    imported: purchases.length,
-    items: purchases.map((it) => ({ id: it.id, title: it.title, brand: it.brand })),
-  });
+  return NextResponse.json(
+    { error: "not_connected", platform, message },
+    { status: 501 }
+  );
 }

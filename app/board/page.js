@@ -112,10 +112,12 @@ export default function BoardPage() {
 
   async function connectPinterest() {
     const res = await postJSON("/api/connect", { user: uid, platform: "pinterest" }).catch(() => null);
-    const d = res ? await res.json() : null;
+    const d = res ? await res.json().catch(() => null) : null;
     if (d && d.imported) {
       setNotice(`pinterest connected — ${d.imported} pinned tastes imported`);
       loadViz();
+    } else {
+      setNotice((d && d.message) || "pinterest import is coming soon — it requires real OAuth setup");
     }
   }
 

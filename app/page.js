@@ -242,6 +242,7 @@ export default function Home() {
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
   const [connectOpen, setConnectOpen] = useState(false);
+  const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
   const [modalRel, setModalRel] = useState([]);
@@ -480,13 +481,15 @@ export default function Home() {
     setConnecting(platform);
     try {
       const res = await postJSON("/api/connect", { user: uidRef.current, platform });
-      const d = await res.json();
-      if (d.imported) {
+      const d = await res.json().catch(() => null);
+      if (d && d.imported) {
         try { window.localStorage.setItem("asilum-connected", platform); } catch {}
         markOnboarded();
         setConnectOpen(false);
         setNotice(`imported ${d.imported} purchases from ${platform} — your feed knows you now`);
         await loadFeed();
+      } else {
+        setConnectNote((d && d.message) || `${platform} linking is coming soon — teach the feed with the moodboard instead`);
       }
     } catch (e) { console.error(e); }
     setConnecting("");
@@ -779,6 +782,7 @@ export default function Home() {
                 </button>
               ))}
             </div>
+            {connectNote && <p className="deck" style={{ color: "var(--red)" }}>{connectNote}</p>}
             <div className="orline">OR</div>
             <p className="deck">
               start cold: favorite what you love, build a moodboard, and follow
