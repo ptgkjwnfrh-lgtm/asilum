@@ -322,12 +322,12 @@ export default function Shell({ children }) {
 
           <div className="psub">CONNECTED ACCOUNT</div>
           {connected ? (
-            <div className="acctline">{connected} — buyer history imported</div>
+            <div className="acctline">{connected} — account linked</div>
           ) : (
             <div className="platformrow">
               {PLATFORMS.map((p) => (
                 <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
-                  {connecting === p ? "scanning…" : p}
+                  {connecting === p ? "checking…" : p}
                 </button>
               ))}
             </div>
