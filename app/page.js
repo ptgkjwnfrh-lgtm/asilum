@@ -4,9 +4,8 @@
 // The big feed: Pinterest masonry (different-sized listings, community posts
 // smooshed between them) with a Grailed-white editorial skin. Cards stay
 // minimal — name, price, fit estimate, FAVORITE / ADD TO BAG — everything else
-// lives in the detail view. First visit offers an honest account-link prompt
-// (coming soon until real OAuth exists); otherwise the moodboard + following
-// jump-start applies.
+// lives in the detail view. First visit offers a buyer-history scan via a
+// connected account; otherwise the moodboard + following jump-start applies.
 // The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -108,12 +107,11 @@ function morseSeq(word) {
 
 function FollowMorse() {
   const [words, setWords] = useState(["asilum"]);
-  const [pos, setPos] = useState(0);
+  const morseRef = useRef(null);
   useEffect(() => {
     const sync = () => {
       const brands = followedBrands();
       setWords(brands.length ? brands : ["asilum"]);
-      setPos(0);
     };
     sync();
     window.addEventListener("asilum:follow", sync);
@@ -128,19 +126,59 @@ function FollowMorse() {
   const base = words.flatMap((w) => [...morseSeq(w), " ", " ", " "]);
   const seqFull = [];
   while (seqFull.length < 160 && base.length) seqFull.push(...base);
+
   useEffect(() => {
-    const iv = setInterval(() => {
-      setPos((p) => (p + 1 > seqFull.length + 10 ? 0 : p + 1));
-    }, 130);
-    return () => clearInterval(iv);
+    const root = morseRef.current;
+    if (!root) return;
+    const marks = Array.from(root.querySelectorAll("[data-morse-mark]"));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let pos = 0;
+    let visible = true;
+    let iv = null;
+
+    const stop = () => {
+      if (iv) clearInterval(iv);
+      iv = null;
+    };
+    const start = () => {
+      if (iv || document.hidden || !visible || reducedMotion) return;
+      iv = setInterval(() => {
+        if (pos >= marks.length + 10) {
+          marks.forEach((mark) => { mark.hidden = true; });
+          pos = 0;
+          return;
+        }
+        if (pos < marks.length) marks[pos].hidden = false;
+        pos += 1;
+      }, 130);
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+      else stop();
+    });
+
+    if (reducedMotion) marks.forEach((mark) => { mark.hidden = false; });
+    observer.observe(root);
+    document.addEventListener("visibilitychange", onVisibility);
+    start();
+    return () => {
+      stop();
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [seqFull.length]);
-  const seq = seqFull.slice(0, pos);
+
   return (
-    <div className="morse" title={"spelling: " + words.join(", ")}>
-      {seq.map((s, k) =>
-        s === "." ? <span className="mstar" key={k}>*</span>
-        : s === "-" ? <span className="mdash" key={k} />
-        : <span className="mgap" key={k} />
+    <div ref={morseRef} className="morse" title={"spelling: " + words.join(", ")}>
+      {seqFull.map((s, k) =>
+        s === "." ? <span hidden data-morse-mark className="mstar" key={k}>*</span>
+        : s === "-" ? <span hidden data-morse-mark className="mdash" key={k} />
+        : <span hidden data-morse-mark className="mgap" key={k} />
       )}
       <span className="mcursor" />
     </div>
@@ -770,7 +808,7 @@ export default function Home() {
         </>
       )}
 
-      {/* ---- First visit: honest account-link prompt (always escapable) ---- */}
+      {/* ---- First visit: buyer-history scan (always escapable) ---- */}
       {connectOpen && (
         <div className="overlay" onClick={useMoodboardInstead}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
@@ -783,7 +821,7 @@ export default function Home() {
             <div className="connectrow">
               {PLATFORMS.map((p) => (
                 <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
-                  {connecting === p ? "checking access…" : p}
+                  {connecting === p ? "scanning history…" : p}
                 </button>
               ))}
             </div>
