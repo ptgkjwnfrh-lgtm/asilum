@@ -16,6 +16,7 @@ import {
   searchUsers, sourceFor, followedBrands, followedUsers,
   setFollowBrand, setFollowUser,
 } from "../lib/social.js";
+import { getSupabase, authConfigured } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 
 const NAV = [
@@ -52,6 +53,10 @@ export default function Shell({ children }) {
   const [connected, setConnected] = useState("");
   const [connectMsg, setConnectMsg] = useState("");
   const [follows, setFollows] = useState({ brands: [], users: [] });
+  const [authUser, setAuthUser] = useState(null);
+  const [authEmail, setAuthEmail] = useState("");
+  const [authMsg, setAuthMsg] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
   const debounceRef = useRef(null);
 
   useEffect(() => {
@@ -76,6 +81,59 @@ export default function Shell({ children }) {
       window.removeEventListener("focus", syncFollows);
     };
   }, []);
+
+  // ---- Supabase auth (magic link). Inert until env keys are set. ----
+  useEffect(() => {
+    let sub = null;
+    getSupabase().then((sb) => {
+      if (!sb) return;
+      sb.auth.getSession().then(({ data }) => {
+        if (data && data.session) onSignedIn(data.session.user);
+      }).catch(() => {});
+      const r = sb.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN" && session) onSignedIn(session.user);
+        if (event === "SIGNED_OUT") setAuthUser(null);
+      });
+      sub = r && r.data ? r.data.subscription : null;
+    });
+    return () => { if (sub) sub.unsubscribe(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // First sign-in adopts the anonymous device identity: the taste profile and
+  // boards trained before the account existed move under "sb-<user id>", then
+  // this device speaks as the account from here on.
+  async function onSignedIn(user) {
+    setAuthUser(user.email || user.id);
+    const account = "sb-" + user.id;
+    const device = getUid();
+    if (!device || device === account) return;
+    try { await postJSON("/api/auth", { user: account, from: device }); } catch {}
+    try { window.localStorage.setItem("asilum-uid", account); } catch {}
+    setUid(account);
+  }
+
+  async function sendMagicLink() {
+    const email = authEmail.trim();
+    if (!email || authBusy) return;
+    setAuthBusy(true);
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signInWithOtp({
+        email, options: { emailRedirectTo: window.location.origin },
+      });
+      setAuthMsg(error
+        ? "could not send the link — " + error.message
+        : "magic link sent — check your inbox");
+    } catch { setAuthMsg("could not send the link — check the Supabase keys"); }
+    setAuthBusy(false);
+  }
+
+  async function signOut() {
+    try { const sb = await getSupabase(); await sb.auth.signOut(); } catch {}
+    setAuthUser(null);
+    setAuthMsg("signed out — this device keeps its taste");
+  }
 
   function updateFit(k, v) {
     setFit((prev) => { const n = { ...prev, [k]: v }; saveFitProfile(n); return n; });
@@ -319,6 +377,37 @@ export default function Shell({ children }) {
               ))}
             </div>
           )}
+
+          <div className="psub">SIGN IN</div>
+          {authConfigured() ? (
+            authUser ? (
+              <>
+                <div className="acctline">{authUser} — signed in</div>
+                <button className="btn ghost" onClick={signOut}>SIGN OUT</button>
+              </>
+            ) : (
+              <>
+                <div className="fitform">
+                  <label>
+                    email — magic link
+                    <input type="email" value={authEmail} placeholder="you@example.com"
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") sendMagicLink(); }} />
+                  </label>
+                </div>
+                <button className="btn" disabled={authBusy} onClick={sendMagicLink}>
+                  {authBusy ? "sending…" : "SEND LINK"}
+                </button>
+              </>
+            )
+          ) : (
+            <button className="btn soon" onClick={() =>
+              setAuthMsg("requires setup — add NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local and rebuild (see .env.example)")
+            }>
+              SIGN IN — REQUIRES SETUP
+            </button>
+          )}
+          {authMsg && <div className="acctline">{authMsg}</div>}
 
           <div className="psub">CONNECTED ACCOUNT</div>
           {connected ? (
