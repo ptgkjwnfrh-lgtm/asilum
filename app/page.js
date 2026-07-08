@@ -401,6 +401,10 @@ export default function Home() {
         fetch("/api/related?item=" + encodeURIComponent(sharedItem) + "&limit=6")
           .then((r) => r.json())
           .then((d) => {
+            if (d.item) {
+              setModal(d.item);
+              setModalRel((d.items || []).slice(0, 6));
+            }
             if (d.items && d.items.length) {
               setNotice("showing pieces connected to a shared item");
               setItems((prev) => {

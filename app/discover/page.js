@@ -118,7 +118,12 @@ export default function DiscoverPage() {
 
       <div className="grid">
         {items.map((it) => (
-          <div className="card" key={it.id}>
+          <div
+            className="card"
+            key={it.id}
+            style={{ cursor: "pointer" }}
+            onClick={() => { window.location.href = "/?item=" + encodeURIComponent(it.id); }}
+          >
             <div className="imgwrap" style={{ aspectRatio: ASPECTS[hashStr(it.id) % ASPECTS.length] }}>
               <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
             </div>
@@ -135,7 +140,7 @@ export default function DiscoverPage() {
                 ))}
               </div>
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
-              <div className="cardacts">
+              <div className="cardacts" onClick={(e) => e.stopPropagation()}>
                 <button className={favedIds.has(it.id) ? "on" : ""} onClick={() => fav(it)}>
                   {favedIds.has(it.id) ? "Faved ✓" : "Favorite"}
                 </button>
