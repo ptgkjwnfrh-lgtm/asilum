@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "asilum",
-      "runtimeExecutable": "/Users/noemosallowed/.local/node-v20.18.1-darwin-arm64/bin/npx",
+      "runtimeExecutable": "npx",
       "runtimeArgs": ["next", "start", "-p", "3458"],
       "port": 3458
     }
