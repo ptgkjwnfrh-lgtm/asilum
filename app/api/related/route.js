@@ -26,5 +26,7 @@ export async function GET(req) {
 
   const edges = await getEdges([itemId]);
   const items = relatedItems(source, { edges, pool, limit });
-  return NextResponse.json({ source: source.id, count: items.length, items });
+  // `item` carries the full source object so deep links (/?item=<id>) can
+  // open the detail modal directly.
+  return NextResponse.json({ source: source.id, item: source, count: items.length, items });
 }

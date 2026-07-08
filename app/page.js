@@ -4,8 +4,9 @@
 // The big feed: Pinterest masonry (different-sized listings, community posts
 // smooshed between them) with a Grailed-white editorial skin. Cards stay
 // minimal — name, price, fit estimate, FAVORITE / ADD TO BAG — everything else
-// lives in the detail view. First visit offers a buyer-history scan via a
-// connected account; otherwise the moodboard + following jump-start applies.
+// lives in the detail view. First visit offers an honest account-link prompt
+// (coming soon until real OAuth exists); otherwise the moodboard + following
+// jump-start applies.
 // The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -242,6 +243,7 @@ export default function Home() {
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
   const [connectOpen, setConnectOpen] = useState(false);
+  const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
   const [modalRel, setModalRel] = useState([]);
@@ -400,6 +402,10 @@ export default function Home() {
         fetch("/api/related?item=" + encodeURIComponent(sharedItem) + "&limit=6")
           .then((r) => r.json())
           .then((d) => {
+            if (d.item) {
+              setModal(d.item);
+              setModalRel((d.items || []).slice(0, 6));
+            }
             if (d.items && d.items.length) {
               setNotice("showing pieces connected to a shared item");
               setItems((prev) => {
@@ -480,13 +486,15 @@ export default function Home() {
     setConnecting(platform);
     try {
       const res = await postJSON("/api/connect", { user: uidRef.current, platform });
-      const d = await res.json();
-      if (d.imported) {
+      const d = await res.json().catch(() => null);
+      if (d && d.imported) {
         try { window.localStorage.setItem("asilum-connected", platform); } catch {}
         markOnboarded();
         setConnectOpen(false);
         setNotice(`imported ${d.imported} purchases from ${platform} — your feed knows you now`);
         await loadFeed();
+      } else {
+        setConnectNote((d && d.message) || `${platform} linking is coming soon — teach the feed with the moodboard instead`);
       }
     } catch (e) { console.error(e); }
     setConnecting("");
@@ -762,23 +770,24 @@ export default function Home() {
         </>
       )}
 
-      {/* ---- First visit: buyer-history scan (always escapable) ---- */}
+      {/* ---- First visit: honest account-link prompt (always escapable) ---- */}
       {connectOpen && (
         <div className="overlay" onClick={useMoodboardInstead}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <button className="mclose" onClick={useMoodboardInstead}>×</button>
             <h2>Your taste, pre-loaded<span style={{ color: "var(--red)" }}>.</span></h2>
             <p className="deck">
-              connect an associated account and the brain scans your buyer
-              history to build your feed instantly.
+              coming soon: connect an associated account and the brain scans
+              your buyer history to build your feed instantly.
             </p>
             <div className="connectrow">
               {PLATFORMS.map((p) => (
-                <button key={p} className="platform" disabled={!!connecting} onClick={() => connect(p)}>
-                  {connecting === p ? "scanning history…" : p}
+                <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
+                  {connecting === p ? "checking access…" : p}
                 </button>
               ))}
             </div>
+            {connectNote && <p className="deck" style={{ color: "var(--red)" }}>{connectNote}</p>}
             <div className="orline">OR</div>
             <p className="deck">
               start cold: favorite what you love, build a moodboard, and follow
@@ -805,7 +814,14 @@ export default function Home() {
             </div>
             <div className="mbody">
               <div className="ttl">{modal.title}</div>
-              <div className="brand2">{modal.brand}</div>
+              <div
+                className="brand2"
+                style={{ cursor: "pointer" }}
+                title={"see " + modal.brand + " on DISCOVER"}
+                onClick={() => { window.location.href = "/discover?q=" + encodeURIComponent(modal.brand); }}
+              >
+                {modal.brand}
+              </div>
               <div className="meta">
                 {modal.category ? <span className="cat">{modal.category}</span> : null}
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
@@ -820,7 +836,17 @@ export default function Home() {
               ) : null}
               {modal.designers && modal.designers.length ? (
                 <div className="designers">
-                  {modal.designers.map((d) => <span className="dz" key={d}>{d}</span>)}
+                  {modal.designers.map((d) => (
+                    <span
+                      className="dz"
+                      key={d}
+                      style={{ cursor: "pointer" }}
+                      title={"see " + d + " on DISCOVER"}
+                      onClick={() => { window.location.href = "/discover?q=" + encodeURIComponent(d); }}
+                    >
+                      {d}
+                    </span>
+                  ))}
                 </div>
               ) : null}
               <div className="pricerow">

@@ -48,15 +48,16 @@ enrichment (public-domain images + object links).
 
 - `/` — HOME: the big masonry feed (minimal cards; full detail on click),
   infinite scroll, filters, community posts woven in. First visit offers a
-  buyer-history scan via a connected account (`POST /api/connect`, simulated
-  until platform OAuth is wired), else the moodboard + following jump-start.
+  coming-soon account-link prompt (`POST /api/connect` returns an honest
+  unavailable message until real OAuth adapters are wired), else the moodboard
+  + following jump-start.
 - `/hotlist` — EDITORIAL/HOTLIST: live ranking from the popularity counters.
 - `/stylist` — THE STYLIST: full outfits (taste + coherence + fit-gated via
   the size brain); "STYLE IT ✂" on any piece anchors every look around it.
 - `/board` — MOODBOARD: view/rename/prune boards; share links
   (`/?board=<id>`) seed the feed of whoever opens them; FOLLOW makes a board
   a standing influence on your feed (`POST /api/follow`).
-- `/orders` — every add-to-bag event, including imported buyer history.
+- `/orders` — every add-to-bag event, shown as purchase/ticket history for the prototype.
 - `/stats` — the living brain viz (learns white, forgets red) + what the
   brain has learned. Idle profiles fade on the clock (6-day half-life,
   `lib/brain/memory.js`).

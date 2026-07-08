@@ -24,8 +24,8 @@ export default function OrdersPage() {
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>ORDERS & TICKETS</h1>
       <p className="deck">
-        everything you bagged — here and from connected accounts. every order
-        carries a ticket.
+        everything you bagged. every order carries a ticket — tracking is
+        simulated until carrier APIs are wired.
       </p>
       <hr className="rule" />
 

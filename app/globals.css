@@ -139,6 +139,15 @@ button { font-family: var(--helv); }
 .btn.wide { width: 100%; margin-top: 6px; }
 .btn:disabled { opacity: 0.35; cursor: default; }
 
+/* Red = the feature behind this button isn't usable yet (coming soon). */
+button.soon, a.soon, .btn.soon, .btn.ghost.soon, .fitbtn.soon, .platform.soon {
+  color: var(--red); border-color: var(--red); background: var(--paper);
+}
+button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
+.fitbtn.soon:hover, .platform.soon:hover {
+  background: var(--red); color: var(--paper); border-color: var(--red);
+}
+
 .controls { display: flex; gap: 10px; margin: 14px 0 6px; flex-wrap: wrap; align-items: center; }
 .controls input[type='text'] {
   flex: 1; min-width: 220px; border: 1px solid var(--line); background: var(--paper);

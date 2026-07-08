@@ -24,24 +24,28 @@ export default function SettingsPage() {
     setUid(getUid() || "");
     setInfo(getProfileInfo());
     setObserve(observationOn());
-    try { setConnected(window.localStorage.getItem("asilum-connected") || ""); } catch {}
+    // Clear any stale "connected" flag from the old simulated import — no
+    // real connection exists until a real OAuth adapter ships.
+    try { window.localStorage.removeItem("asilum-connected"); } catch {}
   }, []);
 
   function statusFor(name) {
     const key = name.toLowerCase();
     if (connected === key) return "ACTIVE";
-    return CONNECTABLE.has(key) ? "AUTHORIZED" : "PENDING PARTNERSHIP";
+    return CONNECTABLE.has(key) ? "COMING SOON" : "PENDING PARTNERSHIP";
   }
 
   async function link(name) {
     const key = name.toLowerCase();
     if (!CONNECTABLE.has(key)) { setNotice(name + " partnership is pending — we'll flip it on the day it signs"); return; }
     const res = await postJSON("/api/connect", { user: uid, platform: key }).catch(() => null);
-    const d = res ? await res.json() : null;
+    const d = res ? await res.json().catch(() => null) : null;
     if (d && d.imported) {
       try { window.localStorage.setItem("asilum-connected", key); } catch {}
       setConnected(key);
       setNotice(name + " linked — " + d.imported + " purchases imported into the brain");
+    } else {
+      setNotice((d && d.message) || name + " linking is coming soon — real account setup required");
     }
   }
 
@@ -79,7 +83,7 @@ export default function SettingsPage() {
             {st === "ACTIVE" ? (
               <button className="fitbtn" onClick={() => unlink(m)}>UNLINK</button>
             ) : (
-              <button className="fitbtn" onClick={() => link(m)}>LINK</button>
+              <button className="fitbtn soon" onClick={() => link(m)}>LINK</button>
             )}
           </div>
         );
