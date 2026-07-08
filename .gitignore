@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Integrated brain-upgrade snapshot — already ported into the app (stylist, memory,
+# ebay adapter, BrainViz, lexicon); keep locally if you like, not in the repo.
+asilum-brain-repo.zip
