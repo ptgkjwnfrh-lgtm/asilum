@@ -590,3 +590,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .mgap { width: 10px; flex: none; }
 .mcursor { width: 2px; height: 12px; background: var(--ink); animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mq, .pulse, .mcursor { animation: none; }
+}
