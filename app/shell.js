@@ -146,7 +146,8 @@ export default function Shell({ children }) {
     if (!text.trim()) { setResults(null); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const d = await fetch("/api/search?q=" + encodeURIComponent(text.trim())).then((r) => r.json());
+        const d = await fetch("/api/search?q=" + encodeURIComponent(text.trim())
+          + "&user=" + encodeURIComponent(getUid() || "")).then((r) => r.json());
         setResults({ ...d, users: searchUsers(text).slice(0, 4) });
       } catch { setResults(null); }
     }, 220);

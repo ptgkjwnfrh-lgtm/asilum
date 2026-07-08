@@ -7,8 +7,9 @@
 import { NextResponse } from "next/server";
 import { TAGS } from "../../../lib/brain/tags.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
-import { listItems } from "../../../lib/db/index.js";
+import { listItems, recordEvent } from "../../../lib/db/index.js";
 import { sourceFor } from "../../../lib/social.js";
+import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,10 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().toLowerCase();
   if (!q) return NextResponse.json({ q, brands: [], items: [], aesthetics: [] });
+
+  // Canonical event history — recorded only when the caller identifies itself.
+  const user = searchParams.get("user");
+  if (user) recordEvent(buildEvent(user, EVENTS.USER_SEARCHED_QUERY, { q })).catch(() => {});
 
   let pool = [];
   try { pool = await listItems(300); } catch { pool = []; }

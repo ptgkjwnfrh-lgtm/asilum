@@ -12,7 +12,7 @@ exploration. Everything below builds around it; nothing bypasses it.
 | Module | Role | Status |
 |---|---|---|
 | `lib/ai` | Brain facade + `bridgeStatus()` introspection; `contract.js` = honesty helpers (`real` / `mockMarked` / `notImplemented`) | live |
-| `lib/events` | Canonical 18-event vocabulary + `buildEvent()`; maps which events already flow through `/api/interaction` | live (pure) |
+| `lib/events` | Canonical 19-event vocabulary + `buildEvent()` + `eventFromInteraction()`; **persisted** to `user_events` via `lib/db.recordEvent` from interaction/board-save/search (Day 5) | live (persisted) |
 | `lib/fashion-taxonomy` | Shared vocabulary: re-exports the live tag space + categories/materials/silhouettes/colors/eras/moods/conditions | live (data) |
 | `lib/embeddings` | v0 = tag-space vectors + cosine (real math, used today); v1 text/visual contracts gated on `EMBEDDINGS_*` env | v0 real / v1 stub |
 | `lib/vision` | Mood Board Intelligence + Fit Pic Analyzer contracts; one `ImageAnalysis` shape for fashion AND non-fashion images; confidence-scored, similar-items-not-certainty | stub (gated on `VISION_*`) |

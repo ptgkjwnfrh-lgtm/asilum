@@ -14,10 +14,11 @@
 import { NextResponse } from "next/server";
 import { learn, itemsVector } from "../../../lib/brain/index.js";
 import {
-  getProfile, saveProfile, recordInteraction,
+  getProfile, saveProfile, recordInteraction, recordEvent,
   createBoard, getBoards, getBoard, addBoardItem, removeBoardItem, renameBoard,
   bumpEdges, bumpPopularity, withUserLock,
 } from "../../../lib/db/index.js";
+import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 
 export const dynamic = "force-dynamic";
 
@@ -81,6 +82,8 @@ export async function POST(req) {
     }),
     bumpPopularity([{ id: item.id, eng: 1 }]),
     recordInteraction(userId, item.id, "save"),
+    recordEvent(buildEvent(userId, EVENTS.USER_ADDED_TO_MOOD_BOARD,
+      { itemId: item.id, brand: item.brand, boardId: board.id })).catch(() => {}),
   ]);
 
   return NextResponse.json({ board });

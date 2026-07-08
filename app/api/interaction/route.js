@@ -11,9 +11,10 @@ import { NextResponse } from "next/server";
 import { learn } from "../../../lib/brain/index.js";
 import { applyTimeDecay, noteActivity } from "../../../lib/brain/memory.js";
 import {
-  getProfile, saveProfile, recordInteraction, bumpEdges, bumpPopularity,
-  withUserLock,
+  getProfile, saveProfile, recordInteraction, recordEvent, bumpEdges,
+  bumpPopularity, withUserLock,
 } from "../../../lib/db/index.js";
+import { eventFromInteraction } from "../../../lib/events/index.js";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +74,11 @@ export async function POST(req) {
     ...valid.map((e) =>
       recordInteraction(userId, e.item.id, e.action, e.dwellMs ?? null)
     ),
+    // Canonical event history for the Alpha Learning Brain (lib/events).
+    ...valid.map((e) => {
+      const evt = eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null);
+      return evt ? recordEvent(evt).catch(() => {}) : Promise.resolve();
+    }),
   ]);
 
   return NextResponse.json({ userId, applied: valid.length, profile });
