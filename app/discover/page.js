@@ -7,7 +7,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getUid, postJSON, thumbFor, hashStr, bagAdd } from "../../lib/client.js";
-import { SOURCES } from "../../lib/social.js";
+import { SOURCES, followedBrands, setFollowBrand } from "../../lib/social.js";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -24,6 +24,8 @@ export default function DiscoverPage() {
   const [loading, setLoading] = useState(false);
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [favedIds, setFavedIds] = useState(() => new Set());
+  const [searched, setSearched] = useState("");
+  const [followed, setFollowed] = useState([]);
   const offsetRef = useRef(0);
   const bootedRef = useRef(false);
 
@@ -41,9 +43,47 @@ export default function DiscoverPage() {
       setTotal(d.total || 0);
       setItems((prev) => (reset ? d.items : [...prev, ...d.items]));
       offsetRef.current += (d.items || []).length;
+      if (reset) setSearched(qval.trim());
     } catch {}
     setLoading(false);
   }, [q, source, tag, sort]);
+
+  useEffect(() => { setFollowed(followedBrands()); }, []);
+
+  // The designer whose rack you're looking at: the last-searched query,
+  // matched against the brands actually returned. Exact match wins; a
+  // partial match counts only when every result is that one brand.
+  const matchedBrand = (() => {
+    const qn = searched.toLowerCase();
+    if (!qn) return "";
+    const exact = items.find((it) => (it.brand || "").toLowerCase() === qn);
+    if (exact) return exact.brand;
+    const brands = [...new Set(items.map((it) => it.brand).filter(Boolean))];
+    if (brands.length === 1 && brands[0].toLowerCase().includes(qn)) return brands[0];
+    return "";
+  })();
+
+  function toggleFollowBrand() {
+    const on = !followed.includes(matchedBrand);
+    setFollowed(setFollowBrand(matchedBrand, on));
+    if (on) {
+      // Feed the follow into the moodboard brain. The lexicon doesn't map
+      // designer names, so train on the designer's dominant tags — the same
+      // path as typing words into the moodboard training station.
+      const w = {};
+      for (const it of items) {
+        if (it.brand !== matchedBrand) continue;
+        for (const [t, v] of Object.entries(it.tags || {})) w[t] = (w[t] || 0) + v;
+      }
+      const topTags = Object.entries(w)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([t]) => t.toLowerCase());
+      if (topTags.length) {
+        postJSON("/api/train", { user: getUid(), prompt: topTags.join(" ") }).catch(() => {});
+      }
+    }
+  }
 
   // Boot: honor ?q= from ticker/search links (brand lands pre-searched).
   useEffect(() => {
@@ -89,6 +129,16 @@ export default function DiscoverPage() {
           onKeyDown={(e) => e.key === "Enter" && load(true)}
           style={{ maxWidth: 280, textTransform: "none", fontWeight: 400 }}
         />
+        {matchedBrand && (
+          <button
+            className={"fitbtn" + (followed.includes(matchedBrand) ? " active" : "")}
+            onClick={toggleFollowBrand}
+          >
+            {followed.includes(matchedBrand)
+              ? `FOLLOWING ${matchedBrand} ✓`
+              : `FOLLOW ${matchedBrand}`}
+          </button>
+        )}
         <select value={source} onChange={(e) => setSource(e.target.value)}>
           <option value="">all sources</option>
           {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
