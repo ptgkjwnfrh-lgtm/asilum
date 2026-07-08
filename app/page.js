@@ -772,8 +772,8 @@ export default function Home() {
             <button className="mclose" onClick={useMoodboardInstead}>×</button>
             <h2>Your taste, pre-loaded<span style={{ color: "var(--red)" }}>.</span></h2>
             <p className="deck">
-              connect an associated account and the brain scans your buyer
-              history to build your feed instantly.
+              coming soon: connect an associated account and the brain scans
+              your buyer history to build your feed instantly.
             </p>
             <div className="connectrow">
               {PLATFORMS.map((p) => (

@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "asilum",
-      "runtimeExecutable": "/private/tmp/claude-501/-Users-noemosallowed/b01d7426-8ed5-48d1-b819-2c35d69397d4/scratchpad/node-v20.19.5-darwin-arm64/bin/npx",
+      "runtimeExecutable": "/private/tmp/claude-501/-Users-noemosallowed/ca9ae1ff-4d8d-4f3d-9999-943394760538/scratchpad/node-v20.18.1-darwin-arm64/bin/npx",
       "runtimeArgs": ["next", "start", "-p", "3458"],
       "port": 3458
     }
