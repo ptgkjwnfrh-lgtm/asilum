@@ -777,7 +777,7 @@ export default function Home() {
             </p>
             <div className="connectrow">
               {PLATFORMS.map((p) => (
-                <button key={p} className="platform" disabled={!!connecting} onClick={() => connect(p)}>
+                <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
                   {connecting === p ? "scanning history…" : p}
                 </button>
               ))}

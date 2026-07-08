@@ -275,7 +275,7 @@ export default function Shell({ children }) {
                 <div className="bagfinal"><span>TOTAL</span><b>USD {Math.round(total)}</b></div>
               </div>
               <button
-                className="btn wide"
+                className="btn wide soon"
                 onClick={() => alert("cross-site checkout arrives with partner commerce APIs — nothing was charged")}
               >
                 CHECKOUT ACROSS SITES
@@ -326,7 +326,7 @@ export default function Shell({ children }) {
           ) : (
             <div className="platformrow">
               {PLATFORMS.map((p) => (
-                <button key={p} className="platform" disabled={!!connecting} onClick={() => connect(p)}>
+                <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
                   {connecting === p ? "scanning…" : p}
                 </button>
               ))}

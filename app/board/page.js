@@ -190,7 +190,7 @@ export default function BoardPage() {
               onKeyDown={(e) => e.key === "Enter" && train()}
             />
             <button className="btn" onClick={train}>TRAIN</button>
-            <button className="btn ghost" onClick={connectPinterest}>CONNECT PINTEREST</button>
+            <button className="btn ghost soon" onClick={connectPinterest}>CONNECT PINTEREST</button>
             <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>
               UPLOAD IMAGES
             </button>

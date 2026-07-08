@@ -83,7 +83,7 @@ export default function SettingsPage() {
             {st === "ACTIVE" ? (
               <button className="fitbtn" onClick={() => unlink(m)}>UNLINK</button>
             ) : (
-              <button className="fitbtn" onClick={() => link(m)}>LINK</button>
+              <button className="fitbtn soon" onClick={() => link(m)}>LINK</button>
             )}
           </div>
         );
