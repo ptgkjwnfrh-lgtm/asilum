@@ -1,0 +1,917 @@
+"use client";
+
+// app/page.js — HOME.
+// The big feed: Pinterest masonry (different-sized listings, community posts
+// smooshed between them) with a Grailed-white editorial skin. Cards stay
+// minimal — name, price, fit estimate, FAVORITE / ADD TO BAG — everything else
+// lives in the detail view. First visit offers a buyer-history scan via a
+// connected account; otherwise the moodboard + following jump-start applies.
+// The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
+
+import { useEffect, useState, useCallback, useRef } from "react";
+import { fitPhrase } from "../lib/brain/sizing.js";
+import {
+  getUid, postJSON, thumbFor, hashStr, bagAdd,
+  loadFitProfile, fitProfileForBrain, EMPTY_FIT,
+} from "../lib/client.js";
+import {
+  addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
+  setFollowBrand, STORIES, listPosts, timeAgo,
+} from "../lib/social.js";
+import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
+
+const DWELL_FLUSH_MS = 5000;
+const DWELL_MIN_MS = 2000;
+const MAX_RENDERED = 300;
+const POST_EVERY = 7; // one community post per N listings
+
+const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
+const PLATFORMS = ["grailed", "depop", "ssense", "ebay", "pinterest"];
+const ASPECTS = ["3 / 4", "1 / 1", "4 / 5", "2 / 3", "3 / 4", "5 / 6"];
+
+const BRIDGE_REASON = {
+  alpha: "matches your taste",
+  beta: "leans into a trait you love",
+  gamma: "connected to pieces you saved",
+  delta: "trending on asilum",
+  epsilon: "a wildcard for you",
+  ad: "sponsored",
+};
+
+// Community voices woven into the masonry (Pinterest's "people" texture).
+const HANDLES = ["@arc.hive", "@vex.wears", "@tabi.lord", "@grey.market", "@hem.line", "@spine.press"];
+const QUOTES = [
+  "the collar is doing all the work and it knows it.",
+  "bought one size up. living inside it now.",
+  "this is what the archive smells like.",
+  "wore it to a funeral and a gallery opening. both correct.",
+  "the drape argues with gravity and wins.",
+  "found the exact one from the runway. hands shaking.",
+  "it photographs badly and looks incredible. keep it.",
+  "my tailor refused to touch it. respect.",
+];
+
+function reasonFor(item) {
+  if (item._zone === "reach") return "a far reach — break your pattern";
+  if (item._zone === "discovery") return "you'll probably like this";
+  if (item._via === "graph") return "saved together by others";
+  if (item._via === "tags") return "a similar aesthetic";
+  const parts = item && item._parts ? item._parts : null;
+  if (!parts) return null;
+  let bestK = null, bestV = -Infinity;
+  for (const k in parts) {
+    if (parts[k] > bestV) { bestV = parts[k]; bestK = k; }
+  }
+  return bestK ? BRIDGE_REASON[bestK] || null : null;
+}
+
+function eraLabel(era) {
+  if (!era) return null;
+  if (era.season && era.year) return era.season + " " + era.year;
+  if (era.year) return String(era.year);
+  if (era.decade) return era.decade;
+  return null;
+}
+
+function aspectFor(id) {
+  return ASPECTS[hashStr(id) % ASPECTS.length];
+}
+
+// ---- Collapsed cube: header always visible, body pops out on hover/click ----
+function Collapsible({ title, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={"module col" + (open ? " open" : "")}>
+      <button className="modhead colhead" onClick={() => setOpen((o) => !o)}>
+        {title} <i>{open ? "−" : "+"}</i>
+      </button>
+      <div className="modbody">{children}</div>
+    </div>
+  );
+}
+
+// ---- Morse ticker: spells the brands you follow, full-width --------------
+// Red * = dot, black bar = dash, cycling brand by brand.
+const MORSE = {
+  a: ".-", b: "-...", c: "-.-.", d: "-..", e: ".", f: "..-.", g: "--.", h: "....",
+  i: "..", j: ".---", k: "-.-", l: ".-..", m: "--", n: "-.", o: "---", p: ".--.",
+  q: "--.-", r: ".-.", s: "...", t: "-", u: "..-", v: "...-", w: ".--", x: "-..-",
+  y: "-.--", z: "--..",
+};
+function morseSeq(word) {
+  const letters = word.toLowerCase().replace(/[^a-z]/g, "");
+  return letters.split("").flatMap((ch, i) =>
+    [...(MORSE[ch] || "").split(""), ...(i < letters.length - 1 ? [" "] : [])]
+  );
+}
+
+function FollowMorse() {
+  const [words, setWords] = useState(["asilum"]);
+  const [pos, setPos] = useState(0);
+  useEffect(() => {
+    const sync = () => {
+      const brands = followedBrands();
+      setWords(brands.length ? brands : ["asilum"]);
+      setPos(0);
+    };
+    sync();
+    window.addEventListener("asilum:follow", sync);
+    window.addEventListener("focus", sync);
+    return () => {
+      window.removeEventListener("asilum:follow", sync);
+      window.removeEventListener("focus", sync);
+    };
+  }, []);
+  // Spell the followed brands back-to-back until the sequence is long enough
+  // to fill the whole strip, then sweep left-to-right and start over.
+  const base = words.flatMap((w) => [...morseSeq(w), " ", " ", " "]);
+  const seqFull = [];
+  while (seqFull.length < 160 && base.length) seqFull.push(...base);
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setPos((p) => (p + 1 > seqFull.length + 10 ? 0 : p + 1));
+    }, 130);
+    return () => clearInterval(iv);
+  }, [seqFull.length]);
+  const seq = seqFull.slice(0, pos);
+  return (
+    <div className="morse" title={"spelling: " + words.join(", ")}>
+      {seq.map((s, k) =>
+        s === "." ? <span className="mstar" key={k}>*</span>
+        : s === "-" ? <span className="mdash" key={k} />
+        : <span className="mgap" key={k} />
+      )}
+      <span className="mcursor" />
+    </div>
+  );
+}
+
+// ---- The slide: rotates a stylist look / editorial story / far-reach piece ---
+function Slide({ items, onOpenItem }) {
+  const [look, setLook] = useState(null);
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    fetch("/api/outfits?user=" + encodeURIComponent(getUid() || "guest") + "&n=1")
+      .then((r) => r.json())
+      .then((d) => setLook((d.outfits || [])[0] || null))
+      .catch(() => {});
+    const iv = setInterval(() => setIdx((i) => i + 1), 8000);
+    return () => clearInterval(iv);
+  }, []);
+  const reach = items.find((it) => it._zone === "reach");
+  const slides = [];
+  if (look) slides.push({ type: "LOOK OF THE MOMENT", body: (
+    <a href="/stylist" className="slidelook">
+      <span className="slidethumbs">
+        {look.items.slice(0, 3).map((it) => <img key={it.id} src={it.img || thumbFor(it)} alt="" />)}
+      </span>
+      <span>{look.dominantTag} · {look.conf} match · USD {Math.round(look.total || 0)} →</span>
+    </a>
+  )});
+  slides.push({ type: "FROM THE MAGAZINE", body: (
+    <a href="/hotlist" className="slidestory">
+      <b>{STORIES[idx % STORIES.length].pub}</b> — {STORIES[idx % STORIES.length].title} →
+    </a>
+  )});
+  if (reach) slides.push({ type: "A FAR REACH", body: (
+    <button className="slidereach" onClick={() => onOpenItem(reach)}>
+      <img src={reach.img || thumbFor(reach)} alt="" />
+      <span>{reach.title} — break your pattern →</span>
+    </button>
+  )});
+  const s = slides[idx % slides.length];
+  return (
+    <>
+      <div className="psub" style={{ margin: "0 0 8px" }}>{s.type}</div>
+      {s.body}
+    </>
+  );
+}
+
+// ---- Live observation tracker ------------------------------------------------
+// A subtle sign the taste engine is alive: cycles observed-signal lines built
+// from the user's actual strongest aesthetics. Gated by the on-device
+// observation toggle in Settings.
+function ObservationTracker() {
+  const [lines, setLines] = useState(["ARCHIVAL", "MINIMAL", "STREETWEAR"]);
+  const [idx, setIdx] = useState(0);
+  const [on, setOn] = useState(true);
+
+  useEffect(() => {
+    setOn(observationOn());
+    fetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
+      .then((r) => r.json())
+      .then((d) => {
+        const p = d.profile || {};
+        const w = { ...(p.long || {}) };
+        for (const k in p.session || {}) w[k] = (w[k] || 0) + p.session[k];
+        const top = Object.entries(w).filter(([, v]) => v > 0.05)
+          .sort((a, b) => b[1] - a[1]).map(([k]) => k).slice(0, 6);
+        if (top.length >= 2) setLines(top);
+      })
+      .catch(() => {});
+    const iv = setInterval(() => setIdx((i) => i + 1), 5200);
+    return () => clearInterval(iv);
+  }, []);
+
+  if (!on) {
+    return <div className="obsline dim">on-device observation is off — enable it in settings</div>;
+  }
+  return (
+    <>
+      {lines.slice(0, 5).map((tag, i) => (
+        <div className={"obsline" + (i === idx % lines.length ? "" : " past")} key={tag + i}>
+          <span className="pulse" />
+          observed interest in <b>{tag}</b> on an external tab
+        </div>
+      ))}
+      <div className="obsnote">signals stay on this device where possible.</div>
+    </>
+  );
+}
+
+export default function Home() {
+  const [epsilon, setEpsilon] = useState(false);
+  const [epsilonAuto, setEpsilonAuto] = useState(false);
+  const [split, setSplit] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [fit, setFit] = useState(EMPTY_FIT);
+  const [savedIds, setSavedIds] = useState(() => new Set());
+  const [baggedIds, setBaggedIds] = useState(() => new Set());
+  const [notice, setNotice] = useState("");
+  const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
+  const [connectOpen, setConnectOpen] = useState(false);
+  const [connecting, setConnecting] = useState("");
+  const [modal, setModal] = useState(null);
+  const [modalRel, setModalRel] = useState([]);
+  const [tab, setTab] = useState("curated");       // curated | following | new
+  const [tabItems, setTabItems] = useState(null);  // following / what's-new items
+  const [composer, setComposer] = useState("");
+  const promptRef = useRef("");
+  const boardParamRef = useRef("");
+  const uidRef = useRef(null);
+  const loadingMoreRef = useRef(false);
+  const sentinelRef = useRef(null);
+
+  // Fit profile lives in the account panel now; stay in sync with it.
+  useEffect(() => {
+    setFit(loadFitProfile());
+    const sync = () => setFit(loadFitProfile());
+    window.addEventListener("asilum:fit", sync);
+    return () => window.removeEventListener("asilum:fit", sync);
+  }, []);
+  const fitBrain = fitProfileForBrain(fit);
+
+  // ---- Dwell tracking ----
+  const dwellRef = useRef({ vis: new Map(), sent: new Set() });
+  const itemsRef = useRef([]);
+  useEffect(() => { itemsRef.current = items; }, [items]);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const d = dwellRef.current;
+    const obs = new IntersectionObserver((entries) => {
+      const now = performance.now();
+      for (const en of entries) {
+        const id = en.target.getAttribute("data-id");
+        if (!id) continue;
+        const rec = d.vis.get(id) || { start: null, total: 0 };
+        if (en.isIntersecting) {
+          if (rec.start == null) rec.start = now;
+        } else if (rec.start != null) {
+          rec.total += now - rec.start;
+          rec.start = null;
+        }
+        d.vis.set(id, rec);
+      }
+    }, { threshold: 0.55 });
+    document.querySelectorAll(".card[data-id]").forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [items]);
+
+  function dwellMsFor(id) {
+    const rec = dwellRef.current.vis.get(id);
+    if (!rec) return 0;
+    let t = rec.total;
+    if (rec.start != null) t += performance.now() - rec.start;
+    return Math.round(t);
+  }
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const user = uidRef.current;
+      if (!user) return;
+      const d = dwellRef.current;
+      const now = performance.now();
+      const events = [];
+      for (const [id, rec] of d.vis) {
+        if (d.sent.has(id)) continue;
+        const t = rec.total + (rec.start != null ? now - rec.start : 0);
+        if (t < DWELL_MIN_MS) continue;
+        const item = itemsRef.current.find((x) => x.id === id);
+        if (!item) continue;
+        events.push({ item: { id: item.id, tags: item.tags }, action: "dwell", dwellMs: Math.round(t) });
+        d.sent.add(id);
+      }
+      if (events.length) {
+        postJSON("/api/interaction", { user, events }).catch(() => {});
+      }
+    }, DWELL_FLUSH_MS);
+    return () => clearInterval(iv);
+  }, []);
+
+  // ---- Feed ----
+  const feedQS = useCallback((user) => {
+    const qs = new URLSearchParams({ user, epsilon: epsilon ? "1" : "0", q: promptRef.current });
+    if (boardParamRef.current) qs.set("board", boardParamRef.current);
+    if (filters.category) qs.set("category", filters.category);
+    if (filters.maxPrice) qs.set("maxPrice", filters.maxPrice);
+    if (filters.fitsMe && fit.usualSize) qs.set("fit", fit.usualSize);
+    return qs;
+  }, [epsilon, filters, fit.usualSize]);
+
+  const loadFeed = useCallback(async (user = uidRef.current) => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/feed?" + feedQS(user).toString());
+      const data = await res.json();
+      setSplit(data.split || null);
+      setItems(data.items || []);
+      setEpsilonAuto(!!data.epsilonAuto);
+      if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
+      dwellRef.current = { vis: new Map(), sent: new Set() };
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [feedQS]);
+
+  const loadMore = useCallback(async () => {
+    const user = uidRef.current;
+    if (!user || loadingMoreRef.current) return;
+    if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
+    loadingMoreRef.current = true;
+    try {
+      const res = await fetch("/api/feed?" + feedQS(user).toString());
+      const data = await res.json();
+      if (data.items && data.items.length) {
+        setItems((prev) => {
+          const have = new Set(prev.map((x) => x.id));
+          return [...prev, ...data.items.filter((x) => !have.has(x.id))];
+        });
+      }
+    } catch (e) { console.error(e); }
+    finally { loadingMoreRef.current = false; }
+  }, [feedQS]);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined" || !sentinelRef.current) return;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) loadMore();
+    }, { rootMargin: "700px" });
+    obs.observe(sentinelRef.current);
+    return () => obs.disconnect();
+  }, [loadMore]);
+
+  // ---- Boot: identity, search hand-off, shared links, first-visit connect ----
+  useEffect(() => {
+    const user = getUid();
+    uidRef.current = user;
+    const sp = new URLSearchParams(window.location.search);
+    boardParamRef.current = sp.get("board") || "";
+    const q = sp.get("q") || "";
+    const sharedItem = sp.get("item");
+    const onboarded = (() => {
+      try { return !!window.localStorage.getItem("asilum-onboarded"); } catch { return true; }
+    })();
+    if (!onboarded && !boardParamRef.current && !sharedItem && !q) setConnectOpen(true);
+
+    const boot = async () => {
+      if (q) {
+        promptRef.current = q;
+        await postJSON("/api/train", { user, prompt: q }).catch(() => {});
+        setNotice(`feed trained on “${q}”`);
+      }
+      await loadFeed(user);
+      if (sharedItem) {
+        fetch("/api/related?item=" + encodeURIComponent(sharedItem) + "&limit=6")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.items && d.items.length) {
+              setNotice("showing pieces connected to a shared item");
+              setItems((prev) => {
+                const have = new Set(d.items.map((x) => x.id));
+                return [...d.items, ...prev.filter((x) => !have.has(x.id))];
+              });
+            }
+          })
+          .catch(() => {});
+      }
+    };
+    boot();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (uidRef.current) loadFeed();
+  }, [filters, epsilon]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function markOnboarded() {
+    try { window.localStorage.setItem("asilum-onboarded", "1"); } catch {}
+  }
+
+  // ---- Home tabs ----
+  // Following: pieces from brands you follow + boards you follow + posts from
+  // people you follow. What's New: the freshest inventory across the
+  // affiliated sites, source-labeled.
+  const [tabPosts, setTabPosts] = useState([]);
+  async function switchTab(next) {
+    setTab(next);
+    if (next === "curated") return;
+    setTabItems(null);
+    setTabPosts([]);
+    try {
+      if (next === "new") {
+        const d = await fetch("/api/discover?sort=new&limit=48").then((r) => r.json());
+        setTabItems(d.items || []);
+      } else if (next === "following") {
+        const seen = new Set();
+        const pool = [];
+        // pieces from followed brands
+        const brands = followedBrands();
+        if (brands.length) {
+          const d = await fetch("/api/discover?brands=" + encodeURIComponent(brands.join("|")) + "&limit=48")
+            .then((r) => r.json());
+          for (const it of d.items || []) {
+            if (!seen.has(it.id)) { seen.add(it.id); pool.push(it); }
+          }
+        }
+        // pieces from followed moodboards
+        const prof = await fetch("/api/profile?user=" + encodeURIComponent(uidRef.current))
+          .then((r) => r.json());
+        const follows = (prof.profile && prof.profile._meta && prof.profile._meta.follows) || [];
+        const boards = await Promise.all(
+          follows.map((id) => fetch("/api/boards?id=" + encodeURIComponent(id)).then((r) => r.json()).catch(() => null))
+        );
+        for (const b of boards) {
+          for (const it of (b && b.board && b.board.items) || []) {
+            if (!seen.has(it.id)) { seen.add(it.id); pool.push(it); }
+          }
+        }
+        // posts from followed people
+        const fu = new Set(followedUsers());
+        setTabPosts(listPosts().filter((p) => fu.has(p.handle)));
+        setTabItems(pool);
+      }
+    } catch { setTabItems([]); }
+  }
+
+  function publishPost() {
+    if (!composer.trim()) return;
+    addPost(composer.trim(), getProfileInfo());
+    setComposer("");
+    setNotice("posted — it's live on the community tab of EDITORIAL and on your profile");
+  }
+
+  async function connect(platform) {
+    if (connecting) return;
+    setConnecting(platform);
+    try {
+      const res = await postJSON("/api/connect", { user: uidRef.current, platform });
+      const d = await res.json();
+      if (d.imported) {
+        try { window.localStorage.setItem("asilum-connected", platform); } catch {}
+        markOnboarded();
+        setConnectOpen(false);
+        setNotice(`imported ${d.imported} purchases from ${platform} — your feed knows you now`);
+        await loadFeed();
+      }
+    } catch (e) { console.error(e); }
+    setConnecting("");
+  }
+
+  function useMoodboardInstead() {
+    markOnboarded();
+    setConnectOpen(false);
+    setNotice("no account connected — favorite pieces, build your moodboard, and follow boards to teach the feed");
+    loadFeed();
+  }
+
+  // ---- Signals ----
+  function insertRelatedAfter(afterId, newItems, cap = 4) {
+    setItems((prev) => {
+      const have = new Set(prev.map((x) => x.id));
+      const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
+      if (!add.length) return prev;
+      const idx = prev.findIndex((x) => x.id === afterId);
+      const out = prev.slice();
+      out.splice(idx + 1, 0, ...add);
+      return out;
+    });
+  }
+
+  async function moreLikeThis(item) {
+    try {
+      const res = await fetch("/api/related?item=" + encodeURIComponent(item.id) + "&limit=8");
+      const data = await res.json();
+      if (data.items) insertRelatedAfter(item.id, data.items, 4);
+    } catch (e) { console.error(e); }
+  }
+
+  async function react(item, action) {
+    const dwellMs = dwellMsFor(item.id);
+    if (action === "hide" || action === "skip") {
+      setItems((prev) => prev.filter((x) => x.id !== item.id));
+      if (modal && modal.id === item.id) setModal(null);
+    }
+    try {
+      await postJSON("/api/interaction", { user: uidRef.current, item, action, dwellMs });
+      if (action === "favorite") moreLikeThis(item);
+    } catch (e) { console.error(e); }
+  }
+
+  function addToBag(item) {
+    bagAdd(item);
+    setBaggedIds((prev) => new Set(prev).add(item.id));
+    react(item, "bag");
+  }
+
+  async function muteTag(tag) {
+    const synthetic = { id: "mute:" + tag + ":" + Date.now(), tags: { [tag]: 1 } };
+    try {
+      await postJSON("/api/interaction", { user: uidRef.current, item: synthetic, action: "skip" });
+      setModal(null);
+      loadFeed();
+    } catch (e) { console.error(e); }
+  }
+
+  async function saveToBoard(item) {
+    setSavedIds((prev) => new Set(prev).add(item.id));
+    try {
+      await postJSON("/api/boards", { user: uidRef.current, item });
+    } catch (e) { console.error(e); }
+  }
+
+  async function shareItem(item) {
+    const url = window.location.origin + "/?item=" + encodeURIComponent(item.id);
+    try { await navigator.clipboard.writeText(url); setNotice("item link copied — it carries its taste graph"); } catch {}
+    postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) }).catch(() => {});
+  }
+
+  function openModal(item) {
+    setModal(item);
+    setModalRel([]);
+    fetch("/api/related?item=" + encodeURIComponent(item.id) + "&limit=6")
+      .then((r) => r.json())
+      .then((d) => setModalRel(d.items || []))
+      .catch(() => {});
+  }
+
+  // Community post tile content, deterministic per feed position. The quote
+  // index steps by 3 (+ a small per-item offset) per post slot so neighboring
+  // posts can never repeat.
+  function postFor(item, idx) {
+    const h = hashStr(item.id + ":" + idx);
+    const ord = Math.floor((idx + 1) / POST_EVERY);
+    return {
+      quote: QUOTES[(ord * 3 + (h % 3)) % QUOTES.length],
+      handle: HANDLES[(h >> 4) % HANDLES.length],
+      ctx: "on the " + item.brand,
+    };
+  }
+
+  const splitLabels = split ? <FollowMorse /> : null;
+
+  return (
+    <div className="wrap">
+      <h1 className="headline"><span className="red">*</span>THE FEED</h1>
+      <p className="deck">everything below was ranked for you — six bridges, three zones, no reruns.</p>
+
+      <div className="tabs">
+        {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
+          <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="composer2">
+        <Avatar name={getProfileInfo().name} />
+        <div className="cright">
+          <textarea
+            rows={2}
+            maxLength={400}
+            placeholder="what are you wearing?"
+            value={composer}
+            onChange={(e) => setComposer(e.target.value)}
+          />
+          <div className="cbar">
+            <span className="cicons">
+              <button title="image — soon" onClick={() => setNotice("image posts arrive with the vibe reader")}>▣</button>
+              <button title="tag a piece — soon" onClick={() => setNotice("piece-tagging is on the cutting table")}>#</button>
+            </span>
+            <span className="ccount">{composer.length}/400</span>
+            <button className="btn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
+          </div>
+        </div>
+      </div>
+
+      <div className="homeband">
+        <Collapsible title="LIVE OBSERVATION">
+          <ObservationTracker />
+        </Collapsible>
+        <Collapsible title="WHO TO FOLLOW">
+          <WhoToFollowList compact withSearch />
+        </Collapsible>
+        <Collapsible title="THE SLIDE">
+          <Slide items={items} onOpenItem={openModal} />
+        </Collapsible>
+      </div>
+
+      <div className="filters">
+        <select
+          value={filters.category}
+          onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
+        >
+          <option value="">all categories</option>
+          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <input
+          type="number"
+          placeholder="max price"
+          value={filters.maxPrice}
+          onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
+        />
+        <label className="toggle" title={fit.usualSize ? "" : "set your size in ACCOUNT first"}>
+          <input
+            type="checkbox"
+            disabled={!fit.usualSize}
+            checked={filters.fitsMe}
+            onChange={(e) => setFilters((f) => ({ ...f, fitsMe: e.target.checked }))}
+          />
+          fits me
+        </label>
+        <label className="toggle">
+          <input
+            type="checkbox"
+            checked={epsilon}
+            onChange={(e) => setEpsilon(e.target.checked)}
+          />
+          epsilon
+        </label>
+      </div>
+
+      <div className="splitbar">{splitLabels}</div>
+
+      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {epsilonAuto && (
+        <div className="autonote">trying something different — you seemed in a rut</div>
+      )}
+
+      {tab === "curated" && (
+        <>
+          {loading && <div className="empty">thinking…</div>}
+          {!loading && items.length === 0 && (
+            <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
+          )}
+          <div className="grid">
+            {items.map((it, i) => {
+              const fitLine = it.size ? fitPhrase(it.size, fitBrain) : null;
+              const post = (i + 1) % POST_EVERY === 0 ? postFor(it, i) : null;
+              return (
+                <FragmentCard
+                  key={it.id}
+                  it={it}
+                  fitLine={fitLine}
+                  bagged={baggedIds.has(it.id)}
+                  onOpen={() => openModal(it)}
+                  onFavorite={() => react(it, "favorite")}
+                  onBag={() => addToBag(it)}
+                  post={post}
+                />
+              );
+            })}
+          </div>
+          <div ref={sentinelRef} className="sentinel" />
+        </>
+      )}
+
+      {tab === "following" && (
+        <>
+          {!tabItems && <div className="empty">reading who and what you follow…</div>}
+          {tabPosts.length > 0 && tabPosts.map((p) => (
+            <div className="cpost" key={p.id}>
+              <Avatar name={p.name} />
+              <div className="cbody">
+                <div className="chead">
+                  <span className="uname">{p.name}</span>
+                  <span className="uhandle">{p.handle} · {timeAgo(p.at)}</span>
+                </div>
+                <p className="ctext">{p.text}</p>
+              </div>
+            </div>
+          ))}
+          {tabItems && tabItems.length === 0 && tabPosts.length === 0 && (
+            <div className="empty">
+              nothing here yet — follow brands (from any piece), moodboards
+              (open a shared board and hit FOLLOW), and people
+              ({followedUsers().length} followed so far) to build this tab.
+            </div>
+          )}
+          {tabItems && tabItems.length > 0 && (
+            <div className="grid">
+              {tabItems.map((it) => (
+                <FragmentCard
+                  key={it.id}
+                  it={it}
+                  fitLine={it.size ? fitPhrase(it.size, fitBrain) : null}
+                  bagged={baggedIds.has(it.id)}
+                  onOpen={() => openModal(it)}
+                  onFavorite={() => react(it, "favorite")}
+                  onBag={() => addToBag(it)}
+                  post={null}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {tab === "new" && (
+        <>
+          <p className="deck">just in from the affiliated sites — freshest first.</p>
+          {!tabItems && <div className="empty">pulling the fresh racks…</div>}
+          {tabItems && (
+            <div className="grid">
+              {tabItems.map((it) => (
+                <FragmentCard
+                  key={it.id}
+                  it={it}
+                  fitLine={it.size ? fitPhrase(it.size, fitBrain) : null}
+                  bagged={baggedIds.has(it.id)}
+                  onOpen={() => openModal(it)}
+                  onFavorite={() => react(it, "favorite")}
+                  onBag={() => addToBag(it)}
+                  post={null}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ---- First visit: buyer-history scan (always escapable) ---- */}
+      {connectOpen && (
+        <div className="overlay" onClick={useMoodboardInstead}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <button className="mclose" onClick={useMoodboardInstead}>×</button>
+            <h2>Your taste, pre-loaded<span style={{ color: "var(--red)" }}>.</span></h2>
+            <p className="deck">
+              connect an associated account and the brain scans your buyer
+              history to build your feed instantly.
+            </p>
+            <div className="connectrow">
+              {PLATFORMS.map((p) => (
+                <button key={p} className="platform" disabled={!!connecting} onClick={() => connect(p)}>
+                  {connecting === p ? "scanning history…" : p}
+                </button>
+              ))}
+            </div>
+            <div className="orline">OR</div>
+            <p className="deck">
+              start cold: favorite what you love, build a moodboard, and follow
+              boards whose taste you trust — the feed learns from all of it.
+            </p>
+            <button className="btn wide" onClick={useMoodboardInstead}>
+              start with the moodboard + following
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ---- Item detail: ALL the depth lives here ---- */}
+      {modal && (
+        <div className="overlay" onClick={() => setModal(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="mclose" onClick={() => setModal(null)}>×</button>
+            <div className="mimg">
+              <img
+                src={modal.img || thumbFor(modal)}
+                alt={modal.alt || modal.title}
+                style={{ aspectRatio: aspectFor(modal.id) }}
+              />
+            </div>
+            <div className="mbody">
+              <div className="ttl">{modal.title}</div>
+              <div className="brand2">{modal.brand}</div>
+              <div className="meta">
+                {modal.category ? <span className="cat">{modal.category}</span> : null}
+                {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
+              </div>
+              {modal.size ? (
+                <div className="size">
+                  {modal.size.label ? <span className="szlabel">{modal.size.label}</span> : null}
+                  {fitPhrase(modal.size, fitBrain) ? (
+                    <span className="szfit">{fitPhrase(modal.size, fitBrain)}</span>
+                  ) : null}
+                </div>
+              ) : null}
+              {modal.designers && modal.designers.length ? (
+                <div className="designers">
+                  {modal.designers.map((d) => <span className="dz" key={d}>{d}</span>)}
+                </div>
+              ) : null}
+              <div className="pricerow">
+                {modal.price ? <span className="price">{modal.currency || "USD"} {modal.price}</span> : null}
+                {modal.url ? (
+                  <a className="buy" href={modal.url} target="_blank" rel="noopener noreferrer">view source ↗</a>
+                ) : null}
+              </div>
+              {reasonFor(modal) ? <div className="why">{reasonFor(modal)}</div> : null}
+              <div className="tags">
+                {Object.keys(modal.tags || {}).slice(0, 4).map((t) => (
+                  <span className="t" key={t}>
+                    {t}
+                    <button className="mute" title={"less " + t} onClick={() => muteTag(t)}>×</button>
+                  </span>
+                ))}
+              </div>
+              <div className="actions">
+                <button onClick={() => react(modal, "favorite")}>Favorite</button>
+                <button className={baggedIds.has(modal.id) ? "on" : ""} onClick={() => addToBag(modal)}>
+                  {baggedIds.has(modal.id) ? "In bag ✓" : "Add to bag"}
+                </button>
+                <button className={savedIds.has(modal.id) ? "on" : ""} onClick={() => saveToBoard(modal)}>
+                  {savedIds.has(modal.id) ? "Saved ✓" : "Save"}
+                </button>
+                <button onClick={() => react(modal, "skip")}>Skip</button>
+              </div>
+              <div className="actions2">
+                <button onClick={() => shareItem(modal)}>share ↗</button>
+                <button onClick={() => { moreLikeThis(modal); setModal(null); }}>more like this</button>
+                <button onClick={() => { window.location.href = "/stylist?anchor=" + encodeURIComponent(modal.id); }}>
+                  style it ✂
+                </button>
+                <button onClick={() => {
+                  const on = !followedBrands().includes(modal.brand);
+                  setFollowBrand(modal.brand, on);
+                  setNotice(on ? `following ${modal.brand} — their pieces land in your FOLLOWING tab` : `unfollowed ${modal.brand}`);
+                }}>
+                  {followedBrands().includes(modal.brand) ? "following brand ✓" : "follow brand"}
+                </button>
+              </div>
+              {modalRel.length ? (
+                <div className="mrelwrap">
+                  <div className="mrelhead">goes with</div>
+                  <div className="mrel">
+                    {modalRel.map((r) => (
+                      <button key={r.id} className="mrelitem" onClick={() => openModal(r)}>
+                        <img src={r.img || thumbFor(r)} alt={r.title} />
+                        <span>{r.brand}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// One masonry cell: the minimal listing card, plus (sometimes) a community
+// post tile smooshed in after it.
+function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, post }) {
+  return (
+    <>
+      <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
+        <div className="imgwrap" onClick={onOpen} style={{ aspectRatio: aspectFor(it.id) }}>
+          <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
+        </div>
+        <div className="body">
+          <div className="ttl" onClick={onOpen}>{it.title}</div>
+          {it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
+          {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
+          {fitLine ? <div className="fitline">{fitLine}</div> : null}
+          <div className="cardacts">
+            <button onClick={onFavorite}>Favorite</button>
+            <button className={bagged ? "on" : ""} onClick={onBag}>
+              {bagged ? "In bag ✓" : "Add to bag"}
+            </button>
+          </div>
+        </div>
+      </div>
+      {post ? (
+        <div className="post">
+          <div className="quote">“{post.quote}”</div>
+          <div className="handle">{post.handle}</div>
+          <div className="ctx">{post.ctx}</div>
+        </div>
+      ) : null}
+    </>
+  );
+}
