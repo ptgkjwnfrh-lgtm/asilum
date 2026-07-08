@@ -1,6 +1,6 @@
 // app/api/orders/route.js
 // GET /api/orders?user=<id> — the tickets/orders surface: every add-to-bag
-// event (including imported buyer history), newest first, joined to items.
+// event, newest first, joined to items.
 
 import { NextResponse } from "next/server";
 import { getInteractions, listItems } from "../../../lib/db/index.js";
