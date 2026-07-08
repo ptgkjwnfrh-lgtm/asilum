@@ -88,10 +88,10 @@ export default function Shell({ children }) {
     getSupabase().then((sb) => {
       if (!sb) return;
       sb.auth.getSession().then(({ data }) => {
-        if (data && data.session) onSignedIn(data.session.user);
+        if (data && data.session) onSignedIn(data.session);
       }).catch(() => {});
       const r = sb.auth.onAuthStateChange((event, session) => {
-        if (event === "SIGNED_IN" && session) onSignedIn(session.user);
+        if (event === "SIGNED_IN" && session) onSignedIn(session);
         if (event === "SIGNED_OUT") setAuthUser(null);
       });
       sub = r && r.data ? r.data.subscription : null;
@@ -103,14 +103,27 @@ export default function Shell({ children }) {
   // First sign-in adopts the anonymous device identity: the taste profile and
   // boards trained before the account existed move under "sb-<user id>", then
   // this device speaks as the account from here on.
-  async function onSignedIn(user) {
+  async function onSignedIn(session) {
+    const user = session.user;
     setAuthUser(user.email || user.id);
     const account = "sb-" + user.id;
     const device = getUid();
     if (!device || device === account) return;
-    try { await postJSON("/api/auth", { user: account, from: device }); } catch {}
-    try { window.localStorage.setItem("asilum-uid", account); } catch {}
-    setUid(account);
+    try {
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ user: account, from: device }),
+      });
+      if (!response.ok) throw new Error("identity adoption failed");
+      try { window.localStorage.setItem("asilum-uid", account); } catch {}
+      setUid(account);
+    } catch {
+      setAuthMsg("signed in, but this device's taste could not be adopted");
+    }
   }
 
   async function sendMagicLink() {
@@ -146,8 +159,8 @@ export default function Shell({ children }) {
     if (!text.trim()) { setResults(null); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const d = await fetch("/api/search?q=" + encodeURIComponent(text.trim())
-          + "&user=" + encodeURIComponent(getUid() || "")).then((r) => r.json());
+        const d = await fetch("/api/search?q=" + encodeURIComponent(text.trim()))
+          .then((r) => r.json());
         setResults({ ...d, users: searchUsers(text).slice(0, 4) });
       } catch { setResults(null); }
     }, 220);
