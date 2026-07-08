@@ -770,7 +770,7 @@ export default function Home() {
         </>
       )}
 
-      {/* ---- First visit: buyer-history scan (always escapable) ---- */}
+      {/* ---- First visit: honest account-link prompt (always escapable) ---- */}
       {connectOpen && (
         <div className="overlay" onClick={useMoodboardInstead}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
