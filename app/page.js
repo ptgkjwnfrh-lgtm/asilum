@@ -4,8 +4,9 @@
 // The big feed: Pinterest masonry (different-sized listings, community posts
 // smooshed between them) with a Grailed-white editorial skin. Cards stay
 // minimal — name, price, fit estimate, FAVORITE / ADD TO BAG — everything else
-// lives in the detail view. First visit offers a buyer-history scan via a
-// connected account; otherwise the moodboard + following jump-start applies.
+// lives in the detail view. First visit offers an honest account-link prompt
+// (coming soon until real OAuth exists); otherwise the moodboard + following
+// jump-start applies.
 // The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
