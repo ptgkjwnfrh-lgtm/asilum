@@ -67,6 +67,11 @@ export async function POST(req) {
     board = boards[0] || (await createBoard(userId, "moodboard"));
   }
 
+  // Persist the canonical event before mutating the board or derived taste. A
+  // failed event write leaves the save request safe to retry.
+  await recordEvent(buildEvent(userId, EVENTS.USER_ADDED_TO_MOOD_BOARD,
+    { itemId: item.id, brand: item.brand, boardId: board.id }));
+
   const priorItems = board.items || [];
   board = await addBoardItem(board.id, item);
 
@@ -82,8 +87,6 @@ export async function POST(req) {
     }),
     bumpPopularity([{ id: item.id, eng: 1 }]),
     recordInteraction(userId, item.id, "save"),
-    recordEvent(buildEvent(userId, EVENTS.USER_ADDED_TO_MOOD_BOARD,
-      { itemId: item.id, brand: item.brand, boardId: board.id })),
   ]);
 
   return NextResponse.json({ board });
