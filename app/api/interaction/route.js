@@ -77,7 +77,7 @@ export async function POST(req) {
     // Canonical event history for the Alpha Learning Brain (lib/events).
     ...valid.map((e) => {
       const evt = eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null);
-      return evt ? recordEvent(evt).catch(() => {}) : Promise.resolve();
+      return evt ? recordEvent(evt) : Promise.resolve();
     }),
   ]);
 
