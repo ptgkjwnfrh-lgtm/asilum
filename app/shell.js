@@ -82,9 +82,22 @@ export default function Shell({ children }) {
     };
   }, []);
 
-  // ---- Supabase auth (magic link). Inert until env keys are set. ----
+  // ---- Server-issued device identity + Supabase magic-link auth. ----
+  async function ensureDeviceIdentity() {
+    const response = await fetch("/api/auth", { cache: "no-store" });
+    if (!response.ok) throw new Error("device identity unavailable");
+    const data = await response.json();
+    if (!data || !/^u-[0-9a-f-]{36}$/.test(data.uid || "")) {
+      throw new Error("invalid device identity");
+    }
+    try { window.localStorage.setItem("asilum-uid", data.uid); } catch {}
+    setUid(data.uid);
+    return data.uid;
+  }
+
   useEffect(() => {
     let sub = null;
+    ensureDeviceIdentity().catch(() => {});
     getSupabase().then((sb) => {
       if (!sb) return;
       sb.auth.getSession().then(({ data }) => {
@@ -92,7 +105,10 @@ export default function Shell({ children }) {
       }).catch(() => {});
       const r = sb.auth.onAuthStateChange((event, session) => {
         if (event === "SIGNED_IN" && session) onSignedIn(session);
-        if (event === "SIGNED_OUT") setAuthUser(null);
+        if (event === "SIGNED_OUT") {
+          setAuthUser(null);
+          ensureDeviceIdentity().catch(() => {});
+        }
       });
       sub = r && r.data ? r.data.subscription : null;
     });
@@ -100,29 +116,28 @@ export default function Shell({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // First sign-in adopts the anonymous device identity: the taste profile and
-  // boards trained before the account existed move under "sb-<user id>", then
-  // this device speaks as the account from here on.
+  // Adoption uses the HttpOnly device cookie as source proof. Signing in always
+  // switches subsequent activity to the account, even if the one-time copy fails.
   async function onSignedIn(session) {
     const user = session.user;
     setAuthUser(user.email || user.id);
     const account = "sb-" + user.id;
-    const device = getUid();
-    if (!device || device === account) return;
     try {
+      await ensureDeviceIdentity();
       const response = await fetch("/api/auth", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: "Bearer " + session.access_token,
         },
-        body: JSON.stringify({ user: account, from: device }),
+        body: JSON.stringify({ user: account }),
       });
       if (!response.ok) throw new Error("identity adoption failed");
-      try { window.localStorage.setItem("asilum-uid", account); } catch {}
-      setUid(account);
     } catch {
       setAuthMsg("signed in, but this device's taste could not be adopted");
+    } finally {
+      try { window.localStorage.setItem("asilum-uid", account); } catch {}
+      setUid(account);
     }
   }
 
@@ -145,6 +160,12 @@ export default function Shell({ children }) {
   async function signOut() {
     try { const sb = await getSupabase(); await sb.auth.signOut(); } catch {}
     setAuthUser(null);
+    try {
+      await ensureDeviceIdentity();
+    } catch {
+      try { window.localStorage.removeItem("asilum-uid"); } catch {}
+      setUid(getUid());
+    }
     setAuthMsg("signed out — this device keeps its taste");
   }
 
