@@ -17,7 +17,7 @@ exploration. Everything below builds around it; nothing bypasses it.
 | `lib/embeddings` | v0 = tag-space vectors + cosine (real math, used today); v1 text/visual contracts gated on `EMBEDDINGS_*` env | v0 real / v1 stub |
 | `lib/vision` | Mood Board Intelligence + Fit Pic Analyzer contracts; one `ImageAnalysis` shape for fashion AND non-fashion images; confidence-scored, similar-items-not-certainty | stub (gated on `VISION_*`) |
 | `lib/visual-personalization` | Pinterest-inspired: real v0 board-level profiles from item tags; stubs for pin ingest, image-analysis folding, aesthetic clustering | v0 real / rest stub |
-| `lib/taste-graph` | TikTok-inspired cross-user layer: real v0 user↔user profile cosine; stubs for neighbors, clusters, collaborative candidates, cluster trends | v0 real / rest stub |
+| `lib/taste-graph` | TikTok-inspired cross-user layer: user↔user cosine, **live neighbors** (profile scan, capped + reported) and **live collaborative candidates** (first reader of `user_events`; signal-weight × neighbor-similarity, negatives subtract) via `/api/similar` (Day 6); clusters/cluster-trends still stubs | live (prototype scale) |
 | `lib/recommendations` | Service facade: live `similarProducts` (Bridge), `LIVE_ROUTES` map, real v0 practical ranker (price/size/availability/freshness), stubs for cross-user/editorial/visual rankers | mixed |
 | `lib/feed` | Mixed-feed foundation: `FEED_SOURCES`, `RANKING_FACTORS` (hand-set starting weights), `composeMixedFeed` stub. Product feed stays `/api/feed` | stub + registry |
 | `lib/music-mapping` | Curated genre/artist → tag seed tables (Deftones example included); `musicProfile()` aggregates into a `/api/train`-compatible tag map | curated mock |
