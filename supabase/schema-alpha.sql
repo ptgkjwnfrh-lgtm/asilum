@@ -5,14 +5,8 @@
 -- empty tables invite code that pretends they're populated.
 -- Shapes mirror lib/db/types.js. All user-owned tables get RLS like schema.sql.
 
-create table if not exists user_events (
-  id bigint generated always as identity primary key,
-  user_id text not null,
-  type text not null,              -- lib/events EVENTS
-  payload jsonb not null default '{}',
-  at timestamptz not null default now()
-);
-create index if not exists user_events_user_at on user_events (user_id, at desc);
+-- user_events GRADUATED (July 8, Day 5): now part of the live schema in
+-- lib/db/index.js — /api/interaction, board saves, and search write it.
 
 create table if not exists product_images (
   id bigint generated always as identity primary key,

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const q = (searchParams.get("q") || "").trim().toLowerCase();
+  const q = (searchParams.get("q") || "").trim().toLowerCase().slice(0, 200);
   if (!q) return NextResponse.json({ q, brands: [], items: [], aesthetics: [] });
 
   let pool = [];
