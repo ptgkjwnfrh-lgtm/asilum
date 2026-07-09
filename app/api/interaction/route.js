@@ -40,6 +40,13 @@ export async function POST(req) {
     );
   }
 
+  // Persist the canonical history before any derived profile/graph mutation. If
+  // this write fails, the request is safe to retry because no learning state moved.
+  const canonicalEvents = valid
+    .map((e) => eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null))
+    .filter(Boolean);
+  await Promise.all(canonicalEvents.map((evt) => recordEvent(evt)));
+
   const edgePairs = [];
   const popBumps = [];
 
@@ -74,11 +81,6 @@ export async function POST(req) {
     ...valid.map((e) =>
       recordInteraction(userId, e.item.id, e.action, e.dwellMs ?? null)
     ),
-    // Canonical event history for the Alpha Learning Brain (lib/events).
-    ...valid.map((e) => {
-      const evt = eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null);
-      return evt ? recordEvent(evt) : Promise.resolve();
-    }),
   ]);
 
   return NextResponse.json({ userId, applied: valid.length, profile });
