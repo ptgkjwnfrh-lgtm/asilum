@@ -83,7 +83,7 @@ export async function POST(req) {
     bumpPopularity([{ id: item.id, eng: 1 }]),
     recordInteraction(userId, item.id, "save"),
     recordEvent(buildEvent(userId, EVENTS.USER_ADDED_TO_MOOD_BOARD,
-      { itemId: item.id, brand: item.brand, boardId: board.id })).catch(() => {}),
+      { itemId: item.id, brand: item.brand, boardId: board.id })),
   ]);
 
   return NextResponse.json({ board });
