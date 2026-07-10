@@ -6,8 +6,9 @@
 // Pinterest-style browse: source filters, aesthetic filters, multi-search.
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getUid, postJSON, thumbFor, hashStr, bagAdd } from "../../lib/client.js";
+import { getUid, postJSON, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
 import { SOURCES, followedBrands, setFollowBrand } from "../../lib/social.js";
+import TicketFlow from "../components/TicketFlow.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -26,8 +27,11 @@ export default function DiscoverPage() {
   const [favedIds, setFavedIds] = useState(() => new Set());
   const [searched, setSearched] = useState("");
   const [followed, setFollowed] = useState([]);
+  const [sug, setSug] = useState([]);
+  const [ticketItem, setTicketItem] = useState(null);
   const offsetRef = useRef(0);
   const bootedRef = useRef(false);
+  const sugRef = useRef(null);
 
   const load = useCallback(async (reset = true, qOverride = null) => {
     setLoading(true);
@@ -35,7 +39,13 @@ export default function DiscoverPage() {
     try {
       const qval = qOverride != null ? qOverride : q;
       const qs = new URLSearchParams({ limit: String(PAGE), offset: String(offsetRef.current) });
-      if (qval.trim()) qs.set("q", qval.trim());
+      if (qval.trim()) {
+        qs.set("q", qval.trim());
+        // Search ranking may use the Mood Board Brain (toggle on the moodboard
+        // page); plain browsing stays untouched by taste, as the deck says.
+        qs.set("user", getUid());
+        qs.set("brain", brainEnabled() ? "1" : "0");
+      }
       if (source) qs.set("source", source);
       if (tag) qs.set("tag", tag);
       if (sort) qs.set("sort", sort);
@@ -121,14 +131,42 @@ export default function DiscoverPage() {
       </p>
 
       <div className="filters">
-        <input
-          type="text"
-          placeholder="search brands, pieces, aesthetics…"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && load(true)}
-          style={{ maxWidth: 280, textTransform: "none", fontWeight: 400 }}
-        />
+        <div className="sugwrap">
+          <input
+            type="text"
+            placeholder="search brands, pieces, aesthetics…"
+            value={q}
+            onChange={(e) => {
+              const v = e.target.value;
+              setQ(v);
+              if (sugRef.current) clearTimeout(sugRef.current);
+              if (v.trim().length < 2) { setSug([]); return; }
+              sugRef.current = setTimeout(async () => {
+                try {
+                  const d = await fetch("/api/suggest?q=" + encodeURIComponent(v.trim())).then((r) => r.json());
+                  setSug(d.suggestions || []);
+                } catch { setSug([]); }
+              }, 180);
+            }}
+            onKeyDown={(e) => { if (e.key === "Enter") { setSug([]); load(true); } }}
+            onBlur={() => setTimeout(() => setSug([]), 180)}
+            style={{ maxWidth: 280, textTransform: "none", fontWeight: 400 }}
+          />
+          {sug.length > 0 && (
+            <div className="sugbox">
+              {sug.map((s) => (
+                <button
+                  key={s.label}
+                  className="sugopt"
+                  onMouseDown={() => { setQ(s.label); setSug([]); load(true, s.label); }}
+                >
+                  <span className="red">*</span> {s.label}
+                  <em>{s.why === "did you mean" ? "did you mean" : s.kind}</em>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         {matchedBrand && (
           <button
             className={"fitbtn" + (followed.includes(matchedBrand) ? " active" : "")}
@@ -197,18 +235,7 @@ export default function DiscoverPage() {
                 <button className={baggedIds.has(it.id) ? "on" : ""} onClick={() => bag(it)}>
                   {baggedIds.has(it.id) ? "In bag ✓" : "Add to bag"}
                 </button>
-                {it.url ? (
-                  <a
-                    className="buybtn"
-                    href={it.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >Buy</a>
-                ) : (
-                  <button onClick={() => alert("direct buy arrives with partner commerce APIs — bag it for now")}>
-                    Buy
-                  </button>
-                )}
+                <button className="buybtn" onClick={() => setTicketItem(it)}>Buy</button>
               </div>
             </div>
           </div>
@@ -222,6 +249,8 @@ export default function DiscoverPage() {
           </button>
         </div>
       )}
+
+      {ticketItem && <TicketFlow item={ticketItem} onClose={() => setTicketItem(null)} />}
     </div>
   );
 }

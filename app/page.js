@@ -19,6 +19,7 @@ import {
   setFollowBrand, STORIES, listPosts, timeAgo,
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
+import TicketFlow from "./components/TicketFlow.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -285,6 +286,7 @@ export default function Home() {
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
   const [modalRel, setModalRel] = useState([]);
+  const [ticketItem, setTicketItem] = useState(null);
   const [tab, setTab] = useState("curated");       // curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
   const [composer, setComposer] = useState("");
@@ -514,7 +516,11 @@ export default function Home() {
 
   function publishPost() {
     if (!composer.trim()) return;
-    addPost(composer.trim(), getProfileInfo());
+    const info = getProfileInfo();
+    addPost(composer.trim(), info);
+    // Real editorial_posts record too — localStorage stays the instant-render
+    // path, the database is the durable one.
+    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: composer.trim() }).catch(() => {});
     setComposer("");
     setNotice("posted — it's live on the community tab of EDITORIAL and on your profile");
   }
@@ -889,6 +895,8 @@ export default function Home() {
               ) : null}
               <div className="pricerow">
                 {modal.price ? <span className="price">{modal.currency || "USD"} {modal.price}</span> : null}
+                <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}
+                  onClick={() => setTicketItem(modal)}>request purchase</button>
                 {modal.url ? (
                   <a className="buy" href={modal.url} target="_blank" rel="noopener noreferrer">view source ↗</a>
                 ) : null}
@@ -943,6 +951,8 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {ticketItem && <TicketFlow item={ticketItem} onClose={() => setTicketItem(null)} />}
     </div>
   );
 }

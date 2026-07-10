@@ -180,9 +180,11 @@ export default function Shell({ children }) {
     if (!text.trim()) { setResults(null); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const d = await fetch("/api/search?q=" + encodeURIComponent(text.trim()))
-          .then((r) => r.json());
-        setResults({ ...d, users: searchUsers(text).slice(0, 4) });
+        const [d, s] = await Promise.all([
+          fetch("/api/search?q=" + encodeURIComponent(text.trim())).then((r) => r.json()),
+          fetch("/api/suggest?q=" + encodeURIComponent(text.trim())).then((r) => r.json()).catch(() => ({ suggestions: [] })),
+        ]);
+        setResults({ ...d, users: searchUsers(text).slice(0, 4), suggestions: s.suggestions || [] });
       } catch { setResults(null); }
     }, 220);
   }
@@ -292,6 +294,17 @@ export default function Shell({ children }) {
 
       {searchOpen && results && (
         <div className="searchpanel">
+          {(results.suggestions || []).length > 0 && (
+            <>
+              <div className="psub">SUGGESTIONS</div>
+              {results.suggestions.slice(0, 6).map((s) => (
+                <a className="shit" key={s.label} href={"/discover?q=" + encodeURIComponent(s.label)}>
+                  {s.label}
+                  <em style={{ marginLeft: 8 }}>{s.why === "did you mean" ? "did you mean" : s.kind}</em>
+                </a>
+              ))}
+            </>
+          )}
           {results.brands.length > 0 && (
             <>
               <div className="psub">BRANDS</div>

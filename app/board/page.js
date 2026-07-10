@@ -7,7 +7,7 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
-import { getUid, postJSON, sendJSON, thumbFor } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, thumbFor, brainEnabled, setBrainEnabled } from "../../lib/client.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
 
@@ -20,6 +20,7 @@ export default function BoardPage() {
   const [notice, setNotice] = useState("");
   const [following, setFollowing] = useState(false);
   const [trainText, setTrainText] = useState("");
+  const [brainOn, setBrainOn] = useState(true);
   const [viz, setViz] = useState(null);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetChecked, setResetChecked] = useState(false);
@@ -101,10 +102,13 @@ export default function BoardPage() {
       .catch(() => {});
   }
   useEffect(() => { if (uid) loadViz(uid); }, [uid]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setBrainOn(brainEnabled()); }, []);
 
   async function train() {
     if (!trainText.trim()) return;
     await postJSON("/api/train", { user: uid, prompt: trainText.trim() }).catch(() => {});
+    // Manual tag entry becomes a real mood_board_uploads record (analyzed_by: manual).
+    postJSON("/api/moodboard", { user: uid, kind: "text", prompt: trainText.trim() }).catch(() => {});
     setNotice(`the brain read “${trainText.trim()}” — convictions updated`);
     setTrainText("");
     loadViz();
@@ -128,6 +132,9 @@ export default function BoardPage() {
     // brain honestly trains on the words the filenames carry.
     const words = files.map((f) => f.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_.]+/g, " ")).join(" ");
     await postJSON("/api/train", { user: uid, prompt: words }).catch(() => {});
+    // Real database record per upload batch, honestly marked analyzed_by:
+    // "filename" — ready for re-analysis when a vision model is connected.
+    postJSON("/api/moodboard", { user: uid, kind: "upload", filenames: files.map((f) => f.name) }).catch(() => {});
     setNotice(`${files.length} image${files.length > 1 ? "s" : ""} queued for vibe analysis — trained on the words they carried`);
     e.target.value = "";
     loadViz();
@@ -197,6 +204,22 @@ export default function BoardPage() {
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onUpload} />
           </div>
           <p className="deck" style={{ marginTop: 4 }}>clothing or anything that&apos;s your vibe.</p>
+
+          <div className="setrow">
+            <div className="setinfo">
+              <div className="setname">Use Mood Board Brain</div>
+              <div className="uhandle" style={{ maxWidth: 520, whiteSpace: "normal" }}>
+                on: search results lean slightly toward what this board has
+                taught. off: search stays general — nothing personalized.
+              </div>
+            </div>
+            <button
+              className={"fitbtn" + (brainOn ? " active" : "")}
+              onClick={() => { const on = !brainOn; setBrainEnabled(on); setBrainOn(on); setNotice(on ? "mood board brain on — search now leans your way" : "mood board brain off — search is general"); }}
+            >
+              {brainOn ? "ON" : "OFF"}
+            </button>
+          </div>
 
           <div className="brainband">
             <div className="brainbox">
