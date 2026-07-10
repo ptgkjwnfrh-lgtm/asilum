@@ -7,7 +7,7 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
-import { getUid, postJSON, sendJSON, thumbFor, brainEnabled, setBrainEnabled } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, setBrainEnabled } from "../../lib/client.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
 
@@ -45,7 +45,7 @@ export default function BoardPage() {
   }, []);
 
   function loadMine(user, focusId = null) {
-    fetch("/api/boards?user=" + encodeURIComponent(user))
+    authorizedFetch("/api/boards?user=" + encodeURIComponent(user))
       .then((r) => r.json())
       .then((d) => {
         const bs = d.boards || [];
@@ -96,7 +96,7 @@ export default function BoardPage() {
 
   // ---- The training station ----
   function loadViz(user = uid || getUid()) {
-    fetch("/api/profile?user=" + encodeURIComponent(user))
+    authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
       .then((r) => r.json())
       .then((d) => setViz({ state: vizState(d.profile), profile: d.profile }))
       .catch(() => {});

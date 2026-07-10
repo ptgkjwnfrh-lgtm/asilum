@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import { inferTags } from "../../../lib/ingest/sources.js";
 import { createMoodBoardUpload, listMoodBoardUploads } from "../../../lib/db/production.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +26,9 @@ function tagRows(vec, tagType) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const user = String(body.user || "").slice(0, 80);
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const kind = body.kind === "upload" ? "upload" : "text";
-  if (!user) return NextResponse.json({ error: "user required" }, { status: 400 });
 
   let text = "";
   if (kind === "upload") {
@@ -59,8 +60,8 @@ export async function POST(req) {
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const user = searchParams.get("user") || "";
-  if (!user) return NextResponse.json({ uploads: [] });
+  const user = await resolveRequestUser(req, searchParams.get("user") || "");
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   try {
     return NextResponse.json({ uploads: await listMoodBoardUploads(user) });
   } catch {

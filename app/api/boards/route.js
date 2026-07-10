@@ -19,6 +19,7 @@ import {
   bumpEdges, bumpPopularity, withUserLock,
 } from "../../../lib/db/index.js";
 import { EVENTS, buildEvent } from "../../../lib/events/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -33,15 +34,20 @@ export async function GET(req) {
     if (!board) return NextResponse.json({ error: "board not found" }, { status: 404 });
     return NextResponse.json({ board, vector: itemsVector(board.items) });
   }
-  const userId = searchParams.get("user");
-  if (!userId) return NextResponse.json({ error: "user or id required" }, { status: 400 });
+  const claimedUser = searchParams.get("user");
+  if (!claimedUser) return NextResponse.json({ error: "user or id required" }, { status: 400 });
+  const userId = await resolveRequestUser(req, claimedUser);
+  if (!userId) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   return NextResponse.json({ boards: await getBoards(userId) });
 }
 
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const userId = body.user || "guest";
+  const userId = await resolveRequestUser(req, body.user || "");
+  if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const item = body.item || null;
 
   // Create-only call.
@@ -93,16 +99,18 @@ export async function POST(req) {
 }
 
 // Ownership check shared by mutating verbs.
-async function ownedBoard(body) {
+async function ownedBoard(req, body) {
+  const userId = await resolveRequestUser(req, body.user || "");
+  if (!userId) return null;
   const board = body.boardId ? await getBoard(body.boardId) : null;
-  if (!board || board.userId !== (body.user || "guest")) return null;
+  if (!board || board.userId !== userId) return null;
   return board;
 }
 
 export async function DELETE(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const board = await ownedBoard(body);
+  const board = await ownedBoard(req, body);
   if (!board) return NextResponse.json({ error: "board not found" }, { status: 404 });
   if (!body.itemId) return NextResponse.json({ error: "itemId required" }, { status: 400 });
   return NextResponse.json({ board: await removeBoardItem(board.id, body.itemId) });
@@ -111,7 +119,7 @@ export async function DELETE(req) {
 export async function PATCH(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const board = await ownedBoard(body);
+  const board = await ownedBoard(req, body);
   if (!board) return NextResponse.json({ error: "board not found" }, { status: 404 });
   const name = String(body.name || "").trim();
   if (!name) return NextResponse.json({ error: "name required" }, { status: 400 });

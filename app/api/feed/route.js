@@ -15,12 +15,16 @@ import {
   listItems, getProfile, saveProfile,
   getEdges, getPopularity, getBoard, bumpPopularity, withUserLock,
 } from "../../../lib/db/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user") || "guest";
+  const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
+  if (!userId) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   const epsilonParam = searchParams.get("epsilon") === "1";
   const q = searchParams.get("q") || "";
   const boardId = searchParams.get("board") || "";

@@ -18,6 +18,7 @@ import {
 import { getAdapter } from "../../../lib/ingest/adapters/index.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { DISCLAIMER_TEXT, DISCLAIMER_VERSION, DISCLAIMER_CHECKBOX } from "../../../lib/tickets.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -33,11 +34,10 @@ async function findItem(itemId) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const user = String(body.user || "").slice(0, 80);
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const itemId = String(body.itemId || "").slice(0, 80);
-  if (!user || !itemId) {
-    return NextResponse.json({ error: "user and itemId required" }, { status: 400 });
-  }
+  if (!itemId) return NextResponse.json({ error: "itemId required" }, { status: 400 });
   const item = await findItem(itemId);
   if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
 
@@ -89,8 +89,8 @@ export async function POST(req) {
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const user = searchParams.get("user") || "";
-  if (!user) return NextResponse.json({ tickets: [] });
+  const user = await resolveRequestUser(req, searchParams.get("user") || "");
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   try {
     return NextResponse.json({ tickets: await listTickets(user) });
   } catch {
@@ -104,8 +104,13 @@ export async function PATCH(req) {
   const id = body.id;
   const action = body.action;
   if (!id || !action) return NextResponse.json({ error: "id and action required" }, { status: 400 });
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const ticket = await getTicket(id).catch(() => null);
-  if (!ticket) return NextResponse.json({ error: "ticket not found" }, { status: 404 });
+  // Ownership: only the requesting user may consent to or cancel their ticket.
+  if (!ticket || ticket.userId !== user) {
+    return NextResponse.json({ error: "ticket not found" }, { status: 404 });
+  }
 
   if (action === "cancel") {
     return NextResponse.json({ ticket: await updateTicket(id, { status: "canceled" }) });

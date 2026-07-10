@@ -3,48 +3,26 @@
 // POST adopts that verified device identity into the Supabase account proven by
 // the bearer token. The client never chooses the source identity.
 
-import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { authConfigured, getAuthenticatedUser } from "../../../lib/supabase.js";
+import {
+  DEVICE_COOKIE, newDeviceId, signedDeviceValue, verifiedDevice,
+} from "../../../lib/identity.js";
 import {
   getProfile, saveProfile, getBoards, createBoard, addBoardItem, withUserLock,
 } from "../../../lib/db/index.js";
 
 export const dynamic = "force-dynamic";
 
-const DEVICE_COOKIE = "asilum-device";
-
-function deviceSecret() {
-  const value = process.env.DEVICE_COOKIE_SECRET || "";
-  return value.length >= 32 ? value : null;
-}
-
-function signature(uid, secret) {
-  return createHmac("sha256", secret).update(uid).digest("hex");
-}
-
-function verifiedDevice(req) {
-  const secret = deviceSecret();
-  const value = req.cookies.get(DEVICE_COOKIE)?.value || "";
-  const dot = value.lastIndexOf(".");
-  if (!secret || dot < 1) return null;
-  const uid = value.slice(0, dot);
-  const supplied = value.slice(dot + 1);
-  if (!/^u-[0-9a-f-]{36}$/.test(uid) || !/^[0-9a-f]{64}$/.test(supplied)) return null;
-  const expected = signature(uid, secret);
-  return timingSafeEqual(Buffer.from(supplied, "hex"), Buffer.from(expected, "hex")) ? uid : null;
-}
-
 export async function GET(req) {
-  const secret = deviceSecret();
-  if (!secret) {
+  if (!signedDeviceValue("probe")) {
     return NextResponse.json({ error: "device identity is not configured" }, { status: 503 });
   }
   let uid = verifiedDevice(req);
   if (!uid) {
-    uid = "u-" + randomUUID();
+    uid = newDeviceId();
     const response = NextResponse.json({ uid });
-    response.cookies.set(DEVICE_COOKIE, uid + "." + signature(uid, secret), {
+    response.cookies.set(DEVICE_COOKIE, signedDeviceValue(uid), {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",

@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import {
-  getUid, postJSON, thumbFor, bagAdd,
+  getUid, postJSON, authorizedFetch, thumbFor, bagAdd,
   loadFitProfile, saveFitProfile,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
@@ -34,7 +34,7 @@ export default function StylistPage() {
       if (f.usualSize) qs.set("fit", f.usualSize);
       if (f.chest) qs.set("chest", f.chest);
       if (f.waist) qs.set("waist", f.waist);
-      const d = await fetch("/api/outfits?" + qs.toString()).then((r) => r.json());
+      const d = await authorizedFetch("/api/outfits?" + qs.toString()).then((r) => r.json());
       setGroups(anchor
         ? [{ genre: "ANCHORED", looks: d.outfits || [] }]
         : d.groups || []);

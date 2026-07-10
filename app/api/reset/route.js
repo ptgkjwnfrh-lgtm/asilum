@@ -7,14 +7,15 @@
 
 import { NextResponse } from "next/server";
 import { saveProfile, withUserLock } from "../../../lib/db/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const userId = body.user || "";
-  if (!userId) return NextResponse.json({ error: "user required" }, { status: 400 });
+  const userId = await resolveRequestUser(req, body.user || "");
+  if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   await withUserLock(userId, () => saveProfile(userId, {}));
   return NextResponse.json({ userId, reset: true });
 }

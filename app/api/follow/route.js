@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { migrateProfile } from "../../../lib/brain/index.js";
 import { getProfile, saveProfile, getBoard, withUserLock } from "../../../lib/db/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,8 @@ const FOLLOW_CAP = 10;
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch { body = {}; }
-  const userId = body.user || "guest";
+  const userId = await resolveRequestUser(req, body.user || "");
+  if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const boardId = body.boardId || "";
   const follow = body.follow !== false;
 

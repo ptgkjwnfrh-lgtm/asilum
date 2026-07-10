@@ -13,6 +13,7 @@ import { buildSlate } from "../../../lib/brain/stylist.js";
 import { TAGS } from "../../../lib/brain/tags.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { listItems, getProfile, saveProfile, withUserLock } from "../../../lib/db/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,10 @@ function lookSignature(look) {
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user") || "guest";
+  const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
+  if (!userId) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   const anchorId = searchParams.get("anchor") || "";
   const full = searchParams.get("full") === "1";
 
@@ -119,10 +123,12 @@ export async function GET(req) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const user = String(body.user || "").slice(0, 80);
+  const { resolveRequestUser } = await import("../../../lib/identity.js");
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const look = body.look || {};
-  if (!user || !Array.isArray(look.items) || !look.items.length) {
-    return NextResponse.json({ error: "user and look.items required" }, { status: 400 });
+  if (!Array.isArray(look.items) || !look.items.length) {
+    return NextResponse.json({ error: "look.items required" }, { status: 400 });
   }
   try {
     const { saveStylistOutfit } = await import("../../../lib/db/production.js");
