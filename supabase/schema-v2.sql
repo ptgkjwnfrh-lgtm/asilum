@@ -193,10 +193,14 @@ CREATE TABLE IF NOT EXISTS mood_board_uploads (
   colors JSONB NOT NULL DEFAULT '[]'::jsonb,
   tags JSONB NOT NULL DEFAULT '[]'::jsonb,  -- [{tag, tag_type, confidence}]
   style_notes TEXT,
-  analyzed_by TEXT NOT NULL DEFAULT 'none', -- none|filename|manual|vision (future)
+  analyzed_by TEXT NOT NULL DEFAULT 'none', -- none|filename|manual|palette-v0|vision (future)
+  idempotency_key TEXT,                     -- client retry dedupe (unique when present)
   created_at TIMESTAMPTZ DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS mood_board_uploads_user ON mood_board_uploads (user_id, created_at DESC);
+ALTER TABLE mood_board_uploads ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS mood_board_uploads_idem
+  ON mood_board_uploads (idempotency_key) WHERE idempotency_key IS NOT NULL;
 
 -- ---- RLS: server-only tables (no anon policies on purpose; the app reaches
 --      them through DATABASE_URL, which bypasses RLS as table owner) ----
