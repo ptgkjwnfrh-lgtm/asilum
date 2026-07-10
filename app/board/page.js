@@ -8,6 +8,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, setBrainEnabled } from "../../lib/client.js";
+import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
 
@@ -125,17 +126,48 @@ export default function BoardPage() {
     }
   }
 
+  // Downsampled pixels for palette v0 — 48px is plenty for color statistics.
+  async function pixelsFrom(file) {
+    const bmp = await createImageBitmap(file);
+    const size = 48;
+    const canvas = document.createElement("canvas");
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bmp, 0, 0, size, size);
+    if (bmp.close) bmp.close();
+    return ctx.getImageData(0, 0, size, size).data;
+  }
+
   async function onUpload(e) {
     const files = [...(e.target.files || [])];
     if (!files.length) return;
-    // Vibe reading from pixels arrives with a vision model; until then the
-    // brain honestly trains on the words the filenames carry.
     const words = files.map((f) => f.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_.]+/g, " ")).join(" ");
-    await postJSON("/api/train", { user: uid, prompt: words }).catch(() => {});
-    // Real database record per upload batch, honestly marked analyzed_by:
-    // "filename" — ready for re-analysis when a vision model is connected.
-    postJSON("/api/moodboard", { user: uid, kind: "upload", filenames: files.map((f) => f.name) }).catch(() => {});
-    setNotice(`${files.length} image${files.length > 1 ? "s" : ""} queued for vibe analysis — trained on the words they carried`);
+    // Palette v0: the brain's first real look at the pixels — dominant colors,
+    // brightness, mood. Colors only; object/texture recognition still needs a
+    // vision model. Files that fail to decode fall back to filename words.
+    const analyses = [];
+    for (const f of files.slice(0, 6)) {
+      try { const a = analyzePalette(await pixelsFrom(f)); if (a) analyses.push(a); } catch {}
+    }
+    const merged = mergePalettes(analyses);
+    const paletteWords = [...new Set(analyses.flatMap((a) => [...a.words, ...a.moods]))].slice(0, 14);
+    const prompt = [words, paletteWords.join(" ")].filter(Boolean).join(" ").trim();
+    if (prompt) await postJSON("/api/train", { user: uid, prompt }).catch(() => {});
+    // Real database record per upload batch — analyzed_by "palette-v0" when
+    // pixels were read, "filename" when they couldn't be. Only raw hex+weight
+    // swatches cross the wire; the server derives names and tag weights
+    // itself (client-supplied labels are never trusted). uploadId makes
+    // retries idempotent: a lost response can't double-record the batch.
+    postJSON("/api/moodboard", {
+      user: uid, kind: "upload",
+      filenames: files.map((f) => f.name.slice(0, 200)),
+      palette: merged.palette.map((s) => ({ hex: s.hex, weight: s.weight })),
+      uploadId: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10),
+    }).catch(() => {});
+    const seen = [...new Set(merged.palette.map((s) => s.name))].slice(0, 3).join(", ");
+    setNotice(analyses.length
+      ? `${files.length} image${files.length > 1 ? "s" : ""} read — palette v0 saw ${seen}; trained on colors + filename words`
+      : `${files.length} image${files.length > 1 ? "s" : ""} queued — pixels unreadable, trained on the words they carried`);
     e.target.value = "";
     loadViz();
   }
