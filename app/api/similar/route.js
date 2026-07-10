@@ -7,13 +7,18 @@
 
 import { NextResponse } from "next/server";
 import { similarUsers, crossUserCandidates } from "../../../lib/taste-graph/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const user = (searchParams.get("user") || "").slice(0, 80);
-  if (!user) return NextResponse.json({ error: "user required" }, { status: 400 });
+  const claimedUser = (searchParams.get("user") || "").slice(0, 80);
+  if (!claimedUser) return NextResponse.json({ error: "user required" }, { status: 400 });
+  const user = await resolveRequestUser(req, claimedUser);
+  if (!user) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   const limit = Math.min(48, parseInt(searchParams.get("limit"), 10) || 10);
 
   const [neighbors, candidates] = await Promise.all([

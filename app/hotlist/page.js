@@ -7,7 +7,7 @@
 // (user posts).
 
 import { useEffect, useState } from "react";
-import { getUid, thumbFor } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
 import { STORIES, listPosts, postStats, timeAgo } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
 
@@ -32,7 +32,7 @@ export default function EditorialPage() {
           return;
         }
         setLive(false);
-        const f = await fetch("/api/feed?user=" + encodeURIComponent("editorial-" + (getUid() || "guest"))).then((r) => r.json());
+        const f = await authorizedFetch("/api/feed?user=" + encodeURIComponent(getUid() || "guest")).then((r) => r.json());
         setRows((f.items || []).slice(0, 10).map((it) => ({
           id: it.id, title: it.title, brand: it.brand,
           stat: it._zone === "reach" ? "far reach" : it._zone, item: it,

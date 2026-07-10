@@ -5,12 +5,16 @@
 import { NextResponse } from "next/server";
 import { getInteractions, listItems } from "../../../lib/db/index.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user") || "guest";
+  const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
+  if (!userId) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   const events = await getInteractions(userId, { action: "bag", limit: 60 });
 
   const byId = new Map(CATALOG.map((it) => [it.id, it]));

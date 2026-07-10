@@ -6,7 +6,7 @@
 // data (board follows, order brands) with placeholder followers.
 
 import { useEffect, useState } from "react";
-import { getUid, thumbFor, hashStr } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor, hashStr } from "../../lib/client.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
   followedUsers, followedBrands, setFollowBrand, sourceFor,
@@ -27,9 +27,9 @@ export default function ProfilePage() {
     setPosts(listPosts().filter((p) => p.mine));
     const user = getUid() || "guest";
     setUid(user);
-    fetch("/api/orders?user=" + encodeURIComponent(user))
+    authorizedFetch("/api/orders?user=" + encodeURIComponent(user))
       .then((r) => r.json()).then((d) => setOrders(d.orders || [])).catch(() => {});
-    fetch("/api/profile?user=" + encodeURIComponent(user))
+    authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
       .then((r) => r.json())
       .then((d) => setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0))
       .catch(() => {});

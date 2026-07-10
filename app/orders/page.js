@@ -7,7 +7,7 @@
 // deterministic simulation until partner fulfillment APIs exist (and says so).
 
 import { useEffect, useState } from "react";
-import { getUid, thumbFor } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
 import { sourceFor, trackingFor } from "../../lib/social.js";
 
 export default function OrdersPage() {
@@ -16,11 +16,11 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const user = encodeURIComponent(getUid() || "guest");
-    fetch("/api/orders?user=" + user)
+    authorizedFetch("/api/orders?user=" + user)
       .then((r) => r.json())
       .then((d) => setOrders(d.orders || []))
       .catch(() => setOrders([]));
-    fetch("/api/tickets?user=" + user)
+    authorizedFetch("/api/tickets?user=" + user)
       .then((r) => r.json())
       .then((d) => setTickets(d.tickets || []))
       .catch(() => setTickets([]));

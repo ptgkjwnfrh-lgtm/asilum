@@ -13,6 +13,7 @@ import { buildSlate } from "../../../lib/brain/stylist.js";
 import { TAGS } from "../../../lib/brain/tags.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { listItems, getProfile, saveProfile, withUserLock } from "../../../lib/db/index.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,10 @@ function lookSignature(look) {
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("user") || "guest";
+  const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
+  if (!userId) {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
   const anchorId = searchParams.get("anchor") || "";
   const full = searchParams.get("full") === "1";
 

@@ -9,7 +9,7 @@
 import { useEffect, useState } from "react";
 import BrainViz from "../components/BrainViz.jsx";
 import { vizState } from "../../lib/brain/memory.js";
-import { getUid } from "../../lib/client.js";
+import { getUid, authorizedFetch } from "../../lib/client.js";
 
 export default function StatsPage() {
   const [stats, setStats] = useState(null);
@@ -20,7 +20,7 @@ export default function StatsPage() {
       .then((r) => r.json())
       .then(setStats)
       .catch(() => {});
-    fetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
+    authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
       .then((r) => r.json())
       .then((d) => setViz(vizState(d.profile)))
       .catch(() => {});

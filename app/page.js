@@ -11,7 +11,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
-  getUid, postJSON, thumbFor, hashStr, bagAdd,
+  getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd,
   loadFitProfile, fitProfileForBrain, EMPTY_FIT,
 } from "../lib/client.js";
 import {
@@ -191,7 +191,7 @@ function Slide({ items, onOpenItem }) {
   const [look, setLook] = useState(null);
   const [idx, setIdx] = useState(0);
   useEffect(() => {
-    fetch("/api/outfits?user=" + encodeURIComponent(getUid() || "guest") + "&n=1")
+    authorizedFetch("/api/outfits?user=" + encodeURIComponent(getUid() || "guest") + "&n=1")
       .then((r) => r.json())
       .then((d) => setLook((d.outfits || [])[0] || null))
       .catch(() => {});
@@ -239,7 +239,7 @@ function ObservationTracker() {
 
   useEffect(() => {
     setOn(observationOn());
-    fetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
+    authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
       .then((r) => r.json())
       .then((d) => {
         const p = d.profile || {};
@@ -377,7 +377,7 @@ export default function Home() {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/feed?" + feedQS(user).toString());
+      const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       setSplit(data.split || null);
       setItems(data.items || []);
@@ -397,7 +397,7 @@ export default function Home() {
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
     loadingMoreRef.current = true;
     try {
-      const res = await fetch("/api/feed?" + feedQS(user).toString());
+      const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       if (data.items && data.items.length) {
         setItems((prev) => {
@@ -495,7 +495,7 @@ export default function Home() {
           }
         }
         // pieces from followed moodboards
-        const prof = await fetch("/api/profile?user=" + encodeURIComponent(uidRef.current))
+        const prof = await authorizedFetch("/api/profile?user=" + encodeURIComponent(uidRef.current))
           .then((r) => r.json());
         const follows = (prof.profile && prof.profile._meta && prof.profile._meta.follows) || [];
         const boards = await Promise.all(
