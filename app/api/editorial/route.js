@@ -8,6 +8,7 @@
 
 import { NextResponse } from "next/server";
 import { createEditorialPost, listEditorialPosts } from "../../../lib/db/production.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
 
@@ -25,9 +26,10 @@ export async function GET(req) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const user = String(body.user || "").slice(0, 80);
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const text = String(body.text || "").trim();
-  if (!user || !text) return NextResponse.json({ error: "user and text required" }, { status: 400 });
+  if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });
   try {
     const post = await createEditorialPost({
       authorId: user,

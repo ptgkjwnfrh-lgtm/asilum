@@ -123,10 +123,12 @@ export async function GET(req) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const user = String(body.user || "").slice(0, 80);
+  const { resolveRequestUser } = await import("../../../lib/identity.js");
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const look = body.look || {};
-  if (!user || !Array.isArray(look.items) || !look.items.length) {
-    return NextResponse.json({ error: "user and look.items required" }, { status: 400 });
+  if (!Array.isArray(look.items) || !look.items.length) {
+    return NextResponse.json({ error: "look.items required" }, { status: 400 });
   }
   try {
     const { saveStylistOutfit } = await import("../../../lib/db/production.js");

@@ -38,7 +38,7 @@ export default function TicketFlow({ item, onClose }) {
     if (!checked || !ticket) return;
     try {
       const res = await sendJSON("PATCH", "/api/tickets", {
-        id: ticket.id, action: "consent", consent: true,
+        id: ticket.id, user: getUid(), action: "consent", consent: true,
         disclaimerVersion: disclaimer?.version,
       });
       const d = await res.json();
