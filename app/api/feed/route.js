@@ -27,7 +27,7 @@ export async function GET(req) {
 
   // Item pool: DB items if available, else the seed catalog.
   let pool = [];
-  try { pool = await listItems(200); } catch { pool = []; }
+  try { pool = await listItems(1000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
 
   // Hard filters run BEFORE ranking so taste ordering applies within them.

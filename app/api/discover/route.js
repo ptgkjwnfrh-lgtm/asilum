@@ -22,7 +22,7 @@ export async function GET(req) {
   const limit = Math.min(96, parseInt(searchParams.get("limit"), 10) || 48);
 
   let pool = [];
-  try { pool = await listItems(500); } catch { pool = []; }
+  try { pool = await listItems(1000); } catch { pool = []; }
   const ids = new Set(pool.map((it) => it.id));
   pool = [...pool, ...CATALOG.filter((it) => !ids.has(it.id))];
 

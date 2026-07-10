@@ -18,7 +18,7 @@ export async function GET(req) {
   if (!itemId) return NextResponse.json({ error: "item required" }, { status: 400 });
 
   let pool = [];
-  try { pool = await listItems(200); } catch { pool = []; }
+  try { pool = await listItems(1000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
 
   const source = pool.find((it) => it.id === itemId) || CATALOG.find((it) => it.id === itemId);

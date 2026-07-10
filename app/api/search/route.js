@@ -18,7 +18,7 @@ export async function GET(req) {
   if (!q) return NextResponse.json({ q, brands: [], items: [], aesthetics: [] });
 
   let pool = [];
-  try { pool = await listItems(300); } catch { pool = []; }
+  try { pool = await listItems(1000); } catch { pool = []; }
   const ids = new Set(pool.map((it) => it.id));
   pool = [...pool, ...CATALOG.filter((it) => !ids.has(it.id))];
 
