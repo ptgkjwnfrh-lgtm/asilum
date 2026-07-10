@@ -66,6 +66,8 @@ export default function StylistPage() {
     for (const it of look.items) {
       await postJSON("/api/boards", { user: getUid(), item: it }).catch(() => {});
     }
+    // Persist the look itself (stylist_outfits) — the stylist's memory of hits.
+    postJSON("/api/outfits", { user: getUid(), look }).catch(() => {});
     setNotice("look saved to your moodboard — every piece teaches the brain");
   }
 

@@ -1,0 +1,116 @@
+// app/api/admin/route.js
+// Admin/moderation backend — no public UI yet (deliberate: the public design
+// is locked; a full admin page can mount on these functions later).
+//
+// Auth: ADMIN_TOKEN env var; requests send "Authorization: Bearer <token>".
+// Unset token = admin disabled entirely (503, honest error).
+//
+// GET  ?area=overview|tags|mappings|sync-logs|search-logs|tickets|adapters
+// POST { action, ... }:
+//   tag.add    { productId, tag, tagType?, confidence? }
+//   tag.delete { id }
+//   tag.merge  { from, to }
+//   mapping.upsert { searchPhrase, mappedTags, relatedTerms, referenceType?, confidence? }
+//   mapping.delete { searchPhrase }
+//   product.moderate { productId, status: visible|hidden|flagged }
+//   sync.run   { query?, limit? }
+
+import { NextResponse } from "next/server";
+import { getPool } from "../../../lib/db/index.js";
+import {
+  getProductTags, addProductTags, deleteProductTag, mergeProductTags,
+  listSearchMappings, upsertSearchMapping, deleteSearchMapping,
+  listSyncLogs,
+} from "../../../lib/db/production.js";
+import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
+
+export const dynamic = "force-dynamic";
+
+function authed(req) {
+  const token = process.env.ADMIN_TOKEN;
+  if (!token || token.length < 16) return { ok: false, status: 503, error: "admin disabled — set ADMIN_TOKEN (16+ chars)" };
+  const got = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (got !== token) return { ok: false, status: 401, error: "bad admin token" };
+  return { ok: true };
+}
+
+export async function GET(req) {
+  const gate = authed(req);
+  if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
+  const { searchParams } = new URL(req.url);
+  const area = searchParams.get("area") || "overview";
+  const p = await getPool();
+
+  try {
+    if (area === "adapters") return NextResponse.json({ adapters: adapterStatuses() });
+    if (area === "mappings") return NextResponse.json({ mappings: await listSearchMappings() });
+    if (area === "sync-logs") return NextResponse.json({ logs: await listSyncLogs() });
+    if (area === "tags") {
+      const productId = searchParams.get("productId");
+      if (!productId) return NextResponse.json({ error: "productId required" }, { status: 400 });
+      return NextResponse.json({ tags: await getProductTags(productId) });
+    }
+    if (area === "search-logs") {
+      if (!p) return NextResponse.json({ logs: [], persistent: false });
+      const { rows } = await p.query("SELECT * FROM search_logs ORDER BY created_at DESC LIMIT 100");
+      return NextResponse.json({ logs: rows, persistent: true });
+    }
+    if (area === "tickets") {
+      if (!p) return NextResponse.json({ tickets: [], persistent: false });
+      const { rows } = await p.query("SELECT * FROM purchase_tickets ORDER BY created_at DESC LIMIT 100");
+      return NextResponse.json({ tickets: rows, persistent: true });
+    }
+    // overview
+    const counts = { persistent: !!p };
+    if (p) {
+      for (const t of ["items", "product_tags", "search_mappings", "search_logs", "purchase_tickets", "editorial_posts", "mood_board_uploads", "stylist_outfits"]) {
+        counts[t] = (await p.query(`SELECT count(*)::int AS n FROM ${t}`)).rows[0].n;
+      }
+    }
+    return NextResponse.json({ counts, adapters: adapterStatuses() });
+  } catch (e) {
+    return NextResponse.json({ error: String(e.message).slice(0, 200) }, { status: 500 });
+  }
+}
+
+export async function POST(req) {
+  const gate = authed(req);
+  if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
+  let body = {};
+  try { body = await req.json(); } catch {}
+
+  try {
+    switch (body.action) {
+      case "tag.add":
+        return NextResponse.json({
+          added: await addProductTags(body.productId, [{ tag: body.tag, tagType: body.tagType, confidence: body.confidence, source: "admin" }]),
+        });
+      case "tag.delete":
+        return NextResponse.json({ deleted: await deleteProductTag(body.id) });
+      case "tag.merge":
+        return NextResponse.json({ merged: await mergeProductTags(body.from, body.to) });
+      case "mapping.upsert":
+        return NextResponse.json({ mapping: await upsertSearchMapping(body) });
+      case "mapping.delete":
+        return NextResponse.json({ deleted: await deleteSearchMapping(body.searchPhrase) });
+      case "product.moderate": {
+        const p = await getPool();
+        if (!p) return NextResponse.json({ error: "requires database" }, { status: 503 });
+        const status = ["visible", "hidden", "flagged"].includes(body.status) ? body.status : "visible";
+        const r = await p.query(
+          "UPDATE items SET moderation_status=$2, flagged=($2='flagged'), updated_at=now() WHERE id=$1",
+          [body.productId, status]
+        );
+        return NextResponse.json({ moderated: r.rowCount });
+      }
+      case "sync.run": {
+        const { syncProducts } = await import("../../../lib/ingest/adapters/sync.js");
+        return NextResponse.json({ runs: await syncProducts({ query: body.query, limit: body.limit }) });
+      }
+      default:
+        return NextResponse.json({ error: "unknown action" }, { status: 400 });
+    }
+  } catch (e) {
+    return NextResponse.json({ error: String(e.message).slice(0, 200) }, { status: 500 });
+  }
+}

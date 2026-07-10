@@ -38,6 +38,8 @@ export async function GET(req) {
   let pool = [];
   try { pool = await listItems(1000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
+  // Never style an outfit around a piece the source has marked gone.
+  pool = pool.filter((it) => it.is_available !== false && !["sold", "removed"].includes(it.availability_status));
 
   const profile = migrateProfile(await getProfile(userId).catch(() => ({})));
   const taste = tasteVector(profile);
@@ -110,4 +112,30 @@ export async function GET(req) {
 
   const count = groups.reduce((s, g) => s + g.looks.length, 0);
   return NextResponse.json({ userId, full: true, genres: groups.map((g) => g.genre), count, groups });
+}
+
+// POST /api/outfits — persist a saved look (SAVE OUTFIT on /stylist) into
+// stylist_outfits: real records of what the stylist got right.
+export async function POST(req) {
+  let body = {};
+  try { body = await req.json(); } catch {}
+  const user = String(body.user || "").slice(0, 80);
+  const look = body.look || {};
+  if (!user || !Array.isArray(look.items) || !look.items.length) {
+    return NextResponse.json({ error: "user and look.items required" }, { status: 400 });
+  }
+  try {
+    const { saveStylistOutfit } = await import("../../../lib/db/production.js");
+    const saved = await saveStylistOutfit({
+      userId: user,
+      signature: look.sig || look.signature || null,
+      genre: look.genre || null,
+      items: look.items.map((it) => ({ id: it.id, title: it.title, brand: it.brand, price: it.price })),
+      matchScore: look.conf ?? look.match ?? null,
+      reasons: look.reasons || [],
+    });
+    return NextResponse.json({ saved: { id: saved.id, persistent: saved.persistent } });
+  } catch (e) {
+    return NextResponse.json({ error: "outfit save failed" }, { status: 500 });
+  }
 }
