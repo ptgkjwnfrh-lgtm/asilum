@@ -15,7 +15,7 @@ export async function GET(req) {
 
   const byId = new Map(CATALOG.map((it) => [it.id, it]));
   try {
-    for (const it of await listItems(200)) byId.set(it.id, it);
+    for (const it of await listItems(1000)) byId.set(it.id, it);
   } catch {}
 
   const orders = events.map((e) => {
