@@ -131,6 +131,62 @@ export async function POST(req) {
         if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
         return NextResponse.json({ feedback: await listStylistFeedback(body.user, body.limit || 100) });
       }
+      // ---- Asterisk AI (Day 10): dual-tag audit, ontology, facts, moderation ----
+      case "asterisk.audit": {
+        const { auditProductTags } = await import("../../../lib/asterisk/tagAudit.js");
+        if (!body.productId) return NextResponse.json({ error: "productId required" }, { status: 400 });
+        const r = await auditProductTags(body.productId);
+        return NextResponse.json(r, { status: r.ok ? 200 : 404 });
+      }
+      case "asterisk.aiTags": {
+        const { getProductAiTags } = await import("../../../lib/db/production.js");
+        if (!body.productId) return NextResponse.json({ error: "productId required" }, { status: 400 });
+        return NextResponse.json({ aiTags: await getProductAiTags(body.productId) });
+      }
+      case "asterisk.reconciliations": {
+        const { listTagReconciliations } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ reconciliations: await listTagReconciliations({
+          productId: body.productId || null,
+          reviewRequired: typeof body.reviewRequired === "boolean" ? body.reviewRequired : null,
+          limit: body.limit || 50 }) });
+      }
+      case "asterisk.ontology.sync": {
+        const { syncOntology } = await import("../../../lib/asterisk/ontology.js");
+        return NextResponse.json({ upserted: await syncOntology() });
+      }
+      case "asterisk.ontology": {
+        const { listOntologyTags } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ tags: await listOntologyTags({ tagType: body.tagType || null, limit: body.limit || 500 }) });
+      }
+      case "asterisk.fact.record": {
+        const { recordFact } = await import("../../../lib/asterisk/facts.js");
+        const r = await recordFact(body);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.fact.review": {
+        const { reviewFact } = await import("../../../lib/asterisk/facts.js");
+        const r = await reviewFact(body.id, body.status, body.reviewer || null);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.facts": {
+        const { listLearnedFacts } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ facts: await listLearnedFacts({
+          entityType: body.entityType || null, entityId: body.entityId || null,
+          status: body.status || null, limit: body.limit || 100 }) });
+      }
+      case "moderation.list": {
+        const { listModerationTasks } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ tasks: await listModerationTasks({
+          status: body.status === "all" ? null : (body.status || "open"), limit: body.limit || 100 }) });
+      }
+      case "moderation.resolve": {
+        const { resolveModerationTask } = await import("../../../lib/db/production.js");
+        const r = await resolveModerationTask(body.id, {
+          status: body.status || "resolved", resolution: body.resolution || null,
+          resolvedBy: body.resolvedBy || "admin" });
+        return r ? NextResponse.json({ task: r })
+                 : NextResponse.json({ error: "task not found or bad status" }, { status: 400 });
+      }
       default:
         return NextResponse.json({ error: "unknown action" }, { status: 400 });
     }

@@ -27,17 +27,22 @@ rewriting the app. **No model is connected today. Nothing fakes one.**
 - **Model event log** (`ai_model_events`): every future model call/failure
   audited; adapter writes it automatically.
 
-## What is DISABLED until a real model + key exist
-- The provider adapters in `lib/ai/adapter.js` (openai/anthropic/gemini/local)
-  — deliberate `not implemented` throws behind the config gate.
+## What is DISABLED until a key + flags exist
+- The **anthropic** provider in `lib/ai/adapter.js` is IMPLEMENTED (Day 10 —
+  Asterisk AI) but fully flag-gated: no key, no flags, no calls, no fake
+  output. openai/gemini/local remain deliberate `not implemented` throws.
 - Model-written taste summaries, image understanding beyond color, designer
   reference detection, model-built outfits.
 
-## How to enable AI later (safely)
-1. Implement ONE provider function in `lib/ai/adapter.js` `PROVIDERS`.
+See `docs/ASTERISK-AI.md` for the full Asterisk AI architecture (ontology,
+dual tagging, learned facts, moderation).
+
+## How to enable AI (safely)
+1. Provider function exists for anthropic; others need a reviewed PR first.
 2. Set env (server-only, never NEXT_PUBLIC): `AI_FEATURES_ENABLED=true`,
-   `AI_PROVIDER=<name>`, `AI_MODEL_NAME=…`, `AI_API_KEY=…`, plus
-   `AI_MOOD_BOARD_ENABLED=true` and/or `AI_STYLIST_ENABLED=true`.
+   `AI_PROVIDER=anthropic`, `AI_MODEL_NAME=…`, `AI_API_KEY=…`, plus
+   `AI_MOOD_BOARD_ENABLED=true`, `AI_STYLIST_ENABLED=true`, and/or
+   `AI_TAG_AUDIT_ENABLED=true`.
 3. That's it — `analyzeMoodBoardItem` and `generateStylistOutfits` already
    route through `runModel()`, validate output (`lib/ai/validate.js` — shape
    check, tag normalization, **product ids restricted to the real candidate
