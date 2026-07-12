@@ -21,6 +21,8 @@ import {
 import { paletteFromSwatches } from "../../../lib/vision/palette.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { EVENTS, buildEvent } from "../../../lib/events/index.js";
+import { analyzeMoodBoardItem } from "../../../lib/ai/moodBoardAnalyzer.js";
+import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 
 export const dynamic = "force-dynamic";
 
@@ -112,9 +114,19 @@ export async function POST(req) {
           uploadId: idemKey,
         }), idemKey)
       : await createMoodBoardUpload(row);
+
+    // Feed the intelligence layer: analyze (local rules today, model when
+    // enabled) and refresh the style profile. Derived data — a failure here
+    // must never fail the upload, and duplicates are not re-analyzed.
+    let analysis = null;
+    if (kind === "upload" && rec.duplicate !== true) {
+      const a = await analyzeMoodBoardItem(rec, { userId: user });
+      if (a.ok) analysis = { source: a.source, summary: a.analysis.summary, confidence: a.analysis.confidenceScore };
+      rebuildUserStyleProfile(user).catch(() => {});
+    }
     return NextResponse.json({
       id: rec.id, persistent: rec.persistent, tags: rec.tags, palette,
-      duplicate: rec.duplicate === true,
+      duplicate: rec.duplicate === true, analysis,
     });
   } catch {
     return NextResponse.json({ error: "moodboard record failed" }, { status: 500 });

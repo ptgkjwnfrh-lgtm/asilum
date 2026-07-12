@@ -107,6 +107,30 @@ export async function POST(req) {
         const { syncProducts } = await import("../../../lib/ingest/adapters/sync.js");
         return NextResponse.json({ runs: await syncProducts({ query: body.query, limit: body.limit }) });
       }
+      // ---- AI-foundation inspection (Day 9): admin/debug review ----
+      case "ai.events": {
+        const { listAiModelEvents } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ events: await listAiModelEvents({ feature: body.feature || null, limit: body.limit || 100 }) });
+      }
+      case "ai.analyses": {
+        const { listMoodBoardAnalyses } = await import("../../../lib/db/production.js");
+        if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
+        return NextResponse.json({ analyses: await listMoodBoardAnalyses(body.user, body.limit || 60) });
+      }
+      case "ai.profile": {
+        const { getUserStyleProfileRow } = await import("../../../lib/db/production.js");
+        if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
+        return NextResponse.json({ profile: await getUserStyleProfileRow(body.user) });
+      }
+      case "ai.config": {
+        const { describeAiConfig } = await import("../../../lib/ai/config.js");
+        return NextResponse.json({ config: describeAiConfig() });
+      }
+      case "stylist.feedback": {
+        const { listStylistFeedback } = await import("../../../lib/db/production.js");
+        if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
+        return NextResponse.json({ feedback: await listStylistFeedback(body.user, body.limit || 100) });
+      }
       default:
         return NextResponse.json({ error: "unknown action" }, { status: 400 });
     }
