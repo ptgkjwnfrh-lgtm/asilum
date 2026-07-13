@@ -15,6 +15,10 @@ import {
   listItems, getProfile, saveProfile,
   getEdges, getPopularity, getBoard, bumpPopularity, withUserLock,
 } from "../../../lib/db/index.js";
+import {
+  getUserCorrectionSignalSummary, getUserRecommendationExclusions,
+} from "../../../lib/db/production.js";
+import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/correctionSignals.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +37,20 @@ export async function GET(req) {
   let pool = [];
   try { pool = await listItems(1000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
+  let correctionSummary, exclusions;
+  try {
+    [correctionSummary, exclusions] = await Promise.all([
+      getUserCorrectionSignalSummary(userId),
+      getUserRecommendationExclusions(userId),
+    ]);
+  } catch {
+    return NextResponse.json({ error: "correction state unavailable" }, { status: 503 });
+  }
+  const excludedBrands = new Set(exclusions.brands);
+  const excludedProducts = new Set(exclusions.productIds);
+  pool = pool.filter((item) =>
+    !excludedProducts.has(item.id) &&
+    !(item.brand && excludedBrands.has(item.brand.trim().toLowerCase())));
 
   // Hard filters run BEFORE ranking so taste ordering applies within them.
   const category = searchParams.get("category") || "";
@@ -52,13 +70,16 @@ export async function GET(req) {
 
   // Profile: persisted (with clock-based forgetting applied on read),
   // else cold-start from prompt.
-  let profile = {};
-  try { profile = await getProfile(userId); } catch { profile = {}; }
+  let storedProfile = {};
+  try { storedProfile = await getProfile(userId); } catch { storedProfile = {}; }
+  let profile = storedProfile;
   ({ profile } = applyTimeDecay(profile));
   const hasProfile =
     Object.keys(profile.long || {}).length > 0 ||
     Object.keys(profile.session || {}).length > 0;
   if (!hasProfile && q) profile = coldStart(q).profile;
+  const profileBeforeCorrections = profile;
+  profile = applyCorrectionSignalsToBrainProfile(profile, correctionSummary);
 
   // Shared-board taste transfer — an explicit ?board= link, else the standing
   // influence of the boards this user follows.
@@ -99,7 +120,7 @@ export async function GET(req) {
     await Promise.all([
       withUserLock(userId, async () => {
         const current = await getProfile(userId);
-        const base = current && Object.keys(current).length ? current : profile;
+        const base = current && Object.keys(current).length ? current : profileBeforeCorrections;
         const { profile: decayed } = applyTimeDecay(base);
         await saveProfile(userId, markSeen(decayed, ids));
       }),

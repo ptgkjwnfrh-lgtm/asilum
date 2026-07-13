@@ -132,6 +132,15 @@ price sensitivity, novelty tolerance, style-evolution timeline (profile
 snapshots, versioned). Alpha/Beta weights and point logic preserved exactly.
 
 ## 12. Trend intelligence data model (Phase 4)
+The first bounded trend-knowledge slice is live in `lib/ai/trendKnowledge.js`:
+a dated 2026-07-13 fashion-TikTok editorial snapshot with source URLs,
+confidence, region, lifecycle, and a hard 2026-10-01 expiry. It feeds structured
+context to stylist prompt v2 and gives the local fallback an explainable trend
+relevance boost capped at 0.18—below one preferred-brand signal—so current
+context cannot overwrite demonstrated taste. Product text must support a trend
+match; broad aesthetic tags alone are not enough. Refresh the snapshot from
+TikTok Creative Center plus independent fashion reporting before its expiry.
+
 `trends` table per the lifecycle model: origin, phases (origin → early
 adoption → subculture → designer/luxury/celebrity adoption → acceleration →
 mass reproduction → saturation → backlash → decline → nostalgic return →
@@ -151,7 +160,8 @@ response; user-disableable.
 ## 14. API contracts
 All identity-gated via `resolveRequestUser`; admin via `ADMIN_TOKEN`.
 - Live today: `/api/why` (GET explanation, POST structured corrections —
-  taste codes reshape the profile, wrong-* codes open moderation tasks),
+  preference codes retrain, standing exclusions filter, and wrong-* codes
+  open moderation tasks),
   `/api/moodboard`, `/api/style-profile`, `/api/stylist`
   (request/feedback), `/api/admin` — extended with `asterisk.audit`,
   `asterisk.aiTags`, `asterisk.reconciliations`, `asterisk.ontology(.sync)`,

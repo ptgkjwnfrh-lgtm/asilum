@@ -116,12 +116,14 @@ export default function Shell({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Adoption uses the HttpOnly device cookie as source proof. Signing in always
-  // switches subsequent activity to the account, even if the one-time copy fails.
+  // Adoption uses the HttpOnly device cookie as source proof. Keep subsequent
+  // activity on the device identity until the one-time copy succeeds, so a
+  // transient database failure cannot strand taste or corrections.
   async function onSignedIn(session) {
     const user = session.user;
     setAuthUser(user.email || user.id);
     const account = "sb-" + user.id;
+    let adopted = false;
     try {
       await ensureDeviceIdentity();
       const response = await fetch("/api/auth", {
@@ -133,9 +135,15 @@ export default function Shell({ children }) {
         body: JSON.stringify({ user: account }),
       });
       if (!response.ok) throw new Error("identity adoption failed");
+      const adoption = await response.json();
+      if (adoption.correctionProfileUpdated === false) {
+        setAuthMsg("signed in — corrections moved; stylist profile refresh is pending");
+      }
+      adopted = true;
     } catch {
       setAuthMsg("signed in, but this device's taste could not be adopted");
-    } finally {
+    }
+    if (adopted) {
       try { window.localStorage.setItem("asilum-uid", account); } catch {}
       setUid(account);
     }

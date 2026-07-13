@@ -11,6 +11,8 @@ import {
 import {
   getProfile, saveProfile, getBoards, createBoard, addBoardItem, withUserLock,
 } from "../../../lib/db/index.js";
+import { adoptUserCorrections } from "../../../lib/db/production.js";
+import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,13 @@ export async function POST(req) {
         movedBoards++;
       }
     }
-    return NextResponse.json({ ok: true, movedProfile, movedBoards });
+    const movedCorrections = await adoptUserCorrections(from, user);
+    let correctionProfileUpdated = null;
+    if (movedCorrections > 0) {
+      correctionProfileUpdated = (await rebuildUserStyleProfile(user)).ok;
+    }
+    return NextResponse.json({
+      ok: true, movedProfile, movedBoards, movedCorrections, correctionProfileUpdated,
+    });
   });
 }

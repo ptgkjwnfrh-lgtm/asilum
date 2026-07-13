@@ -994,38 +994,49 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, post }) 
 // Asterisk AI — "why this" panel (Day 11). Fetches the honest explanation for
 // the open item and offers structured corrections that actually train the
 // profile (negative codes feed avoided tags; wrong-* codes file data reports).
+const ASTERISK_CORRECTION_CHIPS = [
+  ["not-my-style", "not my style"],
+  ["less-like-this", "less like this"],
+  ["more-like-this", "more like this"],
+  ["wrong-color", "wrong color"],
+  ["already-own", "already own"],
+];
+
 function AsteriskWhy({ item, onNotice }) {
   const [why, setWhy] = useState(null);
   const [sent, setSent] = useState(null);
   useEffect(() => {
-    let alive = true;
+    const controller = new AbortController();
     setWhy(null);
     setSent(null);
-    authorizedFetch("/api/why?item=" + encodeURIComponent(item.id) + "&user=" + encodeURIComponent(getUid() || ""))
+    authorizedFetch(
+      "/api/why?item=" + encodeURIComponent(item.id) + "&user=" + encodeURIComponent(getUid() || ""),
+      { signal: controller.signal }
+    )
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (alive && d && d.explanation) setWhy(d.explanation); })
+      .then((d) => { if (d?.explanation) setWhy(d.explanation); })
       .catch(() => {});
-    return () => { alive = false; };
+    return () => controller.abort();
   }, [item.id]);
 
-  const CHIPS = [
-    ["not-my-style", "not my style"],
-    ["less-like-this", "less like this"],
-    ["more-like-this", "more like this"],
-    ["wrong-color", "wrong color"],
-    ["already-own", "already own"],
-  ];
   async function correct(code) {
     setSent(code);
     try {
-      await postJSON("/api/why", { user: getUid(), productId: item.id, code });
-      if (onNotice) onNotice(code === "more-like-this"
-        ? "noted — asterisk leans in"
-        : code.startsWith("wrong")
-          ? "reported — a moderator will check this listing"
-          : "noted — asterisk adjusts your profile");
+      const response = await postJSON("/api/why", { user: getUid(), productId: item.id, code });
+      if (!response.ok) throw new Error("correction rejected");
+      const result = await response.json();
+      if (onNotice) onNotice(result.duplicate
+        ? "already noted — no duplicate signal was added"
+        : result.profileUpdated === false
+          ? "saved — your feed adjusted; stylist profile refresh is pending"
+          : code === "more-like-this"
+            ? "noted — asterisk leans in"
+            : code.startsWith("wrong")
+              ? "reported — a moderator will check this listing"
+              : "noted — asterisk adjusts your profile");
     } catch {
       setSent(null);
+      if (onNotice) onNotice("correction could not be saved — try again");
     }
   }
   if (!why) return null;
@@ -1039,7 +1050,7 @@ function AsteriskWhy({ item, onNotice }) {
       {(why.warnings || []).map((w) => <div className="awhywarn" key={w}>{w}</div>)}
       {why.uncertainty ? <div className="awhywarn">{why.uncertainty}</div> : null}
       <div className="awhychips">
-        {CHIPS.map(([code, label]) => (
+        {ASTERISK_CORRECTION_CHIPS.map(([code, label]) => (
           <button key={code} className={"achip" + (sent === code ? " on" : "")}
             disabled={!!sent} onClick={() => correct(code)}>
             {label}
