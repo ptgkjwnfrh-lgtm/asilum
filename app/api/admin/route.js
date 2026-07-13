@@ -174,6 +174,11 @@ export async function POST(req) {
           entityType: body.entityType || null, entityId: body.entityId || null,
           status: body.status || null, limit: body.limit || 100 }) });
       }
+      case "asterisk.corrections": {
+        const { listUserCorrections } = await import("../../../lib/db/production.js");
+        if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
+        return NextResponse.json({ corrections: await listUserCorrections(body.user, body.limit || 100) });
+      }
       case "moderation.list": {
         const { listModerationTasks } = await import("../../../lib/db/production.js");
         return NextResponse.json({ tasks: await listModerationTasks({
