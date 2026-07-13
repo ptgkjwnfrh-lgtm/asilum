@@ -50,7 +50,13 @@ lib/asterisk/            Asterisk AI services (orchestration layer)
   facts.js               learned-fact staged pipeline               [Day 10]
   explain.js             explanation system + correction loop       [Day 11]
   queryRouter.js         query classification → entity resolution   [Day 12 v1]
-  culture.js             curated film/music/city/decade readings     [Day 12 v1]
+  culture.js             234 curated entities: aesthetics w/ alias
+                         networks + honest trend phases (rising/
+                         peaking/declining/dated, lastReviewed),
+                         artist style-eras, style-canon figures.
+                         Researched provenance curated-web-informed-
+                         2026-07; refresh via the P2 research
+                         pipeline, never silent edits.  [Day 12 v1-v3]
   vision/                fine-grained garment attributes            [P3]
   trends.js              trend lifecycle intelligence               [P4]
   predictions.js         future-interest estimation                 [P5]

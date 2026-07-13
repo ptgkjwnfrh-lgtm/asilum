@@ -252,6 +252,12 @@ export default function DiscoverPage() {
               {(reading.interpretations.find((i) => i.id === activeInterp) || {}).summary}
             </div>
           ) : null}
+          {reading.entity.trend ? (
+            <div className="areadnote">
+              trend: <b>{reading.entity.trend.phase}</b> — {reading.entity.trend.note}
+              {reading.entity.trend.lastReviewed ? ` (reviewed ${reading.entity.trend.lastReviewed})` : ""}
+            </div>
+          ) : null}
           {reading.entity.note ? <div className="areadnote">{reading.entity.note}</div> : null}
         </div>
       )}
