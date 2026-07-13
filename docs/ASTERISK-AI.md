@@ -48,12 +48,12 @@ lib/asterisk/            Asterisk AI services (orchestration layer)
   ontology.js            canonical fashion language + resolver      [Day 10]
   tagAudit.js            dual tagging + reconciliation              [Day 10]
   facts.js               learned-fact staged pipeline               [Day 10]
+  explain.js             explanation system + correction loop       [Day 11]
   queryRouter.js         query classification → entity resolution   [P2]
   culture/               films, celebrities, cities, decades, music [P2]
   vision/                fine-grained garment attributes            [P3]
   trends.js              trend lifecycle intelligence               [P4]
   predictions.js         future-interest estimation                 [P5]
-  explain.js             explanation generation                     [P2]
 lib/ai/                  model seam (adapter, prompts, validation) — unchanged home
 lib/brain/               Alpha base layer — never modified
 ```
@@ -150,7 +150,9 @@ response; user-disableable.
 
 ## 14. API contracts
 All identity-gated via `resolveRequestUser`; admin via `ADMIN_TOKEN`.
-- Live today: `/api/moodboard`, `/api/style-profile`, `/api/stylist`
+- Live today: `/api/why` (GET explanation, POST structured corrections —
+  taste codes reshape the profile, wrong-* codes open moderation tasks),
+  `/api/moodboard`, `/api/style-profile`, `/api/stylist`
   (request/feedback), `/api/admin` — extended with `asterisk.audit`,
   `asterisk.aiTags`, `asterisk.reconciliations`, `asterisk.ontology(.sync)`,
   `asterisk.fact.record/.review`, `asterisk.facts`, `moderation.list/.resolve`.

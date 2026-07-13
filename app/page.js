@@ -902,6 +902,7 @@ export default function Home() {
                 ) : null}
               </div>
               {reasonFor(modal) ? <div className="why">{reasonFor(modal)}</div> : null}
+              <AsteriskWhy item={modal} onNotice={setNotice} />
               <div className="tags">
                 {Object.keys(modal.tags || {}).slice(0, 4).map((t) => (
                   <span className="t" key={t}>
@@ -987,5 +988,64 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, post }) 
         </div>
       ) : null}
     </>
+  );
+}
+
+// Asterisk AI — "why this" panel (Day 11). Fetches the honest explanation for
+// the open item and offers structured corrections that actually train the
+// profile (negative codes feed avoided tags; wrong-* codes file data reports).
+function AsteriskWhy({ item, onNotice }) {
+  const [why, setWhy] = useState(null);
+  const [sent, setSent] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    setWhy(null);
+    setSent(null);
+    authorizedFetch("/api/why?item=" + encodeURIComponent(item.id) + "&user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive && d && d.explanation) setWhy(d.explanation); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [item.id]);
+
+  const CHIPS = [
+    ["not-my-style", "not my style"],
+    ["less-like-this", "less like this"],
+    ["more-like-this", "more like this"],
+    ["wrong-color", "wrong color"],
+    ["already-own", "already own"],
+  ];
+  async function correct(code) {
+    setSent(code);
+    try {
+      await postJSON("/api/why", { user: getUid(), productId: item.id, code });
+      if (onNotice) onNotice(code === "more-like-this"
+        ? "noted — asterisk leans in"
+        : code.startsWith("wrong")
+          ? "reported — a moderator will check this listing"
+          : "noted — asterisk adjusts your profile");
+    } catch {
+      setSent(null);
+    }
+  }
+  if (!why) return null;
+  return (
+    <div className="awhy">
+      <div className="awhyhead"><b className="red">*</b> ASTERISK — WHY THIS</div>
+      <div className="awhysum">
+        {why.summary}
+        {why.tasteMatch > 0 ? " · taste match " + Math.round(why.tasteMatch * 100) + "%" : ""}
+      </div>
+      {(why.warnings || []).map((w) => <div className="awhywarn" key={w}>{w}</div>)}
+      {why.uncertainty ? <div className="awhywarn">{why.uncertainty}</div> : null}
+      <div className="awhychips">
+        {CHIPS.map(([code, label]) => (
+          <button key={code} className={"achip" + (sent === code ? " on" : "")}
+            disabled={!!sent} onClick={() => correct(code)}>
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
