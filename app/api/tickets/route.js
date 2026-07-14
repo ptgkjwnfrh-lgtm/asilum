@@ -11,7 +11,7 @@
 
 import { NextResponse } from "next/server";
 import {
-  createTicket, updateTicket, transitionTicket, listTickets, getTicket,
+  createTicket, updateTicket, transitionTicket, listTickets, getTicket, reportTicketOutcome,
   recordAvailabilityCheck,
 } from "../../../lib/db/production.js";
 import { getAdapter } from "../../../lib/ingest/adapters/index.js";
@@ -20,6 +20,7 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { resolveProduct } from "../../../lib/products.js";
 import { safeExternalUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { buildEvent, EVENTS } from "../../../lib/events/index.js";
 
 export const dynamic = "force-dynamic";
 
@@ -154,6 +155,24 @@ export async function PATCH(req) {
       return NextResponse.json({ error: "ticket state changed; refresh before continuing" }, { status: 409 });
     }
     return NextResponse.json({ ticket: updated, continueUrl });
+  }
+  if (action === "outcome") {
+    const outcome = String(body.outcome || "");
+    const eventType = {
+      bought: EVENTS.USER_REPORTED_PURCHASE,
+      kept: EVENTS.USER_REPORTED_KEEP,
+      returned: EVENTS.USER_REPORTED_RETURN,
+      "not-bought": EVENTS.USER_REPORTED_NO_PURCHASE,
+    }[outcome];
+    if (!eventType) return NextResponse.json({ error: "unknown outcome" }, { status: 400 });
+    const result = await reportTicketOutcome(
+      id, user, outcome,
+      buildEvent(user, eventType, { ticketId: Number(id), itemId: ticket.productId, sourceName: ticket.sourceName })
+    );
+    if (!result) {
+      return NextResponse.json({ error: "outcomes can be reported only after source checkout starts" }, { status: 409 });
+    }
+    return NextResponse.json(result);
   }
   return NextResponse.json({ error: "unknown action" }, { status: 400 });
 }

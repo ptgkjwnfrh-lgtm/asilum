@@ -176,6 +176,32 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .empty { font-family: var(--serif); font-style: italic; color: var(--grey); padding: 50px 0; text-align: center; }
 .sentinel { height: 1px; }
 
+.cravingbox { border: 1px solid var(--line); margin: 18px 0 12px; padding: 14px; }
+.cravinghead { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
+.cravinghead .psub { margin: 0 0 5px; color: var(--red); }
+.cravinghead .deck { margin-bottom: 10px; }
+.cravinggrid { display: grid; grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(120px, 0.7fr)) auto; gap: 8px; }
+.cravinggrid input, .cravinggrid select {
+  width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--paper);
+  color: var(--ink); padding: 10px 11px; font: 700 12px var(--helv);
+}
+.cravinggrid input { font-size: 14px; font-weight: 500; }
+.outcomes { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.outcomes button {
+  border: 1px solid var(--line); background: var(--paper); padding: 5px 8px;
+  font-size: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer;
+}
+.outcomes button:hover, .outcomes button.on { background: var(--ink); color: var(--paper); }
+
+@media (max-width: 980px) {
+  .cravinggrid { grid-template-columns: 1fr 1fr; }
+  .cravinggrid input { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .cravinggrid { grid-template-columns: 1fr; }
+  .cravinggrid input { grid-column: auto; }
+}
+
 /* ---- Masonry feed (Pinterest columns, Grailed skin) ---- */
 
 .grid { columns: 4 240px; column-gap: 20px; }

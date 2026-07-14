@@ -5,7 +5,7 @@
 // account settings, and the legal position (legitimate sources only).
 
 import { useEffect, useState } from "react";
-import { getUid, postJSON } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, clearLocalPersonalizationData } from "../../lib/client.js";
 import {
   getProfileInfo, saveProfileInfo, observationOn, setObservation,
 } from "../../lib/social.js";
@@ -18,6 +18,8 @@ export default function SettingsPage() {
   const [observe, setObserve] = useState(true);
   const [info, setInfo] = useState(null);
   const [notice, setNotice] = useState("");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteChecked, setDeleteChecked] = useState(false);
 
   useEffect(() => {
     setUid(getUid() || "");
@@ -43,6 +45,26 @@ export default function SettingsPage() {
 
   function saveInfo(k, v) {
     setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
+  }
+
+  async function resetTaste() {
+    const response = await postJSON("/api/reset", { user: uid }).catch(() => null);
+    setNotice(response?.ok
+      ? "recommendation model reset; boards, history, tickets, and aggregate signals remain"
+      : "recommendation model could not be reset");
+  }
+
+  async function deletePersonalization() {
+    if (!deleteChecked) return;
+    const response = await sendJSON("DELETE", "/api/privacy", {
+      user: uid, confirm: "DELETE PERSONALIZATION",
+    }).catch(() => null);
+    const data = response ? await response.json().catch(() => ({})) : {};
+    if (!response?.ok) { setNotice(data.error || "personalization data could not be deleted"); return; }
+    clearLocalPersonalizationData();
+    setDeleteOpen(false);
+    setDeleteChecked(false);
+    setNotice(`personalization deleted; retained: ${(data.retained || []).join(", ")}`);
   }
 
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
@@ -74,9 +96,9 @@ export default function SettingsPage() {
         <div className="setinfo">
           <div className="setname">Observation</div>
           <div className="uhandle" style={{ maxWidth: 520, whiteSpace: "normal" }}>
-            with permission, ASILUM notes aesthetics you linger on in-app and
-            through allowed browser/partner activity to sharpen the brain.
-            signals stay on this device where possible.
+            ASILUM notes aesthetics you linger on in-app to sharpen the brain.
+            browser or partner activity is not observed unless a real
+            connection exists and you explicitly permit it.
           </div>
         </div>
         <button
@@ -107,6 +129,37 @@ export default function SettingsPage() {
         <a className="fitbtn" href="/stats">brain health dashboard →</a>
       </div>
 
+      <h3 className="statshead">DATA CONTROLS</h3>
+      <div className="setrow">
+        <div className="setinfo">
+          <div className="setname">Reset recommendation model</div>
+          <div className="uhandle">clears learned taste weights only; boards, events, tickets, and anonymous aggregate signals remain.</div>
+        </div>
+        <button className="fitbtn" onClick={resetTaste}>RESET MODEL</button>
+      </div>
+      <div className="setrow">
+        <div className="setinfo">
+          <div className="setname">Delete personalization data</div>
+          <div className="uhandle" style={{ maxWidth: 620, whiteSpace: "normal" }}>
+            deletes profile vectors, interactions, searches, boards, uploads, corrections, stylist history, and posts.
+            purchase tickets, consent records, the auth account, and deidentified aggregate item statistics remain.
+          </div>
+        </div>
+        <button className="fitbtn" onClick={() => setDeleteOpen(true)}>DELETE DATA</button>
+      </div>
+      {deleteOpen && (
+        <div className="autonote" style={{ cursor: "default" }}>
+          <label className="toggle">
+            <input type="checkbox" checked={deleteChecked} onChange={(e) => setDeleteChecked(e.target.checked)} />
+            I understand what is deleted and what is retained
+          </label>
+          <div className="controls">
+            <button className="btn" disabled={!deleteChecked} onClick={deletePersonalization}>CONFIRM DELETE</button>
+            <button className="btn ghost" onClick={() => { setDeleteOpen(false); setDeleteChecked(false); }}>CANCEL</button>
+          </div>
+        </div>
+      )}
+
       <h3 className="statshead">LEGAL</h3>
       <p className="legal">
         ASILUM sources listings exclusively through legitimate channels:
@@ -114,9 +167,11 @@ export default function SettingsPage() {
         authorized marketplace access. ASILUM does not scrape retailers and
         does not reproduce publication articles or imagery — editorial
         summaries are original and link to the publications. your measurements
-        never leave this device; taste vectors are stored against an anonymous
-        device id. deleting your taste profile (moodboard → full amnesia) is
-        immediate and irreversible.
+        are stored only on this device and are sent transiently to ASILUM for
+        first-party fit scoring, never persisted server-side or sent to an
+        external model; taste vectors use a pseudonymous device or authenticated
+        account identifier. resetting the recommendation model does not delete history;
+        the data controls above state exactly what a broader deletion retains.
       </p>
     </div>
   );

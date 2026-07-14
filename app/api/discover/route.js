@@ -11,12 +11,12 @@ import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { listItems } from "../../../lib/db/index.js";
 import { sourceFor } from "../../../lib/social.js";
 import {
-  interpretSearchQuery, rankSearchResults, getPersonalizedSearchContext, logSearch,
+  searchProducts,
 } from "../../../lib/search/index.js";
-import { productsByTags } from "../../../lib/db/production.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { isDiscoverableProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -31,34 +31,24 @@ export async function GET(req) {
   const limit = Math.min(96, parseInt(searchParams.get("limit"), 10) || 48);
 
   let pool = [];
-  try { pool = await listItems(5000); } catch { pool = []; }
-  const demo = pool.length === 0;
-  if (demo) pool = CATALOG;
-  const sources = [...new Set(pool.map(sourceFor).filter(Boolean))].sort();
-
-  let items = pool.map((it) => ({ ...it, src: sourceFor(it) }));
+  let items = [];
+  let demo = false;
   if (q) {
     const quota = await consumeRateLimit({ scope: "discover-search", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
     if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-    try {
-      const interpreted = await interpretSearchQuery(q, { pool: items });
-      let tagLayerScores = {};
-      try { tagLayerScores = await productsByTags([...interpreted.mappedTags, ...interpreted.tokens, q]); } catch {}
-      const brain = searchParams.get("brain") === "1";
-      const userId = brain
-        ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
-      const personal = userId ? await getPersonalizedSearchContext(userId) : null;
-      items = rankSearchResults(items, interpreted, { tagLayerScores, personal });
-      logSearch(q, items, userId, interpreted);
-    } catch {
-      // engine failure degrades to the original substring filter — never a crash
-      items = items.filter((it) =>
-        (it.title || "").toLowerCase().includes(q) ||
-        (it.brand || "").toLowerCase().includes(q) ||
-        Object.keys(it.tags || {}).some((t) => t.toLowerCase().includes(q))
-      );
-    }
+    const brain = searchParams.get("brain") === "1";
+    const userId = brain ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
+    const result = await searchProducts(q, { userId, brain: !!userId, limit: 2000 });
+    items = result.results.map((item) => ({ ...item, src: sourceFor(item) }));
+    demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
+  } else {
+    try { pool = await listItems(5000); } catch { pool = []; }
+    pool = pool.filter(isDiscoverableProduct);
+    demo = pool.length === 0;
+    if (demo) pool = CATALOG;
+    items = pool.map((item) => ({ ...item, src: sourceFor(item) }));
   }
+  const sources = [...new Set(items.map((item) => item.src).filter(Boolean))].sort();
   if (source) items = items.filter((it) => it.src === source);
   const brands = (searchParams.get("brands") || "").split("|").filter(Boolean).map((b) => b.toLowerCase());
   if (brands.length) {

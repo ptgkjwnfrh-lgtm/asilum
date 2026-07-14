@@ -17,5 +17,8 @@ export async function POST(req) {
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   await mutateProfile(userId, () => ({}));
-  return NextResponse.json({ userId, reset: true });
+  return NextResponse.json({
+    userId, reset: true,
+    retained: ["boards", "event history", "purchase tickets", "co-engagement graph"],
+  });
 }

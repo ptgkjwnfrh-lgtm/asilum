@@ -21,6 +21,8 @@ import {
 import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/correctionSignals.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
+import { isDiscoverableProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +41,19 @@ export async function GET(req) {
   const epsilonParam = searchParams.get("epsilon") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
+  const craving = parseCravingContext({
+    text: searchParams.get("craving"),
+    occasion: searchParams.get("occasion"),
+    mood: searchParams.get("mood"),
+    novelty: searchParams.get("novelty"),
+  });
+  const cravingActive = hasCravingContext(craving);
+  const contextVec = cravingActive ? cravingVector(craving) : null;
 
   // Item pool: DB items if available, else the seed catalog.
   let pool = [];
   try { pool = await listItems(5000); } catch { pool = []; }
+  pool = pool.filter(isDiscoverableProduct);
   if (!pool || pool.length === 0) pool = CATALOG;
   let correctionSummary, exclusions;
   try {
@@ -114,8 +125,12 @@ export async function GET(req) {
     getPopularity(),
   ]);
 
-  const { split, items, epsilonActive, epsilonAuto, zones } = buildFeed(
-    { profile, epsilonActive: epsilonParam, edges, popularity, boardVec },
+  const { split, items, epsilonActive, epsilonAuto, safeMode, zones } = buildFeed(
+    {
+      profile,
+      epsilonActive: epsilonParam || craving.novelty === "wildcard",
+      edges, popularity, boardVec, contextVec, novelty: craving.novelty,
+    },
     pool
   );
 
@@ -138,7 +153,9 @@ export async function GET(req) {
     userId,
     epsilonActive,
     epsilonAuto,
+    safeMode,
     boardSeeded: !!boardVec,
+    craving: cravingActive ? craving : null,
     split,
     zones,
     count: items.length,

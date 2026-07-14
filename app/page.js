@@ -16,7 +16,7 @@ import {
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
-  setFollowBrand, STORIES, listPosts, timeAgo,
+  setFollowBrand, STORIES, listPosts, timeAgo, DEMO_SOCIAL_ENABLED,
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
@@ -53,6 +53,7 @@ const QUOTES = [
 ];
 
 function reasonFor(item) {
+  if (item._contextMatch >= 0.2) return "matches what you're craving right now";
   if (item._zone === "reach") return "a far reach — break your pattern";
   if (item._zone === "discovery") return "you'll probably like this";
   if (item._via === "graph") return "saved together by others";
@@ -281,6 +282,8 @@ export default function Home() {
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
+  const [cravingDraft, setCravingDraft] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
+  const [craving, setCraving] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
   const [connectOpen, setConnectOpen] = useState(false);
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
@@ -370,8 +373,12 @@ export default function Home() {
     if (filters.category) qs.set("category", filters.category);
     if (filters.maxPrice) qs.set("maxPrice", filters.maxPrice);
     if (filters.fitsMe && fit.usualSize) qs.set("fit", fit.usualSize);
+    if (craving.text) qs.set("craving", craving.text);
+    if (craving.occasion) qs.set("occasion", craving.occasion);
+    if (craving.mood) qs.set("mood", craving.mood);
+    if (craving.novelty) qs.set("novelty", craving.novelty);
     return qs;
-  }, [epsilon, filters, fit.usualSize]);
+  }, [epsilon, filters, fit.usualSize, craving]);
 
   const loadFeed = useCallback(async (user = uidRef.current) => {
     if (!user) return;
@@ -383,6 +390,7 @@ export default function Home() {
       setItems(data.items || []);
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
+      else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
       dwellRef.current = { vis: new Map(), sent: new Set() };
     } catch (e) {
       console.error(e);
@@ -390,6 +398,17 @@ export default function Home() {
       setLoading(false);
     }
   }, [feedQS]);
+
+  function applyCraving() {
+    setTab("curated");
+    setCraving({ ...cravingDraft, text: cravingDraft.text.trim().slice(0, 240) });
+  }
+
+  function clearCraving() {
+    const empty = { text: "", occasion: "", mood: "", novelty: "discovery" };
+    setCravingDraft(empty);
+    setCraving(empty);
+  }
 
   const loadMore = useCallback(async () => {
     const user = uidRef.current;
@@ -462,7 +481,7 @@ export default function Home() {
 
   useEffect(() => {
     if (uidRef.current) loadFeed();
-  }, [filters, epsilon]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters, epsilon, craving]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function markOnboarded() {
     try { window.localStorage.setItem("asilum-onboarded", "1"); } catch {}
@@ -674,6 +693,46 @@ export default function Home() {
         </Collapsible>
       </div>
 
+      <section className="cravingbox" aria-labelledby="craving-title">
+        <div className="cravinghead">
+          <div>
+            <div className="psub" id="craving-title">CURRENT CRAVING</div>
+            <p className="deck">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
+          </div>
+          {craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery" ? (
+            <button className="fitbtn" onClick={clearCraving}>CLEAR</button>
+          ) : null}
+        </div>
+        <div className="cravinggrid">
+          <input
+            type="text"
+            maxLength={240}
+            placeholder="dark dinner look, clean but strange, airport armor…"
+            value={cravingDraft.text}
+            onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
+            onKeyDown={(e) => e.key === "Enter" && applyCraving()}
+          />
+          <select value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
+            <option value="">any occasion</option>
+            <option value="everyday">everyday</option><option value="work">work</option>
+            <option value="date">date</option><option value="night">night</option>
+            <option value="event">event</option><option value="travel">travel</option>
+            <option value="outdoors">outdoors</option>
+          </select>
+          <select value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
+            <option value="">any mood</option>
+            <option value="quiet">quiet</option><option value="sharp">sharp</option>
+            <option value="romantic">romantic</option><option value="experimental">experimental</option>
+            <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
+          </select>
+          <select value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
+            <option value="safe">safe bet</option><option value="discovery">discovery</option>
+            <option value="wildcard">wildcard</option>
+          </select>
+          <button className="btn" onClick={applyCraving}>POINT THE WAY</button>
+        </div>
+      </section>
+
       <div className="filters">
         <select
           value={filters.category}
@@ -723,7 +782,7 @@ export default function Home() {
           <div className="grid">
             {items.map((it, i) => {
               const fitLine = it.size ? fitPhrase(it.size, fitBrain) : null;
-              const post = (i + 1) % POST_EVERY === 0 ? postFor(it, i) : null;
+              const post = DEMO_SOCIAL_ENABLED && (i + 1) % POST_EVERY === 0 ? postFor(it, i) : null;
               return (
                 <FragmentCard
                   key={it.id}

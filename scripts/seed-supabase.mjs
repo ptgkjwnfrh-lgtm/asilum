@@ -1,5 +1,5 @@
 // scripts/seed-supabase.mjs
-// Optional demo seeding after schema-v1 through schema-v8 have been applied.
+// Optional demo seeding after schema-v1 through schema-v10 have been applied.
 // Upserts the synthetic catalog into items through the application DB path.
 //
 // Usage: node --experimental-default-type=module scripts/seed-supabase.mjs
