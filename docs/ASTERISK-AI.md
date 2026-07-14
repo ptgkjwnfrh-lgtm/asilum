@@ -49,8 +49,14 @@ lib/asterisk/            Asterisk AI services (orchestration layer)
   tagAudit.js            dual tagging + reconciliation              [Day 10]
   facts.js               learned-fact staged pipeline               [Day 10]
   explain.js             explanation system + correction loop       [Day 11]
-  queryRouter.js         query classification → entity resolution   [P2]
-  culture/               films, celebrities, cities, decades, music [P2]
+  queryRouter.js         query classification → entity resolution   [Day 12 v1]
+  culture.js             234 curated entities: aesthetics w/ alias
+                         networks + honest trend phases (rising/
+                         peaking/declining/dated, lastReviewed),
+                         artist style-eras, style-canon figures.
+                         Researched provenance curated-web-informed-
+                         2026-07; refresh via the P2 research
+                         pipeline, never silent edits.  [Day 12 v1-v3]
   vision/                fine-grained garment attributes            [P3]
   trends.js              trend lifecycle intelligence               [P4]
   predictions.js         future-interest estimation                 [P5]
@@ -159,9 +165,10 @@ response; user-disableable.
 
 ## 14. API contracts
 All identity-gated via `resolveRequestUser`; admin via `ADMIN_TOKEN`.
-- Live today: `/api/why` (GET explanation, POST structured corrections —
-  preference codes retrain, standing exclusions filter, and wrong-* codes
-  open moderation tasks),
+- Live today: `/api/interpret` (GET — cultural reading of a query: labeled
+  interpretations, taste-ordered, honest entity:null misses), `/api/why`
+  (GET explanation, POST structured corrections — preference codes retrain,
+  standing exclusions filter, and wrong-* codes open moderation tasks),
   `/api/moodboard`, `/api/style-profile`, `/api/stylist`
   (request/feedback), `/api/admin` — extended with `asterisk.audit`,
   `asterisk.aiTags`, `asterisk.reconciliations`, `asterisk.ontology(.sync)`,

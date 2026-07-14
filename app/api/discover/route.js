@@ -49,6 +49,24 @@ export async function GET(req) {
     items = pool.map((item) => ({ ...item, src: sourceFor(item) }));
   }
   const sources = [...new Set(items.map((item) => item.src).filter(Boolean))].sort();
+  // Asterisk interpretation pills (Day 12): ?tags=a|b|c ranks the rack by an
+  // interpretation's tag signals — real products only, no costume replicas.
+  const interpTags = (searchParams.get("tags") || "")
+    .split("|").filter(Boolean).map((t) => t.toUpperCase()).slice(0, 8);
+  if (interpTags.length) {
+    items = items
+      .map((it) => {
+        let score = 0;
+        for (const t of interpTags) {
+          const w = (it.tags || {})[t];
+          if (typeof w === "number") score += w;
+        }
+        return { it, score };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((x) => x.it);
+  }
   if (source) items = items.filter((it) => it.src === source);
   const brands = (searchParams.get("brands") || "").split("|").filter(Boolean).map((b) => b.toLowerCase());
   if (brands.length) {

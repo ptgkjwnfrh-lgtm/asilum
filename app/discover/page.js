@@ -29,6 +29,9 @@ export default function DiscoverPage() {
   const [followed, setFollowed] = useState([]);
   const [sug, setSug] = useState([]);
   const [ticketItem, setTicketItem] = useState(null);
+  const [reading, setReading] = useState(null);      // Asterisk's cultural read of the query
+  const [activeInterp, setActiveInterp] = useState("");
+  const interpRef = useRef(null);                     // active interpretation's tags
   const offsetRef = useRef(0);
   const bootedRef = useRef(false);
   const sugRef = useRef(null);
@@ -39,7 +42,10 @@ export default function DiscoverPage() {
     try {
       const qval = qOverride != null ? qOverride : q;
       const qs = new URLSearchParams({ limit: String(PAGE), offset: String(offsetRef.current) });
-      if (qval.trim()) {
+      if (interpRef.current && interpRef.current.length) {
+        // An Asterisk interpretation is active: browse by its tag signals.
+        qs.set("tags", interpRef.current.join("|"));
+      } else if (qval.trim()) {
         qs.set("q", qval.trim());
         // Search ranking may use the Mood Board Brain (toggle on the moodboard
         // page); plain browsing stays untouched by taste, as the deck says.
@@ -60,6 +66,29 @@ export default function DiscoverPage() {
   }, [q, source, tag, sort]);
 
   useEffect(() => { setFollowed(followedBrands()); }, []);
+
+  // Ask Asterisk to READ the query (film / music / city / decade). Misses are
+  // honest: entity null → no strip, standard search stands.
+  useEffect(() => {
+    if (!searched) { setReading(null); setActiveInterp(""); interpRef.current = null; return; }
+    let alive = true;
+    authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + "&user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive) { setReading(d && d.entity ? d : null); setActiveInterp(""); interpRef.current = null; } })
+      .catch(() => { if (alive) setReading(null); });
+    return () => { alive = false; };
+  }, [searched]);
+
+  function pickInterp(i) {
+    interpRef.current = i.tags || [];
+    setActiveInterp(i.id);
+    load(true);
+  }
+  function clearInterp() {
+    interpRef.current = null;
+    setActiveInterp("");
+    load(true);
+  }
 
   // The designer whose rack you're looking at: the last-searched query,
   // matched against the brands actually returned. Exact match wins; a
@@ -200,6 +229,38 @@ export default function DiscoverPage() {
           </button>
         ))}
       </div>
+      {reading && reading.entity && (
+        <div className="aread">
+          <div className="areadhead">
+            <b className="red">*</b> ASTERISK READS: {reading.entity.name.toUpperCase()}
+            <em> {reading.entity.kind}</em>
+            {reading.personalized ? <em> · ordered by your taste</em> : null}
+          </div>
+          <div className="areadpills">
+            {reading.interpretations.map((i) => (
+              <button key={i.id} className={"apill" + (activeInterp === i.id ? " cur" : "")}
+                title={i.summary} onClick={() => pickInterp(i)}>
+                {i.label}
+              </button>
+            ))}
+            {activeInterp ? (
+              <button className="apill clearpill" onClick={clearInterp}>× full results</button>
+            ) : null}
+          </div>
+          {activeInterp ? (
+            <div className="areadsum">
+              {(reading.interpretations.find((i) => i.id === activeInterp) || {}).summary}
+            </div>
+          ) : null}
+          {reading.entity.trend ? (
+            <div className="areadnote">
+              trend: <b>{reading.entity.trend.phase}</b> — {reading.entity.trend.note}
+              {reading.entity.trend.lastReviewed ? ` (reviewed ${reading.entity.trend.lastReviewed})` : ""}
+            </div>
+          ) : null}
+          {reading.entity.note ? <div className="areadnote">{reading.entity.note}</div> : null}
+        </div>
+      )}
       <hr className="rule" />
 
       {loading && items.length === 0 && <div className="empty">opening the racks…</div>}
