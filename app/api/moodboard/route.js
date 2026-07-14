@@ -2,7 +2,7 @@
 // The Mood Board as a database feeder. Every training action becomes a real
 // mood_board_uploads record the future vision/AI layer can re-analyze.
 //
-// POST { user, kind: "upload"|"text", filenames?, prompt?, caption?, palette?, uploadId? }
+// POST { user, kind: "upload"|"text", filenames?, prompt?, caption?, palette?, uploadId (required for uploads) }
 //   upload → filename words + optional palette v0 swatches. The client sends
 //            RAW {hex, weight} swatches only — canonical color names and
 //            shared-TAGS weights are derived server-side (lib/vision/palette
@@ -60,14 +60,13 @@ export async function POST(req) {
       names.push(n.replace(/\.[a-z0-9]+$/i, "").replace(/[-_.]+/g, " "));
     }
     text = names.join(" ");
-    // Client-generated idempotency key: a retry after a lost response returns
-    // the ORIGINAL record instead of writing a duplicate upload + event.
-    if (body.uploadId !== undefined) {
-      if (typeof body.uploadId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(body.uploadId)) {
-        return NextResponse.json({ error: "invalid uploadId" }, { status: 400 });
-      }
-      idemKey = body.uploadId;
+    // Client-generated idempotency key, REQUIRED for uploads (Codex #13
+    // follow-up): a retry after a lost response returns the ORIGINAL stored
+    // record instead of writing a duplicate upload + event.
+    if (typeof body.uploadId !== "string" || !/^[A-Za-z0-9-]{8,64}$/.test(body.uploadId)) {
+      return NextResponse.json({ error: "uploadId required (8-64 chars, [A-Za-z0-9-])" }, { status: 400 });
     }
+    idemKey = body.uploadId;
   } else {
     text = String(body.prompt || "").slice(0, 400);
     if (!text.trim()) return NextResponse.json({ error: "prompt required" }, { status: 400 });

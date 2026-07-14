@@ -194,13 +194,16 @@ CREATE TABLE IF NOT EXISTS mood_board_uploads (
   tags JSONB NOT NULL DEFAULT '[]'::jsonb,  -- [{tag, tag_type, confidence}]
   style_notes TEXT,
   analyzed_by TEXT NOT NULL DEFAULT 'none', -- none|filename|manual|palette-v0|vision (future)
-  idempotency_key TEXT,                     -- client retry dedupe (unique when present)
+  idempotency_key TEXT,                     -- client retry dedupe (unique per user when present)
   created_at TIMESTAMPTZ DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS mood_board_uploads_user ON mood_board_uploads (user_id, created_at DESC);
 ALTER TABLE mood_board_uploads ADD COLUMN IF NOT EXISTS idempotency_key TEXT;
-CREATE UNIQUE INDEX IF NOT EXISTS mood_board_uploads_idem
-  ON mood_board_uploads (idempotency_key) WHERE idempotency_key IS NOT NULL;
+-- Scoped per user (Day 13, Codex #13 follow-up), matching purchase_tickets;
+-- the same DDL runs lazily from lib/db/production.js for the live database.
+CREATE UNIQUE INDEX IF NOT EXISTS mood_board_uploads_user_idem
+  ON mood_board_uploads (user_id, idempotency_key) WHERE idempotency_key IS NOT NULL;
+DROP INDEX IF EXISTS mood_board_uploads_idem;
 
 -- ---- RLS: server-only tables (no anon policies on purpose; the app reaches
 --      them through DATABASE_URL, which bypasses RLS as table owner) ----
