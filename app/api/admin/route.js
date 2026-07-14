@@ -23,14 +23,14 @@ import {
   listSyncLogs,
 } from "../../../lib/db/production.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
+import { bearerToken, secureTokenEqual } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
 function authed(req) {
   const token = process.env.ADMIN_TOKEN;
   if (!token || token.length < 16) return { ok: false, status: 503, error: "admin disabled — set ADMIN_TOKEN (16+ chars)" };
-  const got = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-  if (got !== token) return { ok: false, status: 401, error: "bad admin token" };
+  if (!secureTokenEqual(bearerToken(req), token)) return { ok: false, status: 401, error: "bad admin token" };
   return { ok: true };
 }
 

@@ -27,7 +27,8 @@ console.log(`search_mappings: ${DEFAULT_MAPPINGS.length} upserted`);
 
 const pgMod = await import("pg");
 const { Pool } = pgMod.default ?? pgMod;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const { databaseSslConfig } = await import("../lib/db/index.js");
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: await databaseSslConfig() });
 
 // Production fields for the seed catalog: it is honest demo inventory.
 await pool.query(`

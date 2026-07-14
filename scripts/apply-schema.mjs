@@ -20,7 +20,8 @@ if (!process.env.DATABASE_URL) { console.error("DATABASE_URL is not set."); proc
 
 const pgMod = await import("pg");
 const { Pool } = pgMod.default ?? pgMod;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const { databaseSslConfig } = await import("../lib/db/index.js");
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: await databaseSslConfig() });
 const sql = fs.readFileSync(path.join(root, file), "utf8");
 await pool.query(sql);
 const { rows } = await pool.query(

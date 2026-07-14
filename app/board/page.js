@@ -7,7 +7,7 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
-import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, setBrainEnabled } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, setBrainEnabled, safeExternalUrl } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
@@ -33,10 +33,10 @@ export default function BoardPage() {
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("id");
     if (id) {
-      fetch("/api/boards?id=" + encodeURIComponent(id))
+      authorizedFetch("/api/boards?id=" + encodeURIComponent(id) + "&viewer=" + encodeURIComponent(user))
         .then((r) => r.json())
         .then((d) => {
-          if (d.board && d.board.userId !== user) { setShared(d.board); return; }
+          if (d.board && !d.owned) { setShared(d.board); return; }
           loadMine(user, d.board ? d.board.id : null);
         })
         .catch(() => loadMine(user));
@@ -118,12 +118,7 @@ export default function BoardPage() {
   async function connectPinterest() {
     const res = await postJSON("/api/connect", { user: uid, platform: "pinterest" }).catch(() => null);
     const d = res ? await res.json().catch(() => null) : null;
-    if (d && d.imported) {
-      setNotice(`pinterest connected — ${d.imported} pinned tastes imported`);
-      loadViz();
-    } else {
-      setNotice((d && d.message) || "pinterest import is coming soon — it requires real OAuth setup");
-    }
+    setNotice((d && d.message) || "pinterest import is coming soon — it requires real OAuth setup");
   }
 
   // Downsampled pixels for palette v0 — 48px is plenty for color statistics.
@@ -353,8 +348,8 @@ export default function BoardPage() {
                     <div className="brand2">{it.brand}</div>
                     <div className="pricerow">
                       {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}
-                      {it.url ? (
-                        <a className="buy" href={it.url} target="_blank" rel="noopener noreferrer">view ↗</a>
+                      {safeExternalUrl(it.url) ? (
+                        <a className="buy" href={safeExternalUrl(it.url)} target="_blank" rel="noopener noreferrer">view ↗</a>
                       ) : null}
                     </div>
                     {!shared && (

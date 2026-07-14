@@ -6,7 +6,7 @@
 // The client gates this behind a two-step confirmation.
 
 import { NextResponse } from "next/server";
-import { saveProfile, withUserLock } from "../../../lib/db/index.js";
+import { mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +16,6 @@ export async function POST(req) {
   try { body = await req.json(); } catch { body = {}; }
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
-  await withUserLock(userId, () => saveProfile(userId, {}));
+  await mutateProfile(userId, () => ({}));
   return NextResponse.json({ userId, reset: true });
 }

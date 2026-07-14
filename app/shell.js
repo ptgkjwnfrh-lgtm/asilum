@@ -34,10 +34,7 @@ const TICKER =
   "*ASILUM MAGAZINE — THE TASTE ENGINE IS LIVE — SIX BRIDGES, ONE FEED — " +
   "HOTLIST UPDATED CONTINUOUSLY — WEAR THE ARCHIVE — SKIPS TEACH TOO — ";
 
-const SERVICE_FEE = 0.05;   // ASILUM service fee
-const SHIP_PER_SOURCE = 12; // flat shipping estimate per marketplace source
-
-const PLATFORMS = ["grailed", "depop", "ssense", "ebay", "pinterest"];
+const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 export default function Shell({ children }) {
   const pathname = usePathname();
@@ -50,7 +47,6 @@ export default function Shell({ children }) {
   const [results, setResults] = useState(null);
   const [fit, setFit] = useState(EMPTY_FIT);
   const [connecting, setConnecting] = useState("");
-  const [connected, setConnected] = useState("");
   const [connectMsg, setConnectMsg] = useState("");
   const [follows, setFollows] = useState({ brands: [], users: [] });
   const [authUser, setAuthUser] = useState(null);
@@ -116,12 +112,14 @@ export default function Shell({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Adoption uses the HttpOnly device cookie as source proof. Signing in always
-  // switches subsequent activity to the account, even if the one-time copy fails.
+  // Adoption uses the HttpOnly device cookie as source proof. Keep subsequent
+  // activity on the device identity until the one-time copy succeeds, so a
+  // transient database failure cannot strand taste or corrections.
   async function onSignedIn(session) {
     const user = session.user;
     setAuthUser(user.email || user.id);
     const account = "sb-" + user.id;
+    let adopted = false;
     try {
       await ensureDeviceIdentity();
       const response = await fetch("/api/auth", {
@@ -133,9 +131,15 @@ export default function Shell({ children }) {
         body: JSON.stringify({ user: account }),
       });
       if (!response.ok) throw new Error("identity adoption failed");
+      const adoption = await response.json();
+      if (adoption.correctionProfileUpdated === false) {
+        setAuthMsg("signed in — corrections moved; stylist profile refresh is pending");
+      }
+      adopted = true;
     } catch {
       setAuthMsg("signed in, but this device's taste could not be adopted");
-    } finally {
+    }
+    if (adopted) {
       try { window.localStorage.setItem("asilum-uid", account); } catch {}
       setUid(account);
     }
@@ -203,28 +207,16 @@ export default function Shell({ children }) {
     try {
       const res = await postJSON("/api/connect", { user: getUid(), platform });
       const d = await res.json().catch(() => null);
-      if (d && d.imported) {
-        try {
-          window.localStorage.setItem("asilum-connected", platform);
-          window.localStorage.setItem("asilum-onboarded", "1");
-        } catch {}
-        setConnected(platform);
-        window.location.href = "/";
-      } else {
-        setConnectMsg((d && d.message) || platform + " linking is coming soon — real account setup required");
-      }
+      setConnectMsg((d && d.message) || platform + " linking is coming soon — real account setup required");
     } catch {
       setConnectMsg(platform + " linking is coming soon — real account setup required");
     }
     setConnecting("");
   }
 
-  // ---- Bag math: subtotal, service fee, shipping estimate, total ----
+  // Bag is intent only; checkout, fees, and shipping belong to source sites.
   const subtotal = bag.reduce((s, x) => s + (x.price || 0), 0);
-  const fee = Math.round(subtotal * SERVICE_FEE);
   const nSources = new Set(bag.map((x) => sourceFor(x))).size;
-  const shipping = nSources * SHIP_PER_SOURCE;
-  const total = subtotal + fee + shipping;
 
   // Ticker: the brands and people you follow, clickable — brands land on
   // DISCOVER pre-searched, people land on their page. Default copy until you
@@ -376,15 +368,14 @@ export default function Shell({ children }) {
               ))}
               <div className="bagfees">
                 <div><span>SUBTOTAL</span><b>USD {Math.round(subtotal)}</b></div>
-                <div><span>ASILUM SERVICE FEE</span><b>USD {fee}</b></div>
-                <div><span>SHIPPING EST. ({nSources} {nSources === 1 ? "SOURCE" : "SOURCES"})</span><b>USD {shipping}</b></div>
-                <div className="bagfinal"><span>TOTAL</span><b>USD {Math.round(total)}</b></div>
+                <div><span>SOURCES</span><b>{nSources}</b></div>
+                <div className="bagfinal"><span>CHECKOUT</span><b>ON SOURCE SITES</b></div>
               </div>
               <button
                 className="btn wide soon"
-                onClick={() => alert("cross-site checkout arrives with partner commerce APIs — nothing was charged")}
+                onClick={() => alert("ASILUM does not charge or ship. Open a piece to view its source or create a purchase request.")}
               >
-                CHECKOUT ACROSS SITES
+                HOW PURCHASES WORK
               </button>
             </>
           )}
@@ -399,7 +390,7 @@ export default function Shell({ children }) {
           <div className="phead">ACCOUNT</div>
           <div className="acctid">{uid ? uid.slice(0, 14) + "…" : ""}</div>
           <a className="shit" href="/profile">→ your profile</a>
-          <a className="shit" href="/settings">→ settings & partnered accounts</a>
+          <a className="shit" href="/settings">→ settings & source connections</a>
 
           <div className="psub">FOLLOWING — BRANDS</div>
           {follows.brands.length === 0 ? (
@@ -457,18 +448,14 @@ export default function Shell({ children }) {
           )}
           {authMsg && <div className="acctline">{authMsg}</div>}
 
-          <div className="psub">CONNECTED ACCOUNT</div>
-          {connected ? (
-            <div className="acctline">{connected} — account linked</div>
-          ) : (
-            <div className="platformrow">
-              {PLATFORMS.map((p) => (
-                <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
-                  {connecting === p ? "checking…" : p}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="psub">SOURCE CONNECTIONS</div>
+          <div className="platformrow">
+            {PLATFORMS.map((p) => (
+              <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
+                {connecting === p ? "checking…" : p}
+              </button>
+            ))}
+          </div>
           {connectMsg && <div className="acctline">{connectMsg}</div>}
 
           <div className="psub">SIZING — stored only on this device</div>

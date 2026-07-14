@@ -1,9 +1,8 @@
 -- ASILUM Supabase schema (MVP persistence plan — see CONSTITUTION.md).
 -- Run in the Supabase SQL editor (or psql against DATABASE_URL).
 --
--- NOTE: lib/db/index.js already auto-creates and uses these brain tables when
--- DATABASE_URL is set: items, profiles, interactions, edges, popularity,
--- boards, board_items. This file adds the MVP tables on top and formalizes
+-- NOTE: apply schema-v1-brain.sql first. This file adds the MVP tables on top
+-- of the explicit brain-table migration and formalizes
 -- the mapping:
 --   products         = items (existing)
 --   mood_boards      = boards (existing)

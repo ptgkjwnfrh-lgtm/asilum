@@ -1,5 +1,6 @@
 // app/api/outfits/route.js
-// GET /api/outfits?user=<id>&anchor=<itemId>&full=1&fit=<size>&chest=&waist=
+// POST /api/outfits { kind:"generate",user,anchor?,full?,fit?,aiConsent? }
+// Legacy GET supports non-sensitive deep links but intentionally ignores fit.
 // THE STYLIST.
 //   default    — a quick slate of 3 looks (used by "style it ✂" anchoring)
 //   full=1     — a full generation: 5 base genres × 5 looks = 25 LOOKs,
@@ -12,8 +13,12 @@ import { migrateProfile, tasteVector } from "../../../lib/brain/index.js";
 import { buildSlate } from "../../../lib/brain/stylist.js";
 import { TAGS } from "../../../lib/brain/tags.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
-import { listItems, getProfile, saveProfile, withUserLock } from "../../../lib/db/index.js";
+import { listItems, getProfile, mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { resolveProducts } from "../../../lib/products.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
+import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
 
 export const dynamic = "force-dynamic";
 
@@ -30,17 +35,77 @@ function lookSignature(look) {
   return look.items.map((it) => it.id).sort().join("|");
 }
 
-export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
+const ALLOWED_SIZES = new Set(["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"]);
+
+function safeMeasurement(value, min, max) {
+  const measurement = Number(value);
+  return Number.isFinite(measurement) && measurement >= min && measurement <= max
+    ? measurement : null;
+}
+
+function fitProfileFromBody(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const usualSize = String(value.usualSize || "").toUpperCase();
+  const chest = safeMeasurement(value.chest, 20, 80);
+  const waist = safeMeasurement(value.waist, 15, 80);
+  if (!ALLOWED_SIZES.has(usualSize) && chest == null && waist == null) return null;
+  return {
+    usualSize: ALLOWED_SIZES.has(usualSize) ? usualSize : "",
+    measurements: { ...(chest == null ? {} : { chest }), ...(waist == null ? {} : { waist }) },
+  };
+}
+
+function trendAwareLook(look) {
+  const matches = (look.items || [])
+    .map((item) => scoreProductTrendRelevance(item))
+    .filter((match) => match.trend && match.score >= 0.2)
+    .sort((a, b) => b.score - a.score);
+  const top = matches[0] || null;
+  return {
+    ...look,
+    trendScore: top?.score || 0,
+    trend: top ? { id: top.trend.id, name: top.trend.name, score: top.score } : null,
+    why: [look.why, top ? `current styling context: ${top.trend.name}` : null].filter(Boolean).join(" · "),
+  };
+}
+
+function rankTrendAware(looks) {
+  return looks.map(trendAwareLook)
+    .sort((a, b) => (b.conf + b.trendScore * 6) - (a.conf + a.trendScore * 6));
+}
+
+function modelLook(outfit) {
+  const raw = Number(outfit.matchScore);
+  const conf = Number.isFinite(raw)
+    ? Math.max(75, Math.min(99, Math.round(raw <= 1 ? raw * 100 : raw)))
+    : 85;
+  return {
+    items: outfit.items || [], conf,
+    curated: conf, tasteStat: conf,
+    total: (outfit.items || []).reduce((sum, item) => sum + (Number(item.price) || 0), 0),
+    dominantTag: (outfit.matchedTags?.[0] || "AI EDIT").toUpperCase(),
+    fitNotes: outfit.warnings || [],
+    why: [outfit.aestheticLogic, outfit.outfitSummary, outfit.summary].filter(Boolean)[0] ||
+      "model-ranked from available products and current fashion context",
+  };
+}
+
+async function generate(req, input) {
+  const userId = await resolveRequestUser(req, String(input.user || "guest"));
   if (!userId) {
     return NextResponse.json({ error: "authentication required" }, { status: 401 });
   }
-  const anchorId = searchParams.get("anchor") || "";
-  const full = searchParams.get("full") === "1";
+  const quota = await consumeRateLimit({ scope: "outfits", subject: userId, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) {
+    return NextResponse.json(rateLimitResponse(quota), {
+      status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
+  }
+  const anchorId = String(input.anchor || "").slice(0, 80);
+  const full = input.full === true;
 
   let pool = [];
-  try { pool = await listItems(1000); } catch { pool = []; }
+  try { pool = await listItems(5000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
   // Never style an outfit around a piece the source has marked gone.
   pool = pool.filter((it) => it.is_available !== false && !["sold", "removed"].includes(it.availability_status));
@@ -52,12 +117,9 @@ export async function GET(req) {
     ? pool.find((it) => it.id === anchorId) || CATALOG.find((it) => it.id === anchorId) || null
     : null;
 
-  const fit = (searchParams.get("fit") || "").toUpperCase();
-  const chest = parseFloat(searchParams.get("chest")) || 0;
-  const waist = parseFloat(searchParams.get("waist")) || 0;
-  const fitProfile = fit
-    ? { usualSize: fit, measurements: { ...(chest ? { chest } : {}), ...(waist ? { waist } : {}) } }
-    : null;
+  // Measurements are accepted only from a JSON request body, used transiently
+  // by the local fit engine, and never persisted or sent to an external model.
+  const fitProfile = fitProfileFromBody(input.fit);
 
   const events =
     ((profile._meta && profile._meta.seen) || []).length +
@@ -65,9 +127,9 @@ export async function GET(req) {
 
   // ---- quick mode (anchored slate) ----
   if (!full) {
-    const n = Math.min(5, parseInt(searchParams.get("n"), 10) || 3);
-    const outfits = buildSlate(pool, taste, n, { anchor, fitProfile, events })
-      .filter((o) => o.conf >= MATCH_FLOOR);
+    const n = Math.min(5, Math.max(1, Number.parseInt(input.n, 10) || 3));
+    const outfits = rankTrendAware(buildSlate(pool, taste, n + 3, { anchor, fitProfile, events }))
+      .filter((look) => look.conf >= MATCH_FLOOR).slice(0, n);
     return NextResponse.json({ userId, anchor: anchor ? anchor.id : null, count: outfits.length, outfits });
   }
 
@@ -90,7 +152,7 @@ export async function GET(req) {
       const t = TAGS[Math.floor(Math.random() * TAGS.length)];
       biased[t] = Math.max(-1, Math.min(1, (biased[t] || 0) + (Math.random() - 0.5) * 0.16));
     }
-    const built = buildSlate(pool, biased, LOOKS_PER_GENRE + 2, { fitProfile, events });
+    const built = rankTrendAware(buildSlate(pool, biased, LOOKS_PER_GENRE + 5, { fitProfile, events }));
     const looks = [];
     for (const look of built) {
       if (look.conf < MATCH_FLOOR) continue;
@@ -105,17 +167,44 @@ export async function GET(req) {
 
   // Remember what was shown so the 30-day rule holds next time.
   try {
-    await withUserLock(userId, async () => {
-      const cur = migrateProfile(await getProfile(userId));
+    await mutateProfile(userId, (current) => {
+      const cur = migrateProfile(current);
       cur._meta.looksSeen = [...newSigs, ...(cur._meta.looksSeen || [])]
         .filter((s) => now - s.t < REPEAT_WINDOW_MS)
         .slice(0, SEEN_LOOKS_CAP);
-      await saveProfile(userId, cur);
+      return cur;
     });
   } catch {}
 
+  let ai = { requested: input.aiConsent === true, source: "not-requested" };
+  if (input.aiConsent === true) {
+    const model = await generateStylistOutfits(userId, {
+      requestText: "Create a current, wearable fashion edit from available inventory.",
+      sizePreferences: fitProfile?.usualSize ? [fitProfile.usualSize] : [],
+      useMoodBoardBrain: true,
+      aiConsent: true,
+    });
+    ai = { requested: true, source: model.source || "unavailable" };
+    if (model.ok && model.source === "model") {
+      const looks = model.outfits.map(modelLook).filter((look) => look.items.length >= 3);
+      if (looks.length) groups.unshift({ genre: "AI TREND EDIT", looks });
+    }
+  }
+
   const count = groups.reduce((s, g) => s + g.looks.length, 0);
-  return NextResponse.json({ userId, full: true, genres: groups.map((g) => g.genre), count, groups });
+  return NextResponse.json({ userId, full: true, genres: groups.map((g) => g.genre), count, groups, ai });
+}
+
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  // Legacy/deep-link generation deliberately ignores fit measurements in the
+  // URL. The first-party UI uses POST so private measurements stay out of logs.
+  return generate(req, {
+    user: searchParams.get("user") || "guest",
+    anchor: searchParams.get("anchor") || "",
+    full: searchParams.get("full") === "1",
+    n: searchParams.get("n"),
+  });
 }
 
 // POST /api/outfits — persist a saved look (SAVE OUTFIT on /stylist) into
@@ -123,20 +212,25 @@ export async function GET(req) {
 export async function POST(req) {
   let body = {};
   try { body = await req.json(); } catch {}
-  const { resolveRequestUser } = await import("../../../lib/identity.js");
+  if (body.kind === "generate") return generate(req, body);
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const look = body.look || {};
-  if (!Array.isArray(look.items) || !look.items.length) {
+  if (!Array.isArray(look.items) || !look.items.length || look.items.length > 10 ||
+      look.items.some((item) => !item || typeof item.id !== "string" || item.id.length > 80)) {
     return NextResponse.json({ error: "look.items required" }, { status: 400 });
   }
   try {
+    const products = await resolveProducts(look.items.map((item) => item.id));
+    if (products.size !== new Set(look.items.map((item) => item.id)).size) {
+      return NextResponse.json({ error: "look contains an unknown product" }, { status: 400 });
+    }
     const { saveStylistOutfit } = await import("../../../lib/db/production.js");
     const saved = await saveStylistOutfit({
       userId: user,
       signature: look.sig || look.signature || null,
       genre: look.genre || null,
-      items: look.items.map((it) => ({ id: it.id, title: it.title, brand: it.brand, price: it.price })),
+      items: look.items.map((it) => products.get(it.id)),
       matchScore: look.conf ?? look.match ?? null,
       reasons: look.reasons || [],
     });

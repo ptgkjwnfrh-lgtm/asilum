@@ -9,12 +9,13 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const PLATFORMS = new Set(["grailed", "depop", "ssense", "ebay", "pinterest"]);
+const PLATFORMS = new Set(["ebay", "pinterest", "shopify"]);
 
 // Env vars that would power each platform's real adapter, once built.
 const ADAPTER_ENV = {
   ebay: ["EBAY_CLIENT_ID", "EBAY_CLIENT_SECRET"],
   pinterest: ["PINTEREST_CLIENT_ID", "PINTEREST_CLIENT_SECRET"],
+  shopify: ["SHOPIFY_STORE_DOMAIN", "SHOPIFY_STOREFRONT_TOKEN"],
 };
 
 export async function POST(req) {
@@ -31,7 +32,7 @@ export async function POST(req) {
     ? hasCreds
       ? `${platform} credentials detected — the OAuth adapter isn't enabled yet. coming soon.`
       : `${platform} linking is coming soon — it requires real OAuth setup (${envNeeded.join(", ")}).`
-    : `${platform} linking is coming soon — no partnership or official API access yet.`;
+    : `${platform} linking is coming soon — official API setup is required.`;
 
   return NextResponse.json(
     { error: "not_connected", platform, message },

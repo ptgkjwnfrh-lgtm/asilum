@@ -5,14 +5,17 @@ UI locked, no fake integrations, no scraping, env-vars only.
 
 ## Database
 
-Supabase Postgres via `DATABASE_URL` (session pooler URI — the direct host is
-IPv6-only). `lib/db/index.js` auto-creates the brain tables and falls back to
-an in-memory store when no database is configured, so a keyless dev run never
-crashes. `lib/db/production.js` holds CRUD for the production tables.
+Supabase Postgres via `DATABASE_URL` (transaction pooler URI for serverless;
+direct/session mode for a persistent backend). `lib/db/index.js`
+verifies migrations but never runs DDL at application startup; it falls back
+to an in-memory store only when no database is configured. A configured but
+unmigrated/unavailable database fails loudly instead of silently losing data.
 
 Schema files (idempotent, apply with `node --experimental-default-type=module
 scripts/apply-schema.mjs <file>`):
 
+- `supabase/schema-v1-brain.sql` — core items, profiles, interactions, graph,
+  popularity, boards, and canonical user events.
 - `supabase/schema.sql` — MVP: user_profiles, designers, saved_items
   (= saved_products), articles, product_sources + RLS.
 - `supabase/schema-v2.sql` — production: extends **items (= products)** with
@@ -20,7 +23,22 @@ scripts/apply-schema.mjs <file>`):
   search_mappings, search_logs, source_connections, source_sync_logs,
   product_availability_checks, stylist_outfits, purchase_tickets,
   editorial_posts, mood_board_uploads.
+- `supabase/schema-v3-ai.sql` — analysis, style profile, stylist request, and
+  model audit tables.
+- `supabase/schema-v4-asterisk.sql` — ontology, tag audit, fact provenance,
+  and moderation tables.
+- `supabase/schema-v5-corrections.sql` — structured user correction signals.
+- `supabase/schema-v6-hardening.sql` — quotas, idempotency, honest bag-event
+  migration, sync uniqueness, and hot-path indexes.
+- `supabase/schema-v7-integrity.sql` — explicit schema version, transactional
+  identity adoption, one default board per user, and ticket-state constraints.
+- `supabase/schema-v8-lockdown.sql` — private server-only tables, restricted
+  privileged functions, and deny-by-default privileges for future API objects.
 - `supabase/schema-alpha.sql` — staged, NOT applied.
+
+Apply v1, `schema.sql`, then v2 through v8 in order before deploying. TLS
+certificate verification stays enabled; configure `DATABASE_SSL_CA` when the
+provider CA is not in Node's trust store.
 
 Constitution table mapping: products = items, mood_boards = boards,
 mood_board_items = board_items, saved_products = saved_items.
@@ -30,10 +48,9 @@ Seeding: `scripts/seed-supabase.mjs` (catalog → items),
 
 ## Products & fetching
 
-Every read path (`/api/feed|discover|search|related|outfits|orders`) pulls
-`listItems(1000)` from the database first; `lib/ingest/catalog.json` (915
-synthetic pieces, source_name `seed`) only backfills ids the database lacks —
-emergency development fallback, not the system.
+Inventory reads pull up to 5,000 recent database products. The synthetic
+catalog is used only when the live pool is empty; it is never mixed into live
+inventory and is labeled as demo stock.
 
 ## Source adapters (`lib/ingest/adapters/`)
 
@@ -42,10 +59,8 @@ fetchProductById, checkAvailability, normalizeSourceProduct, syncProducts`.
 
 - **ebay** — LIVE implementation (official Browse API) once
   `EBAY_CLIENT_ID/SECRET` are set (`EBAY_ENV=PRODUCTION` for real listings).
-- **depop, grailed, ssense, therealreal, shopify** — honest disabled
-  placeholders. Each `enabled()` reports exactly which key/partnership it
-  needs (also in `.env.example`). They return empty results, never scrape
-  (`lib/ingest/sources.js` additionally blocklists those hosts), never fake.
+- **shopify** — honest disabled placeholder until an independent store grants
+  Storefront access. It returns empty results and never scrapes or fakes data.
 
 `normalize.js` converts any raw source product into the ASILUM shape and
 derives typed tags; `sync.js` runs enabled adapters → upserts items → writes
@@ -92,9 +107,19 @@ already train the same profile via /api/interaction.
 
 ## Stylist
 
-`/api/outfits` builds looks from the database pool (tag/color/silhouette/fit
-logic in lib/brain/stylist.js — no AI), skips unavailable products, and now
-persists SAVE OUTFIT looks to `stylist_outfits` (items, genre, match score).
+The first-party Stylist generates through `POST /api/outfits`. Local generation
+keeps the five-genre backbone, applies a deliberately small dated-trend boost,
+and runs fit scoring from transient JSON-body measurements that are never
+stored, logged in URLs, or sent to a model. The explicit **AI Trend Lens**
+toggle is off by default; when enabled, `/api/outfits` calls the validated
+`generateStylistOutfits` seam and prepends a model edit only when a configured
+provider succeeds. Disabled or failed AI never replaces the local looks.
+Saved looks persist to `stylist_outfits`.
+
+Trend claims live in `lib/ai/trendKnowledge.js` with direct per-claim sources,
+expiry dates, and snapshot-level TikTok methodology. The scheduled
+`trend-freshness` workflow runs `npm run trends:check` weekly and fails when
+the human review date or minimum active coverage is missed; it never scrapes.
 
 ## Editorial
 
@@ -106,7 +131,8 @@ external links only (copyright rule).
 ## Purchase tickets (third-party purchase assistant)
 
 ASILUM does NOT fulfill: the original marketplace confirms, ships, tracks,
-and handles returns. Flow: BUY → POST `/api/tickets` (creates
+and handles returns. Demo products cannot create purchase tickets. For live
+source products, flow: BUY → POST `/api/tickets` (creates
 `purchase_tickets` row, checks availability through the source adapter) →
 disclaimer popup (exact wording in `lib/tickets.js`, version-stamped) →
 REQUIRED consent checkbox → PATCH consent → `checkout_started` and the source
@@ -126,10 +152,10 @@ locked design stays untouched; an admin page can mount on these later.
 
 ## AI readiness
 
-No paid AI calls anywhere. Seams (all default to local logic, all honest via
-lib/ai/contract.js): `lib/ai/search-adapter.js` (`AI_SEARCH_ENABLED`),
-`lib/vision` (moodboard image analysis contract), `lib/embeddings` (v0 tag
-cosine live, v1 gated), `lib/recommendations`. A future model reads:
+Stylist, mood-board analysis, and tag audit use deterministic local logic by
+default. External model calls require explicit environment feature flags;
+user-derived stylist/moodboard calls additionally require `aiConsent: true`.
+Per-user and global hourly quotas protect every model call. A future model reads:
 product_tags, search_mappings, mood_board_uploads, search_logs,
 stylist_outfits, user_events — all persisted now.
 
@@ -140,7 +166,6 @@ search + mappings + suggestions + logs, ticket flow + disclaimer, moodboard
 records + brain toggle, stylist persistence, editorial posts, admin API,
 adapter framework with availability checking.
 
-WAITING ON OFFICIAL ACCESS: eBay keys (adapter ready), Depop/Grailed
-partnerships, SSENSE/TheRealReal affiliate feeds, per-store Shopify tokens,
-any vision/embedding provider, Pinterest OAuth, Stripe (checkout is
-out-of-scope by constitution).
+WAITING ON OFFICIAL ACCESS: eBay keys (adapter ready), per-store Shopify
+tokens, any vision/embedding provider, and Pinterest OAuth. Checkout remains
+out of scope by constitution.

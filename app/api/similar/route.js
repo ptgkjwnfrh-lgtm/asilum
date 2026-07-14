@@ -8,6 +8,7 @@
 import { NextResponse } from "next/server";
 import { similarUsers, crossUserCandidates } from "../../../lib/taste-graph/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -19,11 +20,20 @@ export async function GET(req) {
   if (!user) {
     return NextResponse.json({ error: "authentication required" }, { status: 401 });
   }
+  const quota = await consumeRateLimit({ scope: "similar", subject: user, limit: 30, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const limit = Math.min(48, parseInt(searchParams.get("limit"), 10) || 10);
 
   const [neighbors, candidates] = await Promise.all([
     similarUsers(user, limit),
     crossUserCandidates(user, limit),
   ]);
-  return NextResponse.json({ user, neighbors: neighbors.data, candidates: candidates.data });
+  // Neighbor identities are an internal scoring detail; never expose another
+  // user's device/account identifier to the client.
+  const neighborSummary = {
+    scanned: neighbors.data.scanned,
+    scanCap: neighbors.data.scanCap,
+    similarities: neighbors.data.neighbors.map((neighbor) => neighbor.similarity),
+  };
+  return NextResponse.json({ neighbors: neighborSummary, candidates: candidates.data });
 }
