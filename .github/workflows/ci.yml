@@ -69,11 +69,13 @@ jobs:
             supabase/schema-v5-corrections.sql \
             supabase/schema-v6-hardening.sql \
             supabase/schema-v7-integrity.sql \
-            supabase/schema-v8-lockdown.sql
+            supabase/schema-v8-lockdown.sql \
+            supabase/schema-v9-discovery.sql \
+            supabase/schema-v10-policy-performance.sql
           do
             node scripts/apply-schema.mjs "$file"
           done
-          node scripts/apply-schema.mjs supabase/schema-v8-lockdown.sql
+          node scripts/apply-schema.mjs supabase/schema-v10-policy-performance.sql
 
       - name: Run Postgres integration tests
         env:

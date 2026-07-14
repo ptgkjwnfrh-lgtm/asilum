@@ -5,7 +5,7 @@
 // user search bar. All follow state is local until real accounts exist.
 
 import { useState } from "react";
-import { MOCK_USERS, searchUsers, followedUsers, setFollowUser } from "../../lib/social.js";
+import { DEMO_SOCIAL_ENABLED, MOCK_USERS, searchUsers, followedUsers, setFollowUser } from "../../lib/social.js";
 
 export function Avatar({ name }) {
   const initials = String(name || "?")
@@ -31,6 +31,9 @@ export function WhoToFollowList({ compact = false, withSearch = false }) {
   const slice = MOCK_USERS.slice(page * per, page * per + per);
   return (
     <>
+      {!DEMO_SOCIAL_ENABLED && (
+        <div className="pempty">real people appear here after account discovery ships. load-test profiles are hidden.</div>
+      )}
       {withSearch && <UserSearch placeholder="find people…" />}
       {slice.map((u) => (
         <div className="urow" key={u.handle}>
@@ -42,12 +45,14 @@ export function WhoToFollowList({ compact = false, withSearch = false }) {
           <FollowButton handle={u.handle} />
         </div>
       ))}
-      <button
-        className="modmore"
-        onClick={() => setPage((p) => ((p + 1) * per >= MOCK_USERS.length ? 0 : p + 1))}
-      >
-        show more →
-      </button>
+      {MOCK_USERS.length > per && (
+        <button
+          className="modmore"
+          onClick={() => setPage((p) => ((p + 1) * per >= MOCK_USERS.length ? 0 : p + 1))}
+        >
+          show more →
+        </button>
+      )}
     </>
   );
 }

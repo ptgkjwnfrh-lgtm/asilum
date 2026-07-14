@@ -171,7 +171,7 @@ export default function BoardPage() {
     await postJSON("/api/reset", { user: uid }).catch(() => {});
     setResetOpen(false);
     setResetChecked(false);
-    setNotice("full amnesia complete — the brain remembers nothing about your taste");
+    setNotice("recommendation model reset — boards, event history, tickets, and aggregate graph signals remain");
     loadViz();
   }
 

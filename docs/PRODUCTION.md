@@ -34,9 +34,13 @@ scripts/apply-schema.mjs <file>`):
   identity adoption, one default board per user, and ticket-state constraints.
 - `supabase/schema-v8-lockdown.sql` — private server-only tables, restricted
   privileged functions, and deny-by-default privileges for future API objects.
+- `supabase/schema-v9-discovery.sql` — indexed product discovery, explicit
+  sponsorship gates, post-handoff outcomes, and privacy-delete indexes.
+- `supabase/schema-v10-policy-performance.sql` — statement-scoped auth checks
+  for the client-facing profile and saved-item RLS policies.
 - `supabase/schema-alpha.sql` — staged, NOT applied.
 
-Apply v1, `schema.sql`, then v2 through v8 in order before deploying. TLS
+Apply v1, `schema.sql`, then v2 through v10 in order before deploying. TLS
 certificate verification stays enabled; configure `DATABASE_SSL_CA` when the
 provider CA is not in Node's trust store.
 
@@ -57,8 +61,10 @@ inventory and is labeled as demo stock.
 Common interface (`types.js`): `getSourceName, enabled, searchProducts,
 fetchProductById, checkAvailability, normalizeSourceProduct, syncProducts`.
 
-- **ebay** — LIVE implementation (official Browse API) once
-  `EBAY_CLIENT_ID/SECRET` are set (`EBAY_ENV=PRODUCTION` for real listings).
+- **ebay** — implemented against the official Browse API but disabled until
+  `EBAY_PARTNERSHIP_APPROVED=1` and API credentials are present.
+- **woocommerce** — official Store API, enabled only for an exact HTTPS store
+  origin whose merchant approved ASILUM (`WOOCOMMERCE_STORE_APPROVED=1`).
 - **shopify** — honest disabled placeholder until an independent store grants
   Storefront access. It returns empty results and never scrapes or fakes data.
 
@@ -78,7 +84,9 @@ excluded from stylist looks.
 Flow: query → `interpretSearchQuery` (intent: brand / "like designer" /
 text + mapping expansion) → `rankSearchResults` → `logSearch`.
 
-Ranking order of force: exact product name > full title > brand/designer >
+Database-backed searches first use the generated `items.search_document` GIN
+index plus `product_tags` to retrieve a bounded candidate set. Ranking order
+of force: exact product name > full title > brand/designer >
 garment-category alignment (a "jeans" query surfaces bottoms — this is what
 keeps "bootcut" specific instead of every flare) > product_tags layer >
 aesthetic vector > related terms > era > availability penalty > Mood Board
@@ -141,6 +149,16 @@ checking_availability → available/unavailable → awaiting_user_consent →
 awaiting_payment_or_checkout → checkout_started → checkout_completed_on_source
 / canceled / failed / completed. No card data, no external-site passwords,
 no automated checkout beyond the handoff. Tickets render on /orders.
+After checkout starts, users can report bought / kept / returned / not bought.
+These are explicitly self-reported outcomes, not marketplace confirmation.
+
+## Privacy controls
+
+`POST /api/reset` clears only learned recommendation weights and lists what it
+retains. `DELETE /api/privacy` requires an exact confirmation phrase and
+deletes user-linked personalization records transactionally. Purchase tickets
+and consent records, the auth account, and deidentified aggregate item
+statistics remain and are disclosed in the UI and response.
 
 ## Admin (`/api/admin`)
 
@@ -164,8 +182,9 @@ stylist_outfits, user_events — all persisted now.
 READY: Postgres persistence, 915-product seed inventory (clearly labeled),
 search + mappings + suggestions + logs, ticket flow + disclaimer, moodboard
 records + brain toggle, stylist persistence, editorial posts, admin API,
-adapter framework with availability checking.
+adapter framework with availability checking, transient craving context,
+indexed catalog candidates, privacy controls, and self-reported outcomes.
 
-WAITING ON OFFICIAL ACCESS: eBay keys (adapter ready), per-store Shopify
+WAITING ON OFFICIAL ACCESS: eBay approval + keys (adapter ready), per-store Shopify
 tokens, any vision/embedding provider, and Pinterest OAuth. Checkout remains
 out of scope by constitution.

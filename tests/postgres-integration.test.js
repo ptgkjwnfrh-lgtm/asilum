@@ -14,6 +14,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const itemB = { id: `item-b-${suffix}`, title: "B", tags: { TAILORED: 0.8 }, price: 120 };
 
   await db.upsertItems([itemA, itemB]);
+  await production.addProductTags(itemB.id, [{ tag: "sharp", tagType: "mood", confidence: 0.9 }]);
+  const candidates = await db.searchItemCandidates("sharp", ["sharp"], 10);
+  assert.ok(candidates.some((item) => item.id === itemB.id));
   const save = (item) => db.commitBoardSave({
     userId, item,
     canonicalEvent: (boardId) => ({
@@ -42,6 +45,14 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     disclaimerVersion: "forged-version",
   }), null);
   assert.equal(await production.transitionTicket(ticket.id, userId, "cancel"), null);
+  const outcomeEvent = {
+    userId, type: "USER_REPORTED_PURCHASE",
+    payload: { ticketId: ticket.id, itemId: itemA.id }, at: Date.now(),
+  };
+  const outcome = await production.reportTicketOutcome(ticket.id, userId, "bought", outcomeEvent);
+  assert.equal(outcome.ticket.userReportedOutcome, "bought");
+  assert.equal(outcome.duplicate, false);
+  assert.equal((await production.reportTicketOutcome(ticket.id, userId, "bought", outcomeEvent)).duplicate, true);
 
   const from = `u-${randomUUID()}`;
   const to = `sb-${randomUUID()}`;
@@ -69,7 +80,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 8);
+  assert.equal(schema.rows[0].version, 10);
 
   const defaults = await pool.query(`
     SELECT EXISTS (

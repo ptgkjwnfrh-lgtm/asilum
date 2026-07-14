@@ -15,7 +15,7 @@ import { TAGS } from "../../../lib/brain/tags.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { listItems, getProfile, mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { resolveProducts } from "../../../lib/products.js";
+import { isDiscoverableProduct, resolveProducts } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
@@ -108,7 +108,7 @@ async function generate(req, input) {
   try { pool = await listItems(5000); } catch { pool = []; }
   if (!pool || pool.length === 0) pool = CATALOG;
   // Never style an outfit around a piece the source has marked gone.
-  pool = pool.filter((it) => it.is_available !== false && !["sold", "removed"].includes(it.availability_status));
+  pool = pool.filter(isDiscoverableProduct);
 
   const profile = migrateProfile(await getProfile(userId).catch(() => ({})));
   const taste = tasteVector(profile);

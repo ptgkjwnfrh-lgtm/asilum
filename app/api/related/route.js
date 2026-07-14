@@ -10,6 +10,7 @@ import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { listItems, getEdges } from "../../../lib/db/index.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { isDiscoverableProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ export async function GET(req) {
 
   let pool = [];
   try { pool = await listItems(5000); } catch { pool = []; }
+  pool = pool.filter(isDiscoverableProduct);
   if (!pool || pool.length === 0) pool = CATALOG;
 
   const source = pool.find((it) => it.id === itemId) || CATALOG.find((it) => it.id === itemId);

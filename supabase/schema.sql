@@ -76,9 +76,9 @@ alter table articles enable row level security;
 alter table product_sources enable row level security;
 
 create policy "own profile" on user_profiles
-  for all using (auth.uid() = id) with check (auth.uid() = id);
+  for all using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 create policy "own saves" on saved_items
-  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for all using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 create policy "public read designers" on designers for select using (true);
 create policy "public read articles" on articles for select using (true);
 create policy "public read sources" on product_sources for select using (true);

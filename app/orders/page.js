@@ -7,12 +7,13 @@
 // never represented as an order, shipment, or completed purchase.
 
 import { useEffect, useState } from "react";
-import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor, sendJSON } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 
 export default function OrdersPage() {
   const [bagHistory, setBagHistory] = useState(null);
   const [tickets, setTickets] = useState(null);
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     const user = encodeURIComponent(getUid() || "guest");
@@ -26,6 +27,17 @@ export default function OrdersPage() {
       .catch(() => setTickets([]));
   }, []);
 
+  async function reportOutcome(ticket, outcome) {
+    const response = await sendJSON("PATCH", "/api/tickets", {
+      user: getUid(), id: ticket.id, action: "outcome", outcome,
+    }).catch(() => null);
+    if (!response) { setNotice("outcome could not be saved"); return; }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ticket) { setNotice(data.error || "outcome could not be saved"); return; }
+    setTickets((current) => current.map((item) => item.id === ticket.id ? data.ticket : item));
+    setNotice(`reported ${outcome} — this improves future recommendations`);
+  }
+
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>ORDERS & TICKETS</h1>
@@ -34,6 +46,7 @@ export default function OrdersPage() {
         confirm, ship, track, and take returns. bag history rides below.
       </p>
       <hr className="rule" />
+      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
 
       <h3 className="statshead">PURCHASE TICKETS</h3>
       {!tickets && <div className="empty">pulling tickets…</div>}
@@ -41,10 +54,10 @@ export default function OrdersPage() {
         <div className="empty">no purchase tickets yet — hit BUY on any piece to open one.</div>
       )}
       {tickets && tickets.map((t, i) => (
-        <a className="hlrow" key={"t" + t.id} href={"/?item=" + encodeURIComponent(t.productId)}>
+        <div className="hlrow" key={"t" + t.id}>
           <div className="hlnum">{String(i + 1).padStart(2, "0")}</div>
           <div className="hlinfo">
-            <div className="hlttl">ticket #{t.id} — {t.productId}</div>
+            <a href={"/?item=" + encodeURIComponent(t.productId)}><div className="hlttl">ticket #{t.id} — {t.productId}</div></a>
             <div className="hlbrand">
               via {t.sourceName || "source"} · {new Date(t.createdAt).toLocaleDateString()}
               {t.consented ? " · consent on file" : ""}
@@ -55,12 +68,24 @@ export default function OrdersPage() {
               </b>
               {" · "}{t.availabilityStatus}
               {t.currentPriceChecked != null ? <> · checked USD {t.currentPriceChecked}</> : null}
+              {t.userReportedOutcome ? <> · you reported <b>{t.userReportedOutcome}</b></> : null}
             </div>
+            {["checkout_started", "checkout_completed_on_source", "completed"].includes(t.status) && (
+              <div className="outcomes" aria-label="Tell Asilum what happened after checkout">
+                {["bought", "kept", "returned", "not-bought"].map((outcome) => (
+                  <button
+                    key={outcome}
+                    className={t.userReportedOutcome === outcome ? "on" : ""}
+                    onClick={() => reportOutcome(t, outcome)}
+                  >{outcome}</button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="hlstat">
             {t.itemPriceAtRequest != null ? `USD ${t.itemPriceAtRequest}` : "—"}
           </div>
-        </a>
+        </div>
       ))}
 
       <hr className="rule" />
