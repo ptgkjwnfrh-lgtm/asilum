@@ -32,9 +32,11 @@ scripts/apply-schema.mjs <file>`):
   migration, sync uniqueness, and hot-path indexes.
 - `supabase/schema-v7-integrity.sql` — explicit schema version, transactional
   identity adoption, one default board per user, and ticket-state constraints.
+- `supabase/schema-v8-lockdown.sql` — private server-only tables, restricted
+  privileged functions, and deny-by-default privileges for future API objects.
 - `supabase/schema-alpha.sql` — staged, NOT applied.
 
-Apply v1, `schema.sql`, then v2 through v7 in order before deploying. TLS
+Apply v1, `schema.sql`, then v2 through v8 in order before deploying. TLS
 certificate verification stays enabled; configure `DATABASE_SSL_CA` when the
 provider CA is not in Node's trust store.
 

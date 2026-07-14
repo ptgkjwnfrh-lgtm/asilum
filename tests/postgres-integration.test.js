@@ -66,5 +66,22 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.ok((await db.getProfile(to)).long.GORP > 0);
 
   const pool = await db.getPool();
+  const schema = await pool.query(
+    "SELECT max(version)::int AS version FROM app_schema_migrations"
+  );
+  assert.equal(schema.rows[0].version, 8);
+
+  const defaults = await pool.query(`
+    SELECT EXISTS (
+      SELECT 1
+      FROM pg_default_acl AS defaults,
+        LATERAL aclexplode(defaults.defaclacl) AS privilege
+      WHERE defaults.defaclnamespace='public'::regnamespace
+        AND defaults.defaclobjtype='f'
+        AND privilege.grantee=0
+        AND privilege.privilege_type='EXECUTE'
+    ) AS public_function_execute
+  `);
+  assert.equal(defaults.rows[0].public_function_execute, false);
   await pool.end();
 });
