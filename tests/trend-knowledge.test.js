@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  getCurrentFashionTrends, scoreProductTrendRelevance,
+  FASHION_TREND_SNAPSHOT_META, getCurrentFashionTrends, scoreProductTrendRelevance,
 } from "../lib/ai/trendKnowledge.js";
 import { scoreProductForUser } from "../lib/ai/stylistReasoningEngine.js";
 
@@ -25,6 +25,17 @@ test("trend matching requires product-level evidence", () => {
   }, trends);
   assert.equal(statementDenim.trend.id, "statement-denim");
   assert.ok(statementDenim.score > generic.score);
+  assert.equal(generic.score, 0);
+  assert.equal(generic.trend, null);
+});
+
+test("model trend context retains provenance", async () => {
+  const { getFashionTrendContext } = await import("../lib/ai/trendKnowledge.js");
+  const [trend] = getFashionTrendContext({ asOf: "2026-07-13", limit: 1 });
+  assert.ok(trend.sources.length >= 1);
+  assert.ok(trend.sources.every((source) => source.url.startsWith("https://")));
+  assert.ok(trend.sources.every((source) => source.kind !== "platform-methodology"));
+  assert.equal(FASHION_TREND_SNAPSHOT_META.methodology.kind, "platform-methodology");
 });
 
 test("personal taste remains stronger than trend relevance", () => {

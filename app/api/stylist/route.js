@@ -16,6 +16,7 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import {
   generateStylistOutfits, recordStylistFeedback, getStylistOutfit,
 } from "../../../lib/ai/stylistReasoningEngine.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,8 @@ export async function POST(req) {
   try { body = await req.json(); } catch {}
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "stylist", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
   if (body.kind === "feedback") {
     const outfit = await getStylistOutfit(body.outfitId).catch(() => null);
@@ -57,6 +60,7 @@ export async function POST(req) {
     colorPreferences: strList(body.colorPreferences, 8),
     excludedTags: strList(body.excludedTags, 16),
     useMoodBoardBrain: body.useMoodBoardBrain !== false,
+    aiConsent: body.aiConsent === true,
   };
   const result = await generateStylistOutfits(user, request);
   if (!result.ok) {

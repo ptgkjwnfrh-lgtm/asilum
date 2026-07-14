@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import {
-  getUid, postJSON, authorizedFetch, thumbFor, bagAdd,
+  getUid, postJSON, thumbFor, bagAdd,
   loadFitProfile, saveFitProfile,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
@@ -22,33 +22,53 @@ export default function StylistPage() {
   const [passed, setPassed] = useState(() => new Set());
   const [sizeOpen, setSizeOpen] = useState(false);
   const [fit, setFit] = useState({ usualSize: "", chest: "", waist: "" });
+  const [aiConsent, setAiConsent] = useState(false);
 
-  const load = useCallback(async (anchor) => {
+  const load = useCallback(async (anchor, allowAi = false) => {
     setLoading(true);
     setPassed(new Set());
     try {
       const f = loadFitProfile();
-      const qs = new URLSearchParams({ user: getUid() || "guest" });
-      if (anchor) { qs.set("anchor", anchor); qs.set("n", "5"); }
-      else qs.set("full", "1");
-      if (f.usualSize) qs.set("fit", f.usualSize);
-      if (f.chest) qs.set("chest", f.chest);
-      if (f.waist) qs.set("waist", f.waist);
-      const d = await authorizedFetch("/api/outfits?" + qs.toString()).then((r) => r.json());
+      const res = await postJSON("/api/outfits", {
+        kind: "generate", user: getUid() || "guest",
+        anchor: anchor || null, full: !anchor, n: anchor ? 5 : undefined,
+        fit: f,
+        // Explicit opt-in controls external model use. Measurements remain in
+        // the local fit engine even when this is on and are never sent onward.
+        aiConsent: allowAi && !anchor,
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || "stylist unavailable");
       setGroups(anchor
         ? [{ genre: "ANCHORED", looks: d.outfits || [] }]
         : d.groups || []);
+      if (allowAi && !anchor && d.ai?.source !== "model") {
+        setNotice("external AI is unavailable — the local trend + taste engine stayed in control");
+      }
     } catch { setGroups([]); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => {
     setFit(loadFitProfile());
+    let storedAiConsent = false;
+    try { storedAiConsent = window.localStorage.getItem("asilum-ai-stylist-consent") === "1"; } catch {}
+    setAiConsent(storedAiConsent);
     const sp = new URLSearchParams(window.location.search);
     const anchor = sp.get("anchor") || "";
     setAnchorId(anchor);
-    load(anchor);
+    load(anchor, storedAiConsent);
   }, [load]);
+
+  function toggleAiConsent() {
+    const next = !aiConsent;
+    setAiConsent(next);
+    try {
+      if (next) window.localStorage.setItem("asilum-ai-stylist-consent", "1");
+      else window.localStorage.removeItem("asilum-ai-stylist-consent");
+    } catch {}
+    load(anchorId, next);
+  }
 
   function lookKey(look) { return look.items.map((it) => it.id).join("|"); }
 
@@ -99,10 +119,13 @@ export default function StylistPage() {
         {anchorId ? " styled around the piece you picked." : ""}
       </p>
       <div className="controls">
-        <button className="btn" onClick={() => load(anchorId)}>REGENERATE</button>
+        <button className="btn" onClick={() => load(anchorId, aiConsent)}>REGENERATE</button>
         <button className="btn ghost" onClick={() => setSizeOpen(true)}>SET YOUR SIZE</button>
+        <button className="btn ghost" aria-pressed={aiConsent} onClick={toggleAiConsent}>
+          AI TREND LENS {aiConsent ? "ON" : "OFF"}
+        </button>
         {anchorId ? (
-          <button className="btn ghost" onClick={() => { setAnchorId(""); load(""); }}>
+          <button className="btn ghost" onClick={() => { setAnchorId(""); load("", aiConsent); }}>
             drop the anchor piece
           </button>
         ) : null}
@@ -173,7 +196,10 @@ export default function StylistPage() {
         <div className="overlay" onClick={() => setSizeOpen(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
             <h2>Your size<span style={{ color: "var(--red)" }}>.</span></h2>
-            <p className="deck">saved on this device — every look is fit-gated through it.</p>
+            <p className="deck">
+              saved on this device — measurements are used transiently for this recut,
+              never stored by the server or sent to the external AI model.
+            </p>
             <div className="fitform">
               <label>
                 usual size
@@ -196,7 +222,7 @@ export default function StylistPage() {
               </label>
             </div>
             <div className="controls">
-              <button className="btn" onClick={() => { setSizeOpen(false); load(anchorId); }}>
+              <button className="btn" onClick={() => { setSizeOpen(false); load(anchorId, aiConsent); }}>
                 SAVE & RECUT LOOKS
               </button>
             </div>

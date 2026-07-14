@@ -11,7 +11,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
-  getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd,
+  getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
   loadFitProfile, fitProfileForBrain, EMPTY_FIT,
 } from "../lib/client.js";
 import {
@@ -27,7 +27,7 @@ const MAX_RENDERED = 300;
 const POST_EVERY = 7; // one community post per N listings
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
-const PLATFORMS = ["grailed", "depop", "ssense", "ebay", "pinterest"];
+const PLATFORMS = ["ebay", "pinterest", "shopify"];
 const ASPECTS = ["3 / 4", "1 / 1", "4 / 5", "2 / 3", "3 / 4", "5 / 6"];
 
 const BRIDGE_REASON = {
@@ -531,15 +531,7 @@ export default function Home() {
     try {
       const res = await postJSON("/api/connect", { user: uidRef.current, platform });
       const d = await res.json().catch(() => null);
-      if (d && d.imported) {
-        try { window.localStorage.setItem("asilum-connected", platform); } catch {}
-        markOnboarded();
-        setConnectOpen(false);
-        setNotice(`imported ${d.imported} purchases from ${platform} — your feed knows you now`);
-        await loadFeed();
-      } else {
-        setConnectNote((d && d.message) || `${platform} linking is coming soon — teach the feed with the moodboard instead`);
-      }
+      setConnectNote((d && d.message) || `${platform} linking is coming soon — teach the feed with the moodboard instead`);
     } catch (e) { console.error(e); }
     setConnecting("");
   }
@@ -821,13 +813,13 @@ export default function Home() {
             <button className="mclose" onClick={useMoodboardInstead}>×</button>
             <h2>Your taste, pre-loaded<span style={{ color: "var(--red)" }}>.</span></h2>
             <p className="deck">
-              coming soon: connect an associated account and the brain scans
-              your buyer history to build your feed instantly.
+              coming soon: connect an authorized source account and import only
+              the data you permit to help shape your feed.
             </p>
             <div className="connectrow">
               {PLATFORMS.map((p) => (
                 <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
-                  {connecting === p ? "scanning history…" : p}
+                  {connecting === p ? "checking setup…" : p}
                 </button>
               ))}
             </div>
@@ -897,8 +889,8 @@ export default function Home() {
                 {modal.price ? <span className="price">{modal.currency || "USD"} {modal.price}</span> : null}
                 <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}
                   onClick={() => setTicketItem(modal)}>request purchase</button>
-                {modal.url ? (
-                  <a className="buy" href={modal.url} target="_blank" rel="noopener noreferrer">view source ↗</a>
+                {safeExternalUrl(modal.url) ? (
+                  <a className="buy" href={safeExternalUrl(modal.url)} target="_blank" rel="noopener noreferrer">view source ↗</a>
                 ) : null}
               </div>
               {reasonFor(modal) ? <div className="why">{reasonFor(modal)}</div> : null}

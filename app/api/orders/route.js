@@ -1,6 +1,6 @@
 // app/api/orders/route.js
-// GET /api/orders?user=<id> — the tickets/orders surface: every add-to-bag
-// event, newest first, joined to items.
+// GET /api/orders?user=<id> — real purchase tickets live elsewhere; this
+// endpoint returns bag intent history, newest first, joined to items.
 
 import { NextResponse } from "next/server";
 import { getInteractions, listItems } from "../../../lib/db/index.js";
@@ -22,7 +22,7 @@ export async function GET(req) {
     for (const it of await listItems(1000)) byId.set(it.id, it);
   } catch {}
 
-  const orders = events.map((e) => {
+  const bagHistory = events.map((e) => {
     const it = byId.get(e.itemId);
     return {
       id: e.itemId,
@@ -35,5 +35,5 @@ export async function GET(req) {
       img: it ? it.img : null,
     };
   });
-  return NextResponse.json({ userId, count: orders.length, orders });
+  return NextResponse.json({ userId, count: bagHistory.length, bagHistory });
 }

@@ -2,34 +2,26 @@
 // The third-party purchase-assistant ticket flow. ASILUM never fulfills:
 // the original marketplace/seller confirms, ships, tracks, and services.
 //
-// POST  { user, itemId, shippingName? }         → create ticket + availability check
+// POST  { user, itemId }                        → create ticket + availability check
 // GET   ?user=<id>                              → the user's tickets
 // PATCH { id, action: "consent"|"cancel", consent? } → consent gate / cancel
 //
-// Consent is REQUIRED before any checkout step: PATCH consent without
-// consent:true is a 400. No card data, no external passwords — ever.
+// Consent is REQUIRED before any checkout step; the server stamps the current
+// disclaimer version. No card data, shipping PII, or external passwords—ever.
 
 import { NextResponse } from "next/server";
-import { listItems } from "../../../lib/db/index.js";
 import {
-  createTicket, updateTicket, listTickets, getTicket,
+  createTicket, updateTicket, transitionTicket, listTickets, getTicket,
   recordAvailabilityCheck,
 } from "../../../lib/db/production.js";
 import { getAdapter } from "../../../lib/ingest/adapters/index.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { DISCLAIMER_TEXT, DISCLAIMER_VERSION, DISCLAIMER_CHECKBOX } from "../../../lib/tickets.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { resolveProduct } from "../../../lib/products.js";
+import { safeExternalUrl } from "../../../lib/url.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
-
-async function findItem(itemId) {
-  try {
-    const pool = await listItems(1000);
-    const hit = pool.find((it) => it.id === itemId);
-    if (hit) return hit;
-  } catch {}
-  return CATALOG.find((it) => it.id === itemId) || null;
-}
 
 export async function POST(req) {
   let body = {};
@@ -38,20 +30,43 @@ export async function POST(req) {
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const itemId = String(body.itemId || "").slice(0, 80);
   if (!itemId) return NextResponse.json({ error: "itemId required" }, { status: 400 });
-  const item = await findItem(itemId);
+  const item = await resolveProduct(itemId);
   if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
+  const sourceUrl = safeExternalUrl(item.source_product_url || item.url);
+  const sourceName = item.source_name || item.source || "seed";
+  if (!sourceUrl || sourceName.includes("seed") || sourceName === "Asilum synthetic seed") {
+    return NextResponse.json(
+      { error: "demo inventory cannot create a purchase ticket; use a live source listing" },
+      { status: 409 }
+    );
+  }
+  const quota = await consumeRateLimit({ scope: "tickets", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) {
+    return NextResponse.json(rateLimitResponse(quota), {
+      status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
+  }
 
   try {
     let ticket = await createTicket({
       userId: user,
       productId: item.id,
-      sourceName: item.source_name || item.source || "seed",
+      sourceName,
       sourceProductId: item.source_product_id || null,
-      sourceProductUrl: item.source_product_url || item.url || null,
+      sourceProductUrl: sourceUrl,
       itemPriceAtRequest: item.price ?? null,
       availabilityStatus: item.availability_status || "unknown",
-      shippingName: body.shippingName ? String(body.shippingName).slice(0, 120) : null,
+      idempotencyKey: body.operationId,
     });
+
+    if (ticket.duplicate && ticket.status !== "requested") {
+      return NextResponse.json({
+        ticket,
+        item: { id: item.id, title: item.title, brand: item.brand, price: ticket.currentPriceChecked ?? item.price, currency: item.currency },
+        disclaimer: { text: DISCLAIMER_TEXT, checkbox: DISCLAIMER_CHECKBOX, version: DISCLAIMER_VERSION },
+        duplicate: true,
+      });
+    }
 
     // Availability check through the source adapter when one is live;
     // demo/seed inventory is honestly labeled available demo stock.
@@ -67,8 +82,6 @@ export async function POST(req) {
         previousPrice: item.price ?? null, currentPrice,
         sourceResponseStatus: check.source_response_status ?? null,
       }).catch(() => {});
-    } else if ((item.source_name || item.source || "seed").includes("seed") || item.source === "Asilum synthetic seed") {
-      availability = "available";
     }
 
     ticket = await updateTicket(ticket.id, {
@@ -113,24 +126,34 @@ export async function PATCH(req) {
   }
 
   if (action === "cancel") {
-    return NextResponse.json({ ticket: await updateTicket(id, { status: "canceled" }) });
+    const updated = await transitionTicket(id, user, "cancel");
+    if (!updated) {
+      return NextResponse.json(
+        { error: "ticket can no longer be canceled here; use the source marketplace for an active checkout" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json({ ticket: updated });
   }
   if (action === "consent") {
     if (body.consent !== true) {
       return NextResponse.json({ error: "user consent is required before checkout", code: "consent_required" }, { status: 400 });
     }
-    if (ticket.status === "unavailable") {
-      return NextResponse.json({ error: "item is no longer available at the source" }, { status: 409 });
+    if (ticket.status !== "awaiting_user_consent") {
+      return NextResponse.json({ error: "ticket is not awaiting consent" }, { status: 409 });
     }
-    const updated = await updateTicket(id, {
-      status: "checkout_started",
-      consent: true,
-      disclaimerVersion: body.disclaimerVersion || DISCLAIMER_VERSION,
-      notes: ticket.sourceProductUrl
-        ? "checkout continues on the source site — the source handles confirmation, tracking, returns"
-        : "no live source URL for this item — demo inventory has no real checkout",
+    const continueUrl = safeExternalUrl(ticket.sourceProductUrl);
+    if (!continueUrl) {
+      return NextResponse.json({ error: "this ticket has no verified source checkout URL" }, { status: 409 });
+    }
+    const updated = await transitionTicket(id, user, "consent", {
+      disclaimerVersion: DISCLAIMER_VERSION,
+      notes: "checkout continues on the source site — the source handles confirmation, tracking, returns",
     });
-    return NextResponse.json({ ticket: updated, continueUrl: ticket.sourceProductUrl || null });
+    if (!updated) {
+      return NextResponse.json({ error: "ticket state changed; refresh before continuing" }, { status: 409 });
+    }
+    return NextResponse.json({ ticket: updated, continueUrl });
   }
   return NextResponse.json({ error: "unknown action" }, { status: 400 });
 }

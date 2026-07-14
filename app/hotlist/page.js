@@ -68,11 +68,11 @@ export default function EditorialPage() {
               <span className="readlink">Read full article ↗</span>
             </a>
             <div className="adbox">
-              <div className="adlabel">SPONSORED / FEATURED</div>
+              <div className="adlabel">EDITORIAL SUBMISSIONS</div>
               <div className="adbody">
                 <span className="adstar">*</span>
-                your archive here.
-                <em>partners@asilum.link</em>
+                submission intake requires setup.
+                <em>coming soon</em>
               </div>
             </div>
           </div>

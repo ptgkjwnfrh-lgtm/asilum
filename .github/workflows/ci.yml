@@ -17,6 +17,20 @@ jobs:
     name: Production build
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: asilum_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d asilum_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - name: Check out repository
@@ -30,6 +44,38 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Apply and verify Postgres migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/asilum_test
+          DATABASE_SSL_MODE: disable
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE SCHEMA auth;
+          CREATE TABLE auth.users (id uuid PRIMARY KEY);
+          SQL
+          for file in \
+            supabase/schema-v1-brain.sql \
+            supabase/schema.sql \
+            supabase/schema-v2.sql \
+            supabase/schema-v3-ai.sql \
+            supabase/schema-v4-asterisk.sql \
+            supabase/schema-v5-corrections.sql \
+            supabase/schema-v6-hardening.sql \
+            supabase/schema-v7-integrity.sql
+          do
+            node scripts/apply-schema.mjs "$file"
+          done
+          node scripts/apply-schema.mjs supabase/schema-v7-integrity.sql
+
+      - name: Run Postgres integration tests
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/asilum_test
+          DATABASE_SSL_MODE: disable
+        run: node --test tests/postgres-integration.test.js
 
       - name: Build application
         run: npm run build

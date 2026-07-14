@@ -5,8 +5,7 @@
 -- empty tables invite code that pretends they're populated.
 -- Shapes mirror lib/db/types.js. All user-owned tables get RLS like schema.sql.
 
--- user_events GRADUATED (July 8, Day 5): now part of the live schema in
--- lib/db/index.js — /api/interaction, board saves, and search write it.
+-- user_events GRADUATED (July 8, Day 5): now part of schema-v1-brain.sql.
 
 create table if not exists product_images (
   id bigint generated always as identity primary key,

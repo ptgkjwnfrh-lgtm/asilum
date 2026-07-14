@@ -23,6 +23,7 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 import { analyzeMoodBoardItem } from "../../../lib/ai/moodBoardAnalyzer.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,8 @@ export async function POST(req) {
   try { body = await req.json(); } catch {}
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "moodboard", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const kind = body.kind === "upload" ? "upload" : "text";
 
   let text = "";
@@ -120,7 +123,7 @@ export async function POST(req) {
     // must never fail the upload, and duplicates are not re-analyzed.
     let analysis = null;
     if (kind === "upload" && rec.duplicate !== true) {
-      const a = await analyzeMoodBoardItem(rec, { userId: user });
+      const a = await analyzeMoodBoardItem(rec, { userId: user, allowExternalAi: body.aiConsent === true });
       if (a.ok) analysis = { source: a.source, summary: a.analysis.summary, confidence: a.analysis.confidenceScore };
       rebuildUserStyleProfile(user).catch(() => {});
     }

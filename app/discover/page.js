@@ -2,12 +2,11 @@
 
 // app/discover/page.js — DISCOVER.
 // The full site inventory across every source — deliberately untouched by the
-// moodboard brain or taste profile. Grailed listings reorganized through a
-// Pinterest-style browse: source filters, aesthetic filters, multi-search.
+// moodboard brain or taste profile unless explicitly enabled during search.
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getUid, postJSON, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
-import { SOURCES, followedBrands, setFollowBrand } from "../../lib/social.js";
+import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
+import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
@@ -20,6 +19,7 @@ export default function DiscoverPage() {
   const [total, setTotal] = useState(0);
   const [q, setQ] = useState("");
   const [source, setSource] = useState("");
+  const [sources, setSources] = useState([]);
   const [tag, setTag] = useState("");
   const [sort, setSort] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,8 +49,9 @@ export default function DiscoverPage() {
       if (source) qs.set("source", source);
       if (tag) qs.set("tag", tag);
       if (sort) qs.set("sort", sort);
-      const d = await fetch("/api/discover?" + qs.toString()).then((r) => r.json());
+      const d = await authorizedFetch("/api/discover?" + qs.toString()).then((r) => r.json());
       setTotal(d.total || 0);
+      setSources(d.sources || []);
       setItems((prev) => (reset ? d.items : [...prev, ...d.items]));
       offsetRef.current += (d.items || []).length;
       if (reset) setSearched(qval.trim());
@@ -179,7 +180,7 @@ export default function DiscoverPage() {
         )}
         <select value={source} onChange={(e) => setSource(e.target.value)}>
           <option value="">all sources</option>
-          {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+          {sources.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
         <select value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="">default order</option>

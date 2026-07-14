@@ -2,11 +2,11 @@
 
 // app/profile/page.js — PROFILE.
 // Banner, avatar, identity, counts, and three tabs: Posts / Brands /
-// Purchases. Identity is local until real accounts exist; counts blend real
-// data (board follows, order brands) with placeholder followers.
+// Bag. Identity is local until real accounts exist; all displayed counts are
+// derived from real local/server state.
 
 import { useEffect, useState } from "react";
-import { getUid, authorizedFetch, thumbFor, hashStr } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
   followedUsers, followedBrands, setFollowBrand, sourceFor,
@@ -18,17 +18,15 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState("posts");
   const [posts, setPosts] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const [bagHistory, setBagHistory] = useState([]);
   const [boardFollows, setBoardFollows] = useState(0);
-  const [uid, setUid] = useState(""); // set after mount — SSR/client markup must match
 
   useEffect(() => {
     setInfo(getProfileInfo());
     setPosts(listPosts().filter((p) => p.mine));
     const user = getUid() || "guest";
-    setUid(user);
     authorizedFetch("/api/orders?user=" + encodeURIComponent(user))
-      .then((r) => r.json()).then((d) => setOrders(d.orders || [])).catch(() => {});
+      .then((r) => r.json()).then((d) => setBagHistory(d.bagHistory || [])).catch(() => {});
     authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
       .then((r) => r.json())
       .then((d) => setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0))
@@ -41,9 +39,9 @@ export default function ProfilePage() {
 
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
-  const brands = [...new Set(orders.map((o) => o.brand).filter(Boolean))];
+  const brands = [...new Set(bagHistory.map((o) => o.brand).filter(Boolean))];
   const followingCount = followedUsers().length + boardFollows;
-  const followers = 100 + (hashStr(uid || "x") % 900); // placeholder until accounts exist
+  const followers = 0;
 
   return (
     <div className="wrap">
@@ -76,7 +74,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="tabs">
-        {[["posts", "POSTS"], ["brands", "BRANDS"], ["purchases", "PURCHASES"]].map(([k, label]) => (
+        {[["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"]].map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
             {label}
           </button>
@@ -109,12 +107,12 @@ export default function ProfilePage() {
         </>
       )}
 
-      {tab === "brands" && <BrandsTab purchaseBrands={brands} />}
+      {tab === "brands" && <BrandsTab bagBrands={brands} />}
 
-      {tab === "purchases" && (
+      {tab === "bag" && (
         <>
-          {orders.length === 0 && <div className="empty">no purchases yet.</div>}
-          {orders.slice(0, 12).map((o, i) => (
+          {bagHistory.length === 0 && <div className="empty">nothing in bag history yet.</div>}
+          {bagHistory.slice(0, 12).map((o, i) => (
             <a className="hlrow" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
               <img src={o.img || thumbFor(o)} alt="" />
               <div className="hlinfo">
@@ -140,14 +138,14 @@ export default function ProfilePage() {
 }
 
 // Following section for brands: what you follow (removable) + brands from
-// your purchases (followable).
-function BrandsTab({ purchaseBrands }) {
+// brands from your bag intent (followable).
+function BrandsTab({ bagBrands }) {
   const [followed, setFollowed] = useState(() => followedBrands());
   function toggle(b) {
     const on = !followed.includes(b);
     setFollowed(setFollowBrand(b, on));
   }
-  const candidates = purchaseBrands.filter((b) => !followed.includes(b));
+  const candidates = bagBrands.filter((b) => !followed.includes(b));
   return (
     <>
       <h3 className="statshead" style={{ marginTop: 8 }}>FOLLOWING</h3>
@@ -160,9 +158,9 @@ function BrandsTab({ purchaseBrands }) {
           ))}
         </div>
       )}
-      <h3 className="statshead">FROM YOUR PURCHASES</h3>
+      <h3 className="statshead">FROM YOUR BAG</h3>
       {candidates.length === 0 ? (
-        <div className="empty">everything you bought is already followed — or nothing is bagged yet.</div>
+        <div className="empty">every bag brand is already followed — or nothing is bagged yet.</div>
       ) : (
         <div className="tagfilter">
           {candidates.map((b) => (

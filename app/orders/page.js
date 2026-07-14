@@ -3,23 +3,23 @@
 // app/orders/page.js — ORDERS & TICKETS.
 // PURCHASE TICKETS are real database records from the third-party purchase
 // assistant (/api/tickets): the source platform fulfills, ships, and tracks —
-// ASILUM never does. Below them, the bag history deck; its carrier line stays
-// deterministic simulation until partner fulfillment APIs exist (and says so).
+// ASILUM never does. Below them, the bag history deck is explicitly intent,
+// never represented as an order, shipment, or completed purchase.
 
 import { useEffect, useState } from "react";
 import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
-import { sourceFor, trackingFor } from "../../lib/social.js";
+import { sourceFor } from "../../lib/social.js";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState(null);
+  const [bagHistory, setBagHistory] = useState(null);
   const [tickets, setTickets] = useState(null);
 
   useEffect(() => {
     const user = encodeURIComponent(getUid() || "guest");
     authorizedFetch("/api/orders?user=" + user)
       .then((r) => r.json())
-      .then((d) => setOrders(d.orders || []))
-      .catch(() => setOrders([]));
+      .then((d) => setBagHistory(d.bagHistory || []))
+      .catch(() => setBagHistory([]));
     authorizedFetch("/api/tickets?user=" + user)
       .then((r) => r.json())
       .then((d) => setTickets(d.tickets || []))
@@ -65,14 +65,12 @@ export default function OrdersPage() {
 
       <hr className="rule" />
       <h3 className="statshead">BAG HISTORY</h3>
-      {!orders && <div className="empty">pulling the bag…</div>}
-      {orders && orders.length === 0 && (
+      {!bagHistory && <div className="empty">pulling the bag…</div>}
+      {bagHistory && bagHistory.length === 0 && (
         <div className="empty">nothing bagged yet — the feed is waiting.</div>
       )}
 
-      {orders && orders.map((o, i) => {
-        const t = trackingFor(o.id, o.at);
-        return (
+      {bagHistory && bagHistory.map((o, i) => (
           <a className="hlrow" key={o.id + ":" + i} href={"/?item=" + encodeURIComponent(o.id)}>
             <div className="hlnum">{String(i + 1).padStart(2, "0")}</div>
             <img src={o.img || thumbFor(o)} alt="" />
@@ -82,15 +80,11 @@ export default function OrdersPage() {
                 {o.brand} — {sourceFor(o)}
                 {o.at ? " — " + new Date(o.at).toLocaleDateString() : ""}
               </div>
-              <div className="ticketline">
-                ticket <b>{t.ticket}</b> · {t.carrier} (simulated) · <b className={t.status === "delivered" ? "" : "red"}>{t.status}</b>
-                {t.status !== "delivered" ? <> · ETA {t.eta}</> : null}
-              </div>
+              <div className="ticketline">added to bag · not purchased or shipped</div>
             </div>
             <div className="hlstat">{o.price ? `${o.currency || "USD"} ${o.price}` : "—"}</div>
           </a>
-        );
-      })}
+      ))}
     </div>
   );
 }

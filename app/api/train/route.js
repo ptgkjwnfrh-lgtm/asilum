@@ -8,8 +8,9 @@
 
 import { NextResponse } from "next/server";
 import { coldStart, migrateProfile } from "../../../lib/brain/index.js";
-import { getProfile, saveProfile } from "../../../lib/db/index.js";
+import { mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -18,20 +19,27 @@ export async function POST(req) {
   try { body = await req.json(); } catch { body = {}; }
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
-  const prompt = body.prompt || "";
+  const prompt = typeof body.prompt === "string" ? body.prompt.trim().slice(0, 400) : "";
 
   if (!prompt) {
     return NextResponse.json({ error: "prompt required" }, { status: 400 });
   }
 
-  const profile = migrateProfile(await getProfile(userId));
-  const fresh = coldStart(prompt).profile;
-  for (const k in fresh) {
-    if (!fresh[k]) continue;
-    profile.long[k] = profile.long[k] ? (profile.long[k] + fresh[k]) / 2 : fresh[k];
+  const quota = await consumeRateLimit({ scope: "train", subject: userId, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) {
+    return NextResponse.json(rateLimitResponse(quota), {
+      status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
   }
-  profile.session = { ...fresh };
-
-  await saveProfile(userId, profile);
+  const fresh = coldStart(prompt).profile;
+  const profile = await mutateProfile(userId, (current) => {
+    const next = migrateProfile(current);
+    for (const k in fresh) {
+      if (!fresh[k]) continue;
+      next.long[k] = next.long[k] ? (next.long[k] + fresh[k]) / 2 : fresh[k];
+    }
+    next.session = { ...fresh };
+    return next;
+  });
   return NextResponse.json({ userId, profile });
 }

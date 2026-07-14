@@ -8,10 +8,7 @@ import { authConfigured, getAuthenticatedUser } from "../../../lib/supabase.js";
 import {
   DEVICE_COOKIE, newDeviceId, signedDeviceValue, verifiedDevice,
 } from "../../../lib/identity.js";
-import {
-  getProfile, saveProfile, getBoards, createBoard, addBoardItem, withUserLock,
-} from "../../../lib/db/index.js";
-import { adoptUserCorrections } from "../../../lib/db/production.js";
+import { adoptAccountData } from "../../../lib/db/production.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 
 export const dynamic = "force-dynamic";
@@ -56,33 +53,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "account does not match bearer token" }, { status: 403 });
   }
 
-  return withUserLock(user, async () => {
-    let movedProfile = false;
-    let movedBoards = 0;
-    const existing = await getProfile(user);
-    if (!existing || Object.keys(existing).length === 0) {
-      const old = await getProfile(from);
-      if (old && Object.keys(old).length > 0) {
-        await saveProfile(user, old);
-        movedProfile = true;
-      }
-    }
-    const boards = await getBoards(user);
-    if (!boards || boards.length === 0) {
-      const oldBoards = await getBoards(from);
-      for (const b of oldBoards || []) {
-        const nb = await createBoard(user, b.name);
-        for (const it of b.items || []) await addBoardItem(nb.id, it);
-        movedBoards++;
-      }
-    }
-    const movedCorrections = await adoptUserCorrections(from, user);
-    let correctionProfileUpdated = null;
-    if (movedCorrections > 0) {
-      correctionProfileUpdated = (await rebuildUserStyleProfile(user)).ok;
-    }
-    return NextResponse.json({
-      ok: true, movedProfile, movedBoards, movedCorrections, correctionProfileUpdated,
-    });
-  });
+  const adopted = await adoptAccountData(from, user);
+  let correctionProfileUpdated = null;
+  if (adopted.movedCorrections > 0 || adopted.movedProfile || adopted.movedBoards > 0) {
+    correctionProfileUpdated = (await rebuildUserStyleProfile(user)).ok;
+  }
+  return NextResponse.json({ ok: true, ...adopted, correctionProfileUpdated });
 }

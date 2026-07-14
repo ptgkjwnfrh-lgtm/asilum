@@ -39,7 +39,6 @@ export default function TicketFlow({ item, onClose }) {
     try {
       const res = await sendJSON("PATCH", "/api/tickets", {
         id: ticket.id, user: getUid(), action: "consent", consent: true,
-        disclaimerVersion: disclaimer?.version,
       });
       const d = await res.json();
       if (!res.ok) { setErr(d.error || "consent failed"); setState("error"); return; }
@@ -95,9 +94,7 @@ export default function TicketFlow({ item, onClose }) {
             <>
               <div className="why">
                 ticket <b>#{ticket?.id}</b> is live.{" "}
-                {continueUrl
-                  ? "checkout continues on the source site (opened in a new tab) — confirmation, tracking, and returns come from them."
-                  : "this is demo inventory with no live source checkout — the ticket records the full flow."}
+                checkout continues on the source site (opened in a new tab) — confirmation, tracking, and returns come from them.
               </div>
               <div className="meta"><span className="cat">{ticket?.status}</span></div>
               <a className="buy" href="/orders">SEE YOUR TICKETS →</a>

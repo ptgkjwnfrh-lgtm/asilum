@@ -1,7 +1,7 @@
 "use client";
 
 // app/settings/page.js — SETTINGS.
-// Partnered marketplace accounts, on-device taste observation, the usual
+// Source connections, on-device taste observation, the usual
 // account settings, and the legal position (legitimate sources only).
 
 import { useEffect, useState } from "react";
@@ -10,12 +10,11 @@ import {
   getProfileInfo, saveProfileInfo, observationOn, setObservation,
 } from "../../lib/social.js";
 
-const MARKETPLACES = ["Grailed", "TheRealReal", "Farfetch", "SSENSE", "Depop", "Lowheads", "eBay"];
-const CONNECTABLE = new Set(["grailed", "depop", "ssense", "ebay"]);
+const MARKETPLACES = ["eBay", "Pinterest", "Shopify"];
+const CONNECTABLE = new Set(["ebay", "pinterest", "shopify"]);
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
-  const [connected, setConnected] = useState("");
   const [observe, setObserve] = useState(true);
   const [info, setInfo] = useState(null);
   const [notice, setNotice] = useState("");
@@ -31,30 +30,15 @@ export default function SettingsPage() {
 
   function statusFor(name) {
     const key = name.toLowerCase();
-    if (connected === key) return "ACTIVE";
-    return CONNECTABLE.has(key) ? "COMING SOON" : "PENDING PARTNERSHIP";
+    return CONNECTABLE.has(key) ? "REQUIRES SETUP" : "COMING SOON";
   }
 
   async function link(name) {
     const key = name.toLowerCase();
-    if (!CONNECTABLE.has(key)) { setNotice(name + " partnership is pending — we'll flip it on the day it signs"); return; }
+    if (!CONNECTABLE.has(key)) { setNotice(name + " connection is not available yet"); return; }
     const res = await postJSON("/api/connect", { user: uid, platform: key }).catch(() => null);
     const d = res ? await res.json().catch(() => null) : null;
-    if (d && d.imported) {
-      try { window.localStorage.setItem("asilum-connected", key); } catch {}
-      setConnected(key);
-      setNotice(name + " linked — " + d.imported + " purchases imported into the brain");
-    } else {
-      setNotice((d && d.message) || name + " linking is coming soon — real account setup required");
-    }
-  }
-
-  function unlink(name) {
-    if (connected === name.toLowerCase()) {
-      try { window.localStorage.removeItem("asilum-connected"); } catch {}
-      setConnected("");
-      setNotice(name + " unlinked — imported taste stays unless you run Full Amnesia on the moodboard");
-    }
+    setNotice((d && d.message) || name + " linking is coming soon — real account setup required");
   }
 
   function saveInfo(k, v) {
@@ -69,7 +53,7 @@ export default function SettingsPage() {
       <p className="deck">accounts, observation, and the fine print.</p>
       {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
 
-      <h3 className="statshead">PARTNERED ACCOUNTS</h3>
+      <h3 className="statshead">SOURCE CONNECTIONS</h3>
       {MARKETPLACES.map((m) => {
         const st = statusFor(m);
         return (
@@ -77,14 +61,10 @@ export default function SettingsPage() {
             <span className="seticon">{m[0]}</span>
             <div className="setinfo">
               <div className="setname">{m}</div>
-              <div className="uhandle">{uid ? uid.slice(0, 10) + "…@asilum.link" : ""}</div>
+              <div className="uhandle">{uid ? "device " + uid.slice(0, 10) + "…" : ""}</div>
             </div>
             <span className={"setstatus" + (st === "ACTIVE" ? " on" : "")}>{st}</span>
-            {st === "ACTIVE" ? (
-              <button className="fitbtn" onClick={() => unlink(m)}>UNLINK</button>
-            ) : (
-              <button className="fitbtn soon" onClick={() => link(m)}>LINK</button>
-            )}
+            <button className="fitbtn soon" onClick={() => link(m)}>LINK</button>
           </div>
         );
       })}
