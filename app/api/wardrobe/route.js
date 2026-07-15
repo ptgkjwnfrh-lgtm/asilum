@@ -11,7 +11,10 @@
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { addWardrobeItem, listWardrobe, wardrobeEnabled } from "../../../lib/wardrobe/index.js";
-import { setWardrobeItemStatus, deleteWardrobeItem } from "../../../lib/db/production.js";
+import { uploadsAvailable, signedPhotoUrl, deleteWardrobePhoto, PHOTO_CONSENT_VERSION } from "../../../lib/wardrobe/photos.js";
+import {
+  setWardrobeItemStatus, deleteWardrobeItem, getWardrobeItem, withUserOperationLock,
+} from "../../../lib/db/production.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -35,7 +38,17 @@ export async function GET(req) {
   const status = ["active", "retired", "all"].includes(searchParams.get("status"))
     ? searchParams.get("status") : "active";
   const items = await listWardrobe(user, { status });
-  return NextResponse.json({ user, status, count: items.length, items });
+  // Signed, short-lived URLs — the bucket is private; nothing else can read it.
+  const gate = uploadsAvailable();
+  const withPhotos = await Promise.all(items.map(async (item) => item.photoPath
+    ? { ...item, photoUrl: await signedPhotoUrl(item.photoPath).catch(() => null) }
+    : item));
+  return NextResponse.json({
+    user, status, count: items.length, items: withPhotos,
+    uploads: gate.available
+      ? { available: true, consentVersion: PHOTO_CONSENT_VERSION }
+      : { available: false, reason: gate.reason },
+  }, { headers: { "Cache-Control": "private, no-store, max-age=0" } });
 }
 
 export async function POST(req) {
@@ -76,7 +89,19 @@ export async function DELETE(req) {
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "wardrobe-write", subject: user, limit: 60, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  const deleted = await deleteWardrobeItem(user, String(parsed.body.id || ""));
-  if (!deleted) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
-  return NextResponse.json({ deleted: true });
+  return withUserOperationLock(user, async (queryTarget) => {
+    const target = await getWardrobeItem(user, String(parsed.body.id || ""), queryTarget);
+    if (!target) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
+    if (target.photoPath) {
+      let removed = false;
+      try { removed = await deleteWardrobePhoto(target.photoPath); } catch {}
+      if (!removed) return NextResponse.json({ error: "photo could not be erased" }, { status: 502 });
+    }
+    const deleted = await deleteWardrobeItem(user, target.id, {
+      expectedPhotoPath: target.photoPath,
+      queryTarget,
+    });
+    if (!deleted) return NextResponse.json({ error: "wardrobe item changed; retry removal" }, { status: 409 });
+    return NextResponse.json({ deleted: true });
+  });
 }

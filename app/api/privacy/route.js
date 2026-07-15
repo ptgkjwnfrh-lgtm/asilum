@@ -4,7 +4,8 @@
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { purgePersonalizationData } from "../../../lib/db/production.js";
+import { purgePersonalizationData, withUserOperationLock } from "../../../lib/db/production.js";
+import { deleteUserPhotos } from "../../../lib/wardrobe/photos.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -21,6 +22,23 @@ export async function DELETE(req) {
   }
   const quota = await consumeRateLimit({ scope: "privacy-delete", subject: user, limit: 2, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  const result = await purgePersonalizationData(user);
-  return NextResponse.json({ deleted: true, ...result });
+  // Erase private-storage photos FIRST and loudly — an incomplete erasure is
+  // a failed request, not a partial success.
+  return withUserOperationLock(user, async (queryTarget) => {
+    try {
+      await deleteUserPhotos(user);
+    } catch {
+      return NextResponse.json({
+        error: "personalization deletion stopped because photo erasure could not be verified; database rows were not purged",
+      }, { status: 502 });
+    }
+    try {
+      const result = await purgePersonalizationData(user, { queryTarget });
+      return NextResponse.json({ deleted: true, ...result });
+    } catch {
+      return NextResponse.json({
+        error: "photo objects were erased, but database personalization could not be fully purged",
+      }, { status: 502 });
+    }
+  });
 }

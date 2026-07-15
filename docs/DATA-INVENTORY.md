@@ -4,7 +4,7 @@ Phase 0 register of every personal-data class the system holds today plus
 the classes the roadmap adds. Retention values marked DRAFT are engineering
 proposals — final periods are owner decision #10 with counsel.
 
-## Held today (main @ 9a1e3b3)
+## Held today
 
 | Data class | Store | Purpose | Access | Retention (DRAFT) | User controls today |
 |---|---|---|---|---|---|
@@ -16,6 +16,7 @@ proposals — final periods are owner decision #10 with counsel.
 | Search queries (+uid when proven) | `search_logs` | search quality | server-only | DRAFT: 90 days raw → aggregate | none yet (gap: retention notice) |
 | Corrections | `user_corrections` | personal retraining, moderation | server-only | account lifetime | visible via /api/why history |
 | Measurements (body) | v12 measurements store | first-party fit ONLY — never external (invariant) | server-only, never in model payloads | until user clears | `/api/measurements` PUT/clear |
+| Wardrobe items + garment photos | `wardrobe_items` + private Supabase Storage | owned-piece styling and color statistics | owner-only server routes; 5-minute signed URLs | until piece or personalization deletion | per-upload consent; erase photo/piece; privacy delete |
 | Moodboard uploads (filenames, palette swatches — NO image bytes today) | `mood_board_uploads` | taste training | owner-scoped | DRAFT: account lifetime | reset/delete via privacy delete |
 | Purchase tickets + user-reported outcomes | `purchase_tickets` | purchase assistance | server-only | DRAFT: 36 months | consent-gated creation |
 | Rate-limit subjects | `api_rate_limits` (sha-256 hashed) | abuse control | server-only | window + cleanup sweep | n/a (hashed) |
@@ -30,7 +31,6 @@ proposals — final periods are owner decision #10 with counsel.
 | Interpretation feedback | A | in-flow (explicit action); follows device-to-account adoption; removed by privacy delete |
 | Learning notifications | A | in-app only; user can disable |
 | Memory visibility preferences | B | explicit settings |
-| Wardrobe items + garment photos | C | EXPLICIT upload consent + privacy notice; EXIF stripped; private bucket; owner-only; signed URLs; deletion control REQUIRED at launch |
 | Wear events | C | explicit opt-in |
 | Rail preferences | D | implicit UI state (non-sensitive) |
 | Profile themes/media | E | moderated public content notice |

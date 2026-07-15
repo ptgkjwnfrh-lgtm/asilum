@@ -31,7 +31,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `ASTERISK_UNKNOWN_QUERIES_ENABLED` | A: aggregation + research queueing | queries still answered; nothing recorded |
 | `ASTERISK_NOTIFICATIONS_ENABLED` | A: learning notices | silent |
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
-| `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | upload surface absent; core wardrobe remains available |
+| `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `DISCOVER_RAILS_ENABLED` (+ per-rail registry rows) | D | strip-only Discover (current) |
 | `PROFILE_THEMES_ENABLED` | E | default profile skin |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
