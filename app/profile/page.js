@@ -8,13 +8,14 @@
 import { useEffect, useState } from "react";
 import {
   EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
-  loadServerFitProfile, saveFitProfile, saveServerFitProfile, sendJSON,
+  loadServerFitProfile, saveFitProfile, saveServerFitProfile, sendJSON, postJSON,
 } from "../../lib/client.js";
 import { convertMeasurementUnit, MEASUREMENT_KEYS } from "../../lib/brain/measurements.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
-  followedUsers, followedBrands, setFollowBrand, sourceFor,
+  followedUsers, followedBrands, setFollowBrand, setFollowUser, sourceFor,
 } from "../../lib/social.js";
+import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
@@ -79,6 +80,7 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      <ProfileAccess />
       <MeasurementsEditor />
 
       <div className="tabs">
@@ -144,6 +146,127 @@ export default function ProfilePage() {
         <UserSearch placeholder="search users to follow…" />
       </div>
     </div>
+  );
+}
+
+const PLATFORMS = ["ebay", "pinterest", "shopify"];
+
+function ProfileAccess() {
+  const [authUser, setAuthUser] = useState(null);
+  const [email, setEmail] = useState("");
+  const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [connecting, setConnecting] = useState("");
+  const [connectNotice, setConnectNotice] = useState("");
+  const [people, setPeople] = useState(() => followedUsers());
+
+  useEffect(() => {
+    try { setNotice(window.localStorage.getItem("asilum-auth-notice") || ""); } catch {}
+    const noticeHandler = (event) => setNotice(event.detail || "");
+    const followHandler = () => setPeople(followedUsers());
+    window.addEventListener("asilum:auth-notice", noticeHandler);
+    window.addEventListener("asilum:follow", followHandler);
+    let subscription = null;
+    getSupabase().then((sb) => {
+      if (!sb) return;
+      sb.auth.getSession().then(({ data }) => setAuthUser(data?.session?.user || null)).catch(() => {});
+      subscription = sb.auth.onAuthStateChange((_event, session) => {
+        setAuthUser(session?.user || null);
+      })?.data?.subscription || null;
+    });
+    return () => {
+      window.removeEventListener("asilum:auth-notice", noticeHandler);
+      window.removeEventListener("asilum:follow", followHandler);
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  async function sendMagicLink() {
+    const address = email.trim();
+    if (!address || busy) return;
+    setBusy(true);
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signInWithOtp({
+        email: address, options: { emailRedirectTo: window.location.origin + "/profile" },
+      });
+      setNotice(error ? "could not send the link — " + error.message : "magic link sent — check your inbox");
+    } catch { setNotice("could not send the link — check the Supabase keys"); }
+    setBusy(false);
+  }
+
+  async function signOut() {
+    try { const sb = await getSupabase(); await sb.auth.signOut(); } catch {}
+    setAuthUser(null);
+    setNotice("signed out — this device keeps its taste");
+  }
+
+  async function connect(platform) {
+    if (connecting) return;
+    setConnecting(platform);
+    try {
+      const response = await postJSON("/api/connect", { user: getUid(), platform });
+      const data = await response.json().catch(() => null);
+      setConnectNotice(data?.message || `${platform} linking requires partner setup`);
+    } catch { setConnectNotice(`${platform} linking requires partner setup`); }
+    setConnecting("");
+  }
+
+  function unfollowPerson(handle) {
+    setFollowUser(handle, false);
+    setPeople(followedUsers());
+  }
+
+  return (
+    <section className="accountcard" id="access">
+      <div className="measurehead">
+        <div>
+          <div className="psub">PROFILE ACCESS</div>
+          <h2>One identity<span className="red">.</span></h2>
+          <p className="deck">Sign-in, settings, connections, follows, and fit all live on this profile.</p>
+        </div>
+        <a className="btn ghost" href="/settings">SETTINGS →</a>
+      </div>
+      <div className="accountgrid">
+        <div>
+          <div className="psub">SIGN IN</div>
+          {authConfigured() ? authUser ? (
+            <>
+              <div className="acctline">{authUser.email || authUser.id} — signed in</div>
+              <button className="btn ghost" onClick={signOut}>SIGN OUT</button>
+            </>
+          ) : (
+            <>
+              <label className="accountemail">email — magic link
+                <input type="email" value={email} placeholder="you@example.com"
+                  onChange={(event) => setEmail(event.target.value)}
+                  onKeyDown={(event) => { if (event.key === "Enter") sendMagicLink(); }} />
+              </label>
+              <button className="btn" disabled={busy} onClick={sendMagicLink}>{busy ? "SENDING…" : "SEND LINK"}</button>
+            </>
+          ) : <div className="acctline">Sign-in requires Supabase public keys in the deployment environment.</div>}
+          {notice ? <div className="acctline accountnotice">{notice}</div> : null}
+        </div>
+        <div>
+          <div className="psub">SOURCE CONNECTIONS</div>
+          <div className="platformrow">
+            {PLATFORMS.map((platform) => (
+              <button key={platform} className="platform soon" disabled={!!connecting} onClick={() => connect(platform)}>
+                {connecting === platform ? "checking…" : platform}
+              </button>
+            ))}
+          </div>
+          {connectNotice ? <div className="acctline accountnotice">{connectNotice}</div> : null}
+        </div>
+        <div>
+          <div className="psub">FOLLOWING — PEOPLE</div>
+          {people.length ? <div className="tagfilter">
+            {people.map((handle) => <button className="chip clickable cur" key={handle}
+              onClick={() => unfollowPerson(handle)}>{handle} ×</button>)}
+          </div> : <div className="acctline">No one followed yet — find people below.</div>}
+        </div>
+      </div>
+    </section>
   );
 }
 

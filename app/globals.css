@@ -566,6 +566,12 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .pedit { display: block; border: 1px solid var(--line); padding: 7px 9px; font-family: var(--helv); font-size: 14px; margin-bottom: 6px; width: 100%; max-width: 380px; }
 .pedit.small { font-size: 12px; }
 .measurecard { border: 2px solid var(--ink); padding: 20px; margin: 14px 0 28px; box-shadow: 7px 7px 0 var(--red); }
+.accountcard { border: 1px solid var(--ink); padding: 20px; margin: 14px 0 22px; }
+.accountgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 12px; }
+.accountgrid > div { border-top: 1px solid var(--line); padding-top: 12px; }
+.accountemail { display: block; font-size: 10px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+.accountemail input { display: block; width: 100%; box-sizing: border-box; margin-top: 4px; border: 1px solid var(--line); padding: 10px; background: var(--paper); font: 700 13px var(--helv); }
+.accountnotice { margin-top: 8px; color: var(--grey); }
 .measurehead { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
 .measurehead .psub { color: var(--red); margin: 0 0 4px; }
 .measurehead h2 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: -0.03em; }
@@ -579,7 +585,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .measuregrid input, .measuregrid select { width: 100%; box-sizing: border-box; margin-top: 4px; border: 1px solid var(--line); padding: 10px; background: var(--paper); font: 700 13px var(--helv); }
 .measureactions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 .measurestatus { color: var(--grey); font: italic 13px var(--serif); }
-@media (max-width: 900px) { .measuregrid { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
+@media (max-width: 900px) { .measuregrid { grid-template-columns: repeat(2, minmax(120px, 1fr)); } .accountgrid { grid-template-columns: 1fr; } }
 
 /* ---- Collapsed cubes: header bar, body pops out on hover/click ---- */
 .module.col { padding: 0; position: relative; min-width: 200px; }

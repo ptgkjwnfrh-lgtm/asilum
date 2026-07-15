@@ -2,20 +2,19 @@
 
 // app/shell.js
 // The magazine shell around every page: *ASILUM magazine wordmark (always a
-// way home) + the eight page buttons in the left sidebar, multi-search + bag
-// pinned upper right, account pinned lower right, and the always-moving
-// ticker across the top. Grailed-white, Helvetica-black, red stars only.
+// way home) + the eight page buttons in the left sidebar, multi-search + bag,
+// and the always-moving ticker. Account controls live on PROFILE so identity
+// has one obvious home.
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  getUid, postJSON, thumbFor, bagList, bagRemove,
+  thumbFor, bagList, bagRemove,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
-  setFollowBrand, setFollowUser,
 } from "../lib/social.js";
-import { getSupabase, authConfigured } from "../lib/supabase.js";
+import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 
@@ -34,29 +33,18 @@ const TICKER =
   "*ASILUM MAGAZINE — THE TASTE ENGINE IS LIVE — SIX BRIDGES, ONE FEED — " +
   "HOTLIST UPDATED CONTINUOUSLY — WEAR THE ARCHIVE — SKIPS TEACH TOO — ";
 
-const PLATFORMS = ["ebay", "pinterest", "shopify"];
-
 export default function Shell({ children }) {
   const fit = useFitBrain();
   const pathname = usePathname();
-  const [uid, setUid] = useState("");
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
-  const [acctOpen, setAcctOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
   const [results, setResults] = useState(null);
-  const [connecting, setConnecting] = useState("");
-  const [connectMsg, setConnectMsg] = useState("");
   const [follows, setFollows] = useState({ brands: [], users: [] });
-  const [authUser, setAuthUser] = useState(null);
-  const [authEmail, setAuthEmail] = useState("");
-  const [authMsg, setAuthMsg] = useState("");
-  const [authBusy, setAuthBusy] = useState(false);
   const debounceRef = useRef(null);
 
   useEffect(() => {
-    setUid(getUid() || "");
     // Clear the stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
@@ -86,7 +74,6 @@ export default function Shell({ children }) {
       throw new Error("invalid device identity");
     }
     try { window.localStorage.setItem("asilum-uid", data.uid); } catch {}
-    setUid(data.uid);
     return data.uid;
   }
 
@@ -101,7 +88,6 @@ export default function Shell({ children }) {
       const r = sb.auth.onAuthStateChange((event, session) => {
         if (event === "SIGNED_IN" && session) onSignedIn(session);
         if (event === "SIGNED_OUT") {
-          setAuthUser(null);
           ensureDeviceIdentity().catch(() => {});
         }
       });
@@ -116,7 +102,6 @@ export default function Shell({ children }) {
   // transient database failure cannot strand taste or corrections.
   async function onSignedIn(session) {
     const user = session.user;
-    setAuthUser(user.email || user.id);
     const account = "sb-" + user.id;
     let adopted = false;
     try {
@@ -132,44 +117,23 @@ export default function Shell({ children }) {
       if (!response.ok) throw new Error("identity adoption failed");
       const adoption = await response.json();
       if (adoption.correctionProfileUpdated === false) {
-        setAuthMsg("signed in — corrections moved; stylist profile refresh is pending");
+        setAuthNotice("signed in — corrections moved; stylist profile refresh is pending");
       }
       adopted = true;
     } catch {
-      setAuthMsg("signed in, but this device's taste could not be adopted");
+      setAuthNotice("signed in, but this device's taste could not be adopted");
     }
     if (adopted) {
       try { window.localStorage.setItem("asilum-uid", account); } catch {}
-      setUid(account);
+      setAuthNotice(`signed in as ${user.email || user.id}`);
     }
   }
 
-  async function sendMagicLink() {
-    const email = authEmail.trim();
-    if (!email || authBusy) return;
-    setAuthBusy(true);
+  function setAuthNotice(message) {
     try {
-      const sb = await getSupabase();
-      const { error } = await sb.auth.signInWithOtp({
-        email, options: { emailRedirectTo: window.location.origin },
-      });
-      setAuthMsg(error
-        ? "could not send the link — " + error.message
-        : "magic link sent — check your inbox");
-    } catch { setAuthMsg("could not send the link — check the Supabase keys"); }
-    setAuthBusy(false);
-  }
-
-  async function signOut() {
-    try { const sb = await getSupabase(); await sb.auth.signOut(); } catch {}
-    setAuthUser(null);
-    try {
-      await ensureDeviceIdentity();
-    } catch {
-      try { window.localStorage.removeItem("asilum-uid"); } catch {}
-      setUid(getUid());
-    }
-    setAuthMsg("signed out — this device keeps its taste");
+      window.localStorage.setItem("asilum-auth-notice", message);
+      window.dispatchEvent(new CustomEvent("asilum:auth-notice", { detail: message }));
+    } catch {}
   }
 
   // ---- Multi-search: brands / pieces / aesthetics / users ----
@@ -194,19 +158,6 @@ export default function Shell({ children }) {
   function closeSearch() {
     // Delayed so option mousedown handlers win over blur.
     setTimeout(() => { setSearchOpen(false); setResults(null); setQ(""); }, 180);
-  }
-
-  async function connect(platform) {
-    if (connecting) return;
-    setConnecting(platform);
-    try {
-      const res = await postJSON("/api/connect", { user: getUid(), platform });
-      const d = await res.json().catch(() => null);
-      setConnectMsg((d && d.message) || platform + " linking is coming soon — real account setup required");
-    } catch {
-      setConnectMsg(platform + " linking is coming soon — real account setup required");
-    }
-    setConnecting("");
   }
 
   // Bag is intent only; checkout, fees, and shipping belong to source sites.
@@ -250,12 +201,6 @@ export default function Shell({ children }) {
               {n.label}
             </a>
           ))}
-          <button
-            className={"snav acct" + (acctOpen ? " cur" : "")}
-            onClick={() => { setAcctOpen((o) => !o); setBagOpen(false); }}
-          >
-            ACCOUNT
-          </button>
         </nav>
         <div className="sfoot">a fashion brain that learns your taste across six bridges</div>
       </aside>
@@ -274,7 +219,7 @@ export default function Shell({ children }) {
         ) : (
           <button className="tbtn" onClick={() => setSearchOpen(true)}>SEARCH</button>
         )}
-        <button className="tbtn" onClick={() => { setBagOpen((o) => !o); setAcctOpen(false); }}>
+        <button className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
         </button>
       </div>
@@ -381,84 +326,6 @@ export default function Shell({ children }) {
           <a className="btn ghost wide" href="/orders" style={{ display: "block", textAlign: "center" }}>
             VIEW ORDERS & TICKETS
           </a>
-        </div>
-      )}
-
-      {acctOpen && (
-        <div className="panel acctpanel">
-          <div className="phead">ACCOUNT</div>
-          <div className="acctid">{uid ? uid.slice(0, 14) + "…" : ""}</div>
-          <a className="shit" href="/profile">→ your profile</a>
-          <a className="shit" href="/settings">→ settings & source connections</a>
-
-          <div className="psub">FOLLOWING — BRANDS</div>
-          {follows.brands.length === 0 ? (
-            <div className="pempty">no brands yet — follow them from a piece or your profile.</div>
-          ) : (
-            <div className="tagfilter">
-              {follows.brands.map((b) => (
-                <span className="chip clickable cur" key={b} onClick={() => setFollowBrand(b, false)}>
-                  {b} ×
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="psub">FOLLOWING — PEOPLE</div>
-          {follows.users.length === 0 ? (
-            <div className="pempty">no one yet — WHO TO FOLLOW lives on home.</div>
-          ) : (
-            <div className="tagfilter">
-              {follows.users.map((h) => (
-                <span className="chip clickable cur" key={h} onClick={() => setFollowUser(h, false)}>
-                  {h} ×
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="psub">SIGN IN</div>
-          {authConfigured() ? (
-            authUser ? (
-              <>
-                <div className="acctline">{authUser} — signed in</div>
-                <button className="btn ghost" onClick={signOut}>SIGN OUT</button>
-              </>
-            ) : (
-              <>
-                <div className="fitform">
-                  <label>
-                    email — magic link
-                    <input type="email" value={authEmail} placeholder="you@example.com"
-                      onChange={(e) => setAuthEmail(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") sendMagicLink(); }} />
-                  </label>
-                </div>
-                <button className="btn" disabled={authBusy} onClick={sendMagicLink}>
-                  {authBusy ? "sending…" : "SEND LINK"}
-                </button>
-              </>
-            )
-          ) : (
-            <button className="btn soon" onClick={() =>
-              setAuthMsg("requires setup — add NEXT_PUBLIC_SUPABASE_URL + NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local and rebuild (see .env.example)")
-            }>
-              SIGN IN — REQUIRES SETUP
-            </button>
-          )}
-          {authMsg && <div className="acctline">{authMsg}</div>}
-
-          <div className="psub">SOURCE CONNECTIONS</div>
-          <div className="platformrow">
-            {PLATFORMS.map((p) => (
-              <button key={p} className="platform soon" disabled={!!connecting} onClick={() => connect(p)}>
-                {connecting === p ? "checking…" : p}
-              </button>
-            ))}
-          </div>
-          {connectMsg && <div className="acctline">{connectMsg}</div>}
-
-          <div className="psub">FIT PROFILE</div>
-          <a className="fitbtn" href="/profile#measurements">ADD / EDIT MEASUREMENTS →</a>
         </div>
       )}
 
