@@ -22,6 +22,11 @@ const { records, skipped } = await approvedCultureProposals();
 for (const s of skipped) {
   process.stderr.write(`compile-culture-research: SKIPPED ${s.id}: ${s.reason}\n`);
 }
+if (skipped.length) {
+  process.stderr.write("compile-culture-research: refusing partial output; repair or archive invalid approved proposals\n");
+  process.exitCode = 1;
+  process.exit();
+}
 
 records.sort((a, b) => a.name.localeCompare(b.name));
 const out = JSON.stringify(records, null, 2) + "\n";

@@ -6,7 +6,8 @@ import {
   researchQueue, approvedCultureProposals, allowedCultureKinds,
   draftProposalsFromSource,
 } from "../lib/asterisk/research.js";
-import { lookupCulture } from "../lib/asterisk/culture.js";
+import { CULTURE, lookupCulture, validateCompiledResearchRecord } from "../lib/asterisk/culture.js";
+import { recordFact } from "../lib/asterisk/facts.js";
 
 const proposal = (over = {}) => ({
   kind: "aesthetic",
@@ -54,6 +55,24 @@ test("unsourced proposals are refused at the door", async () => {
   assert.match(r.error, /source URL required/);
   const insecure = await proposeCultureEntity(proposal(), { sourceUrls: ["http://example.com/x"] });
   assert.equal(insecure.ok, false);
+  const privateSource = await proposeCultureEntity(proposal(), { sourceUrls: ["https://localhost/x"] });
+  assert.equal(privateSource.ok, false);
+});
+
+test("research review cannot mutate an unrelated learned fact", async () => {
+  const unrelated = await recordFact({ entityType: "brand", entityId: "test-brand",
+    claim: "unrelated test fact", claimType: "material", sourceUrls: ["https://example.com/fact"] });
+  assert.equal(unrelated.ok, true);
+  const reviewed = await reviewResearch(unrelated.fact.id, "pending_verification");
+  assert.equal(reviewed.ok, false);
+  assert.match(reviewed.error, /research proposal not found/);
+});
+
+test("payload cap is measured in UTF-8 bytes", async () => {
+  const oversized = await recordFact({ entityType: "test", entityId: "utf8", claim: "payload cap",
+    claimType: "test", payload: { text: "é".repeat(5000) } });
+  assert.equal(oversized.ok, false);
+  assert.match(oversized.error, /8 KiB/);
 });
 
 test("full lifecycle: propose → review → approve → compile shape (memory store)", async () => {
@@ -103,7 +122,7 @@ test("an approved proposal whose name was since curated is skipped, loudly", asy
   fact.value = JSON.stringify(payload); // memory-store object is live
   const { records, skipped } = await approvedCultureProposals();
   assert.ok(!records.some((r) => r.name === "olsen twins"));
-  assert.ok(skipped.some((s) => s.id === id && /already exists/.test(s.reason)));
+  assert.ok(skipped.some((s) => s.id === id && /payload name does not match staged entity/.test(s.reason)));
 });
 
 test("model drafting is honestly gated off", async () => {
@@ -117,4 +136,16 @@ test("curated records stay curated after the research merge runs at load", () =>
   const rec = lookupCulture("olsen twins");
   assert.ok(rec);
   assert.match(rec.interpretations[0].provenance, /^curated/);
+});
+
+test("compiled research records fail closed on malformed trusted data", () => {
+  const compiled = {
+    ...proposal(), factId: "fact-test", provenance: "research-approved-tester",
+    sourceUrls: ["https://example.com/research"],
+  };
+  const options = { kinds: new Set(CULTURE.map((record) => record.kind)), taken: new Set() };
+  assert.equal(validateCompiledResearchRecord(compiled, options), null);
+  assert.match(validateCompiledResearchRecord({ ...compiled,
+    interpretations: [{ ...compiled.interpretations[0], tags: ["invented-tag"] }] }, options), /tags/);
+  assert.match(validateCompiledResearchRecord({ ...compiled, sourceUrls: ["https://localhost/research"] }, options), /source/);
 });
