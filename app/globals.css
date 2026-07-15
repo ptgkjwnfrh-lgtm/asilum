@@ -749,3 +749,9 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .wact:hover { color: var(--red); }
 .wtoggle { justify-self: start; border: 1px solid var(--line); padding: 5px 10px; }
 .wbtn { margin-top: 6px; font-size: 10px; }
+
+/* ── Wardrobe photos (Phase 3b) ─────────────────────────────────────────── */
+.wthumb { width: 44px; height: 44px; object-fit: cover; border: 1px solid var(--line); flex: none; align-self: center; }
+.wconsent { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; color: #444; line-height: 1.5; border: 1px solid var(--line); padding: 8px 10px; cursor: pointer; }
+.wconsent input { margin-top: 2px; accent-color: var(--red); }
+.wact:disabled { color: #ccc; cursor: not-allowed; }
