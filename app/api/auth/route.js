@@ -10,6 +10,8 @@ import {
 } from "../../../lib/identity.js";
 import { adoptAccountData } from "../../../lib/db/production.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +25,7 @@ export async function GET(req) {
     const response = NextResponse.json({ uid });
     response.cookies.set(DEVICE_COOKIE, signedDeviceValue(uid), {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
@@ -34,8 +36,6 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  let body;
-  try { body = await req.json(); } catch { body = null; }
   if (!authConfigured()) {
     return NextResponse.json({ error: "authentication is not configured" }, { status: 503 });
   }
@@ -48,6 +48,11 @@ export async function POST(req) {
     return NextResponse.json({ error: "valid bearer token required" }, { status: 401 });
   }
   const user = "sb-" + authUser.id;
+  const quota = await consumeRateLimit({ scope: "auth-adopt", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const claimedUser = body && typeof body.user === "string" ? body.user : "";
   if (claimedUser && claimedUser !== user) {
     return NextResponse.json({ error: "account does not match bearer token" }, { status: 403 });
@@ -55,7 +60,8 @@ export async function POST(req) {
 
   const adopted = await adoptAccountData(from, user);
   let correctionProfileUpdated = null;
-  if (adopted.movedCorrections > 0 || adopted.movedProfile || adopted.movedBoards > 0) {
+  if (adopted.movedCorrections > 0 || adopted.movedProfile ||
+      adopted.movedBoards > 0 || adopted.movedRecords > 0) {
     correctionProfileUpdated = (await rebuildUserStyleProfile(user)).ok;
   }
   return NextResponse.json({ ok: true, ...adopted, correctionProfileUpdated });

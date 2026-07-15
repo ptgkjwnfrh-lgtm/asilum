@@ -4,14 +4,50 @@ import { randomUUID } from "node:crypto";
 
 const databaseUrl = process.env.TEST_DATABASE_URL || "";
 
-test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async () => {
+test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
   const production = await import("../lib/db/production.js");
   const suffix = randomUUID();
   const userId = `u-${suffix}`;
+  const from = `u-${randomUUID()}`;
+  const to = `sb-${randomUUID()}`;
   const itemA = { id: `item-a-${suffix}`, title: "A", tags: { MINIMAL: 0.8 }, price: 100 };
   const itemB = { id: `item-b-${suffix}`, title: "B", tags: { TAILORED: 0.8 }, price: 120 };
+  const pool = await db.getPool();
+  const userIds = [userId, from, to];
+  const itemIds = [itemA.id, itemB.id];
+
+  t.after(async () => {
+    try {
+      await pool.query("BEGIN");
+      await pool.query(
+        "DELETE FROM board_items WHERE board_id IN (SELECT id FROM boards WHERE user_id=ANY($1::text[]))",
+        [userIds]
+      );
+      await pool.query("DELETE FROM boards WHERE user_id=ANY($1::text[])", [userIds]);
+      for (const table of [
+        "purchase_tickets", "user_events", "interactions", "processed_operations",
+        "user_style_profiles", "profiles",
+      ]) {
+        await pool.query(`DELETE FROM ${table} WHERE user_id=ANY($1::text[])`, [userIds]);
+      }
+      await pool.query(
+        "DELETE FROM identity_adoptions WHERE from_user_id=ANY($1::text[]) OR to_user_id=ANY($1::text[])",
+        [userIds]
+      );
+      await pool.query("DELETE FROM product_tags WHERE product_id=ANY($1::text[])", [itemIds]);
+      await pool.query("DELETE FROM popularity WHERE item_id=ANY($1::text[])", [itemIds]);
+      await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [itemIds]);
+      await pool.query("DELETE FROM items WHERE id=ANY($1::text[])", [itemIds]);
+      await pool.query("COMMIT");
+    } catch (error) {
+      await pool.query("ROLLBACK").catch(() => {});
+      throw error;
+    } finally {
+      await pool.end();
+    }
+  });
 
   await db.upsertItems([itemA, itemB]);
   await production.addProductTags(itemB.id, [{ tag: "sharp", tagType: "mood", confidence: 0.9 }]);
@@ -54,8 +90,6 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal(outcome.duplicate, false);
   assert.equal((await production.reportTicketOutcome(ticket.id, userId, "bought", outcomeEvent)).duplicate, true);
 
-  const from = `u-${randomUUID()}`;
-  const to = `sb-${randomUUID()}`;
   await db.saveProfile(from, { long: { MINIMAL: 0.7 } });
   const sourceBoard = await db.createBoard(from, "source board");
   await db.addBoardItem(sourceBoard.id, itemA);
@@ -76,11 +110,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal((await db.getBoards(to)).length, 2);
   assert.ok((await db.getProfile(to)).long.GORP > 0);
 
-  const pool = await db.getPool();
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 10);
+  assert.equal(schema.rows[0].version, 11);
 
   const defaults = await pool.query(`
     SELECT EXISTS (
@@ -94,5 +127,4 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     ) AS public_function_execute
   `);
   assert.equal(defaults.rows[0].public_function_execute, false);
-  await pool.end();
 });

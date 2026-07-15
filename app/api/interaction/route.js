@@ -17,6 +17,7 @@ import { eventFromInteraction } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { resolveProducts } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +27,9 @@ const CO_ENGAGE_SPAN = 5; // link a new positive to this many recent engagements
 const MAX_EVENTS = 20;
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch { body = {}; }
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const events = Array.isArray(body.events)
@@ -61,9 +63,11 @@ export async function POST(req) {
       status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
     });
   }
-  const canonicalEvents = valid
-    .map((e) => eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null))
-    .filter(Boolean);
+  const canonicalEvents = valid.map((e) =>
+    eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null));
+  if (canonicalEvents.some((event) => !event)) {
+    return NextResponse.json({ error: "unsupported interaction action" }, { status: 400 });
+  }
   const commit = await commitInteractionBatch({
     userId,
     operationId: body.operationId,

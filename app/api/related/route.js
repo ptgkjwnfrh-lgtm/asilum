@@ -6,33 +6,32 @@
 
 import { NextResponse } from "next/server";
 import { relatedItems } from "../../../lib/brain/index.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
-import { listItems, getEdges } from "../../../lib/db/index.js";
+import { getEdges } from "../../../lib/db/index.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
-import { isDiscoverableProduct } from "../../../lib/products.js";
+import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const itemId = searchParams.get("item");
-  const limit = Math.min(24, parseInt(searchParams.get("limit"), 10) || 8);
+  const limit = Math.max(1, Math.min(24, parseInt(searchParams.get("limit"), 10) || 8));
   if (!itemId || itemId.length > 80) return NextResponse.json({ error: "item required" }, { status: 400 });
   const quota = await consumeRateLimit({ scope: "related", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
-  let pool = [];
-  try { pool = await listItems(5000); } catch { pool = []; }
-  pool = pool.filter(isDiscoverableProduct);
-  if (!pool || pool.length === 0) pool = CATALOG;
+  const pool = await getDiscoverablePool();
 
-  const source = pool.find((it) => it.id === itemId) || CATALOG.find((it) => it.id === itemId);
+  const source = pool.find((it) => it.id === itemId);
   if (!source) return NextResponse.json({ error: "item not found" }, { status: 404 });
 
   const edges = await getEdges([itemId]);
   const items = relatedItems(source, { edges, pool, limit });
   // `item` carries the full source object so deep links (/?item=<id>) can
   // open the detail modal directly.
-  return NextResponse.json({ source: source.id, item: source, count: items.length, items });
+  return NextResponse.json({
+    source: source.id, item: publicProduct(source), count: items.length,
+    items: items.map(publicProduct).filter(Boolean),
+  });
 }

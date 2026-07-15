@@ -3,9 +3,11 @@
 // endpoint returns bag intent history, newest first, joined to items.
 
 import { NextResponse } from "next/server";
-import { getInteractions, listItems } from "../../../lib/db/index.js";
+import { getInteractions } from "../../../lib/db/index.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { getDiscoverablePool } from "../../../lib/products.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +17,13 @@ export async function GET(req) {
   if (!userId) {
     return NextResponse.json({ error: "authentication required" }, { status: 401 });
   }
+  const quota = await consumeRateLimit({ scope: "orders-read", subject: userId, limit: 60, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const events = await getInteractions(userId, { action: "bag", limit: 60 });
 
   const byId = new Map(CATALOG.map((it) => [it.id, it]));
   try {
-    for (const it of await listItems(1000)) byId.set(it.id, it);
+    for (const it of await getDiscoverablePool({ fallback: false })) byId.set(it.id, it);
   } catch {}
 
   const bagHistory = events.map((e) => {

@@ -10,9 +10,8 @@ import { NextResponse } from "next/server";
 import { buildFeed, coldStart, markSeen, itemsVector } from "../../../lib/brain/index.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
 import {
-  listItems, getProfile, mutateProfile,
+  getProfile, mutateProfile,
   getEdges, getPopularity, getBoard, bumpPopularity,
 } from "../../../lib/db/index.js";
 import {
@@ -22,7 +21,7 @@ import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/corr
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
-import { isDiscoverableProduct } from "../../../lib/products.js";
+import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -51,10 +50,7 @@ export async function GET(req) {
   const contextVec = cravingActive ? cravingVector(craving) : null;
 
   // Item pool: DB items if available, else the seed catalog.
-  let pool = [];
-  try { pool = await listItems(5000); } catch { pool = []; }
-  pool = pool.filter(isDiscoverableProduct);
-  if (!pool || pool.length === 0) pool = CATALOG;
+  let pool = await getDiscoverablePool();
   let correctionSummary, exclusions;
   try {
     [correctionSummary, exclusions] = await Promise.all([
@@ -71,9 +67,10 @@ export async function GET(req) {
     !(item.brand && excludedBrands.has(item.brand.trim().toLowerCase())));
 
   // Hard filters run BEFORE ranking so taste ordering applies within them.
-  const category = searchParams.get("category") || "";
-  const maxPrice = parseFloat(searchParams.get("maxPrice")) || 0;
-  const fit = (searchParams.get("fit") || "").toUpperCase();
+  const category = (searchParams.get("category") || "").slice(0, 80);
+  const parsedMaxPrice = Number.parseFloat(searchParams.get("maxPrice"));
+  const maxPrice = Number.isFinite(parsedMaxPrice) ? Math.max(0, Math.min(1_000_000, parsedMaxPrice)) : 0;
+  const fit = (searchParams.get("fit") || "").slice(0, 20).toUpperCase();
   if (category) pool = pool.filter((it) => it.category === category);
   if (maxPrice > 0) pool = pool.filter((it) => it.price != null && it.price <= maxPrice);
   if (fit) {
@@ -159,6 +156,6 @@ export async function GET(req) {
     split,
     zones,
     count: items.length,
-    items,
+    items: items.map(publicProduct).filter(Boolean),
   });
 }

@@ -9,6 +9,8 @@
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { explainProduct, recordCorrection, CORRECTION_CODES } from "../../../lib/asterisk/explain.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,8 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "why-read", subject: user, limit: 120, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const item = searchParams.get("item") || "";
   if (!validProductId(item)) {
     return NextResponse.json({ error: "item required" }, { status: 400 });
@@ -31,10 +35,13 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "why-correct", subject: user, limit: 30, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const code = String(body.code || "");
   if (!CORRECTION_CODES.has(code)) {
     return NextResponse.json({ error: "unknown correction code" }, { status: 400 });

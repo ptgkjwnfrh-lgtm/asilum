@@ -10,6 +10,8 @@ import { getProductPool } from "../../../lib/search/index.js";
 import { listSearchMappings } from "../../../lib/db/production.js";
 import { DEFAULT_MAPPINGS } from "../../../lib/search/mappings-seed.js";
 import { buildVocabulary, suggest } from "../../../lib/search/suggest.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,8 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().slice(0, 80);
   if (q.length < 2) return NextResponse.json({ q, suggestions: [] });
+  const quota = await consumeRateLimit({ scope: "suggest", subject: requestSubject(req), limit: 240, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
   try {
     if (!_vocab || Date.now() - _vocabAt > VOCAB_TTL) {

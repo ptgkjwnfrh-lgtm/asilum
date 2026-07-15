@@ -11,12 +11,14 @@ import { coldStart, migrateProfile } from "../../../lib/brain/index.js";
 import { mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch { body = {}; }
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const prompt = typeof body.prompt === "string" ? body.prompt.trim().slice(0, 400) : "";

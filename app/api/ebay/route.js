@@ -15,8 +15,14 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().slice(0, 200);
-  const limit = Math.min(50, parseInt(searchParams.get("limit"), 10) || 24);
+  const limit = Math.max(1, Math.min(50, parseInt(searchParams.get("limit"), 10) || 24));
   if (!q) return NextResponse.json({ error: "q required" }, { status: 400 });
+  if (process.env.EBAY_PARTNERSHIP_APPROVED !== "1") {
+    return NextResponse.json(
+      { error: "eBay adapter idle — partnership approval is required before live access" },
+      { status: 503 }
+    );
+  }
   if (!process.env.EBAY_CLIENT_ID || !process.env.EBAY_CLIENT_SECRET) {
     return NextResponse.json(
       { error: "eBay adapter idle — set EBAY_CLIENT_ID / EBAY_CLIENT_SECRET (and EBAY_ENV) in the environment" },

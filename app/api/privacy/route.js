@@ -6,12 +6,14 @@ import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { purgePersonalizationData } from "../../../lib/db/production.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
 export async function DELETE(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   if (body.confirm !== "DELETE PERSONALIZATION") {

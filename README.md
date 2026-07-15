@@ -20,11 +20,24 @@ restart).
 
 ## Deploy (persistence)
 
-Set `DATABASE_URL` (Neon / Supabase / any Postgres) in the environment. The
-schema (profiles, interactions, taste-graph edges, popularity counters, boards)
-is created automatically on first request. Without it, all learning lives in
-process memory and is lost on every restart or redeploy — fine for demos,
-wrong for production.
+Apply the versioned files in `supabase/` in order using an owner/migration
+connection. Schema v11 creates a non-login `asilum_app` runtime role with only
+the DML privileges and role-scoped RLS policies the server needs. Activate it
+without putting its password in git:
+
+```bash
+DATABASE_ADMIN_URL='<owner connection>' \
+DATABASE_APP_PASSWORD='<32+ character random secret>' \
+npm run db:configure-role
+```
+
+Then set production `DATABASE_URL` to the `asilum_app` transaction-pooler URL
+(`asilum_app.<project-ref>` is the Supavisor username) and set
+`DATABASE_EXPECTED_ROLE=asilum_app`. Do not deploy the owner URL or the role
+setup password. Startup verifies both the role and schema version and refuses
+an owner connection or partial migration. Without a database URL, learning
+lives in process memory and is lost on restart — fine locally, wrong in
+production.
 
 ## Ingesting real listings
 
@@ -35,12 +48,13 @@ environment, then:
 
 ```bash
 curl -X POST https://<host>/api/ingest \
+  -H "Authorization: Bearer <INGEST_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"token":"<INGEST_TOKEN>","merchantFeedUrl":"https://merchant.example/feed.json"}'
+  -d '{"merchantFeedUrl":"https://merchant.example/feed.json"}'
 ```
 
 Wire that to a cron on the deploy platform for fresh inventory. The seed
-catalog (1,000 items in `lib/ingest/catalog.json`) is used whenever the items
+catalog (915 items in `lib/ingest/catalog.json`) is used whenever the items
 table is empty. `node scripts/fill-met-images.mjs` re-runs the Met open-access
 enrichment (public-domain images + object links).
 
@@ -65,7 +79,7 @@ enrichment (public-domain images + object links).
   bag/share/save/favorite/dwell/skip/hide), `GET|POST|PATCH|DELETE /api/boards`,
   `GET /api/related`, `GET /api/outfits`, `POST /api/connect`,
   `POST /api/follow`, `GET /api/orders`, `GET /api/profile`, `GET /api/stats`,
-  `GET /api/ebay` (official Browse API; needs EBAY_CLIENT_ID/SECRET env),
+  `GET /api/ebay` (official Browse API; needs partnership approval and credentials),
   `POST /api/ingest`.
 
 ## Stress test
