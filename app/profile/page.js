@@ -8,16 +8,20 @@
 import { useEffect, useState } from "react";
 import {
   EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
-  loadServerFitProfile, saveFitProfile, saveServerFitProfile, sendJSON, postJSON,
+  saveFitProfile, saveServerFitProfile, sendJSON, postJSON,
 } from "../../lib/client.js";
-import { convertMeasurementUnit, MEASUREMENT_KEYS } from "../../lib/brain/measurements.js";
+import {
+  convertMeasurementUnit, hasMeasurementProfile, MEASUREMENT_KEYS,
+} from "../../lib/brain/measurements.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
   followedUsers, followedBrands, setFollowBrand, setFollowUser, sourceFor,
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import {
+  ColorEvidenceLine, ProductFitLine, refreshFitProfile, useFitBrain,
+} from "../components/ProductSignals.jsx";
 
 export default function ProfilePage() {
   const fit = useFitBrain();
@@ -161,6 +165,7 @@ function ProfileAccess() {
   const [people, setPeople] = useState(() => followedUsers());
 
   useEffect(() => {
+    let active = true;
     try { setNotice(window.localStorage.getItem("asilum-auth-notice") || ""); } catch {}
     const noticeHandler = (event) => setNotice(event.detail || "");
     const followHandler = () => setPeople(followedUsers());
@@ -168,13 +173,13 @@ function ProfileAccess() {
     window.addEventListener("asilum:follow", followHandler);
     let subscription = null;
     getSupabase().then((sb) => {
-      if (!sb) return;
-      sb.auth.getSession().then(({ data }) => setAuthUser(data?.session?.user || null)).catch(() => {});
+      if (!active || !sb) return;
       subscription = sb.auth.onAuthStateChange((_event, session) => {
-        setAuthUser(session?.user || null);
+        if (active) setAuthUser(session?.user || null);
       })?.data?.subscription || null;
     });
     return () => {
+      active = false;
       window.removeEventListener("asilum:auth-notice", noticeHandler);
       window.removeEventListener("asilum:follow", followHandler);
       subscription?.unsubscribe();
@@ -190,15 +195,27 @@ function ProfileAccess() {
       const { error } = await sb.auth.signInWithOtp({
         email: address, options: { emailRedirectTo: window.location.origin + "/profile" },
       });
-      setNotice(error ? "could not send the link — " + error.message : "magic link sent — check your inbox");
-    } catch { setNotice("could not send the link — check the Supabase keys"); }
+      publishNotice(error ? "could not send the link — " + error.message : "magic link sent — check your inbox");
+    } catch { publishNotice("could not send the link — check the Supabase keys"); }
     setBusy(false);
   }
 
   async function signOut() {
-    try { const sb = await getSupabase(); await sb.auth.signOut(); } catch {}
-    setAuthUser(null);
-    setNotice("signed out — this device keeps its taste");
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      setAuthUser(null);
+      publishNotice("signed out — device taste remains; account measurements are locked");
+    } catch { publishNotice("could not sign out — try again"); }
+  }
+
+  function publishNotice(message) {
+    setNotice(message);
+    try {
+      window.localStorage.setItem("asilum-auth-notice", message);
+      window.dispatchEvent(new CustomEvent("asilum:auth-notice", { detail: message }));
+    } catch {}
   }
 
   async function connect(platform) {
@@ -276,13 +293,22 @@ function MeasurementsEditor() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const local = loadFitProfile();
-    setProfile(local);
-    loadServerFitProfile(getUid()).then((server) => {
-      const hasServer = server.usualSize || MEASUREMENT_KEYS.some((key) => server[key] !== "");
-      if (hasServer) { setProfile(server); saveFitProfile(server); }
-      setStatus(hasServer ? "saved to your private ASILUM account" : "not saved yet");
-    }).catch(() => setStatus("using this device — save to sync securely"));
+    let active = true;
+    const sync = (event) => {
+      if (!active) return;
+      const next = event?.detail ? { ...event.detail } : loadFitProfile();
+      setProfile(next);
+      setStatus(hasMeasurementProfile(next) ? "saved privately to this identity" : "not saved yet");
+    };
+    sync();
+    window.addEventListener("asilum:fit", sync);
+    refreshFitProfile().catch(() => {
+      if (active) setStatus("using this device — save to sync securely");
+    });
+    return () => {
+      active = false;
+      window.removeEventListener("asilum:fit", sync);
+    };
   }, []);
 
   function change(key, value) {

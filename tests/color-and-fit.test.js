@@ -5,7 +5,8 @@ import sharp from "sharp";
 import { canonicalMerchantColors, reconcileColorEvidence, verifyProductColor } from "../lib/ingest/colorEvidence.js";
 import { normalizeSourceProduct, typedTagsFrom } from "../lib/ingest/adapters/normalize.js";
 import {
-  convertMeasurementUnit, measurementProfileForBrain, normalizeMeasurementProfile,
+  convertMeasurementUnit, hasMeasurementProfile, measurementProfileForBrain,
+  normalizeMeasurementProfile,
 } from "../lib/brain/measurements.js";
 import { fitAssessment, fitPhrase, sizeRecord } from "../lib/brain/sizing.js";
 
@@ -76,6 +77,12 @@ test("measurement profiles validate and convert units without changing the body 
   assert.deepEqual(measurementProfileForBrain({ ...converted, usualSize: "M" }).measurements,
     { chest: 40, waist: 32 });
   assert.equal(normalizeMeasurementProfile({ unit: "in", chest: 500 }).ok, false);
+});
+
+test("usual-size-only profiles count as real fit profiles", () => {
+  assert.equal(hasMeasurementProfile({ usualSize: "M" }), true);
+  assert.equal(hasMeasurementProfile({ waist: "32" }), true);
+  assert.equal(hasMeasurementProfile({ usualSize: "", waist: "" }), false);
 });
 
 test("fit copy distinguishes listing measurements from modeled estimates", () => {

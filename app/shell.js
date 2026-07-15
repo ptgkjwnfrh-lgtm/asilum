@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  thumbFor, bagList, bagRemove,
+  thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -43,6 +43,8 @@ export default function Shell({ children }) {
   const [results, setResults] = useState(null);
   const [follows, setFollows] = useState({ brands: [], users: [] });
   const debounceRef = useRef(null);
+  const pendingAdoptionRef = useRef(null);
+  const deviceIdentityRef = useRef(null);
 
   useEffect(() => {
     // Clear the stale "connected" flag from the old simulated import — no
@@ -73,27 +75,40 @@ export default function Shell({ children }) {
     if (!data || !/^u-[0-9a-f-]{36}$/.test(data.uid || "")) {
       throw new Error("invalid device identity");
     }
-    try { window.localStorage.setItem("asilum-uid", data.uid); } catch {}
     return data.uid;
   }
 
   useEffect(() => {
+    let active = true;
     let sub = null;
-    ensureDeviceIdentity().catch(() => {});
+    const deviceIdentity = ensureDeviceIdentity().catch(() => null);
+    deviceIdentityRef.current = deviceIdentity;
+    const activateDevice = () => deviceIdentity.then((uid) => {
+      if (active && uid) setUid(uid);
+    });
     getSupabase().then((sb) => {
-      if (!sb) return;
-      sb.auth.getSession().then(({ data }) => {
-        if (data && data.session) onSignedIn(data.session);
-      }).catch(() => {});
+      if (!active) return;
+      if (!sb) { activateDevice(); return; }
       const r = sb.auth.onAuthStateChange((event, session) => {
+        if (event === "INITIAL_SESSION") {
+          if (session) onSignedIn(session);
+          else activateDevice();
+        }
         if (event === "SIGNED_IN" && session) onSignedIn(session);
         if (event === "SIGNED_OUT") {
-          ensureDeviceIdentity().catch(() => {});
+          pendingAdoptionRef.current = null;
+          clearFitProfile();
+          setAuthNotice("signed out — device taste remains; account measurements are locked");
+          activateDevice();
         }
       });
       sub = r && r.data ? r.data.subscription : null;
     });
-    return () => { if (sub) sub.unsubscribe(); };
+    return () => {
+      active = false;
+      pendingAdoptionRef.current = null;
+      if (sub) sub.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,29 +118,46 @@ export default function Shell({ children }) {
   async function onSignedIn(session) {
     const user = session.user;
     const account = "sb-" + user.id;
-    let adopted = false;
-    try {
-      await ensureDeviceIdentity();
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + session.access_token,
-        },
-        body: JSON.stringify({ user: account }),
-      });
-      if (!response.ok) throw new Error("identity adoption failed");
-      const adoption = await response.json();
-      if (adoption.correctionProfileUpdated === false) {
-        setAuthNotice("signed in — corrections moved; stylist profile refresh is pending");
-      }
-      adopted = true;
-    } catch {
-      setAuthNotice("signed in, but this device's taste could not be adopted");
+    const currentIdentity = getUid();
+    if (currentIdentity === account) return;
+    if (pendingAdoptionRef.current?.account === account) {
+      return pendingAdoptionRef.current.promise;
     }
-    if (adopted) {
-      try { window.localStorage.setItem("asilum-uid", account); } catch {}
-      setAuthNotice(`signed in as ${user.email || user.id}`);
+    if (currentIdentity?.startsWith("sb-")) clearFitProfile();
+
+    const pending = { account, promise: null };
+    pendingAdoptionRef.current = pending;
+    pending.promise = (async () => {
+      let adopted = false;
+      try {
+        const device = await (deviceIdentityRef.current || ensureDeviceIdentity());
+        if (!device) throw new Error("device identity unavailable");
+        const response = await fetch("/api/auth", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + session.access_token,
+          },
+          body: JSON.stringify({ user: account }),
+        });
+        if (!response.ok) throw new Error("identity adoption failed");
+        const adoption = await response.json();
+        if (adoption.correctionProfileUpdated === false) {
+          setAuthNotice("signed in — corrections moved; stylist profile refresh is pending");
+        }
+        adopted = true;
+      } catch {
+        if (pendingAdoptionRef.current === pending) {
+          setAuthNotice("signed in, but this device's taste could not be adopted");
+        }
+      }
+      if (adopted && pendingAdoptionRef.current === pending) {
+        setUid(account);
+        setAuthNotice(`signed in as ${user.email || user.id}`);
+      }
+    })();
+    try { await pending.promise; } finally {
+      if (pendingAdoptionRef.current === pending) pendingAdoptionRef.current = null;
     }
   }
 
