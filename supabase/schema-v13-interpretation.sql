@@ -32,6 +32,15 @@ CREATE TABLE IF NOT EXISTS unknown_queries (
   reviewed_by TEXT,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Repair an early v13 application that used DEFAULT 1 / CHECK (> 0).
+-- These ALTERs make a rerun converge on the corrected definition instead of
+-- letting CREATE TABLE IF NOT EXISTS silently preserve the bad defaults.
+ALTER TABLE unknown_queries ALTER COLUMN demand_count SET DEFAULT 0;
+ALTER TABLE unknown_queries ALTER COLUMN distinct_identities SET DEFAULT 0;
+ALTER TABLE unknown_queries DROP CONSTRAINT IF EXISTS unknown_queries_demand_count_check;
+ALTER TABLE unknown_queries ADD CONSTRAINT unknown_queries_demand_count_check CHECK (demand_count >= 0);
+ALTER TABLE unknown_queries DROP CONSTRAINT IF EXISTS unknown_queries_distinct_identities_check;
+ALTER TABLE unknown_queries ADD CONSTRAINT unknown_queries_distinct_identities_check CHECK (distinct_identities >= 0);
 -- open-queue reads: highest demand first among observed
 CREATE INDEX IF NOT EXISTS unknown_queries_open
   ON unknown_queries (demand_count DESC, last_seen DESC) WHERE status = 'observed';
