@@ -51,14 +51,19 @@ lib/asterisk/            Asterisk AI services (orchestration layer)
   explain.js             explanation system + correction loop       [Day 11]
   queryRouter.js         query classification → entity resolution   [Day 12 v1]
   culture.js             234 curated entities: aesthetics w/ alias
-                         networks + honest trend phases (rising/
-                         peaking/declining/dated, lastReviewed),
-                         artist style-eras, style-canon figures.
-                         Researched provenance curated-web-informed-
-                         2026-07; refresh via the P2 research
-                         pipeline, never silent edits.  [Day 12 v1-v3]
+                         networks, artist style-eras, style-canon
+                         figures. Researched provenance curated-web-
+                         informed-2026-07; refresh via the P2 research
+                         pipeline, never silent edits. Lifecycle calls
+                         live in trends.js, NOT here.   [Day 12 v1-v3]
   vision/                fine-grained garment attributes            [P3]
-  trends.js              trend lifecycle intelligence               [P4]
+  trends.js              trend lifecycle intelligence — THE trend
+                         source of truth: aesthetic phase calls
+                         (rising/peaking/declining/dated/classic,
+                         extracted from culture.js) + re-exported
+                         garment snapshot (lib/ai/trendKnowledge.js).
+                         One review clock; both layers gated by
+                         scripts/check-trend-freshness.   [Day 14 v1]
   predictions.js         future-interest estimation                 [P5]
 lib/ai/                  model seam (adapter, prompts, validation) — unchanged home
 lib/brain/               Alpha base layer — never modified
