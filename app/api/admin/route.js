@@ -244,6 +244,20 @@ export async function POST(req) {
         const { draftProposalsFromSource } = await import("../../../lib/asterisk/research.js");
         return NextResponse.json(await draftProposalsFromSource());
       }
+      case "profile.rooms.list": {
+        const { listProfileRooms } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ rooms: await listProfileRooms({
+          status: body.status === "all" ? null : (body.status || null), limit: body.limit || 100 }) });
+      }
+      case "profile.room.moderate": {
+        const { setProfileRoomModeration } = await import("../../../lib/db/production.js");
+        if (!["visible", "under_review", "hidden"].includes(body.status)) {
+          return NextResponse.json({ error: "status must be visible, under_review, or hidden" }, { status: 400 });
+        }
+        const room = await setProfileRoomModeration(body.accountId, body.status);
+        return room ? NextResponse.json({ room })
+                    : NextResponse.json({ error: "room not found" }, { status: 404 });
+      }
       case "moderation.list": {
         const { listModerationTasks } = await import("../../../lib/db/production.js");
         return NextResponse.json({ tasks: await listModerationTasks({

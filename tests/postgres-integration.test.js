@@ -150,7 +150,45 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 16);
+  assert.equal(schema.rows[0].version, 17);
+
+  // v17 profile rooms: account-uuid domain (ADR-002), unique handles,
+  // module cascade, purge coverage.
+  const themeRegistry = await pool.query("SELECT count(*)::int AS n FROM profile_themes");
+  assert.ok(themeRegistry.rows[0].n >= 5, "the five seed skins must exist");
+  const accountA = randomUUID();
+  const accountB = randomUUID();
+  const roomHandle = `it-${suffix.slice(0, 12)}`;
+  // profile_rooms carries an FK to auth.users wherever the auth schema
+  // exists (Supabase, and CI's shim) — give the test accounts parent rows.
+  const authUsersPresent = (await pool.query(
+    "SELECT to_regclass('auth.users') IS NOT NULL AS present")).rows[0].present;
+  if (authUsersPresent) {
+    await pool.query(
+      "INSERT INTO auth.users (id) VALUES ($1::uuid), ($2::uuid) ON CONFLICT DO NOTHING",
+      [accountA, accountB]);
+  }
+  try {
+    await production.upsertProfileRoom(accountA, { handle: roomHandle, themeId: "after-dark", published: true });
+    await assert.rejects(() => production.upsertProfileRoom(accountB, { handle: roomHandle }),
+      /handle-taken/, "handles must be unique across accounts");
+    await production.setProfileModule(accountA, "statement", { content: { text: "integration words" } });
+    await assert.rejects(() => production.setProfileModule(accountB, "statement", { content: { text: "x" } }),
+      /room-required/, "modules require the room row");
+    const storedRoom = await production.getProfileRoomByHandle(roomHandle);
+    assert.equal(storedRoom.accountId, accountA);
+    assert.equal(storedRoom.themeId, "after-dark");
+    await production.purgePersonalizationData("sb-" + accountA);
+    assert.equal(await production.getProfileRoom(accountA), null, "purge erases the room");
+    const orphanModules = await pool.query(
+      "SELECT count(*)::int AS n FROM profile_modules WHERE account_id=$1::uuid", [accountA]);
+    assert.equal(orphanModules.rows[0].n, 0, "modules cascade with the room");
+  } finally {
+    await pool.query("DELETE FROM profile_rooms WHERE account_id=ANY($1::uuid[])", [[accountA, accountB]]);
+    if (authUsersPresent) {
+      await pool.query("DELETE FROM auth.users WHERE id=ANY($1::uuid[])", [[accountA, accountB]]);
+    }
+  }
 
   const railRegistry = await pool.query("SELECT count(*)::int AS n FROM discover_rails");
   assert.ok(railRegistry.rows[0].n >= 4, "the four seed rails must exist");
@@ -172,9 +210,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     FROM pg_class AS c
     JOIN pg_namespace AS n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
-      AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items', 'discover_rails', 'user_rail_prefs')
+      AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items', 'discover_rails', 'user_rail_prefs',
+                        'profile_themes', 'profile_rooms', 'profile_modules')
     ORDER BY c.relname`);
-  assert.equal(memorySecurity.rows.length, 5);
+  assert.equal(memorySecurity.rows.length, 8);
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
     assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);

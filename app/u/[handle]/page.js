@@ -4,28 +4,53 @@
 // Banner, avatar, identity, follow button, their posts, and pieces in their
 // aesthetic. Users are placeholder accounts until real ones exist.
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { thumbFor, hashStr } from "../../../lib/client.js";
 import { MOCK_USERS, listPosts, postStats, timeAgo } from "../../../lib/social.js";
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
+import { PublicRoom } from "../../components/ProfileRoom.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
 
 export default function UserPage({ params }) {
   const fit = useFitBrain();
-  const handle = decodeURIComponent(params.handle || "");
+  // Next 16 passes params as a promise — unwrap it, or the first render
+  // sees an empty handle and every lookup below misfires.
+  const handle = decodeURIComponent(use(params).handle || "");
   const user = MOCK_USERS.find((u) => u.handle === handle);
   const [pieces, setPieces] = useState([]);
   const [posts, setPosts] = useState([]);
+  // Real claimed rooms (Feature E) take precedence over the demo layer.
+  // Claimed handles never start with "@", mock handles always do — the
+  // fetch is skipped where it cannot match.
+  const [room, setRoom] = useState(null);
+  const [roomChecked, setRoomChecked] = useState(!handle || handle.startsWith("@"));
 
   useEffect(() => {
     setPosts(listPosts().filter((p) => p.handle === handle));
+    let stale = false;
+    if (handle && !handle.startsWith("@")) {
+      fetch("/api/profile/room?handle=" + encodeURIComponent(handle))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (!stale) { setRoom(d?.room || null); setRoomChecked(true); } })
+        .catch(() => { if (!stale) setRoomChecked(true); });
+    }
     if (user) {
       fetch("/api/discover?tag=" + encodeURIComponent(user.tags[0]) + "&limit=8")
         .then((r) => r.json())
-        .then((d) => setPieces(d.items || []))
+        .then((d) => { if (!stale) setPieces(d.items || []); })
         .catch(() => {});
     }
+    return () => { stale = true; };
   }, [handle]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (room) {
+    return (
+      <div className="wrap">
+        <PublicRoom room={room} handle={handle} />
+      </div>
+    );
+  }
+  if (!roomChecked) return <div className="wrap"><div className="empty">…</div></div>;
 
   if (!user) {
     return (

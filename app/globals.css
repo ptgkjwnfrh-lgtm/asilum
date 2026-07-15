@@ -776,3 +776,34 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .railitem em { font-style: normal; font-size: 9px; color: #999; }
 .railrestore { justify-self: start; margin-left: 0; border: 1px solid var(--line); padding: 4px 10px; }
 .railerr { font-size: 10px; color: var(--red); letter-spacing: 0.06em; }
+
+/* ── Profile rooms (Feature E) ──────────────────────────────────────────────
+   Theme tokens (--room-*) apply ONLY inside .room / .roomswatch — the
+   magazine shell never re-themes. */
+.roomcard { border: 1px solid var(--line); padding: 16px 18px; margin: 18px 0; }
+.roomgrid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 22px; }
+@media (max-width: 760px) { .roomgrid { grid-template-columns: minmax(0,1fr); } }
+.roomrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
+.roomerr { font-size: 10px; color: var(--red); letter-spacing: 0.06em; margin: 6px 0; }
+.roomstatement { width: 100%; margin-bottom: 6px; }
+.roomswatch { border-width: 1px; border-color: var(--room-ink); background: var(--room-paper); color: var(--room-ink); font: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; padding: 6px 10px; cursor: pointer; }
+.roomswatch b { color: var(--room-accent); }
+.roomswatch.cur { outline: 2px solid var(--room-accent); }
+.room { border-width: 2px; border-color: var(--room-ink); background: var(--room-paper); color: var(--room-ink); padding: 18px 20px; margin: 14px 0; }
+.roombanner { color: var(--room-accent); font-weight: 900; letter-spacing: 0.3em; white-space: nowrap; overflow: hidden; }
+.roomhead { display: flex; align-items: baseline; gap: 12px; margin: 10px 0 4px; }
+.roomtitle { font-size: 44px; font-weight: 900; letter-spacing: -0.01em; margin: 0; }
+.roomstar { color: var(--room-accent); }
+.roomskin { font-size: 10px; letter-spacing: 0.14em; opacity: 0.6; }
+.roomsub { font-size: 10px; font-weight: 900; letter-spacing: 0.18em; color: var(--room-accent); margin: 16px 0 4px; }
+.roomtext { font-size: 14px; line-height: 1.6; white-space: pre-wrap; max-width: 640px; margin: 0; }
+.roomanthem { border: 1px solid var(--room-ink); color: inherit; text-decoration: none; font-size: 11px; padding: 6px 10px; }
+.roomanthem b { letter-spacing: 0.08em; }
+.roompieces { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+.roompiece { flex: 0 0 110px; display: grid; gap: 3px; color: inherit; text-decoration: none; }
+.roompiece img { width: 110px; height: 138px; object-fit: cover; border: 1px solid var(--room-ink); }
+.roompiece span { font-size: 9px; font-weight: 900; line-height: 1.3; }
+.roomfoot { display: flex; gap: 12px; align-items: baseline; margin-top: 18px; font-size: 9px; opacity: 0.75; }
+.roomfoot em { font-style: normal; color: var(--room-accent); }
+.roomreport { margin-left: auto; border: none; background: none; font: inherit; font-size: 9px; letter-spacing: 0.12em; color: var(--room-accent); cursor: pointer; }
+.roommods .chip, .roomthemes { margin-top: 2px; }

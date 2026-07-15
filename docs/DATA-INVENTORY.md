@@ -17,6 +17,7 @@ proposals — final periods are owner decision #10 with counsel.
 | Corrections | `user_corrections` | personal retraining, moderation | server-only | account lifetime | visible via /api/why history |
 | Measurements (body) | v12 measurements store | first-party fit ONLY — never external (invariant) | server-only, never in model payloads | until user clears | `/api/measurements` PUT/clear |
 | Wardrobe items + garment photos | `wardrobe_items` + private Supabase Storage | owned-piece styling and color statistics | owner-only server routes; 5-minute signed URLs | until piece or personalization deletion | per-upload consent; erase photo/piece; privacy delete |
+| Profile room (handle, theme, statement, anthem picks) | `profile_rooms`/`profile_modules` (account-uuid keyed, ADR-002) | user-authored public profile page | server-only; PUBLIC once published + moderation-visible | account lifetime | publish/unpublish, edit, privacy delete; statement screen → human review |
 | Moodboard uploads (filenames, palette swatches — NO image bytes today) | `mood_board_uploads` | taste training | owner-scoped | DRAFT: account lifetime | reset/delete via privacy delete |
 | Purchase tickets + user-reported outcomes | `purchase_tickets` | purchase assistance | server-only | DRAFT: 36 months | consent-gated creation |
 | Rate-limit subjects | `api_rate_limits` (sha-256 hashed) | abuse control | server-only | window + cleanup sweep | n/a (hashed) |
