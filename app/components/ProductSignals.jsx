@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { fitPhrase } from "../../lib/brain/sizing.js";
-import { fitProfileForBrain, loadFitProfile, loadServerFitProfile, saveFitProfile } from "../../lib/client.js";
+import {
+  fitProfileForBrain, getUid, loadFitProfile, loadServerFitProfile, saveFitProfile,
+} from "../../lib/client.js";
 
 // Shared, deliberately conspicuous product facts. Color is rendered only when
 // server-side merchant + image verification succeeded.
@@ -28,16 +30,45 @@ export function ColorEvidenceLine({ item, detailed = false }) {
   );
 }
 
-export function useFitBrain() {
+const fitRefreshes = new Map();
+
+// One identity-bound refresh is shared by every mounted product surface. The
+// identity check prevents a slow response from a previous account replacing
+// the active account's private measurements.
+export function refreshFitProfile() {
+  const identity = getUid() || "";
+  if (fitRefreshes.has(identity)) return fitRefreshes.get(identity);
+  const refresh = loadServerFitProfile(identity).then((server) => {
+    if ((getUid() || "") !== identity) return null;
+    return saveFitProfile(server);
+  }).finally(() => fitRefreshes.delete(identity));
+  fitRefreshes.set(identity, refresh);
+  return refresh;
+}
+
+export function useFitProfile() {
   const [profile, setProfile] = useState(() => loadFitProfile());
   useEffect(() => {
-    loadServerFitProfile().then((server) => {
-      if (Object.values(server || {}).some((value) => typeof value === "number" && value > 0)) {
-        saveFitProfile(server);
-        setProfile(server);
-      }
-    }).catch(() => {});
+    let active = true;
+    const sync = (event) => {
+      if (!active) return;
+      setProfile(event?.detail ? { ...event.detail } : loadFitProfile());
+    };
+    const refresh = () => refreshFitProfile().catch(() => {});
+    window.addEventListener("asilum:fit", sync);
+    window.addEventListener("asilum:identity", refresh);
+    refresh();
+    return () => {
+      active = false;
+      window.removeEventListener("asilum:fit", sync);
+      window.removeEventListener("asilum:identity", refresh);
+    };
   }, []);
+  return profile;
+}
+
+export function useFitBrain() {
+  const profile = useFitProfile();
   return fitProfileForBrain(profile);
 }
 

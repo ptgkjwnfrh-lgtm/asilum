@@ -12,7 +12,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
-  loadFitProfile, loadServerFitProfile, saveFitProfile, fitProfileForBrain, EMPTY_FIT,
+  fitProfileForBrain,
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
@@ -20,7 +20,7 @@ import {
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
-import { ColorEvidenceLine } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -278,7 +278,7 @@ export default function Home() {
   const [split, setSplit] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [fit, setFit] = useState(EMPTY_FIT);
+  const fit = useFitProfile();
   const [savedIds, setSavedIds] = useState(() => new Set());
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [notice, setNotice] = useState("");
@@ -300,19 +300,6 @@ export default function Home() {
   const loadingMoreRef = useRef(false);
   const sentinelRef = useRef(null);
 
-  // Fit profile lives in the account panel now; stay in sync with it.
-  useEffect(() => {
-    setFit(loadFitProfile());
-    loadServerFitProfile(getUid()).then((server) => {
-      if (server.usualSize || Object.values(server).some((value) => typeof value === "number" && value > 0)) {
-        saveFitProfile(server);
-        setFit(server);
-      }
-    }).catch(() => {});
-    const sync = () => setFit(loadFitProfile());
-    window.addEventListener("asilum:fit", sync);
-    return () => window.removeEventListener("asilum:fit", sync);
-  }, []);
   const fitBrain = fitProfileForBrain(fit);
 
   // ---- Dwell tracking ----
@@ -754,7 +741,7 @@ export default function Home() {
           value={filters.maxPrice}
           onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
         />
-        <label className="toggle" title={fit.usualSize ? "" : "set your size in ACCOUNT first"}>
+        <label className="toggle" title={fit.usualSize ? "" : "set your size in PROFILE first"}>
           <input
             type="checkbox"
             disabled={!fit.usualSize}

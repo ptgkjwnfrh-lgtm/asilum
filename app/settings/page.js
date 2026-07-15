@@ -1,51 +1,27 @@
 "use client";
 
 // app/settings/page.js — SETTINGS.
-// Source connections, on-device taste observation, the usual
-// account settings, and the legal position (legitimate sources only).
+// On-device taste observation, privacy controls, and the legal position.
+// Identity, public profile, source connections, follows, and fit live on PROFILE.
 
 import { useEffect, useState } from "react";
 import { getUid, postJSON, sendJSON, clearLocalPersonalizationData } from "../../lib/client.js";
-import {
-  getProfileInfo, saveProfileInfo, observationOn, setObservation,
-} from "../../lib/social.js";
-
-const MARKETPLACES = ["eBay", "Pinterest", "Shopify"];
-const CONNECTABLE = new Set(["ebay", "pinterest", "shopify"]);
+import { observationOn, setObservation } from "../../lib/social.js";
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
   const [observe, setObserve] = useState(true);
-  const [info, setInfo] = useState(null);
   const [notice, setNotice] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
 
   useEffect(() => {
     setUid(getUid() || "");
-    setInfo(getProfileInfo());
     setObserve(observationOn());
     // Clear any stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
   }, []);
-
-  function statusFor(name) {
-    const key = name.toLowerCase();
-    return CONNECTABLE.has(key) ? "REQUIRES SETUP" : "COMING SOON";
-  }
-
-  async function link(name) {
-    const key = name.toLowerCase();
-    if (!CONNECTABLE.has(key)) { setNotice(name + " connection is not available yet"); return; }
-    const res = await postJSON("/api/connect", { user: uid, platform: key }).catch(() => null);
-    const d = res ? await res.json().catch(() => null) : null;
-    setNotice((d && d.message) || name + " linking is coming soon — real account setup required");
-  }
-
-  function saveInfo(k, v) {
-    setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
-  }
 
   async function resetTaste() {
     const response = await postJSON("/api/reset", { user: uid }).catch(() => null);
@@ -67,29 +43,11 @@ export default function SettingsPage() {
     setNotice(`personalization deleted; retained: ${(data.retained || []).join(", ")}`);
   }
 
-  if (!info) return <div className="wrap"><div className="empty">…</div></div>;
-
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>SETTINGS</h1>
-      <p className="deck">accounts, observation, and the fine print.</p>
+      <p className="deck">observation, privacy, and the fine print.</p>
       {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
-
-      <h3 className="statshead">SOURCE CONNECTIONS</h3>
-      {MARKETPLACES.map((m) => {
-        const st = statusFor(m);
-        return (
-          <div className="setrow" key={m}>
-            <span className="seticon">{m[0]}</span>
-            <div className="setinfo">
-              <div className="setname">{m}</div>
-              <div className="uhandle">{uid ? "device " + uid.slice(0, 10) + "…" : ""}</div>
-            </div>
-            <span className={"setstatus" + (st === "ACTIVE" ? " on" : "")}>{st}</span>
-            <button className="fitbtn soon" onClick={() => link(m)}>LINK</button>
-          </div>
-        );
-      })}
 
       <h3 className="statshead">ON-DEVICE TASTE OBSERVATION</h3>
       <div className="setrow">
@@ -109,23 +67,9 @@ export default function SettingsPage() {
         </button>
       </div>
 
-      <h3 className="statshead">ACCOUNT</h3>
-      <div className="fitform" style={{ maxWidth: 560 }}>
-        <label>
-          display name
-          <input type="text" value={info.name} onChange={(e) => saveInfo("name", e.target.value)} />
-        </label>
-        <label>
-          handle
-          <input type="text" value={info.handle} onChange={(e) => saveInfo("handle", e.target.value)} />
-        </label>
-        <label style={{ flex: 1, minWidth: 240 }}>
-          bio
-          <input type="text" value={info.bio} onChange={(e) => saveInfo("bio", e.target.value)} />
-        </label>
-      </div>
       <div className="controls">
         <span className="uhandle">device id: {uid}</span>
+        <a className="fitbtn" href="/profile">profile & connections →</a>
         <a className="fitbtn" href="/stats">brain health dashboard →</a>
       </div>
 
