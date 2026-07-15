@@ -12,6 +12,7 @@
     "db:configure-role": "node scripts/configure-database-role.mjs",
     "test": "node --test tests/*.test.js",
     "trends:check": "node scripts/check-trend-freshness.mjs",
+    "research:compile": "node scripts/compile-culture-research.mjs",
     "start": "next start"
   },
   "dependencies": {

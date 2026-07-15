@@ -17,6 +17,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const pool = await db.getPool();
   const userIds = [userId, from, to];
   const itemIds = [itemA.id, itemB.id];
+  const factIds = [];
 
   t.after(async () => {
     try {
@@ -40,6 +41,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       await pool.query("DELETE FROM popularity WHERE item_id=ANY($1::text[])", [itemIds]);
       await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [itemIds]);
       await pool.query("DELETE FROM items WHERE id=ANY($1::text[])", [itemIds]);
+      await pool.query("DELETE FROM learned_facts WHERE id=ANY($1::text[])", [factIds]);
       await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK").catch(() => {});
@@ -101,6 +103,19 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal((await db.getBoards(to)).length, 1);
   assert.equal((await db.getBoards(from)).length, 0);
   assert.equal((await db.getProfile(to)).long.MINIMAL, 0.7);
+
+  const fact = await production.createLearnedFact({
+    entityType: "test", entityId: suffix, claim: "concurrent review",
+    claimType: "test", sourceUrls: ["https://example.com/fact"],
+    verificationStatus: "discovered",
+  });
+  factIds.push(fact.id);
+  const competingReviews = await Promise.all([
+    production.updateLearnedFactStatus(fact.id, "pending_verification", null, "discovered"),
+    production.updateLearnedFactStatus(fact.id, "rejected", "integration-test", "discovered"),
+  ]);
+  assert.equal(competingReviews.filter(Boolean).length, 1,
+    "only one reviewer may advance the same fact version");
 
   await db.saveProfile(from, { long: { GORP: 0.5 } });
   await db.createBoard(from, "later source board");
