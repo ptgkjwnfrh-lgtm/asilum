@@ -57,6 +57,11 @@ test("preferences roundtrip through the facade", async () => {
   assert.deepEqual((await getMemoryPreferences(U)).hiddenSections, []);
 });
 
+test("preferences reject unknown and duplicate sections below the route layer", async () => {
+  await assert.rejects(() => saveMemoryPreferences(U, ["global", "global"]), TypeError);
+  await assert.rejects(() => saveMemoryPreferences(U, ["private-internals"]), TypeError);
+});
+
 test("MEMORY_SECTIONS is the drawer's exact section list", () => {
   assert.deepEqual([...MEMORY_SECTIONS], ["explicit", "inferred", "global", "uncertainty"]);
 });
@@ -76,6 +81,17 @@ test("follows: set, list newest-first, unset, kind validation, cap", async () =>
   for (let i = 0; i < 60; i++) await setFollow(user, "brand", `brand-${i}`, true);
   const capped = await setFollow(user, "brand", "one-too-many", true);
   assert.equal(capped.ok, false);
+  assert.equal((await setFollow(user, "brand", "brand-0", true)).ok, true,
+    "an existing follow stays idempotent when the cap is full");
+  assert.equal((await listFollows(user)).length, 50);
+  await purgePersonalizationData(user);
+});
+
+test("concurrent follows cannot race beyond the per-user cap", async () => {
+  const user = "u-memory-follow-race";
+  await Promise.all(Array.from({ length: 75 }, (_, index) =>
+    setFollow(user, "brand", `race-brand-${index}`, true)));
+  assert.equal((await listFollows(user)).length, 50);
   await purgePersonalizationData(user);
 });
 

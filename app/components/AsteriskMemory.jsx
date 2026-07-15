@@ -6,17 +6,35 @@
 // All data comes from GET /api/asterisk/memory — a read facade over the
 // existing stores; the only write here is section visibility (POST).
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authorizedFetch, postJSON, getUid } from "../../lib/client.js";
 
 export function useAsteriskMemory(open) {
   const [memory, setMemory] = useState(null);
   const [err, setErr] = useState("");
+  const [revision, setRevision] = useState(0);
+  const saving = useRef(false);
+
+  const reload = useCallback(() => {
+    setMemory(null);
+    setErr("");
+    setRevision((value) => value + 1);
+  }, []);
+
+  useEffect(() => {
+    const identityChanged = () => {
+      reload();
+    };
+    window.addEventListener("asilum:identity", identityChanged);
+    return () => window.removeEventListener("asilum:identity", identityChanged);
+  }, [reload]);
+
   useEffect(() => {
     if (!open) return;
     let dead = false;
     (async () => {
       try {
+        setErr("");
         const res = await authorizedFetch(`/api/asterisk/memory?user=${encodeURIComponent(getUid() || "")}`);
         const data = await res.json();
         if (dead) return;
@@ -27,13 +45,26 @@ export function useAsteriskMemory(open) {
       }
     })();
     return () => { dead = true; };
-  }, [open]);
+  }, [open, revision]);
 
   async function setHidden(hiddenSections) {
-    setMemory((m) => (m ? { ...m, preferences: { hiddenSections } } : m));
-    try { await postJSON("/api/asterisk/memory", { user: getUid(), hiddenSections }); } catch {}
+    if (saving.current) return;
+    saving.current = true;
+    try {
+      const res = await postJSON("/api/asterisk/memory", { user: getUid(), hiddenSections });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "could not save memory display settings");
+      setMemory((current) => current
+        ? { ...current, preferences: data.preferences }
+        : current);
+      setErr("");
+    } catch (error) {
+      setErr(error.message || "could not save memory display settings");
+    } finally {
+      saving.current = false;
+    }
   }
-  return { memory, err, setHidden };
+  return { memory, err, setHidden, reload };
 }
 
 function Row({ label, children }) {
@@ -80,7 +111,7 @@ export function MemorySections({ memory, setHidden, full = false }) {
             ? ex.follows.slice(0, full ? 50 : 6).map((f) => <em key={f.kind + f.target}>{f.target}</em>)
             : "no brands or people yet"}
         </Row>
-        <Row label="FIT PROFILE">{ex.measurements.set ? "set — values stay in settings" : "not set"}</Row>
+        <Row label="FIT PROFILE">{ex.measurements.set ? "set — values stay in profile" : "not set"}</Row>
         <Row label="CRAVING">per-request dial — never stored</Row>
       </Section>
       <Section id="inferred" title="WHAT WE INFERRED">
@@ -128,11 +159,18 @@ export function AsteriskDrawer() {
   const { memory, err, setHidden } = useAsteriskMemory(open);
   return (
     <>
-      <button className="tbtn" onClick={() => setOpen((o) => !o)}>
-        <b className="red">*</b> MEMORY
+      <button
+        className="asterisk-trigger"
+        aria-label="Asterisk memory"
+        aria-expanded={open}
+        aria-controls="asterisk-memory-drawer"
+        onClick={() => setOpen((o) => !o)}
+      >
+        <b className="asterisk-glyph" aria-hidden="true">*</b>
+        <span>ASTERISK</span>
       </button>
       {open && (
-        <div className="panel adrawer">
+        <div className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk memory">
           <div className="phead">ASTERISK MEMORY</div>
           {err && <div className="pempty">{err}</div>}
           {!err && !memory && <div className="pempty">reading…</div>}

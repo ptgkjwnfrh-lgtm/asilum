@@ -5,32 +5,47 @@
 // delete personalization) — all routed to the EXISTING endpoints per ADR-001;
 // this page owns no writes beyond section visibility.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MemorySections, useAsteriskMemory } from "../components/AsteriskMemory.jsx";
-import { postJSON, sendJSON, getUid } from "../../lib/client.js";
+import { clearLocalPersonalizationData, postJSON, sendJSON, getUid } from "../../lib/client.js";
 import { followedBrands, followedUsers } from "../../lib/social.js";
 
 const SYNC_KEY = "asilum-follows-synced";
 
 export default function AsteriskPage() {
-  const { memory, err, setHidden } = useAsteriskMemory(true);
+  const { memory, err, setHidden, reload } = useAsteriskMemory(true);
   const [confirmText, setConfirmText] = useState("");
   const [status, setStatus] = useState("");
+  const syncAttempts = useRef(new Set());
 
   // One-time graduation of localStorage follows into user_follows (ADR-001):
-  // only when the server list is empty, so a second device never clobbers.
+  // Reconcile only missing local follows; never remove or clobber follows
+  // learned on another device. Failed writes remain eligible on the next visit.
   useEffect(() => {
-    if (!memory || memory.explicit.follows.length) return;
-    if (typeof window === "undefined" || window.localStorage.getItem(SYNC_KEY)) return;
+    if (!memory || typeof window === "undefined") return;
+    const user = getUid() || "anonymous";
+    const syncKey = `${SYNC_KEY}:${user}`;
+    if (window.localStorage.getItem(syncKey) || syncAttempts.current.has(user)) return;
+    const server = new Set(memory.explicit.follows.map((f) => `${f.kind}\0${f.target}`));
     const local = [
       ...followedBrands().map((b) => ({ kind: "brand", target: b })),
       ...followedUsers().map((u) => ({ kind: "user", target: u })),
-    ];
-    if (!local.length) return;
-    window.localStorage.setItem(SYNC_KEY, "1");
+    ].filter((f) => !server.has(`${f.kind}\0${f.target}`));
+    if (!local.length) {
+      window.localStorage.setItem(syncKey, "1");
+      return;
+    }
+    syncAttempts.current.add(user);
     Promise.allSettled(local.map((f) => postJSON("/api/follow", { user: getUid(), ...f, follow: true })))
-      .then(() => setStatus(`synced ${local.length} local follow${local.length === 1 ? "" : "s"} to your memory`));
-  }, [memory]);
+      .then((results) => {
+        const synced = results.filter((result) => result.status === "fulfilled" && result.value.ok).length;
+        if (synced === local.length) window.localStorage.setItem(syncKey, "1");
+        setStatus(synced === local.length
+          ? `synced ${synced} local follow${synced === 1 ? "" : "s"} to your memory`
+          : `synced ${synced} of ${local.length} local follows — the rest will retry next visit`);
+        if (synced) reload();
+      });
+  }, [memory, reload]);
 
   function exportMemory() {
     if (!memory) return;
@@ -47,8 +62,15 @@ export default function AsteriskPage() {
     const res = await sendJSON("DELETE", "/api/privacy", { user: getUid(), confirm: confirmText });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) { setStatus(data.error || "delete failed"); return; }
+    const user = getUid() || "anonymous";
+    try {
+      window.localStorage.removeItem(SYNC_KEY);
+      window.localStorage.removeItem(`${SYNC_KEY}:${user}`);
+    } catch {}
+    clearLocalPersonalizationData();
     setConfirmText("");
     setStatus("personalization erased — " + (data.retained || []).join(", ") + " retained");
+    reload();
   }
 
   return (

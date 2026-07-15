@@ -24,6 +24,15 @@ CREATE TABLE IF NOT EXISTS asterisk_memory_preferences (
   hidden_sections JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Reruns must converge if v14 was applied before the constraint shipped.
+ALTER TABLE asterisk_memory_preferences
+  DROP CONSTRAINT IF EXISTS asterisk_memory_preferences_hidden_sections_check;
+ALTER TABLE asterisk_memory_preferences
+  ADD CONSTRAINT asterisk_memory_preferences_hidden_sections_check CHECK (
+    jsonb_typeof(hidden_sections) = 'array'
+    AND hidden_sections <@ '["explicit","inferred","global","uncertainty"]'::jsonb
+    AND jsonb_array_length(hidden_sections) <= 4
+  );
 
 CREATE TABLE IF NOT EXISTS user_follows (
   user_id TEXT NOT NULL CHECK (char_length(user_id) BETWEEN 1 AND 80),
@@ -38,6 +47,7 @@ CREATE INDEX IF NOT EXISTS user_follows_by_user
 
 ALTER TABLE asterisk_memory_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_follows ENABLE ROW LEVEL SECURITY;
+REVOKE ALL PRIVILEGES ON TABLE asterisk_memory_preferences, user_follows FROM PUBLIC;
 
 -- anon/authenticated exist on Supabase, not on plain CI Postgres — guard.
 DO $$

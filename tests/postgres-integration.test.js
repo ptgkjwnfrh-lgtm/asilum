@@ -155,7 +155,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const memorySecurity = await pool.query(`
     SELECT c.relname,
       c.relrowsecurity AS rls,
-      has_table_privilege('asilum_app', format('public.%I', c.relname), 'SELECT,INSERT,UPDATE,DELETE') AS app_access
+      has_table_privilege('asilum_app', format('public.%I', c.relname), 'SELECT,INSERT,UPDATE,DELETE') AS app_access,
+      EXISTS (SELECT 1 FROM aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner)))
+        WHERE grantee=0 AND privilege_type='SELECT') AS public_read
     FROM pg_class AS c
     JOIN pg_namespace AS n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
@@ -165,6 +167,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
     assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);
+    assert.equal(row.public_read, false, `${row.relname} must not be publicly readable`);
   }
 
   await production.setFollow(from, "brand", "Integration Brand", true);

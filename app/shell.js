@@ -228,6 +228,7 @@ export default function Shell({ children }) {
         <a className="wordmark" href="/" title="back to the feed">
           <i>*</i>ASILUM<em>magazine</em>
         </a>
+        <AsteriskDrawer />
         <nav className="snavs">
           {NAV.map((n) => (
             <a key={n.href} className={"snav" + (pathname === n.href ? " cur" : "")} href={n.href}>
@@ -255,7 +256,6 @@ export default function Shell({ children }) {
         <button className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
         </button>
-        <AsteriskDrawer />
       </div>
 
       {searchOpen && results && (
