@@ -1,1 +1,422 @@
-[]
+[
+  {
+    "kind": "aesthetic",
+    "name": "barbiecore",
+    "aliases": [
+      "barbie pink"
+    ],
+    "note": "the 2022-23 hot-pink wave that rode the movie — kept for search coverage",
+    "interpretations": [
+      {
+        "id": "barbiecore/core",
+        "label": "barbiecore",
+        "type": "aesthetic",
+        "summary": "head-to-toe hot pink, hyperfeminine silhouettes at full volume — doll-logic dressing without irony",
+        "tags": [
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "pink"
+        ],
+        "moods": [
+          "playful",
+          "glossy"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-b0fdba98-59d0-4f2b-b8bc-916fcc46b0ea",
+    "sourceUrls": [
+      "https://time.com/6290606/barbiecore-trend-history/",
+      "https://www.today.com/style/celeb-style/what-is-barbiecore-trend-rcna36927"
+    ],
+    "approvedAt": 1784078951639
+  },
+  {
+    "kind": "film",
+    "name": "challengers",
+    "aliases": [
+      "challengers movie"
+    ],
+    "note": "the film that put tenniscore on the street — method dressing as marketing",
+    "interpretations": [
+      {
+        "id": "challengers/court",
+        "label": "the court",
+        "type": "atmosphere",
+        "summary": "wimbledon whites, pleated skirts, polos and crew socks — competitive prep worn off-court",
+        "tags": [
+          "minimal",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "green"
+        ],
+        "moods": [
+          "crisp",
+          "competitive"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "challengers/tashi",
+        "label": "tashi — off-court polish",
+        "type": "character",
+        "summary": "clean athletic lines sharpened into eveningwear — sport silhouettes with couture posture",
+        "tags": [
+          "minimal",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "polished",
+          "severe"
+        ],
+        "confidence": 0.65
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-f0f5a335-f93a-4955-8797-e19128a3772e",
+    "sourceUrls": [
+      "https://www.tennis.com/baseline/articles/year-tenniscore-zendaya-challengers-effect-transform-tennis-fashion-loewe-sinner-osaka-federer-nadal",
+      "https://www.yahoo.com/entertainment/tenniscore-is-on-the-rise-thanks-to-challengers-why-fans-are-leaning-in-to-method-dressing-at-the-movies-181004219.html"
+    ],
+    "approvedAt": 1784078952591
+  },
+  {
+    "kind": "aesthetic",
+    "name": "fisherman aesthetic",
+    "aliases": [
+      "fisherman core",
+      "fishermancore"
+    ],
+    "note": "pinterest-anointed 2025 wave — maritime utility with quiet-luxury polish",
+    "interpretations": [
+      {
+        "id": "fisherman aesthetic/core",
+        "label": "fisherman aesthetic",
+        "type": "aesthetic",
+        "summary": "cable knits, waxed jackets, chunky beanies, boat shoes, rope details — dressed like the catch matters",
+        "tags": [
+          "utilitarian",
+          "gorp",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "cream",
+          "yellow"
+        ],
+        "moods": [
+          "weathered",
+          "practical"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-bea69ff0-d1c2-4d0d-9acd-d9285e1a8d85",
+    "sourceUrls": [
+      "https://www.whowhatwear.com/fashion/fisherman-aesthetic-fashion-trend-2025",
+      "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
+    ],
+    "approvedAt": 1784078949626
+  },
+  {
+    "kind": "aesthetic",
+    "name": "light academia",
+    "aliases": [
+      "light-academia"
+    ],
+    "note": "the sunlit sibling of dark academia — same library, better weather",
+    "interpretations": [
+      {
+        "id": "light academia/core",
+        "label": "light academia",
+        "type": "aesthetic",
+        "summary": "cream cable-knit vests, linen trousers, ivory tweed and soft cotton — scholarly romance in daylight tones",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "cream",
+          "beige",
+          "white"
+        ],
+        "moods": [
+          "soft",
+          "romantic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-184305e1-0c82-4c4c-a337-b2f8a6dc2fa2",
+    "sourceUrls": [
+      "https://aesthetics.fandom.com/wiki/Light_Academia",
+      "https://www.popscotch.com/aesthetics/light-academia"
+    ],
+    "approvedAt": 1784078950663
+  },
+  {
+    "kind": "aesthetic",
+    "name": "mcbling",
+    "aliases": [
+      "mc bling",
+      "2000s bling"
+    ],
+    "note": "mid-2000s tabloid maximalism — distinct from y2k futurism, often mislabeled as it",
+    "interpretations": [
+      {
+        "id": "mcbling/core",
+        "label": "mcbling",
+        "type": "aesthetic",
+        "summary": "rhinestones on everything, velour tracksuits, visible logos, baguette bags, trucker hats — glamour played loud",
+        "tags": [
+          "statement",
+          "streetwear",
+          "seductive"
+        ],
+        "colors": [
+          "pink",
+          "gold",
+          "white"
+        ],
+        "moods": [
+          "playful",
+          "glossy"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-29929414-5efe-4dec-990d-d4648e0a0b29",
+    "sourceUrls": [
+      "https://aesthetics.fandom.com/wiki/McBling",
+      "https://hbx.com/journal/2022/10/exploring-accelerated-trend-cycles-from-y2k-to-mcbling"
+    ],
+    "approvedAt": 1784078950979
+  },
+  {
+    "kind": "aesthetic",
+    "name": "moto boho",
+    "aliases": [
+      "moto-boho",
+      "biker boho"
+    ],
+    "note": "the 2025 runway-led collision — bohemian softness in biker armor",
+    "interpretations": [
+      {
+        "id": "moto boho/core",
+        "label": "moto boho",
+        "type": "aesthetic",
+        "summary": "leather moto shells over gauzy lace, fringe and suede against studs — romantic pieces made road-worthy",
+        "tags": [
+          "independent",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "brown",
+          "black",
+          "cream"
+        ],
+        "moods": [
+          "rugged",
+          "romantic"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-38bae02c-f8fb-469d-a647-a10e88ddc634",
+    "sourceUrls": [
+      "https://hypebae.com/2025/2/moto-boho-trend-explained-chloe-ann-demeulemeester-isabel-marant-dsquared2-pinterest-olsens-ss25",
+      "https://www.lofficielusa.com/fashion/moto-boho-trend-2025-tiktok"
+    ],
+    "approvedAt": 1784078949986
+  },
+  {
+    "kind": "aesthetic",
+    "name": "rockstar girlfriend",
+    "aliases": [
+      "rockstar gf",
+      "rock star girlfriend"
+    ],
+    "note": "the muse's wardrobe — kate moss and anita pallenberg as source code",
+    "interpretations": [
+      {
+        "id": "rockstar girlfriend/core",
+        "label": "rockstar girlfriend",
+        "type": "aesthetic",
+        "summary": "leather trench over a band tee, fishnets, black sunglasses indoors — morning-after glamour worn on purpose",
+        "tags": [
+          "seductive",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "red"
+        ],
+        "moods": [
+          "nocturnal",
+          "raw"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-28fd2ea7-491b-416a-8351-7ee0ab5c511e",
+    "sourceUrls": [
+      "https://aesthetics.fandom.com/wiki/Rockstar_GF",
+      "https://www.distractify.com/p/rockstar-girlfriend-aesthetic"
+    ],
+    "approvedAt": 1784078951311
+  },
+  {
+    "kind": "film",
+    "name": "saltburn",
+    "aliases": [
+      "saltburn movie"
+    ],
+    "note": "one estate summer, two wardrobes — never blended",
+    "interpretations": [
+      {
+        "id": "saltburn/felix",
+        "label": "felix — oxford ease",
+        "type": "character",
+        "summary": "rugby shirts, polos, linen and relaxed tailoring worn carelessly — mid-2000s aristocratic prep",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "cream",
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "effortless",
+          "golden"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "saltburn/indie-sleaze",
+        "label": "the 2006 campus",
+        "type": "atmosphere",
+        "summary": "skinny layers, dishevelment, flash-photo party wear — the indie sleaze backdrop the film reignited",
+        "tags": [
+          "independent",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "grey"
+        ],
+        "moods": [
+          "raw",
+          "nocturnal"
+        ],
+        "confidence": 0.65
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-c155df2e-804d-49f4-9726-12df1fc4b200",
+    "sourceUrls": [
+      "https://wwd.com/eye/lifestyle/saltburn-costumes-sophie-canale-jacob-elordi-barry-keoghan-1235926385/",
+      "https://www.refinery29.com/en-us/saltburn-indie-sleaze-2000s-fashion"
+    ],
+    "approvedAt": 1784078952278
+  },
+  {
+    "kind": "aesthetic",
+    "name": "tenniscore",
+    "aliases": [
+      "tennis core",
+      "court prep"
+    ],
+    "note": "court-to-street prep, super-charged by the challengers press tour",
+    "interpretations": [
+      {
+        "id": "tenniscore/core",
+        "label": "tenniscore",
+        "type": "aesthetic",
+        "summary": "pleated whites, polos, cable-knit sweaters over the shoulders, crew socks — posh athletic ease",
+        "tags": [
+          "minimal",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "green",
+          "cream"
+        ],
+        "moods": [
+          "polished",
+          "playful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-d56de7c8-0e96-4b00-b9eb-131804e03dc8",
+    "sourceUrls": [
+      "https://www.tennis.com/baseline/articles/year-tenniscore-zendaya-challengers-effect-transform-tennis-fashion-loewe-sinner-osaka-federer-nadal",
+      "https://www.purewow.com/fashion/tenniscore-trend"
+    ],
+    "approvedAt": 1784078950319
+  },
+  {
+    "kind": "aesthetic",
+    "name": "trad goth",
+    "aliases": [
+      "traditional goth",
+      "80s goth"
+    ],
+    "note": "the original batcave look — post-punk source code, never fully out of print",
+    "interpretations": [
+      {
+        "id": "trad goth/core",
+        "label": "trad goth",
+        "type": "aesthetic",
+        "summary": "backcombed black hair, victorian lace against torn fishnet, winklepickers, silver occult jewelry — DIY drama",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "purple",
+          "silver"
+        ],
+        "moods": [
+          "nocturnal",
+          "moody"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day16-pr-review",
+    "factId": "fact-2cc50782-14df-437d-9ed3-2144c04e9475",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Goth_subculture",
+      "https://aesthetics.fandom.com/wiki/Trad_Goth"
+    ],
+    "approvedAt": 1784078951962
+  }
+]
