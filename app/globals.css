@@ -729,3 +729,23 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   }
   .amemlbl { flex-basis: 84px; }
 }
+
+/* ── Wardrobe (Feature C, Phase 3a) ─────────────────────────────────────── */
+.wstrip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; border: 1px solid var(--line); padding: 10px 12px; margin: 12px 0; }
+.wstriplbl { font-size: 10px; font-weight: 900; letter-spacing: 0.14em; margin-right: 4px; white-space: nowrap; }
+.wchip { border: 1px solid var(--line); background: var(--paper); font: inherit; font-size: 11px; padding: 3px 10px; cursor: pointer; }
+.wchip:hover { border-color: var(--red); color: var(--red); }
+.wchip.cur { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.wtab { display: grid; gap: 10px; padding: 12px 0; }
+.wadd { display: flex; flex-wrap: wrap; gap: 8px; }
+.wadd input, .wadd select { border: 1px solid var(--line); padding: 7px 10px; font: inherit; font-size: 12px; flex: 1; min-width: 120px; }
+.wadd input:focus, .wadd select:focus { outline: none; border-color: var(--red); }
+.wrow { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; }
+.winfo { flex: 1; min-width: 0; }
+.wttl { font-weight: 900; font-size: 13px; }
+.wttl em { font-style: normal; color: #999; font-weight: 400; font-size: 11px; }
+.wmeta { font-size: 11px; color: #666; }
+.wact { border: none; background: none; font: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; color: #999; cursor: pointer; }
+.wact:hover { color: var(--red); }
+.wtoggle { justify-self: start; border: 1px solid var(--line); padding: 5px 10px; }
+.wbtn { margin-top: 6px; font-size: 10px; }

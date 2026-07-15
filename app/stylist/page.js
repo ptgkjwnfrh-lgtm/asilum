@@ -10,7 +10,7 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   getUid, postJSON, thumbFor, bagAdd,
-  loadFitProfile,
+  loadFitProfile, authorizedFetch,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
@@ -22,7 +22,18 @@ export default function StylistPage() {
   const [notice, setNotice] = useState("");
   const [passed, setPassed] = useState(() => new Set());
   const [aiConsent, setAiConsent] = useState(false);
+  const [wardrobe, setWardrobe] = useState([]);
   const fit = useFitBrain();
+
+  // Owned pieces become anchors: FROM YOUR WARDROBE strip (Feature C).
+  useEffect(() => {
+    let dead = false;
+    authorizedFetch("/api/wardrobe?user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d) => { if (!dead) setWardrobe(d.items || []); })
+      .catch(() => {});
+    return () => { dead = true; };
+  }, []);
 
   const load = useCallback(async (anchor, allowAi = false) => {
     setLoading(true);
@@ -113,6 +124,20 @@ export default function StylistPage() {
         {" "}fit-gated when your size is set.
         {anchorId ? " styled around the piece you picked." : ""}
       </p>
+      {wardrobe.length > 0 && (
+        <div className="wstrip">
+          <span className="wstriplbl"><b className="red">*</b> FROM YOUR WARDROBE</span>
+          {wardrobe.slice(0, 8).map((piece) => (
+            <button
+              key={piece.id}
+              className={"wchip" + (anchorId === "wardrobe:" + piece.id ? " cur" : "")}
+              onClick={() => { setAnchorId("wardrobe:" + piece.id); load("wardrobe:" + piece.id, aiConsent); }}
+            >
+              {piece.title}{piece.brand ? " · " + piece.brand : ""}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="controls">
         <button className="btn" onClick={() => load(anchorId, aiConsent)}>REGENERATE</button>
         <a className="btn ghost" href="/profile#measurements">SET YOUR MEASUREMENTS</a>
@@ -139,7 +164,7 @@ export default function StylistPage() {
             <h3 className="statshead">{g.genre === "ANCHORED" ? "AROUND YOUR PIECE" : "BASE GENRE — " + g.genre}</h3>
             {g.looks.map((o) => {
               lookNo += 1;
-              const nSources = new Set(o.items.map((it) => sourceFor(it))).size;
+              const nSources = new Set(o.items.filter((it) => !it.owned).map((it) => sourceFor(it))).size;
               return (
                 <div className="otf" key={lookKey(o)}>
                   <div className="otfhead">
@@ -149,11 +174,15 @@ export default function StylistPage() {
                   </div>
                   <div className="otfrow">
                     {o.items.map((it) => (
-                      <a className="otfitem" key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
+                      <a
+                        className="otfitem"
+                        key={it.id}
+                        href={it.owned ? "/profile" : "/?item=" + encodeURIComponent(it.id)}
+                      >
                         <img src={it.img || thumbFor(it)} alt={it.title} />
                         <span className="otfttl">{it.title}</span>
                         <span className="otfprice">
-                          {sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
+                          {it.owned ? "YOUR WARDROBE" : sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
                         </span>
                         <ColorEvidenceLine item={it} />
                         <ProductFitLine item={it} fit={fit} />
