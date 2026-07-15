@@ -8,6 +8,7 @@ import {
 } from "../lib/asterisk/research.js";
 import { CULTURE, lookupCulture, validateCompiledResearchRecord } from "../lib/asterisk/culture.js";
 import { recordFact } from "../lib/asterisk/facts.js";
+import { interpretQuery } from "../lib/asterisk/queryRouter.js";
 
 const proposal = (over = {}) => ({
   kind: "aesthetic",
@@ -41,6 +42,20 @@ test("validation is atomic and names the defect", () => {
   assert.match(validateCultureProposal(proposal({
     interpretations: [{ ...proposal().interpretations[0], id: "wrong/core" }],
   })).error, /must be "test-core\//);
+  assert.match(validateCultureProposal(proposal({ aliases: Array(9).fill(0).map((_, i) => `alias-${i}`) })).error, /at most 8/);
+  assert.match(validateCultureProposal(proposal({
+    interpretations: [{ ...proposal().interpretations[0], colors: Array(7).fill(0).map((_, i) => `color-${i}`) }],
+  })).error, /colors allows at most 6/);
+});
+
+test("proposal names are canonicalized before collision and lookup", () => {
+  const result = validateCultureProposal(proposal({
+    name: "  test   spacing  ", aliases: ["test   spacing alias"],
+    interpretations: [{ ...proposal().interpretations[0], id: "test spacing/core" }],
+  }));
+  assert.equal(result.ok, true, result.error);
+  assert.equal(result.proposal.name, "test spacing");
+  assert.deepEqual(result.proposal.aliases, ["test spacing alias"]);
 });
 
 test("kinds come from the live catalog", () => {
@@ -104,6 +119,19 @@ test("full lifecycle: propose → review → approve → compile shape (memory s
   assert.equal(skipped.length, 0);
 });
 
+test("reviewer identities compile into safe deterministic provenance", async () => {
+  const staged = await proposeCultureEntity(proposal({
+    name: "reviewer-test", aliases: [],
+    interpretations: [{ ...proposal().interpretations[0], id: "reviewer-test/core" }],
+  }), SOURCES);
+  for (const [status, reviewer] of [
+    ["pending_verification", null], ["machine_reviewed", null], ["approved", "Jane Q. Reviewer"],
+  ]) assert.equal((await reviewResearch(staged.fact.id, status, reviewer)).ok, true);
+  const { records } = await approvedCultureProposals();
+  assert.equal(records.find((record) => record.name === "reviewer-test").provenance,
+    "research-approved-jane-q.-reviewer");
+});
+
 test("an approved proposal whose name was since curated is skipped, loudly", async () => {
   // "olsen twins" exists in the curated catalog — a stored approved payload
   // for it must be reported as skipped, never merged over curation.
@@ -138,14 +166,30 @@ test("curated records stay curated after the research merge runs at load", () =>
   assert.match(rec.interpretations[0].provenance, /^curated/);
 });
 
+test("research interpretations retain auditable provenance at read time", () => {
+  const rec = lookupCulture("barbie pink");
+  assert.equal(rec?.name, "barbiecore");
+  assert.match(rec.interpretations[0].provenance, /^research-approved-/);
+  assert.ok(rec.sourceUrls.every((url) => url.startsWith("https://")));
+  assert.ok(Number.isFinite(rec.approvedAt));
+});
+
+test("public interpretation results expose research source provenance", async () => {
+  const result = await interpretQuery("barbiecore");
+  assert.match(result.entity.knowledge.provenance, /^research-approved-/);
+  assert.equal(result.entity.knowledge.sourceUrls.length, 2);
+  assert.ok(result.entity.knowledge.approvedAt > 0);
+});
+
 test("compiled research records fail closed on malformed trusted data", () => {
   const compiled = {
-    ...proposal(), factId: "fact-test", provenance: "research-approved-tester",
+    ...proposal(), factId: "fact-00000000-0000-4000-8000-000000000000",
+    provenance: "research-approved-tester", approvedAt: Date.now(),
     sourceUrls: ["https://example.com/research"],
   };
-  const options = { kinds: new Set(CULTURE.map((record) => record.kind)), taken: new Set() };
+  const options = { allowedKinds: new Set(CULTURE.map((record) => record.kind)), takenNames: new Set() };
   assert.equal(validateCompiledResearchRecord(compiled, options), null);
   assert.match(validateCompiledResearchRecord({ ...compiled,
-    interpretations: [{ ...compiled.interpretations[0], tags: ["invented-tag"] }] }, options), /tags/);
+    interpretations: [{ ...compiled.interpretations[0], tags: ["invented-tag"] }] }, options), /tag/);
   assert.match(validateCompiledResearchRecord({ ...compiled, sourceUrls: ["https://localhost/research"] }, options), /source/);
 });
