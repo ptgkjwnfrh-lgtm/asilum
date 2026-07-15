@@ -9,11 +9,17 @@
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { interpretQuery } from "../../../lib/asterisk/queryRouter.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
+  const quota = await consumeRateLimit({
+    scope: "interpret", subject: requestSubject(req), limit: 180, windowMs: 60_000,
+  });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const q = (searchParams.get("q") || "").trim();
   if (!q || q.length > 120) {
     return NextResponse.json({ error: "q required (≤120 chars)" }, { status: 400 });

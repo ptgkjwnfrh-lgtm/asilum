@@ -95,3 +95,21 @@ test("account adoption moves boards, merges taste, and accepts later device data
   assert.equal((await getBoards(to)).length, 3);
   assert.ok((await getProfile(to)).long.GORP > 0);
 });
+
+test("one device cannot be adopted into two accounts concurrently", async () => {
+  const from = `u-${randomUUID()}`;
+  const targets = [`sb-${randomUUID()}`, `sb-${randomUUID()}`];
+  await saveProfile(from, { long: { MINIMAL: 0.9 }, session: {}, _meta: {} });
+  await createBoard(from, "single-owner board");
+
+  const results = await Promise.all(targets.map((target) => adoptAccountData(from, target)));
+  assert.equal(results.reduce((sum, result) => sum + result.movedBoards, 0), 1);
+  assert.equal((await getBoards(from)).length, 0);
+  assert.equal(
+    (await Promise.all(targets.map((target) => getBoards(target))))
+      .reduce((sum, boards) => sum + boards.length, 0),
+    1
+  );
+  const copiedProfiles = await Promise.all(targets.map((target) => getProfile(target)));
+  assert.equal(copiedProfiles.filter((profile) => profile.long?.MINIMAL === 0.9).length, 1);
+});

@@ -146,6 +146,6 @@ export async function GET(req) {
   try {
     return NextResponse.json({ uploads: await listMoodBoardUploads(user) });
   } catch {
-    return NextResponse.json({ uploads: [] });
+    return NextResponse.json({ error: "moodboard history unavailable" }, { status: 503 });
   }
 }

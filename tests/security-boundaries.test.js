@@ -63,8 +63,12 @@ test("upstream JSON reader enforces content type and decompressed size", async (
 test("external links cannot target local networks or nonstandard ports", () => {
   assert.equal(safeExternalUrl("https://127.0.0.1/admin"), null);
   assert.equal(safeExternalUrl("https://192.168.1.1/router"), null);
+  assert.equal(safeExternalUrl("https://[::ffff:127.0.0.1]/admin"), null);
+  assert.equal(safeExternalUrl("https://[fe80::1]/router"), null);
+  assert.equal(safeExternalUrl("https://[2001:db8::1]/documentation"), null);
   assert.equal(safeExternalUrl("https://merchant.example:8443/item"), null);
   assert.equal(safeExternalUrl("https://merchant.example/item"), "https://merchant.example/item");
+  assert.equal(safeExternalUrl("https://[2606:4700:4700::1111]/item"), "https://[2606:4700:4700::1111]/item");
 });
 
 test("public product payloads allowlist fields and nested metadata", () => {
