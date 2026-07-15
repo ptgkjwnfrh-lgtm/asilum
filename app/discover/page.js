@@ -76,7 +76,11 @@ export default function DiscoverPage() {
     let alive = true;
     authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + "&user=" + encodeURIComponent(getUid() || ""))
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (alive) { setReading(d && d.entity ? d : null); setActiveInterp(""); interpRef.current = null; } })
+      .then((d) => {
+        const keep = d && (d.entity || (d.interpretation &&
+          (["ambiguous", "composed"].includes(d.interpretation.method) || d.interpretation.flaggedForResearch)));
+        if (alive) { setReading(keep ? d : null); setActiveInterp(""); interpRef.current = null; }
+      })
       .catch(() => { if (alive) setReading(null); });
     return () => { alive = false; };
   }, [searched]);
@@ -236,6 +240,9 @@ export default function DiscoverPage() {
           <div className="areadhead">
             <b className="red">*</b> ASTERISK READS: {reading.entity.name.toUpperCase()}
             <em> {reading.entity.kind}</em>
+            {reading.interpretation && reading.interpretation.method !== "exact" ? (
+              <em> · {reading.interpretation.method === "recovered" ? "recovered reading" : reading.interpretation.method}</em>
+            ) : null}
             {reading.personalized ? <em> · ordered by your taste</em> : null}
           </div>
           <div className="areadpills">
@@ -254,6 +261,12 @@ export default function DiscoverPage() {
               {(reading.interpretations.find((i) => i.id === activeInterp) || {}).summary}
             </div>
           ) : null}
+          {reading.interpretation && reading.interpretation.confidence.interpretation != null ? (
+            <div className="areadnote">
+              interpretation confidence: <b>{Math.round(reading.interpretation.confidence.interpretation * 100)}%</b>
+              {reading.interpretation.assumptions[0] ? ` — ${reading.interpretation.assumptions[0]}` : ""}
+            </div>
+          ) : null}
           {reading.entity.trend ? (
             <div className="areadnote">
               trend: <b>{reading.entity.trend.phase}</b> — {reading.entity.trend.note}
@@ -263,6 +276,30 @@ export default function DiscoverPage() {
           {reading.entity.note ? <div className="areadnote">{reading.entity.note}</div> : null}
         </div>
       )}
+      {reading && !reading.entity && reading.interpretation &&
+        (reading.interpretation.method === "ambiguous" || reading.interpretation.method === "composed") && (
+        <div className="aread">
+          <div className="areadhead">
+            <b className="red">*</b> ASTERISK ASKS: {reading.interpretation.method === "ambiguous" ? "WHICH ONE?" : "READ AS A COMPOSITION"}
+          </div>
+          <div className="areadpills">
+            {reading.interpretation.alternatives.map((a) => (
+              <button key={a.feedbackId} className="apill"
+                onClick={() => { setQ(a.name); load(true, a.name); }}>
+                {a.name} <em>{a.kind}</em>
+              </button>
+            ))}
+          </div>
+          {reading.interpretation.assumptions[0] ? (
+            <div className="areadnote">{reading.interpretation.assumptions[0]}</div>
+          ) : null}
+        </div>
+      )}
+      {reading && reading.interpretation && reading.interpretation.flaggedForResearch ? (
+        <div className="areadnote">
+          <b className="red">*</b> asterisk flagged this for research — answering with its best current reading
+        </div>
+      ) : null}
       <hr className="rule" />
 
       {loading && items.length === 0 && <div className="empty">opening the racks…</div>}

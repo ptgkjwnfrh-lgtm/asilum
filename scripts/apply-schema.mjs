@@ -36,12 +36,20 @@ if (fs.existsSync(envPath)) {
     if (m && !(m[1] in process.env)) process.env[m[1]] = m[2];
   }
 }
-if (!process.env.DATABASE_URL) { console.error("DATABASE_URL is not set."); process.exit(1); }
+// Migrations run as the project OWNER. Since v11 the runtime DATABASE_URL
+// connects as the least-privilege asilum_app role, which (correctly) cannot
+// run DDL — so prefer DATABASE_ADMIN_URL and refuse a doomed run early.
+const adminUrl = process.env.DATABASE_ADMIN_URL || process.env.DATABASE_URL;
+if (!adminUrl) { console.error("DATABASE_ADMIN_URL (or DATABASE_URL) is not set."); process.exit(1); }
+if (!process.env.DATABASE_ADMIN_URL && /asilum_app/.test(adminUrl)) {
+  console.error("DATABASE_URL connects as asilum_app (no DDL). Set DATABASE_ADMIN_URL to the owner connection.");
+  process.exit(1);
+}
 
 const pgMod = await import("pg");
 const { Pool } = pgMod.default ?? pgMod;
 const { databaseSslConfig } = await import("../lib/db/index.js");
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: await databaseSslConfig() });
+const pool = new Pool({ connectionString: adminUrl, ssl: await databaseSslConfig() });
 
 async function apply(file) {
   const fullPath = path.resolve(root, file);
