@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 
 import { discoverRails, dayIndex, railsEnabled, RAIL_KINDS } from "../lib/discover/rails.js";
 import {
-  listDiscoverRails, getRailPrefs, setRailPref,
+  listDiscoverRails, getRailPrefs, setRailPref, updateDiscoverRail,
   purgePersonalizationData, adoptAccountData,
 } from "../lib/db/production.js";
 
@@ -66,6 +66,15 @@ test("consecutive days show disjoint picks when the pool holds two windows", asy
     const overlap = names(b, id).filter((n) => today.has(n));
     assert.equal(overlap.length, 0, `${id} rail must not repeat yesterday's picks`);
   }
+});
+
+test("registry updates validate input and are persistent-only operator actions", async () => {
+  await assert.rejects(() => updateDiscoverRail("BAD ID!", { enabled: false }), TypeError);
+  await assert.rejects(() => updateDiscoverRail("screen", {}), TypeError);
+  await assert.rejects(() => updateDiscoverRail("screen", { position: 5000 }), TypeError);
+  await assert.rejects(() => updateDiscoverRail("screen", { title: "" }), TypeError);
+  assert.equal(await updateDiscoverRail("screen", { enabled: false }), null,
+    "mem mode refuses — the persistent registry is the only real one");
 });
 
 test("prefs: set, merge into rails, validate, purge, adopt (account wins)", async () => {

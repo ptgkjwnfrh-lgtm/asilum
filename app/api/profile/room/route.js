@@ -26,6 +26,15 @@ import {
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../../lib/security/request.js";
 import { readJsonRequest } from "../../../../lib/security/json.js";
+import { recordEvent } from "../../../../lib/db/index.js";
+import { EVENTS } from "../../../../lib/events/index.js";
+
+// Room writes land in the canonical events ledger (audit trail, not a taste
+// signal). Write-then-event: an event failure fails the request loudly and
+// the idempotent upserts make the retry safe.
+function roomEvent(user, payload) {
+  return recordEvent({ userId: user, type: EVENTS.USER_UPDATED_PROFILE_ROOM, payload, at: Date.now() });
+}
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +122,7 @@ export async function POST(req) {
         return NextResponse.json({ error: "handle, themeId, or published required" }, { status: 400 });
       }
       await upsertProfileRoom(accountId, patch);
+      await roomEvent(user, { op: "room.set", fields: Object.keys(patch) });
       return NextResponse.json({ ...(await ownRoomView(accountId)), available: true });
     }
 
@@ -140,6 +150,7 @@ export async function POST(req) {
       }
       if (!(await getProfileRoom(accountId))) await upsertProfileRoom(accountId, {});
       await setProfileModule(accountId, module, patch);
+      await roomEvent(user, { op: "module.set", module, fields: Object.keys(patch) });
       if (module === "statement" && patch.content) {
         flagged = await screenAndFlag(accountId, patch.content.text);
       }

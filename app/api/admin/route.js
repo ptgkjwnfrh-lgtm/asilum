@@ -244,6 +244,17 @@ export async function POST(req) {
         const { draftProposalsFromSource } = await import("../../../lib/asterisk/research.js");
         return NextResponse.json(await draftProposalsFromSource());
       }
+      case "discover.rails.list": {
+        const { listDiscoverRails } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ rails: await listDiscoverRails() });
+      }
+      case "discover.rail.update": {
+        const { updateDiscoverRail } = await import("../../../lib/db/production.js");
+        const rail = await updateDiscoverRail(String(body.railId || ""), {
+          enabled: body.enabled, position: body.position, title: body.title });
+        return rail ? NextResponse.json({ rail })
+                    : NextResponse.json({ error: "rail not found (registry edits require the database)" }, { status: 404 });
+      }
       case "profile.rooms.list": {
         const { listProfileRooms } = await import("../../../lib/db/production.js");
         return NextResponse.json({ rooms: await listProfileRooms({
