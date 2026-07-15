@@ -91,6 +91,160 @@
     "approvedAt": 1784078952591
   },
   {
+    "kind": "music",
+    "name": "charli xcx",
+    "aliases": [
+      "charli"
+    ],
+    "note": "quite luxury and so trashy — her words, the whole doctrine",
+    "interpretations": [
+      {
+        "id": "charli xcx/party-girl",
+        "label": "party girl",
+        "type": "era",
+        "summary": "strappy white tops, low-rise vintage-wash denim, cropped leather, combat boots, chartreuse accents — burnt-out party confidence",
+        "tags": [
+          "statement",
+          "streetwear",
+          "seductive"
+        ],
+        "colors": [
+          "green",
+          "black",
+          "white"
+        ],
+        "moods": [
+          "raw",
+          "playful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-5e7f7052-cdf7-48bf-96f5-f20158424809",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/celebrity-news/feature/what-is-brat-summer-charli-xcx-aesthetic-1236490299/",
+      "https://www.refinery29.com/en-us/charli-xcx-brat-girl-summer-style"
+    ],
+    "approvedAt": 1784080233447
+  },
+  {
+    "kind": "figure",
+    "name": "cher",
+    "aliases": [
+      "cher style"
+    ],
+    "note": "the mackie decades — body-as-spectacle glamour that camp canonized",
+    "interpretations": [
+      {
+        "id": "cher/mackie-glamour",
+        "label": "mackie glamour",
+        "type": "performance",
+        "summary": "sheer beaded gowns, strategic sequins, feathers and nude illusion — the naked dress written into fashion history",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [
+          "black",
+          "gold",
+          "silver"
+        ],
+        "moods": [
+          "dramatic",
+          "fearless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-6359cb69-14f5-4391-a215-c6bc0fd111dc",
+    "sourceUrls": [
+      "https://www.juliensauctions.com/en/articles/bob-mackie-s-muse-cher-sonny-bono-and-the-birth-of-hollywood-glamour",
+      "https://elle.in/ellecyclopedia-bob-mackie/"
+    ],
+    "approvedAt": 1784080234759
+  },
+  {
+    "kind": "figure",
+    "name": "chloe sevigny",
+    "aliases": [
+      "chloe sevigny style",
+      "sevigny"
+    ],
+    "note": "the eternal downtown it girl — discovered on the street, never left it",
+    "interpretations": [
+      {
+        "id": "chloe sevigny/downtown",
+        "label": "downtown it girl",
+        "type": "personal",
+        "summary": "thrifted individuality, indie-label loyalty, prep subverted with something always slightly off — authenticity as the whole look",
+        "tags": [
+          "independent",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "white",
+          "red"
+        ],
+        "moods": [
+          "playful",
+          "assured"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-71653d8b-6b38-48e6-a05e-8e207ac6a845",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/chloe-sevigny-best-style-fashion-red-carpet",
+      "https://www.nssgclub.com/en/fashion/43269/chloe-sevigny-it-girl-today-career-who-is-she"
+    ],
+    "approvedAt": 1784080234427
+  },
+  {
+    "kind": "music",
+    "name": "dev hynes",
+    "aliases": [
+      "blood orange",
+      "devonte hynes"
+    ],
+    "note": "a tourist from 1982 — new york worn as memory",
+    "interpretations": [
+      {
+        "id": "dev hynes/blood-orange",
+        "label": "blood orange",
+        "type": "era",
+        "summary": "turtlenecks under camp collars, trousers hiked high, embroidered ball caps — 80s new york tenderness, formal against informal",
+        "tags": [
+          "independent",
+          "archival",
+          "minimal"
+        ],
+        "colors": [
+          "red",
+          "black",
+          "white"
+        ],
+        "moods": [
+          "tender",
+          "nocturnal"
+        ],
+        "confidence": 0.65
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-380c3c6f-63d5-4d87-90af-3b63355f5023",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Dev_Hynes",
+      "https://www.thefader.com/2013/11/19/blood-orange-hitting-the-right-notes"
+    ],
+    "approvedAt": 1784080234069
+  },
+  {
     "kind": "aesthetic",
     "name": "fisherman aesthetic",
     "aliases": [
@@ -128,6 +282,124 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "city",
+    "name": "lagos",
+    "aliases": [
+      "lagos nigeria",
+      "naija style"
+    ],
+    "note": "boldness as doctrine — colour is a statement, prints clash on purpose",
+    "interpretations": [
+      {
+        "id": "lagos/alte",
+        "label": "alte",
+        "type": "scene",
+        "summary": "nigeria's alternative scene — experimental thrift, gender-fluid layering, clashing prints restyled by local tailors",
+        "tags": [
+          "independent",
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [
+          "orange",
+          "green",
+          "brown"
+        ],
+        "moods": [
+          "fearless",
+          "playful"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "lagos/fashion-week-street",
+        "label": "fashion week street",
+        "type": "scene",
+        "summary": "voluminous fabrics, handmade craft, traditional pieces cut against contemporary silhouettes — the loudest front row on earth",
+        "tags": [
+          "statement",
+          "independent",
+          "tailored"
+        ],
+        "colors": [
+          "red",
+          "yellow",
+          "blue"
+        ],
+        "moods": [
+          "vibrant",
+          "proud"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-274b6c51-3447-4120-8f5a-99109537a01d",
+    "sourceUrls": [
+      "https://artsandculture.google.com/story/fearless-fashion-the-best-of-lagos-street-style-lagos-fashion-week/cAWhmzdEbSdMLw",
+      "https://guardian.ng/life/photos-street-style-on-day-2-of-lagos-fashion-week-2024/"
+    ],
+    "approvedAt": 1784080231741
+  },
+  {
+    "kind": "music",
+    "name": "lana del rey",
+    "aliases": [
+      "lana"
+    ],
+    "note": "americana run through old hollywood — two distinct wardrobes, never blended",
+    "interpretations": [
+      {
+        "id": "lana del rey/born-to-die",
+        "label": "born to die americana",
+        "type": "era",
+        "summary": "heart sunglasses, bouffants, flower crowns, varsity jackets, red-white-and-blue kitsch — gangsta nancy sinatra",
+        "tags": [
+          "seductive",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "red",
+          "white",
+          "blue"
+        ],
+        "moods": [
+          "nostalgic",
+          "cinematic"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "lana del rey/midwestern",
+        "label": "the midwestern turn",
+        "type": "era",
+        "summary": "white dresses, gingham, veils and tailored coats — the kitsch stripped back to soft americana",
+        "tags": [
+          "seductive",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "cream"
+        ],
+        "moods": [
+          "soft",
+          "wistful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-a0070c19-2a13-446f-a0a6-8fbbd37d1fdb",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/lana-del-rey-style-evolution",
+      "https://www.nssgclub.com/en/fashion/38400/lana-del-rey-style-americana-cowboy-vintage"
+    ],
+    "approvedAt": 1784080233098
   },
   {
     "kind": "aesthetic",
@@ -207,6 +479,45 @@
     "approvedAt": 1784078950979
   },
   {
+    "kind": "city",
+    "name": "mexico city",
+    "aliases": [
+      "cdmx",
+      "mexico df"
+    ],
+    "note": "heritage craft in architectural form — deliberately against the postcard version",
+    "interpretations": [
+      {
+        "id": "mexico city/contemporary",
+        "label": "cdmx contemporary",
+        "type": "scene",
+        "summary": "indigenous textiles and embroidery cut into clean architectural silhouettes — slow fashion as a position, not a mood",
+        "tags": [
+          "independent",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "cream",
+          "black",
+          "terracotta"
+        ],
+        "moods": [
+          "grounded",
+          "deliberate"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-7280889f-a3e6-4460-91a9-ce32fd1f359f",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/mexican-fashion/",
+      "https://www.thezoereport.com/fashion/mexico-city-fashion-scene"
+    ],
+    "approvedAt": 1784080232075
+  },
+  {
     "kind": "aesthetic",
     "name": "moto boho",
     "aliases": [
@@ -244,6 +555,64 @@
       "https://www.lofficielusa.com/fashion/moto-boho-trend-2025-tiktok"
     ],
     "approvedAt": 1784078949986
+  },
+  {
+    "kind": "music",
+    "name": "pharrell",
+    "aliases": [
+      "pharrell williams"
+    ],
+    "note": "two decades from trucker hats to the vuitton atelier — streetwear growing up in public",
+    "interpretations": [
+      {
+        "id": "pharrell/nerd-era",
+        "label": "n.e.r.d era",
+        "type": "era",
+        "summary": "trucker hats, bbc and icecream hoodies, jewel-tone sneakers, oversized pendants — hip-hop style at its most playful",
+        "tags": [
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "pink",
+          "blue",
+          "yellow"
+        ],
+        "moods": [
+          "playful",
+          "bold"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "pharrell/vuitton-era",
+        "label": "vuitton era",
+        "type": "era",
+        "summary": "matured streetwear — tailoring cut against workwear and western codes, pearls with utility — luxury speaking street",
+        "tags": [
+          "tailored",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "brown",
+          "cream",
+          "navy"
+        ],
+        "moods": [
+          "polished",
+          "assured"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-17fe2625-5ca5-4a1b-9f70-7b7b665e05b0",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/pharrell-williams-fashion-timeline/",
+      "https://www.billboard.com/photos/pharrell-williams-style-evolution-photos-1235960612/"
+    ],
+    "approvedAt": 1784080233744
   },
   {
     "kind": "aesthetic",
@@ -342,6 +711,43 @@
     "approvedAt": 1784078952278
   },
   {
+    "kind": "city",
+    "name": "stockholm",
+    "aliases": [
+      "stockholm style"
+    ],
+    "note": "the sharper city cut of scandi minimalism — acne, our legacy, toteme as civic uniform",
+    "interpretations": [
+      {
+        "id": "stockholm/minimal",
+        "label": "stockholm minimal",
+        "type": "scene",
+        "summary": "muted palettes, relaxed tailoring, wool coats and textured knits, branding near-invisible — quality does the talking",
+        "tags": [
+          "minimal",
+          "tailored"
+        ],
+        "colors": [
+          "grey",
+          "beige",
+          "black"
+        ],
+        "moods": [
+          "restrained",
+          "polished"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-eec0cb91-5828-4cc1-8498-1c9aa6224877",
+    "sourceUrls": [
+      "https://www.ssense.com/en-ch/editorial/fashion/best-scandinavian-fashion-brands",
+      "https://onpointfresh.com/stockholm-style-aesthetic/"
+    ],
+    "approvedAt": 1784080232425
+  },
+  {
     "kind": "aesthetic",
     "name": "tenniscore",
     "aliases": [
@@ -378,6 +784,44 @@
       "https://www.purewow.com/fashion/tenniscore-trend"
     ],
     "approvedAt": 1784078950319
+  },
+  {
+    "kind": "music",
+    "name": "the strokes",
+    "aliases": [
+      "julian casablancas"
+    ],
+    "note": "the band that dressed the 2000s — indie sleaze's source wardrobe",
+    "interpretations": [
+      {
+        "id": "the strokes/is-this-it",
+        "label": "is this it era",
+        "type": "era",
+        "summary": "rumpled vintage tees, skinny jeans, thin ties, bandleader jackets, beat-up converse — stage clothes worn as day clothes",
+        "tags": [
+          "independent",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "grey",
+          "red"
+        ],
+        "moods": [
+          "dishevelled",
+          "cool"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day17-pr-review",
+    "factId": "fact-f6a103fe-d2bd-43cc-bec8-d74fb2aef6d7",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Indie_sleaze",
+      "https://www.mrporter.com/en-us/journal/fashion/the-strokes-is-this-it-mens-indie-rock-style-2000s-5077182"
+    ],
+    "approvedAt": 1784080232745
   },
   {
     "kind": "aesthetic",

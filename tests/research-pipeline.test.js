@@ -181,6 +181,22 @@ test("public interpretation results expose research source provenance", async ()
   assert.ok(result.entity.knowledge.approvedAt > 0);
 });
 
+test("a compiled fact re-validates against its own record — compile is idempotent", () => {
+  // Found in production on the second batch: a fact's earlier compiled record
+  // lives in the loaded catalog, so re-validation without self-recognition
+  // refused every batch after the first.
+  const compiled = CULTURE.find((rec) => typeof rec.factId === "string");
+  assert.ok(compiled, "checked-in research records exist");
+  const payload = {
+    kind: compiled.kind, name: compiled.name, aliases: compiled.aliases, note: compiled.note,
+    interpretations: compiled.interpretations.map(({ id, label, type, summary, tags, colors, moods, confidence }) =>
+      ({ id, label, type, summary, tags, colors, moods, confidence })),
+  };
+  assert.equal(validateCultureProposal(payload).ok, false, "foreign view still refuses");
+  assert.equal(validateCultureProposal(payload, { selfFactId: compiled.factId }).ok, true, "self view recognizes its own record");
+  assert.equal(validateCultureProposal(payload, { selfFactId: "fact-someone-else" }).ok, false, "another fact's id does not unlock it");
+});
+
 test("compiled research records fail closed on malformed trusted data", () => {
   const compiled = {
     ...proposal(), factId: "fact-00000000-0000-4000-8000-000000000000",
