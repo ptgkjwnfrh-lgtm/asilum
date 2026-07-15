@@ -17,6 +17,7 @@ import {
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
+import { AsteriskDrawer } from "./components/AsteriskMemory.jsx";
 
 const NAV = [
   { href: "/", label: "HOME" },
@@ -254,6 +255,7 @@ export default function Shell({ children }) {
         <button className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
         </button>
+        <AsteriskDrawer />
       </div>
 
       {searchOpen && results && (

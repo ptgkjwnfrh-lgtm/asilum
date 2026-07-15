@@ -686,3 +686,25 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .apill.clearpill:hover { background: var(--red); color: #fff; }
 .areadsum { font-family: var(--serif); font-style: italic; font-size: 12px; margin-top: 7px; }
 .areadnote { font-size: 10px; color: #777; margin-top: 5px; }
+
+/* ── Asterisk memory (drawer + /asterisk page, Phase 2) ─────────────────── */
+.adrawer { right: 12px; top: 54px; width: 380px; max-height: 78vh; overflow-y: auto; }
+.amemsec { border-top: 1px solid var(--line); padding: 10px 0; }
+.amemsec:first-of-type { border-top: none; }
+.amemhead { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: 0.14em; }
+.amemhide { margin-left: auto; background: none; border: none; font: inherit; font-size: 10px; letter-spacing: 0.12em; cursor: pointer; color: #999; }
+.amemhide:hover { color: var(--red); }
+.amembody { padding-top: 8px; display: grid; gap: 6px; }
+.amemrow { display: flex; gap: 10px; align-items: baseline; font-size: 12px; line-height: 1.5; }
+.amemlbl { flex: 0 0 110px; font-weight: 900; font-size: 10px; letter-spacing: 0.12em; color: #666; }
+.amemval { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.amemval em { font-style: normal; border: 1px solid var(--line); padding: 1px 6px; font-size: 11px; white-space: nowrap; }
+.amemnote { font-size: 11px; color: #666; border-left: 2px solid var(--red); padding-left: 8px; }
+.amemgo { font-size: 10px; font-weight: 900; letter-spacing: 0.12em; color: var(--red); text-decoration: none; border-bottom: 1px solid var(--red); }
+.amempage { max-width: 760px; padding: 24px; }
+.amempage .amemsec { padding: 16px 0; }
+.amemsub { font-size: 13px; color: #444; margin: 8px 0 18px; max-width: 560px; line-height: 1.6; }
+.amemerase { display: flex; gap: 8px; margin-top: 6px; width: 100%; }
+.amemconfirm { border: 1px solid var(--line); padding: 6px 10px; font: inherit; font-size: 11px; letter-spacing: 0.08em; flex: 1; max-width: 260px; }
+.amemconfirm:focus { outline: none; border-color: var(--red); }
+@media (max-width: 760px) { .adrawer { width: calc(100vw - 24px); right: 12px; } .amemlbl { flex-basis: 84px; } }
