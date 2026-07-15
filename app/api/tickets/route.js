@@ -21,12 +21,14 @@ import { resolveProduct } from "../../../lib/products.js";
 import { safeExternalUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { buildEvent, EVENTS } from "../../../lib/events/index.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const itemId = String(body.itemId || "").slice(0, 80);
@@ -96,8 +98,8 @@ export async function POST(req) {
       item: { id: item.id, title: item.title, brand: item.brand, price: currentPrice, currency: item.currency },
       disclaimer: { text: DISCLAIMER_TEXT, checkbox: DISCLAIMER_CHECKBOX, version: DISCLAIMER_VERSION },
     });
-  } catch (e) {
-    return NextResponse.json({ error: "ticket creation failed", detail: String(e.message).slice(0, 200) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "ticket creation failed" }, { status: 500 });
   }
 }
 
@@ -105,6 +107,8 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "tickets-read", subject: user, limit: 60, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
     return NextResponse.json({ tickets: await listTickets(user) });
   } catch {
@@ -113,8 +117,9 @@ export async function GET(req) {
 }
 
 export async function PATCH(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const id = body.id;
   const action = body.action;
   if (!id || !action) return NextResponse.json({ error: "id and action required" }, { status: 400 });
@@ -125,6 +130,8 @@ export async function PATCH(req) {
   if (!ticket || ticket.userId !== user) {
     return NextResponse.json({ error: "ticket not found" }, { status: 404 });
   }
+  const quota = await consumeRateLimit({ scope: "ticket-mutate", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
   if (action === "cancel") {
     const updated = await transitionTicket(id, user, "cancel");

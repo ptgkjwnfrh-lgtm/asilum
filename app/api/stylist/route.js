@@ -17,6 +17,8 @@ import {
   generateStylistOutfits, recordStylistFeedback, getStylistOutfit,
 } from "../../../lib/ai/stylistReasoningEngine.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { publicProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +26,9 @@ const num = (v) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : 
 const strList = (v, cap) => (Array.isArray(v) ? v.slice(0, cap).map((x) => String(x).slice(0, 40)) : []);
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "stylist", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
@@ -74,7 +77,7 @@ export async function POST(req) {
     outfits: result.outfits.map((o) => ({
       id: o.id, name: o.outfitName, summary: o.outfitSummary,
       productIds: (o.items || []).map((it) => it.id),
-      items: o.items, matchedTags: o.matchedTags,
+      items: (o.items || []).map(publicProduct).filter(Boolean), matchedTags: o.matchedTags,
       colorLogic: o.colorLogic, silhouetteLogic: o.silhouetteLogic,
       aestheticLogic: o.aestheticLogic, matchScore: o.matchScore,
       warnings: o.warnings || [], persistent: o.persistent,

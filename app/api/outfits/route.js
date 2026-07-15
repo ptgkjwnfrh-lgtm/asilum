@@ -12,11 +12,11 @@ import { NextResponse } from "next/server";
 import { migrateProfile, tasteVector } from "../../../lib/brain/index.js";
 import { buildSlate } from "../../../lib/brain/stylist.js";
 import { TAGS } from "../../../lib/brain/tags.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
-import { listItems, getProfile, mutateProfile } from "../../../lib/db/index.js";
+import { getProfile, mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { isDiscoverableProduct, resolveProducts } from "../../../lib/products.js";
+import { getDiscoverablePool, publicProduct, resolveProducts } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
 
@@ -90,7 +90,11 @@ function modelLook(outfit) {
   };
 }
 
-async function generate(req, input) {
+function publicLook(look) {
+  return { ...look, items: (look.items || []).map(publicProduct).filter(Boolean) };
+}
+
+async function generate(req, input, { persistSeen = true } = {}) {
   const userId = await resolveRequestUser(req, String(input.user || "guest"));
   if (!userId) {
     return NextResponse.json({ error: "authentication required" }, { status: 401 });
@@ -104,17 +108,13 @@ async function generate(req, input) {
   const anchorId = String(input.anchor || "").slice(0, 80);
   const full = input.full === true;
 
-  let pool = [];
-  try { pool = await listItems(5000); } catch { pool = []; }
-  if (!pool || pool.length === 0) pool = CATALOG;
-  // Never style an outfit around a piece the source has marked gone.
-  pool = pool.filter(isDiscoverableProduct);
+  const pool = await getDiscoverablePool();
 
   const profile = migrateProfile(await getProfile(userId).catch(() => ({})));
   const taste = tasteVector(profile);
 
   const anchor = anchorId
-    ? pool.find((it) => it.id === anchorId) || CATALOG.find((it) => it.id === anchorId) || null
+    ? pool.find((it) => it.id === anchorId) || null
     : null;
 
   // Measurements are accepted only from a JSON request body, used transiently
@@ -130,7 +130,10 @@ async function generate(req, input) {
     const n = Math.min(5, Math.max(1, Number.parseInt(input.n, 10) || 3));
     const outfits = rankTrendAware(buildSlate(pool, taste, n + 3, { anchor, fitProfile, events }))
       .filter((look) => look.conf >= MATCH_FLOOR).slice(0, n);
-    return NextResponse.json({ userId, anchor: anchor ? anchor.id : null, count: outfits.length, outfits });
+    return NextResponse.json({
+      userId, anchor: anchor ? anchor.id : null,
+      count: outfits.length, outfits: outfits.map(publicLook),
+    });
   }
 
   // ---- full generation: 5 genres × 5 looks ----
@@ -166,15 +169,17 @@ async function generate(req, input) {
   }
 
   // Remember what was shown so the 30-day rule holds next time.
-  try {
-    await mutateProfile(userId, (current) => {
-      const cur = migrateProfile(current);
-      cur._meta.looksSeen = [...newSigs, ...(cur._meta.looksSeen || [])]
-        .filter((s) => now - s.t < REPEAT_WINDOW_MS)
-        .slice(0, SEEN_LOOKS_CAP);
-      return cur;
-    });
-  } catch {}
+  if (persistSeen) {
+    try {
+      await mutateProfile(userId, (current) => {
+        const cur = migrateProfile(current);
+        cur._meta.looksSeen = [...newSigs, ...(cur._meta.looksSeen || [])]
+          .filter((s) => now - s.t < REPEAT_WINDOW_MS)
+          .slice(0, SEEN_LOOKS_CAP);
+        return cur;
+      });
+    } catch {}
+  }
 
   let ai = { requested: input.aiConsent === true, source: "not-requested" };
   if (input.aiConsent === true) {
@@ -192,7 +197,10 @@ async function generate(req, input) {
   }
 
   const count = groups.reduce((s, g) => s + g.looks.length, 0);
-  return NextResponse.json({ userId, full: true, genres: groups.map((g) => g.genre), count, groups, ai });
+  return NextResponse.json({
+    userId, full: true, genres: groups.map((g) => g.genre), count,
+    groups: groups.map((group) => ({ ...group, looks: group.looks.map(publicLook) })), ai,
+  });
 }
 
 export async function GET(req) {
@@ -204,17 +212,20 @@ export async function GET(req) {
     anchor: searchParams.get("anchor") || "",
     full: searchParams.get("full") === "1",
     n: searchParams.get("n"),
-  });
+  }, { persistSeen: false });
 }
 
 // POST /api/outfits — persist a saved look (SAVE OUTFIT on /stylist) into
 // stylist_outfits: real records of what the stylist got right.
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   if (body.kind === "generate") return generate(req, body);
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "outfit-save", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const look = body.look || {};
   if (!Array.isArray(look.items) || !look.items.length || look.items.length > 10 ||
       look.items.some((item) => !item || typeof item.id !== "string" || item.id.length > 80)) {
@@ -235,7 +246,7 @@ export async function POST(req) {
       reasons: look.reasons || [],
     });
     return NextResponse.json({ saved: { id: saved.id, persistent: saved.persistent } });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "outfit save failed" }, { status: 500 });
   }
 }

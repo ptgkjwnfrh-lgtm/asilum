@@ -24,6 +24,7 @@ import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 import { analyzeMoodBoardItem } from "../../../lib/ai/moodBoardAnalyzer.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +37,9 @@ function tagRows(vec, tagType) {
 }
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "moodboard", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
@@ -139,9 +141,11 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "moodboard-read", subject: user, limit: 60, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
     return NextResponse.json({ uploads: await listMoodBoardUploads(user) });
   } catch {
-    return NextResponse.json({ uploads: [] });
+    return NextResponse.json({ error: "moodboard history unavailable" }, { status: 503 });
   }
 }

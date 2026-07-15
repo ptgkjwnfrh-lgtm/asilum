@@ -22,7 +22,7 @@ export async function GET(req) {
   }
   const quota = await consumeRateLimit({ scope: "similar", subject: user, limit: 30, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  const limit = Math.min(48, parseInt(searchParams.get("limit"), 10) || 10);
+  const limit = Math.max(1, Math.min(48, parseInt(searchParams.get("limit"), 10) || 10));
 
   const [neighbors, candidates] = await Promise.all([
     similarUsers(user, limit),

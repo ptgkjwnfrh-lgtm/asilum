@@ -3,17 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "db:configure-role": "node scripts/configure-database-role.mjs",
     "test": "node --test tests/*.test.js",
     "trends:check": "node scripts/check-trend-freshness.mjs",
     "start": "next start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.109.0",
+    "@supabase/supabase-js": "2.110.5",
     "next": "16.2.10",
-    "pg": "8.12.0",
+    "pg": "8.22.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

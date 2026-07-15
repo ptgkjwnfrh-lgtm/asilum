@@ -11,23 +11,33 @@ import { createEditorialPost, listEditorialPosts } from "../../../lib/db/product
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { requestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const kind = searchParams.get("kind") || null;
-  const limit = Math.min(120, parseInt(searchParams.get("limit"), 10) || 60);
+  const requestedKind = searchParams.get("kind") || null;
+  if (requestedKind && !["user", "asilum", "article"].includes(requestedKind)) {
+    return NextResponse.json({ error: "unknown editorial kind" }, { status: 400 });
+  }
+  const kind = requestedKind;
+  const limit = Math.max(1, Math.min(120, parseInt(searchParams.get("limit"), 10) || 60));
+  const quota = await consumeRateLimit({ scope: "editorial-read", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
-    return NextResponse.json({ posts: await listEditorialPosts({ kind, limit }) });
+    const posts = (await listEditorialPosts({ kind, limit })).map(({ authorId, ...post }) => post);
+    return NextResponse.json({ posts });
   } catch {
     return NextResponse.json({ posts: [] });
   }
 }
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const text = String(body.text || "").trim().slice(0, 1000);

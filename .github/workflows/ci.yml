@@ -39,7 +39,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -60,22 +60,7 @@ jobs:
           LANGUAGE sql STABLE
           AS $$ SELECT NULL::uuid $$;
           SQL
-          for file in \
-            supabase/schema-v1-brain.sql \
-            supabase/schema.sql \
-            supabase/schema-v2.sql \
-            supabase/schema-v3-ai.sql \
-            supabase/schema-v4-asterisk.sql \
-            supabase/schema-v5-corrections.sql \
-            supabase/schema-v6-hardening.sql \
-            supabase/schema-v7-integrity.sql \
-            supabase/schema-v8-lockdown.sql \
-            supabase/schema-v9-discovery.sql \
-            supabase/schema-v10-policy-performance.sql
-          do
-            node scripts/apply-schema.mjs "$file"
-          done
-          node scripts/apply-schema.mjs supabase/schema-v10-policy-performance.sql
+          node scripts/apply-schema.mjs --all --verify-idempotent
 
       - name: Run Postgres integration tests
         env:

@@ -24,6 +24,8 @@ import {
 } from "../../../lib/db/production.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
 import { bearerToken, secureTokenEqual } from "../../../lib/security/request.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +39,8 @@ function authed(req) {
 export async function GET(req) {
   const gate = authed(req);
   if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
+  const quota = await consumeRateLimit({ scope: "admin-read", subject: "operator", limit: 120, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const { searchParams } = new URL(req.url);
   const area = searchParams.get("area") || "overview";
   const p = await getPool();
@@ -68,16 +72,19 @@ export async function GET(req) {
       }
     }
     return NextResponse.json({ counts, adapters: adapterStatuses() });
-  } catch (e) {
-    return NextResponse.json({ error: String(e.message).slice(0, 200) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "admin read failed" }, { status: 500 });
   }
 }
 
 export async function POST(req) {
   const gate = authed(req);
   if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
-  let body = {};
-  try { body = await req.json(); } catch {}
+  const quota = await consumeRateLimit({ scope: "admin-write", subject: "operator", limit: 60, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
 
   try {
     switch (body.action) {
@@ -96,7 +103,10 @@ export async function POST(req) {
       case "product.moderate": {
         const p = await getPool();
         if (!p) return NextResponse.json({ error: "requires database" }, { status: 503 });
-        const status = ["visible", "hidden", "flagged"].includes(body.status) ? body.status : "visible";
+        if (!["visible", "hidden", "flagged"].includes(body.status)) {
+          return NextResponse.json({ error: "status must be visible, hidden, or flagged" }, { status: 400 });
+        }
+        const status = body.status;
         const r = await p.query(
           "UPDATE items SET moderation_status=$2, flagged=($2='flagged'), updated_at=now() WHERE id=$1",
           [body.productId, status]
@@ -195,7 +205,7 @@ export async function POST(req) {
       default:
         return NextResponse.json({ error: "unknown action" }, { status: 400 });
     }
-  } catch (e) {
-    return NextResponse.json({ error: String(e.message).slice(0, 200) }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "admin action failed" }, { status: 500 });
   }
 }

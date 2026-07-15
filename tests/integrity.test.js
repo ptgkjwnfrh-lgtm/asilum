@@ -4,7 +4,8 @@ import { randomUUID } from "node:crypto";
 
 import { requestSubject, verifiedRequestSubject } from "../lib/security/request.js";
 import {
-  addBoardItem, commitBoardSave, createBoard, getBoards, getProfile, saveProfile,
+  addBoardItem, commitBoardSave, createBoard, getBoards, getInteractions,
+  getProfile, listEvents, recordEvent, recordInteraction, saveProfile,
 } from "../lib/db/index.js";
 import {
   adoptAccountData, createTicket, transitionTicket, updateTicket,
@@ -69,6 +70,8 @@ test("account adoption moves boards, merges taste, and accepts later device data
   const sourceBoard = await createBoard(from, "device board");
   await addBoardItem(sourceBoard.id, item);
   await createBoard(to, "account board");
+  await recordInteraction(from, item.id, "favorite");
+  await recordEvent({ userId: from, type: "USER_FAVORITED_ITEM", payload: { itemId: item.id } });
 
   const [first, retry] = await Promise.all([adoptAccountData(from, to), adoptAccountData(from, to)]);
   assert.equal([first, retry].filter((result) => result.duplicate).length, 1);
@@ -79,6 +82,10 @@ test("account adoption moves boards, merges taste, and accepts later device data
   const merged = await getProfile(to);
   assert.ok(merged.long.MINIMAL > 0);
   assert.ok(merged.long.TAILORED > 0);
+  assert.equal((await getInteractions(from)).length, 0);
+  assert.equal((await getInteractions(to)).length, 1);
+  assert.equal((await listEvents(from)).length, 0);
+  assert.equal((await listEvents(to)).length, 1);
 
   await saveProfile(from, { long: { GORP: 0.7 }, session: {}, _meta: {} });
   await createBoard(from, "later device board");
@@ -87,4 +94,22 @@ test("account adoption moves boards, merges taste, and accepts later device data
   assert.equal(later.movedBoards, 1);
   assert.equal((await getBoards(to)).length, 3);
   assert.ok((await getProfile(to)).long.GORP > 0);
+});
+
+test("one device cannot be adopted into two accounts concurrently", async () => {
+  const from = `u-${randomUUID()}`;
+  const targets = [`sb-${randomUUID()}`, `sb-${randomUUID()}`];
+  await saveProfile(from, { long: { MINIMAL: 0.9 }, session: {}, _meta: {} });
+  await createBoard(from, "single-owner board");
+
+  const results = await Promise.all(targets.map((target) => adoptAccountData(from, target)));
+  assert.equal(results.reduce((sum, result) => sum + result.movedBoards, 0), 1);
+  assert.equal((await getBoards(from)).length, 0);
+  assert.equal(
+    (await Promise.all(targets.map((target) => getBoards(target))))
+      .reduce((sum, boards) => sum + boards.length, 0),
+    1
+  );
+  const copiedProfiles = await Promise.all(targets.map((target) => getProfile(target)));
+  assert.equal(copiedProfiles.filter((profile) => profile.long?.MINIMAL === 0.9).length, 1);
 });

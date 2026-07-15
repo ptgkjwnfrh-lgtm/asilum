@@ -5,6 +5,7 @@
 import { NextResponse } from "next/server";
 import { getProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,8 @@ export async function GET(req) {
   if (!userId) {
     return NextResponse.json({ error: "authentication required" }, { status: 401 });
   }
+  const quota = await consumeRateLimit({ scope: "profile-read", subject: userId, limit: 120, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const profile = await getProfile(userId).catch(() => ({}));
   return NextResponse.json({ userId, profile });
 }

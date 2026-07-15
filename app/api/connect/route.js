@@ -6,6 +6,9 @@
 // it must NOT simulate imported purchase history (see CONSTITUTION.md).
 
 import { NextResponse } from "next/server";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
@@ -19,19 +22,23 @@ const ADAPTER_ENV = {
 };
 
 export async function POST(req) {
-  let body = {};
-  try { body = await req.json(); } catch { body = {}; }
+  const quota = await consumeRateLimit({ scope: "connect", subject: requestSubject(req), limit: 30, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
   const platform = String(body.platform || "").toLowerCase();
   if (!PLATFORMS.has(platform)) {
     return NextResponse.json({ error: "unknown platform" }, { status: 400 });
   }
 
   const envNeeded = ADAPTER_ENV[platform];
-  const hasCreds = envNeeded && envNeeded.every((k) => process.env[k]);
+  const approved = platform !== "ebay" || process.env.EBAY_PARTNERSHIP_APPROVED === "1";
+  const hasCreds = approved && envNeeded && envNeeded.every((k) => process.env[k]);
   const message = envNeeded
     ? hasCreds
       ? `${platform} credentials detected — the OAuth adapter isn't enabled yet. coming soon.`
-      : `${platform} linking is coming soon — it requires real OAuth setup (${envNeeded.join(", ")}).`
+      : `${platform} linking is coming soon — it requires source approval and real OAuth setup (${envNeeded.join(", ")}).`
     : `${platform} linking is coming soon — official API setup is required.`;
 
   return NextResponse.json(
