@@ -31,7 +31,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       await pool.query("DELETE FROM user_measurements WHERE user_id=ANY($1::text[])", [userIds]);
       for (const table of [
         "purchase_tickets", "user_events", "interactions", "processed_operations",
-        "user_style_profiles", "user_follows", "asterisk_memory_preferences", "wardrobe_items", "profiles",
+        "user_style_profiles", "user_follows", "asterisk_memory_preferences", "wardrobe_items", "user_rail_prefs", "profiles",
       ]) {
         await pool.query(`DELETE FROM ${table} WHERE user_id=ANY($1::text[])`, [userIds]);
       }
@@ -150,7 +150,18 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 15);
+  assert.equal(schema.rows[0].version, 16);
+
+  const railRegistry = await pool.query("SELECT count(*)::int AS n FROM discover_rails");
+  assert.ok(railRegistry.rows[0].n >= 4, "the four seed rails must exist");
+  const railPref = await production.setRailPref(from, "screen", { collapsed: true });
+  assert.equal(railPref.collapsed, true);
+  await production.setRailPref(to, "screen", { collapsed: false });
+  const railAdoption = await production.adoptAccountData(from, to);
+  assert.equal(railAdoption.duplicate, false);
+  assert.equal((await production.getRailPrefs(to)).screen.collapsed, false,
+    "account-side rail pref wins on adoption");
+  assert.deepEqual(await production.getRailPrefs(from), {});
 
   const memorySecurity = await pool.query(`
     SELECT c.relname,
@@ -161,9 +172,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     FROM pg_class AS c
     JOIN pg_namespace AS n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
-      AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items')
+      AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items', 'discover_rails', 'user_rail_prefs')
     ORDER BY c.relname`);
-  assert.equal(memorySecurity.rows.length, 3);
+  assert.equal(memorySecurity.rows.length, 5);
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
     assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);

@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
+import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
@@ -324,6 +325,7 @@ export default function DiscoverPage() {
           <b className="red">*</b> asterisk flagged this for research — answering with its best current reading
         </div>
       ) : null}
+      {!searched && !activeInterp && <DiscoverRails onPickTags={pickInterp} />}
       <hr className="rule" />
 
       {loading && items.length === 0 && <div className="empty">opening the racks…</div>}
