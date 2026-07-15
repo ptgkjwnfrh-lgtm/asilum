@@ -56,6 +56,12 @@ lib/asterisk/            Asterisk AI services (orchestration layer)
                          informed-2026-07; refresh via the P2 research
                          pipeline, never silent edits. Lifecycle calls
                          live in trends.js, NOT here.   [Day 12 v1-v3]
+  research.js            research-ingestion pipeline: validated
+                         culture-entity proposals → learned_facts
+                         lifecycle → compile script → reviewable
+                         culture.research.json batches. Model
+                         drafting gated (AI_RESEARCH_ENABLED),
+                         notImplemented until built.    [Day 15 P2 v1]
   vision/                fine-grained garment attributes            [P3]
   trends.js              trend lifecycle intelligence — THE trend
                          source of truth: aesthetic phase calls
@@ -120,10 +126,22 @@ superseded/archived (rejected at any pre-approval stage). Transitions are
 validated (`lib/asterisk/facts.js`); approval requires ≥1 source URL and a
 reviewer identity; sourceless claims stay at reliability 0. Each fact stores
 source URLs/types, publication dates, retrieval date, reliability +
-confidence scores, model version. Actual web research (query generation,
-approved sources, multi-source comparison, conflict detection) is Phase 2 —
-the pipeline it must write through exists now, so uncontrolled model output
-can never reach trusted records.
+confidence scores, model version.
+
+**P2 v1 is live (Day 15, `lib/asterisk/research.js`):** culture-entity
+proposals are validated against the live catalog + brain tag space (new
+names only, no trend fields, confidence ≤ 0.8, ≥1 https source), staged as
+learned facts, and walked through the reviewed lifecycle via admin
+`asterisk.research.*` actions. `npm run research:compile` emits APPROVED
+proposals into `lib/asterisk/culture.research.json` (deterministic, sorted)
+— merged into the catalog at load with curated-wins collision rules, so
+every research batch lands as its own reviewable PR. Source pages are
+fetched only through the exact-host allowlist (`asterisk.research.fetch`),
+and model-assisted drafting stays `notImplemented` behind
+`AI_RESEARCH_ENABLED` until the prompt + validation work exists. Remaining
+Phase 2 work: query generation, multi-source comparison, conflict detection.
+Either way the pipeline everything must write through exists, so uncontrolled
+model output can never reach trusted records.
 
 ## 10. Mood Board Brain event model
 Keep `user_events` as the single behavior log (structured, idempotent).

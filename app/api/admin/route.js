@@ -189,6 +189,40 @@ export async function POST(req) {
         if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
         return NextResponse.json({ corrections: await listUserCorrections(body.user, body.limit || 100) });
       }
+      // ---- research-ingestion pipeline (Day 15, P2 v1) ----
+      case "asterisk.research.propose": {
+        const { proposeCultureEntity } = await import("../../../lib/asterisk/research.js");
+        const r = await proposeCultureEntity(body.proposal || {}, {
+          sourceUrls: body.sourceUrls, sourceTypes: body.sourceTypes,
+          publicationDates: body.publicationDates,
+          reliabilityScore: body.reliabilityScore, modelVersion: body.modelVersion || null,
+        });
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.research.queue": {
+        const { researchQueue } = await import("../../../lib/asterisk/research.js");
+        return NextResponse.json({ proposals: await researchQueue({
+          status: body.status || null, limit: body.limit || 100 }) });
+      }
+      case "asterisk.research.review": {
+        const { reviewResearch } = await import("../../../lib/asterisk/research.js");
+        const r = await reviewResearch(body.id, body.status, body.reviewer || null);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.research.approved": {
+        const { approvedCultureProposals } = await import("../../../lib/asterisk/research.js");
+        return NextResponse.json(await approvedCultureProposals());
+      }
+      case "asterisk.research.fetch": {
+        const { fetchResearchSource } = await import("../../../lib/asterisk/research.js");
+        if (!body.url) return NextResponse.json({ error: "url required" }, { status: 400 });
+        const r = await fetchResearchSource(String(body.url));
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.research.draft": {
+        const { draftProposalsFromSource } = await import("../../../lib/asterisk/research.js");
+        return NextResponse.json(await draftProposalsFromSource());
+      }
       case "moderation.list": {
         const { listModerationTasks } = await import("../../../lib/db/production.js");
         return NextResponse.json({ tasks: await listModerationTasks({
