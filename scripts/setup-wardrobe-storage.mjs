@@ -23,5 +23,5 @@ if (!storageConfigured()) {
 }
 const result = await ensureWardrobeBucket();
 console.log(result.existed
-  ? `bucket "${WARDROBE_BUCKET}" already exists (private) — nothing to do`
-  : `bucket "${WARDROBE_BUCKET}" created (private, 2MB cap, image/jpeg only)`);
+  ? `bucket "${WARDROBE_BUCKET}" already exists — private, 2MB, JPEG-only policy verified`
+  : `bucket "${WARDROBE_BUCKET}" created — private, 2MB, JPEG-only policy verified`);

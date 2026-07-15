@@ -186,6 +186,16 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     "account-side preferences win on adoption");
   assert.deepEqual((await production.getMemoryPreferences(from)).hiddenSections, []);
 
+  let activePhotoOps = 0;
+  let peakPhotoOps = 0;
+  await Promise.all([1, 2, 3].map(() => production.withUserOperationLock(from, async () => {
+    activePhotoOps++;
+    peakPhotoOps = Math.max(peakPhotoOps, activePhotoOps);
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    activePhotoOps--;
+  })));
+  assert.equal(peakPhotoOps, 1, "persistent owner-operation locks serialize Storage/erasure work");
+
   const longCatalogRef = `catalog:${"x".repeat(80)}`;
   const wardrobeAdd = await production.createWardrobeItem({
     userId: from, source: "manual", sourceRef: null, catalogItemId: null,

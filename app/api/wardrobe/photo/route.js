@@ -5,35 +5,35 @@
 //      client-side palette-v0, server re-derives, colors land only if the
 //      piece has none).
 // DELETE { user, id } — remove the photo (object + row fields).
-// Gated by WARDROBE_UPLOADS_ENABLED + configured private Storage; refuses
-// honestly (503 with the reason) otherwise. No face or biometric analysis —
-// color statistics only, and only with the versioned consent.
+// New uploads are gated by WARDROBE_UPLOADS_ENABLED + configured private
+// Storage. Erasure remains available when the upload kill switch is off. No
+// face or biometric analysis — color statistics only, and only with consent.
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../../lib/identity.js";
-import { getWardrobeItem, setWardrobePhoto, setWardrobeColorsIfEmpty } from "../../../../lib/db/production.js";
+import { getWardrobeItem, setWardrobePhoto, withUserOperationLock } from "../../../../lib/db/production.js";
 import { recordEvent } from "../../../../lib/db/index.js";
 import { buildEvent, EVENTS } from "../../../../lib/events/index.js";
 import { paletteFromSwatches } from "../../../../lib/vision/palette.js";
 import {
   uploadsAvailable, storeWardrobePhoto, deleteWardrobePhoto,
-  looksLikeJpeg, PHOTO_CONSENT_VERSION, PHOTO_MAX_BYTES,
+  looksLikeJpeg, storageConfigured, PHOTO_CONSENT_VERSION, PHOTO_MAX_BYTES,
 } from "../../../../lib/wardrobe/photos.js";
+import { PHOTO_REQUEST_MAX_BYTES } from "../../../../lib/wardrobe/photo-contract.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../../lib/security/json.js";
+import { readMultipartRequest } from "../../../../lib/security/multipart.js";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  const gate = uploadsAvailable();
-  if (!gate.available) return NextResponse.json({ error: gate.reason }, { status: 503 });
-
-  let form;
-  try { form = await req.formData(); } catch {
-    return NextResponse.json({ error: "multipart/form-data required" }, { status: 400 });
-  }
+  const parsedMultipart = await readMultipartRequest(req, { maxBytes: PHOTO_REQUEST_MAX_BYTES });
+  if (parsedMultipart.response) return parsedMultipart.response;
+  const form = parsedMultipart.form;
   const user = await resolveRequestUser(req, String(form.get("user") || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const gate = uploadsAvailable();
+  if (!gate.available) return NextResponse.json({ error: gate.reason }, { status: 503 });
   const quota = await consumeRateLimit({ scope: "wardrobe-photo", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
@@ -44,17 +44,21 @@ export async function POST(req) {
   }
 
   const itemId = String(form.get("id") || "");
-  const item = await getWardrobeItem(user, itemId);
-  if (!item) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
 
   const photo = form.get("photo");
   if (!photo || typeof photo.arrayBuffer !== "function") {
     return NextResponse.json({ error: "photo file required" }, { status: 400 });
   }
-  if (photo.size > PHOTO_MAX_BYTES) {
+  if (!photo.size || photo.size > PHOTO_MAX_BYTES) {
     return NextResponse.json({ error: "photo exceeds 2MB — the client should downscale first" }, { status: 400 });
   }
-  const bytes = new Uint8Array(await photo.arrayBuffer());
+  if (photo.type && photo.type !== "image/jpeg") {
+    return NextResponse.json({ error: "photo must be a client-re-encoded JPEG" }, { status: 400 });
+  }
+  let bytes;
+  try { bytes = new Uint8Array(await photo.arrayBuffer()); } catch {
+    return NextResponse.json({ error: "photo could not be read" }, { status: 400 });
+  }
   if (!looksLikeJpeg(bytes)) {
     return NextResponse.json({ error: "photo must be a client-re-encoded JPEG" }, { status: 400 });
   }
@@ -72,39 +76,75 @@ export async function POST(req) {
     if (!derived) return NextResponse.json({ error: "invalid palette payload" }, { status: 400 });
   }
 
-  // Events persist before derived mutations (retry-safe, PR #8 doctrine).
-  await recordEvent(buildEvent(user, EVENTS.USER_UPLOADED_IMAGE, {
-    surface: "wardrobe-photo", itemId: item.id, consent: PHOTO_CONSENT_VERSION,
-  }));
+  const colors = derived?.palette?.length ? derived.palette.map((swatch) => swatch.hex) : [];
+  return withUserOperationLock(user, async (queryTarget) => {
+    const item = await getWardrobeItem(user, itemId, queryTarget);
+    if (!item) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
 
-  const path = await storeWardrobePhoto(user, item.id, bytes);
-  const updated = await setWardrobePhoto(user, item.id, path, PHOTO_CONSENT_VERSION);
-  if (!updated) {
-    await deleteWardrobePhoto(path).catch(() => {});
-    return NextResponse.json({ error: "wardrobe item disappeared during upload" }, { status: 409 });
-  }
-  let colorsSet = false;
-  if (derived?.palette?.length) {
-    colorsSet = !!(await setWardrobeColorsIfEmpty(user, item.id, derived.palette.map((s) => s.hex)));
-  }
-  return NextResponse.json({ item: { ...updated, colorsSet } }, { status: 201 });
+    // Events persist before derived mutations (retry-safe, PR #8 doctrine).
+    await recordEvent(buildEvent(user, EVENTS.USER_UPLOADED_IMAGE, {
+      surface: "wardrobe-photo", itemId: item.id, consent: PHOTO_CONSENT_VERSION,
+    }), queryTarget);
+
+    let path;
+    try {
+      path = await storeWardrobePhoto(user, item.id, bytes);
+    } catch {
+      return NextResponse.json({ error: "private photo storage failed" }, { status: 502 });
+    }
+    let updated;
+    try {
+      updated = await setWardrobePhoto(user, item.id, path, PHOTO_CONSENT_VERSION, {
+        expectedPhotoPath: item.photoPath,
+        colors,
+        queryTarget,
+      });
+    } catch {
+      // If the database outcome is unknown, never delete an object that may
+      // already be the committed row target. The privacy sweep catches any
+      // truly orphaned version.
+      const current = await getWardrobeItem(user, item.id, queryTarget).catch(() => null);
+      if (current?.photoPath !== path) await deleteWardrobePhoto(path).catch(() => {});
+      return NextResponse.json({ error: "photo metadata could not be saved" }, { status: 502 });
+    }
+    if (!updated) {
+      await deleteWardrobePhoto(path).catch(() => {});
+      return NextResponse.json({ error: "wardrobe item changed during upload; retry" }, { status: 409 });
+    }
+    if (item.photoPath && item.photoPath !== path) {
+      const removed = await deleteWardrobePhoto(item.photoPath).catch(() => false);
+      if (!removed) {
+        return NextResponse.json({
+          error: "new photo stored, but previous photo erasure could not be verified",
+        }, { status: 502 });
+      }
+    }
+    const colorsSet = colors.length > 0 && (!Array.isArray(item.colors) || item.colors.length === 0);
+    return NextResponse.json({ item: { ...updated, colorsSet } }, { status: 201 });
+  });
 }
 
 export async function DELETE(req) {
-  const gate = uploadsAvailable();
-  if (!gate.available) return NextResponse.json({ error: gate.reason }, { status: 503 });
   const parsed = await readJsonRequest(req, { maxBytes: 4 * 1024 });
   if (parsed.response) return parsed.response;
   const user = await resolveRequestUser(req, String(parsed.body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "wardrobe-photo", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  const item = await getWardrobeItem(user, String(parsed.body.id || ""));
-  if (!item) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
-  if (item.photoPath) {
-    const removed = await deleteWardrobePhoto(item.photoPath);
+  return withUserOperationLock(user, async (queryTarget) => {
+    const item = await getWardrobeItem(user, String(parsed.body.id || ""), queryTarget);
+    if (!item) return NextResponse.json({ error: "wardrobe item not found" }, { status: 404 });
+    if (!item.photoPath) return NextResponse.json({ item });
+    if (!storageConfigured()) {
+      return NextResponse.json({ error: "private storage is not configured; erasure cannot be verified" }, { status: 503 });
+    }
+    const removed = await deleteWardrobePhoto(item.photoPath).catch(() => false);
     if (!removed) return NextResponse.json({ error: "photo could not be erased" }, { status: 502 });
-  }
-  const updated = await setWardrobePhoto(user, item.id, null, null);
-  return NextResponse.json({ item: updated });
+    const updated = await setWardrobePhoto(user, item.id, null, null, {
+      expectedPhotoPath: item.photoPath,
+      queryTarget,
+    });
+    if (!updated) return NextResponse.json({ error: "photo changed during erasure; retry" }, { status: 409 });
+    return NextResponse.json({ item: updated });
+  });
 }

@@ -7,26 +7,55 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { authorizedFetch, postJSON, sendJSON, getUid } from "../../lib/client.js";
 import { dominantPalette } from "../../lib/vision/palette.js";
+import { PHOTO_MAX_BYTES } from "../../lib/wardrobe/photo-contract.js";
 
 const CATEGORIES = ["", "outerwear", "tops", "knitwear", "tailoring", "bottoms", "footwear", "accessories", "dresses"];
 
 // Client-side photo prep (Phase 3b): canvas re-encode to JPEG ≤1024px —
 // EXIF/GPS metadata never leaves the browser — plus the same 48px palette-v0
 // color walk the moodboard uses. No face or biometric analysis exists.
+async function decodePhoto(file) {
+  if (typeof createImageBitmap === "function") return createImageBitmap(file);
+  const url = URL.createObjectURL(file);
+  try {
+    return await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("image could not be decoded"));
+      image.src = url;
+    });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+function encodeJpeg(canvas, quality) {
+  return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
+}
+
 async function prepPhoto(file) {
-  const bmp = await createImageBitmap(file);
+  const bmp = await decodePhoto(file);
   const scale = Math.min(1, 1024 / Math.max(bmp.width, bmp.height));
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(bmp.width * scale));
   canvas.height = Math.max(1, Math.round(bmp.height * scale));
-  canvas.getContext("2d").drawImage(bmp, 0, 0, canvas.width, canvas.height);
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("canvas unavailable");
+  context.drawImage(bmp, 0, 0, canvas.width, canvas.height);
   const small = document.createElement("canvas");
   small.width = 48; small.height = 48;
-  small.getContext("2d").drawImage(bmp, 0, 0, 48, 48);
+  const smallContext = small.getContext("2d");
+  if (!smallContext) throw new Error("canvas unavailable");
+  smallContext.drawImage(bmp, 0, 0, 48, 48);
   if (bmp.close) bmp.close();
-  const swatches = (dominantPalette(small.getContext("2d").getImageData(0, 0, 48, 48).data) || [])
+  const swatches = (dominantPalette(smallContext.getImageData(0, 0, 48, 48).data) || [])
     .map((s) => ({ hex: s.hex, weight: s.weight }));
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  let blob = null;
+  for (const quality of [0.85, 0.72, 0.6]) {
+    blob = await encodeJpeg(canvas, quality);
+    if (blob && blob.size <= PHOTO_MAX_BYTES) break;
+  }
+  if (!blob || blob.size > PHOTO_MAX_BYTES) throw new Error("photo could not fit the private-storage limit");
   return { blob, swatches };
 }
 
@@ -53,7 +82,7 @@ export function WardrobeTab() {
   }, [showRetired]);
   useEffect(() => {
     refresh();
-    const identityChanged = () => { setPendingDelete(null); refresh(); };
+    const identityChanged = () => { setPendingDelete(null); setPhotoConsent(false); refresh(); };
     window.addEventListener("asilum:identity", identityChanged);
     return () => window.removeEventListener("asilum:identity", identityChanged);
   }, [refresh]);
@@ -100,6 +129,7 @@ export function WardrobeTab() {
       const res = await authorizedFetch("/api/wardrobe/photo", { method: "POST", body: form });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setNotice(data.error || "photo upload failed"); return; }
+      setPhotoConsent(false);
       setNotice(data.item.colorsSet
         ? "photo stored privately — its colors now describe the piece"
         : "photo stored privately");
@@ -110,9 +140,15 @@ export function WardrobeTab() {
   }
 
   async function removePhoto(piece) {
-    const res = await sendJSON("DELETE", "/api/wardrobe/photo", { user: getUid(), id: piece.id }).catch(() => null);
-    if (res?.ok) { setNotice("photo erased"); refresh(); }
-    else setNotice("could not erase the photo");
+    setBusyPhoto(piece.id);
+    try {
+      const res = await sendJSON("DELETE", "/api/wardrobe/photo", { user: getUid(), id: piece.id }).catch(() => null);
+      const data = res ? await res.json().catch(() => ({})) : {};
+      if (res?.ok) { setNotice("photo erased"); refresh(); }
+      else setNotice(data.error || "could not erase the photo");
+    } finally {
+      setBusyPhoto(null);
+    }
   }
 
   const visible = (items || []).filter((piece) => showRetired || piece.status === "active");
@@ -121,7 +157,8 @@ export function WardrobeTab() {
     <div className="wtab">
       <div className="amemnote">
         Only what you tell us you own lives here — bag and favorites never do.
-        Private in this version. Photo uploads arrive with private storage in a later phase.
+        Private in this version. Garment photos use private storage and can be
+        erased independently or with the piece.
       </div>
       <form className="wadd" onSubmit={addManual}>
         <input
@@ -179,7 +216,7 @@ export function WardrobeTab() {
             </div>
           </div>
           <a className="amemgo" href={`/stylist?anchor=wardrobe:${piece.id}`}>STYLE IT</a>
-          {uploads.available && (
+          {uploads.available ? (
             <>
               <input
                 type="file"
@@ -190,17 +227,19 @@ export function WardrobeTab() {
               />
               <button
                 className="wact"
-                disabled={!photoConsent || busyPhoto === piece.id}
+                disabled={!photoConsent || busyPhoto !== null}
                 title={photoConsent ? "" : "tick the consent box first"}
                 onClick={() => fileInputs.current[piece.id]?.click()}
               >
                 {busyPhoto === piece.id ? "STORING…" : piece.photoPath ? "REPLACE PHOTO" : "ADD PHOTO"}
               </button>
-              {piece.photoPath ? (
-                <button className="wact" onClick={() => removePhoto(piece)}>ERASE PHOTO</button>
-              ) : null}
             </>
-          )}
+          ) : null}
+          {piece.photoPath ? (
+            <button className="wact" disabled={busyPhoto !== null} onClick={() => removePhoto(piece)}>
+              {busyPhoto === piece.id ? "ERASING…" : "ERASE PHOTO"}
+            </button>
+          ) : null}
           {piece.status === "active"
             ? <button className="wact" onClick={() => setStatus(piece, "retired")}>RETIRE</button>
             : <button className="wact" onClick={() => setStatus(piece, "active")}>RESTORE</button>}
