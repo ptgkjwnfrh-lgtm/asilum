@@ -1,5 +1,82 @@
 [
   {
+    "kind": "film",
+    "name": "almost famous",
+    "aliases": [
+      "penny lane",
+      "penny lane coat"
+    ],
+    "note": "one shearling-trimmed coat that became a noun",
+    "interpretations": [
+      {
+        "id": "almost famous/penny-lane",
+        "label": "penny lane",
+        "type": "character",
+        "summary": "the fur-trimmed afghan coat over slip dresses, tinted glasses, band-aid glamour — 70s groupie romance",
+        "tags": [
+          "independent",
+          "archival",
+          "seductive"
+        ],
+        "colors": [
+          "brown",
+          "cream",
+          "rust"
+        ],
+        "moods": [
+          "wistful",
+          "golden"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-6ec130ea-88dd-4fc6-8ddc-70cfbf81a876",
+    "sourceUrls": [
+      "https://www.marieclaire.com/fashion/penny-lane-coat-trend/",
+      "https://org.osu.edu/scarlettemagazine/2023/11/27/the-evolution-of-the-penny-lane-coat/"
+    ],
+    "approvedAt": 1784087397091
+  },
+  {
+    "kind": "film",
+    "name": "annie hall",
+    "aliases": [
+      "diane keaton style"
+    ],
+    "note": "keaton's own closet on screen — menswear made a woman's language, 1977",
+    "interpretations": [
+      {
+        "id": "annie hall/core",
+        "label": "annie hall",
+        "type": "character",
+        "summary": "high-waisted wide-leg trousers, vests over collared shirts, neckties, bowler hats — thrifted menswear worn softly",
+        "tags": [
+          "tailored",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "beige",
+          "brown",
+          "white"
+        ],
+        "moods": [
+          "easy",
+          "bookish"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-afb6eca5-ff4b-475f-ba2d-c6e0eb4ab988",
+    "sourceUrls": [
+      "https://www.hollywoodreporter.com/lifestyle/style/diane-keaton-singular-style-audacious-gutsy-independent-1236398566/",
+      "https://www.anothermag.com/fashion-beauty/9310/annie-hall-s-lessons-in-self-directed-style"
+    ],
+    "approvedAt": 1784087396400
+  },
+  {
     "kind": "aesthetic",
     "name": "barbiecore",
     "aliases": [
@@ -206,6 +283,44 @@
     "approvedAt": 1784080234427
   },
   {
+    "kind": "film",
+    "name": "clueless",
+    "aliases": [
+      "cher horowitz"
+    ],
+    "note": "mona may's ray of sunshine — the gaultier yellow plaid that outlived its decade",
+    "interpretations": [
+      {
+        "id": "clueless/cher",
+        "label": "cher horowitz",
+        "type": "character",
+        "summary": "yellow plaid two-pieces, knee socks, mini-kilts, feathered pens — beverly hills prep with total conviction",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "yellow",
+          "white",
+          "pink"
+        ],
+        "moods": [
+          "playful",
+          "polished"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-6776651e-7148-4a08-bd05-4a2763f02e4b",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/culture-news/clueless-30th-anniversary-costume-designer-mona-may-1237976722/",
+      "https://www.wmagazine.com/culture/clueless-fashion-myths-designers-where-to-shop"
+    ],
+    "approvedAt": 1784087396749
+  },
+  {
     "kind": "music",
     "name": "dev hynes",
     "aliases": [
@@ -245,6 +360,44 @@
     "approvedAt": 1784080234069
   },
   {
+    "kind": "figure",
+    "name": "dolly parton",
+    "aliases": [
+      "dolly"
+    ],
+    "note": "behind the seams — rhinestones as autobiography since the seventies",
+    "interpretations": [
+      {
+        "id": "dolly parton/rhinestone",
+        "label": "rhinestone glamour",
+        "type": "performance",
+        "summary": "head-to-toe rhinestones, fringe and sequins on western tailoring — country codes cut with old-hollywood shine",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "gold",
+          "pink",
+          "white"
+        ],
+        "moods": [
+          "dazzling",
+          "warm"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-14fa9273-c9f6-41fd-8677-e0488ccdb7c2",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/dolly-parton-best-fashion-style-photos",
+      "https://www.wideopencountry.com/dolly-parton-fashion/"
+    ],
+    "approvedAt": 1784087398054
+  },
+  {
     "kind": "aesthetic",
     "name": "fisherman aesthetic",
     "aliases": [
@@ -282,6 +435,66 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "tv",
+    "name": "gossip girl",
+    "aliases": [
+      "blair waldorf",
+      "upper east side"
+    ],
+    "note": "couture prep — private-school codes played at full volume, two wardrobes never blended",
+    "interpretations": [
+      {
+        "id": "gossip girl/blair",
+        "label": "blair",
+        "type": "character",
+        "summary": "headbands, blazers, plaid skirts, tights and loafers — hepburn-inflected prep as power dressing",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "navy",
+          "red",
+          "white"
+        ],
+        "moods": [
+          "polished",
+          "imperious"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "gossip girl/serena",
+        "label": "serena",
+        "type": "character",
+        "summary": "upper-class boho — sequins by day, tailored shorts, undone hair, vintage pulled like it was effortless",
+        "tags": [
+          "seductive",
+          "independent",
+          "statement"
+        ],
+        "colors": [
+          "gold",
+          "cream",
+          "green"
+        ],
+        "moods": [
+          "effortless",
+          "golden"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-da173f3c-1e2d-435b-b353-8545c7203c3a",
+    "sourceUrls": [
+      "https://www.marieclaire.com/fashion/gossip-girl-outfits/",
+      "https://graziadaily.co.uk/fashion/trends/gossip-girl-outfits/"
+    ],
+    "approvedAt": 1784087396053
   },
   {
     "kind": "city",
@@ -440,6 +653,66 @@
     "approvedAt": 1784078950663
   },
   {
+    "kind": "tv",
+    "name": "mad men",
+    "aliases": [
+      "don draper",
+      "mad men style"
+    ],
+    "note": "the show that re-sold the 20th century's tailoring to the 21st",
+    "interpretations": [
+      {
+        "id": "mad men/draper",
+        "label": "draper tailoring",
+        "type": "character",
+        "summary": "grey two-button suits, crisp white shirts, tie bars, pocket squares — early-60s madison avenue armor",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "grey",
+          "white",
+          "navy"
+        ],
+        "moods": [
+          "composed",
+          "severe"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "mad men/joan",
+        "label": "joan's sheaths",
+        "type": "character",
+        "summary": "curve-cut sheath dresses, jewel tones, a pen necklace — femininity worn as authority",
+        "tags": [
+          "seductive",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "red",
+          "green",
+          "purple"
+        ],
+        "moods": [
+          "assured",
+          "polished"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-cef019c6-b416-4f01-b28c-e9400409f2fd",
+    "sourceUrls": [
+      "https://www.rogerebert.com/interviews/clothes-make-the-character-janie-bryant-on-the-wardrobe-of-mad-men",
+      "https://www.smithsonianmag.com/smithsonian-institution/go-behind-the-styles-with-mad-mens-emmy-nominated-costume-designer-3802088/"
+    ],
+    "approvedAt": 1784087395411
+  },
+  {
     "kind": "aesthetic",
     "name": "mcbling",
     "aliases": [
@@ -477,6 +750,45 @@
       "https://hbx.com/journal/2022/10/exploring-accelerated-trend-cycles-from-y2k-to-mcbling"
     ],
     "approvedAt": 1784078950979
+  },
+  {
+    "kind": "art",
+    "name": "memphis design",
+    "aliases": [
+      "memphis milano",
+      "memphis group"
+    ],
+    "note": "sottsass's milan — the geometry that gave the 80s its look, gaultier to missoni",
+    "interpretations": [
+      {
+        "id": "memphis design/core",
+        "label": "memphis design",
+        "type": "movement",
+        "summary": "clashing geometry, squiggles and grids, saturated primaries against black-and-white — postmodern pattern worn loud",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [
+          "red",
+          "yellow",
+          "blue"
+        ],
+        "moods": [
+          "playful",
+          "graphic"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-278aa4f6-9b3f-4df3-904b-cd5909aca2a1",
+    "sourceUrls": [
+      "https://designmuseum.org/memphis",
+      "https://en.wikipedia.org/wiki/Memphis_Group"
+    ],
+    "approvedAt": 1784087398367
   },
   {
     "kind": "city",
@@ -711,6 +1023,84 @@
     "approvedAt": 1784078952278
   },
   {
+    "kind": "tv",
+    "name": "sex and the city",
+    "aliases": [
+      "satc",
+      "carrie bradshaw"
+    ],
+    "note": "patricia field's manifesto — fashion as personal narrative, tulle from the five-dollar bin",
+    "interpretations": [
+      {
+        "id": "sex and the city/carrie",
+        "label": "carrie",
+        "type": "character",
+        "summary": "tulle skirts with tank tops, midi skirts and kitten heels, brooches, headscarves, a newspaper-print dress — maximal personal whimsy",
+        "tags": [
+          "statement",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "pink",
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "playful",
+          "romantic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-8aecb7c6-a2ed-405c-8827-b49e5040f0b3",
+    "sourceUrls": [
+      "https://www.elonedge.com/blog/2025/10/8/how-sex-and-the-city-still-influences-how-we-dress-two-decades-later",
+      "https://www.nssgclub.com/en/fashion/27277/patricia-field-stylist-carrie-bradshaw-emily-in-paris"
+    ],
+    "approvedAt": 1784087395739
+  },
+  {
+    "kind": "figure",
+    "name": "stevie nicks",
+    "aliases": [
+      "stevie nicks style"
+    ],
+    "note": "the original witchy bohemian — anna sui dedicated a whole show to her",
+    "interpretations": [
+      {
+        "id": "stevie nicks/core",
+        "label": "gypsy witch glam",
+        "type": "personal",
+        "summary": "layered chiffon and velvet, fringe shawls, platform boots, crescent-moon pendants — stagecraft as wardrobe",
+        "tags": [
+          "independent",
+          "seductive",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "cream",
+          "burgundy"
+        ],
+        "moods": [
+          "ethereal",
+          "mystical"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-e3d69ca9-a588-4836-8ddf-7acfd8861cea",
+    "sourceUrls": [
+      "https://www.glam.com/2186826/throwback-pics-stevie-nicks-highlight-iconic-1970s-style/",
+      "https://sammydvintage.com/vintage-style/stevie-nicks-outfits-70s/"
+    ],
+    "approvedAt": 1784087397720
+  },
+  {
     "kind": "city",
     "name": "stockholm",
     "aliases": [
@@ -746,6 +1136,43 @@
       "https://onpointfresh.com/stockholm-style-aesthetic/"
     ],
     "approvedAt": 1784080232425
+  },
+  {
+    "kind": "music",
+    "name": "talking heads",
+    "aliases": [
+      "david byrne",
+      "big suit"
+    ],
+    "note": "the big suit — kabuki-scaled tailoring as concert architecture, 1984",
+    "interpretations": [
+      {
+        "id": "talking heads/big-suit",
+        "label": "the big suit",
+        "type": "performance",
+        "summary": "radically oversized grey tailoring — the body as a rectangle, proportion itself as the statement",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "grey"
+        ],
+        "moods": [
+          "cerebral",
+          "absurd"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day18-pr-review",
+    "factId": "fact-f6afe345-bb57-4488-9517-d530655034ba",
+    "sourceUrls": [
+      "https://www.musicradar.com/artists/that-will-be-the-inscription-on-my-tombstone-here-lies-the-body-of-david-byrne-why-the-big-suit-how-the-talking-heads-frontmans-oversized-tailoring-defined-his-most-iconic-performance",
+      "https://www.openculture.com/2023/03/david-byrne-explains-how-the-big-suit-he-wore-in-stop-making-sense-was-inspired-by-japanese-kabuki-theatre"
+    ],
+    "approvedAt": 1784087397418
   },
   {
     "kind": "aesthetic",
