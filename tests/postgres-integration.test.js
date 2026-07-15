@@ -159,6 +159,15 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const accountA = randomUUID();
   const accountB = randomUUID();
   const roomHandle = `it-${suffix.slice(0, 12)}`;
+  // profile_rooms carries an FK to auth.users wherever the auth schema
+  // exists (Supabase, and CI's shim) — give the test accounts parent rows.
+  const authUsersPresent = (await pool.query(
+    "SELECT to_regclass('auth.users') IS NOT NULL AS present")).rows[0].present;
+  if (authUsersPresent) {
+    await pool.query(
+      "INSERT INTO auth.users (id) VALUES ($1::uuid), ($2::uuid) ON CONFLICT DO NOTHING",
+      [accountA, accountB]);
+  }
   try {
     await production.upsertProfileRoom(accountA, { handle: roomHandle, themeId: "after-dark", published: true });
     await assert.rejects(() => production.upsertProfileRoom(accountB, { handle: roomHandle }),
@@ -176,6 +185,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     assert.equal(orphanModules.rows[0].n, 0, "modules cascade with the room");
   } finally {
     await pool.query("DELETE FROM profile_rooms WHERE account_id=ANY($1::uuid[])", [[accountA, accountB]]);
+    if (authUsersPresent) {
+      await pool.query("DELETE FROM auth.users WHERE id=ANY($1::uuid[])", [[accountA, accountB]]);
+    }
   }
 
   const railRegistry = await pool.query("SELECT count(*)::int AS n FROM discover_rails");
