@@ -112,6 +112,45 @@
     "approvedAt": 1784078951639
   },
   {
+    "kind": "music",
+    "name": "bjork",
+    "aliases": [
+      "bjork style",
+      "swan dress"
+    ],
+    "note": "the swan dress went from faux pas to moma — risk canonized",
+    "interpretations": [
+      {
+        "id": "bjork/avant-garde",
+        "label": "avant-garde bjork",
+        "type": "personal",
+        "summary": "sculptural silhouettes, designer experiments worn as art pieces — clothing as a medium, never a costume",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "red",
+          "silver"
+        ],
+        "moods": [
+          "otherworldly",
+          "playful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-6f1568c3-2d1c-4141-a6d4-1f9693416351",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Swan_dress",
+      "https://www.cnn.com/style/article/bjork-swan-dress-remember-when/"
+    ],
+    "approvedAt": 1784098503902
+  },
+  {
     "kind": "film",
     "name": "challengers",
     "aliases": [
@@ -321,6 +360,84 @@
     "approvedAt": 1784087396749
   },
   {
+    "kind": "figure",
+    "name": "courtney love",
+    "aliases": [
+      "kinderwhore",
+      "hole band style"
+    ],
+    "note": "kinderwhore — babydoll irony that marc jacobs and batsheva kept citing",
+    "interpretations": [
+      {
+        "id": "courtney love/kinderwhore",
+        "label": "kinderwhore",
+        "type": "personal",
+        "summary": "babydoll dresses with peter pan collars, torn tights, mary janes, smudged red lipstick — girlish codes worn as critique",
+        "tags": [
+          "independent",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "red",
+          "black"
+        ],
+        "moods": [
+          "raw",
+          "ironic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-de94b42d-f983-44ea-9fe7-bfb3211ddc9b",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Kinderwhore",
+      "https://www.dazeddigital.com/fashion/article/62252/1/90s-kinderwhore-girlcore-girl-trends-courtney-love-hole-batsheva-celine"
+    ],
+    "approvedAt": 1784098504526
+  },
+  {
+    "kind": "figure",
+    "name": "debbie harry",
+    "aliases": [
+      "blondie style"
+    ],
+    "note": "cbgb punk run through marilyn glamour — diy with a pout",
+    "interpretations": [
+      {
+        "id": "debbie harry/punk-glamour",
+        "label": "punk glamour",
+        "type": "personal",
+        "summary": "bleached shock of hair, safety-pinned black pants, one-shoulder tops, leather and berets — glamour and punk bleeding together",
+        "tags": [
+          "statement",
+          "seductive",
+          "independent",
+          "streetwear"
+        ],
+        "colors": [
+          "black",
+          "blonde",
+          "red"
+        ],
+        "moods": [
+          "cool",
+          "electric"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-be37869f-f403-44f2-b6be-551e034f6f1c",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/debbie-harry-blondie-best-style-fashion-moments",
+      "https://www.dazeddigital.com/music/article/28608/1/why-debbie-harry-is-music-s-ultimate-cult-style-icon"
+    ],
+    "approvedAt": 1784098505094
+  },
+  {
     "kind": "music",
     "name": "dev hynes",
     "aliases": [
@@ -495,6 +612,86 @@
       "https://graziadaily.co.uk/fashion/trends/gossip-girl-outfits/"
     ],
     "approvedAt": 1784087396053
+  },
+  {
+    "kind": "aesthetic",
+    "name": "gothic lolita",
+    "aliases": [
+      "goth lolita",
+      "moi-meme-moitie"
+    ],
+    "note": "victorian structure in mourning palette — harajuku's most formal register",
+    "interpretations": [
+      {
+        "id": "gothic lolita/core",
+        "label": "gothic lolita",
+        "type": "aesthetic",
+        "summary": "fitted bodices, knee-length bell skirts over petticoats, heavy lace, crosses and bonnets — rococo melancholy worn precisely",
+        "tags": [
+          "avant-garde",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "navy",
+          "burgundy"
+        ],
+        "moods": [
+          "melancholic",
+          "formal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-e01877bd-06ed-487f-b0c9-c53b140b1111",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Gothic_Lolita",
+      "https://www.yokogaomag.com/editorial/lolita-fashion-explained-japanese-fashion-subculture"
+    ],
+    "approvedAt": 1784098505981
+  },
+  {
+    "kind": "aesthetic",
+    "name": "harajuku",
+    "aliases": [
+      "harajuku style",
+      "fruits magazine",
+      "decora"
+    ],
+    "note": "the fruits-era street canon — fashion as decoration, documented weekly from 1997",
+    "interpretations": [
+      {
+        "id": "harajuku/fruits-era",
+        "label": "fruits era",
+        "type": "scene",
+        "summary": "clashing layers, overflowing accessories, kawaii against cyber and goth — self-expression stacked until it sings",
+        "tags": [
+          "statement",
+          "independent",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "pink",
+          "blue",
+          "yellow"
+        ],
+        "moods": [
+          "playful",
+          "maximal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-4b8f2e52-7744-4552-8fd1-ff57d9fe889f",
+    "sourceUrls": [
+      "https://www.nssmag.com/en/fashion/21322/harajuku-style-interview-fruits-magazine-shoichi-aoki-christpher-tordoff",
+      "https://www.dazeddigital.com/fashion/article/29001/1/fruits-future-pop-fashion"
+    ],
+    "approvedAt": 1784098505695
   },
   {
     "kind": "city",
@@ -713,6 +910,64 @@
     "approvedAt": 1784087395411
   },
   {
+    "kind": "music",
+    "name": "madonna",
+    "aliases": [
+      "madonna style"
+    ],
+    "note": "two eras, never blended — downtown lace and the gaultier cone",
+    "interpretations": [
+      {
+        "id": "madonna/like-a-virgin",
+        "label": "like a virgin era",
+        "type": "era",
+        "summary": "white lace with rosaries, stacked bangles, big bows, fingerless gloves — bridal innocence played against the street",
+        "tags": [
+          "seductive",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "playful",
+          "defiant"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "madonna/blond-ambition",
+        "label": "blond ambition",
+        "type": "era",
+        "summary": "the gaultier cone-bra corset — underwear as armor, 50s bullet bras rebuilt as stagecraft",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [
+          "pink",
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "commanding",
+          "theatrical"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-4d658602-dd1d-4d6e-bfe1-dd41bac98762",
+    "sourceUrls": [
+      "https://29secrets.com/style/the-story-of-madonnas-iconic-jean-paul-gaultier-cone-bra/",
+      "https://graziamagazine.com/us/articles/cone-bra-fashion-history-jean-paul-gaultier/"
+    ],
+    "approvedAt": 1784098504226
+  },
+  {
     "kind": "aesthetic",
     "name": "mcbling",
     "aliases": [
@@ -869,6 +1124,44 @@
     "approvedAt": 1784078949986
   },
   {
+    "kind": "figure",
+    "name": "patti smith",
+    "aliases": [
+      "horses cover"
+    ],
+    "note": "the horses cover — a thrifted white shirt that rewrote how women could look in rock",
+    "interpretations": [
+      {
+        "id": "patti smith/horses",
+        "label": "horses androgyny",
+        "type": "personal",
+        "summary": "white shirt with cut cuffs, skinny black tie, jacket slung over the shoulder — baudelaire by way of the bowery",
+        "tags": [
+          "independent",
+          "minimal",
+          "tailored",
+          "avant-garde"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "bookish",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-a7935ee1-2ffc-4563-8349-a9a5ff92b952",
+    "sourceUrls": [
+      "https://americansongwriter.com/behind-the-iconic-and-androgynous-horses-album-cover-by-patti-smith/",
+      "https://faroutmagazine.co.uk/patti-smith-horses-cover-robert-mapplethorpe/"
+    ],
+    "approvedAt": 1784098504814
+  },
+  {
     "kind": "music",
     "name": "pharrell",
     "aliases": [
@@ -963,6 +1256,66 @@
       "https://www.distractify.com/p/rockstar-girlfriend-aesthetic"
     ],
     "approvedAt": 1784078951311
+  },
+  {
+    "kind": "film",
+    "name": "romeo and juliet",
+    "aliases": [
+      "romeo juliet 1996",
+      "verona beach"
+    ],
+    "note": "luhrmann's verona beach — two gangs, two wardrobes, never blended",
+    "interpretations": [
+      {
+        "id": "romeo and juliet/montague",
+        "label": "montague boys",
+        "type": "atmosphere",
+        "summary": "hand-painted hawaiian shirts open over dog tags, cargo pants, chuck taylors — carefree beach-punk swagger",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "blue",
+          "pink",
+          "yellow"
+        ],
+        "moods": [
+          "reckless",
+          "sunlit"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "romeo and juliet/capulet",
+        "label": "capulet formality",
+        "type": "atmosphere",
+        "summary": "sharp dark tailoring, leather vests, ornate holsters, crosses — opulent menace with religious weight",
+        "tags": [
+          "tailored",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "red",
+          "gold"
+        ],
+        "moods": [
+          "severe",
+          "baroque"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-6390ea8e-0704-474c-9ff9-5d014f7f4454",
+    "sourceUrls": [
+      "https://www.nylon.com/fashion/romeo-and-juliet-costumes-1996-fashion",
+      "https://www.newwavemagazine.com/single-post/fashion-feuds-and-fatal-love-costuming-in-baz-luhrmann-s-romeo-and-juliet"
+    ],
+    "approvedAt": 1784098505401
   },
   {
     "kind": "film",
@@ -1249,6 +1602,80 @@
       "https://www.mrporter.com/en-us/journal/fashion/the-strokes-is-this-it-mens-indie-rock-style-2000s-5077182"
     ],
     "approvedAt": 1784080232745
+  },
+  {
+    "kind": "music",
+    "name": "the velvet underground",
+    "aliases": [
+      "velvet underground",
+      "nico style"
+    ],
+    "note": "the factory's house band — the all-black downtown uniform's source code",
+    "interpretations": [
+      {
+        "id": "the velvet underground/factory",
+        "label": "factory black",
+        "type": "era",
+        "summary": "head-to-toe black, leather, dark glasses indoors, androgynous severity — the downtown uniform before it had a name",
+        "tags": [
+          "minimal",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "nocturnal",
+          "detached"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-e974bbd6-ea5e-4004-ab7d-ea2bd9b890b5",
+    "sourceUrls": [
+      "https://faroutmagazine.co.uk/underrated-impact-of-nico-on-velvet-underground/",
+      "https://happymag.tv/the-velvet-underground-nico-why-it-mattered/"
+    ],
+    "approvedAt": 1784098506275
+  },
+  {
+    "kind": "figure",
+    "name": "tina turner",
+    "aliases": [
+      "tina turner style"
+    ],
+    "note": "fringe in motion — mackie flames, legs insured for millions",
+    "interpretations": [
+      {
+        "id": "tina turner/stage",
+        "label": "stage fringe",
+        "type": "performance",
+        "summary": "fringe and sequin minis built to move, beaded flame dresses, the shortest hems on the loudest stages",
+        "tags": [
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "red",
+          "silver"
+        ],
+        "moods": [
+          "electric",
+          "fearless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day19-pr-review",
+    "factId": "fact-04192d8c-06fb-4ff5-8427-3aa677a5324a",
+    "sourceUrls": [
+      "https://www.biography.com/musicians/g69558032/best-of-tina-turner-style",
+      "https://fashionreverie.com/?p=36947"
+    ],
+    "approvedAt": 1784098506570
   },
   {
     "kind": "aesthetic",
