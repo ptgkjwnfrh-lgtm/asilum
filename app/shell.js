@@ -17,6 +17,7 @@ import {
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
+import { AsteriskDrawer } from "./components/AsteriskMemory.jsx";
 
 const NAV = [
   { href: "/", label: "HOME" },
@@ -227,6 +228,7 @@ export default function Shell({ children }) {
         <a className="wordmark" href="/" title="back to the feed">
           <i>*</i>ASILUM<em>magazine</em>
         </a>
+        <AsteriskDrawer />
         <nav className="snavs">
           {NAV.map((n) => (
             <a key={n.href} className={"snav" + (pathname === n.href ? " cur" : "")} href={n.href}>

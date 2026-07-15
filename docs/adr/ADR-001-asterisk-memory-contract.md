@@ -1,6 +1,8 @@
 # ADR-001: One versioned Asterisk memory contract (read facade, not a new store)
 
-- Status: PROPOSED (Phase 0)
+- Status: ACCEPTED — implemented in Phase 2 (`lib/asterisk/memory.js`,
+  `GET/POST /api/asterisk/memory`, schema v14; drawer in the shell, full page
+  at `/asterisk`; brand/user follows graduated to `user_follows`)
 - Date: 2026-07-15
 - Deciders: owner + Codex review
 
