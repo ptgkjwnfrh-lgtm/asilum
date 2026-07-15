@@ -6,14 +6,20 @@
 // derived from real local/server state.
 
 import { useEffect, useState } from "react";
-import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
+import {
+  EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
+  loadServerFitProfile, saveFitProfile, saveServerFitProfile, sendJSON,
+} from "../../lib/client.js";
+import { convertMeasurementUnit, MEASUREMENT_KEYS } from "../../lib/brain/measurements.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
   followedUsers, followedBrands, setFollowBrand, sourceFor,
 } from "../../lib/social.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function ProfilePage() {
+  const fit = useFitBrain();
   const [info, setInfo] = useState(null);
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState("posts");
@@ -73,6 +79,8 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      <MeasurementsEditor />
+
       <div className="tabs">
         {[["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"]].map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
@@ -118,6 +126,8 @@ export default function ProfilePage() {
               <div className="hlinfo">
                 <div className="hlttl" style={{ fontSize: 15 }}>{o.title}</div>
                 <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
+                <ColorEvidenceLine item={o} />
+                <ProductFitLine item={o} fit={fit} />
               </div>
               <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>
             </a>
@@ -134,6 +144,85 @@ export default function ProfilePage() {
         <UserSearch placeholder="search users to follow…" />
       </div>
     </div>
+  );
+}
+
+function MeasurementsEditor() {
+  const [profile, setProfile] = useState(EMPTY_FIT);
+  const [status, setStatus] = useState("loading your fit profile…");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const local = loadFitProfile();
+    setProfile(local);
+    loadServerFitProfile(getUid()).then((server) => {
+      const hasServer = server.usualSize || MEASUREMENT_KEYS.some((key) => server[key] !== "");
+      if (hasServer) { setProfile(server); saveFitProfile(server); }
+      setStatus(hasServer ? "saved to your private ASILUM account" : "not saved yet");
+    }).catch(() => setStatus("using this device — save to sync securely"));
+  }, []);
+
+  function change(key, value) {
+    setProfile((current) => ({ ...current, [key]: value }));
+    setStatus("unsaved changes");
+  }
+
+  async function save() {
+    setSaving(true);
+    try {
+      const saved = await saveServerFitProfile(profile, getUid());
+      setProfile(saved);
+      setStatus("saved — listings will now check your measurements");
+    } catch (error) { setStatus(error.message); }
+    setSaving(false);
+  }
+
+  async function clear() {
+    const response = await sendJSON("DELETE", "/api/measurements", { user: getUid() }).catch(() => null);
+    if (!response?.ok) { setStatus("could not clear measurements"); return; }
+    setProfile({ ...EMPTY_FIT });
+    saveFitProfile({ ...EMPTY_FIT });
+    setStatus("measurements cleared");
+  }
+
+  return (
+    <section className="measurecard" id="measurements">
+      <div className="measurehead">
+        <div>
+          <div className="psub">YOUR MEASUREMENTS</div>
+          <h2>Know before you buy<span className="red">.</span></h2>
+          <p className="deck">Private first-party fit scoring. ASILUM never sends these measurements to a model or merchant.</p>
+        </div>
+        <div className="unitpick" role="group" aria-label="measurement unit">
+          {["in", "cm"].map((unit) => (
+            <button key={unit} className={profile.unit === unit ? "on" : ""}
+              onClick={() => { setProfile((current) => convertMeasurementUnit(current, unit)); setStatus("unsaved changes"); }}>
+              {unit.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="measuregrid">
+        <label>usual size
+          <select value={profile.usualSize} onChange={(event) => change("usualSize", event.target.value)}>
+            <option value="">—</option>
+            {["XXS","XS","S","M","L","XL","XXL","XXXL"].map((size) => <option key={size}>{size}</option>)}
+          </select>
+        </label>
+        {MEASUREMENT_KEYS.map((key) => (
+          <label key={key}>{key} ({profile.unit})
+            <input type="number" inputMode="decimal" min="0" step="0.1" value={profile[key]}
+              placeholder={{ chest: "40", waist: "32", hips: "40", inseam: "31", height: "70" }[key]}
+              onChange={(event) => change(key, event.target.value)} />
+          </label>
+        ))}
+      </div>
+      <div className="measureactions">
+        <button className="btn" disabled={saving} onClick={save}>{saving ? "SAVING…" : "SAVE MEASUREMENTS"}</button>
+        <button className="fitbtn" onClick={clear}>CLEAR</button>
+        <span className="measurestatus">{status}</span>
+      </div>
+    </section>
   );
 }
 

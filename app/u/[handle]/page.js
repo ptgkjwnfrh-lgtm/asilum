@@ -8,8 +8,10 @@ import { useEffect, useState } from "react";
 import { thumbFor, hashStr } from "../../../lib/client.js";
 import { MOCK_USERS, listPosts, postStats, timeAgo } from "../../../lib/social.js";
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
 
 export default function UserPage({ params }) {
+  const fit = useFitBrain();
   const handle = decodeURIComponent(params.handle || "");
   const user = MOCK_USERS.find((u) => u.handle === handle);
   const [pieces, setPieces] = useState([]);
@@ -85,6 +87,8 @@ export default function UserPage({ params }) {
             </div>
             <div className="body">
               <div className="ttl">{it.title}</div>
+              <ColorEvidenceLine item={it} />
+              <ProductFitLine item={it} fit={fit} />
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
             </div>
           </a>

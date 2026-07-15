@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -30,6 +31,7 @@ export default function DiscoverPage() {
   const [sug, setSug] = useState([]);
   const [ticketItem, setTicketItem] = useState(null);
   const [reading, setReading] = useState(null);      // Asterisk's cultural read of the query
+  const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
   const interpRef = useRef(null);                     // active interpretation's tags
   const offsetRef = useRef(0);
@@ -289,6 +291,8 @@ export default function DiscoverPage() {
                   <span className="t" key={t}>{t}</span>
                 ))}
               </div>
+              <ColorEvidenceLine item={it} />
+              <ProductFitLine item={it} fit={fit} />
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
               <div className="cardacts" onClick={(e) => e.stopPropagation()}>
                 <button className={favedIds.has(it.id) ? "on" : ""} onClick={() => fav(it)}>

@@ -12,7 +12,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
-  loadFitProfile, fitProfileForBrain, EMPTY_FIT,
+  loadFitProfile, loadServerFitProfile, saveFitProfile, fitProfileForBrain, EMPTY_FIT,
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
@@ -20,6 +20,7 @@ import {
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
+import { ColorEvidenceLine } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -302,6 +303,12 @@ export default function Home() {
   // Fit profile lives in the account panel now; stay in sync with it.
   useEffect(() => {
     setFit(loadFitProfile());
+    loadServerFitProfile(getUid()).then((server) => {
+      if (server.usualSize || Object.values(server).some((value) => typeof value === "number" && value > 0)) {
+        saveFitProfile(server);
+        setFit(server);
+      }
+    }).catch(() => {});
     const sync = () => setFit(loadFitProfile());
     window.addEventListener("asilum:fit", sync);
     return () => window.removeEventListener("asilum:fit", sync);
@@ -781,7 +788,7 @@ export default function Home() {
           )}
           <div className="grid">
             {items.map((it, i) => {
-              const fitLine = it.size ? fitPhrase(it.size, fitBrain) : null;
+              const fitLine = fitPhrase(it.size, fitBrain);
               const post = DEMO_SOCIAL_ENABLED && (i + 1) % POST_EVERY === 0 ? postFor(it, i) : null;
               return (
                 <FragmentCard
@@ -829,7 +836,7 @@ export default function Home() {
                 <FragmentCard
                   key={it.id}
                   it={it}
-                  fitLine={it.size ? fitPhrase(it.size, fitBrain) : null}
+                  fitLine={fitPhrase(it.size, fitBrain)}
                   bagged={baggedIds.has(it.id)}
                   onOpen={() => openModal(it)}
                   onFavorite={() => react(it, "favorite")}
@@ -852,7 +859,7 @@ export default function Home() {
                 <FragmentCard
                   key={it.id}
                   it={it}
-                  fitLine={it.size ? fitPhrase(it.size, fitBrain) : null}
+                  fitLine={fitPhrase(it.size, fitBrain)}
                   bagged={baggedIds.has(it.id)}
                   onOpen={() => openModal(it)}
                   onFavorite={() => react(it, "favorite")}
@@ -921,9 +928,10 @@ export default function Home() {
                 {modal.category ? <span className="cat">{modal.category}</span> : null}
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
-              {modal.size ? (
+              <ColorEvidenceLine item={modal} detailed />
+              {(modal.size?.label || fitPhrase(modal.size, fitBrain)) ? (
                 <div className="size">
-                  {modal.size.label ? <span className="szlabel">{modal.size.label}</span> : null}
+                  {modal.size?.label ? <span className="szlabel">{modal.size.label}</span> : null}
                   {fitPhrase(modal.size, fitBrain) ? (
                     <span className="szfit">{fitPhrase(modal.size, fitBrain)}</span>
                   ) : null}
@@ -1022,6 +1030,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, post }) 
           <div className="ttl" onClick={onOpen}>{it.title}</div>
           {it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
           {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
+          <ColorEvidenceLine item={it} />
           {fitLine ? <div className="fitline">{fitLine}</div> : null}
           <div className="cardacts">
             <button onClick={onFavorite}>Favorite</button>
