@@ -7,7 +7,7 @@
 // never represented as an order, shipment, or completed purchase.
 
 import { useEffect, useState } from "react";
-import { getUid, authorizedFetch, thumbFor, sendJSON } from "../../lib/client.js";
+import { getUid, authorizedFetch, thumbFor, sendJSON, postJSON } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 
 export default function OrdersPage() {
@@ -26,6 +26,18 @@ export default function OrdersPage() {
       .then((d) => setTickets(d.tickets || []))
       .catch(() => setTickets([]));
   }, []);
+
+  async function addToWardrobe(ticket) {
+    const response = await postJSON("/api/wardrobe", {
+      user: getUid(), source: "ticket", ticketId: ticket.id,
+    }).catch(() => null);
+    if (!response) { setNotice("could not add to wardrobe"); return; }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) { setNotice(data.error || "could not add to wardrobe"); return; }
+    setNotice(data.duplicate
+      ? "already in your wardrobe — the stylist can style it from /stylist"
+      : `added to your wardrobe — the stylist can now build looks around it`);
+  }
 
   async function reportOutcome(ticket, outcome) {
     const response = await sendJSON("PATCH", "/api/tickets", {
@@ -80,6 +92,11 @@ export default function OrdersPage() {
                   >{outcome}</button>
                 ))}
               </div>
+            )}
+            {t.userReportedOutcome === "bought" && (
+              <button className="btn ghost wbtn" onClick={() => addToWardrobe(t)}>
+                <b className="red">*</b> ADD TO WARDROBE
+              </button>
             )}
           </div>
           <div className="hlstat">

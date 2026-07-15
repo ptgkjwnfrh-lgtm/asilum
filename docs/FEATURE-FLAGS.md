@@ -21,6 +21,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `DEVICE_COOKIE_SECRET` | identity issuing | required (503 if unset in prod) | honest 503 |
 | `ADMIN_TOKEN` | admin surface | disabled if unset | honest 503 |
 | `DATABASE_EXPECTED_ROLE` / prod default `asilum_app` | least-privilege runtime | enforced in prod | fail-closed boot |
+| `WARDROBE_ENABLED` | private owned-piece collection + stylist anchors | on (`0` is the kill switch) | wardrobe API refuses with 503; wardrobe anchors refuse instead of silently dropping |
 
 ## Roadmap flags (reserve now, one per phase-1+ surface)
 
@@ -30,7 +31,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `ASTERISK_UNKNOWN_QUERIES_ENABLED` | A: aggregation + research queueing | queries still answered; nothing recorded |
 | `ASTERISK_NOTIFICATIONS_ENABLED` | A: learning notices | silent |
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
-| `WARDROBE_ENABLED` / `WARDROBE_UPLOADS_ENABLED` | C | stylist behaves as today |
+| `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | upload surface absent; core wardrobe remains available |
 | `DISCOVER_RAILS_ENABLED` (+ per-rail registry rows) | D | strip-only Discover (current) |
 | `PROFILE_THEMES_ENABLED` | E | default profile skin |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |

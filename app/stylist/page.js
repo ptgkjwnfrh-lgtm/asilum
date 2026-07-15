@@ -10,9 +10,10 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   getUid, postJSON, thumbFor, bagAdd,
-  loadFitProfile,
+  loadFitProfile, authorizedFetch,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
+import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function StylistPage() {
@@ -22,7 +23,21 @@ export default function StylistPage() {
   const [notice, setNotice] = useState("");
   const [passed, setPassed] = useState(() => new Set());
   const [aiConsent, setAiConsent] = useState(false);
+  const [wardrobe, setWardrobe] = useState([]);
   const fit = useFitBrain();
+
+  // Owned pieces become anchors: FROM YOUR WARDROBE strip (Feature C).
+  const loadWardrobe = useCallback(() => {
+    return authorizedFetch("/api/wardrobe?user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d) => setWardrobe(d.items || []))
+      .catch(() => setWardrobe([]));
+  }, []);
+  useEffect(() => {
+    loadWardrobe();
+    window.addEventListener("asilum:identity", loadWardrobe);
+    return () => window.removeEventListener("asilum:identity", loadWardrobe);
+  }, [loadWardrobe]);
 
   const load = useCallback(async (anchor, allowAi = false) => {
     setLoading(true);
@@ -72,13 +87,15 @@ export default function StylistPage() {
   function lookKey(look) { return look.items.map((it) => it.id).join("|"); }
 
   function bagAll(look) {
-    for (const it of look.items) {
+    const purchasable = purchasableLookItems(look.items);
+    for (const it of purchasable) {
       bagAdd(it);
       postJSON("/api/interaction", {
         user: getUid(), item: { id: it.id, tags: it.tags }, action: "bag",
       }).catch(() => {});
     }
-    setNotice(`the whole look is in your bag — ${look.items.length} pieces, USD ${Math.round(look.total)} added`);
+    const total = purchasable.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+    setNotice(`the purchasable look is in your bag — ${purchasable.length} pieces, USD ${Math.round(total)} added; your wardrobe piece stayed yours`);
   }
 
   async function saveOutfit(look) {
@@ -113,6 +130,20 @@ export default function StylistPage() {
         {" "}fit-gated when your size is set.
         {anchorId ? " styled around the piece you picked." : ""}
       </p>
+      {wardrobe.length > 0 && (
+        <div className="wstrip">
+          <span className="wstriplbl"><b className="red">*</b> FROM YOUR WARDROBE</span>
+          {wardrobe.slice(0, 8).map((piece) => (
+            <button
+              key={piece.id}
+              className={"wchip" + (anchorId === "wardrobe:" + piece.id ? " cur" : "")}
+              onClick={() => { setAnchorId("wardrobe:" + piece.id); load("wardrobe:" + piece.id, aiConsent); }}
+            >
+              {piece.title}{piece.brand ? " · " + piece.brand : ""}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="controls">
         <button className="btn" onClick={() => load(anchorId, aiConsent)}>REGENERATE</button>
         <a className="btn ghost" href="/profile#measurements">SET YOUR MEASUREMENTS</a>
@@ -139,7 +170,7 @@ export default function StylistPage() {
             <h3 className="statshead">{g.genre === "ANCHORED" ? "AROUND YOUR PIECE" : "BASE GENRE — " + g.genre}</h3>
             {g.looks.map((o) => {
               lookNo += 1;
-              const nSources = new Set(o.items.map((it) => sourceFor(it))).size;
+              const nSources = new Set(o.items.filter((it) => !it.owned).map((it) => sourceFor(it))).size;
               return (
                 <div className="otf" key={lookKey(o)}>
                   <div className="otfhead">
@@ -149,11 +180,15 @@ export default function StylistPage() {
                   </div>
                   <div className="otfrow">
                     {o.items.map((it) => (
-                      <a className="otfitem" key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
+                      <a
+                        className="otfitem"
+                        key={it.id}
+                        href={it.owned ? "/profile" : "/?item=" + encodeURIComponent(it.id)}
+                      >
                         <img src={it.img || thumbFor(it)} alt={it.title} />
                         <span className="otfttl">{it.title}</span>
                         <span className="otfprice">
-                          {sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
+                          {it.owned ? "YOUR WARDROBE" : sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
                         </span>
                         <ColorEvidenceLine item={it} />
                         <ProductFitLine item={it} fit={fit} />

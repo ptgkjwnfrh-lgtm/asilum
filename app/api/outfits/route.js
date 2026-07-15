@@ -21,6 +21,8 @@ import { readJsonRequest } from "../../../lib/security/json.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
 import { getUserMeasurements } from "../../../lib/db/production.js";
+import { getWardrobeItem } from "../../../lib/db/production.js";
+import { wardrobeAnchor, wardrobeEnabled } from "../../../lib/wardrobe/index.js";
 import { measurementProfileForBrain, normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
 
 export const dynamic = "force-dynamic";
@@ -81,7 +83,16 @@ function modelLook(outfit) {
 }
 
 function publicLook(look) {
-  return { ...look, items: (look.items || []).map(publicProduct).filter(Boolean) };
+  return {
+    ...look,
+    items: (look.items || []).map((item) => {
+      const safe = publicProduct(item);
+      // Owned pieces (wardrobe anchors) stay marked — the client shows
+      // "from your wardrobe" instead of a buy path.
+      if (safe && item.owned === true) safe.owned = true;
+      return safe;
+    }).filter(Boolean),
+  };
 }
 
 async function generate(req, input, { persistSeen = true } = {}) {
@@ -103,9 +114,22 @@ async function generate(req, input, { persistSeen = true } = {}) {
   const profile = migrateProfile(await getProfile(userId).catch(() => ({})));
   const taste = tasteVector(profile);
 
-  const anchor = anchorId
-    ? pool.find((it) => it.id === anchorId) || null
-    : null;
+  // Wardrobe anchors ("wardrobe:<id>"): the look is built AROUND a piece the
+  // user owns — it fills its slot and is never re-recommended for purchase.
+  let anchor = null;
+  if (anchorId.startsWith("wardrobe:")) {
+    if (!wardrobeEnabled()) {
+      return NextResponse.json(
+        { error: "wardrobe styling is not enabled on this deployment" },
+        { status: 503 }
+      );
+    }
+    const owned = await getWardrobeItem(userId, anchorId.slice("wardrobe:".length)).catch(() => null);
+    anchor = wardrobeAnchor(owned);
+    if (!anchor) return NextResponse.json({ error: "wardrobe piece not found" }, { status: 404 });
+  } else if (anchorId) {
+    anchor = pool.find((it) => it.id === anchorId) || null;
+  }
 
   const savedMeasurements = await getUserMeasurements(userId).catch(() => null);
   const savedFit = savedMeasurements ? measurementProfileForBrain(savedMeasurements) : null;

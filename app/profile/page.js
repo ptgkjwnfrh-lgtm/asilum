@@ -19,6 +19,7 @@ import {
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import {
   ColorEvidenceLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
@@ -88,7 +89,7 @@ export default function ProfilePage() {
       <MeasurementsEditor />
 
       <div className="tabs">
-        {[["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"]].map(([k, label]) => (
+        {[["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"], ["wardrobe", "WARDROBE"]].map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
             {label}
           </button>
@@ -122,6 +123,7 @@ export default function ProfilePage() {
       )}
 
       {tab === "brands" && <BrandsTab bagBrands={brands} />}
+      {tab === "wardrobe" && <WardrobeTab />}
 
       {tab === "bag" && (
         <>

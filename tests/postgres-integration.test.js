@@ -31,7 +31,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       await pool.query("DELETE FROM user_measurements WHERE user_id=ANY($1::text[])", [userIds]);
       for (const table of [
         "purchase_tickets", "user_events", "interactions", "processed_operations",
-        "user_style_profiles", "user_follows", "asterisk_memory_preferences", "profiles",
+        "user_style_profiles", "user_follows", "asterisk_memory_preferences", "wardrobe_items", "profiles",
       ]) {
         await pool.query(`DELETE FROM ${table} WHERE user_id=ANY($1::text[])`, [userIds]);
       }
@@ -150,7 +150,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 14);
+  assert.equal(schema.rows[0].version, 15);
 
   const memorySecurity = await pool.query(`
     SELECT c.relname,
@@ -161,9 +161,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     FROM pg_class AS c
     JOIN pg_namespace AS n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
-      AND c.relname IN ('asterisk_memory_preferences', 'user_follows')
+      AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items')
     ORDER BY c.relname`);
-  assert.equal(memorySecurity.rows.length, 2);
+  assert.equal(memorySecurity.rows.length, 3);
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
     assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);
@@ -185,6 +185,33 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.deepEqual((await production.getMemoryPreferences(to)).hiddenSections, ["inferred"],
     "account-side preferences win on adoption");
   assert.deepEqual((await production.getMemoryPreferences(from)).hiddenSections, []);
+
+  const longCatalogRef = `catalog:${"x".repeat(80)}`;
+  const wardrobeAdd = await production.createWardrobeItem({
+    userId: from, source: "manual", sourceRef: null, catalogItemId: null,
+    title: "integration overcoat", brand: null, category: "outerwear",
+    sizeLabel: null, colors: [], tags: { MINIMAL: 0.5 }, acquiredAt: null,
+  });
+  assert.equal(wardrobeAdd.duplicate, false);
+  for (const owner of [from, to]) {
+    const catalogAdd = await production.createWardrobeItem({
+      userId: owner, source: "catalog", sourceRef: longCatalogRef, catalogItemId: null,
+      title: "integration duplicate", brand: null, category: "tops",
+      sizeLabel: null, colors: [], tags: {}, acquiredAt: null,
+    });
+    assert.equal(catalogAdd.duplicate, false);
+  }
+  const wardrobeAdoptions = await Promise.all([
+    production.adoptAccountData(from, to),
+    production.adoptAccountData(from, to),
+  ]);
+  assert.equal(wardrobeAdoptions.filter((result) => result.duplicate).length, 1,
+    "identity locks make concurrent wardrobe adoption idempotent");
+  assert.equal((await production.listWardrobeItems(from, { status: "all" })).length, 0);
+  const ownedByAccount = await production.listWardrobeItems(to, { status: "all" });
+  assert.equal(ownedByAccount.filter((piece) => piece.title === "integration overcoat").length, 1);
+  assert.equal(ownedByAccount.filter((piece) => piece.sourceRef === longCatalogRef).length, 1,
+    "namespaced 80-character catalog ids fit and dedupe during adoption");
 
   const measurementSecurity = await pool.query(`
     SELECT c.relrowsecurity AS rls,
