@@ -11,8 +11,10 @@ import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, se
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
+  const fit = useFitBrain();
   const [uid, setUid] = useState(null);
   const [boards, setBoards] = useState([]);
   const [activeId, setActiveId] = useState(null);
@@ -346,6 +348,8 @@ export default function BoardPage() {
                   <div className="body">
                     <div className="ttl">{it.title}</div>
                     <div className="brand2">{it.brand}</div>
+                    <ColorEvidenceLine item={it} />
+                    <ProductFitLine item={it} fit={fit} />
                     <div className="pricerow">
                       {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}
                       {safeExternalUrl(it.url) ? (

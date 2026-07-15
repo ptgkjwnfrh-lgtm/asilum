@@ -6,7 +6,8 @@
 //   full=1     — a full generation: 5 base genres × 5 looks = 25 LOOKs,
 //                match floor 75, and a 30-day repeat memory: a look the user
 //                has already been shown has only a 10% chance of reappearing.
-// Fit profile arrives from the client; measurements never persist server-side.
+// Fit uses the caller's private saved measurement profile; it is never sent to
+// the optional external model.
 
 import { NextResponse } from "next/server";
 import { migrateProfile, tasteVector } from "../../../lib/brain/index.js";
@@ -19,6 +20,8 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
+import { getUserMeasurements } from "../../../lib/db/production.js";
+import { measurementProfileForBrain, normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
 
 export const dynamic = "force-dynamic";
 
@@ -35,24 +38,11 @@ function lookSignature(look) {
   return look.items.map((it) => it.id).sort().join("|");
 }
 
-const ALLOWED_SIZES = new Set(["XXS", "XS", "S", "M", "L", "XL", "XXL", "XXXL"]);
-
-function safeMeasurement(value, min, max) {
-  const measurement = Number(value);
-  return Number.isFinite(measurement) && measurement >= min && measurement <= max
-    ? measurement : null;
-}
-
 function fitProfileFromBody(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const usualSize = String(value.usualSize || "").toUpperCase();
-  const chest = safeMeasurement(value.chest, 20, 80);
-  const waist = safeMeasurement(value.waist, 15, 80);
-  if (!ALLOWED_SIZES.has(usualSize) && chest == null && waist == null) return null;
-  return {
-    usualSize: ALLOWED_SIZES.has(usualSize) ? usualSize : "",
-    measurements: { ...(chest == null ? {} : { chest }), ...(waist == null ? {} : { waist }) },
-  };
+  const normalized = normalizeMeasurementProfile(value);
+  return normalized.ok
+    ? { usualSize: normalized.storage.usualSize || "", measurements: normalized.storage.inches }
+    : null;
 }
 
 function trendAwareLook(look) {
@@ -117,9 +107,10 @@ async function generate(req, input, { persistSeen = true } = {}) {
     ? pool.find((it) => it.id === anchorId) || null
     : null;
 
-  // Measurements are accepted only from a JSON request body, used transiently
-  // by the local fit engine, and never persisted or sent to an external model.
-  const fitProfile = fitProfileFromBody(input.fit);
+  const savedMeasurements = await getUserMeasurements(userId).catch(() => null);
+  const savedFit = savedMeasurements ? measurementProfileForBrain(savedMeasurements) : null;
+  const fitProfile = savedFit && (savedFit.usualSize || Object.keys(savedFit.measurements).length)
+    ? savedFit : fitProfileFromBody(input.fit);
 
   const events =
     ((profile._meta && profile._meta.seen) || []).length +

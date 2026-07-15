@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   getUid, postJSON, thumbFor, bagList, bagRemove,
-  loadFitProfile, saveFitProfile, EMPTY_FIT,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -18,6 +17,7 @@ import {
 } from "../lib/social.js";
 import { getSupabase, authConfigured } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 
 const NAV = [
   { href: "/", label: "HOME" },
@@ -37,6 +37,7 @@ const TICKER =
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 export default function Shell({ children }) {
+  const fit = useFitBrain();
   const pathname = usePathname();
   const [uid, setUid] = useState("");
   const [bag, setBag] = useState([]);
@@ -45,7 +46,6 @@ export default function Shell({ children }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
   const [results, setResults] = useState(null);
-  const [fit, setFit] = useState(EMPTY_FIT);
   const [connecting, setConnecting] = useState("");
   const [connectMsg, setConnectMsg] = useState("");
   const [follows, setFollows] = useState({ brands: [], users: [] });
@@ -57,7 +57,6 @@ export default function Shell({ children }) {
 
   useEffect(() => {
     setUid(getUid() || "");
-    setFit(loadFitProfile());
     // Clear the stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
@@ -171,10 +170,6 @@ export default function Shell({ children }) {
       setUid(getUid());
     }
     setAuthMsg("signed out — this device keeps its taste");
-  }
-
-  function updateFit(k, v) {
-    setFit((prev) => { const n = { ...prev, [k]: v }; saveFitProfile(n); return n; });
   }
 
   // ---- Multi-search: brands / pieces / aesthetics / users ----
@@ -313,6 +308,8 @@ export default function Shell({ children }) {
                   <img src={it.img || thumbFor(it)} alt="" />
                   <span>{it.title}</span>
                   <em>{it.src}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}</em>
+                  <ColorEvidenceLine item={it} />
+                  <ProductFitLine item={it} fit={fit} />
                 </a>
               ))}
             </>
@@ -362,6 +359,8 @@ export default function Shell({ children }) {
                   <div className="baginfo">
                     <div className="bagttl">{x.title}</div>
                     <div className="bagprice">{sourceFor(x)} · {x.currency || "USD"} {x.price}</div>
+                    <ColorEvidenceLine item={x} />
+                    <ProductFitLine item={x} fit={fit} />
                   </div>
                   <button className="bagx" onClick={() => bagRemove(x.id)}>×</button>
                 </div>
@@ -458,28 +457,8 @@ export default function Shell({ children }) {
           </div>
           {connectMsg && <div className="acctline">{connectMsg}</div>}
 
-          <div className="psub">SIZING — stored only on this device</div>
-          <div className="fitform">
-            <label>
-              usual size
-              <select value={fit.usualSize} onChange={(e) => updateFit("usualSize", e.target.value)}>
-                <option value="">—</option>
-                {["XXS","XS","S","M","L","XL","XXL","XXXL"].map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              chest (in)
-              <input type="number" inputMode="decimal" value={fit.chest}
-                onChange={(e) => updateFit("chest", e.target.value)} placeholder="40" />
-            </label>
-            <label>
-              waist (in)
-              <input type="number" inputMode="decimal" value={fit.waist}
-                onChange={(e) => updateFit("waist", e.target.value)} placeholder="32" />
-            </label>
-          </div>
+          <div className="psub">FIT PROFILE</div>
+          <a className="fitbtn" href="/profile#measurements">ADD / EDIT MEASUREMENTS →</a>
         </div>
       )}
 

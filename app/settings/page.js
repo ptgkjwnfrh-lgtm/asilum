@@ -167,9 +167,10 @@ export default function SettingsPage() {
         authorized marketplace access. ASILUM does not scrape retailers and
         does not reproduce publication articles or imagery — editorial
         summaries are original and link to the publications. your measurements
-        are stored only on this device and are sent transiently to ASILUM for
-        first-party fit scoring, never persisted server-side or sent to an
-        external model; taste vectors use a pseudonymous device or authenticated
+        are stored privately under your pseudonymous device or authenticated account,
+        used only for first-party fit scoring, and never sent to a merchant or
+        external model; you can clear them from PROFILE or delete them with the
+        personalization controls above. taste vectors use a pseudonymous device or authenticated
         account identifier. resetting the recommendation model does not delete history;
         the data controls above state exactly what a broader deletion retains.
       </p>

@@ -27,6 +27,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
         [userIds]
       );
       await pool.query("DELETE FROM boards WHERE user_id=ANY($1::text[])", [userIds]);
+      await pool.query("DELETE FROM user_measurements WHERE user_id=ANY($1::text[])", [userIds]);
       for (const table of [
         "purchase_tickets", "user_events", "interactions", "processed_operations",
         "user_style_profiles", "profiles",
@@ -93,6 +94,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal((await production.reportTicketOutcome(ticket.id, userId, "bought", outcomeEvent)).duplicate, true);
 
   await db.saveProfile(from, { long: { MINIMAL: 0.7 } });
+  await production.saveUserMeasurements(from, {
+    usualSize: "M", preferredUnit: "in",
+    inches: { chest: 40, waist: 32, hips: 40, inseam: 31, height: 70 },
+  });
   const sourceBoard = await db.createBoard(from, "source board");
   await db.addBoardItem(sourceBoard.id, itemA);
   const [first, second] = await Promise.all([
@@ -103,6 +108,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal((await db.getBoards(to)).length, 1);
   assert.equal((await db.getBoards(from)).length, 0);
   assert.equal((await db.getProfile(to)).long.MINIMAL, 0.7);
+  assert.equal((await production.getUserMeasurements(to)).chest, 40);
+  assert.equal((await production.getUserMeasurements(from)).chest, "");
 
   const fact = await production.createLearnedFact({
     entityType: "test", entityId: suffix, claim: "concurrent review",
@@ -128,7 +135,19 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 11);
+  assert.equal(schema.rows[0].version, 12);
+
+  const measurementSecurity = await pool.query(`
+    SELECT c.relrowsecurity AS rls,
+      has_table_privilege('asilum_app', 'public.user_measurements', 'SELECT,INSERT,UPDATE,DELETE') AS app_access,
+      EXISTS (SELECT 1 FROM aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner)))
+        WHERE grantee=0 AND privilege_type='SELECT') AS public_read
+    FROM pg_class AS c
+    WHERE c.oid='public.user_measurements'::regclass
+  `);
+  assert.equal(measurementSecurity.rows[0].rls, true);
+  assert.equal(measurementSecurity.rows[0].app_access, true);
+  assert.equal(measurementSecurity.rows[0].public_read, false);
 
   const defaults = await pool.query(`
     SELECT EXISTS (

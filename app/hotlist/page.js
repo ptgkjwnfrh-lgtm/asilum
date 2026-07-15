@@ -10,8 +10,10 @@ import { useEffect, useState } from "react";
 import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
 import { STORIES, listPosts, postStats, timeAgo } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function EditorialPage() {
+  const fit = useFitBrain();
   const [tab, setTab] = useState("stories");
   const [rows, setRows] = useState(null);
   const [live, setLive] = useState(true);
@@ -27,7 +29,7 @@ export default function EditorialPage() {
           setLive(true);
           setRows(s.topItems.map((t) => ({
             id: t.id, title: t.title, brand: t.brand,
-            stat: Math.round(t.eng * 10) / 10 + " engagements", item: null,
+            stat: Math.round(t.eng * 10) / 10 + " engagements", item: t.item || null,
           })));
           return;
         }
@@ -114,6 +116,8 @@ export default function EditorialPage() {
               <div className="hlinfo">
                 <div className="hlttl">{r.title}</div>
                 <div className="hlbrand">{r.brand}</div>
+                {r.item ? <ColorEvidenceLine item={r.item} /> : null}
+                {r.item ? <ProductFitLine item={r.item} fit={fit} /> : null}
               </div>
               <div className="hlstat">{r.stat}</div>
             </a>

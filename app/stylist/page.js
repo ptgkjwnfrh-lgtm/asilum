@@ -10,9 +10,10 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   getUid, postJSON, thumbFor, bagAdd,
-  loadFitProfile, saveFitProfile,
+  loadFitProfile,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
+import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function StylistPage() {
   const [groups, setGroups] = useState(null);
@@ -20,9 +21,8 @@ export default function StylistPage() {
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
   const [passed, setPassed] = useState(() => new Set());
-  const [sizeOpen, setSizeOpen] = useState(false);
-  const [fit, setFit] = useState({ usualSize: "", chest: "", waist: "" });
   const [aiConsent, setAiConsent] = useState(false);
+  const fit = useFitBrain();
 
   const load = useCallback(async (anchor, allowAi = false) => {
     setLoading(true);
@@ -50,7 +50,6 @@ export default function StylistPage() {
   }, []);
 
   useEffect(() => {
-    setFit(loadFitProfile());
     let storedAiConsent = false;
     try { storedAiConsent = window.localStorage.getItem("asilum-ai-stylist-consent") === "1"; } catch {}
     setAiConsent(storedAiConsent);
@@ -100,10 +99,6 @@ export default function StylistPage() {
     }
   }
 
-  function updateFit(k, v) {
-    setFit((prev) => { const n = { ...prev, [k]: v }; saveFitProfile(n); return n; });
-  }
-
   let lookNo = 0;
   const visibleGroups = (groups || []).map((g) => ({
     ...g,
@@ -120,7 +115,7 @@ export default function StylistPage() {
       </p>
       <div className="controls">
         <button className="btn" onClick={() => load(anchorId, aiConsent)}>REGENERATE</button>
-        <button className="btn ghost" onClick={() => setSizeOpen(true)}>SET YOUR SIZE</button>
+        <a className="btn ghost" href="/profile#measurements">SET YOUR MEASUREMENTS</a>
         <button className="btn ghost" aria-pressed={aiConsent} onClick={toggleAiConsent}>
           AI TREND LENS {aiConsent ? "ON" : "OFF"}
         </button>
@@ -160,6 +155,8 @@ export default function StylistPage() {
                         <span className="otfprice">
                           {sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
                         </span>
+                        <ColorEvidenceLine item={it} />
+                        <ProductFitLine item={it} fit={fit} />
                       </a>
                     ))}
                   </div>
@@ -192,43 +189,6 @@ export default function StylistPage() {
         returning inside thirty days.
       </p>
 
-      {sizeOpen && (
-        <div className="overlay" onClick={() => setSizeOpen(false)}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
-            <h2>Your size<span style={{ color: "var(--red)" }}>.</span></h2>
-            <p className="deck">
-              saved on this device — measurements are used transiently for this recut,
-              never stored by the server or sent to the external AI model.
-            </p>
-            <div className="fitform">
-              <label>
-                usual size
-                <select value={fit.usualSize} onChange={(e) => updateFit("usualSize", e.target.value)}>
-                  <option value="">—</option>
-                  {["XXS","XS","S","M","L","XL","XXL","XXXL"].map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                chest (in)
-                <input type="number" inputMode="decimal" value={fit.chest}
-                  onChange={(e) => updateFit("chest", e.target.value)} placeholder="40" />
-              </label>
-              <label>
-                waist (in)
-                <input type="number" inputMode="decimal" value={fit.waist}
-                  onChange={(e) => updateFit("waist", e.target.value)} placeholder="32" />
-              </label>
-            </div>
-            <div className="controls">
-              <button className="btn" onClick={() => { setSizeOpen(false); load(anchorId, aiConsent); }}>
-                SAVE & RECUT LOOKS
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
