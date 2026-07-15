@@ -8,27 +8,56 @@
 // Pill clicks route through the SAME pickInterp mechanic as the Asterisk
 // read strip, so rail taps and strip taps behave identically.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authorizedFetch, postJSON, getUid, thumbFor } from "../../lib/client.js";
 
 export function DiscoverRails({ onPickTags }) {
   const [data, setData] = useState(null);
+  const [err, setErr] = useState("");
+  const alive = useRef(false);
 
-  useEffect(() => {
-    let dead = false;
-    authorizedFetch("/api/discover/rails?user=" + encodeURIComponent(getUid() || ""))
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (!dead) setData(d); })
-      .catch(() => {});
-    return () => { dead = true; };
+  const load = useCallback(async () => {
+    try {
+      const res = await authorizedFetch("/api/discover/rails?user=" + encodeURIComponent(getUid() || ""));
+      if (!res.ok) return;
+      const body = await res.json();
+      if (alive.current) setData(body);
+    } catch {}
   }, []);
 
-  function setPref(rail, patch) {
-    setData((current) => current && {
-      ...current,
-      rails: current.rails.map((r) => (r.id === rail.id ? { ...r, ...patch } : r)),
-    });
-    postJSON("/api/discover/rails", { user: getUid(), railId: rail.id, ...patch }).catch(() => {});
+  useEffect(() => {
+    alive.current = true;
+    load();
+    window.addEventListener("asilum:identity", load);
+    return () => {
+      alive.current = false;
+      window.removeEventListener("asilum:identity", load);
+    };
+  }, [load]);
+
+  // Non-optimistic: the stored pref returned by the server is the truth
+  // (same contract as the memory drawer) — failures are surfaced, never
+  // shown as saved state.
+  async function setPref(rail, patch) {
+    try {
+      const res = await postJSON("/api/discover/rails", { user: getUid(), railId: rail.id, ...patch });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || "could not save rail preference");
+      if (!alive.current) return;
+      setErr("");
+      setData((current) => current && {
+        ...current,
+        rails: current.rails.map((r) => (r.id === rail.id
+          ? { ...r, collapsed: !!body.pref.collapsed, hidden: !!body.pref.hidden }
+          : r)),
+      });
+    } catch (error) {
+      if (alive.current) setErr(error.message || "could not save rail preference");
+    }
+  }
+
+  async function restoreHidden(rails) {
+    for (const rail of rails) await setPref(rail, { hidden: false });
   }
 
   if (!data || !data.rails?.length) return null;
@@ -37,10 +66,11 @@ export function DiscoverRails({ onPickTags }) {
 
   return (
     <div className="rails">
+      {err && <div className="railerr"><b className="red">*</b> {err}</div>}
       {hidden.length > 0 && (
         <button
           className="railact railrestore"
-          onClick={() => hidden.forEach((rail) => setPref(rail, { hidden: false }))}
+          onClick={() => restoreHidden(hidden)}
         >
           SHOW {hidden.length} HIDDEN RAIL{hidden.length === 1 ? "" : "S"}
         </button>

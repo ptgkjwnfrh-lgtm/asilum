@@ -57,6 +57,17 @@ test("rotation is deterministic within a day and moves across days", async () =>
   assert.equal(dayIndex(DAY) + 1, dayIndex(new Date(DAY.getTime() + 86_400_000)));
 });
 
+test("consecutive days show disjoint picks when the pool holds two windows", async () => {
+  const a = await discoverRails(null, DAY);
+  const b = await discoverRails(null, new Date(DAY.getTime() + 86_400_000));
+  const names = (result, id) => result.rails.find((r) => r.id === id).entities.map((e) => e.name);
+  for (const id of ["screen", "trend"]) {
+    const today = new Set(names(a, id));
+    const overlap = names(b, id).filter((n) => today.has(n));
+    assert.equal(overlap.length, 0, `${id} rail must not repeat yesterday's picks`);
+  }
+});
+
 test("prefs: set, merge into rails, validate, purge, adopt (account wins)", async () => {
   await setRailPref(U, "screen", { collapsed: true });
   await setRailPref(U, "trend", { hidden: true });
