@@ -31,7 +31,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       await pool.query("DELETE FROM user_measurements WHERE user_id=ANY($1::text[])", [userIds]);
       for (const table of [
         "purchase_tickets", "user_events", "interactions", "processed_operations",
-        "user_style_profiles", "profiles",
+        "user_style_profiles", "user_follows", "asterisk_memory_preferences", "profiles",
       ]) {
         await pool.query(`DELETE FROM ${table} WHERE user_id=ANY($1::text[])`, [userIds]);
       }
@@ -150,7 +150,38 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 13);
+  assert.equal(schema.rows[0].version, 14);
+
+  const memorySecurity = await pool.query(`
+    SELECT c.relname,
+      c.relrowsecurity AS rls,
+      has_table_privilege('asilum_app', format('public.%I', c.relname), 'SELECT,INSERT,UPDATE,DELETE') AS app_access
+    FROM pg_class AS c
+    JOIN pg_namespace AS n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public'
+      AND c.relname IN ('asterisk_memory_preferences', 'user_follows')
+    ORDER BY c.relname`);
+  assert.equal(memorySecurity.rows.length, 2);
+  for (const row of memorySecurity.rows) {
+    assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
+    assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);
+  }
+
+  await production.setFollow(from, "brand", "Integration Brand", true);
+  await production.setFollow(to, "brand", "Integration Brand", true);
+  await production.setFollow(from, "user", "@integration", true);
+  await production.saveMemoryPreferences(from, ["global"]);
+  await production.saveMemoryPreferences(to, ["inferred"]);
+  const memoryAdoption = await production.adoptAccountData(from, to);
+  assert.equal(memoryAdoption.duplicate, false);
+  assert.equal((await production.listFollows(from)).length, 0);
+  const adoptedFollows = await production.listFollows(to);
+  assert.equal(adoptedFollows.filter((f) => f.target === "Integration Brand").length, 1,
+    "duplicate follows must not double on adoption");
+  assert.equal(adoptedFollows.filter((f) => f.target === "@integration").length, 1);
+  assert.deepEqual((await production.getMemoryPreferences(to)).hiddenSections, ["inferred"],
+    "account-side preferences win on adoption");
+  assert.deepEqual((await production.getMemoryPreferences(from)).hiddenSections, []);
 
   const measurementSecurity = await pool.query(`
     SELECT c.relrowsecurity AS rls,
