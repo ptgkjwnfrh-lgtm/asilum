@@ -186,17 +186,32 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     "account-side preferences win on adoption");
   assert.deepEqual((await production.getMemoryPreferences(from)).hiddenSections, []);
 
+  const longCatalogRef = `catalog:${"x".repeat(80)}`;
   const wardrobeAdd = await production.createWardrobeItem({
     userId: from, source: "manual", sourceRef: null, catalogItemId: null,
     title: "integration overcoat", brand: null, category: "outerwear",
     sizeLabel: null, colors: [], tags: { MINIMAL: 0.5 }, acquiredAt: null,
   });
   assert.equal(wardrobeAdd.duplicate, false);
-  const wardrobeAdoption = await production.adoptAccountData(from, to);
-  assert.equal(wardrobeAdoption.duplicate, false);
+  for (const owner of [from, to]) {
+    const catalogAdd = await production.createWardrobeItem({
+      userId: owner, source: "catalog", sourceRef: longCatalogRef, catalogItemId: null,
+      title: "integration duplicate", brand: null, category: "tops",
+      sizeLabel: null, colors: [], tags: {}, acquiredAt: null,
+    });
+    assert.equal(catalogAdd.duplicate, false);
+  }
+  const wardrobeAdoptions = await Promise.all([
+    production.adoptAccountData(from, to),
+    production.adoptAccountData(from, to),
+  ]);
+  assert.equal(wardrobeAdoptions.filter((result) => result.duplicate).length, 1,
+    "identity locks make concurrent wardrobe adoption idempotent");
   assert.equal((await production.listWardrobeItems(from, { status: "all" })).length, 0);
   const ownedByAccount = await production.listWardrobeItems(to, { status: "all" });
   assert.equal(ownedByAccount.filter((piece) => piece.title === "integration overcoat").length, 1);
+  assert.equal(ownedByAccount.filter((piece) => piece.sourceRef === longCatalogRef).length, 1,
+    "namespaced 80-character catalog ids fit and dedupe during adoption");
 
   const measurementSecurity = await pool.query(`
     SELECT c.relrowsecurity AS rls,

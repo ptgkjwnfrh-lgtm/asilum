@@ -1,10 +1,10 @@
 "use client";
 // Profile → WARDROBE tab (Feature C, Phase 3a). Pieces you actually own:
 // manual adds here, catalog pieces marked owned, and "bought" ticket
-// promotions from /orders. Private, always — no sharing surface exists
+// promotions from /orders. Private in this version — no sharing surface exists
 // (owner decision #4 pending). The stylist builds looks around these.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { authorizedFetch, postJSON, sendJSON, getUid } from "../../lib/client.js";
 
 const CATEGORIES = ["", "outerwear", "tops", "knitwear", "tailoring", "bottoms", "footwear", "accessories", "dresses"];
@@ -14,17 +14,23 @@ export function WardrobeTab() {
   const [showRetired, setShowRetired] = useState(false);
   const [form, setForm] = useState({ title: "", brand: "", category: "", sizeLabel: "" });
   const [notice, setNotice] = useState("");
+  const [pendingDelete, setPendingDelete] = useState(null);
 
-  async function refresh(includeRetired = showRetired) {
+  const refresh = useCallback(async (includeRetired = showRetired) => {
     try {
       const res = await authorizedFetch(
         `/api/wardrobe?user=${encodeURIComponent(getUid() || "")}&status=${includeRetired ? "all" : "active"}`);
       const data = await res.json();
       if (!res.ok) { setNotice(data.error || "wardrobe unavailable"); setItems([]); return; }
       setItems(data.items || []);
-    } catch { setItems([]); }
-  }
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+    } catch { setNotice("wardrobe unavailable"); setItems([]); }
+  }, [showRetired]);
+  useEffect(() => {
+    refresh();
+    const identityChanged = () => { setPendingDelete(null); refresh(); };
+    window.addEventListener("asilum:identity", identityChanged);
+    return () => window.removeEventListener("asilum:identity", identityChanged);
+  }, [refresh]);
 
   async function addManual(e) {
     e.preventDefault();
@@ -42,12 +48,14 @@ export function WardrobeTab() {
   }
 
   async function setStatus(piece, status) {
-    const res = await sendJSON("PATCH", "/api/wardrobe", { user: getUid(), id: piece.id, status });
-    if (res.ok) refresh();
+    const res = await sendJSON("PATCH", "/api/wardrobe", { user: getUid(), id: piece.id, status }).catch(() => null);
+    if (res?.ok) refresh();
+    else setNotice("could not update the piece");
   }
   async function remove(piece) {
-    const res = await sendJSON("DELETE", "/api/wardrobe", { user: getUid(), id: piece.id });
-    if (res.ok) { setNotice("record removed"); refresh(); }
+    const res = await sendJSON("DELETE", "/api/wardrobe", { user: getUid(), id: piece.id }).catch(() => null);
+    if (res?.ok) { setPendingDelete(null); setNotice("record removed"); refresh(); }
+    else setNotice("could not remove the piece");
   }
 
   const visible = (items || []).filter((piece) => showRetired || piece.status === "active");
@@ -56,7 +64,7 @@ export function WardrobeTab() {
     <div className="wtab">
       <div className="amemnote">
         Only what you tell us you own lives here — bag and favorites never do.
-        Private, always. Photo uploads arrive with private storage in a later phase.
+        Private in this version. Photo uploads arrive with private storage in a later phase.
       </div>
       <form className="wadd" onSubmit={addManual}>
         <input
@@ -106,7 +114,14 @@ export function WardrobeTab() {
           {piece.status === "active"
             ? <button className="wact" onClick={() => setStatus(piece, "retired")}>RETIRE</button>
             : <button className="wact" onClick={() => setStatus(piece, "active")}>RESTORE</button>}
-          <button className="wact" onClick={() => remove(piece)}>×</button>
+          {pendingDelete === piece.id ? (
+            <>
+              <button className="wact" onClick={() => setPendingDelete(null)}>CANCEL</button>
+              <button className="wact" onClick={() => remove(piece)}>CONFIRM REMOVE</button>
+            </>
+          ) : (
+            <button className="wact" aria-label={`Remove ${piece.title}`} onClick={() => setPendingDelete(piece.id)}>REMOVE</button>
+          )}
         </div>
       ))}
       <button className="wact wtoggle" onClick={() => { setShowRetired(!showRetired); refresh(!showRetired); }}>

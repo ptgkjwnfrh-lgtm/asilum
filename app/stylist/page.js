@@ -13,6 +13,7 @@ import {
   loadFitProfile, authorizedFetch,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
+import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function StylistPage() {
@@ -26,14 +27,17 @@ export default function StylistPage() {
   const fit = useFitBrain();
 
   // Owned pieces become anchors: FROM YOUR WARDROBE strip (Feature C).
-  useEffect(() => {
-    let dead = false;
-    authorizedFetch("/api/wardrobe?user=" + encodeURIComponent(getUid() || ""))
+  const loadWardrobe = useCallback(() => {
+    return authorizedFetch("/api/wardrobe?user=" + encodeURIComponent(getUid() || ""))
       .then((r) => (r.ok ? r.json() : { items: [] }))
-      .then((d) => { if (!dead) setWardrobe(d.items || []); })
-      .catch(() => {});
-    return () => { dead = true; };
+      .then((d) => setWardrobe(d.items || []))
+      .catch(() => setWardrobe([]));
   }, []);
+  useEffect(() => {
+    loadWardrobe();
+    window.addEventListener("asilum:identity", loadWardrobe);
+    return () => window.removeEventListener("asilum:identity", loadWardrobe);
+  }, [loadWardrobe]);
 
   const load = useCallback(async (anchor, allowAi = false) => {
     setLoading(true);
@@ -83,13 +87,15 @@ export default function StylistPage() {
   function lookKey(look) { return look.items.map((it) => it.id).join("|"); }
 
   function bagAll(look) {
-    for (const it of look.items) {
+    const purchasable = purchasableLookItems(look.items);
+    for (const it of purchasable) {
       bagAdd(it);
       postJSON("/api/interaction", {
         user: getUid(), item: { id: it.id, tags: it.tags }, action: "bag",
       }).catch(() => {});
     }
-    setNotice(`the whole look is in your bag — ${look.items.length} pieces, USD ${Math.round(look.total)} added`);
+    const total = purchasable.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+    setNotice(`the purchasable look is in your bag — ${purchasable.length} pieces, USD ${Math.round(total)} added; your wardrobe piece stayed yours`);
   }
 
   async function saveOutfit(look) {

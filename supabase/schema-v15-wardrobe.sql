@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS wardrobe_items (
   id BIGSERIAL PRIMARY KEY,
   user_id TEXT NOT NULL CHECK (char_length(user_id) BETWEEN 1 AND 80),
   source TEXT NOT NULL CHECK (source IN ('manual','ticket','catalog','upload')),
-  source_ref TEXT CHECK (source_ref IS NULL OR char_length(source_ref) <= 80),
+  source_ref TEXT CHECK (source_ref IS NULL OR char_length(source_ref) <= 120),
   catalog_item_id TEXT CHECK (catalog_item_id IS NULL OR char_length(catalog_item_id) <= 80),
   title TEXT NOT NULL CHECK (char_length(title) BETWEEN 1 AND 200),
   brand TEXT CHECK (brand IS NULL OR char_length(brand) <= 120),
@@ -38,6 +38,12 @@ CREATE TABLE IF NOT EXISTS wardrobe_items (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Catalog refs include the "catalog:" namespace in addition to an item id
+-- (which may itself be 80 chars). Rebuild the generated v15 check so reruns
+-- also converge databases that received the original 80-char constraint.
+ALTER TABLE wardrobe_items DROP CONSTRAINT IF EXISTS wardrobe_items_source_ref_check;
+ALTER TABLE wardrobe_items ADD CONSTRAINT wardrobe_items_source_ref_check
+  CHECK (source_ref IS NULL OR char_length(source_ref) <= 120);
 -- the wardrobe read: one user's active pieces, newest first
 CREATE INDEX IF NOT EXISTS wardrobe_items_by_user
   ON wardrobe_items (user_id, status, created_at DESC);

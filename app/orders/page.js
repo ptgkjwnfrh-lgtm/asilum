@@ -30,7 +30,8 @@ export default function OrdersPage() {
   async function addToWardrobe(ticket) {
     const response = await postJSON("/api/wardrobe", {
       user: getUid(), source: "ticket", ticketId: ticket.id,
-    });
+    }).catch(() => null);
+    if (!response) { setNotice("could not add to wardrobe"); return; }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) { setNotice(data.error || "could not add to wardrobe"); return; }
     setNotice(data.duplicate

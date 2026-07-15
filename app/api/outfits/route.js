@@ -117,7 +117,13 @@ async function generate(req, input, { persistSeen = true } = {}) {
   // Wardrobe anchors ("wardrobe:<id>"): the look is built AROUND a piece the
   // user owns — it fills its slot and is never re-recommended for purchase.
   let anchor = null;
-  if (anchorId.startsWith("wardrobe:") && wardrobeEnabled()) {
+  if (anchorId.startsWith("wardrobe:")) {
+    if (!wardrobeEnabled()) {
+      return NextResponse.json(
+        { error: "wardrobe styling is not enabled on this deployment" },
+        { status: 503 }
+      );
+    }
     const owned = await getWardrobeItem(userId, anchorId.slice("wardrobe:".length)).catch(() => null);
     anchor = wardrobeAnchor(owned);
     if (!anchor) return NextResponse.json({ error: "wardrobe piece not found" }, { status: 404 });
