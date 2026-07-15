@@ -20,6 +20,7 @@ import {
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
+import { RoomEditor } from "../components/ProfileRoom.jsx";
 import {
   ColorEvidenceLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
@@ -86,6 +87,7 @@ export default function ProfilePage() {
       </div>
 
       <ProfileAccess />
+      <RoomEditor />
       <MeasurementsEditor />
 
       <div className="tabs">

@@ -23,6 +23,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `DATABASE_EXPECTED_ROLE` / prod default `asilum_app` | least-privilege runtime | enforced in prod | fail-closed boot |
 | `WARDROBE_ENABLED` | private owned-piece collection + stylist anchors | on (`0` is the kill switch) | wardrobe API refuses with 503; wardrobe anchors refuse instead of silently dropping |
 | `DISCOVER_RAILS_ENABLED` (+ per-rail registry `enabled` rows) | D: cultural Discover rails | on (`0` is the kill switch) | rails API refuses with 503; Discover stays strip-only |
+| `PROFILE_THEMES_ENABLED` (+ per-theme registry `enabled` rows) | E: profile rooms | on (`0` is the kill switch) | rooms API refuses with 503; profile keeps the default skin; published rooms 404 |
 
 ## Roadmap flags (reserve now, one per phase-1+ surface)
 
@@ -33,7 +34,6 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `ASTERISK_NOTIFICATIONS_ENABLED` | A: learning notices | silent |
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
-| `PROFILE_THEMES_ENABLED` | E | default profile skin |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
 | `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces |
 
