@@ -192,6 +192,11 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
 
   const railRegistry = await pool.query("SELECT count(*)::int AS n FROM discover_rails");
   assert.ok(railRegistry.rows[0].n >= 4, "the four seed rails must exist");
+  const railBefore = (await production.listDiscoverRails()).find((r) => r.id === "screen");
+  const railUpdated = await production.updateDiscoverRail("screen", { position: railBefore.position + 1 });
+  assert.equal(railUpdated.position, railBefore.position + 1, "registry update roundtrips");
+  await production.updateDiscoverRail("screen", { position: railBefore.position });
+  assert.equal(await production.updateDiscoverRail("no-such-rail", { enabled: false }), null);
   const railPref = await production.setRailPref(from, "screen", { collapsed: true });
   assert.equal(railPref.collapsed, true);
   await production.setRailPref(to, "screen", { collapsed: false });
