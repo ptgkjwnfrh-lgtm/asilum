@@ -95,6 +95,14 @@ export default function DiscoverPage() {
     setActiveInterp("");
     load(true);
   }
+  function submitSearch(qOverride = null) {
+    // A new query must never inherit the prior query's interpretation tags.
+    // Refs update synchronously, avoiding the state/effect race here.
+    interpRef.current = null;
+    setActiveInterp("");
+    setReading(null);
+    load(true, qOverride);
+  }
 
   // The designer whose rack you're looking at: the last-searched query,
   // matched against the brands actually returned. Exact match wins; a
@@ -184,7 +192,7 @@ export default function DiscoverPage() {
                 } catch { setSug([]); }
               }, 180);
             }}
-            onKeyDown={(e) => { if (e.key === "Enter") { setSug([]); load(true); } }}
+            onKeyDown={(e) => { if (e.key === "Enter") { setSug([]); submitSearch(); } }}
             onBlur={() => setTimeout(() => setSug([]), 180)}
             style={{ maxWidth: 280, textTransform: "none", fontWeight: 400 }}
           />
@@ -194,7 +202,7 @@ export default function DiscoverPage() {
                 <button
                   key={s.label}
                   className="sugopt"
-                  onMouseDown={() => { setQ(s.label); setSug([]); load(true, s.label); }}
+                  onMouseDown={() => { setQ(s.label); setSug([]); submitSearch(s.label); }}
                 >
                   <span className="red">*</span> {s.label}
                   <em>{s.why === "did you mean" ? "did you mean" : s.kind}</em>
@@ -277,18 +285,34 @@ export default function DiscoverPage() {
         </div>
       )}
       {reading && !reading.entity && reading.interpretation &&
-        (reading.interpretation.method === "ambiguous" || reading.interpretation.method === "composed") && (
+        (["ambiguous", "composed", "lexical"].includes(reading.interpretation.method)) && (
         <div className="aread">
           <div className="areadhead">
-            <b className="red">*</b> ASTERISK ASKS: {reading.interpretation.method === "ambiguous" ? "WHICH ONE?" : "READ AS A COMPOSITION"}
+            <b className="red">*</b> ASTERISK {reading.interpretation.method === "ambiguous" ? "ASKS: WHICH ONE?"
+              : reading.interpretation.method === "composed" ? "READS: A COMPOSITION"
+              : "READS: STYLE ATTRIBUTES"}
           </div>
           <div className="areadpills">
+            {Object.keys(reading.interpretation.attributes?.tags || {}).length ? (
+              <button
+                className={"apill" + (activeInterp === "attribute-read" ? " cur" : "")}
+                onClick={() => pickInterp({
+                  id: "attribute-read",
+                  tags: Object.keys(reading.interpretation.attributes.tags),
+                })}
+              >
+                use best read
+              </button>
+            ) : null}
             {reading.interpretation.alternatives.map((a) => (
               <button key={a.feedbackId} className="apill"
-                onClick={() => { setQ(a.name); load(true, a.name); }}>
+                onClick={() => { setQ(a.name); submitSearch(a.name); }}>
                 {a.name} <em>{a.kind}</em>
               </button>
             ))}
+            {activeInterp === "attribute-read" ? (
+              <button className="apill clearpill" onClick={clearInterp}>× full results</button>
+            ) : null}
           </div>
           {reading.interpretation.assumptions[0] ? (
             <div className="areadnote">{reading.interpretation.assumptions[0]}</div>

@@ -19,8 +19,10 @@
 CREATE TABLE IF NOT EXISTS unknown_queries (
   id BIGSERIAL PRIMARY KEY,
   normalized_query TEXT NOT NULL UNIQUE CHECK (char_length(normalized_query) BETWEEN 3 AND 200),
-  demand_count INTEGER NOT NULL DEFAULT 1 CHECK (demand_count > 0),
-  distinct_identities INTEGER NOT NULL DEFAULT 1 CHECK (distinct_identities > 0),
+  -- Start at zero: the transactional vote insert below is the single source
+  -- of the first count. A default of one would double-count every new query.
+  demand_count INTEGER NOT NULL DEFAULT 0 CHECK (demand_count >= 0),
+  distinct_identities INTEGER NOT NULL DEFAULT 0 CHECK (distinct_identities >= 0),
   last_method TEXT NOT NULL DEFAULT 'none',
   status TEXT NOT NULL DEFAULT 'observed'
     CHECK (status IN ('observed','research_created','resolved','dismissed')),
@@ -34,7 +36,7 @@ CREATE TABLE IF NOT EXISTS unknown_queries (
 CREATE INDEX IF NOT EXISTS unknown_queries_open
   ON unknown_queries (demand_count DESC, last_seen DESC) WHERE status = 'observed';
 
--- per-identity dedupe window so one identity cannot inflate demand
+-- one lifetime vote per identity/query so one identity cannot inflate demand
 CREATE TABLE IF NOT EXISTS unknown_query_votes (
   query_id BIGINT NOT NULL REFERENCES unknown_queries(id) ON DELETE CASCADE,
   identity_hash TEXT NOT NULL,

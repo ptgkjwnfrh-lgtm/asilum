@@ -62,7 +62,9 @@ export async function GET(req) {
   // Unresolved/flagged queries feed demand aggregation (flag-gated,
   // hashed identity, abuse-screened) — never automatic learning.
   if (interpretation.flaggedForResearch) {
-    noteUnknownQuery(interpretation.normalizedQuery, user || requestSubject(req), interpretation.method);
+    // Await the write: an unobserved promise can be frozen when a serverless
+    // request returns, silently losing the demand signal.
+    await noteUnknownQuery(interpretation.normalizedQuery, user || requestSubject(req), interpretation.method);
   }
 
   // Legacy shape preserved for existing consumers (discover strip et al).
