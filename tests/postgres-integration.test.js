@@ -18,6 +18,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const userIds = [userId, from, to];
   const itemIds = [itemA.id, itemB.id];
   const factIds = [];
+  const unknownQuery = `unknown-${suffix}`;
 
   t.after(async () => {
     try {
@@ -43,6 +44,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [itemIds]);
       await pool.query("DELETE FROM items WHERE id=ANY($1::text[])", [itemIds]);
       await pool.query("DELETE FROM learned_facts WHERE id=ANY($1::text[])", [factIds]);
+      await pool.query("DELETE FROM interpretation_feedback WHERE user_id=ANY($1::text[])", [userIds]);
+      await pool.query("DELETE FROM unknown_queries WHERE normalized_query=$1", [unknownQuery]);
       await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK").catch(() => {});
@@ -98,6 +101,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     usualSize: "M", preferredUnit: "in",
     inches: { chest: 40, waist: 32, hips: 40, inseam: 31, height: 70 },
   });
+  await production.recordInterpretationFeedback({
+    userId: from, normalizedQuery: "rain", interpretationId: "1:exact:rain",
+    contractVersion: 1, verdict: "not-meant",
+  });
   const sourceBoard = await db.createBoard(from, "source board");
   await db.addBoardItem(sourceBoard.id, itemA);
   const [first, second] = await Promise.all([
@@ -110,6 +117,14 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal((await db.getProfile(to)).long.MINIMAL, 0.7);
   assert.equal((await production.getUserMeasurements(to)).chest, 40);
   assert.equal((await production.getUserMeasurements(from)).chest, "");
+  assert.equal((await production.listInterpretationFeedback(from, "rain")).length, 0);
+  assert.equal((await production.listInterpretationFeedback(to, "rain"))[0]?.verdict, "not-meant");
+
+  const firstUnknown = await production.recordUnknownQuery(unknownQuery, `identity-${suffix}`, "none");
+  assert.equal(firstUnknown.demandCount, 1, "the first persistent vote is counted exactly once");
+  assert.equal(firstUnknown.distinctIdentities, 1);
+  const duplicateUnknown = await production.recordUnknownQuery(unknownQuery, `identity-${suffix}`, "none");
+  assert.equal(duplicateUnknown.demandCount, 1, "a repeated identity cannot inflate demand");
 
   const fact = await production.createLearnedFact({
     entityType: "test", entityId: suffix, claim: "concurrent review",
@@ -135,7 +150,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 12);
+  assert.equal(schema.rows[0].version, 13);
 
   const measurementSecurity = await pool.query(`
     SELECT c.relrowsecurity AS rls,
@@ -148,6 +163,26 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal(measurementSecurity.rows[0].rls, true);
   assert.equal(measurementSecurity.rows[0].app_access, true);
   assert.equal(measurementSecurity.rows[0].public_read, false);
+
+  const interpretationSecurity = await pool.query(`
+    SELECT c.relname, c.relrowsecurity AS rls,
+      has_table_privilege('asilum_app', c.oid, 'SELECT,INSERT,UPDATE,DELETE') AS app_access,
+      EXISTS (SELECT 1 FROM aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner)))
+        WHERE grantee=0 AND privilege_type='SELECT') AS public_read
+    FROM pg_class AS c
+    WHERE c.oid IN (
+      'public.unknown_queries'::regclass,
+      'public.unknown_query_votes'::regclass,
+      'public.interpretation_feedback'::regclass
+    )
+    ORDER BY c.relname
+  `);
+  assert.equal(interpretationSecurity.rows.length, 3);
+  for (const row of interpretationSecurity.rows) {
+    assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
+    assert.equal(row.app_access, true, `${row.relname} must be reachable by asilum_app`);
+    assert.equal(row.public_read, false, `${row.relname} must not be publicly readable`);
+  }
 
   const defaults = await pool.query(`
     SELECT EXISTS (

@@ -27,7 +27,7 @@ proposals — final periods are owner decision #10 with counsel.
 | New class | Feature | Notice/consent gate before collection |
 |---|---|---|
 | Unknown-query samples (normalized) | A | retention notice at search; abuse screening; DRAFT 180 days |
-| Interpretation feedback | A | in-flow (explicit action) |
+| Interpretation feedback | A | in-flow (explicit action); follows device-to-account adoption; removed by privacy delete |
 | Learning notifications | A | in-app only; user can disable |
 | Memory visibility preferences | B | explicit settings |
 | Wardrobe items + garment photos | C | EXPLICIT upload consent + privacy notice; EXIF stripped; private bucket; owner-only; signed URLs; deletion control REQUIRED at launch |

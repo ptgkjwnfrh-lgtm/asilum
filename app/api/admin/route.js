@@ -219,6 +219,27 @@ export async function POST(req) {
         const r = await fetchResearchSource(String(body.url));
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
+      // ---- unknown-query aggregation (Phase 1) ----
+      case "asterisk.unknown.list": {
+        const { unknownQueryQueue } = await import("../../../lib/asterisk/unknownQueries.js");
+        return NextResponse.json({ unknownQueries: await unknownQueryQueue({
+          status: body.status === "all" ? null : (body.status || "observed"), limit: body.limit || 50 }) });
+      }
+      case "asterisk.unknown.promote": {
+        const { promoteUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
+        const r = await promoteUnknownQuery(body.id, body.reviewer || null);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.unknown.resolve": {
+        const { resolveUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
+        const r = await resolveUnknownQuery(body.id, body.reviewer || null, body.researchFactId || null);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
+      case "asterisk.unknown.dismiss": {
+        const { dismissUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
+        const r = await dismissUnknownQuery(body.id, body.reviewer || null);
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
       case "asterisk.research.draft": {
         const { draftProposalsFromSource } = await import("../../../lib/asterisk/research.js");
         return NextResponse.json(await draftProposalsFromSource());

@@ -49,7 +49,7 @@ short retention).
 | Threat | Mitigation (built with the feature) |
 |---|---|
 | Query-log privacy leakage | normalized text only, bounded length/charset, server-only tables (no anon/authenticated grants), DRAFT 180-day retention, flag-gated recording |
-| Demand-count inflation (one attacker "voting" a query into research) | per-identity dedupe within window + rate limits + admin-only promotion |
+| Demand-count inflation (one attacker "voting" a query into research) | one lifetime vote per identity/query + rate limits + enforced distinct-identity threshold + admin-only promotion |
 | Feedback poisoning another user's interpretations | feedback rows are per-identity; only influence THAT user's ordering; global change only via reviewed research |
 | Reflected XSS via echoed queries | responses JSON-only; UI renders text nodes (React escaping); eval case adv-3 asserts no markup reflection |
 | Cross-user reads | RLS-equivalent server-side scoping via resolveRequestUser; adversarial tests in suite (security-boundaries + new tests) |
