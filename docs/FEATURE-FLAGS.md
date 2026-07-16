@@ -35,7 +35,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
-| `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces |
+| `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces (case machinery shipped v18, admin-only and flag-independent; the flag gates future PUBLIC badges) |
 
 Rules:
 1. A kill switch must be flippable by env change + restart alone — no
