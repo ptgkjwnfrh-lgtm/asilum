@@ -77,6 +77,43 @@
     "approvedAt": 1784087396400
   },
   {
+    "kind": "city",
+    "name": "atlanta",
+    "aliases": [
+      "atl"
+    ],
+    "note": "the city that made trap — and dressed global streetwear through it",
+    "interpretations": [
+      {
+        "id": "atlanta/trap",
+        "label": "trap atlanta",
+        "type": "scene",
+        "summary": "oversized hoodies, chunky jewelry, statement sneakers — dressing for yourself, exported worldwide",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "gold"
+        ],
+        "moods": [
+          "heavy",
+          "magnetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-cc3e287f-9269-453c-b217-e90003a2fbe4",
+    "sourceUrls": [
+      "https://www.npr.org/2023/07/19/1188417703/hip-hop-50-atlanta",
+      "https://www.dazeddigital.com/music/article/47166/1/atlanta-changed-the-sound-of-the-world-migos-zaytoven-gucci-mane"
+    ],
+    "approvedAt": 1784176303025
+  },
+  {
     "kind": "aesthetic",
     "name": "barbiecore",
     "aliases": [
@@ -110,6 +147,62 @@
       "https://www.today.com/style/celeb-style/what-is-barbiecore-trend-rcna36927"
     ],
     "approvedAt": 1784078951639
+  },
+  {
+    "kind": "music",
+    "name": "billie eilish",
+    "aliases": [],
+    "note": "the baggy silhouette as body autonomy — then the old-hollywood pivot",
+    "interpretations": [
+      {
+        "id": "billie eilish/baggy",
+        "label": "baggy era",
+        "type": "era",
+        "summary": "800-sizes-too-big streetwear as visual privacy — oversized made intentional, never lazy",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "neon green",
+          "black"
+        ],
+        "moods": [
+          "defiant",
+          "private"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "billie eilish/happier",
+        "label": "Happier Than Ever era",
+        "type": "era",
+        "summary": "pin-up blonde, corsetry and ball gowns — old hollywood on her own terms, then back to androgyny",
+        "tags": [
+          "seductive",
+          "archival",
+          "tailored"
+        ],
+        "colors": [
+          "champagne",
+          "blonde",
+          "black"
+        ],
+        "moods": [
+          "glamorous",
+          "soft"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-cd3eb501-d779-405c-8a7e-5440fb0a8b84",
+    "sourceUrls": [
+      "https://www.thestar.com.my/lifestyle/style/2024/10/25/celebrity-style-the-evolution-of-billie-eilishs-quirky-fashion-sense",
+      "https://www.women.com/1717137/stunning-transformation-billie-eilish-personal-style/"
+    ],
+    "approvedAt": 1784176301590
   },
   {
     "kind": "music",
@@ -399,6 +492,45 @@
     "approvedAt": 1784098504526
   },
   {
+    "kind": "aesthetic",
+    "name": "cowboycore",
+    "aliases": [
+      "cowboy core",
+      "western revival"
+    ],
+    "note": "the western wave — cowboy carter sent stetsons and bolo ties mainstream",
+    "interpretations": [
+      {
+        "id": "cowboycore/rodeo",
+        "label": "the rodeo read",
+        "type": "aesthetic",
+        "summary": "fringed suede, double denim, chocolate calf boots, stetsons and bolo ties — western gone main street",
+        "tags": [
+          "statement",
+          "utilitarian",
+          "archival"
+        ],
+        "colors": [
+          "tan",
+          "denim",
+          "chocolate"
+        ],
+        "moods": [
+          "swaggering",
+          "dusty"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-a3191112-47eb-49d0-a99b-c73a1f0565ba",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/articles/marketing-pr/beyonces-impact-on-western-wear/",
+      "https://wwd.com/pop-culture/culture-news/cowboy-core-latest-trend-internet-beyonce-1235516158/"
+    ],
+    "approvedAt": 1784176071978
+  },
+  {
     "kind": "figure",
     "name": "debbie harry",
     "aliases": [
@@ -477,6 +609,44 @@
     "approvedAt": 1784080234069
   },
   {
+    "kind": "music",
+    "name": "doechii",
+    "aliases": [
+      "swamp princess"
+    ],
+    "note": "2025's style-icon ascent — the thom browne army and officewear reinvented",
+    "interpretations": [
+      {
+        "id": "doechii/tailored",
+        "label": "the tailored read",
+        "type": "era",
+        "summary": "bolero, shirt-and-tie, sculptural trousers — grey-uniform tailoring worn like armor on stage",
+        "tags": [
+          "tailored",
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [
+          "grey",
+          "white",
+          "black"
+        ],
+        "moods": [
+          "precise",
+          "commanding"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-e530295d-c335-461c-a096-ce0fdc05c3ee",
+    "sourceUrls": [
+      "https://www.whowhatwear.com/fashion/celebrity-style/doechii-style",
+      "https://wwd.com/pop-culture/celebrity-news/doechii-thom-browne-dress-grammys-1236899741/"
+    ],
+    "approvedAt": 1784176302255
+  },
+  {
     "kind": "figure",
     "name": "dolly parton",
     "aliases": [
@@ -552,6 +722,42 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "film",
+    "name": "goodfellas",
+    "aliases": [],
+    "note": "silk suits and spearpoint collars — scorsese's tailoring as biography",
+    "interpretations": [
+      {
+        "id": "goodfellas/crew",
+        "label": "the crew",
+        "type": "atmosphere",
+        "summary": "silk suiting, spearpoint collars burying the tie knot, camp shirts, gold rings — flash as rank",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "grey",
+          "burgundy",
+          "gold"
+        ],
+        "moods": [
+          "flashy",
+          "menacing"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5cc734e7-62f2-4379-aa7a-f40d16dde750",
+    "sourceUrls": [
+      "https://fromtailorswithlove.co.uk/goodfellas-who-made-the-suits-breaking-down-the-gangster-style-157",
+      "https://bamfstyle.com/2020/09/19/goodfellas-30/"
+    ],
+    "approvedAt": 1784176301218
   },
   {
     "kind": "tv",
@@ -694,6 +900,64 @@
     "approvedAt": 1784098505695
   },
   {
+    "kind": "music",
+    "name": "lady gaga",
+    "aliases": [
+      "gaga"
+    ],
+    "note": "performance art in wardrobe form — from the meat dress to couture restraint",
+    "interpretations": [
+      {
+        "id": "lady gaga/fame-monster",
+        "label": "Fame Monster theatre",
+        "type": "era",
+        "summary": "mcqueen armadillos, the meat dress, sculptural provocation — the red carpet as protest stage",
+        "tags": [
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [
+          "red",
+          "black",
+          "silver"
+        ],
+        "moods": [
+          "theatrical",
+          "provocative"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "lady gaga/star-is-born",
+        "label": "old hollywood gaga",
+        "type": "era",
+        "summary": "shakespearean mcqueen gowns and clean couture — shock evolved into subtler grandeur",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "gold",
+          "champagne"
+        ],
+        "moods": [
+          "grand",
+          "composed"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-363cd61f-be29-435b-961d-e3a830973b6a",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/celebrity-news/feature/lady-gaga-fashion-through-the-years-1236287053/",
+      "https://www.wmagazine.com/fashion/lady-gaga-style-evolution"
+    ],
+    "approvedAt": 1784176301868
+  },
+  {
     "kind": "city",
     "name": "lagos",
     "aliases": [
@@ -810,6 +1074,42 @@
       "https://www.nssgclub.com/en/fashion/38400/lana-del-rey-style-americana-cowboy-vintage"
     ],
     "approvedAt": 1784080233098
+  },
+  {
+    "kind": "figure",
+    "name": "lewis hamilton",
+    "aliases": [],
+    "note": "the paddock turned runway — race weekends as fashion statements",
+    "interpretations": [
+      {
+        "id": "lewis hamilton/paddock",
+        "label": "paddock runway",
+        "type": "era",
+        "summary": "rick owens boilersuits, wales bonner tailoring, berets — clothing as armor in a conservative sport",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "purple",
+          "white",
+          "black"
+        ],
+        "moods": [
+          "fearless",
+          "polished"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-9cd7b07d-bca8-4f9a-9bf1-227ee74133bf",
+    "sourceUrls": [
+      "https://www.formula1.com/en/latest/article/two-decades-of-lewis-hamilton-in-f1-the-evolution-of-a-fashion-icon.2T7y8KocruM8HWV2Jvufkf",
+      "https://speedwellmag.com/from-maranello-to-the-met-lewis-hamiltons-fashion-revolution/"
+    ],
+    "approvedAt": 1784176302643
   },
   {
     "kind": "aesthetic",
@@ -1162,6 +1462,44 @@
     "approvedAt": 1784098504814
   },
   {
+    "kind": "tv",
+    "name": "peaky blinders",
+    "aliases": [
+      "shelby"
+    ],
+    "note": "the tweed revival engine — flat cap sales up 83% after it aired",
+    "interpretations": [
+      {
+        "id": "peaky blinders/garrison",
+        "label": "the Garrison",
+        "type": "atmosphere",
+        "summary": "tweed three-pieces, newsboy caps, collarless shirts, heavy overcoats — period menswear made contemporary",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "grey",
+          "brown",
+          "black"
+        ],
+        "moods": [
+          "severe",
+          "smoky"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-9230739c-d2fa-47e0-af4a-2ea3ebe12f76",
+    "sourceUrls": [
+      "https://www.nssmag.com/en/fashion/44815/flat-cap-return-fashion-history-coppola-style-trend",
+      "https://thefashionglobe.com/secrets-iconic-peaky-blinders-outfits/"
+    ],
+    "approvedAt": 1784176299762
+  },
+  {
     "kind": "music",
     "name": "pharrell",
     "aliases": [
@@ -1218,6 +1556,42 @@
       "https://www.billboard.com/photos/pharrell-williams-style-evolution-photos-1235960612/"
     ],
     "approvedAt": 1784080233744
+  },
+  {
+    "kind": "film",
+    "name": "pulp fiction",
+    "aliases": [],
+    "note": "betsy heimann's diner uniform — a white shirt that never left the culture",
+    "interpretations": [
+      {
+        "id": "pulp fiction/mia",
+        "label": "Mia Wallace",
+        "type": "character",
+        "summary": "oversized-collar white shirt, cropped black kick-flares, chanel flats, blunt bob, red lip",
+        "tags": [
+          "minimal",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "white",
+          "black",
+          "red"
+        ],
+        "moods": [
+          "cool",
+          "dangerous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-c6c45fa8-6d05-478f-936d-8aa0ac183363",
+    "sourceUrls": [
+      "https://www.interviewmagazine.com/fashion/mia-wallaces-pulp-fiction-outfit-made-dance-scene-iconic",
+      "https://www.dazeddigital.com/beauty/article/64890/1/how-uma-thurman-pulp-fiction-haircut-became-a-cult-icon-mia-wallace-bob"
+    ],
+    "approvedAt": 1784176300498
   },
   {
     "kind": "aesthetic",
@@ -1564,6 +1938,102 @@
       "https://www.purewow.com/fashion/tenniscore-trend"
     ],
     "approvedAt": 1784078950319
+  },
+  {
+    "kind": "tv",
+    "name": "the bear",
+    "aliases": [
+      "carmy"
+    ],
+    "note": "gq called it a menswear show — the kitchen pass as a runway",
+    "interpretations": [
+      {
+        "id": "the bear/carmy",
+        "label": "Carmy",
+        "type": "character",
+        "summary": "loopwheeled white tee, black work pants, apron and clogs — chef workwear as modern brando minimalism",
+        "tags": [
+          "utilitarian",
+          "minimal",
+          "streetwear"
+        ],
+        "colors": [
+          "white",
+          "black",
+          "navy"
+        ],
+        "moods": [
+          "intense",
+          "honest"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-6183847c-9ce2-4457-a7a1-0a6d6d31f145",
+    "sourceUrls": [
+      "https://bamfstyle.com/2023/08/14/the-bear-carmy/",
+      "https://www.merzbschwanen.com/blogs/press/the-real-star-of-the-bear-is-carmys-perfect-white-t-shirt"
+    ],
+    "approvedAt": 1784176300139
+  },
+  {
+    "kind": "film",
+    "name": "the fifth element",
+    "aliases": [
+      "fifth element"
+    ],
+    "note": "gaultier's sci-fi wardrobe — bondage, punk and lingerie in the 23rd century",
+    "interpretations": [
+      {
+        "id": "the fifth element/leeloo",
+        "label": "Leeloo",
+        "type": "character",
+        "summary": "the white bandage bodysuit and orange rubber braces — underwear-as-outerwear taken off-world",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "orange",
+          "white"
+        ],
+        "moods": [
+          "chaotic",
+          "futurist"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the fifth element/future-city",
+        "label": "the future city",
+        "type": "atmosphere",
+        "summary": "uniform-chic cashiers and strap-and-skin silhouettes — echoed from mcqueen 1998 to hood by air",
+        "tags": [
+          "avant-garde",
+          "utilitarian",
+          "streetwear"
+        ],
+        "colors": [
+          "orange",
+          "black",
+          "chrome"
+        ],
+        "moods": [
+          "synthetic",
+          "loud"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5719f1cb-42ea-40ae-bef4-0635da0dca8e",
+    "sourceUrls": [
+      "https://fashionhistory.fitnyc.edu/1997-besson-the-fifth-element/",
+      "https://www.dazeddigital.com/fashion/article/35459/1/a-closer-look-at-gaultiers-fifth-element-costume-design"
+    ],
+    "approvedAt": 1784176300799
   },
   {
     "kind": "music",
