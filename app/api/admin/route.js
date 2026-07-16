@@ -244,6 +244,52 @@ export async function POST(req) {
         const { draftProposalsFromSource } = await import("../../../lib/asterisk/research.js");
         return NextResponse.json(await draftProposalsFromSource());
       }
+      case "brand.case.open": {
+        const { validateOpenCase } = await import("../../../lib/brands/cases.js");
+        const { insertBrandCase } = await import("../../../lib/db/production.js");
+        let opened;
+        try {
+          opened = validateOpenCase({ ...body, openedBy: body.openedBy || "admin" });
+        } catch (error) {
+          return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        return NextResponse.json({ case: await insertBrandCase(opened) });
+      }
+      case "brand.case.transition": {
+        const { validateTransition } = await import("../../../lib/brands/cases.js");
+        const { getBrandCase, applyBrandCaseTransition } = await import("../../../lib/db/production.js");
+        const kase = await getBrandCase(String(body.id || ""));
+        if (!kase) return NextResponse.json({ error: "case not found" }, { status: 404 });
+        let t;
+        try {
+          t = validateTransition(kase, { to: body.to, actor: body.actor || "admin",
+            evidence: body.evidence, resolution: body.resolution });
+          if (body.note !== undefined) t.note = String(body.note).slice(0, 500);
+        } catch (error) {
+          return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        try {
+          const moved = await applyBrandCaseTransition(kase.id, kase.status, t);
+          return NextResponse.json({ case: moved });
+        } catch (error) {
+          if (error?.message === "case-moved") {
+            return NextResponse.json({ error: "case moved under you — re-read and retry" }, { status: 409 });
+          }
+          throw error;
+        }
+      }
+      case "brand.cases.list": {
+        const { listBrandCases } = await import("../../../lib/db/production.js");
+        return NextResponse.json({ cases: await listBrandCases({
+          status: body.status || null, kind: body.kind || null,
+          brandName: body.brandName || null, limit: body.limit || 100 }) });
+      }
+      case "brand.case.get": {
+        const { getBrandCase, listBrandCaseEvents } = await import("../../../lib/db/production.js");
+        const kase = await getBrandCase(String(body.id || ""));
+        if (!kase) return NextResponse.json({ error: "case not found" }, { status: 404 });
+        return NextResponse.json({ case: kase, events: await listBrandCaseEvents(kase.id) });
+      }
       case "discover.rails.list": {
         const { listDiscoverRails } = await import("../../../lib/db/production.js");
         return NextResponse.json({ rails: await listDiscoverRails() });

@@ -150,7 +150,29 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 17);
+  assert.equal(schema.rows[0].version, 18);
+
+  // v18 brand cases: CAS transition + same-transaction ledger row.
+  {
+    const { validateOpenCase, validateTransition } = await import("../lib/brands/cases.js");
+    let kase = await production.insertBrandCase(validateOpenCase({
+      kind: "verification", brandName: `IT Brand ${suffix.slice(0, 8)}`, openedBy: "it-admin" }));
+    try {
+      kase = await production.applyBrandCaseTransition(kase.id, "open",
+        validateTransition(kase, { to: "under_review", actor: "it-admin" }));
+      await assert.rejects(
+        () => production.applyBrandCaseTransition(kase.id, "open",
+          { to: "archived", actor: "it-admin" }),
+        /case-moved/, "stale expectedStatus must 409, not overwrite");
+      const ledger = await production.listBrandCaseEvents(kase.id);
+      assert.deepEqual(ledger.map((e) => e.toStatus), ["open", "under_review"]);
+    } finally {
+      await pool.query("DELETE FROM brand_cases WHERE id=$1", [kase.id]);
+      const orphans = await pool.query(
+        "SELECT count(*)::int AS n FROM brand_case_events WHERE case_id=$1", [kase.id]);
+      assert.equal(orphans.rows[0].n, 0, "ledger cascades with the case");
+    }
+  }
 
   // v17 profile rooms: account-uuid domain (ADR-002), unique handles,
   // module cascade, purge coverage.
@@ -216,9 +238,9 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     JOIN pg_namespace AS n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
       AND c.relname IN ('asterisk_memory_preferences', 'user_follows', 'wardrobe_items', 'discover_rails', 'user_rail_prefs',
-                        'profile_themes', 'profile_rooms', 'profile_modules')
+                        'profile_themes', 'profile_rooms', 'profile_modules', 'brand_cases', 'brand_case_events')
     ORDER BY c.relname`);
-  assert.equal(memorySecurity.rows.length, 8);
+  assert.equal(memorySecurity.rows.length, 10);
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
     assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);
