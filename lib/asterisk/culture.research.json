@@ -1,5 +1,44 @@
 [
   {
+    "kind": "aesthetic",
+    "name": "acid house",
+    "aliases": [
+      "rave",
+      "second summer of love"
+    ],
+    "note": "1988's warehouse uniform — smileys, baggies and neon built for dancing",
+    "interpretations": [
+      {
+        "id": "acid house/warehouse",
+        "label": "the warehouse",
+        "type": "aesthetic",
+        "summary": "smiley tees, MA-1 bombers, baggy jeans, bucket hats, tie-dye and neon — clothes loose enough for an all-night floor",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "statement"
+        ],
+        "colors": [
+          "yellow",
+          "neon",
+          "denim"
+        ],
+        "moods": [
+          "euphoric",
+          "loose"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-d5c8dca6-3120-469c-822c-ef0cee657a53",
+    "sourceUrls": [
+      "https://mixmag.net/feature/acid-house-fashion",
+      "https://hypebeast.com/2018/8/second-summer-love-fashion-legacy-nike-adidas"
+    ],
+    "approvedAt": 1784177956847
+  },
+  {
     "kind": "film",
     "name": "almost famous",
     "aliases": [
@@ -112,6 +151,45 @@
       "https://www.dazeddigital.com/music/article/47166/1/atlanta-changed-the-sound-of-the-world-migos-zaytoven-gucci-mane"
     ],
     "approvedAt": 1784176303025
+  },
+  {
+    "kind": "aesthetic",
+    "name": "ballroom culture",
+    "aliases": [
+      "ballroom",
+      "voguing"
+    ],
+    "note": "the houses of new york — categories, realness, and walking as modeling",
+    "interpretations": [
+      {
+        "id": "ballroom culture/categories",
+        "label": "the categories",
+        "type": "aesthetic",
+        "summary": "realness and high-fashion categories walked for trophies — showgirl feathers to executive tailoring, chosen-family houses behind every look",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "gold",
+          "white",
+          "red"
+        ],
+        "moods": [
+          "triumphant",
+          "fierce"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-cd9a2649-833a-48f3-a85b-0c5c3cba91a2",
+    "sourceUrls": [
+      "https://www.rollingstone.com/culture/culture-features/striking-a-pose-a-brief-history-of-ball-culture-629280/",
+      "https://en.wikipedia.org/wiki/Ball_culture"
+    ],
+    "approvedAt": 1784177955699
   },
   {
     "kind": "aesthetic",
@@ -242,6 +320,42 @@
       "https://www.cnn.com/style/article/bjork-swan-dress-remember-when/"
     ],
     "approvedAt": 1784098503902
+  },
+  {
+    "kind": "figure",
+    "name": "caitlin clark",
+    "aliases": [],
+    "note": "prada's first draft pick — the wnba tunnel gone luxe",
+    "interpretations": [
+      {
+        "id": "caitlin clark/tunnel",
+        "label": "tunnel rookie",
+        "type": "era",
+        "summary": "head-to-toe prada at the draft, a zac posen trench-and-skort tunnel fit, slingbacks where sneakers used to be",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "white",
+          "grey",
+          "silver"
+        ],
+        "moods": [
+          "poised",
+          "arriving"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-cee00cd1-6075-450e-b7d1-71bb8adde7c9",
+    "sourceUrls": [
+      "https://wwd.com/fashion-news/fashion-scoops/caitlin-clark-prada-for-wnba-draft-1236315258/",
+      "https://www.whowhatwear.com/fashion/celebrity-style/caitlin-clark-prada-wnba-tunnel-fits"
+    ],
+    "approvedAt": 1784177957769
   },
   {
     "kind": "film",
@@ -413,6 +527,42 @@
       "https://www.nssgclub.com/en/fashion/43269/chloe-sevigny-it-girl-today-career-who-is-she"
     ],
     "approvedAt": 1784080234427
+  },
+  {
+    "kind": "aesthetic",
+    "name": "club kids",
+    "aliases": [],
+    "note": "nightlife as performance art — the look built from imagination alone",
+    "interpretations": [
+      {
+        "id": "club kids/look-factory",
+        "label": "the look factory",
+        "type": "aesthetic",
+        "summary": "DIY costume, theatrical face paint, fluid gender expression — 90s new york nights where the outfit WAS the invitation",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "neon",
+          "silver",
+          "white"
+        ],
+        "moods": [
+          "outrageous",
+          "euphoric"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-be03b3b6-f3d2-498c-9d71-e030efee887a",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Club_Kids",
+      "https://metrosource.com/1990s-new-york-club-kids-dressed"
+    ],
+    "approvedAt": 1784177956566
   },
   {
     "kind": "film",
@@ -1855,6 +2005,44 @@
     "approvedAt": 1784176300498
   },
   {
+    "kind": "aesthetic",
+    "name": "punk",
+    "aliases": [
+      "punk rock"
+    ],
+    "note": "the kings road original — DIY rebellion held together with safety pins",
+    "interpretations": [
+      {
+        "id": "punk/kings-road",
+        "label": "Kings Road",
+        "type": "aesthetic",
+        "summary": "ripped tees pinned back together, bondage trousers, unravelling mohair, bin-liner dresses — SEX and Seditionaries made distress a language",
+        "tags": [
+          "statement",
+          "independent",
+          "avant-garde"
+        ],
+        "colors": [
+          "black",
+          "red",
+          "tartan"
+        ],
+        "moods": [
+          "raw",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-b59a46bb-881f-4dd7-abfc-155c2d7a210c",
+    "sourceUrls": [
+      "https://www.vam.ac.uk/articles/vivienne-westwood-punk-new-romantic-and-beyond",
+      "https://fashion-era.com/1970s/punk-fashion-history"
+    ],
+    "approvedAt": 1784177955436
+  },
+  {
     "kind": "figure",
     "name": "rick owens",
     "aliases": [],
@@ -1889,6 +2077,44 @@
       "https://culted.com/rick-owens-designer-avant-garde-dark-lord-halloween-fashion/"
     ],
     "approvedAt": 1784177294095
+  },
+  {
+    "kind": "aesthetic",
+    "name": "riot grrrl",
+    "aliases": [
+      "riot girl"
+    ],
+    "note": "olympia's feminist punk — girlishness reclaimed at full volume",
+    "interpretations": [
+      {
+        "id": "riot grrrl/zine",
+        "label": "the zine table",
+        "type": "aesthetic",
+        "summary": "plaid skirts, band tees, combat boots, plastic baby barrettes and feminist pins — cute weaponized, DIY to the last patch",
+        "tags": [
+          "independent",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [
+          "pink",
+          "plaid red",
+          "black"
+        ],
+        "moods": [
+          "loud",
+          "unapologetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-9e243303-c37e-4a52-8a41-72821888bbae",
+    "sourceUrls": [
+      "https://www.anothermag.com/fashion-beauty/8279/the-riot-grrrl-style-revolution",
+      "https://en.wikipedia.org/wiki/Riot_grrrl"
+    ],
+    "approvedAt": 1784177956018
   },
   {
     "kind": "aesthetic",
@@ -1927,6 +2153,44 @@
       "https://www.distractify.com/p/rockstar-girlfriend-aesthetic"
     ],
     "approvedAt": 1784078951311
+  },
+  {
+    "kind": "figure",
+    "name": "roger federer",
+    "aliases": [
+      "federer"
+    ],
+    "note": "swiss precision off the court — elegance as a daily setting",
+    "interpretations": [
+      {
+        "id": "roger federer/maestro",
+        "label": "the maestro",
+        "type": "era",
+        "summary": "clean tailored polos and track silhouettes in navy, black and white — 70s tenniswear refined into an effortless uniform",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "white",
+          "black"
+        ],
+        "moods": [
+          "composed",
+          "effortless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f7969540-2718-4a65-9c74-9b2405d206d8",
+    "sourceUrls": [
+      "https://www.insidehook.com/style/uniqlo-roger-federer-collection",
+      "https://www.hollywoodreporter.com/lifestyle/shopping/roger-federer-jw-anderson-uniqlo-tennis-collection-pricing-best-products-1235901551/"
+    ],
+    "approvedAt": 1784177958072
   },
   {
     "kind": "film",
@@ -1987,6 +2251,66 @@
       "https://www.newwavemagazine.com/single-post/fashion-feuds-and-fatal-love-costuming-in-baz-luhrmann-s-romeo-and-juliet"
     ],
     "approvedAt": 1784098505401
+  },
+  {
+    "kind": "aesthetic",
+    "name": "rude boy",
+    "aliases": [
+      "rude boys",
+      "two-tone",
+      "2 tone"
+    ],
+    "note": "kingston sharpness to the two-tone checkerboard",
+    "interpretations": [
+      {
+        "id": "rude boy/kingston",
+        "label": "Kingston",
+        "type": "aesthetic",
+        "summary": "tonic suits, pork pie and trilby hats, thin ties, patent brogues — jazz-informed sharpness from independence-era kingston",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "silver-tonic",
+          "white"
+        ],
+        "moods": [
+          "sharp",
+          "cool"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "rude boy/two-tone",
+        "label": "the two-tone revival",
+        "type": "aesthetic",
+        "summary": "black suit, white shirt, pork pie, white socks and loafers — the specials' checkerboard fusing punk energy with ska polish",
+        "tags": [
+          "tailored",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "kinetic",
+          "unified"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f1a29c07-e2a0-4751-a39d-29390b001577",
+    "sourceUrls": [
+      "https://www.museumofyouthculture.com/rude-boy/",
+      "https://en.wikipedia.org/wiki/Rude_boy"
+    ],
+    "approvedAt": 1784177957166
   },
   {
     "kind": "figure",
@@ -2688,6 +3012,80 @@
       "https://aesthetics.fandom.com/wiki/Trad_Goth"
     ],
     "approvedAt": 1784078951962
+  },
+  {
+    "kind": "figure",
+    "name": "travis kelce",
+    "aliases": [],
+    "note": "the nfl tunnel's loudest wardrobe — prints worn at full confidence",
+    "interpretations": [
+      {
+        "id": "travis kelce/gameday",
+        "label": "gameday entrance",
+        "type": "era",
+        "summary": "kidsuper suits, gucci sets, bold prints and fearless layering — the stadium tunnel as a weekly runway slot",
+        "tags": [
+          "statement",
+          "streetwear",
+          "tailored"
+        ],
+        "colors": [
+          "cream",
+          "cobalt",
+          "black"
+        ],
+        "moods": [
+          "exuberant",
+          "confident"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-280cd483-e769-417f-898e-05695c838f47",
+    "sourceUrls": [
+      "https://www.hellomagazine.com/hfm/fashion-trends/717457/travis-kelce-best-fashion-moments-of-all-time/",
+      "https://parade.com/news/travis-kelce-bold-game-day-outfit-brazil-has-fans-declaring-hes-in-his-fiance-era-for-nfl-year-13"
+    ],
+    "approvedAt": 1784177957465
+  },
+  {
+    "kind": "aesthetic",
+    "name": "visual kei",
+    "aliases": [
+      "v-kei"
+    ],
+    "note": "japan's visual shock — hair as architecture, gender as material",
+    "interpretations": [
+      {
+        "id": "visual kei/visual-shock",
+        "label": "visual shock",
+        "type": "aesthetic",
+        "summary": "teased sculptural hair in unnatural color, PVC and lace costume, eye-centered makeup on every gender — glam and goth through a japanese lens",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "crimson",
+          "platinum"
+        ],
+        "moods": [
+          "dramatic",
+          "otherworldly"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-78f56939-9733-4f36-8fb4-8fd18b1d9f53",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Visual_kei",
+      "https://savvytokyo.com/tokyo-fashion-subculture-visual-kei/"
+    ],
+    "approvedAt": 1784177956291
   },
   {
     "kind": "figure",
