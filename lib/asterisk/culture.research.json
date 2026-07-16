@@ -39,6 +39,42 @@
     "approvedAt": 1784177956847
   },
   {
+    "kind": "aesthetic",
+    "name": "afrofuturism",
+    "aliases": [],
+    "note": "ancient africa in orbit — sun ra to wakanda's costume shop",
+    "interpretations": [
+      {
+        "id": "afrofuturism/wakanda",
+        "label": "the vibranium wardrobe",
+        "type": "aesthetic",
+        "summary": "ruth e. carter's beaded battle wear and 3-d headpieces, sun ra's space regalia — african textile tradition projected forward",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "violet",
+          "gold",
+          "cobalt"
+        ],
+        "moods": [
+          "cosmic",
+          "ancestral"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-db8d4a0d-60c5-49d1-ba6c-01c28b53a338",
+    "sourceUrls": [
+      "https://ncartmuseum.org/ruth-e-carter-afrofuturism-in-costume-design/",
+      "https://www.cnn.com/2018/02/12/africa/genre-behind-black-panther-afrofuturism"
+    ],
+    "approvedAt": 1784178662588
+  },
+  {
     "kind": "film",
     "name": "almost famous",
     "aliases": [
@@ -76,6 +112,44 @@
       "https://org.osu.edu/scarlettemagazine/2023/11/27/the-evolution-of-the-penny-lane-coat/"
     ],
     "approvedAt": 1784087397091
+  },
+  {
+    "kind": "figure",
+    "name": "andy warhol",
+    "aliases": [
+      "warhol"
+    ],
+    "note": "the silver-wig uniform — repetition as personal brand",
+    "interpretations": [
+      {
+        "id": "andy warhol/factory",
+        "label": "the Factory uniform",
+        "type": "era",
+        "summary": "silver wig, striped tees, black turtlenecks, leather and levi's under a blazer — a look reproduced as faithfully as his prints",
+        "tags": [
+          "minimal",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "silver",
+          "black",
+          "denim"
+        ],
+        "moods": [
+          "detached",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-49d0c4c3-7cc6-4e8d-a083-ae31d3567bf7",
+    "sourceUrls": [
+      "https://www.permanentstyle.com/2025/07/what-artists-wear-as-projection-and-performance.html",
+      "https://en.wikipedia.org/wiki/Andy_Warhol"
+    ],
+    "approvedAt": 1784178615401
   },
   {
     "kind": "film",
@@ -320,6 +394,137 @@
       "https://www.cnn.com/style/article/bjork-swan-dress-remember-when/"
     ],
     "approvedAt": 1784098503902
+  },
+  {
+    "kind": "aesthetic",
+    "name": "black dandyism",
+    "aliases": [
+      "dandy",
+      "superfine"
+    ],
+    "note": "250 years of tailoring as self-definition — the met's 2025 thesis",
+    "interpretations": [
+      {
+        "id": "black dandyism/superfine",
+        "label": "superfine",
+        "type": "aesthetic",
+        "summary": "immaculate tailoring turned from imposed costume into a weapon of elegance — douglass's victorian suits to harlem color to exaggerated 70s plaid",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "burgundy",
+          "mustard",
+          "pinstripe"
+        ],
+        "moods": [
+          "dignified",
+          "sovereign"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-c41aefc7-0793-4db5-bd7e-4605bc9475d0",
+    "sourceUrls": [
+      "https://www.metmuseum.org/exhibitions/superfine-tailoring-black-style",
+      "https://theconversation.com/tailoring-and-the-black-dandy-how-250-years-of-black-fashion-history-inspired-the-2025-met-gala-250650"
+    ],
+    "approvedAt": 1784178663571
+  },
+  {
+    "kind": "music",
+    "name": "blackpink",
+    "aliases": [],
+    "note": "four members, four french houses — the k-pop luxury axis",
+    "interpretations": [
+      {
+        "id": "blackpink/ambassadors",
+        "label": "the ambassadors",
+        "type": "era",
+        "summary": "chanel tweed, saint laurent sharpness, celine minimalism and dior romance split across one group — stagewear as a house portfolio",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "pink",
+          "tweed"
+        ],
+        "moods": [
+          "polished",
+          "commanding"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-69e1cd10-7302-4b47-95f1-a080db0b74ec",
+    "sourceUrls": [
+      "https://wwd.com/fashion-news/fashion-scoops/blackpink-lisa-jennie-rose-jisoo-ambassadorships-deals-1235238642/",
+      "https://www.dazeddigital.com/fashion/article/52211/1/blackpink-jennie-jisoo-rose-lisa-style-dior-celine-chanel-saint-laurent/slide-4"
+    ],
+    "approvedAt": 1784178612479
+  },
+  {
+    "kind": "music",
+    "name": "britney spears",
+    "aliases": [
+      "britney"
+    ],
+    "note": "the y2k blueprint — low-rise, bedazzled, butterfly-clipped",
+    "interpretations": [
+      {
+        "id": "britney spears/schoolgirl",
+        "label": "the debut era",
+        "type": "era",
+        "summary": "tied white shirt, pleated mini, knee socks and scrunchies — the video that wrote a decade's dress code",
+        "tags": [
+          "statement",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "pink",
+          "white",
+          "grey"
+        ],
+        "moods": [
+          "playful",
+          "electric"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "britney spears/denim",
+        "label": "the denim gown",
+        "type": "era",
+        "summary": "the 2001 patchwork denim dress with rhinestone choker — once a faux pas, now a cult y2k artifact",
+        "tags": [
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "denim"
+        ],
+        "moods": [
+          "brazen",
+          "iconic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-520c8d41-c7ee-4c55-ae06-f34efa2260a1",
+    "sourceUrls": [
+      "https://graziamagazine.com/us/articles/happy-birthday-britney-spears-grazia-looks-back-on-the-pop-princess-influence-on-fashion/",
+      "https://www.whowhatwear.com/britney-spears-fashion"
+    ],
+    "approvedAt": 1784178611822
   },
   {
     "kind": "figure",
@@ -681,6 +886,42 @@
     "approvedAt": 1784176071978
   },
   {
+    "kind": "music",
+    "name": "daft punk",
+    "aliases": [],
+    "note": "anonymity as the ultimate look — chrome helmets over saint laurent sequins",
+    "interpretations": [
+      {
+        "id": "daft punk/robots",
+        "label": "the robots",
+        "type": "era",
+        "summary": "gold and silver helmets, black leather gloves-to-boot, sequined tuxedos — identity erased so the silhouette does the talking",
+        "tags": [
+          "avant-garde",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "chrome",
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "mechanical",
+          "immaculate"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-cb37b498-f4e0-4b39-a284-b6033cdf8332",
+    "sourceUrls": [
+      "https://www.scmp.com/magazines/style/celebrity/article/3124607/daft-punks-fashion-legacy-how-duos-robot-helmets-used",
+      "https://www.nssmag.com/en/fashion/25343/daft-punk-fashion"
+    ],
+    "approvedAt": 1784178612789
+  },
+  {
     "kind": "figure",
     "name": "debbie harry",
     "aliases": [
@@ -797,6 +1038,44 @@
     "approvedAt": 1784080234069
   },
   {
+    "kind": "aesthetic",
+    "name": "disco",
+    "aliases": [
+      "studio 54"
+    ],
+    "note": "the halston dancefloor — silk jersey built for light and motion",
+    "interpretations": [
+      {
+        "id": "disco/studio-54",
+        "label": "Studio 54",
+        "type": "aesthetic",
+        "summary": "bias-cut halston jersey, lamé, sequins and metallic platforms — clothes engineered to catch the mirror ball",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "gold",
+          "silver",
+          "champagne"
+        ],
+        "moods": [
+          "glittering",
+          "liberated"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-95b1d3b8-4b99-40b3-b68a-801ff2cc2e52",
+    "sourceUrls": [
+      "https://www.stylist.co.uk/fashion/studio-54-fashion-halston/523158",
+      "https://cfda.com/news/cfda-decades-the-seventies-disco-glitter-studio-54/"
+    ],
+    "approvedAt": 1784178614042
+  },
+  {
     "kind": "music",
     "name": "doechii",
     "aliases": [
@@ -873,6 +1152,63 @@
     "approvedAt": 1784087398054
   },
   {
+    "kind": "music",
+    "name": "elvis presley",
+    "aliases": [
+      "elvis"
+    ],
+    "note": "beale street tailoring to belew rhinestones — the king's two wardrobes",
+    "interpretations": [
+      {
+        "id": "elvis presley/beale-street",
+        "label": "Beale Street",
+        "type": "era",
+        "summary": "lansky bros cuban collars, pink-and-black blazers, high-waisted pleats — 50s memphis flash learned from blues clothiers",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "pink",
+          "black",
+          "cream"
+        ],
+        "moods": [
+          "swaggering",
+          "smooth"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "elvis presley/vegas",
+        "label": "the jumpsuit years",
+        "type": "era",
+        "summary": "bill belew's embroidered, rhinestoned jumpsuits with capes and high collars — stagewear as monument",
+        "tags": [
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "grand",
+          "excessive"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f3b6b82c-967b-4593-aab3-3211a93fa0d4",
+    "sourceUrls": [
+      "https://www.fashionbeans.com/article/elvis-presley-fashion/",
+      "https://bykerwin.com/elvis-jumpsuits-a-style-evolution-and-fashion-influence/"
+    ],
+    "approvedAt": 1784178613426
+  },
+  {
     "kind": "aesthetic",
     "name": "fisherman aesthetic",
     "aliases": [
@@ -910,6 +1246,44 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "figure",
+    "name": "frida kahlo",
+    "aliases": [
+      "frida"
+    ],
+    "note": "tehuana dress as self-definition — identity worn deliberately",
+    "interpretations": [
+      {
+        "id": "frida kahlo/tehuana",
+        "label": "the Tehuana wardrobe",
+        "type": "era",
+        "summary": "oaxacan tehuana dresses, rebozos and marigold crowns — matriarchal dress chosen as a statement of strength and mexicanidad",
+        "tags": [
+          "statement",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "marigold",
+          "cobalt",
+          "scarlet"
+        ],
+        "moods": [
+          "rooted",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-be1a1e1f-30c1-43e5-b72b-bcc0d864f0aa",
+    "sourceUrls": [
+      "https://www.laopera.org/discover-la-opera/explore/blog/the-history-of-frida-iconic-tehuana-dress",
+      "https://www.barnebys.com/blog/the-true-story-of-frida-kahlos-style"
+    ],
+    "approvedAt": 1784178614741
   },
   {
     "kind": "film",
@@ -1047,6 +1421,78 @@
     "approvedAt": 1784098505981
   },
   {
+    "kind": "music",
+    "name": "grime",
+    "aliases": [],
+    "note": "the tracksuit mafia — uk sportswear worn as scene identity",
+    "interpretations": [
+      {
+        "id": "grime/tracksuit",
+        "label": "the tracksuit uniform",
+        "type": "scene",
+        "summary": "black all-in-ones and nike air max — boy in da corner to shutdown, comfort-first kit that outran the fashion industry's permission",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "grey",
+          "neon"
+        ],
+        "moods": [
+          "cold",
+          "certain"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-6f401490-6076-48a4-aee7-0d6d2a5a78ad",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/grime-sneakers-fashion/",
+      "https://pausemag.co.uk/2016/11/five-grime-fashion-staples/"
+    ],
+    "approvedAt": 1784178613727
+  },
+  {
+    "kind": "aesthetic",
+    "name": "gyaru",
+    "aliases": [],
+    "note": "shibuya's rebellion against pale-and-proper — tan, bleach, and volume",
+    "interpretations": [
+      {
+        "id": "gyaru/shibuya",
+        "label": "the Shibuya gal",
+        "type": "aesthetic",
+        "summary": "deep tans, bleached hair, dramatic lashes and nails, customized uniforms — egg-magazine street style built to refuse the beauty standard",
+        "tags": [
+          "statement",
+          "streetwear",
+          "seductive"
+        ],
+        "colors": [
+          "platinum",
+          "tan",
+          "pink"
+        ],
+        "moods": [
+          "defiant",
+          "sunny"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-7baebb95-1f02-4fe3-ad78-d633f12be341",
+    "sourceUrls": [
+      "https://savvytokyo.com/tokyo-fashion-subculture-the-iconic-shibuya-gyaru/",
+      "https://en.wikipedia.org/wiki/Gyaru"
+    ],
+    "approvedAt": 1784178662944
+  },
+  {
     "kind": "aesthetic",
     "name": "harajuku",
     "aliases": [
@@ -1089,6 +1535,44 @@
   },
   {
     "kind": "figure",
+    "name": "jackie kennedy",
+    "aliases": [
+      "jackie o"
+    ],
+    "note": "the pillbox standard — diplomacy dressed in clean lines",
+    "interpretations": [
+      {
+        "id": "jackie kennedy/first-lady",
+        "label": "the First Lady years",
+        "type": "era",
+        "summary": "cassini and givenchy suits, pillbox hats, white gloves and three-quarter sleeves — understated as a public language",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "ivory",
+          "camel",
+          "powder blue"
+        ],
+        "moods": [
+          "composed",
+          "gracious"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-0d24a9d0-6b8c-42c1-810c-fa9f5e631978",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/1960s_in_fashion",
+      "https://takesmeback.com/1960s-fashion-icons-who-made-an-impact-thats-still-felt-today/"
+    ],
+    "approvedAt": 1784178615719
+  },
+  {
+    "kind": "figure",
     "name": "jean paul gaultier",
     "aliases": [
       "gaultier"
@@ -1123,6 +1607,118 @@
       "https://www.wmagazine.com/culture/jean-paul-gaultier-life-in-parties-interview"
     ],
     "approvedAt": 1784177293792
+  },
+  {
+    "kind": "figure",
+    "name": "jean-michel basquiat",
+    "aliases": [
+      "basquiat"
+    ],
+    "note": "armani worn barefoot and paint-splattered — luxury refused as precious",
+    "interpretations": [
+      {
+        "id": "jean-michel basquiat/armani",
+        "label": "paint on Armani",
+        "type": "era",
+        "summary": "designer suits worn to paint in, frayed hems and splatters on the times cover — streetwear and high fashion fused before the term existed",
+        "tags": [
+          "independent",
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [
+          "paint-splatter",
+          "grey",
+          "ochre"
+        ],
+        "moods": [
+          "instinctive",
+          "unbothered"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-b2645b8c-8b5e-40e1-ab74-68e9254c2846",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/34691/1/jean-michel-basquiat-fashion-and-sense-of-style",
+      "https://www.artmajeur.com/en/magazine/2-art-news/fun-fact-jean-michel-basquiat-in-armani-and-barefoot-when-art-wore-fashion/337819"
+    ],
+    "approvedAt": 1784178615086
+  },
+  {
+    "kind": "music",
+    "name": "jimi hendrix",
+    "aliases": [
+      "hendrix"
+    ],
+    "note": "military jackets turned against the parade ground — psychedelic dandyism",
+    "interpretations": [
+      {
+        "id": "jimi hendrix/experience",
+        "label": "the experience",
+        "type": "era",
+        "summary": "portobello-road hussar jackets, silk scarves at neck and knee, velvet flares and silver rings — uniform recut as liberation",
+        "tags": [
+          "statement",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "scarlet",
+          "purple",
+          "gold"
+        ],
+        "moods": [
+          "electric",
+          "free"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-551561f5-ddf1-410a-a08a-84575ed3c15b",
+    "sourceUrls": [
+      "https://modernlovemagazine.com/fashion/jimi-hendrix-fashion-for-a-rock-god/",
+      "https://www.thevoiceoffashion.com/intersections/columns/jimi-hendrix-dressing-to-be-uncommon-4011"
+    ],
+    "approvedAt": 1784178613129
+  },
+  {
+    "kind": "figure",
+    "name": "josephine baker",
+    "aliases": [],
+    "note": "art deco's live wire — the tuxedo on the champs-elysees",
+    "interpretations": [
+      {
+        "id": "josephine baker/deco",
+        "label": "the deco star",
+        "type": "era",
+        "summary": "slicked bakerfix crop, deco-patterned gowns and a perfectly fitted men's tuxedo decades early — performance and androgyny fused",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "black",
+          "ivory"
+        ],
+        "moods": [
+          "dazzling",
+          "fearless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-30825067-330b-40b8-8384-652a764a1e75",
+    "sourceUrls": [
+      "https://www.europeana.eu/en/stories/josephine-baker-fashion-icon",
+      "https://www.mic.com/articles/148307/unsung-style-icon-josephine-baker-pioneer-of-the-miniskirt-and-androgynous-dressing"
+    ],
+    "approvedAt": 1784178614398
   },
   {
     "kind": "figure",
@@ -2577,6 +3173,42 @@
     "approvedAt": 1784177291784
   },
   {
+    "kind": "music",
+    "name": "spice girls",
+    "aliases": [],
+    "note": "five personas, five dress codes — girl power as a wardrobe system",
+    "interpretations": [
+      {
+        "id": "spice girls/five",
+        "label": "the five uniforms",
+        "type": "era",
+        "summary": "buffalo platforms, a tea-towel union jack on a gucci dress, leopard, trackies and little gucci slips — difference worn as the point",
+        "tags": [
+          "statement",
+          "streetwear",
+          "seductive"
+        ],
+        "colors": [
+          "red",
+          "leopard",
+          "silver"
+        ],
+        "moods": [
+          "loud",
+          "joyful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-1863ad9b-d956-46e0-a7fb-2410c873c259",
+    "sourceUrls": [
+      "https://www.nylon.com/fashion/spice-world-fashion-25-anniversary",
+      "https://www.billboard.com/music/pop/geri-halliwell-talks-iconic-spice-girls-union-jack-dress-1235433977/"
+    ],
+    "approvedAt": 1784178612152
+  },
+  {
     "kind": "figure",
     "name": "stevie nicks",
     "aliases": [
@@ -3050,6 +3682,42 @@
     "approvedAt": 1784177957465
   },
   {
+    "kind": "figure",
+    "name": "twiggy",
+    "aliases": [],
+    "note": "the face of mod — androgyny that rewrote the ideal",
+    "interpretations": [
+      {
+        "id": "twiggy/mod-face",
+        "label": "the face of 66",
+        "type": "era",
+        "summary": "pixie crop, painted lower lashes, shift dresses that skim not hug — the boyish silhouette that flipped the script",
+        "tags": [
+          "minimal",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "mustard",
+          "black"
+        ],
+        "moods": [
+          "wide-eyed",
+          "modern"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-67fd297a-2499-49b0-aeea-b0f1b48f5af3",
+    "sourceUrls": [
+      "https://takesmeback.com/1960s-fashion-icons-who-changed-how-we-thought-about-style/",
+      "https://en.wikipedia.org/wiki/1960s_in_fashion"
+    ],
+    "approvedAt": 1784178616044
+  },
+  {
     "kind": "aesthetic",
     "name": "visual kei",
     "aliases": [
@@ -3160,5 +3828,43 @@
       "https://www.yokogaomag.com/editorial/who-is-yohji-yamamoto-japanese-fashion-designer"
     ],
     "approvedAt": 1784177293223
+  },
+  {
+    "kind": "aesthetic",
+    "name": "zoot suit",
+    "aliases": [
+      "pachuco"
+    ],
+    "note": "the drape shape — jazz tailoring that became a stand",
+    "interpretations": [
+      {
+        "id": "zoot suit/drape",
+        "label": "the drape",
+        "type": "aesthetic",
+        "summary": "high-waisted pegged trousers, long wide-shouldered coats, watch chains and floppy hats — chitlin' circuit style carried by pachuco and hepcat youth as self-possession",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "sharkskin",
+          "charcoal",
+          "pinstripe"
+        ],
+        "moods": [
+          "proud",
+          "unbowed"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-554cb8fa-c88b-4916-8b21-7bdd0aba1fba",
+    "sourceUrls": [
+      "https://www.pbssocal.org/shows/artbound/pachucos-not-just-mexican-american-males-or-juvenile-delinquents",
+      "https://www.britannica.com/topic/zoot-suit-clothing"
+    ],
+    "approvedAt": 1784178663258
   }
 ]
