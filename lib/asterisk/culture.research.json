@@ -1,5 +1,43 @@
 [
   {
+    "kind": "decade",
+    "name": "30s",
+    "aliases": [
+      "1930s"
+    ],
+    "note": "depression grit and silver-screen glamour in one wardrobe",
+    "interpretations": [
+      {
+        "id": "30s/bias-cut",
+        "label": "bias-cut glamour",
+        "type": "era",
+        "summary": "vionnet's bias cut clinging in silk, the letty lynton dress copied half a million times — hollywood escapism against make-do-and-mend",
+        "tags": [
+          "seductive",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "platinum",
+          "ivory",
+          "midnight"
+        ],
+        "moods": [
+          "liquid",
+          "aspirational"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-395a2f3f-5aa1-4fc7-84c6-efca7e76c667",
+    "sourceUrls": [
+      "https://fashionhistory.fitnyc.edu/1930-1939/",
+      "https://www.fashiongonerogue.com/era/1930s-fashion-women/"
+    ],
+    "approvedAt": 1784179357955
+  },
+  {
     "kind": "aesthetic",
     "name": "acid house",
     "aliases": [
@@ -112,6 +150,82 @@
       "https://org.osu.edu/scarlettemagazine/2023/11/27/the-evolution-of-the-penny-lane-coat/"
     ],
     "approvedAt": 1784087397091
+  },
+  {
+    "kind": "music",
+    "name": "amy winehouse",
+    "aliases": [
+      "winehouse"
+    ],
+    "note": "camden's retro rebel — the beehive that inspired chanel",
+    "interpretations": [
+      {
+        "id": "amy winehouse/camden",
+        "label": "the Camden beehive",
+        "type": "era",
+        "summary": "grungy homemade beehive, tattooed wings of eyeliner, thigh-skimming rockabilly minis and a graveyard of satin ballet flats",
+        "tags": [
+          "seductive",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "leopard",
+          "red"
+        ],
+        "moods": [
+          "smoky",
+          "tender"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-a93119a9-1b0b-416c-a1c8-59622867cb32",
+    "sourceUrls": [
+      "https://www.wmagazine.com/gallery/amy-winehouse-style",
+      "https://www.bustle.com/articles/90970-11-amy-whinehouse-outfits-and-accessories-that-defined-her-style-and-solidified-her-iconic-position"
+    ],
+    "approvedAt": 1784179334260
+  },
+  {
+    "kind": "figure",
+    "name": "andre leon talley",
+    "aliases": [
+      "alt"
+    ],
+    "note": "vogue's editor in capes — grandeur as daily practice",
+    "interpretations": [
+      {
+        "id": "andre leon talley/capes",
+        "label": "the cape years",
+        "type": "era",
+        "summary": "custom caftans and capes by lagerfeld, ford and dapper dan — editorial authority worn floor-length",
+        "tags": [
+          "statement",
+          "tailored",
+          "avant-garde"
+        ],
+        "colors": [
+          "crimson",
+          "royal blue",
+          "gold"
+        ],
+        "moods": [
+          "majestic",
+          "generous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f0428042-c059-4e8b-81ef-262a2f1a75d6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Andr%C3%A9_Leon_Talley",
+      "https://theconversation.com/andre-leon-talley-dreamed-of-a-life-in-the-pages-of-vogue-where-bad-things-never-happened-175237"
+    ],
+    "approvedAt": 1784179346107
   },
   {
     "kind": "figure",
@@ -299,6 +413,42 @@
       "https://www.today.com/style/celeb-style/what-is-barbiecore-trend-rcna36927"
     ],
     "approvedAt": 1784078951639
+  },
+  {
+    "kind": "figure",
+    "name": "bianca jagger",
+    "aliases": [],
+    "note": "the studio 54 entrance in ysl white — tailoring at the disco",
+    "interpretations": [
+      {
+        "id": "bianca jagger/white-suit",
+        "label": "the white suit",
+        "type": "era",
+        "summary": "ysl le smoking and halston jersey worn where everyone else wore sequins — sharp tailoring as nightlife power",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "white",
+          "ivory",
+          "gold"
+        ],
+        "moods": [
+          "assured",
+          "luminous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-584371cb-bb8d-4892-8765-77f0c60c44c5",
+    "sourceUrls": [
+      "https://www.stylist.co.uk/fashion/studio-54-fashion-halston/523158",
+      "https://vintagelifestyle.com/club-style-made-iconic-by-studio-54-and-stars-like-bianca-jagger/"
+    ],
+    "approvedAt": 1784179350071
   },
   {
     "kind": "music",
@@ -923,6 +1073,44 @@
   },
   {
     "kind": "figure",
+    "name": "dapper dan",
+    "aliases": [
+      "daniel day"
+    ],
+    "note": "harlem's first hip-hop couturier — the logo remixed into armor",
+    "interpretations": [
+      {
+        "id": "dapper dan/logomania",
+        "label": "logomania Harlem",
+        "type": "era",
+        "summary": "house monograms blown up into full jackets and puffed sleeves for rakim-era clientele — bootleg turned blueprint, gucci came back full circle",
+        "tags": [
+          "statement",
+          "streetwear",
+          "tailored"
+        ],
+        "colors": [
+          "monogram brown",
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "audacious",
+          "sovereign"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-7aa29120-de51-4ce1-ac9a-70cde0543365",
+    "sourceUrls": [
+      "https://www.lofficielusa.com/men/dapper-dan-harlem-influence-fashion-gucci-logo",
+      "https://www.npr.org/transcripts/1109863455"
+    ],
+    "approvedAt": 1784179342163
+  },
+  {
+    "kind": "figure",
     "name": "debbie harry",
     "aliases": [
       "blondie style"
@@ -1074,6 +1262,42 @@
       "https://cfda.com/news/cfda-decades-the-seventies-disco-glitter-studio-54/"
     ],
     "approvedAt": 1784178614042
+  },
+  {
+    "kind": "film",
+    "name": "do the right thing",
+    "aliases": [],
+    "note": "ruth e. carter's hottest day in bed-stuy — 1989 in saturated color",
+    "interpretations": [
+      {
+        "id": "do the right thing/bed-stuy",
+        "label": "Bed-Stuy summer",
+        "type": "atmosphere",
+        "summary": "kente-cloth shorts, dodgers jersey with a medallion, hand-painted love-hate tees, saturated nike athletics — a block's identity dressed head to toe",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "red",
+          "yellow",
+          "green"
+        ],
+        "moods": [
+          "blazing",
+          "proud"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-ba219712-eb50-40bf-8c08-513c97e55ee9",
+    "sourceUrls": [
+      "https://www.ruthecarter.com/collection/do-the-right-thing",
+      "https://www.dazeddigital.com/fashion/article/43537/1/ruth-carter-oscar-winning-best-costume-designer-award-black-panther-spike-lee"
+    ],
+    "approvedAt": 1784179314462
   },
   {
     "kind": "music",
@@ -1248,6 +1472,44 @@
     "approvedAt": 1784078949626
   },
   {
+    "kind": "music",
+    "name": "freddie mercury",
+    "aliases": [
+      "freddie"
+    ],
+    "note": "from leotards to the wembley yellow — stagewear as coronation",
+    "interpretations": [
+      {
+        "id": "freddie mercury/wembley",
+        "label": "Wembley 86",
+        "type": "era",
+        "summary": "the diana moseley yellow buckled jacket over white jeans and adidas — 70s leotard flamboyance matured into military-cut command",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "yellow",
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "triumphant",
+          "electric"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-a342f182-a257-4e22-b594-08584b5d8a43",
+    "sourceUrls": [
+      "https://www.cnn.com/style/article/remember-when-freddie-mercury-jacket/",
+      "https://www.themoviefashion.com/freddie-mercury-yellow-jacket-rocks/"
+    ],
+    "approvedAt": 1784179326352
+  },
+  {
     "kind": "figure",
     "name": "frida kahlo",
     "aliases": [
@@ -1284,6 +1546,45 @@
       "https://www.barnebys.com/blog/the-true-story-of-frida-kahlos-style"
     ],
     "approvedAt": 1784178614741
+  },
+  {
+    "kind": "tv",
+    "name": "friends",
+    "aliases": [
+      "the rachel",
+      "rachel green"
+    ],
+    "note": "90s minimalism with a haircut that owned a decade",
+    "interpretations": [
+      {
+        "id": "friends/rachel",
+        "label": "Rachel Green",
+        "type": "character",
+        "summary": "the layered face-framing Rachel cut over slip skirts, fitted tees and clean 90s minimalism — the most requested salon photo of the clinton era",
+        "tags": [
+          "minimal",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "camel",
+          "white",
+          "denim"
+        ],
+        "moods": [
+          "fresh",
+          "effortless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f6d40f8a-33ec-4b68-8c59-7148fedc921d",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/The_Rachel",
+      "https://www.mentalfloss.com/article/598225/jennifer-aniston-the-rachel-haircut-friends-history"
+    ],
+    "approvedAt": 1784179572463
   },
   {
     "kind": "film",
@@ -1532,6 +1833,78 @@
       "https://www.dazeddigital.com/fashion/article/29001/1/fruits-future-pop-fashion"
     ],
     "approvedAt": 1784098505695
+  },
+  {
+    "kind": "film",
+    "name": "heathers",
+    "aliases": [],
+    "note": "color-coded power prep — shoulder pads with a body count",
+    "interpretations": [
+      {
+        "id": "heathers/croquet",
+        "label": "the croquet court",
+        "type": "atmosphere",
+        "summary": "boxy power-shoulder blazers in signature reds, greens and yellows over pleated skirts and colored tights — clique hierarchy as a palette",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "red",
+          "green",
+          "yellow"
+        ],
+        "moods": [
+          "razor-sharp",
+          "poisonous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-547c6ff6-775a-41a0-b9cb-af772c2b7915",
+    "sourceUrls": [
+      "https://www.anothermag.com/fashion-beauty/10241/back-to-school-style-courtesy-of-cult-80s-film-heathers",
+      "https://www.nylon.com/fashion/heathers-movie-fashion-outfits/amp"
+    ],
+    "approvedAt": 1784179318460
+  },
+  {
+    "kind": "figure",
+    "name": "isabella blow",
+    "aliases": [],
+    "note": "the patron in the pheasant-feather hat — taste as an act of faith",
+    "interpretations": [
+      {
+        "id": "isabella blow/hats",
+        "label": "the hat patron",
+        "type": "era",
+        "summary": "philip treacy sculpture worn daily, mcqueen's first collection bought whole on installments — flamboyance in service of other people's genius",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "violet",
+          "black",
+          "scarlet"
+        ],
+        "moods": [
+          "theatrical",
+          "devoted"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-8151f49b-f17c-4e89-b18c-00ec6c27ad3f",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Isabella_Blow",
+      "https://www.dazeddigital.com/fashion/article/17903/1/the-da-zed-guide-to-isabella-blow"
+    ],
+    "approvedAt": 1784179354028
   },
   {
     "kind": "figure",
@@ -2124,6 +2497,44 @@
     "approvedAt": 1784098504226
   },
   {
+    "kind": "film",
+    "name": "marie antoinette",
+    "aliases": [
+      "marie antoinette 2006"
+    ],
+    "note": "canonero's oscar-winning versailles — a palette handed over in a box of macarons",
+    "interpretations": [
+      {
+        "id": "marie antoinette/versailles",
+        "label": "the macaron palette",
+        "type": "atmosphere",
+        "summary": "laduree pastels in silk, frills, feathers and florals — period dress made to feel alive, not academic",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "pistachio",
+          "rose",
+          "lavender"
+        ],
+        "moods": [
+          "confectionary",
+          "restless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-b8e6633d-28c7-439d-a737-bf1415f03ba9",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/culture-news/gallery/sofia-coppola-marie-antoinette-costumes-photos-1236708846/",
+      "https://www.hollywoodreporter.com/lifestyle/style/sofia-coppola-marie-antoinette-film-costumes-macarons-milena-1236357509/"
+    ],
+    "approvedAt": 1784179310508
+  },
+  {
     "kind": "aesthetic",
     "name": "mcbling",
     "aliases": [
@@ -2239,6 +2650,78 @@
       "https://www.thezoereport.com/fashion/mexico-city-fashion-scene"
     ],
     "approvedAt": 1784080232075
+  },
+  {
+    "kind": "city",
+    "name": "miami",
+    "aliases": [],
+    "note": "tropical deco — pastels off ocean drive, guayaberas next to grails",
+    "interpretations": [
+      {
+        "id": "miami/tropical-deco",
+        "label": "tropical deco",
+        "type": "scene",
+        "summary": "art-deco pastels bleeding into streetwear, cuban guayaberas with statement sneakers, basel-week peacocking — heat-built dressing",
+        "tags": [
+          "streetwear",
+          "statement",
+          "minimal"
+        ],
+        "colors": [
+          "seafoam",
+          "flamingo",
+          "white"
+        ],
+        "moods": [
+          "sunlit",
+          "loud"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5780ee41-b634-4bdc-b8f8-3e7c8e71c61d",
+    "sourceUrls": [
+      "https://mdpl.org/historic-threads/2025/08/art-decos-resurgence-inspires-fashion-on-miami-beach-1985/",
+      "https://www.miamilivingmagazine.com/post/miami-street-style-evolution-that-has-everyone-taking-notice"
+    ],
+    "approvedAt": 1784179361898
+  },
+  {
+    "kind": "tv",
+    "name": "miami vice",
+    "aliases": [],
+    "note": "the pastel permission slip — t-shirts under unstructured linen",
+    "interpretations": [
+      {
+        "id": "miami vice/crockett",
+        "label": "Sonny Crockett",
+        "type": "character",
+        "summary": "baggy pastel linen over a cotton tee, sockless loafers, ray-bans — italian ease that rewired 80s menswear",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "seafoam",
+          "coral",
+          "white"
+        ],
+        "moods": [
+          "breezy",
+          "cool"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-6d75bf37-ddf4-4b88-ab27-383550b5d54e",
+    "sourceUrls": [
+      "https://www.hollywoodreporter.com/lifestyle/style/miami-vice-michael-mann-costume-designers-interview-menswear-1235961920/",
+      "https://www.mrporter.com/en-us/journal/fashion/the-pastel-soaked-return-of-miami-vice-style-1080220"
+    ],
+    "approvedAt": 1784179302616
   },
   {
     "kind": "aesthetic",
@@ -3436,6 +3919,100 @@
     "approvedAt": 1784176300139
   },
   {
+    "kind": "music",
+    "name": "the beatles",
+    "aliases": [
+      "beatles"
+    ],
+    "note": "two revolutions in one band — cardin collarless to sgt pepper brocade",
+    "interpretations": [
+      {
+        "id": "the beatles/collarless",
+        "label": "the collarless era",
+        "type": "era",
+        "summary": "dougie millings' cardin-modelled collarless suits and chelsea boots — mod uniformity that sold a sound",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "charcoal",
+          "black"
+        ],
+        "moods": [
+          "boyish",
+          "precise"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the beatles/pepper",
+        "label": "Sgt Pepper",
+        "type": "era",
+        "summary": "day-glo military jackets with braiding and frogging, velvet and brocade — psychedelia in full historical pastiche",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "scarlet",
+          "teal",
+          "gold"
+        ],
+        "moods": [
+          "kaleidoscopic",
+          "playful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-e51ccc3b-507a-4bf5-bc0d-ca026062e559",
+    "sourceUrls": [
+      "https://www.liverpoolmuseums.org.uk/stories/iconic-fashion-of-beatles-focus",
+      "https://faroutmagazine.co.uk/beatles-history-most-iconic-looks/"
+    ],
+    "approvedAt": 1784179330337
+  },
+  {
+    "kind": "film",
+    "name": "the craft",
+    "aliases": [],
+    "note": "catholic-school uniforms turned coven-ward — the 90s witch blueprint",
+    "interpretations": [
+      {
+        "id": "the craft/coven",
+        "label": "the coven",
+        "type": "atmosphere",
+        "summary": "uniform plaid restyled with PVC coats, dog collars, rosaries and slip dresses — grunge, goth and teen spirit in one spellbook",
+        "tags": [
+          "statement",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "plaid grey",
+          "silver"
+        ],
+        "moods": [
+          "occult",
+          "restless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-40c9d223-91c5-463c-8bfb-1dad0cf9dee6",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/30973/1/creating-the-cult-fashion-that-defined-the-craft",
+      "https://www.nylon.com/fashion/how-to-dress-like-a-90s-witch-inspired-by-the-craft"
+    ],
+    "approvedAt": 1784179322413
+  },
+  {
     "kind": "film",
     "name": "the fifth element",
     "aliases": [
@@ -3604,6 +4181,42 @@
       "https://fashionreverie.com/?p=36947"
     ],
     "approvedAt": 1784098506570
+  },
+  {
+    "kind": "music",
+    "name": "tlc",
+    "aliases": [],
+    "note": "crazysexycool in borrowed-from-the-boys baggy — fashion as PSA",
+    "interpretations": [
+      {
+        "id": "tlc/crazysexycool",
+        "label": "the CrazySexyCool era",
+        "type": "era",
+        "summary": "oversized tees, baggy pants, boxers and docs — with condoms pinned on as a deliberate safe-sex statement, DIY down to the fringe",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "neon",
+          "denim",
+          "black"
+        ],
+        "moods": [
+          "fearless",
+          "loose"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-7b5f0111-f24a-48e4-bfa8-5c6f9195d8fd",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/18865/1/tlcs-greatest-fashion-moments",
+      "https://i-d.co/article/tlc-fashion/"
+    ],
+    "approvedAt": 1784179338214
   },
   {
     "kind": "aesthetic",
