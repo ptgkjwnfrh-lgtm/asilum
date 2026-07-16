@@ -570,6 +570,44 @@
     "approvedAt": 1784098505094
   },
   {
+    "kind": "figure",
+    "name": "deion sanders",
+    "aliases": [
+      "prime time"
+    ],
+    "note": "the draft's first fashion icon — flash as a career strategy",
+    "interpretations": [
+      {
+        "id": "deion sanders/prime-time",
+        "label": "Prime Time",
+        "type": "era",
+        "summary": "gold ropes over track suits, bandana, dark shades — 90s flash that taught athletes to be brands",
+        "tags": [
+          "statement",
+          "streetwear",
+          "archival"
+        ],
+        "colors": [
+          "gold",
+          "black",
+          "white"
+        ],
+        "moods": [
+          "flashy",
+          "electric"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-107087f8-13d5-4fc2-9ca5-61e208fe2079",
+    "sourceUrls": [
+      "https://andscape.com/features/deion-sanders-double-play-30-for-30-icon-of-prime-time-style/",
+      "https://thegarnettereport.com/sports/deion-sanders-nfl-fashion-icon/"
+    ],
+    "approvedAt": 1784177292088
+  },
+  {
     "kind": "music",
     "name": "dev hynes",
     "aliases": [
@@ -898,6 +936,78 @@
       "https://www.dazeddigital.com/fashion/article/29001/1/fruits-future-pop-fashion"
     ],
     "approvedAt": 1784098505695
+  },
+  {
+    "kind": "figure",
+    "name": "jean paul gaultier",
+    "aliases": [
+      "gaultier"
+    ],
+    "note": "the enfant terrible in his own clothes — breton stripe and a kilt",
+    "interpretations": [
+      {
+        "id": "jean paul gaultier/marin",
+        "label": "the sailor and the kilt",
+        "type": "era",
+        "summary": "his own marinière and man-kilt uniform with a bleached crop — masculinity and femininity played in public",
+        "tags": [
+          "statement",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "impish",
+          "liberated"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5f67395e-8672-4114-8786-46b870a8cc7a",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/47634/1/jean-paul-gaultier-paris-fashion-haute-couture-final-show-trends-ss20-show",
+      "https://www.wmagazine.com/culture/jean-paul-gaultier-life-in-parties-interview"
+    ],
+    "approvedAt": 1784177293792
+  },
+  {
+    "kind": "figure",
+    "name": "karl lagerfeld",
+    "aliases": [],
+    "note": "the most recognizable uniform in fashion — 18th-century collar, powdered ponytail",
+    "interpretations": [
+      {
+        "id": "karl lagerfeld/uniform",
+        "label": "the uniform",
+        "type": "era",
+        "summary": "high starched collar, black tailored jacket, fingerless gloves, white ponytail, dark shades — old and new fused on one body",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "severe",
+          "exacting"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-e8b74a7a-a29d-42fa-9bf2-710c288da280",
+    "sourceUrls": [
+      "https://www.wmagazine.com/gallery/karl-lagerfeld-personal-style-photos",
+      "https://www.papermag.com/karl-lagerfeld-personal-uniform"
+    ],
+    "approvedAt": 1784177292938
   },
   {
     "kind": "music",
@@ -1386,6 +1496,45 @@
   },
   {
     "kind": "aesthetic",
+    "name": "mods",
+    "aliases": [
+      "mod",
+      "modernists"
+    ],
+    "note": "1960s britain's sharpest tribe — italian tailoring under an army parka",
+    "interpretations": [
+      {
+        "id": "mods/modernists",
+        "label": "the modernists",
+        "type": "aesthetic",
+        "summary": "slim three-button suits, skinny ties, desert boots — a fishtail parka over it all to keep the scooter off the mohair",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "olive",
+          "white"
+        ],
+        "moods": [
+          "sharp",
+          "restless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-97619be8-7d9a-4a6f-af40-13c67c9ac8c2",
+    "sourceUrls": [
+      "https://www.museumofyouthculture.com/mods/",
+      "https://en.wikipedia.org/wiki/Mod_(subculture)"
+    ],
+    "approvedAt": 1784177294394
+  },
+  {
+    "kind": "aesthetic",
     "name": "moto boho",
     "aliases": [
       "moto-boho",
@@ -1422,6 +1571,118 @@
       "https://www.lofficielusa.com/fashion/moto-boho-trend-2025-tiktok"
     ],
     "approvedAt": 1784078949986
+  },
+  {
+    "kind": "figure",
+    "name": "naomi osaka",
+    "aliases": [],
+    "note": "harajuku playfulness meets technical sport — lv's first athlete ambassador",
+    "interpretations": [
+      {
+        "id": "naomi osaka/courtside",
+        "label": "harajuku courtside",
+        "type": "era",
+        "summary": "comme des garcons collabs, a wimbledon kimono, y2k nostalgia over technical sportswear",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "pink",
+          "white",
+          "green"
+        ],
+        "moods": [
+          "playful",
+          "layered"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5e6e19bd-d7eb-408a-a7c1-aaff34970434",
+    "sourceUrls": [
+      "https://wwd.com/fashion-news/fashion-scoops/naomi-osaka-fashion-beauty-deals-nike-louis-vuitton-1234694567/",
+      "https://www.russh.com/naomi-osaka-style/"
+    ],
+    "approvedAt": 1784177292373
+  },
+  {
+    "kind": "aesthetic",
+    "name": "new romantics",
+    "aliases": [
+      "blitz kids"
+    ],
+    "note": "the blitz club's flamboyant answer to punk — history worn as costume",
+    "interpretations": [
+      {
+        "id": "new romantics/blitz",
+        "label": "the Blitz kids",
+        "type": "aesthetic",
+        "summary": "frilly poet shirts, brocade and sashes, theatrical makeup on every gender — pirates and rococo dandies on a tuesday night",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "ivory",
+          "crimson"
+        ],
+        "moods": [
+          "theatrical",
+          "androgynous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-9f845124-cea2-4a6e-8a1d-ae6898c2dd90",
+    "sourceUrls": [
+      "https://designmuseum.org/exhibitions/blitz-the-club-that-shaped-the-80s",
+      "https://fashion-era.com/fashion-history/1980s/new-romantic-fashion"
+    ],
+    "approvedAt": 1784177295005
+  },
+  {
+    "kind": "aesthetic",
+    "name": "northern soul",
+    "aliases": [
+      "wigan casino"
+    ],
+    "note": "clothes built for the all-nighter — wide baggies that catch air mid-spin",
+    "interpretations": [
+      {
+        "id": "northern soul/allnighter",
+        "label": "the all-nighter",
+        "type": "aesthetic",
+        "summary": "high-waisted 40-inch baggies, sports vests, keep-the-faith badges — a uniform engineered for spins, kicks and eight hours of soul",
+        "tags": [
+          "utilitarian",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "navy",
+          "red"
+        ],
+        "moods": [
+          "kinetic",
+          "devoted"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-7d7e0ba9-d9a8-4173-9dcd-aaffd59d4212",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/25076/1/how-northern-soul-sparked-a-fashion-revolution",
+      "https://www.anothermag.com/fashion-beauty/7565/vintage-style-northern-soul"
+    ],
+    "approvedAt": 1784177295577
   },
   {
     "kind": "figure",
@@ -1594,6 +1855,42 @@
     "approvedAt": 1784176300498
   },
   {
+    "kind": "figure",
+    "name": "rick owens",
+    "aliases": [],
+    "note": "fashion's dark lord in his own glunge — black-grey monotones and drape",
+    "interpretations": [
+      {
+        "id": "rick owens/glunge",
+        "label": "glunge lord",
+        "type": "era",
+        "summary": "black and grey monotones, elongated drape, white sneakers — glam-grunge renunciation worn daily",
+        "tags": [
+          "avant-garde",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "grey",
+          "white"
+        ],
+        "moods": [
+          "monastic",
+          "dystopian"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-f74b1694-6a03-40bb-b5d2-3b3a7e89f5f5",
+    "sourceUrls": [
+      "https://www.polimoda.com/rick-owens-aesthetic-vocabulary-fashion-philosophy/",
+      "https://culted.com/rick-owens-designer-avant-garde-dark-lord-halloween-fashion/"
+    ],
+    "approvedAt": 1784177294095
+  },
+  {
     "kind": "aesthetic",
     "name": "rockstar girlfriend",
     "aliases": [
@@ -1692,6 +1989,42 @@
     "approvedAt": 1784098505401
   },
   {
+    "kind": "figure",
+    "name": "russell westbrook",
+    "aliases": [],
+    "note": "the boldest dresser the league produced — fashion as a psychological weapon",
+    "interpretations": [
+      {
+        "id": "russell westbrook/tunnel",
+        "label": "tunnel provocateur",
+        "type": "era",
+        "summary": "lensless frames, loud prints, kilts and risks — the walk that made the tunnel a stage",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "red",
+          "white",
+          "black"
+        ],
+        "moods": [
+          "fearless",
+          "confrontational"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5413837a-9084-482a-8460-aa6972c4b1e8",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/people/russell-westbrook/",
+      "https://www.theglobeandmail.com/life/style/article-nba-sports-fashion-tunnel-style/"
+    ],
+    "approvedAt": 1784177292655
+  },
+  {
     "kind": "film",
     "name": "saltburn",
     "aliases": [
@@ -1750,6 +2083,99 @@
     "approvedAt": 1784078952278
   },
   {
+    "kind": "aesthetic",
+    "name": "sapeurs",
+    "aliases": [
+      "la sape",
+      "sapeur"
+    ],
+    "note": "the society of ambiance makers and elegant people — elegance as dignity",
+    "interpretations": [
+      {
+        "id": "sapeurs/la-sape",
+        "label": "la sape",
+        "type": "aesthetic",
+        "summary": "impeccable tailoring in saturated color, the danse des griffes — brazzaville and kinshasa's century-old elegance-as-resistance",
+        "tags": [
+          "tailored",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "fuchsia",
+          "emerald",
+          "scarlet"
+        ],
+        "moods": [
+          "dignified",
+          "joyous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-e7d68684-47e0-4c0f-b2a7-9a4201118a80",
+    "sourceUrls": [
+      "https://www.lensculture.com/articles/tariq-zaidi-the-sapeurs-of-brazzaville",
+      "https://www.voguescandinavia.com/articles/the-incredible-fashion-of-the-ladies-and-gentlemen-of-the-congo"
+    ],
+    "approvedAt": 1784177295288
+  },
+  {
+    "kind": "figure",
+    "name": "serena williams",
+    "aliases": [],
+    "note": "court couture that rewrote the rulebook — literally",
+    "interpretations": [
+      {
+        "id": "serena williams/catsuit",
+        "label": "the catsuit",
+        "type": "era",
+        "summary": "the 2002 and 2018 compression catsuits — function as statement; the ban forced the WTA to modernize",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "powerful",
+          "defiant"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "serena williams/queen",
+        "label": "the Queen collection",
+        "type": "era",
+        "summary": "virgil abloh's one-sleeve tulle tutu with silver sneakers and fishnets — ballet armor for match point",
+        "tags": [
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "grey",
+          "silver"
+        ],
+        "moods": [
+          "regal",
+          "graceful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-e32cc932-6ecc-4948-8992-a7ddd6688200",
+    "sourceUrls": [
+      "https://time.com/5380389/serena-williams-tutu/",
+      "https://tennisgrandstand.com/2026/06/17/serena-williams-most-controversial-and-iconic-on-court-outfits-and-why-were-some-of-them-banned/"
+    ],
+    "approvedAt": 1784177291473
+  },
+  {
     "kind": "tv",
     "name": "sex and the city",
     "aliases": [
@@ -1787,6 +2213,44 @@
       "https://www.nssgclub.com/en/fashion/27277/patricia-field-stylist-carrie-bradshaw-emily-in-paris"
     ],
     "approvedAt": 1784087395739
+  },
+  {
+    "kind": "figure",
+    "name": "shai gilgeous-alexander",
+    "aliases": [
+      "sga"
+    ],
+    "note": "the reigning king of nba tunnel style — gq's most stylish, thom browne runway",
+    "interpretations": [
+      {
+        "id": "shai gilgeous-alexander/tunnel",
+        "label": "tunnel king",
+        "type": "era",
+        "summary": "boxy cropped tops, baggy denim, studied silhouette play — the arena walk as a runway he owns",
+        "tags": [
+          "streetwear",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "denim",
+          "cream",
+          "black"
+        ],
+        "moods": [
+          "playful",
+          "assured"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-2df2a1ed-5175-4e49-aab1-6a15aa333a75",
+    "sourceUrls": [
+      "https://www.espn.com/nba/story/_/id/45507106/inside-fashion-closets-2025-nba-finals-superstars-shai-gilgeous-alexander-tyrese-haliburton",
+      "https://www.theglobeandmail.com/life/style/article-shai-gilgeous-alexander-nba-conquering-fashion-world-runway-menswear/"
+    ],
+    "approvedAt": 1784177291784
   },
   {
     "kind": "figure",
@@ -1900,6 +2364,44 @@
       "https://www.openculture.com/2023/03/david-byrne-explains-how-the-big-suit-he-wore-in-stop-making-sense-was-inspired-by-japanese-kabuki-theatre"
     ],
     "approvedAt": 1784087397418
+  },
+  {
+    "kind": "aesthetic",
+    "name": "teddy boys",
+    "aliases": [
+      "teds"
+    ],
+    "note": "britain's first youth subculture — edwardian drape on working-class wages",
+    "interpretations": [
+      {
+        "id": "teddy boys/teds",
+        "label": "the teds",
+        "type": "aesthetic",
+        "summary": "velvet-collared drape jackets in burgundy and emerald, brocade waistcoats, slim jim ties, drainpipes, pompadours — two weeks' wages on one suit",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "burgundy",
+          "emerald",
+          "black"
+        ],
+        "moods": [
+          "swaggering",
+          "nostalgic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-5d773e17-fe46-418f-bdd6-f6879184e0fb",
+    "sourceUrls": [
+      "https://jacobin.com/2026/03/teddy-boys-fashion-rock-postwar-britain",
+      "https://www.thevintagenews.com/2015/12/31/the-dandies-of-the-1950s/"
+    ],
+    "approvedAt": 1784177294719
   },
   {
     "kind": "aesthetic",
@@ -2186,5 +2688,79 @@
       "https://aesthetics.fandom.com/wiki/Trad_Goth"
     ],
     "approvedAt": 1784078951962
+  },
+  {
+    "kind": "figure",
+    "name": "vivienne westwood",
+    "aliases": [
+      "westwood"
+    ],
+    "note": "punk's grande dame — tartan, corsets and orange hair in service of a cause",
+    "interpretations": [
+      {
+        "id": "vivienne westwood/dame",
+        "label": "punk grande dame",
+        "type": "era",
+        "summary": "tartan and corsetry worn by their inventor, flame-orange crop, slogans as accessories — rebellion institutionalized on her own terms",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "tartan red",
+          "orange",
+          "gold"
+        ],
+        "moods": [
+          "defiant",
+          "grand"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-aeef14ab-b7d7-48b9-b553-be289eb6ae4b",
+    "sourceUrls": [
+      "https://www.vam.ac.uk/articles/vivienne-westwood-punk-new-romantic-and-beyond",
+      "https://www.metmuseum.org/essays/vivienne-westwood-born-1941-and-the-postmodern-legacy-of-punk-style"
+    ],
+    "approvedAt": 1784177293501
+  },
+  {
+    "kind": "figure",
+    "name": "yohji yamamoto",
+    "aliases": [
+      "yohji"
+    ],
+    "note": "the poet of black — five identical black everythings, worn like a vow",
+    "interpretations": [
+      {
+        "id": "yohji yamamoto/black",
+        "label": "the poet of black",
+        "type": "era",
+        "summary": "the same black tee, trouser and jacket every day under a slouch hat — black as modest and arrogant at once",
+        "tags": [
+          "avant-garde",
+          "minimal",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "contemplative",
+          "unhurried"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day22-pr-review",
+    "factId": "fact-a8bb8b27-b69d-4fc3-8abc-5f5fac3f3132",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Yohji_Yamamoto",
+      "https://www.yokogaomag.com/editorial/who-is-yohji-yamamoto-japanese-fashion-designer"
+    ],
+    "approvedAt": 1784177293223
   }
 ]
