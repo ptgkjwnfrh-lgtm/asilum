@@ -113,6 +113,44 @@
     "approvedAt": 1784178662588
   },
   {
+    "kind": "figure",
+    "name": "alexander mcqueen",
+    "aliases": [
+      "mcqueen",
+      "savage beauty"
+    ],
+    "note": "romantic darkness cut with savile row precision",
+    "interpretations": [
+      {
+        "id": "alexander mcqueen/savage-beauty",
+        "label": "savage beauty",
+        "type": "formula",
+        "summary": "romantic darkness cut with savile row precision — bumsters, victorian gothic, life-and-death dualities engineered into tailoring",
+        "tags": [
+          "avant-garde",
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "romantic",
+          "dark"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-4f0a9ed8-f777-42b6-b5d8-1c3012dbcc2c",
+    "sourceUrls": [
+      "https://www.cnn.com/style/article/alexander-mcqueen-savage-beauty/index.html",
+      "https://www.studiointernational.com/the-dark-side-of-love--alexander-mcqueen-savage-beauty"
+    ],
+    "approvedAt": 1784260234888
+  },
+  {
     "kind": "film",
     "name": "almost famous",
     "aliases": [
@@ -1436,6 +1474,41 @@
     "approvedAt": 1784177292088
   },
   {
+    "kind": "figure",
+    "name": "demna",
+    "aliases": [
+      "demna gvasalia"
+    ],
+    "note": "ironic couture with a post-soviet edge — both readings valid",
+    "interpretations": [
+      {
+        "id": "demna/ironic-couture",
+        "label": "ironic couture",
+        "type": "formula",
+        "summary": "oversized dystopian tailoring with a post-soviet edge — luxury hoodies worn straight or as the joke, and both readings valid",
+        "tags": [
+          "avant-garde",
+          "streetwear",
+          "statement",
+          "utilitarian"
+        ],
+        "colors": [],
+        "moods": [
+          "deadpan",
+          "dystopian"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-d6a5b4fb-97f3-43a4-811c-7d9d888fb228",
+    "sourceUrls": [
+      "https://culted.com/dissecting-demna/",
+      "https://www.istitutomarangoni.com/en/maze35/fashion/demnas-rise-revealed-from-balenciaga-rejection-to-gucci-creative-director"
+    ],
+    "approvedAt": 1784260242508
+  },
+  {
     "kind": "music",
     "name": "dev hynes",
     "aliases": [
@@ -1661,6 +1734,41 @@
       "https://www.wideopencountry.com/dolly-parton-fashion/"
     ],
     "approvedAt": 1784087398054
+  },
+  {
+    "kind": "figure",
+    "name": "dries van noten",
+    "aliases": [
+      "dries"
+    ],
+    "note": "print-mashing and color clash — the antwerp six's romantic",
+    "interpretations": [
+      {
+        "id": "dries van noten/print-clash",
+        "label": "the print clash",
+        "type": "formula",
+        "summary": "embroidered and brocaded layers, prints mashed and colors clashed — craft traditions translated into wearable collections, the antwerp romantic",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "lush",
+          "worldly"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-a3aa8dbb-96e4-4182-89b0-89cf4af8ceb2",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Dries_van_Noten",
+      "https://theface.com/style/antwerp-six-exhibition-dries-van-noten-ann-demeulemeester"
+    ],
+    "approvedAt": 1784260246870
   },
   {
     "kind": "figure",
@@ -2551,6 +2659,42 @@
   },
   {
     "kind": "figure",
+    "name": "hedi slimane",
+    "aliases": [
+      "slimane"
+    ],
+    "note": "the skinny silhouette — rock and roll tailoring so narrow it changed menswear",
+    "interpretations": [
+      {
+        "id": "hedi slimane/skinny-silhouette",
+        "label": "the silhouette slimane",
+        "type": "formula",
+        "summary": "rock-and-roll tailoring — glam references, indie boys in black tie, a line so narrow it redrew menswear for a decade",
+        "tags": [
+          "tailored",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "electric",
+          "lean"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-e39279cf-00bc-465f-99f8-f808dddc88f1",
+    "sourceUrls": [
+      "https://www.britannica.com/biography/Slimane-Hedi",
+      "https://pleasekillme.com/hedi-slimane/"
+    ],
+    "approvedAt": 1784260241402
+  },
+  {
+    "kind": "figure",
     "name": "ib kamara",
     "aliases": [
       "ibrahim kamara"
@@ -2687,6 +2831,42 @@
       "https://www.dazeddigital.com/fashion/article/17903/1/the-da-zed-guide-to-isabella-blow"
     ],
     "approvedAt": 1784179354028
+  },
+  {
+    "kind": "figure",
+    "name": "issey miyake",
+    "aliases": [
+      "miyake",
+      "pleats please"
+    ],
+    "note": "a piece of cloth — technology as textile poetry",
+    "interpretations": [
+      {
+        "id": "issey miyake/piece-of-cloth",
+        "label": "a piece of cloth",
+        "type": "formula",
+        "summary": "heat-set pleats that move with the body — technology as textile poetry, the garment born whole from one piece of cloth",
+        "tags": [
+          "avant-garde",
+          "minimal",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "weightless",
+          "inventive"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-f30304bc-8541-43bd-874c-a6e19061c3de",
+    "sourceUrls": [
+      "https://www.ebsco.com/research-starters/history/issey-miyake",
+      "https://danslegris.com/blogs/journal/issey-miyake"
+    ],
+    "approvedAt": 1784260247958
   },
   {
     "kind": "figure",
@@ -2971,6 +3151,41 @@
       "https://www.thevoiceoffashion.com/intersections/columns/jimi-hendrix-dressing-to-be-uncommon-4011"
     ],
     "approvedAt": 1784178613129
+  },
+  {
+    "kind": "figure",
+    "name": "john galliano",
+    "aliases": [
+      "galliano"
+    ],
+    "note": "the bias-cut romantic — theatrical couture staged as legend",
+    "interpretations": [
+      {
+        "id": "john galliano/bias-cut-romantic",
+        "label": "the bias-cut romantic",
+        "type": "formula",
+        "summary": "newsprint dresses and lingerie made fashion — bias-cut sensuality with theatrical couture staged as legend, history reinterpreted at full volume",
+        "tags": [
+          "seductive",
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "theatrical",
+          "decadent"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-0b59d7b5-ada9-4e1b-b494-6ce33da60c0f",
+    "sourceUrls": [
+      "https://www.sothebys.com/en/articles/designer-in-focus-dissecting-the-genius-of-john-galliano",
+      "https://www.photobookmagazine.com/features/beyond-the-bias-cut-john-gallianos-sensual-revolution"
+    ],
+    "approvedAt": 1784260235960
   },
   {
     "kind": "figure",
@@ -3818,6 +4033,44 @@
   },
   {
     "kind": "figure",
+    "name": "martin margiela",
+    "aliases": [
+      "margiela",
+      "tabi"
+    ],
+    "note": "deconstruction as philosophy — the designer erased so the idea leads",
+    "interpretations": [
+      {
+        "id": "martin margiela/deconstruction",
+        "label": "the invisible hand of deconstruction",
+        "type": "formula",
+        "summary": "exposed seams, whited tabi boots, four white stitches — deconstruction as philosophy, the designer erased so the idea leads",
+        "tags": [
+          "avant-garde",
+          "independent",
+          "minimal",
+          "utilitarian"
+        ],
+        "colors": [
+          "white"
+        ],
+        "moods": [
+          "conceptual",
+          "quiet"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-8a6969fb-cca6-43ee-923e-9d8b28866575",
+    "sourceUrls": [
+      "https://www.nssmag.com/en/fashion/40710/margiela-deconstruction-tabi-legacy",
+      "https://fashionlawjournal.com/the-allure-of-the-unknown-maison-margielas-revolutionary-use-of-anonymity-in-luxury-fashion/"
+    ],
+    "approvedAt": 1784260237048
+  },
+  {
+    "kind": "figure",
     "name": "matthew henson",
     "aliases": [],
     "note": "the wardrobe, not the costume — luxury worn casual, built for a person not a mold",
@@ -4184,6 +4437,43 @@
     "approvedAt": 1784258276362
   },
   {
+    "kind": "figure",
+    "name": "miuccia prada",
+    "aliases": [
+      "mrs prada"
+    ],
+    "note": "ugly chic — industrial nylon as luxury, ideas priced above materials",
+    "interpretations": [
+      {
+        "id": "miuccia prada/ugly-chic",
+        "label": "ugly chic",
+        "type": "formula",
+        "summary": "industrial nylon as luxury, clashing prints and deliberate wrongness — ideas priced above materials, taste that requires explanation",
+        "tags": [
+          "avant-garde",
+          "minimal",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "intellectual",
+          "subversive"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-0ca9e679-6f84-4510-a812-d5e3dfc2b41e",
+    "sourceUrls": [
+      "https://www.pradagroup.com/en/perspectives/stories/sezione-know-how/prada-nylon.html",
+      "https://sociallifemagazine.com/the-archive/prada-history/"
+    ],
+    "approvedAt": 1784260244693
+  },
+  {
     "kind": "aesthetic",
     "name": "mods",
     "aliases": [
@@ -4546,6 +4836,45 @@
     "approvedAt": 1784080233744
   },
   {
+    "kind": "figure",
+    "name": "phoebe philo",
+    "aliases": [
+      "philo",
+      "old celine"
+    ],
+    "note": "feminist minimalism — clothes for the woman, not the fantasy",
+    "interpretations": [
+      {
+        "id": "phoebe philo/feminist-minimalism",
+        "label": "feminist minimalism",
+        "type": "formula",
+        "summary": "oversized camel coats, wide trousers, pockets and practicality made luxury — clothes for the woman, not the fantasy; the wardrobe adults treasure",
+        "tags": [
+          "minimal",
+          "tailored",
+          "independent"
+        ],
+        "colors": [
+          "camel",
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "calm",
+          "assured"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-8d144a26-a453-4fa1-bc33-831c097e56c5",
+    "sourceUrls": [
+      "https://www.fmmefmmefmme.com/community/the-phoebe-philo-effect-feminist-minimalism-and-its-continued-influence-on-fashion",
+      "https://luxurylondon.co.uk/style/hers/phoebe-philo-fashion-designer-celine/"
+    ],
+    "approvedAt": 1784260239227
+  },
+  {
     "kind": "film",
     "name": "pulp fiction",
     "aliases": [],
@@ -4618,6 +4947,81 @@
       "https://fashion-era.com/1970s/punk-fashion-history"
     ],
     "approvedAt": 1784177955436
+  },
+  {
+    "kind": "figure",
+    "name": "raf simons",
+    "aliases": [
+      "raf"
+    ],
+    "note": "teenage rebellion in classical cloth — subculture worn as uniform",
+    "interpretations": [
+      {
+        "id": "raf simons/youth-in-tailoring",
+        "label": "youth in tailoring",
+        "type": "formula",
+        "summary": "teenage rebellion in classical cloth — slim black tailoring cut young, subculture and new wave worn as uniform, pride in individuality",
+        "tags": [
+          "tailored",
+          "independent",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "black",
+          "grey"
+        ],
+        "moods": [
+          "restless",
+          "precise"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-34362091-54c3-4821-9fd6-3b657872cf76",
+    "sourceUrls": [
+      "https://1granary.com/miscellaneous/a-deep-dive-into-the-history-of-raf-simons-before-his-lfw-debut/",
+      "https://www.complex.com/style/a/gregory-babcock/raf-simons-guide"
+    ],
+    "approvedAt": 1784260240299
+  },
+  {
+    "kind": "figure",
+    "name": "rei kawakubo",
+    "aliases": [
+      "comme des garcons",
+      "cdg"
+    ],
+    "note": "anti-fashion — black as resistance, imperfection made the point",
+    "interpretations": [
+      {
+        "id": "rei kawakubo/anti-fashion",
+        "label": "anti-fashion",
+        "type": "formula",
+        "summary": "black as resistance, lumps and bumps where the body should be — emptiness and imperfection made the point, beauty interrogated not served",
+        "tags": [
+          "avant-garde",
+          "independent",
+          "statement"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "defiant",
+          "austere"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-2eba15b1-afd5-4e61-a4f5-594b13682942",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Rei_Kawakubo",
+      "https://www.istitutomarangoni.com/en/maze35/game-changers/rei-kawakubo-queen-of-the-in-between-kingdom"
+    ],
+    "approvedAt": 1784260245787
   },
   {
     "kind": "figure",
@@ -5979,6 +6383,42 @@
     "approvedAt": 1784179338214
   },
   {
+    "kind": "figure",
+    "name": "tom ford",
+    "aliases": [],
+    "note": "sexed-up glamour that revived a house — velvet, satin, car-finish shine",
+    "interpretations": [
+      {
+        "id": "tom ford/gucci-glamour",
+        "label": "the sexual revolution",
+        "type": "formula",
+        "summary": "velvet hipsters, unbuttoned satin, helmut-newton androgyny polished to a car-finish shine — glamour weaponized to revive a house",
+        "tags": [
+          "seductive",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "red",
+          "white"
+        ],
+        "moods": [
+          "confident",
+          "nocturnal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-2df885d1-714a-4763-8dc2-743552066c61",
+    "sourceUrls": [
+      "https://www.anothermag.com/fashion-beauty/8296/tom-fords-sexual-revolution-at-gucci-aw96",
+      "https://www.showstudio.com/news/how-tom-ford-revolutionised-fashion"
+    ],
+    "approvedAt": 1784260238104
+  },
+  {
     "kind": "aesthetic",
     "name": "trad goth",
     "aliases": [
@@ -6128,6 +6568,40 @@
       "https://en.wikipedia.org/wiki/1960s_in_fashion"
     ],
     "approvedAt": 1784178616044
+  },
+  {
+    "kind": "figure",
+    "name": "virgil abloh",
+    "aliases": [
+      "virgil"
+    ],
+    "note": "the three percent — streetwear remixed into luxury, design as open source",
+    "interpretations": [
+      {
+        "id": "virgil abloh/three-percent",
+        "label": "the three percent",
+        "type": "formula",
+        "summary": "streetwear remixed into luxury by shifting just enough — quotation marks honest about the source, design treated as open source",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "optimistic",
+          "knowing"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-0e77fdbd-b10f-455b-9ab1-0ab99f385e78",
+    "sourceUrls": [
+      "https://www.britannica.com/biography/Virgil-Abloh",
+      "https://www.istitutomarangoni.com/en/maze35/game-changers/virgil-abloh-3-percent-rule-fashion"
+    ],
+    "approvedAt": 1784260243620
   },
   {
     "kind": "aesthetic",
