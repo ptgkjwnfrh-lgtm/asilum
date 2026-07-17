@@ -114,6 +114,38 @@
   },
   {
     "kind": "figure",
+    "name": "alek wek",
+    "aliases": [],
+    "note": "beauty redefined — elle 1997, the cover that widened the standard",
+    "interpretations": [
+      {
+        "id": "alek wek/beauty-redefined",
+        "label": "beauty redefined",
+        "type": "era",
+        "summary": "shaved head, deep dark skin, elle 1997 — the cover that widened the standard; radiance carried without apology",
+        "tags": [
+          "minimal",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "radiant",
+          "unapologetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-dfe6ddde-d805-46e1-9e79-8d7d9c8098a1",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Alek_Wek",
+      "https://face2faceafrica.com/article/alek-wek-beauty-redefined"
+    ],
+    "approvedAt": 1784263042100
+  },
+  {
+    "kind": "figure",
     "name": "alexander mcqueen",
     "aliases": [
       "mcqueen",
@@ -517,6 +549,38 @@
       "https://www.today.com/style/celeb-style/what-is-barbiecore-trend-rcna36927"
     ],
     "approvedAt": 1784078951639
+  },
+  {
+    "kind": "figure",
+    "name": "beverly johnson",
+    "aliases": [],
+    "note": "the american cover — august 1974, the cover that moved an industry",
+    "interpretations": [
+      {
+        "id": "beverly johnson/american-cover",
+        "label": "the american cover",
+        "type": "era",
+        "summary": "august 1974, american vogue — the cover that moved an industry within a year; polished ease that made exclusion look absurd",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "assured",
+          "historic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-3edbc913-7f88-494a-972a-88f02964e28d",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Beverly_Johnson",
+      "https://artsandculture.google.com/story/beverly-johnson-in-vogue-conde-nast-archive/PgWRXUQYqGBLKA?hl=en"
+    ],
+    "approvedAt": 1784263041013
   },
   {
     "kind": "figure",
@@ -1131,6 +1195,111 @@
       "https://www.nssgclub.com/en/fashion/43269/chloe-sevigny-it-girl-today-career-who-is-she"
     ],
     "approvedAt": 1784080234427
+  },
+  {
+    "kind": "figure",
+    "name": "christy turlington",
+    "aliases": [
+      "turlington"
+    ],
+    "note": "eternity — clean line, beauty carried like it costs nothing",
+    "interpretations": [
+      {
+        "id": "christy turlington/eternity",
+        "label": "eternity",
+        "type": "era",
+        "summary": "the face of the 20th century — calvin klein serenity, clean line, glamour carried like it costs nothing at all",
+        "tags": [
+          "minimal",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "serene",
+          "timeless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-123ae7c0-0922-48a9-bdd4-c8e6e1cdf453",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Christy_Turlington",
+      "https://coveteur.com/christy-turlington-calvin-klein-eternity"
+    ],
+    "approvedAt": 1784263033272
+  },
+  {
+    "kind": "figure",
+    "name": "cindy crawford",
+    "aliases": [
+      "crawford"
+    ],
+    "note": "all-american off-duty — the pepsi-ad uniform that made off-duty a genre",
+    "interpretations": [
+      {
+        "id": "cindy crawford/all-american",
+        "label": "all-american off-duty",
+        "type": "era",
+        "summary": "high-waisted denim, white tank, tailored blazer — the pepsi-ad uniform that turned off-duty into a genre of its own",
+        "tags": [
+          "minimal",
+          "utilitarian",
+          "statement"
+        ],
+        "colors": [
+          "blue",
+          "white"
+        ],
+        "moods": [
+          "easy",
+          "magnetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-7bd81b63-dcc4-4a32-aa9c-b7e81f12668e",
+    "sourceUrls": [
+      "https://www.whowhatwear.com/cindy-crawford-style",
+      "https://www.thezoereport.com/culture/cindy-crawford-jeans"
+    ],
+    "approvedAt": 1784263034373
+  },
+  {
+    "kind": "figure",
+    "name": "claudia schiffer",
+    "aliases": [
+      "schiffer"
+    ],
+    "note": "the chanel bride — bardot hair and couture stillness",
+    "interpretations": [
+      {
+        "id": "claudia schiffer/chanel-bride",
+        "label": "the chanel bride",
+        "type": "era",
+        "summary": "bardot hair and couture stillness — lagerfeld's recurring bride, a thousand covers of composed golden glamour",
+        "tags": [
+          "seductive",
+          "tailored",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "poised",
+          "golden"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-5e2344c4-8af4-4770-be42-d01bb1677520",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Claudia_Schiffer",
+      "https://www.lofficielusa.com/fashion/young-claudia-schiffer-90s-supermodel-karl-lagerfeld"
+    ],
+    "approvedAt": 1784263035472
   },
   {
     "kind": "aesthetic",
@@ -1766,6 +1935,40 @@
       "https://www.wideopencountry.com/dolly-parton-fashion/"
     ],
     "approvedAt": 1784087398054
+  },
+  {
+    "kind": "figure",
+    "name": "donyale luna",
+    "aliases": [
+      "luna"
+    ],
+    "note": "the first cover — british vogue 1966, statuesque surrealism",
+    "interpretations": [
+      {
+        "id": "donyale luna/first-cover",
+        "label": "the first cover",
+        "type": "era",
+        "summary": "british vogue 1966, one lined eye through parted fingers — statuesque surrealism that broke the cover line for black models",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "otherworldly",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-1f438741-ca78-4b4c-ab45-9d94c383c2bd",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Donyale_Luna",
+      "https://www.theroot.com/the-complex-life-of-donyale-luna-the-first-black-super-1850842057"
+    ],
+    "approvedAt": 1784263039897
   },
   {
     "kind": "figure",
@@ -3328,6 +3531,39 @@
     "approvedAt": 1784178615086
   },
   {
+    "kind": "figure",
+    "name": "jerry hall",
+    "aliases": [],
+    "note": "studio 54 texan — honey mane and halston satin",
+    "interpretations": [
+      {
+        "id": "jerry hall/studio-54-texan",
+        "label": "the studio 54 texan",
+        "type": "era",
+        "summary": "honey mane and halston satin — slinky metallics, backless glamour, a texas drawl under the mirror ball",
+        "tags": [
+          "seductive",
+          "statement"
+        ],
+        "colors": [
+          "gold"
+        ],
+        "moods": [
+          "louche",
+          "dazzling"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-6dc112db-9afe-4d21-9f33-98b28d77fc5b",
+    "sourceUrls": [
+      "https://i-d.co/article/jerry-hall-70s-fashion/",
+      "https://www.russh.com/jerry-hall-style/"
+    ],
+    "approvedAt": 1784263037680
+  },
+  {
     "kind": "music",
     "name": "jimi hendrix",
     "aliases": [
@@ -3980,6 +4216,41 @@
       "https://www.popscotch.com/aesthetics/light-academia"
     ],
     "approvedAt": 1784078950663
+  },
+  {
+    "kind": "figure",
+    "name": "linda evangelista",
+    "aliases": [
+      "evangelista",
+      "the linda"
+    ],
+    "note": "the chameleon cut — reinvention as a working method",
+    "interpretations": [
+      {
+        "id": "linda evangelista/chameleon-cut",
+        "label": "the chameleon cut",
+        "type": "era",
+        "summary": "the 1989 crop that cost sixteen shows and won the decade — constant reinvention as a working method, hair as the collection",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "protean",
+          "knowing"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-f34e7a5f-4606-4b76-9ac5-038b47e43c4c",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Linda_Evangelista",
+      "https://www.dazeddigital.com/fashion/article/24690/1/linda-evangelista-the-ultimate-supermodel"
+    ],
+    "approvedAt": 1784263032196
   },
   {
     "kind": "music",
@@ -4800,6 +5071,40 @@
   },
   {
     "kind": "figure",
+    "name": "naomi campbell",
+    "aliases": [
+      "naomi"
+    ],
+    "note": "the walk — dance-schooled runway command, alaia's sculptural muse",
+    "interpretations": [
+      {
+        "id": "naomi campbell/the-walk",
+        "label": "the walk",
+        "type": "era",
+        "summary": "dance-schooled, hip-rolling runway command — alaia's sculptural muse, first black cover of vogue paris; presence that amplifies the garment",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "commanding",
+          "feline"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-d8d68d45-ed21-48db-86e2-3d9115bafb36",
+    "sourceUrls": [
+      "https://www.wmagazine.com/culture/naomi-campbell-va-museum-fashion-photos",
+      "https://i-d.co/article/7-of-naomi-campbells-most-iconic-outfits/"
+    ],
+    "approvedAt": 1784263031111
+  },
+  {
+    "kind": "figure",
     "name": "naomi osaka",
     "aliases": [],
     "note": "harajuku playfulness meets technical sport — lv's first athlete ambassador",
@@ -4981,6 +5286,38 @@
       "https://www.anothermag.com/fashion-beauty/9297/paninari-the-italian-originators-of-fast-food-in-fashion"
     ],
     "approvedAt": 1784216433784
+  },
+  {
+    "kind": "figure",
+    "name": "pat cleveland",
+    "aliases": [],
+    "note": "the runway dance — versailles 1973, fabric in flight",
+    "interpretations": [
+      {
+        "id": "pat cleveland/runway-dance",
+        "label": "the runway dance",
+        "type": "era",
+        "summary": "the josephine baker of the runways — versailles 1973, fabric in flight, walking turned into performance with a door opened behind her",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "euphoric",
+          "weightless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-f43840a5-4f7f-44c6-8a2a-a042d7dc26dc",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Pat_Cleveland",
+      "https://www.anothermag.com/fashion-beauty/15889/an-oral-history-of-the-battle-of-versailles-by-pat-cleveland"
+    ],
+    "approvedAt": 1784263038789
   },
   {
     "kind": "figure",
@@ -6959,6 +7296,71 @@
       "https://en.wikipedia.org/wiki/1960s_in_fashion"
     ],
     "approvedAt": 1784178616044
+  },
+  {
+    "kind": "figure",
+    "name": "tyra banks",
+    "aliases": [
+      "tyra"
+    ],
+    "note": "the smize — commercial supermodel power taught as a craft",
+    "interpretations": [
+      {
+        "id": "tyra banks/the-smize",
+        "label": "the smize",
+        "type": "era",
+        "summary": "first black solo sports illustrated swimsuit cover, victoria's secret angel — commercial supermodel power later taught as a craft",
+        "tags": [
+          "seductive",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "magnetic",
+          "playful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-1ab1b488-1dba-4765-8e25-d63b6bb9bbbc",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Tyra_Banks",
+      "https://swimsuit.si.com/swimnews/tyra-banks-reflects-on-being-the-first-black-woman-on-the-cover-of-the-si-swimsuit-issue-01j9ph534zk8"
+    ],
+    "approvedAt": 1784263043196
+  },
+  {
+    "kind": "figure",
+    "name": "veruschka",
+    "aliases": [],
+    "note": "the painted body — the model as her own canvas",
+    "interpretations": [
+      {
+        "id": "veruschka/painted-body",
+        "label": "the painted body",
+        "type": "era",
+        "summary": "six foot three of body-paint metamorphosis — the blow-up cameo, dali collaborations, the model turned into her own canvas",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "feral",
+          "transcendent"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day26-pr-review",
+    "factId": "fact-6272f84b-72c1-4929-ac4e-f9b88b740acc",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Veruschka",
+      "https://www.net-a-porter.com/en-us/porter/article-d9a20be8638c5ab0/fashion/art-of-style/veruschka"
+    ],
+    "approvedAt": 1784263036572
   },
   {
     "kind": "figure",
