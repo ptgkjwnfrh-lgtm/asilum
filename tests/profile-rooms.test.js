@@ -19,6 +19,7 @@ import {
 
 const ACCOUNT = "0f9d2c4a-1111-4222-8333-abcdefabcdef";
 const OTHER = "1e8c3b5d-4444-4555-9666-fedcbafedcba";
+const HANDLELESS = "2a7b4c6d-7777-4888-9999-aabbccddeeff";
 
 test("flag defaults on; 0 is the kill switch", () => {
   assert.equal(profileRoomsEnabled(), true);
@@ -72,6 +73,9 @@ test("validateAnthem canonicalizes real music entities and refuses the rest", ()
 });
 
 test("room lifecycle: claim, theme, publish, public visibility rules", async () => {
+  await assert.rejects(
+    () => upsertProfileRoom(HANDLELESS, { published: true }),
+    /handle-required/, "an addressless room cannot be published");
   await upsertProfileRoom(ACCOUNT, { handle: validateHandle("test-room") });
   await assert.rejects(
     () => upsertProfileRoom(OTHER, { handle: "test-room" }),
@@ -87,6 +91,8 @@ test("room lifecycle: claim, theme, publish, public visibility rules", async () 
   const pub = await publicRoomView("test-room");
   assert.equal(pub.handle, "test-room");
   assert.equal(pub.theme.id, "after-dark");
+  assert.ok(!pub.modules.some((m) => m.module === "top-pieces" || m.module === "brands"),
+    "derived private activity never becomes public without opt-in");
 
   await setProfileRoomModeration(ACCOUNT, "under_review");
   assert.equal(await publicRoomView("test-room"), null, "under_review rooms are invisible");
@@ -102,11 +108,18 @@ test("modules: stored content roundtrips, hidden modules stay off the public roo
   const own = await ownRoomView(ACCOUNT);
   assert.equal(own.room.modules.length, 4, "owner sees every module, hidden included");
   assert.equal(own.room.modules.find((m) => m.module === "statement").content.text, "archival everything");
+  assert.equal(own.room.modules.find((m) => m.module === "top-pieces").visible, false,
+    "derived activity defaults private");
 
   const pub = await publicRoomView("test-room");
   const ids = pub.modules.map((m) => m.module);
   assert.ok(!ids.includes("brands"), "hidden module absent from the public room");
+  assert.ok(!ids.includes("top-pieces"), "unconfigured derived module stays private");
   assert.equal(pub.modules.find((m) => m.module === "soundtrack").content.entities[0].name, "david bowie");
+
+  await setProfileModule(ACCOUNT, "top-pieces", { visible: true });
+  assert.ok((await publicRoomView("test-room")).modules.some((m) => m.module === "top-pieces"),
+    "the owner can explicitly opt a derived module into the public room");
 
   await assert.rejects(() => setProfileModule(ACCOUNT, "friends", {}), TypeError);
   await assert.rejects(() => setProfileModule(OTHER, "statement", { content: { text: "x" } }),

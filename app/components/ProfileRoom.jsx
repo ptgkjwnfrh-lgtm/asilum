@@ -173,6 +173,7 @@ export function RoomEditor() {
           </div>
 
           <div className="psub" style={{ marginTop: 12 }}>MODULES</div>
+          <div className="roomhint">TOP PIECES and BRANDS stay private until you explicitly turn them on.</div>
           <div className="roomrow roommods">
             {(room?.modules || []).map((m) => (
               <button key={m.module} className={"chip clickable" + (m.visible ? " cur" : "")} disabled={busy}

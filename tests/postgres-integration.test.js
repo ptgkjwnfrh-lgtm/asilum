@@ -56,7 +56,18 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   });
 
   await db.upsertItems([itemA, itemB]);
-  await production.addProductTags(itemB.id, [{ tag: "sharp", tagType: "mood", confidence: 0.9 }]);
+  await production.addProductTags(itemA.id, [
+    { tag: "sharp", tagType: "mood", confidence: 0.1 },
+  ]);
+  await production.addProductTags(itemB.id, [
+    { tag: "sharp", tagType: "mood", confidence: 0.9 },
+    { tag: "sharp", tagType: "material", confidence: 0.9 },
+  ]);
+  const typedTop = await production.productsByTagsTyped(["sharp"], { limit: 1 });
+  assert.deepEqual(Object.keys(typedTop), [itemB.id],
+    "typed tag limit counts products, not product/type rows");
+  assert.deepEqual(Object.keys(typedTop[itemB.id]).sort(), ["material", "mood"],
+    "all score dimensions survive the product cap");
   const candidates = await db.searchItemCandidates("sharp", ["sharp"], 10);
   assert.ok(candidates.some((item) => item.id === itemB.id));
   const save = (item) => db.commitBoardSave({
@@ -150,7 +161,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 18);
+  assert.equal(schema.rows[0].version, 19);
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
   {
@@ -166,6 +177,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
         /case-moved/, "stale expectedStatus must 409, not overwrite");
       const ledger = await production.listBrandCaseEvents(kase.id);
       assert.deepEqual(ledger.map((e) => e.toStatus), ["open", "under_review"]);
+      assert.deepEqual((await production.listBrandCaseEvents(kase.id, 1)).map((e) => e.toStatus),
+        ["under_review"], "a capped ledger returns the latest transition");
     } finally {
       await pool.query("DELETE FROM brand_cases WHERE id=$1", [kase.id]);
       const orphans = await pool.query(
@@ -191,6 +204,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       [accountA, accountB]);
   }
   try {
+    await assert.rejects(() => production.upsertProfileRoom(accountB, { published: true }),
+      /handle-required/, "published rooms require a claimed handle");
     await production.upsertProfileRoom(accountA, { handle: roomHandle, themeId: "after-dark", published: true });
     await assert.rejects(() => production.upsertProfileRoom(accountB, { handle: roomHandle }),
       /handle-taken/, "handles must be unique across accounts");
@@ -231,7 +246,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const memorySecurity = await pool.query(`
     SELECT c.relname,
       c.relrowsecurity AS rls,
-      has_table_privilege('asilum_app', format('public.%I', c.relname), 'SELECT,INSERT,UPDATE,DELETE') AS app_access,
+      has_table_privilege('asilum_app', c.oid, 'SELECT') AS app_select,
+      has_table_privilege('asilum_app', c.oid, 'INSERT') AS app_insert,
+      has_table_privilege('asilum_app', c.oid, 'UPDATE') AS app_update,
+      has_table_privilege('asilum_app', c.oid, 'DELETE') AS app_delete,
       EXISTS (SELECT 1 FROM aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner)))
         WHERE grantee=0 AND privilege_type='SELECT') AS public_read
     FROM pg_class AS c
@@ -243,8 +261,17 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal(memorySecurity.rows.length, 10);
   for (const row of memorySecurity.rows) {
     assert.equal(row.rls, true, `${row.relname} must have RLS enabled`);
-    assert.equal(row.app_access, true, `asilum_app must reach ${row.relname}`);
+    assert.equal(row.app_select, true, `asilum_app must read ${row.relname}`);
     assert.equal(row.public_read, false, `${row.relname} must not be publicly readable`);
+    if (row.relname === "brand_cases") {
+      assert.equal(row.app_insert, true);
+      assert.equal(row.app_update, true);
+      assert.equal(row.app_delete, false, "case records are retained operational evidence");
+    } else if (row.relname === "brand_case_events") {
+      assert.equal(row.app_insert, true);
+      assert.equal(row.app_update, false, "the transition ledger is append-only");
+      assert.equal(row.app_delete, false, "the transition ledger is append-only");
+    }
   }
 
   await production.setFollow(from, "brand", "Integration Brand", true);

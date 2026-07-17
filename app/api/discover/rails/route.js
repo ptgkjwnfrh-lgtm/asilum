@@ -30,7 +30,8 @@ export async function GET(req) {
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const result = await discoverRails(user);
-  return NextResponse.json(result);
+  return NextResponse.json(result,
+    { headers: { "Cache-Control": "private, no-store, max-age=0" } });
 }
 
 export async function POST(req) {

@@ -36,6 +36,14 @@ function authed(req) {
   return { ok: true };
 }
 
+// Audit attribution is server configuration, never caller-controlled JSON.
+// ADMIN_TOKEN authenticates the operator surface; ADMIN_ACTOR names that
+// operator in durable review/case ledgers.
+function adminActor() {
+  const actor = String(process.env.ADMIN_ACTOR || "admin").trim();
+  return actor ? actor.slice(0, 80) : "admin";
+}
+
 export async function GET(req) {
   const gate = authed(req);
   if (!gate.ok) return NextResponse.json({ error: gate.error }, { status: gate.status });
@@ -175,7 +183,7 @@ export async function POST(req) {
       }
       case "asterisk.fact.review": {
         const { reviewFact } = await import("../../../lib/asterisk/facts.js");
-        const r = await reviewFact(body.id, body.status, body.reviewer || null);
+        const r = await reviewFact(body.id, body.status, adminActor());
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
       case "asterisk.facts": {
@@ -206,7 +214,7 @@ export async function POST(req) {
       }
       case "asterisk.research.review": {
         const { reviewResearch } = await import("../../../lib/asterisk/research.js");
-        const r = await reviewResearch(body.id, body.status, body.reviewer || null);
+        const r = await reviewResearch(body.id, body.status, adminActor());
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
       case "asterisk.research.approved": {
@@ -227,17 +235,17 @@ export async function POST(req) {
       }
       case "asterisk.unknown.promote": {
         const { promoteUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
-        const r = await promoteUnknownQuery(body.id, body.reviewer || null);
+        const r = await promoteUnknownQuery(body.id, adminActor());
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
       case "asterisk.unknown.resolve": {
         const { resolveUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
-        const r = await resolveUnknownQuery(body.id, body.reviewer || null, body.researchFactId || null);
+        const r = await resolveUnknownQuery(body.id, adminActor(), body.researchFactId || null);
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
       case "asterisk.unknown.dismiss": {
         const { dismissUnknownQuery } = await import("../../../lib/asterisk/unknownQueries.js");
-        const r = await dismissUnknownQuery(body.id, body.reviewer || null);
+        const r = await dismissUnknownQuery(body.id, adminActor());
         return NextResponse.json(r, { status: r.ok ? 200 : 400 });
       }
       case "asterisk.research.draft": {
@@ -249,7 +257,7 @@ export async function POST(req) {
         const { insertBrandCase } = await import("../../../lib/db/production.js");
         let opened;
         try {
-          opened = validateOpenCase({ ...body, openedBy: body.openedBy || "admin" });
+          opened = validateOpenCase({ ...body, openedBy: adminActor() });
         } catch (error) {
           return NextResponse.json({ error: error.message }, { status: 400 });
         }
@@ -262,7 +270,7 @@ export async function POST(req) {
         if (!kase) return NextResponse.json({ error: "case not found" }, { status: 404 });
         let t;
         try {
-          t = validateTransition(kase, { to: body.to, actor: body.actor || "admin",
+          t = validateTransition(kase, { to: body.to, actor: adminActor(),
             evidence: body.evidence, resolution: body.resolution });
           if (body.note !== undefined) t.note = String(body.note).slice(0, 500);
         } catch (error) {
@@ -324,7 +332,7 @@ export async function POST(req) {
         const { resolveModerationTask } = await import("../../../lib/db/production.js");
         const r = await resolveModerationTask(body.id, {
           status: body.status || "resolved", resolution: body.resolution || null,
-          resolvedBy: body.resolvedBy || "admin" });
+          resolvedBy: adminActor() });
         return r ? NextResponse.json({ task: r })
                  : NextResponse.json({ error: "task not found or bad status" }, { status: 400 });
       }
