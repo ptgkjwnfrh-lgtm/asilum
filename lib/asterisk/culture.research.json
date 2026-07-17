@@ -789,6 +789,44 @@
     "approvedAt": 1784178612479
   },
   {
+    "kind": "figure",
+    "name": "bob mackie",
+    "aliases": [
+      "mackie",
+      "sultan of sequins"
+    ],
+    "note": "the nude illusion — beaded sheer glamour built for stage lights",
+    "interpretations": [
+      {
+        "id": "bob mackie/nude-illusion",
+        "label": "the nude illusion",
+        "type": "formula",
+        "summary": "beaded sheer glamour built for the stage lights — the mohawk oscar gown, the time-cover dress; the body itself becomes the garment",
+        "tags": [
+          "seductive",
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [
+          "gold",
+          "silver"
+        ],
+        "moods": [
+          "dazzling",
+          "fearless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-259d3b6a-579f-49b6-875c-b322a3f1108b",
+    "sourceUrls": [
+      "https://www.britannica.com/biography/Bob-Mackie",
+      "https://www.marieclaire.co.uk/fashion/bob-mackie-best-looks-of-all-time"
+    ],
+    "approvedAt": 1784318120032
+  },
+  {
     "kind": "film",
     "name": "bonnie and clyde",
     "aliases": [],
@@ -1024,6 +1062,38 @@
       "https://www.thegentlemansjournal.com/article/style-icon-cary-grant/"
     ],
     "approvedAt": 1784257150566
+  },
+  {
+    "kind": "figure",
+    "name": "catherine martin",
+    "aliases": [],
+    "note": "the luhrmann spectacle — maximalism engineered to the last bead",
+    "interpretations": [
+      {
+        "id": "catherine martin/luhrmann-spectacle",
+        "label": "the luhrmann spectacle",
+        "type": "formula",
+        "summary": "moulin rouge corsetry to gatsby deco — double oscars twice over; maximalism engineered to the last bead",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "lavish",
+          "kinetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-62f399f6-3cc0-4140-b940-14344e8b8535",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Catherine_Martin_(designer)",
+      "https://variety.com/2023/film/global/catherine-martin-baz-luhrmann-1235829483/"
+    ],
+    "approvedAt": 1784318128835
   },
   {
     "kind": "film",
@@ -1412,6 +1482,42 @@
       "https://www.sothebys.com/en/articles/how-coco-chanel-shaped-fashion-history"
     ],
     "approvedAt": 1784257134455
+  },
+  {
+    "kind": "figure",
+    "name": "colleen atwood",
+    "aliases": [
+      "atwood"
+    ],
+    "note": "gothic tenderness — outsiders dressed with sympathy",
+    "interpretations": [
+      {
+        "id": "colleen atwood/gothic-tenderness",
+        "label": "gothic tenderness",
+        "type": "formula",
+        "summary": "scissorhands leather and geisha silk — four oscars of outsiders dressed with sympathy, darkness cut with meticulous care",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "melancholy",
+          "meticulous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-d3c51fbd-31bf-4133-8342-71e37c6d62d3",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Colleen_Atwood",
+      "https://sarabandefoundation.org/en-us/blogs/news/colleen-atwood-the-clothing-of-the-character"
+    ],
+    "approvedAt": 1784318125487
   },
   {
     "kind": "figure",
@@ -2045,6 +2151,41 @@
   },
   {
     "kind": "figure",
+    "name": "edith head",
+    "aliases": [],
+    "note": "the studio uniform — eight oscars of costume as character psychology",
+    "interpretations": [
+      {
+        "id": "edith head/studio-uniform",
+        "label": "the studio uniform",
+        "type": "formula",
+        "summary": "eight oscars of studio precision — the to-catch-a-thief wardrobe, the vertigo grey suit; costume built as character psychology",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "grey",
+          "black"
+        ],
+        "moods": [
+          "exacting",
+          "discreet"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-d760e0df-7ae5-4c4f-a3cf-1ed2bbf7199e",
+    "sourceUrls": [
+      "https://www.oscars.org/collection-highlights/edith-head",
+      "https://en.wikipedia.org/wiki/Edith_Head"
+    ],
+    "approvedAt": 1784318118945
+  },
+  {
+    "kind": "figure",
     "name": "edward enninful",
     "aliases": [
       "enninful"
@@ -2076,6 +2217,42 @@
       "https://time.com/5886975/edward-enninful-british-vogue-interview/"
     ],
     "approvedAt": 1784258282869
+  },
+  {
+    "kind": "figure",
+    "name": "eiko ishioka",
+    "aliases": [
+      "ishioka"
+    ],
+    "note": "costume as sculpture — garments that ignore fashion entirely",
+    "interpretations": [
+      {
+        "id": "eiko ishioka/costume-as-sculpture",
+        "label": "costume as sculpture",
+        "type": "formula",
+        "summary": "dracula's blood-red armor, fever-dream constructions — garments that ignore fashion entirely and win oscars anyway",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "red"
+        ],
+        "moods": [
+          "surreal",
+          "monumental"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-402046da-45a5-4db8-9ac8-c5798479ac24",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Eiko_Ishioka",
+      "https://wepresent.wetransfer.com/stories/eiko-ishioka-charlie-fox"
+    ],
+    "approvedAt": 1784318126558
   },
   {
     "kind": "figure",
@@ -2538,6 +2715,43 @@
       "https://revolutionwatch.com/gianni-agnelli-over-the-cuff/"
     ],
     "approvedAt": 1784257158675
+  },
+  {
+    "kind": "figure",
+    "name": "gilbert adrian",
+    "aliases": [
+      "adrian",
+      "gowns by adrian"
+    ],
+    "note": "gowns by adrian — mgm glamour that walked off the screen into macy's",
+    "interpretations": [
+      {
+        "id": "gilbert adrian/gowns-by-adrian",
+        "label": "gowns by adrian",
+        "type": "formula",
+        "summary": "the letty lynton shoulders, the ruby slippers — mgm glamour so wanted it walked off the screen and into macy's by the half-million",
+        "tags": [
+          "statement",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "red"
+        ],
+        "moods": [
+          "grand",
+          "transformative"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-2cc69eaa-21fa-43bc-9677-1f8d56ac5164",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Adrian_(costume_designer)",
+      "https://cfda.com/news/fashion-flashback-adrian/"
+    ],
+    "approvedAt": 1784318130954
   },
   {
     "kind": "film",
@@ -4918,6 +5132,43 @@
   },
   {
     "kind": "figure",
+    "name": "milena canonero",
+    "aliases": [
+      "canonero"
+    ],
+    "note": "the painterly period — four oscars of art-historical rigor",
+    "interpretations": [
+      {
+        "id": "milena canonero/painterly-period",
+        "label": "the painterly period",
+        "type": "formula",
+        "summary": "barry lyndon lit like a gainsborough, marie antoinette in macaron pastels — period costume held to art-historical rigor, four oscars deep",
+        "tags": [
+          "archival",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "pastel pink",
+          "cream"
+        ],
+        "moods": [
+          "opulent",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-e41ddcad-2f33-4727-bd10-b17a4d613d87",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Milena_Canonero",
+      "https://metrograph.com/wardrobe-department-milena-canonero/"
+    ],
+    "approvedAt": 1784318123319
+  },
+  {
+    "kind": "figure",
     "name": "misa hylton",
     "aliases": [
       "hip-hop glamorous"
@@ -5029,6 +5280,40 @@
       "https://en.wikipedia.org/wiki/Mod_(subculture)"
     ],
     "approvedAt": 1784177294394
+  },
+  {
+    "kind": "figure",
+    "name": "mona may",
+    "aliases": [],
+    "note": "the anti-grunge — femininity deployed against the flannel decade",
+    "interpretations": [
+      {
+        "id": "mona may/anti-grunge",
+        "label": "the anti-grunge",
+        "type": "formula",
+        "summary": "the yellow gaultier plaid — femininity deployed against the flannel decade; a wardrobe so complete it became its own halloween canon",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "yellow"
+        ],
+        "moods": [
+          "bright",
+          "knowing"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-076b5998-741d-4047-9c0b-a8760cc7fe7e",
+    "sourceUrls": [
+      "https://www.forbes.com/sites/lelalondon/2021/03/15/clueless-mona-may-proves-iconic-costume-design-pays-off-in-hollywood/",
+      "https://www.interviewmagazine.com/fashion/clueless-costume-designer-mona-may-immortalizing-plaid-sets"
+    ],
+    "approvedAt": 1784318127702
   },
   {
     "kind": "aesthetic",
@@ -5250,6 +5535,40 @@
     "approvedAt": 1784177295577
   },
   {
+    "kind": "figure",
+    "name": "orry-kelly",
+    "aliases": [
+      "orry kelly"
+    ],
+    "note": "the golden-age line — three hundred films of bias-cut discretion",
+    "interpretations": [
+      {
+        "id": "orry-kelly/golden-age-line",
+        "label": "the golden-age line",
+        "type": "formula",
+        "summary": "the casablanca wardrobe, the some-like-it-hot illusions — three hundred films of bias-cut discretion and sly wit",
+        "tags": [
+          "tailored",
+          "seductive",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "polished",
+          "sly"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-c7737b11-61c9-47e4-81d6-5148ece0c41f",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Orry-Kelly",
+      "https://frockflicks.com/costume-designer-orry-kelly-the-frock-flicks-guide/"
+    ],
+    "approvedAt": 1784318129902
+  },
+  {
     "kind": "aesthetic",
     "name": "paninari",
     "aliases": [
@@ -5318,6 +5637,40 @@
       "https://www.anothermag.com/fashion-beauty/15889/an-oral-history-of-the-battle-of-versailles-by-pat-cleveland"
     ],
     "approvedAt": 1784263038789
+  },
+  {
+    "kind": "figure",
+    "name": "patricia field",
+    "aliases": [
+      "pat field"
+    ],
+    "note": "the high-low mix — character wardrobes that taught a generation to clash",
+    "interpretations": [
+      {
+        "id": "patricia field/high-low",
+        "label": "the high-low mix",
+        "type": "formula",
+        "summary": "a tutu with heels, couture over flea-market — character wardrobes that taught a generation to clash on purpose",
+        "tags": [
+          "statement",
+          "independent",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "audacious",
+          "joyful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-c1082b5b-8caa-42f1-b14a-a4d95efc9aa4",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Patricia_Field",
+      "https://www.today.com/popculture/patricia-field-sex-and-the-city-costume-designer-memoir-rcna72527"
+    ],
+    "approvedAt": 1784318121113
   },
   {
     "kind": "figure",
@@ -6023,6 +6376,41 @@
     "approvedAt": 1784177292655
   },
   {
+    "kind": "figure",
+    "name": "ruth e. carter",
+    "aliases": [
+      "ruth carter"
+    ],
+    "note": "afrofuturist armor — history, fantasy and diaspora sewn into costume",
+    "interpretations": [
+      {
+        "id": "ruth e. carter/afrofuturist-armor",
+        "label": "afrofuturist armor",
+        "type": "formula",
+        "summary": "wakanda built from real african craft traditions — history, fantasy and the diaspora sewn into superhero costume; two oscars of firsts",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "regal",
+          "powerful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-4bc0e00d-208d-4472-8d51-ab835b6ecbfe",
+    "sourceUrls": [
+      "https://www.ruthecarter.com/about",
+      "https://en.wikipedia.org/wiki/Ruth_E._Carter"
+    ],
+    "approvedAt": 1784318122220
+  },
+  {
     "kind": "music",
     "name": "salt-n-pepa",
     "aliases": [
@@ -6117,6 +6505,39 @@
       "https://www.refinery29.com/en-us/saltburn-indie-sleaze-2000s-fashion"
     ],
     "approvedAt": 1784078952278
+  },
+  {
+    "kind": "figure",
+    "name": "sandy powell",
+    "aliases": [],
+    "note": "velvet and rock stars — period costume worn like performance",
+    "interpretations": [
+      {
+        "id": "sandy powell/velvet-and-rock-stars",
+        "label": "velvet and rock stars",
+        "type": "formula",
+        "summary": "orlando across the centuries, velvet goldmine glam, scorsese new york — period costume worn like a performance, never a museum",
+        "tags": [
+          "statement",
+          "archival",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "theatrical",
+          "sumptuous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-92cc307a-8118-4e67-8893-4b26d09a63fa",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Sandy_Powell_(costume_designer)",
+      "https://thegrandtourist.net/costume-designer-sandy-powell-reflects-on-her-monumental-career/"
+    ],
+    "approvedAt": 1784318124403
   },
   {
     "kind": "aesthetic",
