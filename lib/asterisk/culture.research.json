@@ -473,6 +473,58 @@
     "approvedAt": 1784258280702
   },
   {
+    "kind": "aesthetic",
+    "name": "aso ebi",
+    "aliases": [
+      "asoebi",
+      "family cloth"
+    ],
+    "note": "one fabric across a hundred guests — solidarity worn out loud",
+    "interpretations": [
+      {
+        "id": "aso ebi/the-owambe",
+        "label": "the owambe",
+        "type": "scene",
+        "summary": "one fabric across a hundred guests — ankara, lace and aso oke tailored bespoke, the gele tied architectural; support made visible",
+        "tags": [
+          "statement",
+          "tailored",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "joyful",
+          "united"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "aso ebi/runway-hybrid",
+        "label": "the runway hybrid",
+        "type": "scene",
+        "summary": "lagos fashion week carrying the kin-cloth logic into contemporary design — coordination itself treated as couture",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "assured",
+          "modern"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-39d93339-0339-4245-87ae-d4aac219aa86",
+    "sourceUrls": [
+      "https://www.theknot.com/content/aso-ebi-styles-for-wedding",
+      "https://newlinesmag.com/reportage/kin-cloth-brings-people-together-and-sets-them-apart/"
+    ],
+    "approvedAt": 1784321850094
+  },
+  {
     "kind": "city",
     "name": "atlanta",
     "aliases": [
@@ -836,6 +888,80 @@
     "approvedAt": 1784178663571
   },
   {
+    "kind": "aesthetic",
+    "name": "black tie",
+    "aliases": [
+      "white tie",
+      "tuxedo"
+    ],
+    "note": "the evening codes — three grades of the same formality",
+    "interpretations": [
+      {
+        "id": "black tie/white-tie",
+        "label": "white tie",
+        "type": "scene",
+        "summary": "the full rig — black tailcoat, white pique waistcoat and bow; the last surviving formality of the nineteenth-century evening",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "ceremonial",
+          "exact"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "black tie/classic",
+        "label": "classic black tie",
+        "type": "scene",
+        "summary": "the tuxedo of 1886 — dinner jacket, silk lapels, one rule kept simple: after six, keep it dark",
+        "tags": [
+          "tailored",
+          "minimal"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "assured",
+          "nocturnal"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "black tie/creative",
+        "label": "creative black tie",
+        "type": "scene",
+        "summary": "velvet jackets, color and pattern worked inside the code — the dress code bent without breaking",
+        "tags": [
+          "tailored",
+          "statement",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "playful",
+          "polished"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-d294fbab-66af-4690-b431-2d9c4a599151",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Black_tie",
+      "https://www.gentlemansgazette.com/tuxedo-black-tie-guide/"
+    ],
+    "approvedAt": 1784321843459
+  },
+  {
     "kind": "music",
     "name": "blackpink",
     "aliases": [],
@@ -949,6 +1075,73 @@
   },
   {
     "kind": "film",
+    "name": "bollywood",
+    "aliases": [
+      "hindi cinema"
+    ],
+    "note": "three eras of the industry that dresses a billion imaginations",
+    "interpretations": [
+      {
+        "id": "bollywood/chiffon-romance",
+        "label": "the chiffon romance",
+        "type": "scene",
+        "summary": "yash raj chiffon saris in the rain with the alps behind — nineties longing dressed at full sweep",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "romantic",
+          "sweeping"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "bollywood/masala-nineties",
+        "label": "the masala nineties",
+        "type": "scene",
+        "summary": "multiplex glitter and girl-next-door ghagras sparking nationwide street trends — the era a costume designer shaped",
+        "tags": [
+          "statement",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "exuberant",
+          "glossy"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "bollywood/global-couture",
+        "label": "the global couture era",
+        "type": "scene",
+        "summary": "bridal revivalism in vintage indian textiles and cannes red carpets — rooted and worldly in the same garment",
+        "tags": [
+          "archival",
+          "statement",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "regal",
+          "rooted"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-89926923-260e-4cd7-88bb-49647b9bf938",
+    "sourceUrls": [
+      "https://www.jgnt.co/bollywood-fashion-trends-stylists-manish-malhotra",
+      "https://www.harpersbazaar.in/fashion/story/how-manish-malhotra-sabyasachi-and-others-have-re-introduced-indian-fashion-on-the-global-stage-1092141-2024-09-16"
+    ],
+    "approvedAt": 1784321848995
+  },
+  {
+    "kind": "film",
     "name": "bonnie and clyde",
     "aliases": [],
     "note": "van runkle's gun-moll wardrobe — the beret heard around the world",
@@ -1018,6 +1211,81 @@
       "https://listverse.com/2009/04/20/10-unusual-japanese-fashions-and-subcultures/"
     ],
     "approvedAt": 1784216437728
+  },
+  {
+    "kind": "aesthetic",
+    "name": "bridal",
+    "aliases": [
+      "wedding dress",
+      "bride"
+    ],
+    "note": "the one-day garment — invented tradition, stripped line, or year-long commission",
+    "interpretations": [
+      {
+        "id": "bridal/white-wedding",
+        "label": "the white wedding",
+        "type": "scene",
+        "summary": "queen victoria's 1840 honiton lace — the white gown as invented tradition, publicized into permanence by the illustrated press",
+        "tags": [
+          "archival",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "white"
+        ],
+        "moods": [
+          "ceremonial",
+          "romantic"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "bridal/courthouse-minimal",
+        "label": "courthouse minimal",
+        "type": "scene",
+        "summary": "a clean suit or slip dress and a bouquet — the vow stripped to its line",
+        "tags": [
+          "minimal",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "cream"
+        ],
+        "moods": [
+          "calm",
+          "certain"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "bridal/couture-bride",
+        "label": "the couture bride",
+        "type": "scene",
+        "summary": "architectural gowns and veils built like sets — the one-day garment treated as the year's biggest commission",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [
+          "white"
+        ],
+        "moods": [
+          "grand",
+          "luminous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-a24b0a9c-849d-4bfd-9031-dafbc2431430",
+    "sourceUrls": [
+      "https://time.com/3698249/white-weddings/",
+      "https://www.vam.ac.uk/articles/the-victoria-connection"
+    ],
+    "approvedAt": 1784321844557
   },
   {
     "kind": "music",
@@ -2750,6 +3018,61 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "aesthetic",
+    "name": "flamenco",
+    "aliases": [
+      "bata de cola",
+      "traje de flamenca"
+    ],
+    "note": "folk dress that became a living fashion — the feria and the stage",
+    "interpretations": [
+      {
+        "id": "flamenco/feria-dress",
+        "label": "the feria dress",
+        "type": "scene",
+        "summary": "polka-dot ruffles born on working andalusian women at the fairs — the traje de flamenca, folk dress that never stopped evolving",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "red",
+          "black"
+        ],
+        "moods": [
+          "proud",
+          "joyful"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "flamenco/bata-de-cola",
+        "label": "bata de cola",
+        "type": "scene",
+        "summary": "up to five metres of trained skirt engineered for turns — stagewear in which the garment dances too",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "hypnotic",
+          "commanding"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-6a1c0812-7623-4c95-879d-8a239e724a42",
+    "sourceUrls": [
+      "https://elflamencoensevilla.com/en/the-flamenco-long-tailed-dress/",
+      "https://bestflamencobarcelona.com/en/the-flamenco-attire-exploring-the-essence-of-traditional-flamenco-dresses/"
+    ],
+    "approvedAt": 1784321846773
   },
   {
     "kind": "film",
@@ -5967,6 +6290,61 @@
     "approvedAt": 1784078949986
   },
   {
+    "kind": "aesthetic",
+    "name": "motorsport style",
+    "aliases": [
+      "paddock style",
+      "motorcore",
+      "race day"
+    ],
+    "note": "monaco as fashion week — the paddock walk and the garage uniform",
+    "interpretations": [
+      {
+        "id": "motorsport style/paddock-walk",
+        "label": "the paddock walk",
+        "type": "scene",
+        "summary": "drivers' pre-race fits photographed like a carpet — elevated athleisure and relaxed tailoring, monaco run as fashion week",
+        "tags": [
+          "statement",
+          "tailored",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "sleek",
+          "competitive"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "motorsport style/motorcore",
+        "label": "motorcore",
+        "type": "scene",
+        "summary": "quilted jackets, mechanic shirts and racing stripes — the garage uniform worn as fan fashion in the grandstand",
+        "tags": [
+          "utilitarian",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "red"
+        ],
+        "moods": [
+          "kinetic",
+          "loyal"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-16f2d7cd-a0c1-451c-b4b4-7ff56370bc24",
+    "sourceUrls": [
+      "https://www.formula1.com/en/latest/article/the-best-paddock-fits-of-the-2025-singapore-grand-prix.1mx9HUYB8qfQCXvdQP9EJB",
+      "https://www.marieclaire.com/fashion/celebrity-style/formula-1-las-vegas-grand-prix-street-style-trends/"
+    ],
+    "approvedAt": 1784321852278
+  },
+  {
     "kind": "figure",
     "name": "naomi campbell",
     "aliases": [
@@ -6636,6 +7014,63 @@
       "https://www.complex.com/style/a/gregory-babcock/raf-simons-guide"
     ],
     "approvedAt": 1784260240299
+  },
+  {
+    "kind": "aesthetic",
+    "name": "raw denim",
+    "aliases": [
+      "denim heads",
+      "selvedge"
+    ],
+    "note": "indigo as a long relationship — the loom and the fade",
+    "interpretations": [
+      {
+        "id": "raw denim/okayama-looms",
+        "label": "the okayama looms",
+        "type": "scene",
+        "summary": "shuttle-loom selvedge from okayama, rope-dyed indigo — vintage american machines kept alive in japan, irregularity the whole point",
+        "tags": [
+          "utilitarian",
+          "archival",
+          "independent",
+          "minimal"
+        ],
+        "colors": [
+          "indigo"
+        ],
+        "moods": [
+          "devoted",
+          "exacting"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "raw denim/fade-culture",
+        "label": "fade culture",
+        "type": "scene",
+        "summary": "whiskers, honeycombs and visible repairs — a decade-long relationship with one pair, the wear itself the design",
+        "tags": [
+          "utilitarian",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "indigo"
+        ],
+        "moods": [
+          "patient",
+          "personal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-52c5a9de-50cc-44ba-89ab-54aa58805e4e",
+    "sourceUrls": [
+      "https://denimhunters.com/history-of-jeans-4/",
+      "https://boringmonday.co/magazine/fashion/japanese-selvedge-denim"
+    ],
+    "approvedAt": 1784321845664
   },
   {
     "kind": "music",
@@ -8027,6 +8462,59 @@
   },
   {
     "kind": "aesthetic",
+    "name": "tango",
+    "aliases": [
+      "milonga"
+    ],
+    "note": "buenos aires dance-floor formality — movement first, the suit as respect",
+    "interpretations": [
+      {
+        "id": "tango/milonga-night",
+        "label": "the milonga night",
+        "type": "scene",
+        "summary": "floaty skirts cut for leg extensions, pressed suits and shined leather — dance-floor formality where movement writes the dress code",
+        "tags": [
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "black",
+          "red"
+        ],
+        "moods": [
+          "intimate",
+          "poised"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "tango/la-boca",
+        "label": "la boca origins",
+        "type": "scene",
+        "summary": "the port-district roots — immigrant workwear sharpened for the dance hall, the suit worn as respect for the night",
+        "tags": [
+          "tailored",
+          "archival",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "nostalgic",
+          "dignified"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-24beee7e-16d7-4399-bc7a-64a711f3c5b8",
+    "sourceUrls": [
+      "https://www.ultimatetango.com/blog/argentine-tango-fashion",
+      "https://www.danceus.org/style/milonga-dance-in-argentina/"
+    ],
+    "approvedAt": 1784321847874
+  },
+  {
+    "kind": "aesthetic",
     "name": "teddy boys",
     "aliases": [
       "teds"
@@ -8658,6 +9146,60 @@
       "https://swimsuit.si.com/swimnews/tyra-banks-reflects-on-being-the-first-black-woman-on-the-cover-of-the-si-swimsuit-issue-01j9ph534zk8"
     ],
     "approvedAt": 1784263043196
+  },
+  {
+    "kind": "music",
+    "name": "uk garage",
+    "aliases": [
+      "ukg",
+      "2-step"
+    ],
+    "note": "dress-to-impress rave — the holy trinity era and the garage girl",
+    "interpretations": [
+      {
+        "id": "uk garage/super-sharp",
+        "label": "super sharp",
+        "type": "scene",
+        "summary": "moschino, versace and iceberg all-over prints, designer loafers and champagne — dress-to-impress rave at its sharpest",
+        "tags": [
+          "statement",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "gold"
+        ],
+        "moods": [
+          "flash",
+          "celebratory"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "uk garage/garage-girl",
+        "label": "the garage girl",
+        "type": "scene",
+        "summary": "strappy dresses, logo tops and heels — high-street glamour preened for the club and photographed by the smoke machine",
+        "tags": [
+          "seductive",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "glossy",
+          "confident"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-907b6c55-ca07-43ec-95ab-9275010bab9e",
+    "sourceUrls": [
+      "https://daily.redbullmusicacademy.com/2019/02/uk-garage-fashion/",
+      "https://www.dazeddigital.com/fashion/article/19438/1/what-we-wore-uk-garage"
+    ],
+    "approvedAt": 1784321851194
   },
   {
     "kind": "figure",
