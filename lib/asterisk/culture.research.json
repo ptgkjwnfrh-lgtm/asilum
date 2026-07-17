@@ -511,6 +511,56 @@
   },
   {
     "kind": "aesthetic",
+    "name": "b-boy",
+    "aliases": [
+      "bboy",
+      "breaking style"
+    ],
+    "note": "the uniform my adidas made canon — style and function inseparable",
+    "interpretations": [
+      {
+        "id": "b-boy/fresh",
+        "label": "fresh",
+        "type": "scene",
+        "summary": "shell-toes with fat laces or none, velour tracksuits, kangols and rope chains — the uniform my adidas made canon",
+        "tags": [
+          "streetwear",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "electric",
+          "cocky"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "b-boy/battle-ready",
+        "label": "battle-ready",
+        "type": "scene",
+        "summary": "nylon that slides on cardboard, windbreakers and suede pumas built to spin — function first, style inseparable from it",
+        "tags": [
+          "streetwear",
+          "utilitarian"
+        ],
+        "colors": [],
+        "moods": [
+          "kinetic",
+          "focused"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-c948782a-d5fb-45b3-900c-e6d31dc8fc2f",
+    "sourceUrls": [
+      "https://history.hiphop/kangol-hats/",
+      "https://www.80scasualclassics.co.uk/blogs/blog/adidas-superstar-run-dmc"
+    ],
+    "approvedAt": 1784321137880
+  },
+  {
+    "kind": "aesthetic",
     "name": "ballroom culture",
     "aliases": [
       "ballroom",
@@ -1330,6 +1380,77 @@
       "https://elle.in/ellecyclopedia-bob-mackie/"
     ],
     "approvedAt": 1784080234759
+  },
+  {
+    "kind": "aesthetic",
+    "name": "chicano style",
+    "aliases": [
+      "cholo",
+      "chola",
+      "lowrider"
+    ],
+    "note": "three branches of one inheritance — the zoot line carried from the 40s forward",
+    "interpretations": [
+      {
+        "id": "chicano style/pachuco-line",
+        "label": "the pachuco line",
+        "type": "scene",
+        "summary": "the zoot inheritance — drape and defiance passed down from the 40s, pride worn tailored and oversized",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "proud",
+          "defiant"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "chicano style/cholo",
+        "label": "cholo",
+        "type": "scene",
+        "summary": "creased dickies, a pendleton buttoned only at the top over a white tee, hairnet and shades — workwear worn ceremonial",
+        "tags": [
+          "utilitarian",
+          "streetwear",
+          "minimal"
+        ],
+        "colors": [],
+        "moods": [
+          "composed",
+          "loyal"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "chicano style/chola",
+        "label": "chola",
+        "type": "scene",
+        "summary": "winged liner, dark lip liner, hoops and flannels — femininity codified with solidarity and defiance",
+        "tags": [
+          "seductive",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "fierce",
+          "devoted"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-016a1542-e0b5-41cd-86d4-a77b6d32f16d",
+    "sourceUrls": [
+      "https://lataco.com/cholo-chicano-culture-history",
+      "https://en.wikipedia.org/wiki/Cholo_(subculture)"
+    ],
+    "approvedAt": 1784321136797
   },
   {
     "kind": "figure",
@@ -3099,6 +3220,62 @@
     "approvedAt": 1784258277455
   },
   {
+    "kind": "aesthetic",
+    "name": "greasers",
+    "aliases": [
+      "greaser",
+      "ton-up boys"
+    ],
+    "note": "leather at the drive-in and at a hundred miles an hour — two sides of the same jacket",
+    "interpretations": [
+      {
+        "id": "greasers/drive-in-americana",
+        "label": "drive-in americana",
+        "type": "scene",
+        "summary": "perfecto leather, cuffed selvedge, engineer boots and pomade — the wild one's silhouette parked at the drive-in",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "statement"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "cool",
+          "restless"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "greasers/ton-up",
+        "label": "the ton-up boys",
+        "type": "scene",
+        "summary": "studded and patched leathers built for a hundred miles an hour between cafes — british rocker armor with a kettle waiting",
+        "tags": [
+          "utilitarian",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "reckless",
+          "loyal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-f9fc5bc6-6ab6-4c95-b868-90f8e9b53116",
+    "sourceUrls": [
+      "https://www.britannica.com/topic/greaser",
+      "https://en.wikipedia.org/wiki/Ton-up_boy"
+    ],
+    "approvedAt": 1784321135665
+  },
+  {
     "kind": "music",
     "name": "grime",
     "aliases": [],
@@ -3284,6 +3461,57 @@
     "approvedAt": 1784098505695
   },
   {
+    "kind": "aesthetic",
+    "name": "harlem renaissance",
+    "aliases": [
+      "savoy ballroom"
+    ],
+    "note": "elegance as event and as argument — dressing up as dignity and defiance",
+    "interpretations": [
+      {
+        "id": "harlem renaissance/savoy-night",
+        "label": "the savoy night",
+        "type": "scene",
+        "summary": "beaded drop-waists and fringe under chandeliers, drape suits swinging the lindy hop — elegance staged as an event",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "electric",
+          "glamorous"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "harlem renaissance/strivers-row",
+        "label": "strivers' row",
+        "type": "scene",
+        "summary": "tailored suits, furs and gloves worn as dignity and defiance — dressing up made a civil argument",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "dignified",
+          "aspiring"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-7d23921f-6f6b-4e62-8a2c-05d2487e00be",
+    "sourceUrls": [
+      "https://www.hemsandbrims.org/blog/the-harlem-renaissance",
+      "https://www.goodmorningamerica.com/style/story/harlem-renaissance-fashion-97011784"
+    ],
+    "approvedAt": 1784321140064
+  },
+  {
     "kind": "figure",
     "name": "harry lambert",
     "aliases": [],
@@ -3461,6 +3689,57 @@
       "https://en.wikipedia.org/wiki/Herb_Ritts"
     ],
     "approvedAt": 1784261931500
+  },
+  {
+    "kind": "aesthetic",
+    "name": "hippie",
+    "aliases": [
+      "hippies",
+      "flower power"
+    ],
+    "note": "dress reform from a san francisco street corner — two wardrobes, one refusal",
+    "interpretations": [
+      {
+        "id": "hippie/haight-ashbury",
+        "label": "the haight",
+        "type": "scene",
+        "summary": "hand-dyed and embroidered everything — psychedelic prints, fringe and army surplus; dress reform run from a san francisco street corner",
+        "tags": [
+          "independent",
+          "statement",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "utopian",
+          "unhurried"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "hippie/woodstock",
+        "label": "woodstock",
+        "type": "scene",
+        "summary": "bell-bottoms, tie-dye, kurtas and embroidered blouses in a muddy field — the counterculture's biggest runway",
+        "tags": [
+          "independent",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "free",
+          "communal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-e91ae685-2c15-4e33-8b31-680d14cdc680",
+    "sourceUrls": [
+      "https://www.encyclopedia.com/fashion/encyclopedias-almanacs-transcripts-and-maps/hippie-style",
+      "https://vintagedancer.com/1960s/hippies-in-the-60s-fashion-festivals-flower-power/"
+    ],
+    "approvedAt": 1784321133425
   },
   {
     "kind": "music",
@@ -4896,6 +5175,63 @@
       "https://graziamagazine.com/us/articles/cone-bra-fashion-history-jean-paul-gaultier/"
     ],
     "approvedAt": 1784098504226
+  },
+  {
+    "kind": "aesthetic",
+    "name": "mall goth",
+    "aliases": [
+      "mallgoth",
+      "spooky kids"
+    ],
+    "note": "the underground bought at the food court — sincerity intact (trad goth is its own record)",
+    "interpretations": [
+      {
+        "id": "mall goth/hot-topic-era",
+        "label": "the hot topic era",
+        "type": "scene",
+        "summary": "tripp pants with chains and zippers, band tees, platform boots — the underground bought at the food court, sincerity intact",
+        "tags": [
+          "statement",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "moody",
+          "theatrical"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "mall goth/nu-metal-industrial",
+        "label": "nu-metal industrial",
+        "type": "scene",
+        "summary": "jnco width, wallet chains, striped sleeves under black band tees — the heavier end of the suburb's dark uniform",
+        "tags": [
+          "streetwear",
+          "statement",
+          "utilitarian"
+        ],
+        "colors": [
+          "black",
+          "red"
+        ],
+        "moods": [
+          "loud",
+          "brooding"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-24d3cc76-a7cd-4174-b9d4-9fb3c3f693df",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Mall_goth",
+      "https://www.dazeddigital.com/fashion/article/43658/1/instagram-hot-topic-mallgoth-1990smallgoth-nu-metal-marilyn-manson-subculture"
+    ],
+    "approvedAt": 1784321142303
   },
   {
     "kind": "film",
@@ -6920,6 +7256,58 @@
     "approvedAt": 1784177295288
   },
   {
+    "kind": "aesthetic",
+    "name": "scene",
+    "aliases": [
+      "scene kids",
+      "scene hair",
+      "myspace scene"
+    ],
+    "note": "the first look engineered for a profile picture",
+    "interpretations": [
+      {
+        "id": "scene/myspace-era",
+        "label": "the myspace era",
+        "type": "scene",
+        "summary": "raccoon-striped hair, neon skinnies, studded belts and shutter shades — the first look engineered for a profile picture",
+        "tags": [
+          "statement",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "hyper",
+          "sociable"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "scene/kandi-and-glitter",
+        "label": "kandi and glitter",
+        "type": "scene",
+        "summary": "hello kitty, kandi bracelets, fingerless gloves and two-color converse — childhood props worn at maximum saturation",
+        "tags": [
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "playful",
+          "defiant"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-d69cff54-4e4f-46ea-99e3-4d953d859e47",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Scene_(subculture)",
+      "https://www.bustle.com/articles/150324-13-things-scene-kids-wore-in-the-early-2000s-because-scene-was-totally-not-emo"
+    ],
+    "approvedAt": 1784321141182
+  },
+  {
     "kind": "music",
     "name": "selena quintanilla",
     "aliases": [
@@ -7194,6 +7582,57 @@
   },
   {
     "kind": "aesthetic",
+    "name": "skinhead",
+    "aliases": [
+      "suedehead"
+    ],
+    "note": "the original 1969 scene — mod precision meets jamaican rude boy, working-class and multiracial at the start",
+    "interpretations": [
+      {
+        "id": "skinhead/sixty-nine-originals",
+        "label": "the '69 originals",
+        "type": "scene",
+        "summary": "ben sherman button-downs, sta-prest, braces and polished boots — mod precision crossed with jamaican rude boy soul, multiracial at the start",
+        "tags": [
+          "utilitarian",
+          "tailored",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "sharp",
+          "proud"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "skinhead/suedehead",
+        "label": "suedehead",
+        "type": "scene",
+        "summary": "the crop grown out, brogues in, crombies and tonic suits — the sharper soul-boy evolution of the same wardrobe",
+        "tags": [
+          "tailored",
+          "minimal",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "dapper",
+          "restrained"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-cc54325e-323f-4996-b266-6169d521a63e",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Skinhead",
+      "https://subculturewiki.com/skinhead-fashion/"
+    ],
+    "approvedAt": 1784321134572
+  },
+  {
+    "kind": "aesthetic",
     "name": "soft grunge",
     "aliases": [
       "tumblr grunge",
@@ -7453,6 +7892,63 @@
       "https://mytour.vn/en/blog/travel/10-fascinating-japanese-fashion-trends-and-subcultures-mytour.html"
     ],
     "approvedAt": 1784216441683
+  },
+  {
+    "kind": "aesthetic",
+    "name": "surf culture",
+    "aliases": [
+      "surfer",
+      "surf style"
+    ],
+    "note": "malibu ease to highlighter thrash — the sport's two wardrobes",
+    "interpretations": [
+      {
+        "id": "surf culture/longboard-sixties",
+        "label": "the longboard sixties",
+        "type": "scene",
+        "summary": "aloha shirts, hang ten boardshorts, sun-bleached white tees — malibu ease before the sport went pro",
+        "tags": [
+          "minimal",
+          "independent",
+          "streetwear"
+        ],
+        "colors": [
+          "white"
+        ],
+        "moods": [
+          "sunlit",
+          "loose"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "surf culture/neon-eighties",
+        "label": "the neon eighties",
+        "type": "scene",
+        "summary": "gotcha and quiksilver in yellow, pink and green geometry — the thrash decade dressed in highlighter",
+        "tags": [
+          "statement",
+          "streetwear"
+        ],
+        "colors": [
+          "yellow",
+          "pink",
+          "green"
+        ],
+        "moods": [
+          "loud",
+          "sun-wired"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day28-pr-review",
+    "factId": "fact-a47a93d6-3ff9-450a-a1d4-a154f3af16c1",
+    "sourceUrls": [
+      "https://surfd.com/guides/a-guide-to-surf-style",
+      "https://www.theinertia.com/surf/10-essential-80s-surf-trends/"
+    ],
+    "approvedAt": 1784321138954
   },
   {
     "kind": "aesthetic",
