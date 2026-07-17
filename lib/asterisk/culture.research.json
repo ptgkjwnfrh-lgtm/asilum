@@ -621,6 +621,78 @@
     "approvedAt": 1784178612479
   },
   {
+    "kind": "film",
+    "name": "bonnie and clyde",
+    "aliases": [],
+    "note": "van runkle's gun-moll wardrobe — the beret heard around the world",
+    "interpretations": [
+      {
+        "id": "bonnie and clyde/bonnie",
+        "label": "Bonnie Parker",
+        "type": "character",
+        "summary": "jaunty berets, neckerchiefs, knitted tees and slinky midi skirts with a honey bob — 30s outlaw chic that doubled french beret production overnight",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "honey",
+          "mustard",
+          "grey"
+        ],
+        "moods": [
+          "dangerous",
+          "romantic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-6e706387-ab48-42c5-a582-5241dd3d43d0",
+    "sourceUrls": [
+      "https://i-d.co/article/faye-dunaway-70s-style/",
+      "https://hungermag.com/editorial/style-lessons-to-learn-from-bonnie-and-clyde"
+    ],
+    "approvedAt": 1784216425859
+  },
+  {
+    "kind": "aesthetic",
+    "name": "bosozoku",
+    "aliases": [],
+    "note": "the speed tribes — embroidered tokko-fuku as rolling regalia",
+    "interpretations": [
+      {
+        "id": "bosozoku/speed-tribes",
+        "label": "the speed tribes",
+        "type": "aesthetic",
+        "summary": "long embroidered tokko-fuku coats over baggy pants, surgical masks and pompadours astride customized bikes — kanji-stitched allegiance worn loud",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "scarlet",
+          "gold"
+        ],
+        "moods": [
+          "thunderous",
+          "loyal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-e0545bbe-1e7b-402d-bcb4-291732beac88",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/B%C5%8Ds%C5%8Dzoku",
+      "https://listverse.com/2009/04/20/10-unusual-japanese-fashions-and-subcultures/"
+    ],
+    "approvedAt": 1784216437728
+  },
+  {
     "kind": "music",
     "name": "britney spears",
     "aliases": [
@@ -1376,6 +1448,44 @@
     "approvedAt": 1784087398054
   },
   {
+    "kind": "figure",
+    "name": "elsa schiaparelli",
+    "aliases": [
+      "schiaparelli"
+    ],
+    "note": "surrealism's couturier — shocking pink as a worldview",
+    "interpretations": [
+      {
+        "id": "elsa schiaparelli/shocking",
+        "label": "shocking",
+        "type": "era",
+        "summary": "lobster prints, shoe hats, tattoo-motif knits and the pink she named shocking — dali's circle sewn into clothes chanel called costume",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "shocking pink",
+          "black",
+          "gold"
+        ],
+        "moods": [
+          "surreal",
+          "audacious"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-5eff8a2a-a17c-4674-9166-bf6cdb3b2c75",
+    "sourceUrls": [
+      "https://www.elledecoration.co.uk/decorating/colours/a34011671/elsa-schiaparelli-shocking-pink/",
+      "https://www.lofficielusa.com/fashion/history-of-maison-schiaparelli-elsa-schiaparelli-shocking-pink-daniel-roseberry"
+    ],
+    "approvedAt": 1784216401819
+  },
+  {
     "kind": "music",
     "name": "elvis presley",
     "aliases": [
@@ -1470,6 +1580,42 @@
       "https://www.marieclaire.com/fashion/fisherman-aesthetic-fashion-trend/"
     ],
     "approvedAt": 1784078949626
+  },
+  {
+    "kind": "film",
+    "name": "flashdance",
+    "aliases": [],
+    "note": "the cut sweatshirt — dancewear that jumped the studio wall",
+    "interpretations": [
+      {
+        "id": "flashdance/maniac",
+        "label": "the welder-dancer",
+        "type": "character",
+        "summary": "off-the-shoulder cut sweatshirt, legwarmers over tights, a body built for the audition — 1983's diy uniform that had a generation scissoring their knits",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "seductive"
+        ],
+        "colors": [
+          "grey",
+          "black",
+          "red"
+        ],
+        "moods": [
+          "kinetic",
+          "hungry"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-a7e98179-da9e-4a27-a683-1dc17f72d8e1",
+    "sourceUrls": [
+      "https://www.anothermag.com/fashion-beauty/10756/celebrating-the-fearless-style-of-1983-classic-flashdance",
+      "https://goldenglobes.com/vertical-gallery/iconic-fashion-flashdance/"
+    ],
+    "approvedAt": 1784216429811
   },
   {
     "kind": "music",
@@ -1794,6 +1940,42 @@
     "approvedAt": 1784178662944
   },
   {
+    "kind": "figure",
+    "name": "halston",
+    "aliases": [],
+    "note": "the cashmere uniform — american minimalism in first person",
+    "interpretations": [
+      {
+        "id": "halston/uniform",
+        "label": "the uniform",
+        "type": "era",
+        "summary": "black cashmere turtleneck, matching cardigan, trim trousers — the same spare luxe he cut for women, worn daily by the man himself",
+        "tags": [
+          "minimal",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "camel",
+          "ivory"
+        ],
+        "moods": [
+          "fluid",
+          "assured"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-25e95d64-d22a-4563-a7a1-ed1b0c799171",
+    "sourceUrls": [
+      "https://exhibitions.fitnyc.edu/blog-ysl-halston/",
+      "https://fashionhistorian.net/blog/2015/04/03/exhibition-review-yves-saint-laurent-halston-fashioning-the-70s/"
+    ],
+    "approvedAt": 1784216405892
+  },
+  {
     "kind": "aesthetic",
     "name": "harajuku",
     "aliases": [
@@ -1872,6 +2054,42 @@
   },
   {
     "kind": "figure",
+    "name": "iman",
+    "aliases": [],
+    "note": "saint laurent's dream woman — five decades of command",
+    "interpretations": [
+      {
+        "id": "iman/muse",
+        "label": "the muse years",
+        "type": "era",
+        "summary": "sculptural hair, dramatic eyes, couture carried like architecture — ysl dedicated the african queen collection to her; halston, versace and miyake followed",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "cobalt",
+          "bronze"
+        ],
+        "moods": [
+          "regal",
+          "magnetic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-45870968-550c-4215-9275-6c20ef4cd5f8",
+    "sourceUrls": [
+      "https://wwd.com/fashion-news/fashion-features/gallery/iman-modeling-photos-1237032069/",
+      "https://www.wmagazine.com/fashion/iman-best-fashion-style-photos"
+    ],
+    "approvedAt": 1784216397857
+  },
+  {
+    "kind": "figure",
     "name": "isabella blow",
     "aliases": [],
     "note": "the patron in the pheasant-feather hat — taste as an act of faith",
@@ -1943,6 +2161,80 @@
       "https://takesmeback.com/1960s-fashion-icons-who-made-an-impact-thats-still-felt-today/"
     ],
     "approvedAt": 1784178615719
+  },
+  {
+    "kind": "music",
+    "name": "james brown",
+    "aliases": [],
+    "note": "the cape act — sweat, sequins and showmanship by the pound",
+    "interpretations": [
+      {
+        "id": "james brown/cape",
+        "label": "the cape routine",
+        "type": "era",
+        "summary": "fitted sequined suits and jumpsuits built for splits, the cape draped mid-collapse and thrown off for one more encore — wrestling flash meets sanctified soul",
+        "tags": [
+          "statement",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "crimson",
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "explosive",
+          "dramatic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-9aaa4165-7143-4da4-8cd7-74898a4a5cd0",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/James_Brown",
+      "https://500songs.com/podcast/episode-39-please-please-please-by-james-brown-and-the-famous-flames/"
+    ],
+    "approvedAt": 1784216417831
+  },
+  {
+    "kind": "music",
+    "name": "janet jackson",
+    "aliases": [
+      "janet",
+      "rhythm nation"
+    ],
+    "note": "rhythm nation unisex black — uniform as unity statement",
+    "interpretations": [
+      {
+        "id": "janet jackson/rhythm-nation",
+        "label": "Rhythm Nation",
+        "type": "era",
+        "summary": "black cropped military jacket, high-waist trousers, the key-pinned cap — an army of identical silhouettes; black worn, in her words, to represent something positive",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "minimal"
+        ],
+        "colors": [
+          "black",
+          "silver"
+        ],
+        "moods": [
+          "disciplined",
+          "united"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-dce2e187-8587-415b-9580-2f7092909e4b",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Rhythm_Nation_1814_(film)",
+      "https://en.wikipedia.org/wiki/Rhythm_Nation"
+    ],
+    "approvedAt": 1784216651445
   },
   {
     "kind": "figure",
@@ -2379,6 +2671,42 @@
     "approvedAt": 1784078950663
   },
   {
+    "kind": "music",
+    "name": "little richard",
+    "aliases": [],
+    "note": "the architect's pompadour — capes, pancake and sequins before anyone dared",
+    "interpretations": [
+      {
+        "id": "little richard/architect",
+        "label": "the architect",
+        "type": "era",
+        "summary": "six-inch pompadour grown to a foot, jeweled capes and studded suits, pancake makeup under stage lights — the blueprint bowie and elton studied",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "scarlet",
+          "white"
+        ],
+        "moods": [
+          "ecstatic",
+          "fearless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-2c4f7d9a-d705-4b24-aaa5-6dba7016f933",
+    "sourceUrls": [
+      "https://www.pbs.org/wnet/americanmasters/how-little-richard-found-his-flamboyant-style-fashion/28088/",
+      "https://en.wikipedia.org/wiki/Little_Richard"
+    ],
+    "approvedAt": 1784216421764
+  },
+  {
     "kind": "tv",
     "name": "mad men",
     "aliases": [
@@ -2724,6 +3052,44 @@
     "approvedAt": 1784179302616
   },
   {
+    "kind": "music",
+    "name": "michael jackson",
+    "aliases": [
+      "king of pop"
+    ],
+    "note": "the red thriller jacket and one glove — stagewear as monument",
+    "interpretations": [
+      {
+        "id": "michael jackson/thriller",
+        "label": "the Thriller era",
+        "type": "era",
+        "summary": "the candy-apple landis jacket with inverted-triangle shoulders, a single crystal glove, white socks under black loafers — the mid-80s most copied wardrobe",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "red",
+          "black",
+          "silver"
+        ],
+        "moods": [
+          "electric",
+          "untouchable"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-0a86e8e6-c4ec-40cf-9889-f0e75fecf2cf",
+    "sourceUrls": [
+      "https://www.complex.com/style/a/shelton-boyd-griffith/michael-jackson-style-evolution",
+      "https://en.wikipedia.org/wiki/Thriller_jacket"
+    ],
+    "approvedAt": 1784216489347
+  },
+  {
     "kind": "aesthetic",
     "name": "mods",
     "aliases": [
@@ -2912,6 +3278,44 @@
       "https://www.anothermag.com/fashion-beauty/7565/vintage-style-northern-soul"
     ],
     "approvedAt": 1784177295577
+  },
+  {
+    "kind": "aesthetic",
+    "name": "paninari",
+    "aliases": [
+      "paninaro"
+    ],
+    "note": "milan's sandwich-bar tribe — brands worn as the whole ideology",
+    "interpretations": [
+      {
+        "id": "paninari/san-babila",
+        "label": "San Babila",
+        "type": "aesthetic",
+        "summary": "moncler puffers, levi's 501s, timberlands and best company sweats — 80s italian teens who made the label the look, saluted by the pet shop boys",
+        "tags": [
+          "streetwear",
+          "statement",
+          "utilitarian"
+        ],
+        "colors": [
+          "orange",
+          "denim",
+          "wheat"
+        ],
+        "moods": [
+          "glossy",
+          "carefree"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-25296477-66e4-407c-912d-3e23cff11663",
+    "sourceUrls": [
+      "https://www.mrporter.com/en-us/journal/fashion/paninaro-menswear-25359310",
+      "https://www.anothermag.com/fashion-beauty/9297/paninari-the-italian-originators-of-fast-food-in-fashion"
+    ],
+    "approvedAt": 1784216433784
   },
   {
     "kind": "figure",
@@ -3768,6 +4172,80 @@
     "approvedAt": 1784080232425
   },
   {
+    "kind": "aesthetic",
+    "name": "sukeban",
+    "aliases": [],
+    "note": "japan's girl gangs — sailor uniforms lengthened into armor",
+    "interpretations": [
+      {
+        "id": "sukeban/alliance",
+        "label": "the alliance",
+        "type": "aesthetic",
+        "summary": "custom-embroidered sailor tops, pleated skirts to the floor, converse and permed hair — the school uniform re-tailored into 70s girl-gang rank",
+        "tags": [
+          "statement",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "white",
+          "scarlet"
+        ],
+        "moods": [
+          "unbending",
+          "sisterly"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-83065300-69e4-484d-b2cd-04df247656a6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Sukeban",
+      "https://mytour.vn/en/blog/travel/10-fascinating-japanese-fashion-trends-and-subcultures-mytour.html"
+    ],
+    "approvedAt": 1784216441683
+  },
+  {
+    "kind": "aesthetic",
+    "name": "swenkas",
+    "aliases": [
+      "swenking"
+    ],
+    "note": "the swank of johannesburg — sunday suits as self-respect",
+    "interpretations": [
+      {
+        "id": "swenkas/swank",
+        "label": "the swank",
+        "type": "aesthetic",
+        "summary": "designer suits and brimmed fedoras walked in choreographed turns — zulu working men's weekend competitions of cleanliness, sobriety and above all self-respect",
+        "tags": [
+          "tailored",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "burgundy",
+          "cream",
+          "navy"
+        ],
+        "moods": [
+          "dignified",
+          "celebratory"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-d831f503-f554-47e7-b3c0-325fcaff31b8",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Swenkas",
+      "https://www.deedsmag.com/stories/the-2025-met-gala-meet-the-swenkas-africas-foremost-dandies"
+    ],
+    "approvedAt": 1784216445614
+  },
+  {
     "kind": "music",
     "name": "talking heads",
     "aliases": [
@@ -4441,6 +4919,45 @@
       "https://www.yokogaomag.com/editorial/who-is-yohji-yamamoto-japanese-fashion-designer"
     ],
     "approvedAt": 1784177293223
+  },
+  {
+    "kind": "figure",
+    "name": "yves saint laurent",
+    "aliases": [
+      "ysl",
+      "saint laurent"
+    ],
+    "note": "le smoking's author — menswear translated for women, worn by its maker",
+    "interpretations": [
+      {
+        "id": "yves saint laurent/smoking",
+        "label": "le smoking and safari",
+        "type": "era",
+        "summary": "the 1966 woman's tuxedo, the safari jacket, gangster pinstripe — archetypes borrowed from men's closets and made liberation",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "khaki",
+          "white"
+        ],
+        "moods": [
+          "revolutionary",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-803f344f-6180-4b1a-8002-76a6f7f20d38",
+    "sourceUrls": [
+      "https://exhibitions.fitnyc.edu/ysl-halston/",
+      "https://content.time.com/time/specials/packages/article/0,28804,2110513_2110512_2110756,00.html"
+    ],
+    "approvedAt": 1784216409903
   },
   {
     "kind": "aesthetic",
