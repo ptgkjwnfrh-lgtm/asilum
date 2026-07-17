@@ -229,6 +229,40 @@
   },
   {
     "kind": "figure",
+    "name": "andrew mukamal",
+    "aliases": [],
+    "note": "method dressing the archive — press-tour looks rebuilt from doll-size originals",
+    "interpretations": [
+      {
+        "id": "andrew mukamal/doll-archive",
+        "label": "method dressing the archive",
+        "type": "formula",
+        "summary": "press-tour looks rebuilt from doll-size originals — schiaparelli, westwood and chanel archives mined for custom recreations, character dressing at couture scale",
+        "tags": [
+          "archival",
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [
+          "pink"
+        ],
+        "moods": [
+          "committed",
+          "exuberant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-44d631c3-85e4-4893-9ac5-01f35e5eb6d5",
+    "sourceUrls": [
+      "https://variety.com/2024/film/news/margot-robbie-stylist-andrew-mukamal-barbie-the-world-tour-fashion-photo-book-1235882022/",
+      "https://www.scmp.com/magazines/style/fashion/celebrity-style/article/3343487/who-margot-robbies-stylist-andrew-mukamal-whos-behind-her-wuthering-heights-looks"
+    ],
+    "approvedAt": 1784259525113
+  },
+  {
+    "kind": "figure",
     "name": "andy warhol",
     "aliases": [
       "warhol"
@@ -1702,6 +1736,38 @@
   },
   {
     "kind": "figure",
+    "name": "elizabeth stewart",
+    "aliases": [],
+    "note": "the re-wear — sustainability made a styling statement rather than a sacrifice",
+    "interpretations": [
+      {
+        "id": "elizabeth stewart/the-rewear",
+        "label": "the re-wear",
+        "type": "formula",
+        "summary": "red-carpet glamour that returns to the closet — cherished pieces re-worn, vintage championed, sustainability made a styling statement rather than a sacrifice",
+        "tags": [
+          "tailored",
+          "archival",
+          "minimal"
+        ],
+        "colors": [],
+        "moods": [
+          "principled",
+          "elegant"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-bc76d939-92ee-4005-88c7-c21bfd3adb82",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/articles/sustainability/cate-blanchett-takes-on-the-red-carpet-system/",
+      "https://us.resee.com/en/blog/the-style-series-elizabeth-stewart"
+    ],
+    "approvedAt": 1784259526209
+  },
+  {
+    "kind": "figure",
     "name": "elsa schiaparelli",
     "aliases": [
       "schiaparelli"
@@ -2022,6 +2088,41 @@
       "https://www.mentalfloss.com/article/598225/jennifer-aniston-the-rachel-haircut-friends-history"
     ],
     "approvedAt": 1784179572463
+  },
+  {
+    "kind": "figure",
+    "name": "gabriella karefa-johnson",
+    "aliases": [
+      "karefa-johnson",
+      "gkj"
+    ],
+    "note": "the narrative gaze — tactile styling that widened who fashion imagery is for",
+    "interpretations": [
+      {
+        "id": "gabriella karefa-johnson/narrative-gaze",
+        "label": "the narrative gaze",
+        "type": "formula",
+        "summary": "disparate colors, textures and silhouettes paired into stories — tactile, narrative-led styling that widened who fashion imagery is for and about",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "joyful",
+          "expansive"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-b3e4f078-e13f-4a31-abf8-e4e022d4724c",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Gabriella_Karefa-Johnson",
+      "https://www.businessoffashion.com/people/gabriella-karefa-johnson/"
+    ],
+    "approvedAt": 1784259521837
   },
   {
     "kind": "figure",
@@ -2380,6 +2481,39 @@
     "approvedAt": 1784098505695
   },
   {
+    "kind": "figure",
+    "name": "harry lambert",
+    "aliases": [],
+    "note": "playful subversion — pearls, gowns and camp menswear worn like it was never a question",
+    "interpretations": [
+      {
+        "id": "harry lambert/playful-subversion",
+        "label": "playful subversion",
+        "type": "formula",
+        "summary": "pearls, gowns and camp menswear worn like it was never a question — vintage and emerging designers over rigid tailoring, gender norms played with, not fought",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "playful",
+          "free"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-b99d36ac-9602-43cd-ba3d-a271b9807196",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Harry_Lambert_(stylist)",
+      "https://www.dazeddigital.com/fashion/article/51147/1/harry-styles-vogue-december-cover-dress-gender-fluid-gucci-tyler-mitchell"
+    ],
+    "approvedAt": 1784259519593
+  },
+  {
     "kind": "film",
     "name": "heathers",
     "aliases": [],
@@ -2449,6 +2583,38 @@
       "https://www.dazeddigital.com/projects/article/35377/1/ibrahim-kamara-stylists-biography-dazed-100-profile"
     ],
     "approvedAt": 1784258271979
+  },
+  {
+    "kind": "figure",
+    "name": "ilaria urbinati",
+    "aliases": [],
+    "note": "the sharp suit standard — menswear precision that owns the best-dressed lists",
+    "interpretations": [
+      {
+        "id": "ilaria urbinati/sharp-suit-standard",
+        "label": "the sharp suit standard",
+        "type": "formula",
+        "summary": "menswear built on expert tailoring and obsessive detail — red-carpet suiting with an instinct for what turns heads, precision elevated to signature",
+        "tags": [
+          "tailored",
+          "statement",
+          "minimal"
+        ],
+        "colors": [],
+        "moods": [
+          "polished",
+          "confident"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-13414551-bd40-49ac-a09c-e3f2bb361669",
+    "sourceUrls": [
+      "https://thewallgroup.com/artist/ilaria-urbinati/",
+      "https://www.hellomagazine.com/fashion/870526/ryan-reynolds-hollywood-stylist-ilaria-urbinati-interview/"
+    ],
+    "approvedAt": 1784259527301
   },
   {
     "kind": "figure",
@@ -3020,6 +3186,38 @@
     "approvedAt": 1784257146554
   },
   {
+    "kind": "figure",
+    "name": "katie grand",
+    "aliases": [],
+    "note": "the showmaker — pop-glossy maximalism from dazed to pop to love",
+    "interpretations": [
+      {
+        "id": "katie grand/showmaker",
+        "label": "the showmaker",
+        "type": "formula",
+        "summary": "pop-glossy maximalism from dazed to pop to love — shows and campaigns styled as spectacle, the industry's secret weapon behind the front row",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "electric",
+          "knowing"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-300f0a9d-fa0c-4395-b5e1-c0b0e8180ffe",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/people/katie-grand/",
+      "https://www.cnn.com/style/article/katie-grand-marc-jacobs-style-show/index.html"
+    ],
+    "approvedAt": 1784259528382
+  },
+  {
     "kind": "music",
     "name": "lady gaga",
     "aliases": [
@@ -3587,6 +3785,71 @@
     "approvedAt": 1784257142452
   },
   {
+    "kind": "figure",
+    "name": "marni senofonte",
+    "aliases": [],
+    "note": "emotion first — couture layered high-low, nothing random from video to red carpet",
+    "interpretations": [
+      {
+        "id": "marni senofonte/emotion-first",
+        "label": "emotion first",
+        "type": "formula",
+        "summary": "each song an emotion, each look a thread — couture layered high-low into modern victorian and street armor, nothing random from video to red carpet",
+        "tags": [
+          "statement",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "regal",
+          "deliberate"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-9a02498c-86ab-48f4-8367-361403122d34",
+    "sourceUrls": [
+      "https://www.wmagazine.com/story/beyonce-stylist-marni-senofonte",
+      "https://wwd.com/eye/people/marni-senofonte-beyonce-stylist-10831291/"
+    ],
+    "approvedAt": 1784259522937
+  },
+  {
+    "kind": "figure",
+    "name": "matthew henson",
+    "aliases": [],
+    "note": "the wardrobe, not the costume — luxury worn casual, built for a person not a mold",
+    "interpretations": [
+      {
+        "id": "matthew henson/wardrobe-not-costume",
+        "label": "the wardrobe, not the costume",
+        "type": "formula",
+        "summary": "high-end low-key menswear built as a real wardrobe rather than a celebrity mold — luxury worn casual, collaboration over imposition",
+        "tags": [
+          "streetwear",
+          "minimal",
+          "tailored",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "assured",
+          "easy"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-7ee9d0d7-7bf0-4208-9241-3e5cc3e93ccd",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/people/matthew-henson/",
+      "https://coveteur.com/2016/07/20/matthew-henson-asap-rocky-stylist/"
+    ],
+    "approvedAt": 1784259524037
+  },
+  {
     "kind": "aesthetic",
     "name": "mcbling",
     "aliases": [
@@ -3658,6 +3921,41 @@
       "https://system-magazine.com/issues/issue-22/in-the-words-of-mel-ottenberg"
     ],
     "approvedAt": 1784258273080
+  },
+  {
+    "kind": "figure",
+    "name": "melanie ward",
+    "aliases": [
+      "waif look"
+    ],
+    "note": "raw minimalism — the waif launched, then refined into helmut lang's edge",
+    "interpretations": [
+      {
+        "id": "melanie ward/raw-minimalism",
+        "label": "raw minimalism",
+        "type": "formula",
+        "summary": "grainy anti-glamour that launched the waif — street-found grunge refined over thirteen years into helmut lang's edged minimalism, the opposite of supermodel maximalism",
+        "tags": [
+          "minimal",
+          "independent",
+          "avant-garde",
+          "utilitarian"
+        ],
+        "colors": [],
+        "moods": [
+          "raw",
+          "quiet"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-6a16326a-2b9d-4499-8838-e73522f80fac",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/68949/1/melanie-ward-remembering-the-trailblazing-stylist-in-her-own-words",
+      "https://title-mag.com/londons-90s-grunge-aesthetic-a-love-letter-to-melanie-ward/"
+    ],
+    "approvedAt": 1784259520726
   },
   {
     "kind": "art",
@@ -4628,6 +4926,44 @@
     "approvedAt": 1784177292655
   },
   {
+    "kind": "music",
+    "name": "salt-n-pepa",
+    "aliases": [
+      "salt n pepa"
+    ],
+    "note": "hip-hop maximalism in kente kufis and eight-ball leather — power, sexiness and femininity in one look",
+    "interpretations": [
+      {
+        "id": "salt-n-pepa/pushing-it",
+        "label": "pushing it",
+        "type": "era",
+        "summary": "kente kufi hats, custom eight-ball leather jackets, dookie chains over tights — hip-hop maximalism claiming power, sexiness and femininity all at once",
+        "tags": [
+          "streetwear",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "red",
+          "black",
+          "yellow"
+        ],
+        "moods": [
+          "unapologetic",
+          "powerful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-4099d27b-56bd-46c7-87b8-74e2f7b70bde",
+    "sourceUrls": [
+      "https://hellobeautiful.com/playlist/fashion-trends-salt-n-pepa/",
+      "https://www.universityoffashion.com/blog/50-years-of-hip-hop-a-fashion-revolution/in-their-kente-cloth-kufi-hats-custom-varsity-jackets-tights-and-dookie-chains-salt-n-pepa-were-committed-hip-hop-style-maximalists-photo-credit-janette-beckman/"
+    ],
+    "approvedAt": 1784259516245
+  },
+  {
     "kind": "film",
     "name": "saltburn",
     "aliases": [
@@ -4892,6 +5228,79 @@
       "https://www.theglobeandmail.com/life/style/article-shai-gilgeous-alexander-nba-conquering-fashion-world-runway-menswear/"
     ],
     "approvedAt": 1784177291784
+  },
+  {
+    "kind": "figure",
+    "name": "simon foxton",
+    "aliases": [],
+    "note": "street-cast tailoring — sportswear, savile row and fetishwear merged decades early",
+    "interpretations": [
+      {
+        "id": "simon foxton/street-cast-tailoring",
+        "label": "street-cast tailoring",
+        "type": "formula",
+        "summary": "sportswear merged with tailoring and fetishwear decades before it was common — street casting as the styling act, everyday lads made iconic",
+        "tags": [
+          "tailored",
+          "streetwear",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "proud",
+          "subversive"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-a28befa2-1d29-41ec-b5c2-384e27eefb16",
+    "sourceUrls": [
+      "https://www.showstudio.com/contributors/simon_foxton",
+      "https://i-d.co/article/simon-foxtons-i-d-archive/"
+    ],
+    "approvedAt": 1784259529543
+  },
+  {
+    "kind": "aesthetic",
+    "name": "soft grunge",
+    "aliases": [
+      "tumblr grunge",
+      "pastel grunge",
+      "2014 tumblr"
+    ],
+    "note": "the 2014 tumblr silhouette — cute and aggressive merged, pastel over punk",
+    "interpretations": [
+      {
+        "id": "soft grunge/tumblr-era",
+        "label": "the 2014 tumblr era",
+        "type": "aesthetic",
+        "summary": "chokers, tennis skirts, creepers and flannel over ripped tights — cute and aggressive merged into the dominant 2010s silhouette, pastel over punk",
+        "tags": [
+          "streetwear",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "pastel pink",
+          "white"
+        ],
+        "moods": [
+          "moody",
+          "nostalgic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-9c42036a-1a4f-4590-93c8-8216dcf4d1f1",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Soft_grunge",
+      "https://fizzymag.com/articles/soft-grunge-tumblr-fashion-guide"
+    ],
+    "approvedAt": 1784259518511
   },
   {
     "kind": "music",
@@ -5644,6 +6053,45 @@
       "https://parade.com/news/travis-kelce-bold-game-day-outfit-brazil-has-fans-declaring-hes-in-his-fiance-era-for-nfl-year-13"
     ],
     "approvedAt": 1784177957465
+  },
+  {
+    "kind": "aesthetic",
+    "name": "twee",
+    "aliases": [
+      "tweecore",
+      "twee revival"
+    ],
+    "note": "peter pan collars and polka dots — everyday life romanticized through 2010s indie sincerity",
+    "interpretations": [
+      {
+        "id": "twee/peter-pan-collar-years",
+        "label": "the peter pan collar years",
+        "type": "aesthetic",
+        "summary": "polka dots, a-line dresses, printed cardigans, mary janes over bright tights — late-50s sweetness reclaimed through 2010s indie sincerity",
+        "tags": [
+          "independent",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "pastel pink",
+          "mustard",
+          "cream"
+        ],
+        "moods": [
+          "whimsical",
+          "sincere"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-30e22fac-0696-4515-964e-80169c59ccd8",
+    "sourceUrls": [
+      "https://www.refinery29.com/en-us/2022/03/10888243/twee-fashion-zooey-deschanel-new-girl",
+      "https://www.shiftlondon.org/features/tweevival-a-modern-twist-on-quirky-retro-fashion/"
+    ],
+    "approvedAt": 1784259517362
   },
   {
     "kind": "figure",
