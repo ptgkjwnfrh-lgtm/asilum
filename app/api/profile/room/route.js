@@ -22,6 +22,7 @@ import {
 import {
   upsertProfileRoom, setProfileModule, setProfileRoomModeration,
   getProfileRoom, getProfileRoomByHandle, createModerationTask,
+  withUserOperationLock,
 } from "../../../../lib/db/production.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../../lib/security/request.js";
@@ -29,11 +30,29 @@ import { readJsonRequest } from "../../../../lib/security/json.js";
 import { recordEvent } from "../../../../lib/db/index.js";
 import { EVENTS } from "../../../../lib/events/index.js";
 
-// Room writes land in the canonical events ledger (audit trail, not a taste
-// signal). Write-then-event: an event failure fails the request loudly and
-// the idempotent upserts make the retry safe.
-function roomEvent(user, payload) {
-  return recordEvent({ userId: user, type: EVENTS.USER_UPDATED_PROFILE_ROOM, payload, at: Date.now() });
+// A room mutation, its moderation consequence, and its audit event commit as
+// one unit. The owner advisory lock also prevents two tabs from interleaving
+// patches against the same room.
+function roomEvent(user, payload, queryTarget = null) {
+  return recordEvent(
+    { userId: user, type: EVENTS.USER_UPDATED_PROFILE_ROOM, payload, at: Date.now() },
+    queryTarget
+  );
+}
+
+async function withRoomWrite(user, fn) {
+  return withUserOperationLock(user, async (queryTarget) => {
+    if (!queryTarget) return fn(null);
+    await queryTarget.query("BEGIN");
+    try {
+      const result = await fn(queryTarget);
+      await queryTarget.query("COMMIT");
+      return result;
+    } catch (error) {
+      try { await queryTarget.query("ROLLBACK"); } catch {}
+      throw error;
+    }
+  });
 }
 
 export const dynamic = "force-dynamic";
@@ -70,17 +89,6 @@ export async function GET(req) {
   const view = await ownRoomView(accountId);
   return NextResponse.json({ available: true, ...view },
     { headers: { "Cache-Control": "private, no-store, max-age=0" } });
-}
-
-async function screenAndFlag(accountId, text) {
-  const flags = screenStatement(text);
-  if (!flags.length) return null;
-  await setProfileRoomModeration(accountId, "under_review");
-  await createModerationTask({
-    kind: "profile-content", subjectType: "profile_room", subjectId: accountId,
-    payload: { flags, excerpt: text.slice(0, 160) }, priority: "high",
-  });
-  return flags;
 }
 
 export async function POST(req) {
@@ -121,8 +129,10 @@ export async function POST(req) {
       if (!Object.keys(patch).length) {
         return NextResponse.json({ error: "handle, themeId, or published required" }, { status: 400 });
       }
-      await upsertProfileRoom(accountId, patch);
-      await roomEvent(user, { op: "room.set", fields: Object.keys(patch) });
+      await withRoomWrite(user, async (queryTarget) => {
+        await upsertProfileRoom(accountId, patch, { queryTarget });
+        await roomEvent(user, { op: "room.set", fields: Object.keys(patch) }, queryTarget);
+      });
       return NextResponse.json({ ...(await ownRoomView(accountId)), available: true });
     }
 
@@ -139,6 +149,7 @@ export async function POST(req) {
         if (module === "statement") {
           const text = sanitizeStatement(body.content?.text ?? "");
           patch.content = { text };
+          flagged = screenStatement(text);
         } else if (module === "soundtrack") {
           patch.content = { entities: validateAnthem(body.content?.entities ?? []) };
         } else {
@@ -148,15 +159,26 @@ export async function POST(req) {
       if (!Object.keys(patch).length) {
         return NextResponse.json({ error: "visible, position, or content required" }, { status: 400 });
       }
-      if (!(await getProfileRoom(accountId))) await upsertProfileRoom(accountId, {});
-      await setProfileModule(accountId, module, patch);
-      await roomEvent(user, { op: "module.set", module, fields: Object.keys(patch) });
-      if (module === "statement" && patch.content) {
-        flagged = await screenAndFlag(accountId, patch.content.text);
-      }
+      await withRoomWrite(user, async (queryTarget) => {
+        if (!(await getProfileRoom(accountId, queryTarget))) {
+          await upsertProfileRoom(accountId, {}, { queryTarget });
+        }
+        if (flagged?.length) {
+          await setProfileRoomModeration(accountId, "under_review", queryTarget);
+          await createModerationTask({
+            kind: "profile-content", subjectType: "profile_room", subjectId: accountId,
+            payload: { flags: flagged, excerpt: patch.content.text.slice(0, 160) }, priority: "high",
+          }, queryTarget);
+        }
+        await setProfileModule(accountId, module, patch, { queryTarget });
+        await roomEvent(user,
+          { op: "module.set", module, fields: Object.keys(patch) }, queryTarget);
+      });
       return NextResponse.json({
         ...(await ownRoomView(accountId)), available: true,
-        ...(flagged ? { flagged, note: "your draft is saved; the public room is paused for a human review" } : {}),
+        ...(flagged?.length
+          ? { flagged, note: "your draft is saved; the public room is paused for a human review" }
+          : {}),
       });
     }
 
@@ -170,6 +192,9 @@ export async function POST(req) {
     }
     if (error?.message === "room-required") {
       return NextResponse.json({ error: "claim your room first" }, { status: 400 });
+    }
+    if (error?.message === "handle-required") {
+      return NextResponse.json({ error: "claim a handle before publishing" }, { status: 400 });
     }
     throw error;
   }

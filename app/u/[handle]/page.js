@@ -15,7 +15,7 @@ export default function UserPage({ params }) {
   const fit = useFitBrain();
   // Next 16 passes params as a promise — unwrap it, or the first render
   // sees an empty handle and every lookup below misfires.
-  const handle = decodeURIComponent(use(params).handle || "");
+  const handle = String(use(params).handle || "");
   const user = MOCK_USERS.find((u) => u.handle === handle);
   const [pieces, setPieces] = useState([]);
   const [posts, setPosts] = useState([]);
