@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { discoverRails, dayIndex, railsEnabled, RAIL_KINDS } from "../lib/discover/rails.js";
 import {
   listDiscoverRails, getRailPrefs, setRailPref, updateDiscoverRail,
-  purgePersonalizationData, adoptAccountData,
+  purgePersonalizationData, adoptAccountData, saveMemoryPreferences,
 } from "../lib/db/production.js";
 
 const U = "u-rails-test";
@@ -32,6 +32,7 @@ test("rails assemble with real content and honest exploration basis", async () =
   const result = await discoverRails(null, DAY);
   assert.equal(result.rails.length, 4);
   assert.equal(result.personalized, false);
+  assert.equal(result.guidanceEnabled, false);
   const screen = result.rails.find((r) => r.id === "screen");
   assert.ok(screen.entities.length > 0 && screen.entities.length <= 6);
   assert.ok(screen.entities.every((e) => ["film", "tv"].includes(e.kind)));
@@ -40,6 +41,17 @@ test("rails assemble with real content and honest exploration basis", async () =
   assert.ok(trend.entities.every((e) => ["rising", "peaking"].includes(e.phase)));
   const exploration = result.rails.find((r) => r.id === "exploration");
   assert.match(exploration.basis, /no taste on file/);
+});
+
+test("rails honor the durable Asterisk guidance preference", async () => {
+  const user = "u-rails-guidance";
+  assert.equal((await discoverRails(user, DAY)).guidanceEnabled, true);
+  await saveMemoryPreferences(user, { guidanceEnabled: false });
+  const paused = await discoverRails(user, DAY);
+  assert.equal(paused.guidanceEnabled, false);
+  assert.equal(paused.personalized, false);
+  assert.match(paused.rails.find((r) => r.id === "exploration").basis, /no taste on file/);
+  await purgePersonalizationData(user);
 });
 
 test("rotation is deterministic within a day and moves across days", async () => {

@@ -18,7 +18,9 @@ import { orchestrateInterpretation, normalizeQuery } from "../../../lib/asterisk
 import { INTERPRETATION_CONTRACT_VERSION } from "../../../lib/asterisk/interpretationSchema.js";
 import { inventoryRepresentationConfidence } from "../../../lib/asterisk/confidence.js";
 import { noteUnknownQuery } from "../../../lib/asterisk/unknownQueries.js";
-import { listInterpretationFeedback, recordInterpretationFeedback } from "../../../lib/db/production.js";
+import {
+  getMemoryPreferences, listInterpretationFeedback, recordInterpretationFeedback,
+} from "../../../lib/db/production.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
@@ -53,9 +55,12 @@ export async function GET(req) {
     return NextResponse.json({ error: "q required (≤200 chars)" }, { status: 400 });
   }
   const user = await resolveRequestUser(req, searchParams.get("user") || "").catch(() => null);
-  const feedback = user ? await listInterpretationFeedback(user, normalizeQuery(q)).catch(() => []) : [];
+  const guidanceEnabled = !!user &&
+    (await getMemoryPreferences(user).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
+  const feedback = guidanceEnabled
+    ? await listInterpretationFeedback(user, normalizeQuery(q)).catch(() => []) : [];
 
-  const contract = await orchestrateInterpretation(q, user || null, feedback);
+  const contract = await orchestrateInterpretation(q, guidanceEnabled ? user : null, feedback);
   const inventory = await inventoryConfidence(contract);
   const interpretation = { ...contract, confidence: { ...contract.confidence, inventoryRepresentation: inventory } };
 
@@ -73,6 +78,7 @@ export async function GET(req) {
     entity: contract.entity,
     interpretations: contract.interpretations,
     personalized: contract.personalized,
+    guidanceEnabled,
     interpretation,
   });
 }

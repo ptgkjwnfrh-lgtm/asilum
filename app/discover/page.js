@@ -1,8 +1,8 @@
 "use client";
 
 // app/discover/page.js — DISCOVER.
-// The full site inventory across every source — deliberately untouched by the
-// moodboard brain or taste profile unless explicitly enabled during search.
+// The full site inventory across every source. Asterisk may route search and
+// exploration through the user's Passport, but the user can pause that layer.
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
@@ -32,6 +32,7 @@ export default function DiscoverPage() {
   const [sug, setSug] = useState([]);
   const [ticketItem, setTicketItem] = useState(null);
   const [reading, setReading] = useState(null);      // Asterisk's cultural read of the query
+  const [guideOn, setGuideOn] = useState(true);
   const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
   const interpRef = useRef(null);                     // active interpretation's tags
@@ -50,10 +51,10 @@ export default function DiscoverPage() {
         qs.set("tags", interpRef.current.join("|"));
       } else if (qval.trim()) {
         qs.set("q", qval.trim());
-        // Search ranking may use the Mood Board Brain (toggle on the moodboard
-        // page); plain browsing stays untouched by taste, as the deck says.
+        // The server also checks the saved preference; this query flag lets the
+        // client request a general rack immediately after guidance is paused.
         qs.set("user", getUid());
-        qs.set("brain", brainEnabled() ? "1" : "0");
+        qs.set("brain", guideOn ? "1" : "0");
       }
       if (source) qs.set("source", source);
       if (tag) qs.set("tag", tag);
@@ -66,16 +67,23 @@ export default function DiscoverPage() {
       if (reset) setSearched(qval.trim());
     } catch {}
     setLoading(false);
-  }, [q, source, tag, sort]);
+  }, [q, source, tag, sort, guideOn]);
 
   useEffect(() => { setFollowed(followedBrands()); }, []);
+  useEffect(() => {
+    const sync = () => setGuideOn(brainEnabled());
+    sync();
+    window.addEventListener("asilum:brain", sync);
+    return () => window.removeEventListener("asilum:brain", sync);
+  }, []);
 
   // Ask Asterisk to READ the query (film / music / city / decade). Misses are
   // honest: entity null → no strip, standard search stands.
   useEffect(() => {
     if (!searched) { setReading(null); setActiveInterp(""); interpRef.current = null; return; }
     let alive = true;
-    authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + "&user=" + encodeURIComponent(getUid() || ""))
+    const user = guideOn ? "&user=" + encodeURIComponent(getUid() || "") : "";
+    authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + user)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         const keep = d && (d.entity || (d.interpretation &&
@@ -84,7 +92,7 @@ export default function DiscoverPage() {
       })
       .catch(() => { if (alive) setReading(null); });
     return () => { alive = false; };
-  }, [searched]);
+  }, [searched, guideOn]);
 
   function pickInterp(i) {
     interpRef.current = i.tags || [];
@@ -151,7 +159,7 @@ export default function DiscoverPage() {
   useEffect(() => {
     if (bootedRef.current) load(true);
     else bootedRef.current = true;
-  }, [source, tag, sort]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, tag, sort, guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function fav(it) {
     setFavedIds((p) => new Set(p).add(it.id));
@@ -171,15 +179,22 @@ export default function DiscoverPage() {
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>DISCOVER</h1>
       <p className="deck">
-        the entire rack, every source, untouched by your taste profile —
-        {" "}{total ? total + " pieces" : "counting"} across the archive.
+        explore the full archive. {guideOn
+          ? "Asterisk is using your Passport to route every search toward your style."
+          : "Asterisk guidance is paused, so results stay general."}
+        {" "}{total ? total + " pieces" : "counting"} across the racks.
       </p>
+      <div className={"searchguide " + (guideOn ? "on" : "off")}>
+        <b className="red">*</b> ASTERISK {guideOn ? "GUIDING" : "PAUSED"}
+        <span>{guideOn ? "Passport-aware ranking is active" : "Your Passport is saved but not influencing results"}</span>
+        <a href="/asterisk">CONTROL</a>
+      </div>
 
       <div className="filters">
         <div className="sugwrap">
           <input
             type="text"
-            placeholder="search brands, pieces, aesthetics…"
+            placeholder="search a piece, feeling, place, film, era…"
             value={q}
             onChange={(e) => {
               const v = e.target.value;

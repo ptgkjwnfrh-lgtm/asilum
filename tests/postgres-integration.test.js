@@ -161,7 +161,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 19);
+  assert.equal(schema.rows[0].version, 20);
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
   {
@@ -277,8 +277,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   await production.setFollow(from, "brand", "Integration Brand", true);
   await production.setFollow(to, "brand", "Integration Brand", true);
   await production.setFollow(from, "user", "@integration", true);
-  await production.saveMemoryPreferences(from, ["global"]);
-  await production.saveMemoryPreferences(to, ["inferred"]);
+  await production.saveMemoryPreferences(from, { hiddenSections: ["global"], guidanceEnabled: false });
+  await production.saveMemoryPreferences(to, { hiddenSections: ["inferred"], guidanceEnabled: true });
   const memoryAdoption = await production.adoptAccountData(from, to);
   assert.equal(memoryAdoption.duplicate, false);
   assert.equal((await production.listFollows(from)).length, 0);
@@ -288,6 +288,8 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal(adoptedFollows.filter((f) => f.target === "@integration").length, 1);
   assert.deepEqual((await production.getMemoryPreferences(to)).hiddenSections, ["inferred"],
     "account-side preferences win on adoption");
+  assert.equal((await production.getMemoryPreferences(to)).guidanceEnabled, true,
+    "account-side guidance preference wins on adoption");
   assert.deepEqual((await production.getMemoryPreferences(from)).hiddenSections, []);
 
   let activePhotoOps = 0;

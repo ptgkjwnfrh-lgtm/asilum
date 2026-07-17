@@ -3,8 +3,8 @@
 // whose content derives live from reviewed sources: the culture catalog
 // (screen/soundtrack), the trend authority (rising now), and genuinely
 // far-from-taste products (exploration — the feed's own far-reach rule).
-// Rotation is deterministic by UTC day for everyone; taste only ORDERS
-// entities, never filters. Collapse/hide are the only writes (per-user).
+// Rotation is deterministic by UTC day for everyone; when Asterisk guidance
+// is active, Passport taste only ORDERS entities and never filters them.
 // Pill clicks route through the SAME pickInterp mechanic as the Asterisk
 // read strip, so rail taps and strip taps behave identically.
 
@@ -29,9 +29,11 @@ export function DiscoverRails({ onPickTags }) {
     alive.current = true;
     load();
     window.addEventListener("asilum:identity", load);
+    window.addEventListener("asilum:brain", load);
     return () => {
       alive.current = false;
       window.removeEventListener("asilum:identity", load);
+      window.removeEventListener("asilum:brain", load);
     };
   }, [load]);
 

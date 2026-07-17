@@ -9,7 +9,8 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid,
+  thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid, brainEnabled,
+  authorizedFetch,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -20,11 +21,11 @@ import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/Pro
 import { AsteriskDrawer } from "./components/AsteriskMemory.jsx";
 
 const NAV = [
-  { href: "/", label: "HOME" },
+  { href: "/", label: "YOUR EDIT" },
   { href: "/hotlist", label: "EDITORIAL / HOTLIST" },
-  { href: "/stylist", label: "STYLIST" },
-  { href: "/board", label: "MOODBOARD" },
-  { href: "/discover", label: "DISCOVER" },
+  { href: "/stylist", label: "BUILD A LOOK" },
+  { href: "/board", label: "PASSPORT / MOODBOARD" },
+  { href: "/discover", label: "EXPLORE / SEARCH" },
   { href: "/orders", label: "ORDERS & TICKETS" },
   { href: "/profile", label: "PROFILE" },
   { href: "/settings", label: "SETTINGS" },
@@ -40,6 +41,7 @@ export default function Shell({ children }) {
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [guideOn, setGuideOn] = useState(true);
   const [q, setQ] = useState("");
   const [results, setResults] = useState(null);
   const [follows, setFollows] = useState({ brands: [], users: [] });
@@ -66,6 +68,13 @@ export default function Shell({ children }) {
       window.removeEventListener("storage", syncFollows);
       window.removeEventListener("focus", syncFollows);
     };
+  }, []);
+
+  useEffect(() => {
+    const syncGuide = () => setGuideOn(brainEnabled());
+    syncGuide();
+    window.addEventListener("asilum:brain", syncGuide);
+    return () => window.removeEventListener("asilum:brain", syncGuide);
   }, []);
 
   // ---- Server-issued device identity + Supabase magic-link auth. ----
@@ -176,8 +185,13 @@ export default function Shell({ children }) {
     if (!text.trim()) { setResults(null); return; }
     debounceRef.current = setTimeout(async () => {
       try {
+        const query = new URLSearchParams({
+          q: text.trim(),
+          user: getUid() || "",
+          brain: guideOn ? "1" : "0",
+        });
         const [d, s] = await Promise.all([
-          fetch("/api/search?q=" + encodeURIComponent(text.trim())).then((r) => r.json()),
+          authorizedFetch("/api/search?" + query.toString()).then((r) => r.json()),
           fetch("/api/suggest?q=" + encodeURIComponent(text.trim())).then((r) => r.json()).catch(() => ({ suggestions: [] })),
         ]);
         setResults({ ...d, users: searchUsers(text).slice(0, 4), suggestions: s.suggestions || [] });
@@ -186,7 +200,7 @@ export default function Shell({ children }) {
   }
   function submitSearch(e) {
     if (e.key !== "Enter" || !q.trim()) return;
-    window.location.href = "/?q=" + encodeURIComponent(q.trim());
+    window.location.href = "/discover?q=" + encodeURIComponent(q.trim());
   }
   function closeSearch() {
     // Delayed so option mousedown handlers win over blur.
@@ -236,7 +250,10 @@ export default function Shell({ children }) {
             </a>
           ))}
         </nav>
-        <div className="sfoot">a fashion brain that learns your taste across six bridges</div>
+        <div className="sjourney">
+          <span>PASSPORT</span><i>→</i><span>ASTERISK</span><i>→</i><span>YOUR EDIT</span>
+        </div>
+        <div className="sfoot">one taste record, guiding every rack</div>
       </aside>
 
       <div className="topright">
@@ -244,7 +261,7 @@ export default function Shell({ children }) {
           <input
             autoFocus
             className="search"
-            placeholder="brands, pieces, aesthetics, users…"
+            placeholder="ask for a piece, feeling, place, film, era…"
             value={q}
             onChange={(e) => onSearchInput(e.target.value)}
             onKeyDown={submitSearch}
@@ -260,6 +277,10 @@ export default function Shell({ children }) {
 
       {searchOpen && results && (
         <div className="searchpanel">
+          <div className={"searchguide " + (guideOn ? "on" : "off")}>
+            <b className="red">*</b> ASTERISK {guideOn ? "IS GUIDING" : "IS PAUSED"}
+            <span>{guideOn ? " · ordered through your Passport" : " · general results"}</span>
+          </div>
           {(results.suggestions || []).length > 0 && (
             <>
               <div className="psub">SUGGESTIONS</div>
@@ -275,7 +296,7 @@ export default function Shell({ children }) {
             <>
               <div className="psub">BRANDS</div>
               {results.brands.map((b) => (
-                <a className="shit" key={b} href={"/?q=" + encodeURIComponent(b)}>{b}</a>
+                <a className="shit" key={b} href={"/discover?q=" + encodeURIComponent(b)}>{b}</a>
               ))}
             </>
           )}
@@ -297,7 +318,7 @@ export default function Shell({ children }) {
             <>
               <div className="psub">AESTHETICS</div>
               {results.aesthetics.map((t) => (
-                <a className="shit" key={t} href={"/?q=" + encodeURIComponent(t.toLowerCase())}>{t}</a>
+                <a className="shit" key={t} href={"/discover?q=" + encodeURIComponent(t.toLowerCase())}>{t}</a>
               ))}
             </>
           )}

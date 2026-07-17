@@ -105,7 +105,33 @@ export default function BoardPage() {
       .catch(() => {});
   }
   useEffect(() => { if (uid) loadViz(uid); }, [uid]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { setBrainOn(brainEnabled()); }, []);
+  useEffect(() => {
+    const sync = () => setBrainOn(brainEnabled());
+    sync();
+    window.addEventListener("asilum:brain", sync);
+    return () => window.removeEventListener("asilum:brain", sync);
+  }, []);
+
+  async function toggleGuidance() {
+    const next = !brainOn;
+    const previous = brainOn;
+    setBrainOn(next);
+    try {
+      const res = await postJSON("/api/asterisk/memory", {
+        user: uid || getUid(), guidanceEnabled: next,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "could not update Asterisk");
+      setBrainEnabled(data.preferences.guidanceEnabled !== false);
+      setNotice(next
+        ? "Asterisk guidance on — every rack now routes through this Passport"
+        : "Asterisk paused — your Passport stays saved, but racks are general");
+    } catch (error) {
+      setBrainOn(previous);
+      setBrainEnabled(previous);
+      setNotice(error.message || "could not update Asterisk guidance");
+    }
+  }
 
   async function train() {
     if (!trainText.trim()) return;
@@ -204,11 +230,11 @@ export default function BoardPage() {
 
   return (
     <div className="wrap">
-      <h1 className="headline"><span className="red">*</span>MOODBOARD</h1>
+      <h1 className="headline"><span className="red">*</span>YOUR PASSPORT</h1>
       <p className="deck">
         {shared
-          ? "someone's taste, pinned down. follow it and it shapes your feed."
-          : "what you've saved — every save teaches the brain and builds the taste graph."}
+          ? "someone's taste passport. follow it and its route joins your own."
+          : "your moodboard is your Passport: every save, word, and image teaches Asterisk where to take you."}
       </p>
       <hr className="rule" />
 
@@ -216,7 +242,7 @@ export default function BoardPage() {
 
       {!shared && (
         <>
-          <h3 className="statshead">TRAIN THE BRAIN</h3>
+          <h3 className="statshead">STAMP THE PASSPORT</h3>
           <div className="controls">
             <input
               type="text"
@@ -225,7 +251,7 @@ export default function BoardPage() {
               onChange={(e) => setTrainText(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && train()}
             />
-            <button className="btn" onClick={train}>TRAIN</button>
+            <button className="btn" onClick={train}>ADD TO PASSPORT</button>
             <button className="btn ghost soon" onClick={connectPinterest}>CONNECT PINTEREST</button>
             <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>
               UPLOAD IMAGES
@@ -236,15 +262,15 @@ export default function BoardPage() {
 
           <div className="setrow">
             <div className="setinfo">
-              <div className="setname">Use Mood Board Brain</div>
+              <div className="setname">Asterisk Guidance</div>
               <div className="uhandle" style={{ maxWidth: 520, whiteSpace: "normal" }}>
-                on: search results lean slightly toward what this board has
-                taught. off: search stays general — nothing personalized.
+                on: Home, Search, Discover, and Stylist use this Passport.
+                off: those racks stay general; the Passport remains saved.
               </div>
             </div>
             <button
               className={"fitbtn" + (brainOn ? " active" : "")}
-              onClick={() => { const on = !brainOn; setBrainEnabled(on); setBrainOn(on); setNotice(on ? "mood board brain on — search now leans your way" : "mood board brain off — search is general"); }}
+              onClick={toggleGuidance}
             >
               {brainOn ? "ON" : "OFF"}
             </button>
