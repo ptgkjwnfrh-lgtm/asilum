@@ -1,13 +1,15 @@
 "use client";
-// Asterisk memory surface (handoff Feature B, Phase 2; contract ADR-001 v1).
-// AsteriskDrawer = the ✳ MEMORY topbar button + slide-down panel used by the
+// Asterisk memory surface (contract ADR-001 v2).
+// AsteriskDrawer = the guide button + slide-down panel used by the
 // shell on every page; MemorySections = the shared section renderer the
 // drawer and /asterisk both use, so both surfaces show the SAME contract.
 // All data comes from GET /api/asterisk/memory — a read facade over the
-// existing stores; the only write here is section visibility (POST).
+// existing stores; writes are display visibility and Asterisk guidance.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { authorizedFetch, postJSON, getUid } from "../../lib/client.js";
+import {
+  authorizedFetch, postJSON, getUid, brainEnabled, setBrainEnabled,
+} from "../../lib/client.js";
 
 export function useAsteriskMemory(open) {
   const [memory, setMemory] = useState(null);
@@ -40,6 +42,8 @@ export function useAsteriskMemory(open) {
         if (dead) return;
         if (!res.ok) { setErr(data.error || "memory unavailable"); return; }
         setMemory(data.memory);
+        const serverGuidance = data.memory?.preferences?.guidanceEnabled !== false;
+        if (brainEnabled() !== serverGuidance) setBrainEnabled(serverGuidance);
       } catch {
         if (!dead) setErr("memory unavailable");
       }
@@ -64,7 +68,30 @@ export function useAsteriskMemory(open) {
       saving.current = false;
     }
   }
-  return { memory, err, setHidden, reload };
+
+  async function setGuidanceEnabled(guidanceEnabled) {
+    if (saving.current || typeof guidanceEnabled !== "boolean") return false;
+    saving.current = true;
+    try {
+      const res = await postJSON("/api/asterisk/memory", {
+        user: getUid(), guidanceEnabled,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "could not update Asterisk guidance");
+      setMemory((current) => current
+        ? { ...current, preferences: data.preferences }
+        : current);
+      setBrainEnabled(data.preferences.guidanceEnabled !== false);
+      setErr("");
+      return true;
+    } catch (error) {
+      setErr(error.message || "could not update Asterisk guidance");
+      return false;
+    } finally {
+      saving.current = false;
+    }
+  }
+  return { memory, err, setHidden, setGuidanceEnabled, reload };
 }
 
 function Row({ label, children }) {
@@ -98,7 +125,7 @@ export function MemorySections({ memory, setHidden, full = false }) {
   const ex = memory.explicit, inf = memory.inferred, gl = memory.global, un = memory.uncertainty;
   return (
     <>
-      <Section id="explicit" title="WHAT YOU TOLD US">
+      <Section id="explicit" title="PASSPORT STAMPS">
         <Row label="CORRECTIONS">
           {ex.corrections.length
             ? ex.corrections.slice(0, full ? 20 : 5).map((c) => (
@@ -114,7 +141,7 @@ export function MemorySections({ memory, setHidden, full = false }) {
         <Row label="FIT PROFILE">{ex.measurements.set ? "set — values stay in profile" : "not set"}</Row>
         <Row label="CRAVING">per-request dial — never stored</Row>
       </Section>
-      <Section id="inferred" title="WHAT WE INFERRED">
+      <Section id="inferred" title="YOUR STYLE ROUTE">
         <Row label="LEANS">
           {inf.dominantAesthetics.length
             ? inf.dominantAesthetics.map((t) => <em key={t.tag}>{t.tag}</em>)
@@ -156,27 +183,93 @@ export function MemorySections({ memory, setHidden, full = false }) {
 
 export function AsteriskDrawer() {
   const [open, setOpen] = useState(false);
-  const { memory, err, setHidden } = useAsteriskMemory(open);
+  const [guideMirror, setGuideMirror] = useState(true);
+  const { memory, err, setHidden, setGuidanceEnabled } = useAsteriskMemory(open);
+
+  // The shell needs only one boolean until the drawer opens. Keep ordinary
+  // page loads cheap; the full multi-store Passport read is lazy.
+  useEffect(() => {
+    let dead = false;
+    const syncLocal = () => setGuideMirror(brainEnabled());
+    const syncServer = async () => {
+      try {
+        const res = await authorizedFetch(
+          `/api/asterisk/memory?view=preferences&user=${encodeURIComponent(getUid() || "")}`
+        );
+        const data = await res.json();
+        if (dead || !res.ok) return;
+        setBrainEnabled(data.preferences?.guidanceEnabled !== false);
+      } catch {}
+    };
+    syncLocal();
+    syncServer();
+    window.addEventListener("asilum:brain", syncLocal);
+    window.addEventListener("asilum:identity", syncServer);
+    return () => {
+      dead = true;
+      window.removeEventListener("asilum:brain", syncLocal);
+      window.removeEventListener("asilum:identity", syncServer);
+    };
+  }, []);
+
+  const guidanceOn = memory
+    ? memory.preferences?.guidanceEnabled !== false
+    : guideMirror;
+  const leans = memory?.inferred?.dominantAesthetics?.slice(0, 3) || [];
   return (
     <>
       <button
         className="asterisk-trigger"
-        aria-label="Asterisk memory"
+        aria-label="Asterisk guide"
         aria-expanded={open}
         aria-controls="asterisk-memory-drawer"
         onClick={() => setOpen((o) => !o)}
       >
         <b className="asterisk-glyph" aria-hidden="true">*</b>
-        <span>ASTERISK</span>
+        <span>ASTERISK GUIDE</span>
+        <em className={"asterisk-state " + (guidanceOn ? "on" : "off")}>
+          {guidanceOn ? "GUIDING" : "PAUSED"}
+        </em>
       </button>
       {open && (
-        <div className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk memory">
-          <div className="phead">ASTERISK MEMORY</div>
+        <div className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk guide">
+          <div className="phead">ASTERISK — YOUR TRAVEL AGENT</div>
+          <div className="aguideintro">
+            Your Passport teaches Asterisk the route. Search sets the destination;
+            Asterisk orders the racks so the trip still feels like you.
+          </div>
+          <div className={"aguideswitch " + (guidanceOn ? "on" : "off")}>
+            <div>
+              <b>{guidanceOn ? "GUIDANCE ON" : "GUIDANCE PAUSED"}</b>
+              <span>
+                {guidanceOn
+                  ? "Passport taste is shaping Home, Search, Discover, and Stylist."
+                  : "Those surfaces are general. Your Passport stays saved."}
+              </span>
+            </div>
+            <button
+              className="fitbtn"
+              aria-pressed={guidanceOn}
+              onClick={() => setGuidanceEnabled(!guidanceOn)}
+            >
+              {guidanceOn ? "PAUSE" : "TURN ON"}
+            </button>
+          </div>
+          <div className="aroute">
+            <a href="/board"><b>1</b><span>PASSPORT<em>show your taste</em></span></a>
+            <a href="/discover"><b>2</b><span>EXPLORE<em>name any destination</em></span></a>
+            <a href="/stylist"><b>3</b><span>STYLE<em>build the whole look</em></span></a>
+          </div>
+          {leans.length > 0 && (
+            <div className="aguidelean">
+              CURRENT ROUTE · {leans.map((lean) => lean.tag).join(" / ")}
+            </div>
+          )}
           {err && <div className="pempty">{err}</div>}
           {!err && !memory && <div className="pempty">reading…</div>}
           {memory && <MemorySections memory={memory} setHidden={setHidden} />}
           <a className="btn ghost wide" href="/asterisk" style={{ display: "block", textAlign: "center" }}>
-            FULL MEMORY & CONTROLS
+            OPEN PASSPORT READ & CONTROLS
           </a>
         </div>
       )}

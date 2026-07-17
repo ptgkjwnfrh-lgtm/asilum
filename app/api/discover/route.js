@@ -1,7 +1,7 @@
 // app/api/discover/route.js
 // GET /api/discover?q=&source=&tag=&category=&sort=new&offset=&limit=&user=&brain=
-// The full site inventory — deliberately NOT ranked by the taste profile
-// unless the user's Mood Board Brain toggle is on (&brain=1). Database
+// The full site inventory — ranked through the user's Passport only when
+// Asterisk guidance is requested and the saved server preference is on.
 // products first; the seed catalog only backfills a keyless dev run.
 // ?q= runs through the real search engine (lib/search): mappings expansion,
 // product_tags layer, ranked results with matchReason.
@@ -16,6 +16,7 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { rankByInterpretationTags } from "../../../lib/discover/tagRank.js";
+import { getMemoryPreferences } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
 
@@ -34,10 +35,16 @@ export async function GET(req) {
   let pool = [];
   let items = [];
   let demo = false;
+  let guidanceEnabled = false;
   if (q) {
-    const brain = searchParams.get("brain") === "1";
-    const userId = brain ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
-    const result = await searchProducts(q, { userId, brain: !!userId, limit: 2000 });
+    const requestedGuidance = searchParams.get("brain") === "1";
+    const userId = requestedGuidance
+      ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
+    guidanceEnabled = !!userId &&
+      (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
+    const result = await searchProducts(q, {
+      userId, brain: guidanceEnabled, limit: 2000,
+    });
     items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item) }));
     demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
   } else {
@@ -74,6 +81,7 @@ export async function GET(req) {
     offset,
     demo,
     sources,
+    guidanceEnabled,
     items: items.slice(offset, offset + limit),
   });
 }

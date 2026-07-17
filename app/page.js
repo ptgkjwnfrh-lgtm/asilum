@@ -12,7 +12,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
-  fitProfileForBrain,
+  fitProfileForBrain, brainEnabled,
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
@@ -278,6 +278,7 @@ export default function Home() {
   const [split, setSplit] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [guideOn, setGuideOn] = useState(true);
   const fit = useFitProfile();
   const [savedIds, setSavedIds] = useState(() => new Set());
   const [baggedIds, setBaggedIds] = useState(() => new Set());
@@ -306,6 +307,12 @@ export default function Home() {
   const dwellRef = useRef({ vis: new Map(), sent: new Set() });
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
+  useEffect(() => {
+    const sync = () => setGuideOn(brainEnabled());
+    sync();
+    window.addEventListener("asilum:brain", sync);
+    return () => window.removeEventListener("asilum:brain", sync);
+  }, []);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -447,8 +454,7 @@ export default function Home() {
     const boot = async () => {
       if (q) {
         promptRef.current = q;
-        await postJSON("/api/train", { user, prompt: q }).catch(() => {});
-        setNotice(`feed trained on “${q}”`);
+        setNotice(`Asterisk is routing this edit toward “${q}” without rewriting your Passport`);
       }
       await loadFeed(user);
       if (sharedItem) {
@@ -475,7 +481,7 @@ export default function Home() {
 
   useEffect(() => {
     if (uidRef.current) loadFeed();
-  }, [filters, epsilon, craving]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters, epsilon, craving, guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function markOnboarded() {
     try { window.localStorage.setItem("asilum-onboarded", "1"); } catch {}
@@ -644,7 +650,11 @@ export default function Home() {
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>THE FEED</h1>
-      <p className="deck">everything below was ranked for you — six bridges, three zones, no reruns.</p>
+      <p className="deck">
+        {guideOn
+          ? "Asterisk routed this edit through your Passport — six bridges, three zones, no reruns."
+          : "Asterisk is paused — this is a general edit. Your Passport is still waiting when you return."}
+      </p>
 
       <div className="tabs">
         {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (

@@ -1,10 +1,9 @@
 // app/api/feed/route.js
 // GET /api/feed?user=<id>&epsilon=<0|1>&q=<prompt>&board=<boardId>
-// Returns a ranked, personalized feed. Uses the persisted profile if present,
-// otherwise cold-starts from the optional text prompt. A shared board id seeds
-// the taste vector (taste transfer), so a shared moodboard link personalizes
-// the feed of whoever opens it. Every served page is remembered on the profile
-// (feed rotation) and counted as impressions for the popularity signal.
+// Returns a ranked feed. With Asterisk guidance active it uses the Passport
+// profile, optional prompt, and shared-board taste transfer; while paused it
+// uses general signals plus explicit fit/craving filters and does not update
+// taste-rotation memory. Impressions still feed global popularity.
 
 import { NextResponse } from "next/server";
 import { buildFeed, coldStart, markSeen, itemsVector } from "../../../lib/brain/index.js";
@@ -16,7 +15,7 @@ import {
   getEdges, getPopularity, getBoard, bumpPopularity,
 } from "../../../lib/db/index.js";
 import {
-  getUserCorrectionSignalSummary, getUserRecommendationExclusions,
+  getMemoryPreferences, getUserCorrectionSignalSummary, getUserRecommendationExclusions,
 } from "../../../lib/db/production.js";
 import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/correctionSignals.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
@@ -38,6 +37,8 @@ export async function GET(req) {
       status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
     });
   }
+  const guidanceEnabled =
+    (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
   const epsilonParam = searchParams.get("epsilon") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
@@ -60,7 +61,7 @@ export async function GET(req) {
   let correctionSummary, exclusions;
   try {
     [correctionSummary, exclusions] = await Promise.all([
-      getUserCorrectionSignalSummary(userId),
+      guidanceEnabled ? getUserCorrectionSignalSummary(userId) : Promise.resolve({}),
       getUserRecommendationExclusions(userId),
     ]);
   } catch {
@@ -92,25 +93,29 @@ export async function GET(req) {
   // Profile: persisted (with clock-based forgetting applied on read),
   // else cold-start from prompt.
   let storedProfile = {};
-  try { storedProfile = await getProfile(userId); } catch { storedProfile = {}; }
+  if (guidanceEnabled) {
+    try { storedProfile = await getProfile(userId); } catch { storedProfile = {}; }
+  }
   let profile = storedProfile;
   ({ profile } = applyTimeDecay(profile));
   const hasProfile =
     Object.keys(profile.long || {}).length > 0 ||
     Object.keys(profile.session || {}).length > 0;
-  if (!hasProfile && q) profile = coldStart(q).profile;
+  if (guidanceEnabled && !hasProfile && q) profile = coldStart(q).profile;
   const profileBeforeCorrections = profile;
-  profile = applyCorrectionSignalsToBrainProfile(profile, correctionSummary);
+  profile = guidanceEnabled
+    ? applyCorrectionSignalsToBrainProfile(profile, correctionSummary)
+    : applyCorrectionSignalsToBrainProfile({}, {});
 
   // Shared-board taste transfer — an explicit ?board= link, else the standing
   // influence of the boards this user follows.
   let boardVec = null;
-  if (boardId) {
+  if (guidanceEnabled && boardId) {
     try {
       const board = await getBoard(boardId);
       if (board && board.items.length) boardVec = itemsVector(board.items);
     } catch {}
-  } else {
+  } else if (guidanceEnabled) {
     const follows = (profile && profile._meta && profile._meta.follows) || [];
     if (follows.length) {
       try {
@@ -122,7 +127,8 @@ export async function GET(req) {
   }
 
   // Graph neighborhood of the user's recent engagements + global popularity.
-  const recent = (profile && profile._meta && profile._meta.recent) || [];
+  const recent = guidanceEnabled
+    ? (profile && profile._meta && profile._meta.recent) || [] : [];
   const [edges, popularity] = await Promise.all([
     recent.length ? getEdges(recent) : {},
     getPopularity(),
@@ -142,14 +148,15 @@ export async function GET(req) {
   // the clock decay is persisted so idle forgetting sticks.
   const ids = items.map((it) => it.id);
   try {
-    await Promise.all([
-      mutateProfile(userId, (current) => {
+    const writes = [bumpPopularity(ids.map((id) => ({ id, imp: 1 })))];
+    if (guidanceEnabled) {
+      writes.push(mutateProfile(userId, (current) => {
         const base = current && Object.keys(current).length ? current : profileBeforeCorrections;
         const { profile: decayed } = applyTimeDecay(base);
         return markSeen(decayed, ids);
-      }),
-      bumpPopularity(ids.map((id) => ({ id, imp: 1 }))),
-    ]);
+      }));
+    }
+    await Promise.all(writes);
   } catch {}
 
   return NextResponse.json({
@@ -157,6 +164,7 @@ export async function GET(req) {
     epsilonActive,
     epsilonAuto,
     safeMode,
+    guidanceEnabled,
     boardSeeded: !!boardVec,
     craving: cravingActive ? craving : null,
     split,

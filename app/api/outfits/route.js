@@ -20,8 +20,9 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
-import { getUserMeasurements } from "../../../lib/db/production.js";
-import { getWardrobeItem } from "../../../lib/db/production.js";
+import {
+  getMemoryPreferences, getUserMeasurements, getWardrobeItem,
+} from "../../../lib/db/production.js";
 import { wardrobeAnchor, wardrobeEnabled } from "../../../lib/wardrobe/index.js";
 import { measurementProfileForBrain, normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
 
@@ -108,10 +109,14 @@ async function generate(req, input, { persistSeen = true } = {}) {
   }
   const anchorId = String(input.anchor || "").slice(0, 80);
   const full = input.full === true;
+  const guidanceEnabled =
+    (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
 
   const pool = await getDiscoverablePool();
 
-  const profile = migrateProfile(await getProfile(userId).catch(() => ({})));
+  const profile = migrateProfile(guidanceEnabled
+    ? await getProfile(userId).catch(() => ({}))
+    : {});
   const taste = tasteVector(profile);
 
   // Wardrobe anchors ("wardrobe:<id>"): the look is built AROUND a piece the
@@ -147,6 +152,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
       .filter((look) => look.conf >= MATCH_FLOOR).slice(0, n);
     return NextResponse.json({
       userId, anchor: anchor ? anchor.id : null,
+      guidanceEnabled,
       count: outfits.length, outfits: outfits.map(publicLook),
     });
   }
@@ -184,7 +190,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
   }
 
   // Remember what was shown so the 30-day rule holds next time.
-  if (persistSeen) {
+  if (persistSeen && guidanceEnabled) {
     try {
       await mutateProfile(userId, (current) => {
         const cur = migrateProfile(current);
@@ -201,7 +207,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
     const model = await generateStylistOutfits(userId, {
       requestText: "Create a current, wearable fashion edit from available inventory.",
       sizePreferences: fitProfile?.usualSize ? [fitProfile.usualSize] : [],
-      useMoodBoardBrain: true,
+      useMoodBoardBrain: guidanceEnabled,
       aiConsent: true,
     });
     ai = { requested: true, source: model.source || "unavailable" };
@@ -214,6 +220,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
   const count = groups.reduce((s, g) => s + g.looks.length, 0);
   return NextResponse.json({
     userId, full: true, genres: groups.map((g) => g.genre), count,
+    guidanceEnabled,
     groups: groups.map((group) => ({ ...group, looks: group.looks.map(publicLook) })), ai,
   });
 }

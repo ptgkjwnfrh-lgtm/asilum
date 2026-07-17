@@ -1,4 +1,4 @@
-// tests/asterisk-memory.test.js — Asterisk memory facade (ADR-001 v1).
+// tests/asterisk-memory.test.js — Asterisk memory facade (ADR-001 v2).
 // Mem-mode: contract shape, measurements privacy (status only, never raw
 // values), preferences validation, follows CRUD + cap, purge and adoption
 // coverage of the two v14 domains.
@@ -53,13 +53,23 @@ test("preferences roundtrip through the facade", async () => {
   await saveMemoryPreferences(U, ["global"]);
   const r = await asteriskMemory(U);
   assert.deepEqual(r.memory.preferences.hiddenSections, ["global"]);
-  await saveMemoryPreferences(U, []);
-  assert.deepEqual((await getMemoryPreferences(U)).hiddenSections, []);
+  assert.equal(r.memory.preferences.guidanceEnabled, true);
+  await saveMemoryPreferences(U, { guidanceEnabled: false });
+  assert.deepEqual(await getMemoryPreferences(U), {
+    hiddenSections: ["global"], guidanceEnabled: false,
+  }, "a partial guidance patch preserves display preferences");
+  await saveMemoryPreferences(U, { hiddenSections: [] });
+  assert.deepEqual(await getMemoryPreferences(U), {
+    hiddenSections: [], guidanceEnabled: false,
+  }, "a partial display patch preserves guidance");
+  await saveMemoryPreferences(U, { guidanceEnabled: true });
 });
 
 test("preferences reject unknown and duplicate sections below the route layer", async () => {
   await assert.rejects(() => saveMemoryPreferences(U, ["global", "global"]), TypeError);
   await assert.rejects(() => saveMemoryPreferences(U, ["private-internals"]), TypeError);
+  await assert.rejects(() => saveMemoryPreferences(U, { guidanceEnabled: "false" }), TypeError);
+  await assert.rejects(() => saveMemoryPreferences(U, {}), TypeError);
 });
 
 test("MEMORY_SECTIONS is the drawer's exact section list", () => {
@@ -95,13 +105,15 @@ test("concurrent follows cannot race beyond the per-user cap", async () => {
   await purgePersonalizationData(user);
 });
 
-test("purge erases both v14 domains", async () => {
+test("purge erases Asterisk preferences and restores guidance default", async () => {
   const user = "u-memory-purge";
   await setFollow(user, "brand", "Bode", true);
-  await saveMemoryPreferences(user, ["explicit"]);
+  await saveMemoryPreferences(user, { hiddenSections: ["explicit"], guidanceEnabled: false });
   await purgePersonalizationData(user);
   assert.equal((await listFollows(user)).length, 0);
-  assert.deepEqual((await getMemoryPreferences(user)).hiddenSections, []);
+  assert.deepEqual(await getMemoryPreferences(user), {
+    hiddenSections: [], guidanceEnabled: true,
+  });
 });
 
 test("adoption moves follows and preferences; account side wins conflicts", async () => {
@@ -110,14 +122,25 @@ test("adoption moves follows and preferences; account side wins conflicts", asyn
   await setFollow(from, "brand", "Dries Van Noten", true);
   await setFollow(to, "brand", "Dries Van Noten", true); // duplicate — must not double
   await setFollow(from, "brand", "Lemaire", true);
-  await saveMemoryPreferences(from, ["global"]);
-  await saveMemoryPreferences(to, ["inferred"]); // account side wins
+  await saveMemoryPreferences(from, { hiddenSections: ["global"], guidanceEnabled: false });
+  await saveMemoryPreferences(to, { hiddenSections: ["inferred"], guidanceEnabled: true }); // account side wins
   await adoptAccountData(from, to);
   const follows = await listFollows(to);
   assert.deepEqual([...new Set(follows.map((f) => f.target))].sort(), ["Dries Van Noten", "Lemaire"]);
   assert.equal(follows.length, 2);
   assert.equal((await listFollows(from)).length, 0);
   assert.deepEqual((await getMemoryPreferences(to)).hiddenSections, ["inferred"]);
+  assert.equal((await getMemoryPreferences(to)).guidanceEnabled, true);
   assert.deepEqual((await getMemoryPreferences(from)).hiddenSections, []);
+  await purgePersonalizationData(to);
+});
+
+test("adoption carries paused guidance when the account has no preference", async () => {
+  const from = "u-guidance-adopt-from";
+  const to = "sb-guidance-adopt-to";
+  await saveMemoryPreferences(from, { guidanceEnabled: false });
+  await adoptAccountData(from, to);
+  assert.equal((await getMemoryPreferences(to)).guidanceEnabled, false);
+  assert.equal((await getMemoryPreferences(from)).guidanceEnabled, true);
   await purgePersonalizationData(to);
 });

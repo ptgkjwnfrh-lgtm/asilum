@@ -7,10 +7,10 @@
 // total, curated/taste stats, source count, match %, PASS / SAVE OUTFIT /
 // BAG ALL / SET YOUR SIZE / REGENERATE.
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   getUid, postJSON, thumbFor, bagAdd,
-  loadFitProfile, authorizedFetch,
+  loadFitProfile, authorizedFetch, brainEnabled,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
@@ -24,6 +24,8 @@ export default function StylistPage() {
   const [passed, setPassed] = useState(() => new Set());
   const [aiConsent, setAiConsent] = useState(false);
   const [wardrobe, setWardrobe] = useState([]);
+  const [guideOn, setGuideOn] = useState(true);
+  const guideBooted = useRef(false);
   const fit = useFitBrain();
 
   // Owned pieces become anchors: FROM YOUR WARDROBE strip (Feature C).
@@ -73,6 +75,21 @@ export default function StylistPage() {
     setAnchorId(anchor);
     load(anchor, storedAiConsent);
   }, [load]);
+
+  useEffect(() => {
+    const sync = () => setGuideOn(brainEnabled());
+    sync();
+    window.addEventListener("asilum:brain", sync);
+    return () => window.removeEventListener("asilum:brain", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!guideBooted.current) {
+      guideBooted.current = true;
+      return;
+    }
+    load(anchorId, aiConsent);
+  }, [guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function toggleAiConsent() {
     const next = !aiConsent;
@@ -126,10 +143,17 @@ export default function StylistPage() {
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>THE STYLIST</h1>
       <p className="deck">
-        whole looks cut across sources — 5 per base genre, floor 75% match,
+        whole looks cut across sources. {guideOn
+          ? "Asterisk is styling through your Passport,"
+          : "Asterisk guidance is paused, so this is a general edit,"}
         {" "}fit-gated when your size is set.
         {anchorId ? " styled around the piece you picked." : ""}
       </p>
+      <div className={"searchguide " + (guideOn ? "on" : "off")}>
+        <b className="red">*</b> ASTERISK {guideOn ? "GUIDING" : "PAUSED"}
+        <span>{guideOn ? "Passport taste + fit + wardrobe are working together" : "Fit and wardrobe still work; saved taste is not used"}</span>
+        <a href="/asterisk">CONTROL</a>
+      </div>
       {wardrobe.length > 0 && (
         <div className="wstrip">
           <span className="wstriplbl"><b className="red">*</b> FROM YOUR WARDROBE</span>
@@ -219,9 +243,9 @@ export default function StylistPage() {
       ))}
 
       <p className="deck" style={{ marginTop: 22 }}>
-        match is a relative ranking signal that sharpens as the brain learns
-        you — a look you were already shown has a one-in-ten chance of
-        returning inside thirty days.
+        match is a relative ranking signal that sharpens while Asterisk
+        guidance is active. A look you were already shown has a one-in-ten
+        chance of returning inside thirty days.
       </p>
 
     </div>

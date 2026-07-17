@@ -15,22 +15,27 @@ import { safeExternalUrl } from "../../../lib/url.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { getMemoryPreferences } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().toLowerCase().slice(0, 200);
-  const brain = searchParams.get("brain") === "1";
-  const userId = brain
-    ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
-  if (!q) return NextResponse.json({ q, brands: [], items: [], aesthetics: [], results: [], total: 0 });
+  if (!q) return NextResponse.json({
+    q, brands: [], items: [], aesthetics: [], results: [], total: 0, guidanceEnabled: false,
+  });
   const quota = await consumeRateLimit({ scope: "search", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const requestedGuidance = searchParams.get("brain") === "1";
+  const userId = requestedGuidance
+    ? await resolveRequestUser(req, searchParams.get("user") || "") : null;
+  const guidanceEnabled = !!userId &&
+    (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
 
   let out = { query: q, results: [], total: 0, interpreted: null };
   try {
-    out = await searchProducts(q, { userId, brain: brain && !!userId, limit: 48 });
+    out = await searchProducts(q, { userId, brain: guidanceEnabled, limit: 48 });
   } catch {
     // engine failure degrades to an empty (not fake) result set
   }
@@ -58,6 +63,7 @@ export async function GET(req) {
   return NextResponse.json({
     q, brands, items, aesthetics,
     total: out.total,
+    guidanceEnabled,
     interpreted: out.interpreted,
     results: out.results.map((it) => ({
       id: it.id, title: it.title, brand: it.brand, price: it.price,

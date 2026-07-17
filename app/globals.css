@@ -65,6 +65,12 @@ button { font-family: var(--helv); }
 .snav:hover { color: var(--red); }
 .snav.cur { background: var(--ink); color: var(--paper); padding: 0 10px; margin: 0 -10px; }
 .snav.cur::before { content: "* "; color: var(--red); white-space: pre; }
+.sjourney {
+  display: flex; align-items: center; justify-content: space-between; gap: 3px;
+  padding: 8px 0; border-top: 1px solid var(--line);
+  font-size: 7px; font-weight: 900; letter-spacing: 0.06em; white-space: nowrap;
+}
+.sjourney i { color: var(--red); font-style: normal; }
 .sfoot { margin-top: auto; font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--grey); line-height: 1.5; }
 
 .topright {
@@ -136,6 +142,7 @@ button { font-family: var(--helv); }
 .btn:hover { background: var(--paper); color: var(--ink); }
 .btn.ghost { background: var(--paper); color: var(--ink); }
 .btn.ghost:hover { background: var(--ink); color: var(--paper); }
+.btn.ghost.active { color: var(--paper); background: var(--ink); }
 .btn.wide { width: 100%; margin-top: 6px; }
 .btn:disabled { opacity: 0.35; cursor: default; }
 
@@ -376,7 +383,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
     border-right: none; border-top: 1px solid var(--line);
     flex-direction: row; align-items: center; gap: 12px; padding: 0 12px;
   }
-  .wordmark em, .sfoot { display: none; }
+  .wordmark em, .sfoot, .sjourney { display: none; }
   .wordmark { font-size: 18px; }
   /* base .snavs/.snav form a column of 44px rows — flatten back to a row here
      or the nine items overflow the 56px bottom bar and float over the page */
@@ -463,6 +470,15 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .shit.item img { width: 30px; height: 40px; object-fit: cover; flex: none; }
 .shit.item span { flex: 1; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .shit.item em { font-style: normal; font-size: 10px; color: var(--grey); flex: none; }
+.searchguide {
+  display: flex; align-items: center; gap: 7px; width: fit-content; max-width: 100%;
+  border: 1px solid var(--line); padding: 7px 10px; margin: 8px 0 12px;
+  font-size: 10px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.searchguide span { color: var(--grey); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
+.searchguide a { margin-left: auto; color: var(--red); border-bottom: 1px solid var(--red); }
+.searchguide.off { border-style: dashed; color: var(--grey); }
+.searchpanel .searchguide { width: 100%; margin: 0 0 8px; }
 
 /* ---- Bag fees ---- */
 .bagfees { padding: 10px 0 2px; }
@@ -695,12 +711,38 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   font-size: 11px; font-weight: 900; letter-spacing: 0.14em;
 }
 .asterisk-trigger:hover, .asterisk-trigger[aria-expanded="true"] { color: var(--red); }
+.asterisk-state {
+  margin-left: auto; font-style: normal; font-size: 7px; letter-spacing: 0.1em;
+  color: var(--red);
+}
+.asterisk-state.off { color: var(--grey); }
 .asterisk-glyph {
   width: 27px; height: 27px; flex: none; display: grid; place-items: center;
   background: var(--ink); color: var(--red); font-size: 25px; line-height: 1;
 }
 .asterisk-trigger[aria-expanded="true"] .asterisk-glyph { background: var(--red); color: var(--paper); }
 .adrawer { left: calc(var(--side-w) + 12px); top: 54px; width: 380px; max-height: 78vh; overflow-y: auto; }
+.aguideintro { font-size: 12px; line-height: 1.5; color: var(--grey); margin: 0 0 10px; }
+.aguideswitch {
+  display: flex; gap: 12px; align-items: center; justify-content: space-between;
+  border: 1px solid var(--line); border-left: 4px solid var(--red); padding: 9px 10px; margin-bottom: 10px;
+}
+.aguideswitch.off { border-left-color: var(--grey); border-style: dashed; }
+.aguideswitch div { display: grid; gap: 3px; }
+.aguideswitch b { font-size: 11px; letter-spacing: 0.1em; }
+.aguideswitch span { font-size: 10px; line-height: 1.35; color: var(--grey); }
+.aroute { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-bottom: 8px; }
+.aroute a { display: flex; gap: 6px; padding: 8px; border-right: 1px solid var(--line); min-width: 0; }
+.aroute a:last-child { border-right: 0; }
+.aroute a:hover { background: var(--ink); color: var(--paper); }
+.aroute b { color: var(--red); font-size: 12px; }
+.aroute span { display: grid; gap: 2px; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; }
+.aroute em { font-size: 8px; font-weight: 400; letter-spacing: 0; color: var(--grey); font-style: normal; }
+.aroute a:hover em { color: var(--faint); }
+.aguidelean {
+  margin: 0 0 10px; font-size: 9px; font-weight: 900; letter-spacing: 0.1em;
+  color: var(--red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .amemsec { border-top: 1px solid var(--line); padding: 10px 0; }
 .amemsec:first-of-type { border-top: none; }
 .amemhead { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: 0.14em; }
@@ -722,12 +764,15 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 @media (max-width: 760px) {
   .asterisk-trigger { width: auto; margin: 0; padding: 0; border: 0; }
   .asterisk-trigger span { display: none; }
+  .asterisk-state { display: none; }
   .asterisk-glyph { width: 32px; height: 32px; }
   .adrawer {
     left: 12px; right: 12px; top: auto; bottom: 64px; width: auto;
     max-height: calc(100vh - 110px);
   }
   .amemlbl { flex-basis: 84px; }
+  .searchguide { align-items: flex-start; flex-wrap: wrap; }
+  .searchguide span { width: 100%; }
 }
 
 /* ── Wardrobe (Feature C, Phase 3a) ─────────────────────────────────────── */

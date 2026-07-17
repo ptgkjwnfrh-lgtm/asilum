@@ -1,9 +1,9 @@
 "use client";
-// /asterisk — the full Asterisk memory page (handoff Feature B, Phase 2).
+// /asterisk — the full Asterisk memory and guidance control room.
 // Everything the drawer shows, plus the control room: export your memory as
 // JSON, correct the record, and the honest big red switches (reset brain,
 // delete personalization) — all routed to the EXISTING endpoints per ADR-001;
-// this page owns no writes beyond section visibility.
+// this page owns display visibility and guidance controls.
 
 import { useEffect, useRef, useState } from "react";
 import { MemorySections, useAsteriskMemory } from "../components/AsteriskMemory.jsx";
@@ -13,7 +13,7 @@ import { followedBrands, followedUsers } from "../../lib/social.js";
 const SYNC_KEY = "asilum-follows-synced";
 
 export default function AsteriskPage() {
-  const { memory, err, setHidden, reload } = useAsteriskMemory(true);
+  const { memory, err, setHidden, setGuidanceEnabled, reload } = useAsteriskMemory(true);
   const [confirmText, setConfirmText] = useState("");
   const [status, setStatus] = useState("");
   const syncAttempts = useRef(new Set());
@@ -75,10 +75,10 @@ export default function AsteriskPage() {
 
   return (
     <div className="amempage">
-      <h1 className="headline"><span className="red">*</span>ASTERISK MEMORY</h1>
+      <h1 className="headline"><span className="red">*</span>ASTERISK CONTROL ROOM</h1>
       <div className="amemsub">
-        Everything Asterisk holds about you, from the stores it already keeps — nothing invented,
-        nothing duplicated. Corrections retrain it; the switches below are real.
+        Your Passport read, Asterisk&apos;s route, and the controls behind it.
+        Guidance can pause without deleting the Passport; corrections still keep the record honest.
       </div>
       {err && <div className="pempty">{err}</div>}
       {!err && !memory && <div className="pempty">reading…</div>}
@@ -89,13 +89,26 @@ export default function AsteriskPage() {
           <div className="amemhead"><b className="red">*</b> CONTROLS</div>
           <div className="amembody">
             <div className="amemrow">
+              <span className="amemlbl">GUIDANCE</span>
+              <span className="amemval">
+                <button
+                  className={"btn ghost" + (memory.preferences?.guidanceEnabled !== false ? " active" : "")}
+                  aria-pressed={memory.preferences?.guidanceEnabled !== false}
+                  onClick={() => setGuidanceEnabled(memory.preferences?.guidanceEnabled === false)}
+                >
+                  {memory.preferences?.guidanceEnabled !== false ? "ON — PAUSE" : "PAUSED — TURN ON"}
+                </button>
+                <em>pause personalized ordering; keep your Passport saved</em>
+              </span>
+            </div>
+            <div className="amemrow">
               <span className="amemlbl">EXPORT</span>
               <span className="amemval"><button className="btn ghost" onClick={exportMemory}>DOWNLOAD JSON</button></span>
             </div>
             <div className="amemrow">
               <span className="amemlbl">RETRAIN</span>
               <span className="amemval">
-                open any piece → <em>✳ WHY THIS</em> to correct a read · <a className="amemgo" href="/board">TRAIN THE MOODBOARD</a>
+                open any piece → <em>✳ WHY THIS</em> to correct a read · <a className="amemgo" href="/board">STAMP THE PASSPORT</a>
               </span>
             </div>
             <div className="amemrow">
