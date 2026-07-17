@@ -8,6 +8,7 @@
 
 import { NextResponse } from "next/server";
 import { buildFeed, coldStart, markSeen, itemsVector } from "../../../lib/brain/index.js";
+import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
 import {
@@ -51,6 +52,11 @@ export async function GET(req) {
 
   // Item pool: DB items if available, else the seed catalog.
   let pool = await getDiscoverablePool();
+  // Dense tagging (Day 25): sharpen item vectors with the brain's own
+  // affinity bleed before scoring — primaries untouched, kill switch below.
+  if ((process.env.DENSE_FEED_ENABLED ?? "1") !== "0") {
+    pool = pool.map((it) => ({ ...it, tags: enrichItemVec(it.tags || {}) }));
+  }
   let correctionSummary, exclusions;
   try {
     [correctionSummary, exclusions] = await Promise.all([
