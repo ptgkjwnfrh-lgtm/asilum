@@ -1246,6 +1246,38 @@
   },
   {
     "kind": "figure",
+    "name": "corinne day",
+    "aliases": [],
+    "note": "the raw diary — anti-fashion realism, no retouching, beauty unpolished",
+    "interpretations": [
+      {
+        "id": "corinne day/raw-diary",
+        "label": "the raw diary",
+        "type": "lens",
+        "summary": "anti-fashion realism — no retouching, minimal makeup, the third summer of love; beauty found in the unpolished and the ordinary",
+        "tags": [
+          "independent",
+          "minimal",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "raw",
+          "intimate"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-4dc6ff7b-dfab-4efb-b420-d88f3601edb6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Corinne_Day",
+      "https://hundredheroines.org/historical-heroines/corinne-day/"
+    ],
+    "approvedAt": 1784261923664
+  },
+  {
+    "kind": "figure",
     "name": "courtney love",
     "aliases": [
       "kinderwhore",
@@ -1876,6 +1908,40 @@
   },
   {
     "kind": "figure",
+    "name": "ellen von unwerth",
+    "aliases": [
+      "von unwerth"
+    ],
+    "note": "the playful gaze — sensuality with the joke kept in",
+    "interpretations": [
+      {
+        "id": "ellen von unwerth/playful-gaze",
+        "label": "the playful gaze",
+        "type": "lens",
+        "summary": "strong, self-assured women caught mid-laugh — sensuality with the joke kept in, the female gaze before anyone named it",
+        "tags": [
+          "seductive",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "playful",
+          "liberated"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-9ae33d70-2498-4c5e-97fc-e6dde2db54d3",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/39892/1/ellen-von-unwerth-new-exhibition-the-female-gaze-metoo-london-ladyland",
+      "https://www.cnn.com/style/article/ellen-von-unwerth-fashion-photography/index.html"
+    ],
+    "approvedAt": 1784261932664
+  },
+  {
+    "kind": "figure",
     "name": "elsa schiaparelli",
     "aliases": [
       "schiaparelli"
@@ -2476,6 +2542,42 @@
     "approvedAt": 1784178613727
   },
   {
+    "kind": "figure",
+    "name": "guy bourdin",
+    "aliases": [
+      "bourdin"
+    ],
+    "note": "surreal desire — high-gloss color, emblematic red, unsettling melodrama",
+    "interpretations": [
+      {
+        "id": "guy bourdin/surreal-desire",
+        "label": "surreal desire",
+        "type": "lens",
+        "summary": "high-gloss color, an emblematic red, fragmented bodies — the product shot refused in favor of unsettling melodrama and want",
+        "tags": [
+          "seductive",
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [
+          "red"
+        ],
+        "moods": [
+          "surreal",
+          "dangerous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-b11f92da-a1ae-4011-84f8-2503fc1ecc4e",
+    "sourceUrls": [
+      "https://independent-photo.com/news/guy-bourdin/",
+      "https://www.artsy.net/article/artsy-editorial-the-striking-obsessive-fashion-photography-of-guy-bourdin"
+    ],
+    "approvedAt": 1784261928150
+  },
+  {
     "kind": "aesthetic",
     "name": "gyaru",
     "aliases": [],
@@ -2695,6 +2797,80 @@
   },
   {
     "kind": "figure",
+    "name": "helmut newton",
+    "aliases": [
+      "newton"
+    ],
+    "note": "power glamour — strong women in commanding poses, noir contrast, berlin decadence",
+    "interpretations": [
+      {
+        "id": "helmut newton/power-glamour",
+        "label": "power glamour",
+        "type": "lens",
+        "summary": "strong women in commanding poses — high-contrast noir, berlin decadence, glamour worn as dominance rather than decoration",
+        "tags": [
+          "seductive",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "dominant",
+          "nocturnal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-c5df4fb8-726e-42b4-845a-a1a34e67da5b",
+    "sourceUrls": [
+      "https://www.theartstory.org/artist/newton-helmut/",
+      "https://i-d.co/article/helmut-newton-exhibition/"
+    ],
+    "approvedAt": 1784261922546
+  },
+  {
+    "kind": "figure",
+    "name": "herb ritts",
+    "aliases": [
+      "ritts"
+    ],
+    "note": "california marble — golden-hour light on sculptural bodies",
+    "interpretations": [
+      {
+        "id": "herb ritts/california-marble",
+        "label": "california marble",
+        "type": "lens",
+        "summary": "golden-hour desert and beach light on sculptural bodies — greek statuary reshot in los angeles, glamour taken outdoors",
+        "tags": [
+          "minimal",
+          "seductive",
+          "statement"
+        ],
+        "colors": [
+          "white",
+          "sand"
+        ],
+        "moods": [
+          "sunlit",
+          "monumental"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-1f8513ac-ec14-47e7-88a0-f91c97fc8dbc",
+    "sourceUrls": [
+      "https://www.getty.edu/art/exhibitions/ritts/",
+      "https://en.wikipedia.org/wiki/Herb_Ritts"
+    ],
+    "approvedAt": 1784261931500
+  },
+  {
+    "kind": "figure",
     "name": "ib kamara",
     "aliases": [
       "ibrahim kamara"
@@ -2795,6 +2971,43 @@
       "https://www.wmagazine.com/fashion/iman-best-fashion-style-photos"
     ],
     "approvedAt": 1784216397857
+  },
+  {
+    "kind": "figure",
+    "name": "irving penn",
+    "aliases": [
+      "irving penn corner"
+    ],
+    "note": "the pruned frame — elegance as subtraction",
+    "interpretations": [
+      {
+        "id": "irving penn/pruned-frame",
+        "label": "the pruned frame",
+        "type": "lens",
+        "summary": "white backdrops, corner portraits, still-life covers — everything cut that does not contribute; elegance practiced as subtraction",
+        "tags": [
+          "minimal",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "grey"
+        ],
+        "moods": [
+          "austere",
+          "precise"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-11fe945d-74b4-4d51-9b84-8fb1be158426",
+    "sourceUrls": [
+      "https://aboutphotography.blog/photographer/irving-penn",
+      "https://www.pacegallery.com/artists/irving-penn/"
+    ],
+    "approvedAt": 1784261933764
   },
   {
     "kind": "figure",
@@ -3222,6 +3435,40 @@
       "https://www.mic.com/articles/148307/unsung-style-icon-josephine-baker-pioneer-of-the-miniskirt-and-androgynous-dressing"
     ],
     "approvedAt": 1784178614398
+  },
+  {
+    "kind": "figure",
+    "name": "juergen teller",
+    "aliases": [
+      "teller"
+    ],
+    "note": "flash realism — the snapshot as the point, celebrity stripped to humanity",
+    "interpretations": [
+      {
+        "id": "juergen teller/flash-realism",
+        "label": "flash realism",
+        "type": "lens",
+        "summary": "on-camera flash, no retouching, deliberately artless — celebrity stripped to humanity, the imperfect snapshot elevated to the whole point",
+        "tags": [
+          "independent",
+          "avant-garde",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "candid",
+          "absurd"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-3937596c-248f-450b-bd53-09a5e716cf62",
+    "sourceUrls": [
+      "https://www.itsnicethat.com/articles/elizabeth-goodspeed-column-juergen-teller-photography-120124",
+      "https://www.showstudio.com/projects/in_camera/juergen-teller"
+    ],
+    "approvedAt": 1784261924784
   },
   {
     "kind": "figure",
@@ -4626,6 +4873,40 @@
     "approvedAt": 1784177295005
   },
   {
+    "kind": "figure",
+    "name": "nick knight",
+    "aliases": [
+      "showstudio"
+    ],
+    "note": "image-making after photography — live-streamed shoots, hybrid digital images",
+    "interpretations": [
+      {
+        "id": "nick knight/image-making",
+        "label": "image-making after photography",
+        "type": "lens",
+        "summary": "3d scans, live-streamed shoots, hybrid digital images — fashion imagery treated as an open experiment since the year 2000",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "futurist",
+          "luminous"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-2e8b33c9-53c7-4dd1-8b6e-17697d35929a",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Nick_Knight_(photographer)",
+      "https://www.1854.photography/2015/05/showstudio-nick-knights-digital-fashion-concept/"
+    ],
+    "approvedAt": 1784261929258
+  },
+  {
     "kind": "aesthetic",
     "name": "northern soul",
     "aliases": [
@@ -4776,6 +5057,43 @@
       "https://thefashionglobe.com/secrets-iconic-peaky-blinders-outfits/"
     ],
     "approvedAt": 1784176299762
+  },
+  {
+    "kind": "figure",
+    "name": "peter lindbergh",
+    "aliases": [
+      "lindbergh"
+    ],
+    "note": "the honest portrait — black-and-white natural light that made the supermodels",
+    "interpretations": [
+      {
+        "id": "peter lindbergh/honest-portrait",
+        "label": "the honest portrait",
+        "type": "lens",
+        "summary": "black-and-white natural light, no heavy makeup — the group shot that made the supermodels; allure without artifice, warmth over gloss",
+        "tags": [
+          "minimal",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "warm",
+          "timeless"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-dae70236-5b2c-43cb-b643-8e36ee601ff3",
+    "sourceUrls": [
+      "https://www.artsy.net/article/artsy-editorial-peter-lindbergh-photo-launched-90s-supermodel-era",
+      "https://en.wikipedia.org/wiki/Peter_Lindbergh"
+    ],
+    "approvedAt": 1784261927048
   },
   {
     "kind": "music",
@@ -5022,6 +5340,44 @@
       "https://www.istitutomarangoni.com/en/maze35/game-changers/rei-kawakubo-queen-of-the-in-between-kingdom"
     ],
     "approvedAt": 1784260245787
+  },
+  {
+    "kind": "figure",
+    "name": "richard avedon",
+    "aliases": [
+      "avedon"
+    ],
+    "note": "the avedon blur — models in motion against white, stillness banished",
+    "interpretations": [
+      {
+        "id": "richard avedon/avedon-blur",
+        "label": "the avedon blur",
+        "type": "lens",
+        "summary": "models in motion against white — emotion sprinting through couture, an evening gown among elephants; stillness banished from fashion",
+        "tags": [
+          "statement",
+          "tailored",
+          "archival",
+          "minimal"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "kinetic",
+          "exuberant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-2071e3d4-0afe-4977-988e-c64491d3b82a",
+    "sourceUrls": [
+      "https://www.theartstory.org/artist/avedon-richard/",
+      "https://www.npr.org/sections/pictureshow/2009/06/richard_avedons_fashion_photog.html"
+    ],
+    "approvedAt": 1784261930359
   },
   {
     "kind": "figure",
@@ -5780,6 +6136,41 @@
       "https://wwd.com/fashion-news/street-style/pitti-uomo-mens-street-style-fall-1236850712/"
     ],
     "approvedAt": 1784257178611
+  },
+  {
+    "kind": "figure",
+    "name": "steven meisel",
+    "aliases": [
+      "meisel"
+    ],
+    "note": "the chameleon — style as shapeshifting, supermodels made per issue",
+    "interpretations": [
+      {
+        "id": "steven meisel/chameleon",
+        "label": "the chameleon",
+        "type": "lens",
+        "summary": "every italian vogue cover for decades — style as shapeshifting, supermodels discovered and cultural storylines scripted issue by issue",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "protean",
+          "exacting"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-7d595960-c3d9-4eb6-a9e3-900feea8d14c",
+    "sourceUrls": [
+      "https://magazine.032c.com/magazine/who-is-steven-meisel",
+      "https://en.wikipedia.org/wiki/Steven_Meisel"
+    ],
+    "approvedAt": 1784261925920
   },
   {
     "kind": "figure",
