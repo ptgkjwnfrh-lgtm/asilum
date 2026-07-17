@@ -9,6 +9,7 @@ import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnab
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
+import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
@@ -187,7 +188,7 @@ export default function DiscoverPage() {
       <div className={"searchguide " + (guideOn ? "on" : "off")}>
         <b className="red">*</b> ASTERISK {guideOn ? "GUIDING" : "PAUSED"}
         <span>{guideOn ? "Passport-aware ranking is active" : "Your Passport is saved but not influencing results"}</span>
-        <a href="/asterisk">CONTROL</a>
+        <AsteriskGuidanceToggle compact className="fitbtn asearchtoggle" />
       </div>
 
       <div className="filters">
