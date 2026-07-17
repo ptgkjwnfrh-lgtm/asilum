@@ -304,6 +304,38 @@
     "approvedAt": 1784087396400
   },
   {
+    "kind": "figure",
+    "name": "arianne phillips",
+    "aliases": [],
+    "note": "stage armor — tour wardrobe as world-building, engineered to survive choreography",
+    "interpretations": [
+      {
+        "id": "arianne phillips/stage-armor",
+        "label": "stage armor",
+        "type": "formula",
+        "summary": "tour wardrobe as world-building — corsetry, tailoring and theatrical costume engineered to survive choreography and define an era of pop stagecraft",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "armored",
+          "iconic"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-75a536cf-c95d-4598-a2f4-82ae17687d75",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Arianne_Phillips",
+      "https://www.service95.com/madonna-celebration-tour-stylist"
+    ],
+    "approvedAt": 1784258280702
+  },
+  {
     "kind": "city",
     "name": "atlanta",
     "aliases": [
@@ -783,6 +815,43 @@
       "https://www.whowhatwear.com/fashion/celebrity-style/caitlin-clark-prada-wnba-tunnel-fits"
     ],
     "approvedAt": 1784177957769
+  },
+  {
+    "kind": "figure",
+    "name": "carine roitfeld",
+    "aliases": [
+      "roitfeld",
+      "erotic chic"
+    ],
+    "note": "erotic chic — the paris formula of pencil skirt, cinched jacket, skyscraper heel",
+    "interpretations": [
+      {
+        "id": "carine roitfeld/erotic-chic",
+        "label": "erotic chic",
+        "type": "formula",
+        "summary": "the paris formula — pencil skirt, cinched jacket, skyscraper heel, smoky eye; black-leather sensuality held to strict editorial discipline",
+        "tags": [
+          "seductive",
+          "tailored",
+          "minimal"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "dangerous",
+          "precise"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-2f4e458e-46be-432f-8478-eff2714ae786",
+    "sourceUrls": [
+      "https://theglossarymagazine.com/fashion/carine-roitfeld-interview/",
+      "https://www.catwalkyourself.com/fashion-biographies/carine-roitfeld/"
+    ],
+    "approvedAt": 1784258278539
   },
   {
     "kind": "figure",
@@ -1599,6 +1668,40 @@
   },
   {
     "kind": "figure",
+    "name": "edward enninful",
+    "aliases": [
+      "enninful"
+    ],
+    "note": "inclusive glamour — casting as the styling statement",
+    "interpretations": [
+      {
+        "id": "edward enninful/inclusive-glamour",
+        "label": "inclusive glamour",
+        "type": "formula",
+        "summary": "casting as the styling statement — glamour opened wide, diversity of perspective on every cover, fashion imagery tracking the contemporary moment",
+        "tags": [
+          "statement",
+          "tailored",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "expansive",
+          "proud"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-63b67107-2ca2-405d-b428-2a578f9377f2",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Edward_Enninful",
+      "https://time.com/5886975/edward-enninful-british-vogue-interview/"
+    ],
+    "approvedAt": 1784258282869
+  },
+  {
+    "kind": "figure",
     "name": "elsa schiaparelli",
     "aliases": [
       "schiaparelli"
@@ -2094,6 +2197,40 @@
     "approvedAt": 1784098505981
   },
   {
+    "kind": "figure",
+    "name": "grace coddington",
+    "aliases": [
+      "coddington"
+    ],
+    "note": "the romantic narrative — storybook editorials staged like cinema",
+    "interpretations": [
+      {
+        "id": "grace coddington/romantic-narrative",
+        "label": "the romantic narrative",
+        "type": "formula",
+        "summary": "storybook editorials staged like cinema — history, literature and myth walked through couture, imagination prioritized over practicality",
+        "tags": [
+          "archival",
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "dreamlike",
+          "romantic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-e48a57e3-7072-4fd7-a163-c3325d9817f6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Grace_Coddington",
+      "https://www.businessoffashion.com/people/grace-coddington/"
+    ],
+    "approvedAt": 1784258277455
+  },
+  {
     "kind": "music",
     "name": "grime",
     "aliases": [],
@@ -2277,6 +2414,41 @@
       "https://www.nylon.com/fashion/heathers-movie-fashion-outfits/amp"
     ],
     "approvedAt": 1784179318460
+  },
+  {
+    "kind": "figure",
+    "name": "ib kamara",
+    "aliases": [
+      "ibrahim kamara"
+    ],
+    "note": "collage futurism — west african draping crossed with sportswear until style points somewhere new",
+    "interpretations": [
+      {
+        "id": "ib kamara/collage-futurism",
+        "label": "collage futurism",
+        "type": "formula",
+        "summary": "west african draping crossed with sportswear and corsetry — daring layering that recontextualizes clothing and beauty into bold new directions",
+        "tags": [
+          "avant-garde",
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "visionary",
+          "bold"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-1d2a104c-6520-423a-90e5-49b49b4eb8c6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Ib_Kamara",
+      "https://www.dazeddigital.com/projects/article/35377/1/ibrahim-kamara-stylists-biography-dazed-100-profile"
+    ],
+    "approvedAt": 1784258271979
   },
   {
     "kind": "figure",
@@ -2672,6 +2844,44 @@
   },
   {
     "kind": "figure",
+    "name": "june ambrose",
+    "aliases": [
+      "shiny suits"
+    ],
+    "note": "the shiny suit era — costume-level risk that made hip-hop and high fashion one economy",
+    "interpretations": [
+      {
+        "id": "june ambrose/shiny-suit-era",
+        "label": "the shiny suit era",
+        "type": "formula",
+        "summary": "patent moto suits, inflated silhouettes, couture pulled into the rap video — bets so big they defined the artists who wore them",
+        "tags": [
+          "statement",
+          "streetwear",
+          "avant-garde"
+        ],
+        "colors": [
+          "red",
+          "silver",
+          "black"
+        ],
+        "moods": [
+          "fearless",
+          "flamboyant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-9e41052d-6698-4ad4-a9fe-56d968c4177a",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/June_Ambrose",
+      "https://fashionista.com/2022/04/june-ambrose-stylist-career-interview"
+    ],
+    "approvedAt": 1784258275250
+  },
+  {
+    "kind": "figure",
     "name": "karl lagerfeld",
     "aliases": [],
     "note": "the most recognizable uniform in fashion — 18th-century collar, powdered ponytail",
@@ -2704,6 +2914,72 @@
       "https://www.papermag.com/karl-lagerfeld-personal-uniform"
     ],
     "approvedAt": 1784177292938
+  },
+  {
+    "kind": "figure",
+    "name": "karla welch",
+    "aliases": [
+      "x karla"
+    ],
+    "note": "the invisible hand — styling that disappears into the client",
+    "interpretations": [
+      {
+        "id": "karla welch/invisible-hand",
+        "label": "the invisible hand",
+        "type": "formula",
+        "summary": "styling that disappears into the client — the perfect tee, the le smoking, a fearless to-hell-with-it spirit; owning your look is the whole point",
+        "tags": [
+          "minimal",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "effortless",
+          "assured"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-44e07c45-59e7-405a-8e25-ac1bde7d7b26",
+    "sourceUrls": [
+      "https://thewallgroup.com/artist/karla-welch/",
+      "https://graziadaily.co.uk/fashion/news/karla-welch-hollywood-stylist/"
+    ],
+    "approvedAt": 1784258279619
+  },
+  {
+    "kind": "figure",
+    "name": "kate young",
+    "aliases": [],
+    "note": "gamine glamour — old-hollywood line cut with 90s cool-girl restraint",
+    "interpretations": [
+      {
+        "id": "kate young/gamine-glamour",
+        "label": "gamine glamour",
+        "type": "formula",
+        "summary": "old-hollywood line cut with 90s cool-girl restraint — strict minimal silhouettes over prints, glamour worn like it costs no effort",
+        "tags": [
+          "tailored",
+          "minimal",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "poised",
+          "cool"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-df49a8f1-2f9b-424e-8506-75c425eef422",
+    "sourceUrls": [
+      "https://thewallgroup.com/artist/kate-young/",
+      "https://wwd.com/fashion-news/fashion-features/kate-young-celebrity-stylist-wwd-style-awards-golden-globes-2025-fashion-1236773909/"
+    ],
+    "approvedAt": 1784258281773
   },
   {
     "kind": "figure",
@@ -2921,6 +3197,58 @@
   },
   {
     "kind": "figure",
+    "name": "law roach",
+    "aliases": [
+      "luxury law",
+      "image architect"
+    ],
+    "note": "the image architect — press tours scripted like editorial arcs, archives raided for the carpet",
+    "interpretations": [
+      {
+        "id": "law roach/method-dressing",
+        "label": "method dressing",
+        "type": "formula",
+        "summary": "the premiere look scripted to the story — a press tour built like an editorial arc, each carpet a chapter, clothing doing character work",
+        "tags": [
+          "statement",
+          "archival",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "theatrical",
+          "exact"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "law roach/archive-revival",
+        "label": "the archive pull",
+        "type": "formula",
+        "summary": "vintage couture hunted like grails and returned to the carpet — the strongest statement may be twenty years old and fit like it was waiting",
+        "tags": [
+          "archival",
+          "statement",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "reverent",
+          "grand"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-3fae56b7-deb8-4163-bc36-ad4c616533e2",
+    "sourceUrls": [
+      "https://www.businessoffashion.com/people/law-roach/",
+      "https://www.fastcompany.com/91216135/image-architect-law-roach-on-styling-zendaya-celebrity"
+    ],
+    "approvedAt": 1784258270914
+  },
+  {
+    "kind": "figure",
     "name": "lewis hamilton",
     "aliases": [],
     "note": "the paddock turned runway — race weekends as fashion statements",
@@ -3028,6 +3356,41 @@
       "https://en.wikipedia.org/wiki/Little_Richard"
     ],
     "approvedAt": 1784216421764
+  },
+  {
+    "kind": "figure",
+    "name": "lotta volkova",
+    "aliases": [
+      "volkova"
+    ],
+    "note": "the post-soviet uniform — stereotype casting and messy-girl layering restaged as high fashion",
+    "interpretations": [
+      {
+        "id": "lotta volkova/post-soviet-uniform",
+        "label": "the post-soviet uniform",
+        "type": "formula",
+        "summary": "market-stall layering, stereotype casting, office skirts gone strange — the culture clash of the russian 90s restaged as high fashion",
+        "tags": [
+          "avant-garde",
+          "utilitarian",
+          "independent",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "deadpan",
+          "subversive"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-975163e5-cd82-46ea-9ccc-d2951bd79bdc",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/lotta-volkova-stylist-profile/",
+      "https://www.wmagazine.com/story/lotta-volkova-stylist-balenciaga"
+    ],
+    "approvedAt": 1784258274196
   },
   {
     "kind": "tv",
@@ -3263,6 +3626,40 @@
     "approvedAt": 1784078950979
   },
   {
+    "kind": "figure",
+    "name": "mel ottenberg",
+    "aliases": [
+      "ottenberg"
+    ],
+    "note": "off-kilter sexy — american-dream ephemera styled with a knowing wink",
+    "interpretations": [
+      {
+        "id": "mel ottenberg/off-kilter-sexy",
+        "label": "off-kilter sexy",
+        "type": "formula",
+        "summary": "the aspirational ephemera of the american dream twinned with basic heat — vintage pieces, custom samples, mainstream glamour subverted from the inside",
+        "tags": [
+          "seductive",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "knowing",
+          "playful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-8fbf8c2e-02b0-48d5-b1e5-6c8a08248ce2",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Mel_Ottenberg",
+      "https://system-magazine.com/issues/issue-22/in-the-words-of-mel-ottenberg"
+    ],
+    "approvedAt": 1784258273080
+  },
+  {
     "kind": "art",
     "name": "memphis design",
     "aliases": [
@@ -3449,6 +3846,44 @@
       "https://en.wikipedia.org/wiki/Thriller_jacket"
     ],
     "approvedAt": 1784216489347
+  },
+  {
+    "kind": "figure",
+    "name": "misa hylton",
+    "aliases": [
+      "hip-hop glamorous"
+    ],
+    "note": "hip-hop glamorous — custom monochrome sets and remixed luxury built for new muses",
+    "interpretations": [
+      {
+        "id": "misa hylton/custom-glamour",
+        "label": "hip-hop glamorous",
+        "type": "formula",
+        "summary": "custom monochrome sets, furs and pastel leather, luxury logos remixed to fit the block — glamour built for women fashion had never treated as muses",
+        "tags": [
+          "seductive",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [
+          "lilac",
+          "baby blue",
+          "pink"
+        ],
+        "moods": [
+          "glamorous",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day24-pr-review",
+    "factId": "fact-ca995349-2628-484f-a84b-fc978f8535da",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Misa_Hylton",
+      "https://www.dazeddigital.com/fashion/article/42182/1/misa-hylton-interview-90s-hip-hop-stylist-lil-kim-hard-core-vmas"
+    ],
+    "approvedAt": 1784258276362
   },
   {
     "kind": "aesthetic",
