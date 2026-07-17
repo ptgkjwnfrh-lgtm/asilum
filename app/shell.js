@@ -18,7 +18,7 @@ import {
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
-import { AsteriskDrawer } from "./components/AsteriskMemory.jsx";
+import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 
 const NAV = [
   { href: "/", label: "YOUR EDIT" },
@@ -76,6 +76,12 @@ export default function Shell({ children }) {
     window.addEventListener("asilum:brain", syncGuide);
     return () => window.removeEventListener("asilum:brain", syncGuide);
   }, []);
+
+  // A search that is already open must be re-ranked immediately when the
+  // switch changes; stale personalized results must never sit under OFF.
+  useEffect(() => {
+    if (searchOpen && q.trim()) onSearchInput(q);
+  }, [guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- Server-issued device identity + Supabase magic-link auth. ----
   async function ensureDeviceIdentity() {
@@ -258,15 +264,18 @@ export default function Shell({ children }) {
 
       <div className="topright">
         {searchOpen ? (
-          <input
-            autoFocus
-            className="search"
-            placeholder="ask for a piece, feeling, place, film, era…"
-            value={q}
-            onChange={(e) => onSearchInput(e.target.value)}
-            onKeyDown={submitSearch}
-            onBlur={closeSearch}
-          />
+          <>
+            <input
+              autoFocus
+              className="search"
+              placeholder="ask for a piece, feeling, place, film, era…"
+              value={q}
+              onChange={(e) => onSearchInput(e.target.value)}
+              onKeyDown={submitSearch}
+              onBlur={closeSearch}
+            />
+            <AsteriskGuidanceToggle className="fitbtn asearchtoggle" />
+          </>
         ) : (
           <button className="tbtn" onClick={() => setSearchOpen(true)}>SEARCH</button>
         )}

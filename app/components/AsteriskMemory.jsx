@@ -94,6 +94,57 @@ export function useAsteriskMemory(open) {
   return { memory, err, setHidden, setGuidanceEnabled, reload };
 }
 
+// Small, reusable version of the same durable guidance control. Search uses
+// this directly so changing routes never requires a trip to the control room.
+export function AsteriskGuidanceToggle({ compact = false, className = "" }) {
+  const [on, setOn] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const sync = () => setOn(brainEnabled());
+    sync();
+    window.addEventListener("asilum:brain", sync);
+    return () => window.removeEventListener("asilum:brain", sync);
+  }, []);
+
+  async function toggle() {
+    if (saving) return;
+    const next = !on;
+    setSaving(true);
+    setError("");
+    try {
+      const res = await postJSON("/api/asterisk/memory", {
+        user: getUid(), guidanceEnabled: next,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "could not update Asterisk guidance");
+      setBrainEnabled(data.preferences?.guidanceEnabled !== false);
+    } catch (cause) {
+      setError(cause.message || "could not update Asterisk guidance");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${className}${on ? " active" : ""}`.trim()}
+      aria-label={`Turn Asterisk guidance ${on ? "off" : "on"}`}
+      aria-pressed={on}
+      disabled={saving}
+      title={error || (on
+        ? "Pause Passport-aware ranking"
+        : "Turn on Passport-aware ranking")}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={toggle}
+    >
+      {compact ? "" : "ASTERISK "}{saving ? "…" : on ? "ON" : "OFF"}
+    </button>
+  );
+}
+
 function Row({ label, children }) {
   return (
     <div className="amemrow">

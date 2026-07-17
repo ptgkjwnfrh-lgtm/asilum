@@ -479,6 +479,11 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .searchguide a { margin-left: auto; color: var(--red); border-bottom: 1px solid var(--red); }
 .searchguide.off { border-style: dashed; color: var(--grey); }
 .searchpanel .searchguide { width: 100%; margin: 0 0 8px; }
+.asearchtoggle {
+  flex: none; min-width: 44px; padding: 5px 9px; margin-left: auto;
+  font-size: 9px; letter-spacing: 0.1em;
+}
+.topright .asearchtoggle { margin-left: 4px; white-space: nowrap; }
 
 /* ---- Bag fees ---- */
 .bagfees { padding: 10px 0 2px; }
