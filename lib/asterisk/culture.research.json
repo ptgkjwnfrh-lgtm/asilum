@@ -2045,6 +2045,57 @@
     "approvedAt": 1784261923664
   },
   {
+    "kind": "aesthetic",
+    "name": "cosplay",
+    "aliases": [
+      "cosplayer"
+    ],
+    "note": "character worn for the crowd — worldcon 1939 to the craftsmanship stage",
+    "interpretations": [
+      {
+        "id": "cosplay/con-floor",
+        "label": "the con floor",
+        "type": "scene",
+        "summary": "worldcon 1939 to the modern hall — character worn for the crowd, the photo line as the finish line",
+        "tags": [
+          "statement",
+          "independent",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "devoted",
+          "playful"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "cosplay/craftsmanship-contest",
+        "label": "the craftsmanship contest",
+        "type": "scene",
+        "summary": "sewing, 3d printing, prosthetics and wig work judged seam by seam — costume as a competitive discipline",
+        "tags": [
+          "avant-garde",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "meticulous",
+          "proud"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-95b38f08-bc5c-4bd7-a04d-c0bebc500e96",
+    "sourceUrls": [
+      "https://www.britannica.com/topic/cosplay",
+      "https://www.firststopcosplay.com/blogs/fsco-blog/the-fascinating-history-of-cosplay-iconic-moments-through-the-years"
+    ],
+    "approvedAt": 1784322551602
+  },
+  {
     "kind": "figure",
     "name": "courtney love",
     "aliases": [
@@ -2606,6 +2657,75 @@
       "https://www.theroot.com/the-complex-life-of-donyale-luna-the-first-black-super-1850842057"
     ],
     "approvedAt": 1784263039897
+  },
+  {
+    "kind": "aesthetic",
+    "name": "drag",
+    "aliases": [
+      "drag queen",
+      "drag style"
+    ],
+    "note": "craft across a century — pageant polish, club invention, the mainstream era",
+    "interpretations": [
+      {
+        "id": "drag/pageant-polish",
+        "label": "pageant polish",
+        "type": "scene",
+        "summary": "gowns, boas and silver-screen glamour perfected to competition standard — the harlem-ball lineage of high femme craft",
+        "tags": [
+          "seductive",
+          "statement",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "glamorous",
+          "exact"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "drag/club-avant-garde",
+        "label": "the club avant-garde",
+        "type": "scene",
+        "summary": "art over impersonation — sculptural, theatrical looks built for nightlife; the club-kid end of the craft",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "fearless",
+          "inventive"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "drag/race-era",
+        "label": "the race era",
+        "type": "scene",
+        "summary": "the 2009-on mainstream — runway weeks on television, a global audience learning the vocabulary of a century-old craft",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "polished",
+          "victorious"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-88e97dc8-f8b4-410a-9047-13107f20a113",
+    "sourceUrls": [
+      "https://www.fashionabc.org/drag-a-sartorial-history/",
+      "https://www.iconiqa.co/stories/the-evolution-of-drag-fashion-from-underground-scenes-to-mainstream-glamour-2g8p5-bllkx"
+    ],
+    "approvedAt": 1784322547242
   },
   {
     "kind": "figure",
@@ -5883,6 +6003,57 @@
     "approvedAt": 1784087398367
   },
   {
+    "kind": "aesthetic",
+    "name": "met gala",
+    "aliases": [
+      "met ball",
+      "first monday in may"
+    ],
+    "note": "fashion's superbowl — the costume institute's night, themed since vreeland",
+    "interpretations": [
+      {
+        "id": "met gala/first-monday",
+        "label": "the first monday in may",
+        "type": "scene",
+        "summary": "eleanor lambert's 1948 fundraiser grown into fashion's superbowl — the costume institute's night, themed since vreeland's tenure",
+        "tags": [
+          "statement",
+          "archival",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "electric",
+          "ceremonial"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "met gala/theme-game",
+        "label": "the theme game",
+        "type": "scene",
+        "summary": "a year of planning against one curatorial brief — method dressing at institutional scale, the steps as the runway",
+        "tags": [
+          "statement",
+          "avant-garde"
+        ],
+        "colors": [],
+        "moods": [
+          "competitive",
+          "theatrical"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-e63db735-f32e-44f4-a95c-03a76a3515eb",
+    "sourceUrls": [
+      "https://time.com/6972918/met-gala-history/",
+      "https://www.britannica.com/topic/Met-gala"
+    ],
+    "approvedAt": 1784322546134
+  },
+  {
     "kind": "city",
     "name": "mexico city",
     "aliases": [
@@ -7743,6 +7914,63 @@
     "approvedAt": 1784321141182
   },
   {
+    "kind": "aesthetic",
+    "name": "school uniform",
+    "aliases": [
+      "seifuku",
+      "gakuran"
+    ],
+    "note": "the sailor collar and the five gold buttons — uniforms the world keeps borrowing",
+    "interpretations": [
+      {
+        "id": "school uniform/seifuku",
+        "label": "seifuku",
+        "type": "scene",
+        "summary": "the 1920 sailor collar that became a national icon — pleats and ribbon lines that anime carried worldwide",
+        "tags": [
+          "minimal",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "crisp",
+          "nostalgic"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "school uniform/gakuran",
+        "label": "gakuran",
+        "type": "scene",
+        "summary": "the prussian-derived black tunic with five gold buttons — standing-collar discipline that streetwear keeps borrowing",
+        "tags": [
+          "tailored",
+          "utilitarian",
+          "minimal"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "severe",
+          "formal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-10822df6-3d43-4bea-b4be-58278bdff499",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/School_uniforms_in_Japan",
+      "https://www.tokyoweekender.com/art_and_culture/fashion/how-japans-iconic-school-uniforms-transformed-over-the-years/"
+    ],
+    "approvedAt": 1784322552697
+  },
+  {
     "kind": "music",
     "name": "selena quintanilla",
     "aliases": [
@@ -8515,6 +8743,61 @@
   },
   {
     "kind": "aesthetic",
+    "name": "tattoo style",
+    "aliases": [
+      "american traditional",
+      "irezumi"
+    ],
+    "note": "two canons of skin — sailor bold lines and full-body mythology",
+    "interpretations": [
+      {
+        "id": "tattoo style/american-traditional",
+        "label": "american traditional",
+        "type": "scene",
+        "summary": "bold lines, limited palette, anchors and swallows — the sailor canon codified mid-century, built to age",
+        "tags": [
+          "statement",
+          "archival",
+          "streetwear"
+        ],
+        "colors": [
+          "red",
+          "black"
+        ],
+        "moods": [
+          "steadfast",
+          "salty"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "tattoo style/irezumi",
+        "label": "irezumi",
+        "type": "scene",
+        "summary": "full-body mythology in the japanese tradition — koi, dragons and waves composed over years of sittings",
+        "tags": [
+          "avant-garde",
+          "archival",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "patient",
+          "epic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-77ec52f7-df0d-4153-93da-4b37ded88ee7",
+    "sourceUrls": [
+      "https://www.purevisiontattoo.com/japanese-vs-american-traditional-tattoos-styles-stories-symbolism/",
+      "https://voyapon.com/horimono-history-traditional-tattoos-japan/"
+    ],
+    "approvedAt": 1784322553772
+  },
+  {
+    "kind": "aesthetic",
     "name": "teddy boys",
     "aliases": [
       "teds"
@@ -8588,6 +8871,57 @@
       "https://www.purewow.com/fashion/tenniscore-trend"
     ],
     "approvedAt": 1784078950319
+  },
+  {
+    "kind": "aesthetic",
+    "name": "the afro",
+    "aliases": [
+      "afro",
+      "natural hair"
+    ],
+    "note": "black is beautiful worn as a halo — the crown and its radius",
+    "interpretations": [
+      {
+        "id": "the afro/the-crown",
+        "label": "the crown",
+        "type": "scene",
+        "summary": "black is beautiful worn as a halo — the pick as emblem, the sixties era of pride made visible at a glance",
+        "tags": [
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "proud",
+          "liberated"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the afro/soul-train-halo",
+        "label": "the soul train halo",
+        "type": "scene",
+        "summary": "bigger by the year through the seventies — soul, funk and the screen wearing the style at full radius",
+        "tags": [
+          "statement",
+          "seductive",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "radiant",
+          "joyful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-0016047e-fabb-4639-bf6b-fbb470137d4a",
+    "sourceUrls": [
+      "https://nmaahc.si.edu/explore/stories/strands-of-inspiration",
+      "https://www.ebony.com/the-history-of-the-afro/"
+    ],
+    "approvedAt": 1784322550487
   },
   {
     "kind": "tv",
@@ -8780,6 +9114,56 @@
     "approvedAt": 1784176300799
   },
   {
+    "kind": "aesthetic",
+    "name": "the mullet",
+    "aliases": [
+      "mullet"
+    ],
+    "note": "business in front — the joke haircut re-cut as fashion",
+    "interpretations": [
+      {
+        "id": "the mullet/business-in-front",
+        "label": "business in front",
+        "type": "scene",
+        "summary": "the eighties original — short top, long back, worn by rockers and rinks alike and named by its own slogan",
+        "tags": [
+          "statement",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "brash",
+          "unbothered"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the mullet/modern-revival",
+        "label": "the modern revival",
+        "type": "scene",
+        "summary": "the 2020 lockdown comeback — faded, textured and deliberate; the joke haircut re-cut as fashion by gucci and the charts",
+        "tags": [
+          "statement",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "knowing",
+          "cool"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-0615b982-7d30-4654-a8eb-ef2fed75ee58",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Mullet_(haircut)",
+      "https://www.lofficiel.co.uk/Fashion/mullet-the-haircut-that-revolutionized-the-80s-miley-cyrus-david-bowie-meryl-streep"
+    ],
+    "approvedAt": 1784322554943
+  },
+  {
     "kind": "music",
     "name": "the strokes",
     "aliases": [
@@ -8853,6 +9237,58 @@
       "https://happymag.tv/the-velvet-underground-nico-why-it-mattered/"
     ],
     "approvedAt": 1784098506275
+  },
+  {
+    "kind": "aesthetic",
+    "name": "thrifting",
+    "aliases": [
+      "thrift",
+      "secondhand style"
+    ],
+    "note": "the hunt and the storefront — secondhand as sport and skill",
+    "interpretations": [
+      {
+        "id": "thrifting/the-hunt",
+        "label": "the hunt",
+        "type": "scene",
+        "summary": "racks worked with competitive energy — the one-of-one find as the whole sport, sustainability as the tailwind",
+        "tags": [
+          "independent",
+          "archival",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "patient",
+          "triumphant"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "thrifting/resell-era",
+        "label": "the resell era",
+        "type": "scene",
+        "summary": "depop storefronts and haul videos — the hunt gone online, curation itself the skill on display",
+        "tags": [
+          "independent",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "entrepreneurial",
+          "quick"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-e10c3d16-89e6-4497-947c-b58cca4d1602",
+    "sourceUrls": [
+      "https://www.npr.org/2021/06/18/1006207991/when-second-hand-becomes-vintage-gen-z-has-made-thrifting-a-big-business",
+      "https://www.trillmag.com/life/opinion/modern-treasure-hunting-why-gen-z-is-obsessed-with-thrifting/"
+    ],
+    "approvedAt": 1784322548351
   },
   {
     "kind": "figure",
@@ -9342,6 +9778,60 @@
       "https://www.metmuseum.org/essays/vivienne-westwood-born-1941-and-the-postmodern-legacy-of-punk-style"
     ],
     "approvedAt": 1784177293501
+  },
+  {
+    "kind": "aesthetic",
+    "name": "watch culture",
+    "aliases": [
+      "horology",
+      "watch collecting"
+    ],
+    "note": "the wrist as the collection — restraint on one end, the grail hunt on the other",
+    "interpretations": [
+      {
+        "id": "watch culture/dress-watch",
+        "label": "the dress watch canon",
+        "type": "scene",
+        "summary": "thin gold on leather sliding under a cuff — restraint as the flex, the quiet end of the collection",
+        "tags": [
+          "minimal",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "gold"
+        ],
+        "moods": [
+          "discreet",
+          "patient"
+        ],
+        "confidence": 0.7
+      },
+      {
+        "id": "watch culture/grail-hunt",
+        "label": "the grail hunt",
+        "type": "scene",
+        "summary": "steel sports references, waiting lists and forum lore — the research is the romance, the grail a self-portrait",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "archival"
+        ],
+        "colors": [],
+        "moods": [
+          "obsessive",
+          "aspirational"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day29-pr-review",
+    "factId": "fact-935bb333-a5c1-48fd-9b04-abe55e06c67f",
+    "sourceUrls": [
+      "https://www.watchtime.com/brands/luxury-watches/the-myth-of-the-grail-watch",
+      "https://www.chrono24.com/magazine/how-to-start-your-watch-collection-a-guide-for-beginners-p_170987/"
+    ],
+    "approvedAt": 1784322549428
   },
   {
     "kind": "music",
