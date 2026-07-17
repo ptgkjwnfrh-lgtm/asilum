@@ -785,6 +785,42 @@
     "approvedAt": 1784177957769
   },
   {
+    "kind": "figure",
+    "name": "cary grant",
+    "aliases": [],
+    "note": "middle-of-the-road perfected — never trendy, never dated",
+    "interpretations": [
+      {
+        "id": "cary grant/proportion",
+        "label": "the proportion master",
+        "type": "era",
+        "summary": "high-waisted trousers, ventless jackets and grounded greys cut to his own geometry — the suit as a lifetime's single decision",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "grey",
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "unruffled",
+          "immaculate"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-f3f0557a-9ebf-40be-8f85-0b1ffd456000",
+    "sourceUrls": [
+      "https://www.gentlemansgazette.com/cary-grant-gentleman-style/",
+      "https://www.thegentlemansjournal.com/article/style-icon-cary-grant/"
+    ],
+    "approvedAt": 1784257150566
+  },
+  {
     "kind": "film",
     "name": "challengers",
     "aliases": [
@@ -1028,6 +1064,44 @@
       "https://www.wmagazine.com/culture/clueless-fashion-myths-designers-where-to-shop"
     ],
     "approvedAt": 1784087396749
+  },
+  {
+    "kind": "figure",
+    "name": "coco chanel",
+    "aliases": [
+      "gabrielle chanel"
+    ],
+    "note": "the borrowed-from-the-boys blueprint — jersey, stripes, pearls by the yard",
+    "interpretations": [
+      {
+        "id": "coco chanel/deauville",
+        "label": "the Deauville uniform",
+        "type": "era",
+        "summary": "breton jersey reworked with patch pockets, beach pajamas borrowed from lovers' closets, ropes of magnificent fakes — comfort made the ultimate luxury",
+        "tags": [
+          "minimal",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "cream",
+          "black"
+        ],
+        "moods": [
+          "liberated",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-6920f490-8c5b-41f4-985a-b00c223350f5",
+    "sourceUrls": [
+      "https://edition.cnn.com/style/article/coco-chanel-fashion-50-years",
+      "https://www.sothebys.com/en/articles/how-coco-chanel-shaped-fashion-history"
+    ],
+    "approvedAt": 1784257134455
   },
   {
     "kind": "figure",
@@ -1298,6 +1372,44 @@
     "approvedAt": 1784080234069
   },
   {
+    "kind": "figure",
+    "name": "diana vreeland",
+    "aliases": [
+      "vreeland"
+    ],
+    "note": "the empress of why-don't-you — red as the great clarifier",
+    "interpretations": [
+      {
+        "id": "diana vreeland/red",
+        "label": "the red room",
+        "type": "era",
+        "summary": "lacquered black hair, red lizard boots, red nails and a park avenue living room like a garden in hell — editorial imagination worn as a life",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "scarlet",
+          "black",
+          "gold"
+        ],
+        "moods": [
+          "imperious",
+          "fantastical"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-32913586-672c-4037-ab99-d898faa2a66d",
+    "sourceUrls": [
+      "https://www.britannica.com/biography/Diana-Vreeland",
+      "https://www.elledecoration.co.uk/decorating/colours/a34657562/diana-vreeland-red/"
+    ],
+    "approvedAt": 1784257138492
+  },
+  {
     "kind": "aesthetic",
     "name": "disco",
     "aliases": [
@@ -1446,6 +1558,44 @@
       "https://www.wideopencountry.com/dolly-parton-fashion/"
     ],
     "approvedAt": 1784087398054
+  },
+  {
+    "kind": "figure",
+    "name": "duke of windsor",
+    "aliases": [
+      "edward viii"
+    ],
+    "note": "the knot that carries his name — soft tailoring against victorian starch",
+    "interpretations": [
+      {
+        "id": "duke of windsor/knot",
+        "label": "the Windsor wardrobe",
+        "type": "era",
+        "summary": "prince of wales check, fair isle knits, soft attached collars and the fat knot — royal dress rebuilt for comfort and photographed everywhere",
+        "tags": [
+          "tailored",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "glen check",
+          "fair isle",
+          "burgundy"
+        ],
+        "moods": [
+          "rakish",
+          "assured"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-d8d78aa7-9144-49aa-aa45-a059c19e56bb",
+    "sourceUrls": [
+      "https://www.gentlemansgazette.com/duke-of-windsor-clothes-how-to/",
+      "https://en.wikipedia.org/wiki/Edward_VIII"
+    ],
+    "approvedAt": 1784257162641
   },
   {
     "kind": "figure",
@@ -1618,6 +1768,44 @@
     "approvedAt": 1784216429811
   },
   {
+    "kind": "figure",
+    "name": "fred astaire",
+    "aliases": [
+      "astaire"
+    ],
+    "note": "careful carelessness in motion — the suit that had to dance",
+    "interpretations": [
+      {
+        "id": "fred astaire/motion",
+        "label": "dressed to move",
+        "type": "era",
+        "summary": "soft drape suits danced in before wearing, a necktie for a belt, collar pinned just so — formalwear rebuilt around movement",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "dove grey",
+          "camel",
+          "white"
+        ],
+        "moods": [
+          "weightless",
+          "debonair"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-7645d86d-cd28-47bf-866f-3798aec2f324",
+    "sourceUrls": [
+      "https://www.gentlemansgazette.com/history-s-10-biggest-menswear-influencers/comment-page-1/",
+      "https://en.wikipedia.org/wiki/Fred_Astaire"
+    ],
+    "approvedAt": 1784257154697
+  },
+  {
     "kind": "music",
     "name": "freddie mercury",
     "aliases": [
@@ -1731,6 +1919,44 @@
       "https://www.mentalfloss.com/article/598225/jennifer-aniston-the-rachel-haircut-friends-history"
     ],
     "approvedAt": 1784179572463
+  },
+  {
+    "kind": "figure",
+    "name": "gianni agnelli",
+    "aliases": [
+      "agnelli"
+    ],
+    "note": "l'avvocato — the watch over the cuff and every rule broken perfectly",
+    "interpretations": [
+      {
+        "id": "gianni agnelli/avvocato",
+        "label": "l'Avvocato",
+        "type": "era",
+        "summary": "watch buckled over the shirt cuff, tie askew outside the pullover, hiking boots under flannel suiting — esquire's best-dressed man in history",
+        "tags": [
+          "tailored",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "flannel grey",
+          "navy",
+          "brown"
+        ],
+        "moods": [
+          "nonchalant",
+          "commanding"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-f4eeddab-6c94-4b14-91b6-8a1e991f54e8",
+    "sourceUrls": [
+      "https://www.thegentlemansjournal.com/article/style-icon-dress-like-gianni-agnelli/",
+      "https://revolutionwatch.com/gianni-agnelli-over-the-cuff/"
+    ],
+    "approvedAt": 1784257158675
   },
   {
     "kind": "film",
@@ -2163,6 +2389,65 @@
     "approvedAt": 1784178615719
   },
   {
+    "kind": "film",
+    "name": "james bond",
+    "aliases": [
+      "007"
+    ],
+    "note": "sixty years of the cinema suit — conduit cut to tom ford",
+    "interpretations": [
+      {
+        "id": "james bond/conduit",
+        "label": "the conduit cut",
+        "type": "era",
+        "summary": "anthony sinclair's unfussy savile row line on connery — the sixties template that sold out department stores by association",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "midnight",
+          "grey",
+          "white"
+        ],
+        "moods": [
+          "lethal",
+          "composed"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "james bond/craig",
+        "label": "the Tom Ford era",
+        "type": "era",
+        "summary": "trim shoulders, narrow lapels and a suit that survives the chase — bespoke english lines compressed for a harder bond",
+        "tags": [
+          "tailored",
+          "utilitarian",
+          "statement"
+        ],
+        "colors": [
+          "charcoal",
+          "navy",
+          "black"
+        ],
+        "moods": [
+          "coiled",
+          "modern"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-fde7e2bf-8f8f-44c3-b7ee-51b3155dac7f",
+    "sourceUrls": [
+      "https://therake.com/stories/sixty-years-of-bonds-best-suits",
+      "https://fromtailorswithlove.co.uk/the-evolution-of-james-bonds-suits-from-connery-to-craig"
+    ],
+    "approvedAt": 1784257174670
+  },
+  {
     "kind": "music",
     "name": "james brown",
     "aliases": [],
@@ -2419,6 +2704,44 @@
       "https://www.papermag.com/karl-lagerfeld-personal-uniform"
     ],
     "approvedAt": 1784177292938
+  },
+  {
+    "kind": "figure",
+    "name": "katharine hepburn",
+    "aliases": [
+      "hepburn"
+    ],
+    "note": "trousers against the studio's wishes — ease as a principle",
+    "interpretations": [
+      {
+        "id": "katharine hepburn/trousers",
+        "label": "the trousers",
+        "type": "era",
+        "summary": "high-waisted slacks, loafers and rolled sleeves on and off set — she wore the sylvia scarlett wardrobe home and dared the studio to object",
+        "tags": [
+          "tailored",
+          "minimal",
+          "utilitarian"
+        ],
+        "colors": [
+          "khaki",
+          "cream",
+          "brown"
+        ],
+        "moods": [
+          "unbothered",
+          "athletic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-94771f53-fc58-432c-9521-c8097614b9f2",
+    "sourceUrls": [
+      "https://www.cnn.com/style/katharine-hepburn-pants-remember-when",
+      "https://www.tcm.com/articles/021615/follow-the-thread-fashion-rule-breakers"
+    ],
+    "approvedAt": 1784257146554
   },
   {
     "kind": "music",
@@ -2861,6 +3184,44 @@
       "https://www.hollywoodreporter.com/lifestyle/style/sofia-coppola-marie-antoinette-film-costumes-macarons-milena-1236357509/"
     ],
     "approvedAt": 1784179310508
+  },
+  {
+    "kind": "figure",
+    "name": "marlene dietrich",
+    "aliases": [
+      "dietrich"
+    ],
+    "note": "the tuxedo made unisex — morocco, 1930",
+    "interpretations": [
+      {
+        "id": "marlene dietrich/tuxedo",
+        "label": "the Morocco tuxedo",
+        "type": "era",
+        "summary": "white tie, tails and top hat worn on screen and off — trousers, she said, made her more feminine than dresses; hollywood never recovered",
+        "tags": [
+          "tailored",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "white",
+          "silver"
+        ],
+        "moods": [
+          "smoldering",
+          "sovereign"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-c17f2099-2ea2-4ace-aa38-4b1717b6c3eb",
+    "sourceUrls": [
+      "https://qz.com/1166338/marlene-dietrich-google-honors-the-movie-star-who-made-tuxedos-unisex",
+      "https://www.tcm.com/articles/021615/follow-the-thread-fashion-rule-breakers"
+    ],
+    "approvedAt": 1784257142452
   },
   {
     "kind": "aesthetic",
@@ -3983,6 +4344,44 @@
     "approvedAt": 1784177291473
   },
   {
+    "kind": "figure",
+    "name": "serge gainsbourg",
+    "aliases": [
+      "gainsbourg"
+    ],
+    "note": "gloves for the feet — repetto whites and worn denim forever",
+    "interpretations": [
+      {
+        "id": "serge gainsbourg/repetto",
+        "label": "the Repetto uniform",
+        "type": "era",
+        "summary": "white zizi jazz shoes jane birkin found him, frayed jeans, open denim shirt and a gauloise — dishevelment tuned to the millimetre",
+        "tags": [
+          "minimal",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "denim",
+          "grey"
+        ],
+        "moods": [
+          "louche",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-4648f300-e98c-44b4-b700-761f4de2690a",
+    "sourceUrls": [
+      "https://www.mrporter.com/en-us/journal/fashion/style-legacy-serge-gainsbourg-museum-24517134",
+      "https://vintageclothingguides.com/celebrity-fashion/serge-gainsbourgs-iconic-fashion-moments/"
+    ],
+    "approvedAt": 1784257166757
+  },
+  {
     "kind": "tv",
     "name": "sex and the city",
     "aliases": [
@@ -4094,6 +4493,45 @@
       "https://www.billboard.com/music/pop/geri-halliwell-talks-iconic-spice-girls-union-jack-dress-1235433977/"
     ],
     "approvedAt": 1784178612152
+  },
+  {
+    "kind": "aesthetic",
+    "name": "sprezzatura",
+    "aliases": [
+      "pitti uomo",
+      "pitti peacock"
+    ],
+    "note": "studied carelessness — castiglione's courtier at a florentine trade show",
+    "interpretations": [
+      {
+        "id": "sprezzatura/pitti",
+        "label": "the Pitti wall",
+        "type": "aesthetic",
+        "summary": "unbuttoned everything, wrists of bracelets, jacket thrown just-so — perfection through calculated imperfection, peacocking twice a year in florence",
+        "tags": [
+          "tailored",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "tobacco",
+          "cobalt",
+          "cream"
+        ],
+        "moods": [
+          "preening",
+          "artful"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-da8cd598-b216-4012-ae95-d5b1730767dc",
+    "sourceUrls": [
+      "https://www.gentlemansgazette.com/pitti-uomo-dos-donts-street-style-91/",
+      "https://wwd.com/fashion-news/street-style/pitti-uomo-mens-street-style-fall-1236850712/"
+    ],
+    "approvedAt": 1784257178611
   },
   {
     "kind": "figure",
@@ -4883,6 +5321,44 @@
       "https://www.metmuseum.org/essays/vivienne-westwood-born-1941-and-the-postmodern-legacy-of-punk-style"
     ],
     "approvedAt": 1784177293501
+  },
+  {
+    "kind": "music",
+    "name": "whitney houston",
+    "aliases": [
+      "whitney"
+    ],
+    "note": "the queen of 80s shine — shoulders, sequins and that smile",
+    "interpretations": [
+      {
+        "id": "whitney houston/eighties",
+        "label": "the 80s crown",
+        "type": "era",
+        "summary": "shouldered blazers, leather jackets, sequined column gowns and bowed hair — pop polish that set the decade's dress code",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "silver",
+          "royal blue",
+          "gold"
+        ],
+        "moods": [
+          "radiant",
+          "triumphant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day23-pr-review",
+    "factId": "fact-783a40f9-c03c-4fbe-a091-eb43a8fb060d",
+    "sourceUrls": [
+      "https://i-d.co/article/whitney-houston-80s-fashion/",
+      "https://www.hellomagazine.com/hfm/20221225160372/whitney-houston-best-fashion-moments/"
+    ],
+    "approvedAt": 1784257170736
   },
   {
     "kind": "figure",
