@@ -77,6 +77,39 @@
     "approvedAt": 1784177956847
   },
   {
+    "kind": "music",
+    "name": "afrobeats",
+    "aliases": [],
+    "note": "lagos to the runway — fluent in ankara and burberry at once (the scene; fela kuti's afrobeat is its own record)",
+    "interpretations": [
+      {
+        "id": "afrobeats/lagos-to-the-runway",
+        "label": "lagos to the runway",
+        "type": "era",
+        "summary": "ankara and adire against off-white and burberry — agbadas beside sharp tailoring, lagos stagewear fluent in both languages",
+        "tags": [
+          "statement",
+          "streetwear",
+          "tailored",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "assured",
+          "vibrant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-907a66b8-a0b0-448c-85a6-26cc839936b0",
+    "sourceUrls": [
+      "https://www.billboard.com/music/features/afrobeats-fashion-evolution-history-feature-1235058245/",
+      "https://culturecustodian.com/the-nigerian-stylists-behind-the-biggest-fashion-moments-in-afrobeats/"
+    ],
+    "approvedAt": 1784319656175
+  },
+  {
     "kind": "aesthetic",
     "name": "afrofuturism",
     "aliases": [],
@@ -827,6 +860,44 @@
     "approvedAt": 1784318120032
   },
   {
+    "kind": "music",
+    "name": "bob marley",
+    "aliases": [
+      "marley"
+    ],
+    "note": "soul rebel — liberation worn as uniform",
+    "interpretations": [
+      {
+        "id": "bob marley/soul-rebel",
+        "label": "soul rebel",
+        "type": "era",
+        "summary": "m65 military jackets, full denim, the rasta tam — utilitarian rebellion in red, gold and green; liberation worn as a working uniform",
+        "tags": [
+          "utilitarian",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "red",
+          "gold",
+          "green"
+        ],
+        "moods": [
+          "righteous",
+          "easy"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-7c7c0d58-01ca-4275-a8a3-5b6f399a289e",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/bob-marley-fashion-style/",
+      "https://thereggaemuseum.com/the-timeless-fashion-of-bob-marley-a-cultural-and-revolutionary-style-icon/"
+    ],
+    "approvedAt": 1784319646102
+  },
+  {
     "kind": "film",
     "name": "bonnie and clyde",
     "aliases": [],
@@ -1088,12 +1159,45 @@
       }
     ],
     "provenance": "research-approved-day27-pr-review",
-    "factId": "fact-62f399f6-3cc0-4140-b940-14344e8b8535",
+    "factId": "fact-8aa3ba96-5bc5-443c-87a3-001e48eab21e",
     "sourceUrls": [
       "https://en.wikipedia.org/wiki/Catherine_Martin_(designer)",
       "https://variety.com/2023/film/global/catherine-martin-baz-luhrmann-1235829483/"
     ],
-    "approvedAt": 1784318128835
+    "approvedAt": 1784319293511
+  },
+  {
+    "kind": "music",
+    "name": "celia cruz",
+    "aliases": [],
+    "note": "azucar — sugar shouted in full costume",
+    "interpretations": [
+      {
+        "id": "celia cruz/azucar",
+        "label": "azucar",
+        "type": "era",
+        "summary": "bata cubana ruffles, towering technicolor wigs, sequined gowns to carnegie hall — sugar shouted in full costume",
+        "tags": [
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "orange"
+        ],
+        "moods": [
+          "jubilant",
+          "regal"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-3b93e317-7ac7-44b0-82d2-4da034d2c483",
+    "sourceUrls": [
+      "https://www.smithsonianmag.com/smithsonian-institution/enduring-legacy-queen-salsa-celia-cruz-180981126/",
+      "https://news.miami.edu/libraries/stories/2023/04/azucar-dress-worn-by-queen-of-salsa-donated-to-cuban-heritage-collection.html"
+    ],
+    "approvedAt": 1784319649480
   },
   {
     "kind": "film",
@@ -1664,6 +1768,44 @@
       "https://www.nssmag.com/en/fashion/25343/daft-punk-fashion"
     ],
     "approvedAt": 1784178612789
+  },
+  {
+    "kind": "music",
+    "name": "dancehall",
+    "aliases": [
+      "bashment"
+    ],
+    "note": "the bling era — kingston sound-system glamour",
+    "interpretations": [
+      {
+        "id": "dancehall/bling-era",
+        "label": "the bling era",
+        "type": "era",
+        "summary": "mesh marinas, batty riders, sequins and traffic-stopping color — kingston sound-system glamour that out-dressed every stage it touched",
+        "tags": [
+          "statement",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "red",
+          "gold",
+          "green"
+        ],
+        "moods": [
+          "flamboyant",
+          "defiant"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-9288bd7d-ed49-4b3d-9d72-70f9a61089f0",
+    "sourceUrls": [
+      "https://www.dancehallmag.com/2021/09/15/style/fashion-trends-jamaica-and-dancehall-introduced-to-the-world.html",
+      "https://thereggaemuseum.com/the-history-of-dancehall-fashion-a-cultural-runway-of-rebellion-style-expression/"
+    ],
+    "approvedAt": 1784319644985
   },
   {
     "kind": "figure",
@@ -2414,6 +2556,40 @@
       "https://bykerwin.com/elvis-jumpsuits-a-style-evolution-and-fashion-influence/"
     ],
     "approvedAt": 1784178613426
+  },
+  {
+    "kind": "music",
+    "name": "fela kuti",
+    "aliases": [
+      "fela"
+    ],
+    "note": "kalakuta tailoring — western dress rejected with total exactness",
+    "interpretations": [
+      {
+        "id": "fela kuti/kalakuta-tailoring",
+        "label": "kalakuta tailoring",
+        "type": "era",
+        "summary": "embroidered ankara jumpsuits precisely fitted, beads, matched shoes for every color — western dress rejected with total exactness",
+        "tags": [
+          "statement",
+          "tailored",
+          "independent"
+        ],
+        "colors": [],
+        "moods": [
+          "defiant",
+          "vivid"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-fa152c69-f4a2-46b3-b03b-542fe304664d",
+    "sourceUrls": [
+      "https://www.okayafrica.com/fela-kuti-the-radical-fashion-icon/125161",
+      "https://omirenstyles.com/fela-kuti-fashion/"
+    ],
+    "approvedAt": 1784319647224
   },
   {
     "kind": "aesthetic",
@@ -3285,6 +3461,38 @@
       "https://en.wikipedia.org/wiki/Herb_Ritts"
     ],
     "approvedAt": 1784261931500
+  },
+  {
+    "kind": "music",
+    "name": "hyperpop",
+    "aliases": [],
+    "note": "digital maximalism — the internet worn at full volume",
+    "interpretations": [
+      {
+        "id": "hyperpop/digital-maximalism",
+        "label": "digital maximalism",
+        "type": "era",
+        "summary": "holographic vinyl, glitch prints, y2k chrome and cyber accessories — the internet worn at full volume, sincerity and irony in one fit",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [],
+        "moods": [
+          "chaotic",
+          "gleeful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-8034a3c2-abad-4fa9-8517-cab5a0d475f2",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Hyperpop",
+      "https://distromono.com/artists/aesthetic-overload-the-alluring-visuals-of-hyperpop-and-the-hottest-artists-on-the-rise/"
+    ],
+    "approvedAt": 1784319653929
   },
   {
     "kind": "figure",
@@ -4599,6 +4807,40 @@
   },
   {
     "kind": "music",
+    "name": "madchester",
+    "aliases": [
+      "baggy"
+    ],
+    "note": "the baggy era — psychedelia cut loose enough to dance",
+    "interpretations": [
+      {
+        "id": "madchester/baggy-era",
+        "label": "the baggy era",
+        "type": "era",
+        "summary": "twenty-one-inch flares, tie-dye, the drummer's bucket hat — sixties psychedelia put through a rave floor, cut loose enough to dance",
+        "tags": [
+          "streetwear",
+          "independent",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "loose",
+          "euphoric"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-2096b3b7-1e8e-4a63-a922-9dccd9a2f93b",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Madchester",
+      "https://www.museumofyouthculture.com/madchester/"
+    ],
+    "approvedAt": 1784319652844
+  },
+  {
+    "kind": "music",
     "name": "madonna",
     "aliases": [
       "madonna style"
@@ -5169,6 +5411,40 @@
   },
   {
     "kind": "figure",
+    "name": "miriam makeba",
+    "aliases": [
+      "mama africa"
+    ],
+    "note": "mama africa — pan-african elegance as resistance",
+    "interpretations": [
+      {
+        "id": "miriam makeba/mama-africa",
+        "label": "mama africa",
+        "type": "era",
+        "summary": "natural hair, beaded jewellery, boubous and isicholos worn with western gowns — pan-african elegance carried as resistance",
+        "tags": [
+          "statement",
+          "independent",
+          "tailored"
+        ],
+        "colors": [],
+        "moods": [
+          "dignified",
+          "luminous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-30575d0d-e6b3-4fc6-aecc-198a727a0b80",
+    "sourceUrls": [
+      "https://www.okayafrica.com/miriam-makeba-the-musician-as-fashion-muse/234527",
+      "https://dressparade.org/miriam-makeba/"
+    ],
+    "approvedAt": 1784319657298
+  },
+  {
+    "kind": "figure",
     "name": "misa hylton",
     "aliases": [
       "hip-hop glamorous"
@@ -5423,6 +5699,37 @@
       "https://www.russh.com/naomi-osaka-style/"
     ],
     "approvedAt": 1784177292373
+  },
+  {
+    "kind": "music",
+    "name": "new jack swing",
+    "aliases": [],
+    "note": "the in living color era — hip-hop swing dressed loud and bright",
+    "interpretations": [
+      {
+        "id": "new jack swing/in-living-color-era",
+        "label": "the in living color era",
+        "type": "era",
+        "summary": "overalls with one strap down, starter jackets, kente accents and parachute pants — hip-hop swing dressed loud, bright and moving",
+        "tags": [
+          "streetwear",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "playful",
+          "confident"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-17d47f6e-c5f5-4d03-845d-3580c1393333",
+    "sourceUrls": [
+      "https://cosignmag.com/newjackswing/",
+      "https://en.wikipedia.org/wiki/New_jack_swing"
+    ],
+    "approvedAt": 1784319650605
   },
   {
     "kind": "aesthetic",
@@ -5993,6 +6300,40 @@
       "https://www.complex.com/style/a/gregory-babcock/raf-simons-guide"
     ],
     "approvedAt": 1784260240299
+  },
+  {
+    "kind": "music",
+    "name": "reggaeton",
+    "aliases": [
+      "perreo"
+    ],
+    "note": "barrio fino — san juan street uniform gone global",
+    "interpretations": [
+      {
+        "id": "reggaeton/barrio-fino",
+        "label": "barrio fino",
+        "type": "era",
+        "summary": "baggy denim, timbs and layered chains sharpening into fitted y2k flash — the san juan street uniform gone global",
+        "tags": [
+          "streetwear",
+          "statement",
+          "seductive"
+        ],
+        "colors": [],
+        "moods": [
+          "brash",
+          "magnetic"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-7adab166-63d0-4880-9f87-8f8d21cf01fe",
+    "sourceUrls": [
+      "https://www.refinery29.com/en-us/2021/08/10620225/reggaeton-fashion-influence",
+      "https://lifestyle.inquirer.net/547460/reggaeton-style-isnt-just-streetwear-anymore/"
+    ],
+    "approvedAt": 1784319655053
   },
   {
     "kind": "figure",
@@ -6579,6 +6920,42 @@
     "approvedAt": 1784177295288
   },
   {
+    "kind": "music",
+    "name": "selena quintanilla",
+    "aliases": [
+      "selena"
+    ],
+    "note": "the astrodome jumpsuit — self-designed tejano glamour",
+    "interpretations": [
+      {
+        "id": "selena quintanilla/astrodome-jumpsuit",
+        "label": "the astrodome jumpsuit",
+        "type": "era",
+        "summary": "self-designed bustiers and the purple bell-bottom jumpsuit — seventies glamour with tejano studs and western boots, sketched on the tour bus",
+        "tags": [
+          "seductive",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "purple"
+        ],
+        "moods": [
+          "radiant",
+          "self-made"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-de2ca705-91c9-4d5f-a792-2048bdaac2f4",
+    "sourceUrls": [
+      "https://www.texasmonthly.com/arts-entertainment/selena-fashion-icon/",
+      "https://remezcla.com/lists/culture/selena-quintanilla-underrated-fashion-looks/"
+    ],
+    "approvedAt": 1784319648379
+  },
+  {
     "kind": "figure",
     "name": "serena williams",
     "aliases": [],
@@ -6746,6 +7123,41 @@
       "https://www.theglobeandmail.com/life/style/article-shai-gilgeous-alexander-nba-conquering-fashion-world-runway-menswear/"
     ],
     "approvedAt": 1784177291784
+  },
+  {
+    "kind": "music",
+    "name": "shibuya-kei",
+    "aliases": [
+      "shibuya kei"
+    ],
+    "note": "the record-store mod — sixties ye-ye re-pressed in nineties tokyo",
+    "interpretations": [
+      {
+        "id": "shibuya-kei/record-store-mod",
+        "label": "the record-store mod",
+        "type": "era",
+        "summary": "tailored suits, a-line minis, op-art geometry — sixties ye-ye re-pressed in nineties tokyo, polish chosen over slouch",
+        "tags": [
+          "tailored",
+          "minimal",
+          "independent",
+          "statement"
+        ],
+        "colors": [],
+        "moods": [
+          "breezy",
+          "precise"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day27-pr-review",
+    "factId": "fact-6bcf39cb-8719-4785-94d4-20e68b40f58d",
+    "sourceUrls": [
+      "https://www.tokyoweekender.com/entertainment/music/complete-guide-shibuya-kei/",
+      "https://en.wikipedia.org/wiki/Shibuya-kei"
+    ],
+    "approvedAt": 1784319651723
   },
   {
     "kind": "figure",
