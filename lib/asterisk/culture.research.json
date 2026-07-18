@@ -216,6 +216,43 @@
     "approvedAt": 1784260234888
   },
   {
+    "kind": "music",
+    "name": "alice cooper",
+    "aliases": [
+      "shock rock"
+    ],
+    "note": "shock rock's wardrobe — gothic vaudeville before the genre had a name",
+    "interpretations": [
+      {
+        "id": "alice cooper/gothic-vaudeville",
+        "label": "gothic vaudeville",
+        "type": "era",
+        "summary": "women's clothing, grease-paint eyes and haunted-house theatre from 1969 on — the shock-rock template of costume-as-menace that ozzy, manson and every haunted stage after inherited",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "blood red"
+        ],
+        "moods": [
+          "macabre",
+          "vaudevillian"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-9bb2ad2a-672b-45f4-bb3f-14120db6dabf",
+    "sourceUrls": [
+      "https://www.phoenixnewtimes.com/music/alice-cooper-actually-it-was-ozzy-osbourne-who-did-that-crazy-thing-you-remember-6599020/",
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion"
+    ],
+    "approvedAt": 1784348137952
+  },
+  {
     "kind": "film",
     "name": "almost famous",
     "aliases": [
@@ -1055,6 +1092,43 @@
     "approvedAt": 1784178663571
   },
   {
+    "kind": "music",
+    "name": "black sabbath",
+    "aliases": [
+      "ozzy osbourne",
+      "ozzy"
+    ],
+    "note": "doom's first uniform — black, crosses, and the prince of darkness",
+    "interpretations": [
+      {
+        "id": "black sabbath/doom-uniform",
+        "label": "doom uniform",
+        "type": "era",
+        "summary": "heavy metal's founding dress — black on black, crosses and fringe, ozzy's theatrical menace from birmingham to the palladium; the template every metal scene after either wore or fought",
+        "tags": [
+          "statement",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "ominous",
+          "heavy"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-98bfe3c7-cd1d-4414-a8eb-3926253484df",
+    "sourceUrls": [
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion",
+      "https://loudwire.com/what-is-hair-metal/"
+    ],
+    "approvedAt": 1784348136558
+  },
+  {
     "kind": "aesthetic",
     "name": "black tie",
     "aliases": [
@@ -1638,6 +1712,43 @@
       "https://www.theindustry.fashion/in-history-oasis-britpop-style-that-defined-an-era/"
     ],
     "approvedAt": 1784344229494
+  },
+  {
+    "kind": "music",
+    "name": "bruce springsteen",
+    "aliases": [
+      "the boss"
+    ],
+    "note": "born in the usa denim — working-class americana as stage uniform",
+    "interpretations": [
+      {
+        "id": "bruce springsteen/born-in-the-usa",
+        "label": "born in the usa",
+        "type": "era",
+        "summary": "slim levi's, white tee, denim and leather jackets with the bandana — the 1984 album cover as the working-class american uniform; heartland authenticity worn without costume",
+        "tags": [
+          "utilitarian",
+          "minimal",
+          "streetwear"
+        ],
+        "colors": [
+          "denim blue",
+          "white"
+        ],
+        "moods": [
+          "earnest",
+          "enduring"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-ef2db592-9640-4782-b55c-9c1656dc7ddd",
+    "sourceUrls": [
+      "https://www.mrporter.com/en-us/journal/fashion/bruce-springsteen-style-25362012",
+      "https://www.levistrauss.com/2026/05/27/bruce-springsteen-levis/"
+    ],
+    "approvedAt": 1784348141989
   },
   {
     "kind": "figure",
@@ -3359,6 +3470,41 @@
     "approvedAt": 1784257162641
   },
   {
+    "kind": "music",
+    "name": "duran duran",
+    "aliases": [],
+    "note": "the new romantics' pop export — frills, suits and video-age polish",
+    "interpretations": [
+      {
+        "id": "duran duran/video-age-romantics",
+        "label": "video-age romantics",
+        "type": "era",
+        "summary": "frilled fop shirts and pirate flourishes polished into video-age suits — the birmingham band that carried the blitz-club new romantics record's look to mtv scale",
+        "tags": [
+          "tailored",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "pastel"
+        ],
+        "moods": [
+          "polished",
+          "cinematic"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-648d7451-0ceb-454e-a31e-0c8c4ba7f461",
+    "sourceUrls": [
+      "https://www.lofficiel.co.uk/fashion/duran-duran-english-band-photos-images-iconic-looks",
+      "https://en.wikipedia.org/wiki/New_Romantic"
+    ],
+    "approvedAt": 1784348141324
+  },
+  {
     "kind": "figure",
     "name": "eartha kitt",
     "aliases": [],
@@ -4231,6 +4377,43 @@
     "approvedAt": 1784318130954
   },
   {
+    "kind": "aesthetic",
+    "name": "glam metal",
+    "aliases": [
+      "hair metal"
+    ],
+    "note": "sunset strip excess — backcombed hair, spandex and studded leather",
+    "interpretations": [
+      {
+        "id": "glam metal/sunset-strip",
+        "label": "sunset strip",
+        "type": "scene",
+        "summary": "the early-80s la scene — backcombed hair and hairspray, makeup, spandex and tight leather, headbands, animal print and side-laced studded stagewear; 70s glam androgyny turned up to arena scale",
+        "tags": [
+          "statement",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "leopard",
+          "black"
+        ],
+        "moods": [
+          "excessive",
+          "peacocking"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-ff3506ca-5009-413d-8f51-67a1a0fd0664",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Glam_metal",
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion"
+    ],
+    "approvedAt": 1784348131732
+  },
+  {
     "kind": "film",
     "name": "goodfellas",
     "aliases": [],
@@ -4620,6 +4803,44 @@
       "https://www.dazeddigital.com/beauty/article/54905/1/legendary-hairstylist-guido-palau-breaks-down-5-hair-raising-looks"
     ],
     "approvedAt": 1784342680964
+  },
+  {
+    "kind": "music",
+    "name": "guns n roses",
+    "aliases": [
+      "gnr",
+      "guns and roses"
+    ],
+    "note": "dirty hair metal — the top hat and the bandana against the strip's polish",
+    "interpretations": [
+      {
+        "id": "guns n roses/dirty-hair-metal",
+        "label": "dirty hair metal",
+        "type": "era",
+        "summary": "slash's top hat over a wall of curls, axl's bandana and leather — the late-80s counter to glam polish; ripped, dangerous and thrifted where the strip was styled",
+        "tags": [
+          "statement",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "denim blue"
+        ],
+        "moods": [
+          "dangerous",
+          "unwashed"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-d3de055a-65bf-4571-a8e9-6a0e1ab43117",
+    "sourceUrls": [
+      "https://www.one37pm.com/style/how-guns-n-roses-changed-rock-fashion",
+      "https://www.ultimate-guitar.com/articles/features/poison-f---ed-it-up-how-guns-n-roses-and-dirty-hair-metal-went-against-the-80s-glam-185816"
+    ],
+    "approvedAt": 1784348133069
   },
   {
     "kind": "figure",
@@ -6218,6 +6439,41 @@
   },
   {
     "kind": "music",
+    "name": "kiss",
+    "aliases": [],
+    "note": "four personas in kabuki paint and armor — identity as merchandise",
+    "interpretations": [
+      {
+        "id": "kiss/the-personas",
+        "label": "the personas",
+        "type": "era",
+        "summary": "starchild, demon, spaceman, catman — kabuki paint, studded armor and platform boots turning four musicians into permanent characters; costume as the product itself",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "streetwear"
+        ],
+        "colors": [
+          "black",
+          "silver"
+        ],
+        "moods": [
+          "theatrical",
+          "branded"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-23902298-2c78-44d2-8e69-d284b8a1d718",
+    "sourceUrls": [
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion",
+      "https://www.cityliveglasgow.com/journalism/2024/5/28/the-best-dressed-glam-metal-bands-of-all-time"
+    ],
+    "approvedAt": 1784348137262
+  },
+  {
+    "kind": "music",
     "name": "lady gaga",
     "aliases": [
       "gaga"
@@ -6443,6 +6699,43 @@
       "https://www.fastcompany.com/91216135/image-architect-law-roach-on-styling-zendaya-celebrity"
     ],
     "approvedAt": 1784258270914
+  },
+  {
+    "kind": "music",
+    "name": "led zeppelin",
+    "aliases": [
+      "zeppelin"
+    ],
+    "note": "the rock-god archetype — bare-chested plant, page's dragon suit",
+    "interpretations": [
+      {
+        "id": "led zeppelin/rock-god",
+        "label": "rock god",
+        "type": "era",
+        "summary": "robert plant's bare-chested mane and low-slung denim built the rock-god archetype; jimmy page's embroidered dragon suit its occult-dandy counterpart — 70s stage masculinity at maximum wattage",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "denim blue",
+          "black"
+        ],
+        "moods": [
+          "mythic",
+          "loose"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-cc5a6000-6018-4be1-a735-8c3a34cc1d82",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Robert_Plant",
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion"
+    ],
+    "approvedAt": 1784348134506
   },
   {
     "kind": "figure",
@@ -7397,6 +7690,41 @@
     "approvedAt": 1784342684569
   },
   {
+    "kind": "music",
+    "name": "metallica",
+    "aliases": [],
+    "note": "anti-fashion metal — ripped jeans, flannels and tees as refusal of glam",
+    "interpretations": [
+      {
+        "id": "metallica/no-uniform-uniform",
+        "label": "no-uniform uniform",
+        "type": "era",
+        "summary": "ripped jeans, band tees and flannels held against the strip's spandex — thrash's workmanlike refusal that steered 90s metal dress toward the achievable; kin to the metalhead record's battle-jacket lin",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "flannel"
+        ],
+        "moods": [
+          "unadorned",
+          "relentless"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-3a6c055f-3c0b-4c33-9e0d-8a38def857de",
+    "sourceUrls": [
+      "https://www.yahoo.com/entertainment/metallica-drove-evolution-90s-metal-090000220.html",
+      "https://www.redbull.com/us-en/brief-history-of-heavy-metal-fashion"
+    ],
+    "approvedAt": 1784348133786
+  },
+  {
     "kind": "city",
     "name": "mexico city",
     "aliases": [
@@ -7820,6 +8148,41 @@
       "https://www.interviewmagazine.com/fashion/clueless-costume-designer-mona-may-immortalizing-plaid-sets"
     ],
     "approvedAt": 1784318127702
+  },
+  {
+    "kind": "music",
+    "name": "motley crue",
+    "aliases": [],
+    "note": "the strip's pioneers — ray brown's studded leather built the uniform",
+    "interpretations": [
+      {
+        "id": "motley crue/theatre-of-pain",
+        "label": "theatre of pain",
+        "type": "era",
+        "summary": "the band that kick-started the sunset strip look — designer ray brown's pioneering studded leather and side-lacing pants from the theatre of pain and girls girls girls tours became heavy metal staples",
+        "tags": [
+          "statement",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "red"
+        ],
+        "moods": [
+          "debauched",
+          "loud"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-d82e4a9a-6154-47d4-adf8-a9452764fc57",
+    "sourceUrls": [
+      "https://metalinjection.net/editorials/the-spandex-years-designer-ray-browns-hair-metal-days-with-motley-crue-ratt-and-more",
+      "https://loudwire.com/what-is-hair-metal/"
+    ],
+    "approvedAt": 1784348132402
   },
   {
     "kind": "aesthetic",
@@ -8889,6 +9252,41 @@
     "approvedAt": 1784345375316
   },
   {
+    "kind": "music",
+    "name": "queen",
+    "aliases": [],
+    "note": "zandra rhodes' pleated whites to live aid's vest — theatre at stadium scale",
+    "interpretations": [
+      {
+        "id": "queen/stage-opera",
+        "label": "stage opera",
+        "type": "era",
+        "summary": "zandra rhodes' white pleated wing top on freddie became one of rock's enduring images — operatic costume built for stadiums, later stripped to the live aid vest and moustache; the freddie mercury reco",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "operatic",
+          "triumphant"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-8df452d9-f34f-4a70-8750-385d94c351fa",
+    "sourceUrls": [
+      "https://www.anothermanmag.com/style-grooming/10561/dame-zandra-rhodes-on-designing-for-freddie-mercury",
+      "https://umusic.co.nz/originals/rock/queens-iconic-stage-costumes-with-fashion-designer-zandra-rhodes/"
+    ],
+    "approvedAt": 1784348135871
+  },
+  {
     "kind": "figure",
     "name": "raf simons",
     "aliases": [
@@ -8925,6 +9323,41 @@
       "https://www.complex.com/style/a/gregory-babcock/raf-simons-guide"
     ],
     "approvedAt": 1784260240299
+  },
+  {
+    "kind": "music",
+    "name": "ramones",
+    "aliases": [],
+    "note": "leathers, straight jeans and sneakers — punk's other uniform, no styling required",
+    "interpretations": [
+      {
+        "id": "ramones/gabba-gabba-uniform",
+        "label": "gabba gabba uniform",
+        "type": "era",
+        "summary": "perfecto leathers, straight jeans, tees and sneakers worn identically for two decades — the new york counter to london's engineered look; the perfecto record holds the jacket, this is the band that ma",
+        "tags": [
+          "streetwear",
+          "independent",
+          "minimal"
+        ],
+        "colors": [
+          "black",
+          "denim blue"
+        ],
+        "moods": [
+          "uniform",
+          "unbothered"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-87834f49-d13e-410c-ba28-3e77958e2db6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Punk_fashion",
+      "https://www.rollingstone.com/culture/culture-features/sex-pistols-fashion-punk-legacy-1355610/"
+    ],
+    "approvedAt": 1784348139282
   },
   {
     "kind": "aesthetic",
@@ -10079,6 +10512,43 @@
     "approvedAt": 1784087395739
   },
   {
+    "kind": "music",
+    "name": "sex pistols",
+    "aliases": [
+      "seditionaries"
+    ],
+    "note": "the band the shop dressed — westwood and mclaren's walking manifesto",
+    "interpretations": [
+      {
+        "id": "sex pistols/seditionaries",
+        "label": "seditionaries",
+        "type": "era",
+        "summary": "dressed from sex and seditionaries on kings road — bondage trousers, safety pins and ripped tartan as mclaren and westwood's manifesto in motion; the punk record holds the scene, the vivienne westwood",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [
+          "tartan red",
+          "black"
+        ],
+        "moods": [
+          "confrontational",
+          "engineered"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-801a47d1-f2ae-4f32-8e54-e3a18916d45b",
+    "sourceUrls": [
+      "https://www.rollingstone.com/culture/culture-features/sex-pistols-fashion-punk-legacy-1355610/",
+      "https://rmc.library.cornell.edu/punkfest/exhibition/punkarrives/fashion.html"
+    ],
+    "approvedAt": 1784348138616
+  },
+  {
     "kind": "figure",
     "name": "shai gilgeous-alexander",
     "aliases": [
@@ -11185,6 +11655,41 @@
     "approvedAt": 1784179330337
   },
   {
+    "kind": "music",
+    "name": "the clash",
+    "aliases": [],
+    "note": "stencilled slogans and paint spatter — punk dressed for the picket line",
+    "interpretations": [
+      {
+        "id": "the clash/stencil-and-spatter",
+        "label": "stencil and spatter",
+        "type": "era",
+        "summary": "hand-stencilled slogans and paint-spattered shirts, later rockabilly quiffs and military surplus — punk's political wing dressing like its own poster",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "army green",
+          "pink"
+        ],
+        "moods": [
+          "agitprop",
+          "restless"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-d29253fe-7783-45a4-94fb-00b6f242670e",
+    "sourceUrls": [
+      "https://www.marieclaire.co.uk/fashion/a-brief-history-of-punk-fashion-79145",
+      "https://punk77.co.uk/punk-fashion-introduction/"
+    ],
+    "approvedAt": 1784348139964
+  },
+  {
     "kind": "film",
     "name": "the craft",
     "aliases": [],
@@ -11442,6 +11947,81 @@
       "https://www.collectorsweekly.com/articles/the-colorful-history-of-the-black-leather-jacket/"
     ],
     "approvedAt": 1784346238520
+  },
+  {
+    "kind": "music",
+    "name": "the rolling stones",
+    "aliases": [
+      "rolling stones",
+      "mick jagger"
+    ],
+    "note": "jagger's androgynous strut — ossie clark jumpsuits and menswear remade",
+    "interpretations": [
+      {
+        "id": "the rolling stones/jagger-strut",
+        "label": "jagger strut",
+        "type": "era",
+        "summary": "ossie clark's custom velvet jumpsuits, lace-up leather and blue eyeshadow — jagger's 70s androgyny redefined what menswear could be, and modern style still quotes his quirks as vocabulary",
+        "tags": [
+          "seductive",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "velvet red",
+          "black"
+        ],
+        "moods": [
+          "rakish",
+          "electric"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-be796a22-b76f-4911-86a2-e129a311cb43",
+    "sourceUrls": [
+      "https://i-d.co/article/mick-jagger-70s-fashion/",
+      "https://www.wmagazine.com/fashion/mick-jagger-style-evolution-photos"
+    ],
+    "approvedAt": 1784348135203
+  },
+  {
+    "kind": "music",
+    "name": "the smiths",
+    "aliases": [
+      "morrissey"
+    ],
+    "note": "quiffs, gladioli and charity-shop romanticism — 80s indie's founding wardrobe",
+    "interpretations": [
+      {
+        "id": "the smiths/gladioli-romantic",
+        "label": "gladioli romantic",
+        "type": "era",
+        "summary": "morrissey's quiff and open oversized shirts with gladioli in the back pocket, nhs glasses and hearing aids worn in tribute — cardigans, tatty 501s and desert boots as the student uniform 80s british i",
+        "tags": [
+          "independent",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "faded blue",
+          "cream"
+        ],
+        "moods": [
+          "yearning",
+          "bookish"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-42b55cb1-a9de-4115-9ab1-3f96e053bc7b",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/british-indie-style-80s/",
+      "https://www.thebeliever.net/the-passion-of-the-morrissey/"
+    ],
+    "approvedAt": 1784348140652
   },
   {
     "kind": "music",
