@@ -2833,6 +2833,41 @@
     "approvedAt": 1784257138492
   },
   {
+    "kind": "film",
+    "name": "dirty dancing",
+    "aliases": [],
+    "note": "1963 through a 1987 lens — baby's timeless summer wardrobe",
+    "interpretations": [
+      {
+        "id": "dirty dancing/babys-summer",
+        "label": "baby's summer",
+        "type": "era",
+        "summary": "chambray, keds, tied blouses and dance leotards — sixties resort dressing cut with eighties styling; a hybrid summer wardrobe that reads timeless instead of dated",
+        "tags": [
+          "minimal",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "denim blue"
+        ],
+        "moods": [
+          "sunlit",
+          "coming-of-age"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-652f106b-dee4-4c17-ad74-3e62b683ca70",
+    "sourceUrls": [
+      "https://indie-mag.com/2019/08/dirty-dancing-costume-design/",
+      "https://www.whowhatwear.com/dirty-dancing-movie-style"
+    ],
+    "approvedAt": 1784346780161
+  },
+  {
     "kind": "aesthetic",
     "name": "disco",
     "aliases": [
@@ -4203,6 +4238,64 @@
     "approvedAt": 1784345371689
   },
   {
+    "kind": "film",
+    "name": "grease",
+    "aliases": [
+      "pink ladies",
+      "t-birds"
+    ],
+    "note": "1978's fifties — satin club jackets and the greaser uniform, restaged",
+    "interpretations": [
+      {
+        "id": "grease/pink-ladies",
+        "label": "pink ladies",
+        "type": "era",
+        "summary": "pink satin club jackets with names on the back, poodle skirts and mary janes — girl-gang membership dressing that still costumes every decade since",
+        "tags": [
+          "statement",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "pink",
+          "black"
+        ],
+        "moods": [
+          "clubbish",
+          "playful"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "grease/t-birds",
+        "label": "t-birds",
+        "type": "era",
+        "summary": "albert wolsky's take on the greaser uniform — leather jackets, white tees, cigarette-leg pants; the greasers record holds the real scene, this is its most-quoted restaging, down to gaultier's 2014 col",
+        "tags": [
+          "streetwear",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "cocky",
+          "nostalgic"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-f0f78340-30f9-4597-ba0f-5494a2f44202",
+    "sourceUrls": [
+      "https://coveteur.com/t-birds-grease-fashion",
+      "https://variety.com/2023/artisans/news/grease-rise-of-the-pink-ladies-costume-designer-angelina-kekich-1235624833/"
+    ],
+    "approvedAt": 1784346778008
+  },
+  {
     "kind": "aesthetic",
     "name": "greasers",
     "aliases": [
@@ -5336,6 +5429,41 @@
       "https://www.wmagazine.com/culture/jean-paul-gaultier-life-in-parties-interview"
     ],
     "approvedAt": 1784177293792
+  },
+  {
+    "kind": "figure",
+    "name": "jean seberg",
+    "aliases": [],
+    "note": "the breathless crop — a pixie and a newspaper tee that outlived the fifties",
+    "interpretations": [
+      {
+        "id": "jean seberg/the-breathless-crop",
+        "label": "the breathless crop",
+        "type": "era",
+        "summary": "self-dressed on godard's budget — the new york herald tribune tee, cropped trousers and the pixie salons copied worldwide; boyish charm as a clean break from fifties polish",
+        "tags": [
+          "minimal",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "fresh",
+          "unadorned"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-9faa78b1-fe18-4d34-99ae-62b093b33430",
+    "sourceUrls": [
+      "https://www.newwavefilm.com/about/jean-seberg-fashion-style.shtml",
+      "https://www.netflix.com/tudum/features/zoey-deutch-nouvelle-vague-jean-seberg"
+    ],
+    "approvedAt": 1784346779460
   },
   {
     "kind": "figure",
@@ -7783,6 +7911,44 @@
     "approvedAt": 1784177295577
   },
   {
+    "kind": "art",
+    "name": "nouvelle vague",
+    "aliases": [
+      "french new wave",
+      "breathless"
+    ],
+    "note": "the left bank uniform — cinema's most imitated off-duty wardrobe",
+    "interpretations": [
+      {
+        "id": "nouvelle vague/left-bank-uniform",
+        "label": "left bank uniform",
+        "type": "scene",
+        "summary": "breton stripes, trench coats, cropped trousers and gamine crops — the low-budget realism of godard and truffaut's casts turned parisian street clothes into a permanent grammar; karina and seberg its f",
+        "tags": [
+          "minimal",
+          "tailored",
+          "independent"
+        ],
+        "colors": [
+          "navy",
+          "cream"
+        ],
+        "moods": [
+          "insouciant",
+          "literate"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-c92938a9-c983-43b5-aa4a-accc787e854a",
+    "sourceUrls": [
+      "https://www.newwavefilm.com/about/jean-seberg-fashion-style.shtml",
+      "https://wwd.com/fashion-news/fashion-features/zoey-deutch-cannes-chanel-jean-seberg-nouvelle-vague-1237792591/"
+    ],
+    "approvedAt": 1784346778739
+  },
+  {
     "kind": "figure",
     "name": "orry-kelly",
     "aliases": [
@@ -8202,6 +8368,65 @@
       "https://luxurylondon.co.uk/style/hers/phoebe-philo-fashion-designer-celine/"
     ],
     "approvedAt": 1784260239227
+  },
+  {
+    "kind": "aesthetic",
+    "name": "power dressing",
+    "aliases": [
+      "power suit",
+      "dynasty",
+      "working girl"
+    ],
+    "note": "the 80s boardroom shoulder — authority tailored for women, ancestor of office siren",
+    "interpretations": [
+      {
+        "id": "power dressing/boardroom-armor",
+        "label": "boardroom armor",
+        "type": "scene",
+        "summary": "padded shoulders, tailored suits and molloy's dress-for-success codified into 80s authority — alexis carrington's dynasty wardrobe made the silhouette a symbol of command",
+        "tags": [
+          "tailored",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "fuchsia",
+          "royal blue"
+        ],
+        "moods": [
+          "commanding",
+          "polished"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "power dressing/the-ascent",
+        "label": "the ascent",
+        "type": "scene",
+        "summary": "working girl's 1988 wardrobe arc — big hair and boroughs tailoring sharpening into collarless silk and clean shoulders as the ladder gets climbed; the suit as plot",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "grey",
+          "red"
+        ],
+        "moods": [
+          "ambitious",
+          "transforming"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-3c4bb8a0-4056-415e-a78e-cb321ac6a856",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Power_dressing",
+      "https://www.ebsco.com/research-starters/womens-studies-and-feminism/power-dressing"
+    ],
+    "approvedAt": 1784346775827
   },
   {
     "kind": "film",
@@ -9134,6 +9359,43 @@
     "approvedAt": 1784345376062
   },
   {
+    "kind": "film",
+    "name": "scarface",
+    "aliases": [
+      "tony montana"
+    ],
+    "note": "miami excess in pastel tailoring — the suit as ambition",
+    "interpretations": [
+      {
+        "id": "scarface/tony-montana",
+        "label": "tony montana",
+        "type": "era",
+        "summary": "white and pastel suits over colombian-collar shirts — 1983 miami flamboyance that broke menswear's muted rules; kin to the miami and miami vice records without replacing either",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "pastel"
+        ],
+        "moods": [
+          "brazen",
+          "hungry"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-8bd8c490-a563-4c31-9b87-c429bcca62a0",
+    "sourceUrls": [
+      "https://bamfstyle.com/tag/tony-montana/",
+      "https://vintageclothingguides.com/movie-fashion/scarface-movie-outfits/"
+    ],
+    "approvedAt": 1784346777259
+  },
+  {
     "kind": "aesthetic",
     "name": "scene",
     "aliases": [
@@ -9241,6 +9503,62 @@
       "https://www.tokyoweekender.com/art_and_culture/fashion/how-japans-iconic-school-uniforms-transformed-over-the-years/"
     ],
     "approvedAt": 1784322552697
+  },
+  {
+    "kind": "tv",
+    "name": "seinfeld",
+    "aliases": [],
+    "note": "the show about nothing that dressed everything — normcore's accidental prophets",
+    "interpretations": [
+      {
+        "id": "seinfeld/the-jerry",
+        "label": "the jerry",
+        "type": "era",
+        "summary": "white sneakers, stonewashed jeans, tucked-in shirts — simplicity so complete it became normcore's founding document decades later; the normcore record holds the register, this is where it aired",
+        "tags": [
+          "minimal",
+          "streetwear",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "stonewash"
+        ],
+        "moods": [
+          "unbothered",
+          "ordinary"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "seinfeld/elaine-benes",
+        "label": "elaine benes",
+        "type": "era",
+        "summary": "floral dresses over sturdy loafers, oversized blazers, denim-on-denim a decade before the vmas made it a headline — 90s workplace dressing with an opinion",
+        "tags": [
+          "independent",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "floral",
+          "denim blue"
+        ],
+        "moods": [
+          "wry",
+          "assured"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-f015f0a2-15ac-413a-8b43-50ad5154d376",
+    "sourceUrls": [
+      "https://www.today.com/style/normcore-seinfeld-look-turns-bland-fashion-trend-2D79317923",
+      "https://www.grailed.com/drycleanonly/seinfeld-fashion-influence",
+      "https://time.com/2933820/seinfeld-anniversary-elaine-benes-style/"
+    ],
+    "approvedAt": 1784346776534
   },
   {
     "kind": "music",
