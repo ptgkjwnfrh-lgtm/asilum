@@ -403,6 +403,41 @@
     "approvedAt": 1784178615401
   },
   {
+    "kind": "figure",
+    "name": "anna karina",
+    "aliases": [],
+    "note": "the face of the nouvelle vague — gamine precision in plaid and liner",
+    "interpretations": [
+      {
+        "id": "anna karina/nouvelle-vague-gamine",
+        "label": "nouvelle vague gamine",
+        "type": "era",
+        "summary": "plaid skirts, trench coats, headbands and ballet flats with catty eyeliner — godard's leading lady as the living embodiment of new-wave dressing, the blueprint french-girl style still quotes",
+        "tags": [
+          "minimal",
+          "tailored",
+          "independent"
+        ],
+        "colors": [
+          "red",
+          "navy"
+        ],
+        "moods": [
+          "gamine",
+          "knowing"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-dcc39c2e-faa7-42bc-9314-0dcfdd105830",
+    "sourceUrls": [
+      "https://i-d.co/article/anna-karina-french-style/",
+      "https://www.anothermag.com/design-living/12166/remembering-anna-karina-the-leading-lady-of-french-new-wave-cinema"
+    ],
+    "approvedAt": 1784346242067
+  },
+  {
     "kind": "film",
     "name": "annie hall",
     "aliases": [
@@ -3816,6 +3851,41 @@
     "approvedAt": 1784179572463
   },
   {
+    "kind": "aesthetic",
+    "name": "gabber",
+    "aliases": [],
+    "note": "rotterdam hardcore — shaved heads and tracksuits at 180 bpm",
+    "interpretations": [
+      {
+        "id": "gabber/rotterdam-hardcore",
+        "label": "rotterdam hardcore",
+        "type": "scene",
+        "summary": "the early-90s dutch hardcore scene — shaved heads, australian by l'alpina tracksuits, bomber jackets and air max; sportswear stripped of leisure and worn as allegiance",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "neon green",
+          "black"
+        ],
+        "moods": [
+          "relentless",
+          "unified"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-c33c42ac-466a-4dcc-bb5e-f2391f96d3cd",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Gabber",
+      "https://www.gabberwear.nl/en/"
+    ],
+    "approvedAt": 1784346241374
+  },
+  {
     "kind": "figure",
     "name": "gabriella karefa-johnson",
     "aliases": [
@@ -5412,6 +5482,42 @@
     "approvedAt": 1784260235960
   },
   {
+    "kind": "music",
+    "name": "johnny cash",
+    "aliases": [
+      "man in black"
+    ],
+    "note": "the man in black — mourning dress as standing protest",
+    "interpretations": [
+      {
+        "id": "johnny cash/the-man-in-black",
+        "label": "the man in black",
+        "type": "era",
+        "summary": "black head to toe against nashville's rhinestones — worn, by his own 1971 telling, for the poor, the imprisoned and the war dead; a uniform that made dissent look inevitable",
+        "tags": [
+          "minimal",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "somber",
+          "steadfast"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-8d83f509-28ce-4acb-ac59-c5e1e84db14b",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Man_in_Black_(song)",
+      "https://www.rollingstone.com/music/music-country/flashback-see-johnny-cashs-style-defining-man-in-black-in-1971-167505/"
+    ],
+    "approvedAt": 1784346239268
+  },
+  {
     "kind": "figure",
     "name": "josephine baker",
     "aliases": [],
@@ -5955,6 +6061,41 @@
   },
   {
     "kind": "figure",
+    "name": "leigh bowery",
+    "aliases": [],
+    "note": "the body as couture — weekly reinvention as contemporary art",
+    "interpretations": [
+      {
+        "id": "leigh bowery/body-as-couture",
+        "label": "body as couture",
+        "type": "formula",
+        "summary": "taboo's host reinvented himself weekly — sculptural claustrophobic costumes, painted heads, towering platforms; dressing practiced as artwork, now in the tate; the lineage the club kids carried to new",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "acid",
+          "flesh"
+        ],
+        "moods": [
+          "transgressive",
+          "monumental"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-c6514feb-b0a1-4da2-99d1-724c3c925d4d",
+    "sourceUrls": [
+      "https://www.tate.org.uk/whats-on/tate-modern/leigh-bowery/exhibition-guide",
+      "https://www.ngv.vic.gov.au/essay/taboo-or-not-taboo-the-fashions-of-leigh-bowery/"
+    ],
+    "approvedAt": 1784346240657
+  },
+  {
+    "kind": "figure",
     "name": "lewis hamilton",
     "aliases": [],
     "note": "the paddock turned runway — race weekends as fashion statements",
@@ -6061,6 +6202,62 @@
       "https://www.dazeddigital.com/fashion/article/24690/1/linda-evangelista-the-ultimate-supermodel"
     ],
     "approvedAt": 1784263032196
+  },
+  {
+    "kind": "concept",
+    "name": "little black dress",
+    "aliases": [
+      "lbd"
+    ],
+    "note": "chanel's 1926 'ford of fashion' — the democratic uniform of elegance",
+    "interpretations": [
+      {
+        "id": "little black dress/the-ford",
+        "label": "the ford",
+        "type": "scene",
+        "summary": "chanel's october 1926 vogue cover dress, dubbed the ford for its model-t universality — mourning black turned into the one dress every woman could own and wear anywhere",
+        "tags": [
+          "minimal",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "democratic",
+          "assured"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "little black dress/givenchy-black",
+        "label": "givenchy black",
+        "type": "scene",
+        "summary": "the hollywood chapter — givenchy's black dresses on audrey hepburn from sabrina to breakfast at tiffany's; the lbd as cinema's shorthand for effortless polish",
+        "tags": [
+          "seductive",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "pearl"
+        ],
+        "moods": [
+          "polished",
+          "iconic"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-f0879902-1786-4b65-b2f4-4e384ba2a4d2",
+    "sourceUrls": [
+      "https://www.metmuseum.org/art/collection/search/83616",
+      "https://www.smithsonianmag.com/smart-news/why-coco-chanel-created-lbd-180965024/"
+    ],
+    "approvedAt": 1784346237079
   },
   {
     "kind": "music",
@@ -9319,6 +9516,43 @@
     "approvedAt": 1784259529543
   },
   {
+    "kind": "music",
+    "name": "siouxsie sioux",
+    "aliases": [
+      "siouxsie"
+    ],
+    "note": "the godmother of goth — the batcave blueprint mcqueen and owens cite",
+    "interpretations": [
+      {
+        "id": "siouxsie sioux/godmother-of-goth",
+        "label": "godmother of goth",
+        "type": "era",
+        "summary": "sharp cat-eye ritual makeup, black layers, fishnet and victorian silhouette — the late-70s blueprint the goth scenes built on; the trad goth record holds the scene, this is its founding face",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "crimson"
+        ],
+        "moods": [
+          "theatrical",
+          "sovereign"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-14584735-fb46-47e5-9e41-a307fad4a25e",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/fashion/article/24865/1/siouxsie-sioux-the-batcave-and-the-legacy-of-80s-goth",
+      "https://www.fredperry.com/us/subculture/articles/something-of-the-night-series-siouxsie-sioux"
+    ],
+    "approvedAt": 1784346239959
+  },
+  {
     "kind": "aesthetic",
     "name": "skate culture",
     "aliases": [
@@ -10449,6 +10683,63 @@
     "approvedAt": 1784322554943
   },
   {
+    "kind": "concept",
+    "name": "the perfecto",
+    "aliases": [
+      "perfecto",
+      "motorcycle jacket",
+      "biker jacket"
+    ],
+    "note": "schott 1928 — the asymmetric leather jacket schools banned and punk adopted",
+    "interpretations": [
+      {
+        "id": "the perfecto/the-wild-one",
+        "label": "the wild one",
+        "type": "scene",
+        "summary": "schott's 1928 horsehide motorcycle jacket, built asymmetric so the zip never touched the tank — brando wore it in 1953 and american schools banned it for a year; rebellion you could hang on a chair",
+        "tags": [
+          "statement",
+          "independent",
+          "utilitarian"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "defiant",
+          "cool"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the perfecto/punk-uniform",
+        "label": "punk uniform",
+        "type": "scene",
+        "summary": "the ramones made it punk's second skin in the 70s, gaultier rebuilt it for the runway in the 80s — the jacket as membership card across every scene that refuses",
+        "tags": [
+          "statement",
+          "independent",
+          "streetwear"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "loyal",
+          "insurgent"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-09ba5549-9635-4757-9ddc-752b4cdf5a79",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Perfecto_motorcycle_jacket",
+      "https://www.collectorsweekly.com/articles/the-colorful-history-of-the-black-leather-jacket/"
+    ],
+    "approvedAt": 1784346238520
+  },
+  {
     "kind": "music",
     "name": "the strokes",
     "aliases": [
@@ -10829,6 +11120,61 @@
       "https://parade.com/news/travis-kelce-bold-game-day-outfit-brazil-has-fans-declaring-hes-in-his-fiance-era-for-nfl-year-13"
     ],
     "approvedAt": 1784177957465
+  },
+  {
+    "kind": "concept",
+    "name": "trench coat",
+    "aliases": [],
+    "note": "officer's gabardine to noir shorthand — a century of the belted khaki coat",
+    "interpretations": [
+      {
+        "id": "trench coat/officers-gabardine",
+        "label": "officer's gabardine",
+        "type": "scene",
+        "summary": "burberry's 1879 breathable waterproof cut into a wwi officer's coat — d-rings for equipment, epaulettes for rank, khaki for mud; function that outlived its war",
+        "tags": [
+          "utilitarian",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "khaki",
+          "camel"
+        ],
+        "moods": [
+          "capable",
+          "enduring"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "trench coat/noir-to-runway",
+        "label": "noir to runway",
+        "type": "scene",
+        "summary": "the detective's collar-up silhouette — cinema's shorthand for mystery, then a perennial runway rebuild; the rare garment equally at home in surveillance and couture",
+        "tags": [
+          "tailored",
+          "statement",
+          "minimal"
+        ],
+        "colors": [
+          "khaki",
+          "black"
+        ],
+        "moods": [
+          "mysterious",
+          "composed"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-e07606fe-b013-44d7-a36e-e7df68d6edc6",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Trench_coat",
+      "https://www.burberryplc.com/company/unmistakably-burberry/the-trench-coat"
+    ],
+    "approvedAt": 1784346237799
   },
   {
     "kind": "aesthetic",
