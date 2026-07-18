@@ -322,6 +322,11 @@ export function AsteriskDrawer() {
           <a className="btn ghost wide" href="/asterisk" style={{ display: "block", textAlign: "center" }}>
             OPEN PASSPORT READ & CONTROLS
           </a>
+          <div className="adisclose">
+            ✳ Asterisk is an automated recommendation &amp; interpretation system.
+            Readings are human-curated and cited; no generative AI is active.
+            <a href="/asterisk"> WHAT ASTERISK IS</a>
+          </div>
         </div>
       )}
     </>

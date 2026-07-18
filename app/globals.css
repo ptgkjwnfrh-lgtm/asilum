@@ -857,3 +857,9 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .roomfoot em { font-style: normal; color: var(--room-accent); }
 .roomreport { margin-left: auto; border: none; background: none; font: inherit; font-size: 9px; letter-spacing: 0.12em; color: var(--room-accent); cursor: pointer; }
 .roommods .chip, .roomthemes { margin-top: 2px; }
+
+/* Day 30 pt2 — EU transparency disclosure line (drawer footer + /asterisk block) */
+.adisclose { margin-top: 10px; padding-top: 8px; border-top: 1px solid #111; font-size: 11px; line-height: 1.5; color: #555; }
+.adisclose a { color: #e5342b; text-decoration: none; font-weight: 700; }
+.adisclose a:hover { text-decoration: underline; }
+.adisclose.full { margin: 0; padding: 10px 0 2px; border-top: 0; font-size: 12.5px; color: #222; }

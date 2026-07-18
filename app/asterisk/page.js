@@ -82,6 +82,26 @@ export default function AsteriskPage() {
       </div>
       {err && <div className="pempty">{err}</div>}
       {!err && !memory && <div className="pempty">reading…</div>}
+
+      <div className="amemsec">
+        <div className="amemhead"><b className="red">*</b> WHAT ASTERISK IS</div>
+        <div className="amembody">
+          <p className="adisclose full">
+            Asterisk is ASILUM&apos;s automated recommendation and interpretation
+            system. The taste engine ranks pieces with deterministic arithmetic
+            over your own signals — favorites, saves, skips, dwell — never a
+            black-box model. Cultural readings come from a human-curated,
+            source-cited catalog; every reading shows its method and confidence,
+            and every recommendation can explain itself (✳ WHY THIS). No
+            generative AI writes anything you see here today: the model seam
+            exists in the codebase but ships disabled, and turning it on is
+            gated behind its own review. You can pause guidance without losing
+            your Passport, correct any read, export everything, or erase
+            personalization — the controls below are the complete set.
+          </p>
+        </div>
+      </div>
+
       {memory && <MemorySections memory={memory} setHidden={setHidden} full />}
 
       {memory && (
