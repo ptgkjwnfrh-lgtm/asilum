@@ -479,6 +479,65 @@
     "approvedAt": 1784343330736
   },
   {
+    "kind": "aesthetic",
+    "name": "apres-ski",
+    "aliases": [
+      "apres ski",
+      "ski culture",
+      "alpine chic"
+    ],
+    "note": "the mountain after the mountain — alpine glamour and its gorp descendant",
+    "interpretations": [
+      {
+        "id": "apres-ski/alpine-glam",
+        "label": "alpine glam",
+        "type": "scene",
+        "summary": "st. moritz in the 60s and 70s — fur-trimmed parkas, bold knits, quilted one-pieces and moon boots; dior, cardin and courreges cutting skiwear for a jet set that dressed for the bar, not the slope",
+        "tags": [
+          "seductive",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "red"
+        ],
+        "moods": [
+          "glamorous",
+          "leisurely"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "apres-ski/slope-to-bar",
+        "label": "slope to bar",
+        "type": "scene",
+        "summary": "the modern version — technical shells, shearling sorels and base layers worn from lift to lodge; the gorp era's alpine branch, function kept on after the run ends",
+        "tags": [
+          "gorp",
+          "utilitarian",
+          "streetwear"
+        ],
+        "colors": [
+          "ice blue",
+          "black"
+        ],
+        "moods": [
+          "capable",
+          "relaxed"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-201e2a04-ab00-45ca-8063-41a48529878a",
+    "sourceUrls": [
+      "https://luxurylondon.co.uk/style/hers/history-of-ski-wear-designer-style/",
+      "https://graziamagazine.com/us/articles/winter-olympics-apres-ski-fashion-trends-2026-shop/"
+    ],
+    "approvedAt": 1784344230211
+  },
+  {
     "kind": "figure",
     "name": "arianne phillips",
     "aliases": [],
@@ -1251,6 +1310,41 @@
     "approvedAt": 1784216437728
   },
   {
+    "kind": "music",
+    "name": "bossa nova",
+    "aliases": [],
+    "note": "carioca cool — the zona sul's whispered elegance",
+    "interpretations": [
+      {
+        "id": "bossa nova/carioca-cool",
+        "label": "carioca cool",
+        "type": "era",
+        "summary": "ipanema and copacabana around 1960 — linen and open collars, sundress ease, beach-to-bar polish; joao gilberto's whispered samba as a dress code of quiet precision",
+        "tags": [
+          "minimal",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "sand"
+        ],
+        "moods": [
+          "breezy",
+          "understated"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-7dc5b2cf-8a97-466d-8260-a752f3660d48",
+    "sourceUrls": [
+      "https://www.smithsonianmag.com/smart-news/remembering-bossa-nova-pioneer-joao-gilberto-180972578/",
+      "https://www.npr.org/2019/07/08/739488787/how-joao-gilbertos-music-sparked-an-aesthetic-revolution"
+    ],
+    "approvedAt": 1784344231709
+  },
+  {
     "kind": "aesthetic",
     "name": "bridal",
     "aliases": [
@@ -1380,6 +1474,63 @@
       "https://www.whowhatwear.com/britney-spears-fashion"
     ],
     "approvedAt": 1784178611822
+  },
+  {
+    "kind": "music",
+    "name": "britpop",
+    "aliases": [
+      "cool britannia"
+    ],
+    "note": "90s british guitar pop's two wardrobes — parka lads and art-school mod-ual",
+    "interpretations": [
+      {
+        "id": "britpop/parka-lad",
+        "label": "parka lad",
+        "type": "era",
+        "summary": "the oasis side — olive parkas, adidas gazelles and sambas, track tops and bucket hats carried over from madchester; casuals style gone national, deliberately unpretentious",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "olive",
+          "navy"
+        ],
+        "moods": [
+          "nonchalant",
+          "swaggering"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "britpop/mod-ual",
+        "label": "mod-ual",
+        "type": "era",
+        "summary": "the blur side — albarn's own word for mod tailoring crossed with casuals and charity-shop finds; art-school britain quoting the 60s with a smirk, a lineage from the mods without replacing them",
+        "tags": [
+          "tailored",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "navy",
+          "white"
+        ],
+        "moods": [
+          "arch",
+          "referential"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-bccaab97-ddc3-4806-b84a-da49fdee7565",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/britpop-90s-fashion/",
+      "https://www.theindustry.fashion/in-history-oasis-britpop-style-that-defined-an-era/"
+    ],
+    "approvedAt": 1784344229494
   },
   {
     "kind": "figure",
@@ -4375,6 +4526,41 @@
     "approvedAt": 1784261931500
   },
   {
+    "kind": "music",
+    "name": "highlife",
+    "aliases": [],
+    "note": "independence formal — dance-band elegance as a national argument",
+    "interpretations": [
+      {
+        "id": "highlife/independence-formal",
+        "label": "independence formal",
+        "type": "era",
+        "summary": "ghana's dance-band era from the late 1940s — kente-trimmed suits and embroidered agbada on the country's biggest stages, making the public case that african formal dress belongs at the highest occasio",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "dignified",
+          "celebratory"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-5cda7982-78f5-4a75-a795-c968d3290e8d",
+    "sourceUrls": [
+      "https://omirenstyles.com/ghanaian-highlife-fashion/",
+      "https://en.wikipedia.org/wiki/Highlife"
+    ],
+    "approvedAt": 1784344233070
+  },
+  {
     "kind": "aesthetic",
     "name": "hippie",
     "aliases": [
@@ -7117,6 +7303,67 @@
     "approvedAt": 1784319650605
   },
   {
+    "kind": "city",
+    "name": "new orleans",
+    "aliases": [
+      "nola",
+      "mardi gras indians",
+      "black masking indians",
+      "second line",
+      "big chief"
+    ],
+    "note": "dress as procession — black masking suits and second-line sunday best",
+    "interpretations": [
+      {
+        "id": "new orleans/black-masking",
+        "label": "black masking",
+        "type": "scene",
+        "summary": "the mardi gras indians' hand-beaded suits — a year of sewing, plumes and rhinestones honoring the native nations that sheltered escaped enslaved people; tribes meet in the street to decide whose suit",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [
+          "turquoise",
+          "crimson"
+        ],
+        "moods": [
+          "reverent",
+          "resplendent"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "new orleans/second-line",
+        "label": "second line",
+        "type": "scene",
+        "summary": "brass-band processions in sunday best — sashes, parasols, polished shoes and club colors; joy as a dress code that moves down the street",
+        "tags": [
+          "tailored",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "jubilant",
+          "communal"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-480be4d4-41a5-4643-920d-59ee1b175b1f",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Mardi_Gras_Indians",
+      "https://www.neworleans.com/things-to-do/music/history-and-traditions/mardi-gras-indians/"
+    ],
+    "approvedAt": 1784344228778
+  },
+  {
     "kind": "aesthetic",
     "name": "new romantics",
     "aliases": [
@@ -8265,6 +8512,43 @@
       "https://en.wikipedia.org/wiki/Ruth_E._Carter"
     ],
     "approvedAt": 1784318122220
+  },
+  {
+    "kind": "music",
+    "name": "salsa",
+    "aliases": [
+      "fania"
+    ],
+    "note": "the fania era — barrio glamour at the peak of 70s new york",
+    "interpretations": [
+      {
+        "id": "salsa/the-fania-era",
+        "label": "the fania era",
+        "type": "era",
+        "summary": "silky wide-collared shirts, pastel suits and sharp tailoring on the fania all-stars — nuyorican style from the bronx to yankee stadium; dressed-up defiance with film-world polish",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "pastel",
+          "white"
+        ],
+        "moods": [
+          "exuberant",
+          "sharp"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-ccd939ec-a448-42d3-9c01-3b8cc76696a2",
+    "sourceUrls": [
+      "https://www.carnegiehall.org/Explore/Articles/2024/12/20/Salsas-New-York-History",
+      "https://daily.redbullmusicacademy.com/2017/06/visual-history-of-salsa/"
+    ],
+    "approvedAt": 1784344232394
   },
   {
     "kind": "music",
@@ -9442,6 +9726,63 @@
       "https://www.danceus.org/style/milonga-dance-in-argentina/"
     ],
     "approvedAt": 1784321847874
+  },
+  {
+    "kind": "concept",
+    "name": "tartan",
+    "aliases": [
+      "plaid"
+    ],
+    "note": "one cloth, two flags — highland heritage and punk's ripped anarchy",
+    "interpretations": [
+      {
+        "id": "tartan/highland-code",
+        "label": "highland code",
+        "type": "scene",
+        "summary": "the clan cloth — banned after culloden in 1746, codified into named setts in the 19th century, worn since as kilt, sash and heritage suiting; pattern as lineage",
+        "tags": [
+          "archival",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "hunter green",
+          "navy"
+        ],
+        "moods": [
+          "proud",
+          "ceremonial"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "tartan/ripped-tartan",
+        "label": "ripped tartan",
+        "type": "scene",
+        "summary": "westwood and mclaren tearing the heritage cloth into bondage trousers and safety-pinned jackets on kings road in 1976 — the sex pistols' uniform; westwood later registered her own macandreas sett, reb",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "independent"
+        ],
+        "colors": [
+          "red",
+          "black"
+        ],
+        "moods": [
+          "defiant",
+          "ironic"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-021f3193-8b1d-4918-9455-9b9491647135",
+    "sourceUrls": [
+      "https://www.scmp.com/magazines/post-magazine/fashion/article/3277305/how-scotlands-traditional-tartan-patterns-conquered-fashion-vivienne-westwoods-punk-looks-burberry",
+      "https://i-d.co/article/a-punk-and-political-history-of-tartan/"
+    ],
+    "approvedAt": 1784344231023
   },
   {
     "kind": "aesthetic",
