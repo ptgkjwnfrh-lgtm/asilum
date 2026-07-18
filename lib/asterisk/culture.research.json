@@ -1420,6 +1420,43 @@
     "approvedAt": 1784321844557
   },
   {
+    "kind": "figure",
+    "name": "brigitte bardot",
+    "aliases": [
+      "bardot"
+    ],
+    "note": "st. tropez barefoot — gingham, repetto flats, and the neckline that took her name",
+    "interpretations": [
+      {
+        "id": "brigitte bardot/st-tropez-barefoot",
+        "label": "st. tropez barefoot",
+        "type": "era",
+        "summary": "the pink gingham esterel wedding dress that started a craze, repetto ballerinas made for her in 1956, barefoot through st. tropez — riviera ease with the off-shoulder neckline fashion still calls the",
+        "tags": [
+          "seductive",
+          "independent",
+          "minimal"
+        ],
+        "colors": [
+          "pink",
+          "white"
+        ],
+        "moods": [
+          "insouciant",
+          "sunlit"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-acc3633b-604a-4e97-bc8b-d2bdaba4a4e0",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Brigitte_Bardot",
+      "https://www.seesainttropez.com/people/brigitte-bardot"
+    ],
+    "approvedAt": 1784345372397
+  },
+  {
     "kind": "music",
     "name": "britney spears",
     "aliases": [
@@ -3590,6 +3627,43 @@
   },
   {
     "kind": "figure",
+    "name": "francoise hardy",
+    "aliases": [
+      "ye-ye"
+    ],
+    "note": "the modern woman of 60s paris — courreges white, the first le smoking",
+    "interpretations": [
+      {
+        "id": "francoise hardy/ye-ye-modern",
+        "label": "ye-ye modern",
+        "type": "era",
+        "summary": "the ye-ye generation's fashion leader — white courreges pantsuits, saint laurent's first le smoking, an early champion of paco rabanne's metal dresses; french cool as streamlined futurism",
+        "tags": [
+          "minimal",
+          "tailored",
+          "avant-garde"
+        ],
+        "colors": [
+          "white",
+          "silver"
+        ],
+        "moods": [
+          "cool",
+          "modern"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-a4a17fe0-6161-42ee-a8d7-92075ca232a0",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Fran%C3%A7oise_Hardy",
+      "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/grasse/paco-rabanne-dior-cardin-francoise-hardy-brigitte-bardot-jane-birkin-la-mode-et-les-femmes-a-travers-l-objectif-de-jean-daniel-lorieux-2985620.html"
+    ],
+    "approvedAt": 1784345373148
+  },
+  {
+    "kind": "figure",
     "name": "fred astaire",
     "aliases": [
       "astaire"
@@ -4019,6 +4093,44 @@
       "https://www.businessoffashion.com/people/grace-coddington/"
     ],
     "approvedAt": 1784258277455
+  },
+  {
+    "kind": "figure",
+    "name": "grace kelly",
+    "aliases": [
+      "princess grace",
+      "kelly bag"
+    ],
+    "note": "hitchcock heroine to monaco royal — the wardrobe that named a bag",
+    "interpretations": [
+      {
+        "id": "grace kelly/hitchcock-to-monaco",
+        "label": "hitchcock to monaco",
+        "type": "era",
+        "summary": "edith head's to-catch-a-thief wardrobe, then the hermes sac a depeches held against the paparazzi — renamed the kelly; clean lines, structured silhouettes, a soft palette worn like protocol",
+        "tags": [
+          "tailored",
+          "minimal",
+          "seductive"
+        ],
+        "colors": [
+          "ivory",
+          "powder blue"
+        ],
+        "moods": [
+          "composed",
+          "luminous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-17f8702a-6cbc-42b1-a789-31c853b43d7d",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/culture-news/feature/hermes-kelly-bag-history-1236897752/",
+      "https://en.wikipedia.org/wiki/Kelly_bag"
+    ],
+    "approvedAt": 1784345371689
   },
   {
     "kind": "aesthetic",
@@ -7969,6 +8081,41 @@
     "approvedAt": 1784177955436
   },
   {
+    "kind": "film",
+    "name": "quadrophenia",
+    "aliases": [],
+    "note": "the film that re-made a subculture — brighton 1964 through 1979 eyes",
+    "interpretations": [
+      {
+        "id": "quadrophenia/brighton-mod",
+        "label": "brighton mod",
+        "type": "scene",
+        "summary": "parkas, three-button suits and scooters filtered through punk-era grit — the 1979 film handed a generation the mods' visual guide and the revival went from hundreds to hundreds of thousands within the",
+        "tags": [
+          "tailored",
+          "streetwear",
+          "archival"
+        ],
+        "colors": [
+          "olive",
+          "navy"
+        ],
+        "moods": [
+          "restless",
+          "sharp"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-641e0ccc-daea-482d-a9aa-2402f5c84823",
+    "sourceUrls": [
+      "https://www.flavorwire.com/457710/quadrophenias-hyperrealistic-portrait-of-teen-angst-1960s-mod-style",
+      "https://mubi.com/en/notebook/posts/mubi-podcast-quadrophenia-the-mod-mod-world-of-64-79-and-beyond"
+    ],
+    "approvedAt": 1784345375316
+  },
+  {
     "kind": "figure",
     "name": "raf simons",
     "aliases": [
@@ -8751,6 +8898,43 @@
       "https://www.voguescandinavia.com/articles/the-incredible-fashion-of-the-ladies-and-gentlemen-of-the-congo"
     ],
     "approvedAt": 1784177295288
+  },
+  {
+    "kind": "film",
+    "name": "saturday night fever",
+    "aliases": [
+      "tony manero"
+    ],
+    "note": "the white suit — disco's emblem, chosen against a black one",
+    "interpretations": [
+      {
+        "id": "saturday night fever/the-white-suit",
+        "label": "the white suit",
+        "type": "era",
+        "summary": "patrizia von brandenstein's white three-piece — 'heroes wore white' — over a black shirt on the 2001 odyssey floor; the emblem of the disco decade, now museum-displayed; kin to the disco record's stud",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "black"
+        ],
+        "moods": [
+          "hedonistic",
+          "aspirational"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-078bd9cf-d737-4dae-8a09-a792ddac9eea",
+    "sourceUrls": [
+      "https://www.dezeen.com/2012/08/24/john-travoltas-saturday-night-fever-suit-rediscovered/",
+      "https://bamfstyle.com/2017/12/15/saturday-night-fever-white-suit/"
+    ],
+    "approvedAt": 1784345376062
   },
   {
     "kind": "aesthetic",
@@ -10157,6 +10341,64 @@
     "approvedAt": 1784176300799
   },
   {
+    "kind": "tv",
+    "name": "the fresh prince of bel-air",
+    "aliases": [
+      "fresh prince"
+    ],
+    "note": "90s color-block streetwear meets bel-air prep — two wardrobes, one house",
+    "interpretations": [
+      {
+        "id": "the fresh prince of bel-air/the-fresh-prince",
+        "label": "the fresh prince",
+        "type": "era",
+        "summary": "inside-out blazers, color-block windbreakers, jerseys, overalls with one strap down — hip-hop's athletic flash mainstreamed on network tv, the reference point for how 90s kids actually dressed",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "neon",
+          "purple"
+        ],
+        "moods": [
+          "playful",
+          "confident"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "the fresh prince of bel-air/hilary-banks",
+        "label": "hilary banks",
+        "type": "era",
+        "summary": "the other wardrobe in the house — structured blazers, matching skirt suits, hats and gloves; 90s ladylike polish played straight while the living room went neon",
+        "tags": [
+          "tailored",
+          "seductive",
+          "statement"
+        ],
+        "colors": [
+          "fuchsia",
+          "cream"
+        ],
+        "moods": [
+          "polished",
+          "arch"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-83aecb14-35c6-412e-b729-569d990fccba",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/fresh-prince-of-bel-air-fashion/",
+      "https://www.nssmag.com/en/fashion/19037/fresh-prince-of-bel-air-style-netflix",
+      "https://www.hola.com/us/fashion/20220126308927/90s-fashion-trends-defined-by-the-fresh-prince-of-bel-air/"
+    ],
+    "approvedAt": 1784345376797
+  },
+  {
     "kind": "aesthetic",
     "name": "the mullet",
     "aliases": [
@@ -10280,6 +10522,41 @@
       "https://happymag.tv/the-velvet-underground-nico-why-it-mattered/"
     ],
     "approvedAt": 1784098506275
+  },
+  {
+    "kind": "film",
+    "name": "the warriors",
+    "aliases": [],
+    "note": "1979 nyc gang uniforms — the vest as crew identity",
+    "interpretations": [
+      {
+        "id": "the warriors/the-vest",
+        "label": "the vest",
+        "type": "scene",
+        "summary": "east gate faux-leather vests with rose clements' embroidered patches — every gang a uniform, every uniform an identity; the crew-dressing grammar hip-hop carried forward",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "brown",
+          "denim blue"
+        ],
+        "moods": [
+          "tribal",
+          "swaggering"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-5b2d0f07-2aad-4cf5-a430-26a0ed4f2b18",
+    "sourceUrls": [
+      "https://www.dazeddigital.com/film-tv/article/43535/1/the-warriors-nyc-movie-costume-designer-film-anniversary",
+      "https://clothesonfilm.net/2017/06/16/the-warriors-leather-vest/"
+    ],
+    "approvedAt": 1784345373874
   },
   {
     "kind": "aesthetic",
@@ -10441,6 +10718,41 @@
       "https://www.showstudio.com/news/how-tom-ford-revolutionised-fashion"
     ],
     "approvedAt": 1784260238104
+  },
+  {
+    "kind": "film",
+    "name": "top gun",
+    "aliases": [],
+    "note": "the g-1 flight jacket's civilian moment — summer 1986",
+    "interpretations": [
+      {
+        "id": "top gun/the-flight-jacket",
+        "label": "the flight jacket",
+        "type": "era",
+        "summary": "maverick's patch-covered g-1 with mouton collar and aviators sold out across america within weeks of release — the most dramatic military-to-civilian jump in flight-jacket history",
+        "tags": [
+          "utilitarian",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "brown",
+          "olive"
+        ],
+        "moods": [
+          "cocksure",
+          "all-american"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-1a62382f-64ad-4bc4-89b2-4fbb89a16e68",
+    "sourceUrls": [
+      "https://www.alphaindustries.com/blogs/alpha-stories/how-top-gun-made-bomber-jackets-famous",
+      "https://cdapress.com/news/2025/sep/26/from-cockpits-to-catwalks-the-flight-jackets-iconic-history/"
+    ],
+    "approvedAt": 1784345374607
   },
   {
     "kind": "aesthetic",
