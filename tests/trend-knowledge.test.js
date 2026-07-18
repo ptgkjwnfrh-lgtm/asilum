@@ -7,12 +7,12 @@ import {
 import { scoreProductForUser } from "../lib/ai/stylistReasoningEngine.js";
 
 test("trend knowledge is active only inside its dated window", () => {
-  assert.ok(getCurrentFashionTrends({ asOf: "2026-07-13" }).length >= 8);
+  assert.ok(getCurrentFashionTrends({ asOf: "2026-07-17" }).length >= 8);
   assert.equal(getCurrentFashionTrends({ asOf: "2027-01-01" }).length, 0);
 });
 
 test("trend matching requires product-level evidence", () => {
-  const trends = getCurrentFashionTrends({ asOf: "2026-07-13" });
+  const trends = getCurrentFashionTrends({ asOf: "2026-07-17" });
   const statementDenim = scoreProductTrendRelevance({
     title: "Studded patchwork statement denim jean",
     category: "pants",
@@ -31,7 +31,7 @@ test("trend matching requires product-level evidence", () => {
 
 test("model trend context retains provenance", async () => {
   const { getFashionTrendContext } = await import("../lib/ai/trendKnowledge.js");
-  const [trend] = getFashionTrendContext({ asOf: "2026-07-13", limit: 1 });
+  const [trend] = getFashionTrendContext({ asOf: "2026-07-17", limit: 1 });
   assert.ok(trend.sources.length >= 1);
   assert.ok(trend.sources.every((source) => source.url.startsWith("https://")));
   assert.ok(trend.sources.every((source) => source.kind !== "platform-methodology"));
@@ -39,7 +39,7 @@ test("model trend context retains provenance", async () => {
 });
 
 test("personal taste remains stronger than trend relevance", () => {
-  const trends = getCurrentFashionTrends({ asOf: "2026-07-13" });
+  const trends = getCurrentFashionTrends({ asOf: "2026-07-17" });
   const profile = {
     dominantAesthetics: [{ tag: "minimal", weight: 1 }],
     preferredBrands: [], avoidedTags: [],
