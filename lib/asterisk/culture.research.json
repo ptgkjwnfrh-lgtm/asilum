@@ -2249,6 +2249,43 @@
   },
   {
     "kind": "figure",
+    "name": "danessa myricks",
+    "aliases": [
+      "danessa myricks beauty"
+    ],
+    "note": "multi-use possibility — self-taught pro-grade beauty built for every skin tone",
+    "interpretations": [
+      {
+        "id": "danessa myricks/multi-use-possibility",
+        "label": "multi-use possibility",
+        "type": "formula",
+        "summary": "self-taught single mother to nine allure awards — layerable multi-use formulas and shade ranges built deep-first; professional artistry made accessible",
+        "tags": [
+          "independent",
+          "seductive",
+          "statement"
+        ],
+        "colors": [
+          "bronze",
+          "berry"
+        ],
+        "moods": [
+          "inclusive",
+          "resourceful"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-9c37ddba-641f-498c-8762-c927736197e9",
+    "sourceUrls": [
+      "https://time.com/7210615/danessa-myricks-beauty-industry-makeup/",
+      "https://www.forbes.com/sites/katehardcastle/2025/03/02/danessa-myricks-redefining-beauty-through-innovation-and-inclusivity/"
+    ],
+    "approvedAt": 1784342683154
+  },
+  {
+    "kind": "figure",
     "name": "dapper dan",
     "aliases": [
       "daniel day"
@@ -3067,6 +3104,41 @@
     "approvedAt": 1784178613426
   },
   {
+    "kind": "figure",
+    "name": "eugene souleiman",
+    "aliases": [],
+    "note": "sculptural punk — margiela shampoo suds, yohji volumes, three-dimensional hair",
+    "interpretations": [
+      {
+        "id": "eugene souleiman/sculptural-punk",
+        "label": "sculptural punk",
+        "type": "formula",
+        "summary": "a westwood-wearing punk who thinks in three dimensions — caged updos, shampoo-suds hair for galliano's margiela, no ponytails; craft as refusal of the minimal",
+        "tags": [
+          "avant-garde",
+          "independent",
+          "statement"
+        ],
+        "colors": [
+          "platinum",
+          "black"
+        ],
+        "moods": [
+          "experimental",
+          "defiant"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-bfd7dcc5-db4f-44fb-bf8c-a30731ce1459",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Eugene_Souleiman",
+      "https://www.anothermag.com/fashion-beauty/15826/eugene-souleiman-hairstylist-interview"
+    ],
+    "approvedAt": 1784342682444
+  },
+  {
     "kind": "music",
     "name": "fela kuti",
     "aliases": [
@@ -3756,6 +3828,40 @@
   },
   {
     "kind": "figure",
+    "name": "guido palau",
+    "aliases": [],
+    "note": "avant-garde runway hair — grunge for calvin klein to sculpted prada severity",
+    "interpretations": [
+      {
+        "id": "guido palau/avant-garde-hair",
+        "label": "avant-garde hair",
+        "type": "formula",
+        "summary": "from sassoon training to thirty shows a season — undone grunge with david sims, then decades of severe, sculptural, referential hair for prada, mcqueen and margiela",
+        "tags": [
+          "avant-garde",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "severe",
+          "referential"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-c5973e7e-2307-463b-81de-237185fd31c4",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Guido_Palau",
+      "https://www.dazeddigital.com/beauty/article/54905/1/legendary-hairstylist-guido-palau-breaks-down-5-hair-raising-looks"
+    ],
+    "approvedAt": 1784342680964
+  },
+  {
+    "kind": "figure",
     "name": "guy bourdin",
     "aliases": [
       "bourdin"
@@ -4391,6 +4497,43 @@
       "https://www.dazeddigital.com/fashion/article/17903/1/the-da-zed-guide-to-isabella-blow"
     ],
     "approvedAt": 1784179354028
+  },
+  {
+    "kind": "figure",
+    "name": "isamaya ffrench",
+    "aliases": [
+      "isamaya"
+    ],
+    "note": "the face as a 3d canvas — industrial-design beauty, hardware and latex",
+    "interpretations": [
+      {
+        "id": "isamaya ffrench/industrial-beauty",
+        "label": "industrial beauty",
+        "type": "formula",
+        "summary": "central saint martins industrial design turned makeup — piercings, chrome, leather and latex; beauty built like product design for people who do not conform",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "chrome",
+          "black"
+        ],
+        "moods": [
+          "subversive",
+          "sculptural"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-46cb3fc3-daf3-4c6d-9791-bf1498664541",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Isamaya_Ffrench",
+      "https://news.artnet.com/art-world/isamaya-ffrench-profile-2178761"
+    ],
+    "approvedAt": 1784342678729
   },
   {
     "kind": "figure",
@@ -5058,6 +5201,41 @@
       "https://www.cnn.com/style/article/katie-grand-marc-jacobs-style-show/index.html"
     ],
     "approvedAt": 1784259528382
+  },
+  {
+    "kind": "figure",
+    "name": "kevyn aucoin",
+    "aliases": [],
+    "note": "the transformation — 90s contour glamour that turned faces into icons",
+    "interpretations": [
+      {
+        "id": "kevyn aucoin/the-transformation",
+        "label": "the transformation",
+        "type": "formula",
+        "summary": "sculpted light and shadow before contouring had a name — supermodel-era faces remade as golden-age icons; glamour as devotion",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "bronze",
+          "nude"
+        ],
+        "moods": [
+          "glamorous",
+          "devotional"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-73d630a8-cb33-461d-aa2b-ac9ccef23922",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Kevyn_Aucoin",
+      "https://kevynaucoinbeauty.com/pages/about-kevyn-aucoin-beauty"
+    ],
+    "approvedAt": 1784342679487
   },
   {
     "kind": "music",
@@ -6054,6 +6232,63 @@
     "approvedAt": 1784322546134
   },
   {
+    "kind": "aesthetic",
+    "name": "metalhead",
+    "aliases": [
+      "battle jacket",
+      "battle vest"
+    ],
+    "note": "metal dress as identity — the patched battle jacket and the black uniform",
+    "interpretations": [
+      {
+        "id": "metalhead/battle-jacket",
+        "label": "the battle jacket",
+        "type": "scene",
+        "summary": "the patched denim or leather cut-off as wearable biography — airmen to bikers to punk to 80s metal; every patch a record of tours, records and belonging",
+        "tags": [
+          "statement",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "denim blue",
+          "black"
+        ],
+        "moods": [
+          "devoted",
+          "armored"
+        ],
+        "confidence": 0.73
+      },
+      {
+        "id": "metalhead/black-uniform",
+        "label": "the black uniform",
+        "type": "scene",
+        "summary": "band tee, black jeans, leather and boots — the everyday metal uniform that reads instantly across scenes and decades; denim and leather as community code",
+        "tags": [
+          "statement",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "black"
+        ],
+        "moods": [
+          "heavy",
+          "loyal"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-a4720f5f-4aad-4fa7-ae1e-bc7a98e7e14f",
+    "sourceUrls": [
+      "https://www.tandfonline.com/doi/full/10.1080/19401159.2021.1872763",
+      "https://www.loudersound.com/features/how-heavy-metal-fashion-formed-denim-leather-jackets"
+    ],
+    "approvedAt": 1784342684569
+  },
+  {
     "kind": "city",
     "name": "mexico city",
     "aliases": [
@@ -6829,6 +7064,44 @@
       "https://www.anothermag.com/fashion-beauty/15889/an-oral-history-of-the-battle-of-versailles-by-pat-cleveland"
     ],
     "approvedAt": 1784263038789
+  },
+  {
+    "kind": "figure",
+    "name": "pat mcgrath",
+    "aliases": [
+      "pat mcgrath labs",
+      "mothership"
+    ],
+    "note": "the most influential makeup artist in the world — maximal gilded editorial glamour",
+    "interpretations": [
+      {
+        "id": "pat mcgrath/the-mothership",
+        "label": "the mothership",
+        "type": "formula",
+        "summary": "three thousand runways of maximal transformation — gilded lids, sequined skin, hands over brushes; glamour as spectacle from prada to margiela",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "black"
+        ],
+        "moods": [
+          "opulent",
+          "transformative"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-1ebab0e3-66cf-492b-a7e3-a98dc093b51e",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Pat_McGrath_(make-up_artist)",
+      "https://www.businessoffashion.com/people/pat-mcgrath/"
+    ],
+    "approvedAt": 1784342678001
   },
   {
     "kind": "figure",
@@ -7791,6 +8064,40 @@
   },
   {
     "kind": "figure",
+    "name": "sam mcknight",
+    "aliases": [],
+    "note": "working glamour — diana's slicked crop, chanel's wind-blown ease",
+    "interpretations": [
+      {
+        "id": "sam mcknight/working-glamour",
+        "label": "working glamour",
+        "type": "formula",
+        "summary": "the 1990 vogue crop that remade princess diana, seven years her personal stylist, decades of movable, lived-in glamour for chanel and fendi — hair that works",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "blonde"
+        ],
+        "moods": [
+          "effortless",
+          "assured"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-150ae032-d73c-4fcd-adaa-61c10cb14aea",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Sam_McKnight",
+      "https://www.anothermag.com/fashion-beauty/9237/inside-the-world-of-hair-artist-sam-mcknight"
+    ],
+    "approvedAt": 1784342681688
+  },
+  {
+    "kind": "figure",
     "name": "sandy powell",
     "aliases": [],
     "note": "velvet and rock stars — period costume worn like performance",
@@ -8242,6 +8549,66 @@
       "https://i-d.co/article/simon-foxtons-i-d-archive/"
     ],
     "approvedAt": 1784259529543
+  },
+  {
+    "kind": "aesthetic",
+    "name": "skate culture",
+    "aliases": [
+      "skateboarding",
+      "skater style",
+      "dogtown",
+      "z-boys"
+    ],
+    "note": "two waves of skate dress — dogtown fluidity and 90s big-pants street",
+    "interpretations": [
+      {
+        "id": "skate culture/dogtown",
+        "label": "dogtown",
+        "type": "scene",
+        "summary": "the 70s z-boys surf-to-concrete look — cut-off jeans, tube socks, worn vans, low-slung fluid ease; style born from how the body moves",
+        "tags": [
+          "streetwear",
+          "independent",
+          "utilitarian"
+        ],
+        "colors": [
+          "faded blue",
+          "white"
+        ],
+        "moods": [
+          "loose",
+          "sun-worn"
+        ],
+        "confidence": 0.73
+      },
+      {
+        "id": "skate culture/big-pants-small-wheels",
+        "label": "big pants small wheels",
+        "type": "scene",
+        "summary": "90s street skating's baggy denim, oversized hoodies and graphic decks-as-billboards — hip-hop and punk crossing into the streetwear that conquered fashion",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "washed denim",
+          "black"
+        ],
+        "moods": [
+          "baggy",
+          "irreverent"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-d3bafc55-e2d0-48a7-acbe-178bf227f0b3",
+    "sourceUrls": [
+      "https://www.anothermanmag.com/style-grooming/10007/this-clothing-label-defined-skate-style-dogtown-skateboards",
+      "https://www.fastatucla.com/fast-at-ucla/skateboarding-the-birthplace-of-modern-streetwear"
+    ],
+    "approvedAt": 1784342683862
   },
   {
     "kind": "aesthetic",
@@ -9832,6 +10199,41 @@
       "https://www.chrono24.com/magazine/how-to-start-your-watch-collection-a-guide-for-beginners-p_170987/"
     ],
     "approvedAt": 1784322549428
+  },
+  {
+    "kind": "figure",
+    "name": "way bandy",
+    "aliases": [],
+    "note": "designing your face — the 70s invention of the modern makeup artist",
+    "interpretations": [
+      {
+        "id": "way bandy/designing-your-face",
+        "label": "designing your face",
+        "type": "formula",
+        "summary": "heavy yet clean, natural-looking application codified in the 1977 bestseller — the highest-paid face painter of the studio 54 era, teacher of the generation after",
+        "tags": [
+          "minimal",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "ivory",
+          "rose"
+        ],
+        "moods": [
+          "polished",
+          "foundational"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-eb57da7f-574f-456c-9350-21b1ee5c25b4",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Way_Bandy",
+      "https://www.beautylish.com/a/vxjin/way-bandy-makeup-master"
+    ],
+    "approvedAt": 1784342680212
   },
   {
     "kind": "music",
