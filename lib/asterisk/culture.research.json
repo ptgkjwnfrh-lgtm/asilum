@@ -256,6 +256,41 @@
   },
   {
     "kind": "music",
+    "name": "amapiano",
+    "aliases": [],
+    "note": "mzansi groove — loose luxe streetwear built by the same channels as the sound",
+    "interpretations": [
+      {
+        "id": "amapiano/mzansi-groove",
+        "label": "mzansi groove",
+        "type": "scene",
+        "summary": "loose silhouettes, luxe streetwear, bucket hats and utility layers — south africa's log-drum scene dressing itself through tiktok and the club circuit, with johannesburg designers like rich mnisi carr",
+        "tags": [
+          "streetwear",
+          "independent",
+          "statement"
+        ],
+        "colors": [
+          "earth",
+          "cream"
+        ],
+        "moods": [
+          "fluid",
+          "assured"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-d0fd218a-529b-47e5-9131-ee4bbeeb87cd",
+    "sourceUrls": [
+      "https://omirenstyles.com/amapiano-fashion-aesthetic-south-africa/",
+      "https://newsroom.spotify.com/2024-06-13/from-beats-to-the-streets-to-the-catwalks-how-amapiano-enabled-a-lifestyle/"
+    ],
+    "approvedAt": 1784347329756
+  },
+  {
+    "kind": "music",
     "name": "amy winehouse",
     "aliases": [
       "winehouse"
@@ -1911,6 +1946,41 @@
     "approvedAt": 1784080234759
   },
   {
+    "kind": "music",
+    "name": "chet baker",
+    "aliases": [],
+    "note": "the white undershirt as a whole aesthetic — west coast cool at its barest",
+    "interpretations": [
+      {
+        "id": "chet baker/west-coast-cool",
+        "label": "west coast cool",
+        "type": "era",
+        "summary": "a white undershirt and slacks doing what other men needed a wardrobe for — west coast jazz's restraint worn on the body; the vulnerable minimum as style",
+        "tags": [
+          "minimal",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "white",
+          "khaki"
+        ],
+        "moods": [
+          "languid",
+          "bare"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-d4f14a58-74eb-40b9-94e1-4b465be2fbab",
+    "sourceUrls": [
+      "https://www.ivy-style.com/an-almost-mystical-presence-charlie-davidson-on-chet-baker.html",
+      "https://officemagazine.net/channeling-chet-baker"
+    ],
+    "approvedAt": 1784347327564
+  },
+  {
     "kind": "aesthetic",
     "name": "chicano style",
     "aliases": [
@@ -2795,6 +2865,64 @@
     "approvedAt": 1784080234069
   },
   {
+    "kind": "music",
+    "name": "diana ross",
+    "aliases": [
+      "the supremes",
+      "supremes"
+    ],
+    "note": "motown's matched silver gowns to mahogany's fifty self-designed costumes",
+    "interpretations": [
+      {
+        "id": "diana ross/the-supremes",
+        "label": "the supremes",
+        "type": "era",
+        "summary": "matching floor-length gene shelly gowns hand-beaded in hong kong — sequins built to move under stage lights; motown glamour as coordinated precision",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "silver",
+          "champagne"
+        ],
+        "moods": [
+          "luminous",
+          "unified"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "diana ross/mahogany",
+        "label": "mahogany",
+        "type": "era",
+        "summary": "she designed fifty of her own costumes for the 1975 film — mackie-fabricated turbans and one-shoulder drama; the 70s solo era as self-authored spectacle",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [
+          "purple",
+          "fuchsia"
+        ],
+        "moods": [
+          "self-made",
+          "grand"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-ce0f6b2a-9c44-4def-b523-f56f7e6ddd26",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/celebrity-news/feature/diana-ross-best-looks-iconic-fashion-moments-1236258838/",
+      "https://i-d.co/article/diana-ross-most-iconic-outfits-fashion-style/"
+    ],
+    "approvedAt": 1784347325354
+  },
+  {
     "kind": "figure",
     "name": "diana vreeland",
     "aliases": [
@@ -3229,6 +3357,41 @@
       "https://en.wikipedia.org/wiki/Edward_VIII"
     ],
     "approvedAt": 1784257162641
+  },
+  {
+    "kind": "figure",
+    "name": "eartha kitt",
+    "aliases": [],
+    "note": "satin turbans and leopard as emblem — glamour on her own rules",
+    "interpretations": [
+      {
+        "id": "eartha kitt/own-rules-glamour",
+        "label": "own-rules glamour",
+        "type": "era",
+        "summary": "tight satin turbans framing flared eyeliner, leopard worn like a personal crest — a sex symbol who refused every script but her own; playful sophistication as defiance",
+        "tags": [
+          "seductive",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "leopard",
+          "black"
+        ],
+        "moods": [
+          "feline",
+          "self-possessed"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-de01208d-914a-49ad-a25f-7a217f6f184f",
+    "sourceUrls": [
+      "https://www.mic.com/articles/148941/unsung-style-icon-eartha-kitt-lover-of-animal-prints-and-turbans",
+      "https://vintageclothingguides.com/celebrity-fashion/eartha-kitts-iconic-fashion-moments/"
+    ],
+    "approvedAt": 1784347326079
   },
   {
     "kind": "figure",
@@ -3731,6 +3894,43 @@
       "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/grasse/paco-rabanne-dior-cardin-francoise-hardy-brigitte-bardot-jane-birkin-la-mode-et-les-femmes-a-travers-l-objectif-de-jean-daniel-lorieux-2985620.html"
     ],
     "approvedAt": 1784345373148
+  },
+  {
+    "kind": "music",
+    "name": "frank sinatra",
+    "aliases": [
+      "rat pack"
+    ],
+    "note": "sharkskin, a 2.25-inch lapel, and a fedora tilted just so",
+    "interpretations": [
+      {
+        "id": "frank sinatra/rat-pack-sharp",
+        "label": "rat pack sharp",
+        "type": "era",
+        "summary": "mohair-wool sharkskin suits fitted obsessively — lapels at exactly two and a quarter inches — slim ties and the cocked fedora; vegas mid-century elegance as a uniform code",
+        "tags": [
+          "tailored",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "sharkskin grey",
+          "midnight"
+        ],
+        "moods": [
+          "suave",
+          "exact"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-a77af9c1-b882-4841-aaff-37a4911ee32a",
+    "sourceUrls": [
+      "https://aklasu.co/blogs/journal/suave-stylish-and-sensible-a-note-on-the-style-of-the-rat-pack",
+      "https://www.gentlemansgazette.com/frank-sinatra-style-gentleman/"
+    ],
+    "approvedAt": 1784347326827
   },
   {
     "kind": "figure",
@@ -5754,6 +5954,63 @@
     "approvedAt": 1784258275250
   },
   {
+    "kind": "music",
+    "name": "k-pop",
+    "aliases": [
+      "kpop"
+    ],
+    "note": "idol stagecraft and the ambassador era — korea's two fashion exports",
+    "interpretations": [
+      {
+        "id": "k-pop/idol-stagecraft",
+        "label": "idol stagecraft",
+        "type": "scene",
+        "summary": "comeback-concept styling — coordinated but individuated stagewear rebuilt for every era, airport looks documented like editorials; image as a produced discipline",
+        "tags": [
+          "statement",
+          "streetwear",
+          "avant-garde"
+        ],
+        "colors": [
+          "pastel",
+          "chrome"
+        ],
+        "moods": [
+          "produced",
+          "immaculate"
+        ],
+        "confidence": 0.73
+      },
+      {
+        "id": "k-pop/ambassador-era",
+        "label": "ambassador era",
+        "type": "scene",
+        "summary": "idols as luxury's most powerful faces — the blackpink four each fronting a paris house; the blackpink record holds the group, this is the industry shift they led",
+        "tags": [
+          "tailored",
+          "seductive",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "ivory"
+        ],
+        "moods": [
+          "polished",
+          "global"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-b51499f7-c17d-4d40-82c9-c42c7c5bc67a",
+    "sourceUrls": [
+      "https://www.nylon.com/fashion/kpop-high-fashion-ambassadors-jennie-chanel",
+      "https://elle.in/fashion/the-k-pop-effect-how-korean-idols-became-fashions-most-powerful-ambassadors-9470511"
+    ],
+    "approvedAt": 1784347328278
+  },
+  {
     "kind": "figure",
     "name": "karl lagerfeld",
     "aliases": [],
@@ -7326,6 +7583,63 @@
     "approvedAt": 1784318123319
   },
   {
+    "kind": "music",
+    "name": "miles davis",
+    "aliases": [
+      "birth of the cool"
+    ],
+    "note": "every sound change was a wardrobe change — brooks brothers to miyake",
+    "interpretations": [
+      {
+        "id": "miles davis/birth-of-the-cool",
+        "label": "birth of the cool",
+        "type": "era",
+        "summary": "brooks brothers sharp into andover-shop ivy — natural-shoulder tweed, oxford cloth, weejuns and rep ties worn while cutting kind of blue; black ivy at its most exacting",
+        "tags": [
+          "tailored",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "charcoal",
+          "oxford blue"
+        ],
+        "moods": [
+          "exacting",
+          "cool"
+        ],
+        "confidence": 0.75
+      },
+      {
+        "id": "miles davis/electric-miles",
+        "label": "electric miles",
+        "type": "era",
+        "summary": "the 70s electric turn dressed to match — eclectic stagewear beside sly stone, then 80s oversized miyake; the wardrobe changed every time the music did",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "scarlet",
+          "black"
+        ],
+        "moods": [
+          "mercurial",
+          "ahead"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-dda3f37a-cb22-4cf7-a8c0-74f2ec02a4d7",
+    "sourceUrls": [
+      "https://www.ivy-style.com/gotta-be-me-miles-davis-music-and-style-in-the-fifties.html",
+      "https://www.milesdavis.com/books/milesstyle-the-fashion-of-miles-davis/"
+    ],
+    "approvedAt": 1784347323913
+  },
+  {
     "kind": "figure",
     "name": "miriam makeba",
     "aliases": [
@@ -7871,6 +8185,43 @@
       "https://www.1854.photography/2015/05/showstudio-nick-knights-digital-fashion-concept/"
     ],
     "approvedAt": 1784261929258
+  },
+  {
+    "kind": "music",
+    "name": "nina simone",
+    "aliases": [
+      "high priestess of soul"
+    ],
+    "note": "regal, fearless, entirely her own — prints on prints and sculptural headpieces",
+    "interpretations": [
+      {
+        "id": "nina simone/high-priestess",
+        "label": "high priestess",
+        "type": "era",
+        "summary": "bold prints layered fearlessly, sculptural headpieces and jewelry styled by intuition over trend — stage presence as sovereignty, dressed on her own terms through the civil-rights years",
+        "tags": [
+          "statement",
+          "independent",
+          "archival"
+        ],
+        "colors": [
+          "gold",
+          "indigo"
+        ],
+        "moods": [
+          "sovereign",
+          "fearless"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-f1362a71-5dc7-417f-96e2-c1150257be38",
+    "sourceUrls": [
+      "https://stylecaster.com/nina-simone-fashion/",
+      "https://www.essence.com/fashion/nina-simone-headpiece-collection/"
+    ],
+    "approvedAt": 1784347324623
   },
   {
     "kind": "aesthetic",
@@ -10612,6 +10963,41 @@
       "https://www.thevintagenews.com/2015/12/31/the-dandies-of-the-1950s/"
     ],
     "approvedAt": 1784177294719
+  },
+  {
+    "kind": "music",
+    "name": "tejano",
+    "aliases": [],
+    "note": "rodeo glam — embroidered western brilliance from dance floor to grandstand",
+    "interpretations": [
+      {
+        "id": "tejano/rodeo-glam",
+        "label": "rodeo glam",
+        "type": "scene",
+        "summary": "hot pink, fuchsia and aqua against embroidered western shirts, fringe, bolo ties and best boots — heritage worn with flair from go tejano day to the dance hall; the selena record holds its queen",
+        "tags": [
+          "statement",
+          "seductive",
+          "utilitarian"
+        ],
+        "colors": [
+          "fuchsia",
+          "aqua"
+        ],
+        "moods": [
+          "celebratory",
+          "proud"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-8b6fcfd5-6485-46dc-a19f-c9dcdc263c19",
+    "sourceUrls": [
+      "https://www.houstoniamag.com/style-and-shopping/2023/03/rodeo-fashion-6a05cae6-556c-4311-9e5c-26769235e74e",
+      "https://www.houstonlanding.org/photo-essay-culture-tradition-and-pride-shines-at-houston-rodeos-go-tejano-day/"
+    ],
+    "approvedAt": 1784347328983
   },
   {
     "kind": "aesthetic",
