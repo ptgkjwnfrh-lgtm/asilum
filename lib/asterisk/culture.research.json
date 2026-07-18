@@ -441,6 +441,44 @@
     "approvedAt": 1784087396400
   },
   {
+    "kind": "art",
+    "name": "antwerp six",
+    "aliases": [
+      "antwerp 6",
+      "belgian avant-garde"
+    ],
+    "note": "six academy graduates, one van, london 1986 — belgian deconstruction arrives",
+    "interpretations": [
+      {
+        "id": "antwerp six/the-van-to-london",
+        "label": "the van to london",
+        "type": "scene",
+        "summary": "dries van noten, ann demeulemeester, van saene, van beirendonck, bikkembergs and yee drive a van to the 1986 british designer show — deconstructed, sculptural, layered; three days later stocked at bar",
+        "tags": [
+          "avant-garde",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "ecru"
+        ],
+        "moods": [
+          "radical",
+          "collective"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-04595ca7-43e3-445e-a04f-faa8b5d6f643",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Antwerp_Six",
+      "https://www.momu.be/en/exhibitions/the-antwerp-six"
+    ],
+    "approvedAt": 1784343330736
+  },
+  {
     "kind": "figure",
     "name": "arianne phillips",
     "aliases": [],
@@ -2323,6 +2361,66 @@
     "approvedAt": 1784179342163
   },
   {
+    "kind": "aesthetic",
+    "name": "deadhead",
+    "aliases": [
+      "grateful dead style",
+      "shakedown street",
+      "jam band",
+      "lot couture"
+    ],
+    "note": "the lot as bazaar — hand-dyed bootlegs the band chose to bless",
+    "interpretations": [
+      {
+        "id": "deadhead/shakedown-street",
+        "label": "shakedown street",
+        "type": "scene",
+        "summary": "the parking-lot economy outside the shows — hand tie-dyed bootleg tees, patchwork and craft sold from van to van; the band encouraged it, so the fans designed the aesthetic themselves",
+        "tags": [
+          "independent",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "tie-dye",
+          "faded"
+        ],
+        "moods": [
+          "communal",
+          "handmade"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "deadhead/lot-couture",
+        "label": "lot couture",
+        "type": "scene",
+        "summary": "the bootleg spirit gone high fashion — online ceramics from lot-tee roots to gq spreads and official collabs; dancing bears at the top of streetwear's food chain",
+        "tags": [
+          "streetwear",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "tie-dye",
+          "black"
+        ],
+        "moods": [
+          "ironic",
+          "devoted"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-45e7feed-4096-472d-94be-d4547d8b1267",
+    "sourceUrls": [
+      "https://www.sothebys.com/how-grateful-dead-merch-became-a-force-in-fashion",
+      "https://www.highsnobiety.com/p/grateful-dead-tie-dye-print-trend/"
+    ],
+    "approvedAt": 1784343332849
+  },
+  {
     "kind": "figure",
     "name": "debbie harry",
     "aliases": [
@@ -2548,6 +2646,43 @@
       "https://cfda.com/news/cfda-decades-the-seventies-disco-glitter-studio-54/"
     ],
     "approvedAt": 1784178614042
+  },
+  {
+    "kind": "figure",
+    "name": "dita von teese",
+    "aliases": [
+      "queen of burlesque"
+    ],
+    "note": "neo-burlesque glamour — 40s couture discipline made contemporary",
+    "interpretations": [
+      {
+        "id": "dita von teese/neo-burlesque-glamour",
+        "label": "neo-burlesque glamour",
+        "type": "era",
+        "summary": "porcelain skin, crimson lips, cinched corsetry and vintage couture worn daily — the performer credited with reviving burlesque made retro glamour a living practice, not a costume",
+        "tags": [
+          "seductive",
+          "archival",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "red"
+        ],
+        "moods": [
+          "polished",
+          "deliberate"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-b8b49fb8-409c-4a07-b770-ad150ead4517",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Dita_Von_Teese",
+      "https://wwd.com/fashion-news/fashion-features/dita-von-teese-life-of-a-modern-showgirl-1238138180/"
+    ],
+    "approvedAt": 1784343331460
   },
   {
     "kind": "film",
@@ -4706,6 +4841,61 @@
   },
   {
     "kind": "music",
+    "name": "janelle monae",
+    "aliases": [],
+    "note": "the tuxedo uniform and the android futures it opened",
+    "interpretations": [
+      {
+        "id": "janelle monae/the-uniform",
+        "label": "the uniform",
+        "type": "era",
+        "summary": "black-and-white tuxedos worn as homage to working-class parents in uniform — 'in a tuxedo you're timeless'; womenswear rebuilt around a standard men's form",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "principled",
+          "timeless"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "janelle monae/android-futures",
+        "label": "android futures",
+        "type": "era",
+        "summary": "the archandroid era and after — metropolis-inspired sci-fi staging, sculptural silhouettes and color arriving like a system update; a pop branch of the afrofuturist line with its own uniform logic",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "pink"
+        ],
+        "moods": [
+          "visionary",
+          "playful"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-260eb45f-5050-45e2-aa03-92494450e9aa",
+    "sourceUrls": [
+      "https://www.thenationalnews.com/lifestyle/fashion/2023/01/03/janelle-monae-style-fashion/",
+      "https://www.ebony.com/photo-timeline-janelle-monae-fashion-journey/"
+    ],
+    "approvedAt": 1784343332153
+  },
+  {
+    "kind": "music",
     "name": "janet jackson",
     "aliases": [
       "janet",
@@ -6001,6 +6191,44 @@
     "approvedAt": 1784260237048
   },
   {
+    "kind": "music",
+    "name": "mary j blige",
+    "aliases": [
+      "ghetto fabulous",
+      "queen of hip-hop soul"
+    ],
+    "note": "hip-hop soul royalty — the 90s uniform misa hylton built with her",
+    "interpretations": [
+      {
+        "id": "mary j blige/hip-hop-soul-royalty",
+        "label": "hip-hop soul royalty",
+        "type": "era",
+        "summary": "baggy armani suits with teflon boots, all-white monochrome, knee-high boots and shades — the 90s hip-hop-soul uniform styled with misa hylton; a look the culture built and later reclaimed from the 'gh",
+        "tags": [
+          "streetwear",
+          "tailored",
+          "statement"
+        ],
+        "colors": [
+          "white",
+          "camel"
+        ],
+        "moods": [
+          "regal",
+          "unbothered"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-a5b84575-685d-4876-8706-6dd232a9aef3",
+    "sourceUrls": [
+      "https://www.nylon.com/fashion/mary-j-blige-90s-style-fashion-outfits",
+      "https://www.essence.com/fashion/mary-j-blige-best-fashion/"
+    ],
+    "approvedAt": 1784343327882
+  },
+  {
     "kind": "figure",
     "name": "matthew henson",
     "aliases": [],
@@ -6752,6 +6980,43 @@
   },
   {
     "kind": "figure",
+    "name": "muhammad ali",
+    "aliases": [
+      "the greatest"
+    ],
+    "note": "the greatest, dressed — savile row restraint while the ring wore leather greatcoats",
+    "interpretations": [
+      {
+        "id": "muhammad ali/the-greatest-dressed",
+        "label": "the greatest, dressed",
+        "type": "era",
+        "summary": "savile row suits from harry helman, houndstooth and knitted polos, dashikis worn as symbol — 'i'm a gentleman now, i have to look like one'; clean tailoring while his era went loud",
+        "tags": [
+          "tailored",
+          "minimal",
+          "statement"
+        ],
+        "colors": [
+          "camel",
+          "white"
+        ],
+        "moods": [
+          "assured",
+          "dignified"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-2bc93b8c-23b3-435d-b2e7-32577c40438d",
+    "sourceUrls": [
+      "https://www.mrporter.com/en-us/journal/fashion/mr-muhammad-ali-675358",
+      "https://en.wikipedia.org/wiki/Muhammad_Ali"
+    ],
+    "approvedAt": 1784343328612
+  },
+  {
+    "kind": "figure",
     "name": "naomi campbell",
     "aliases": [
       "naomi"
@@ -7307,6 +7572,41 @@
       "https://www.billboard.com/photos/pharrell-williams-style-evolution-photos-1235960612/"
     ],
     "approvedAt": 1784080233744
+  },
+  {
+    "kind": "figure",
+    "name": "philip treacy",
+    "aliases": [],
+    "note": "perhaps the greatest living milliner — hats as surrealist sculpture",
+    "interpretations": [
+      {
+        "id": "philip treacy/sculptural-millinery",
+        "label": "sculptural millinery",
+        "type": "formula",
+        "summary": "discovered and championed by isabella blow in 1989 — ships, discs and feathered sculptures for mcqueen, chanel and givenchy; the hat as the whole argument",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "violet"
+        ],
+        "moods": [
+          "sculptural",
+          "theatrical"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-d3e675b3-fa5a-41cb-9770-a11f72fd577a",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Philip_Treacy",
+      "https://www.interviewmagazine.com/fashion/milliner-philip-treacy-shows-us-his-wildest-hats"
+    ],
+    "approvedAt": 1784343329319
   },
   {
     "kind": "figure",
@@ -8775,6 +9075,41 @@
       "https://wwd.com/fashion-news/street-style/pitti-uomo-mens-street-style-fall-1236850712/"
     ],
     "approvedAt": 1784257178611
+  },
+  {
+    "kind": "figure",
+    "name": "stephen jones",
+    "aliases": [],
+    "note": "radical millinery — blitz kid to dior's creative director of hats",
+    "interpretations": [
+      {
+        "id": "stephen jones/radical-millinery",
+        "label": "radical millinery",
+        "type": "formula",
+        "summary": "a blitz-club new romantic who became the only british milliner running a paris couture hat studio — galliano's collaborator since 1993 across dior and margiela; wit worn at an angle",
+        "tags": [
+          "avant-garde",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "ivory"
+        ],
+        "moods": [
+          "witty",
+          "precise"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day30-pr-review",
+    "factId": "fact-a2494d21-3056-44cd-bfe0-d44bf91a0012",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Stephen_Jones_(milliner)",
+      "https://fashionschooldaily.com/picture-this-by-gpp-41/10376/"
+    ],
+    "approvedAt": 1784343330014
   },
   {
     "kind": "figure",
