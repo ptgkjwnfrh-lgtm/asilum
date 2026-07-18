@@ -118,6 +118,16 @@ export default function SettingsPage() {
         account identifier. resetting the recommendation model does not delete history;
         the data controls above state exactly what a broader deletion retains.
       </p>
+      <p className="legal">
+        automated systems: ASILUM&apos;s recommendations and cultural readings are
+        produced by Asterisk, an automated system built on deterministic
+        taste arithmetic and a human-curated, source-cited culture catalog.
+        no generative AI model currently produces content in this product;
+        if that changes, the surface it appears on will say so. guidance can
+        be paused, corrected, or erased at any time — see the{" "}
+        <a href="/asterisk">ASTERISK CONTROL ROOM</a> for the full read and
+        controls.
+      </p>
     </div>
   );
 }
