@@ -28,16 +28,18 @@ import { readJsonRequest } from "../../../lib/security/json.js";
 export const dynamic = "force-dynamic";
 
 async function inventoryConfidence(contract) {
-  // Best-effort inventory representation: count live items matching the
-  // reading's tag signals. Never fabricated — 0 when nothing matches.
+  // Inventory representation from live, DISCOVERABLE inventory only: the
+  // count query mirrors isDiscoverableProduct, so hidden, sold, removed, or
+  // unavailable rows cannot inflate the claim, and no row scan crosses into
+  // application memory. Never fabricated — 0 when nothing matches, null when
+  // inventory is unreadable (an outage must not report as confidence).
   try {
     const tags = contract.attributes?.tags
       || Object.fromEntries((contract.interpretations[0]?.tags || []).map((t) => [t.toUpperCase(), 1]));
     const keys = Object.keys(tags);
     if (!keys.length) return null;
-    const { listItems } = await import("../../../lib/db/index.js");
-    const pool = await listItems(1000).catch(() => []);
-    const matched = pool.filter((it) => keys.some((t) => (it.tags || {})[t])).length;
+    const { countDiscoverableProductsByTags } = await import("../../../lib/products.js");
+    const matched = await countDiscoverableProductsByTags(keys);
     return inventoryRepresentationConfidence({ matchedItems: matched, requested: 24 });
   } catch {
     return null;

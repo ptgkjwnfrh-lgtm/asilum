@@ -5,7 +5,7 @@
 // exploration through the user's Passport, but the user can pause that layer.
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
+import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled, claimRequest } from "../../lib/client.js";
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
@@ -40,8 +40,14 @@ export default function DiscoverPage() {
   const offsetRef = useRef(0);
   const bootedRef = useRef(false);
   const sugRef = useRef(null);
+  const loadGenRef = useRef(0);
+  const sugGenRef = useRef(0);
 
   const load = useCallback(async (reset = true, qOverride = null) => {
+    // Every load claims a new generation: a slower older response — most
+    // importantly a pending Asterisk-ON rack after guidance was paused —
+    // must never overwrite the rack a newer request owns.
+    const isCurrent = claimRequest(loadGenRef);
     setLoading(true);
     if (reset) offsetRef.current = 0;
     try {
@@ -61,13 +67,14 @@ export default function DiscoverPage() {
       if (tag) qs.set("tag", tag);
       if (sort) qs.set("sort", sort);
       const d = await authorizedFetch("/api/discover?" + qs.toString()).then((r) => r.json());
+      if (!isCurrent()) return;
       setTotal(d.total || 0);
       setSources(d.sources || []);
       setItems((prev) => (reset ? d.items : [...prev, ...d.items]));
       offsetRef.current += (d.items || []).length;
       if (reset) setSearched(qval.trim());
     } catch {}
-    setLoading(false);
+    if (isCurrent()) setLoading(false);
   }, [q, source, tag, sort, guideOn]);
 
   useEffect(() => { setFollowed(followedBrands()); }, []);
@@ -203,10 +210,11 @@ export default function DiscoverPage() {
               if (sugRef.current) clearTimeout(sugRef.current);
               if (v.trim().length < 2) { setSug([]); return; }
               sugRef.current = setTimeout(async () => {
+                const isCurrent = claimRequest(sugGenRef);
                 try {
                   const d = await fetch("/api/suggest?q=" + encodeURIComponent(v.trim())).then((r) => r.json());
-                  setSug(d.suggestions || []);
-                } catch { setSug([]); }
+                  if (isCurrent()) setSug(d.suggestions || []);
+                } catch { if (isCurrent()) setSug([]); }
               }, 180);
             }}
             onKeyDown={(e) => { if (e.key === "Enter") { setSug([]); submitSearch(); } }}

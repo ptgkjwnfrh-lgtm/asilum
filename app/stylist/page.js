@@ -10,7 +10,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import {
   getUid, postJSON, thumbFor, bagAdd,
-  loadFitProfile, authorizedFetch, brainEnabled,
+  loadFitProfile, authorizedFetch, brainEnabled, claimRequest,
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
@@ -26,6 +26,7 @@ export default function StylistPage() {
   const [wardrobe, setWardrobe] = useState([]);
   const [guideOn, setGuideOn] = useState(true);
   const guideBooted = useRef(false);
+  const loadGenRef = useRef(0);
   const fit = useFitBrain();
 
   // Owned pieces become anchors: FROM YOUR WARDROBE strip (Feature C).
@@ -42,6 +43,9 @@ export default function StylistPage() {
   }, [loadWardrobe]);
 
   const load = useCallback(async (anchor, allowAi = false) => {
+    // A new generation claim: an anchor click while a full generate is still
+    // in flight must not let the slower response overwrite the newer looks.
+    const isCurrent = claimRequest(loadGenRef);
     setLoading(true);
     setPassed(new Set());
     try {
@@ -56,14 +60,15 @@ export default function StylistPage() {
       });
       const d = await res.json();
       if (!res.ok) throw new Error(d.error || "stylist unavailable");
+      if (!isCurrent()) return;
       setGroups(anchor
         ? [{ genre: "ANCHORED", looks: d.outfits || [] }]
         : d.groups || []);
       if (allowAi && !anchor && d.ai?.source !== "model") {
         setNotice("external AI is unavailable — the local trend + taste engine stayed in control");
       }
-    } catch { setGroups([]); }
-    finally { setLoading(false); }
+    } catch { if (isCurrent()) setGroups([]); }
+    finally { if (isCurrent()) setLoading(false); }
   }, []);
 
   useEffect(() => {
