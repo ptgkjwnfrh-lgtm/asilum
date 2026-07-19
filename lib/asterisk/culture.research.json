@@ -1602,6 +1602,41 @@
     "approvedAt": 1784348753678
   },
   {
+    "kind": "figure",
+    "name": "brad pitt",
+    "aliases": [],
+    "note": "90s boy-poet to tyler durden — a-list masculinity in flux",
+    "interpretations": [
+      {
+        "id": "brad pitt/boy-poet",
+        "label": "boy poet",
+        "type": "era",
+        "summary": "the 90s skinny-rockstar register — long hair, open shirts, thrift-leaning ease — hardening into fight club's red leather; the fight club record holds tyler, this is the star's own arc",
+        "tags": [
+          "independent",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "denim blue",
+          "white"
+        ],
+        "moods": [
+          "easy",
+          "restless"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-ab295c20-5b1b-4a5f-b1ff-3165e2afe6d9",
+    "sourceUrls": [
+      "https://www.bfi.org.uk/features/1990s-stardom",
+      "https://www.lofficielusa.com/fashion/90s-mens-fashion-icons"
+    ],
+    "approvedAt": 1784349486966
+  },
+  {
     "kind": "aesthetic",
     "name": "bridal",
     "aliases": [
@@ -6295,6 +6330,41 @@
   },
   {
     "kind": "figure",
+    "name": "jeremy allen white",
+    "aliases": [],
+    "note": "the bear's white tee — a loopwheeled basic as leading man",
+    "interpretations": [
+      {
+        "id": "jeremy allen white/the-white-tee",
+        "label": "the white tee",
+        "type": "era",
+        "summary": "carmy's merz b. schwanen loopwheeled white tee — a 1920s german factory's basic turned the most-searched shirt on tv; the bear record holds the show and its carmy query space, this is the actor's mens",
+        "tags": [
+          "minimal",
+          "utilitarian",
+          "streetwear"
+        ],
+        "colors": [
+          "white",
+          "denim blue"
+        ],
+        "moods": [
+          "worn-in",
+          "intense"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-b84bdc8a-4de1-4eeb-9b3a-4a218d3c8a55",
+    "sourceUrls": [
+      "https://www.nssmag.com/en/fashion/33948/the-bear-t-shirt-carmy-jeremy-allen-white-look",
+      "https://wwd.com/fashion-news/fashion-features/merz-b-schwanen-the-bear-white-t-shirt-1235784619/"
+    ],
+    "approvedAt": 1784349512649
+  },
+  {
+    "kind": "figure",
     "name": "jerry hall",
     "aliases": [],
     "note": "studio 54 texan — honey mane and halston satin",
@@ -6469,6 +6539,41 @@
       "https://www.rollingstone.com/music/music-country/flashback-see-johnny-cashs-style-defining-man-in-black-in-1971-167505/"
     ],
     "approvedAt": 1784346239268
+  },
+  {
+    "kind": "figure",
+    "name": "johnny depp",
+    "aliases": [],
+    "note": "the grunge dandy — scarves, rings and drifter tailoring",
+    "interpretations": [
+      {
+        "id": "johnny depp/grunge-dandy",
+        "label": "grunge dandy",
+        "type": "era",
+        "summary": "leathers and scarves, stacked rings and tinted glasses — the 90s romantic-drifter register from dead man onward; rock-star bohemia worn as costume and self at once",
+        "tags": [
+          "independent",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "burgundy"
+        ],
+        "moods": [
+          "rakish",
+          "vagabond"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-a5a954f6-92c3-44b0-a2ad-daef7c0cd271",
+    "sourceUrls": [
+      "https://www.bfi.org.uk/features/1990s-stardom",
+      "https://www.lofficielusa.com/fashion/90s-mens-fashion-icons"
+    ],
+    "approvedAt": 1784349488464
   },
   {
     "kind": "figure",
@@ -6912,6 +7017,41 @@
   },
   {
     "kind": "figure",
+    "name": "keanu reeves",
+    "aliases": [],
+    "note": "unbothered basics for thirty years — the internet's favorite normcore",
+    "interpretations": [
+      {
+        "id": "keanu reeves/eternal-basics",
+        "label": "eternal basics",
+        "type": "era",
+        "summary": "black tees, workwear jackets and motorcycle boots worn unchanged for decades — the 90s curtain-cut heartthrob who became the internet's proof that basics outlast trends; kin to the normcore record's r",
+        "tags": [
+          "minimal",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "black",
+          "charcoal"
+        ],
+        "moods": [
+          "unbothered",
+          "constant"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-7292462e-58a7-4a8f-acb8-2796601859c8",
+    "sourceUrls": [
+      "https://www.lofficielusa.com/fashion/90s-mens-fashion-icons",
+      "https://www.thefashionisto.com/articles/90s-mens-hair/"
+    ],
+    "approvedAt": 1784349489186
+  },
+  {
+    "kind": "figure",
     "name": "kevyn aucoin",
     "aliases": [],
     "note": "the transformation — 90s contour glamour that turned faces into icons",
@@ -7279,6 +7419,41 @@
       "https://www.ngv.vic.gov.au/essay/taboo-or-not-taboo-the-fashions-of-leigh-bowery/"
     ],
     "approvedAt": 1784346240657
+  },
+  {
+    "kind": "figure",
+    "name": "leonardo dicaprio",
+    "aliases": [],
+    "note": "the curtain haircut and 90s heartthrob tailoring — romeo's generation",
+    "interpretations": [
+      {
+        "id": "leonardo dicaprio/curtain-era",
+        "label": "curtain era",
+        "type": "era",
+        "summary": "the center-part curtain cut over open hawaiian shirts and slouchy suiting — romeo + juliet's generation-defining heartthrob dressing; the pretty-young-things a-list of the 90s",
+        "tags": [
+          "seductive",
+          "independent",
+          "streetwear"
+        ],
+        "colors": [
+          "white",
+          "sky"
+        ],
+        "moods": [
+          "boyish",
+          "magnetic"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-abbecfc2-b26e-49dd-9eb0-dbb1d2763206",
+    "sourceUrls": [
+      "https://www.bfi.org.uk/features/1990s-stardom",
+      "https://www.lofficielusa.com/fashion/90s-mens-fashion-icons"
+    ],
+    "approvedAt": 1784349487733
   },
   {
     "kind": "figure",
@@ -7867,6 +8042,43 @@
       "https://www.hollywoodreporter.com/lifestyle/style/sofia-coppola-marie-antoinette-film-costumes-macarons-milena-1236357509/"
     ],
     "approvedAt": 1784179310508
+  },
+  {
+    "kind": "figure",
+    "name": "marilyn monroe",
+    "aliases": [
+      "the seven year itch"
+    ],
+    "note": "the travilla white dress — the 20th century's most-quoted image of glamour",
+    "interpretations": [
+      {
+        "id": "marilyn monroe/white-dress",
+        "label": "the white dress",
+        "type": "era",
+        "summary": "william travilla's white halter over the subway grate in 1955 — one of the century's defining images; beyond it, pucci prints and pencil skirts worn as soft, deliberate glamour",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "platinum"
+        ],
+        "moods": [
+          "luminous",
+          "iconic"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-3a2c248c-8b51-4882-9e0b-658be116a8c9",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/White_dress_of_Marilyn_Monroe",
+      "https://casciritchie.com/2018/08/26/marilyn-and-pucci/"
+    ],
+    "approvedAt": 1784349481857
   },
   {
     "kind": "figure",
@@ -9275,6 +9487,41 @@
     "approvedAt": 1784261929258
   },
   {
+    "kind": "figure",
+    "name": "nicole richie",
+    "aliases": [],
+    "note": "from simple-life velour to boho godmother — the 2000s' quiet stylist",
+    "interpretations": [
+      {
+        "id": "nicole richie/boho-godmother",
+        "label": "boho godmother",
+        "type": "era",
+        "summary": "the y2k tabloid wardrobe traded for oversized sunglasses, maxi dresses and layered vintage — the transition that helped steer the late-2000s toward boho; house of harlow made it a business",
+        "tags": [
+          "independent",
+          "seductive",
+          "archival"
+        ],
+        "colors": [
+          "camel",
+          "turquoise"
+        ],
+        "moods": [
+          "laid-back",
+          "curated"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-57cfb7ba-c70d-4110-8e6a-b0669f14bb68",
+    "sourceUrls": [
+      "https://www.lofficielusa.com/fashion/nicole-richie-y2k-fashion-style-looks-paris-hilton",
+      "https://www.obviousmag.com/2000s-fashion-trends-15-iconic-y2k-styles/"
+    ],
+    "approvedAt": 1784349484074
+  },
+  {
     "kind": "music",
     "name": "nina simone",
     "aliases": [
@@ -9493,6 +9740,43 @@
       "https://www.anothermag.com/fashion-beauty/9297/paninari-the-italian-originators-of-fast-food-in-fashion"
     ],
     "approvedAt": 1784216433784
+  },
+  {
+    "kind": "figure",
+    "name": "paris hilton",
+    "aliases": [
+      "the simple life"
+    ],
+    "note": "y2k's reigning it-girl — velour juicy, rhinestones and the tiny bag",
+    "interpretations": [
+      {
+        "id": "paris hilton/y2k-it-girl",
+        "label": "y2k it-girl",
+        "type": "era",
+        "summary": "solid-color juicy couture velour with a little belly showing, rhinestone slogans, von dutch and the tiny handbag — paparazzi photos as the era's fashion press; the 2000s it-girl blueprint",
+        "tags": [
+          "seductive",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [
+          "pink",
+          "rhinestone"
+        ],
+        "moods": [
+          "famous",
+          "frosted"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-1592927f-91d5-4269-81fe-22fb597f5bf1",
+    "sourceUrls": [
+      "https://fashionmagazine.com/style/celebrity-style/paris-hilton-2000s-fashion/",
+      "https://www.wmagazine.com/culture/paris-hilton-best-2000s-style"
+    ],
+    "approvedAt": 1784349483327
   },
   {
     "kind": "figure",
@@ -10699,6 +10983,43 @@
     "approvedAt": 1784318122220
   },
   {
+    "kind": "figure",
+    "name": "ryan gosling",
+    "aliases": [
+      "scorpion jacket"
+    ],
+    "note": "the drive scorpion jacket — one satin bomber, a whole aesthetic",
+    "interpretations": [
+      {
+        "id": "ryan gosling/scorpion-jacket",
+        "label": "scorpion jacket",
+        "type": "era",
+        "summary": "the white satin bomber with the gold scorpion, built to glow at night by refn's design — drive's 2011 jacket spawned a menswear archetype; later the pink-and-ken chapter proved the range",
+        "tags": [
+          "statement",
+          "streetwear",
+          "minimal"
+        ],
+        "colors": [
+          "white satin",
+          "gold"
+        ],
+        "moods": [
+          "nocturnal",
+          "laconic"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-fa5d34f6-73ae-4053-b451-1e0bf6e8a46a",
+    "sourceUrls": [
+      "https://classiq.me/ryan-gosling-and-his-otherworldly-drive-jacket",
+      "https://en.wikipedia.org/wiki/Drive_(2011_film)"
+    ],
+    "approvedAt": 1784349489937
+  },
+  {
     "kind": "music",
     "name": "sabrina carpenter",
     "aliases": [],
@@ -10971,6 +11292,43 @@
       "https://www.voguescandinavia.com/articles/the-incredible-fashion-of-the-ladies-and-gentlemen-of-the-congo"
     ],
     "approvedAt": 1784177295288
+  },
+  {
+    "kind": "figure",
+    "name": "sarah jessica parker",
+    "aliases": [
+      "sjp"
+    ],
+    "note": "the cfda icon behind carrie — clashing prints into magic",
+    "interpretations": [
+      {
+        "id": "sarah jessica parker/icon-clash",
+        "label": "icon clash",
+        "type": "era",
+        "summary": "the 2004 cfda fashion icon — tutus with menswear, mixed prints and manolos; the real-life sensibility that built carrie bradshaw; the sex and the city record holds the show, this is the woman",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [
+          "pink",
+          "metallic"
+        ],
+        "moods": [
+          "fearless",
+          "playful"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-c3357eec-f95a-4582-84dd-5ecd50ef65fb",
+    "sourceUrls": [
+      "https://wwd.com/fashion-news/fashion-scoops/gallery/sarah-jessica-parker-style-through-the-years-photos-1203545899/",
+      "https://en.wikipedia.org/wiki/Sarah_Jessica_Parker"
+    ],
+    "approvedAt": 1784349486258
   },
   {
     "kind": "film",
@@ -11525,6 +11883,43 @@
   },
   {
     "kind": "figure",
+    "name": "sienna miller",
+    "aliases": [
+      "festival chic"
+    ],
+    "note": "glastonbury 2004-06 — the boho wardrobe that named festival dressing",
+    "interpretations": [
+      {
+        "id": "sienna miller/glastonbury-boho",
+        "label": "glastonbury boho",
+        "type": "era",
+        "summary": "flowing skirts, low-rise flares, concho belts, layered beads and uggs in the mud — the glastonbury looks that had the sunday times coining 'festival chic' in 2004; the boho revival record's 2000s ance",
+        "tags": [
+          "independent",
+          "seductive",
+          "streetwear"
+        ],
+        "colors": [
+          "tan",
+          "gold"
+        ],
+        "moods": [
+          "carefree",
+          "muddy-glam"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-405562a6-653a-48c1-ad8f-56a892c4d7b9",
+    "sourceUrls": [
+      "https://graziadaily.co.uk/fashion/shopping/sienna-miller-boho-outfit/",
+      "https://www.hellomagazine.com/hfm/fashion-trends/701386/sienna-miller-boho-chic-dress/"
+    ],
+    "approvedAt": 1784349484809
+  },
+  {
+    "kind": "figure",
     "name": "simon foxton",
     "aliases": [],
     "note": "street-cast tailoring — sportswear, savile row and fetishwear merged decades early",
@@ -11743,6 +12138,41 @@
       "https://fizzymag.com/articles/soft-grunge-tumblr-fashion-guide"
     ],
     "approvedAt": 1784259518511
+  },
+  {
+    "kind": "figure",
+    "name": "sophia loren",
+    "aliases": [],
+    "note": "italian screen elegance — pucci-era femininity at full voltage",
+    "interpretations": [
+      {
+        "id": "sophia loren/italian-elegance",
+        "label": "italian elegance",
+        "type": "era",
+        "summary": "50s-60s italian cinema's most glamorous export — pucci creations, cinched silhouettes and unapologetic femininity; elegance worn as national style",
+        "tags": [
+          "seductive",
+          "tailored",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "gold"
+        ],
+        "moods": [
+          "voluptuous",
+          "commanding"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-6817b896-622f-4f68-9f1f-c3a6748f3c7f",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/sophia-loren-best-fashion-style-photos",
+      "https://en.wikipedia.org/wiki/Sophia_Loren"
+    ],
+    "approvedAt": 1784349482588
   },
   {
     "kind": "music",
@@ -13919,6 +14349,41 @@
       "https://www.hellomagazine.com/hfm/20221225160372/whitney-houston-best-fashion-moments/"
     ],
     "approvedAt": 1784257170736
+  },
+  {
+    "kind": "figure",
+    "name": "winona ryder",
+    "aliases": [],
+    "note": "90s quirky minimalism — black turtlenecks, crops and thrifted edge",
+    "interpretations": [
+      {
+        "id": "winona ryder/quirky-minimal",
+        "label": "quirky minimal",
+        "type": "era",
+        "summary": "fitted black turtlenecks, slip dresses, pixie crops and the occasional flannel — 90s minimalism with a gothic wink; the cool-girl register indie sleaze and soft grunge both quote",
+        "tags": [
+          "minimal",
+          "independent",
+          "seductive"
+        ],
+        "colors": [
+          "black",
+          "grey"
+        ],
+        "moods": [
+          "wry",
+          "undone"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-9681ee63-aee2-4855-b28a-1bcf8eb8efa1",
+    "sourceUrls": [
+      "https://graziadaily.co.uk/fashion/news/10-winona-ryder-iconic-90s-fashion-moments/",
+      "https://www.homesandgardens.com/celebrity-style/winona-ryder-chic-minimalist-bedroom"
+    ],
+    "approvedAt": 1784349485528
   },
   {
     "kind": "figure",
