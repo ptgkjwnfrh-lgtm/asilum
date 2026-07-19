@@ -36,6 +36,10 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
 | `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces (case machinery shipped v18, admin-only and flag-independent; the flag gates future PUBLIC badges) |
+| `EDITORIAL_PUBLISHING_ENABLED` | Restructure Phase 1 (ADR-004): public publishing pipeline | drafts still work; publish action absent |
+| `MIXED_FEEDS_ENABLED` | Restructure Phase 2 (ADR-005): TODAY/Editorial candidate feeds | existing home feed unchanged |
+| `SOCIAL_GRAPH_ENABLED` | Restructure Phase 4: reactions, comments, notifications surfaces | follows (v14) unaffected; new surfaces absent |
+| `SPONSORED_PLACEMENTS_ENABLED` | Restructure Phase 5+ (ADR-005 gates): disclosed sponsored candidates | no sponsored rows ever enter feeds |
 
 Rules:
 1. A kill switch must be flippable by env change + restart alone — no

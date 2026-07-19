@@ -1,5 +1,12 @@
 # ASILUM Capability Map — Master Handoff Baseline
 
+> **Restructure status (2026-07-19):** Phase 0 of the July-19 Restructure
+> Handoff is complete — all five release-blocker findings fixed on `main`
+> (PR #77: creation-time newest sort, stale-response guards, discoverable-
+> only inventory confidence; PR #78: anonymous-abuse boundary layers 2-3 +
+> dual-channel candidate retrieval with surfaced truncation). Constitution
+> v2 + ADR-004..007 are PROPOSED in this PR; phases 1+ await its approval.
+
 Status audit for the master handoff (Features A–G) against `main` at `9a1e3b3`
 (July 15, 2026). Legend: **EXISTS** (production-real today), **PARTIAL**
 (a real slice exists; handoff scope is larger), **MISSING** (nothing real yet).
