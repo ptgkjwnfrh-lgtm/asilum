@@ -68,6 +68,20 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     "typed tag limit counts products, not product/type rows");
   assert.deepEqual(Object.keys(typedTop[itemB.id]).sort(), ["material", "mood"],
     "all score dimensions survive the product cap");
+
+  // Inventory-representation predicate (PR 0A): the SQL count must mirror
+  // isDiscoverableProduct — hidden, sold, and unavailable rows never count.
+  const zzTag = `ZZPHASE0${suffix.replaceAll("-", "").toUpperCase().slice(0, 8)}`;
+  const itemVis = { id: `item-vis-${suffix}`, title: "Vis", tags: { [zzTag]: 1 }, price: 90 };
+  const itemSold = { id: `item-sold-${suffix}`, title: "Sold", tags: { [zzTag]: 1 }, price: 90, availability_status: "sold" };
+  const itemHidden = { id: `item-hidden-${suffix}`, title: "Hidden", tags: { [zzTag]: 1 }, price: 90 };
+  const itemOff = { id: `item-off-${suffix}`, title: "Off", tags: { [zzTag]: 1 }, price: 90, is_available: false };
+  itemIds.push(itemVis.id, itemSold.id, itemHidden.id, itemOff.id);
+  await db.upsertItems([itemVis, itemSold, itemHidden, itemOff]);
+  await pool.query("UPDATE items SET moderation_status='hidden' WHERE id=$1", [itemHidden.id]);
+  const products = await import("../lib/products.js");
+  assert.equal(await products.countDiscoverableProductsByTags([zzTag]), 1,
+    "sold, hidden, and unavailable rows must not inflate inventory confidence");
   const candidates = await db.searchItemCandidates("sharp", ["sharp"], 10);
   assert.ok(candidates.some((item) => item.id === itemB.id));
   const save = (item) => db.commitBoardSave({

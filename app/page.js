@@ -12,7 +12,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
-  fitProfileForBrain, brainEnabled,
+  fitProfileForBrain, brainEnabled, claimRequest, watchRequest,
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
@@ -299,6 +299,7 @@ export default function Home() {
   const boardParamRef = useRef("");
   const uidRef = useRef(null);
   const loadingMoreRef = useRef(false);
+  const feedGenRef = useRef(0);
   const sentinelRef = useRef(null);
 
   const fitBrain = fitProfileForBrain(fit);
@@ -383,10 +384,15 @@ export default function Home() {
 
   const loadFeed = useCallback(async (user = uidRef.current) => {
     if (!user) return;
+    // A reload claims a new feed generation: a slower older response (e.g. a
+    // pending personalized feed after a craving/filter change) must never
+    // overwrite the feed a newer request owns.
+    const isCurrent = claimRequest(feedGenRef);
     setLoading(true);
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
+      if (!isCurrent()) return;
       setSplit(data.split || null);
       setItems(data.items || []);
       setEpsilonAuto(!!data.epsilonAuto);
@@ -396,7 +402,7 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }, [feedQS]);
 
@@ -416,9 +422,13 @@ export default function Home() {
     if (!user || loadingMoreRef.current) return;
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
     loadingMoreRef.current = true;
+    // Appends observe the feed generation without claiming it: a page fetched
+    // for a feed that has since reloaded must be dropped, not appended.
+    const isCurrent = watchRequest(feedGenRef);
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
+      if (!isCurrent()) return;
       if (data.items && data.items.length) {
         setItems((prev) => {
           const have = new Set(prev.map((x) => x.id));

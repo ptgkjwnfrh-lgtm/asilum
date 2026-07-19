@@ -16,6 +16,7 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { rankByInterpretationTags } from "../../../lib/discover/tagRank.js";
+import { createdAtOf, sortNewestFirst, stripRecencyKey } from "../../../lib/discover/recency.js";
 import { getMemoryPreferences } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
@@ -45,13 +46,13 @@ export async function GET(req) {
     const result = await searchProducts(q, {
       userId, brain: guidanceEnabled, limit: 2000,
     });
-    items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item) }));
+    items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item), _createdAt: createdAtOf(item) }));
     demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
   } else {
     pool = await getDiscoverablePool({ fallback: false });
     demo = pool.length === 0;
     if (demo) pool = await getDiscoverablePool();
-    items = pool.map((item) => ({ ...publicProduct(item), src: sourceFor(item) }));
+    items = pool.map((item) => ({ ...publicProduct(item), src: sourceFor(item), _createdAt: createdAtOf(item) }));
   }
   const sources = [...new Set(items.map((item) => item.src).filter(Boolean))].sort();
   // Asterisk interpretation pills (Day 12): ?tags=a|b|c ranks the rack by an
@@ -72,7 +73,7 @@ export async function GET(req) {
   }
   if (tag) items = items.filter((it) => (it.tags || {})[tag]);
   if (category) items = items.filter((it) => it.category === category);
-  if (sort === "new") items = items.slice().reverse();
+  if (sort === "new") items = sortNewestFirst(items);
   if (sort === "price-asc") items = items.slice().sort((a, b) => (a.price || 1e9) - (b.price || 1e9));
   if (sort === "price-desc") items = items.slice().sort((a, b) => (b.price || 0) - (a.price || 0));
 
@@ -82,6 +83,6 @@ export async function GET(req) {
     demo,
     sources,
     guidanceEnabled,
-    items: items.slice(offset, offset + limit),
+    items: stripRecencyKey(items.slice(offset, offset + limit)),
   });
 }
