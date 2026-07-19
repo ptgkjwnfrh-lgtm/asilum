@@ -12,7 +12,7 @@ import {
   searchProducts,
 } from "../../../lib/search/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { rankByInterpretationTags } from "../../../lib/discover/tagRank.js";
@@ -25,6 +25,12 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const quota = await consumeRateLimit({ scope: "discover", subject: requestSubject(req), limit: 180, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const globalQuota = await consumeGlobalBudget("discover");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
+    });
+  }
   const q = (searchParams.get("q") || "").trim().toLowerCase().slice(0, 200);
   const source = (searchParams.get("source") || "").slice(0, 80);
   const tag = (searchParams.get("tag") || "").slice(0, 40).toUpperCase();

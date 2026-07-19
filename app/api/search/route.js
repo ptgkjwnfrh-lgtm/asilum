@@ -13,7 +13,7 @@ import { searchProducts } from "../../../lib/search/index.js";
 import { sourceFor } from "../../../lib/social.js";
 import { safeExternalUrl } from "../../../lib/url.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { getMemoryPreferences } from "../../../lib/db/production.js";
 
@@ -27,6 +27,12 @@ export async function GET(req) {
   });
   const quota = await consumeRateLimit({ scope: "search", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const globalQuota = await consumeGlobalBudget("search");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
+    });
+  }
   const requestedGuidance = searchParams.get("brain") === "1";
   const userId = requestedGuidance
     ? await resolveRequestUser(req, searchParams.get("user") || "") : null;

@@ -82,6 +82,16 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const products = await import("../lib/products.js");
   assert.equal(await products.countDiscoverableProductsByTags([zzTag]), 1,
     "sold, hidden, and unavailable rows must not inflate inventory confidence");
+
+  // Dual-channel candidate retrieval (PR 0A slice 2): tag-only matches are
+  // retrieved by summed evidence confidence, not starved by text recency,
+  // and the result shape reports truncation.
+  const retrieved = await db.searchItemCandidates("zz-no-text-match", ["sharp"]);
+  assert.ok(Array.isArray(retrieved.rows) && typeof retrieved.truncated === "boolean",
+    "retrieval returns { rows, truncated }");
+  const tagIds = retrieved.rows.map((row) => row.id).filter((id) => itemIds.includes(id));
+  assert.deepEqual(tagIds, [itemB.id, itemA.id],
+    "tag channel orders by summed evidence confidence (B 1.8 > A 0.1)");
   const candidates = await db.searchItemCandidates("sharp", ["sharp"], 10);
   assert.ok(candidates.some((item) => item.id === itemB.id));
   const save = (item) => db.commitBoardSave({

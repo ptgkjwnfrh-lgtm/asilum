@@ -64,6 +64,40 @@ test("inventory-representation count sees discoverable items only", async () => 
   assert.equal(await countDiscoverableProductsByTags(["ZZNOSUCHTAG"]), 0);
 });
 
+test("global cost circuit breaker: env budget enforced, 0 disables, unknown scope open", async () => {
+  const { consumeGlobalBudget } = await import("../lib/security/rateLimit.js");
+  process.env.GLOBAL_BUDGET_ZZTEST = "3";
+  try {
+    for (let i = 0; i < 3; i += 1) {
+      assert.equal((await consumeGlobalBudget("zztest")).allowed, true, `hit ${i + 1} within budget`);
+    }
+    assert.equal((await consumeGlobalBudget("zztest")).allowed, false, "budget exhausted fails closed");
+  } finally {
+    delete process.env.GLOBAL_BUDGET_ZZTEST;
+  }
+  process.env.GLOBAL_BUDGET_SEARCH = "0";
+  try {
+    assert.equal((await consumeGlobalBudget("search")).allowed, true, "explicit 0 disables the breaker");
+  } finally {
+    delete process.env.GLOBAL_BUDGET_SEARCH;
+  }
+  assert.equal((await consumeGlobalBudget("zz-unbudgeted-scope")).allowed, true,
+    "scopes without a budget are open, not accidentally closed");
+});
+
+test("candidate retrieval reports truncation instead of silently capping", async () => {
+  await SEEDED;
+  const { searchItemCandidates } = await import("../lib/db/index.js");
+  const retrieved = await searchItemCandidates("minimal", ["minimal"]);
+  assert.ok(Array.isArray(retrieved.rows), "retrieval returns { rows, truncated }");
+  assert.equal(typeof retrieved.truncated, "boolean");
+  assert.equal(retrieved.truncated, false, "a small pool is never reported truncated");
+  const { searchProducts } = await import("../lib/search/index.js");
+  const result = await searchProducts("minimal");
+  assert.ok("candidatesTruncated" in result, "search results carry the truncation flag");
+  assert.equal(result.candidatesTruncated, false);
+});
+
 test("claimRequest invalidates slower in-flight responses; watchRequest only observes", () => {
   const ref = { current: 0 };
   const first = claimRequest(ref);
