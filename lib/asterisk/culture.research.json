@@ -38,6 +38,43 @@
     "approvedAt": 1784179357955
   },
   {
+    "kind": "music",
+    "name": "50 cent",
+    "aliases": [
+      "g-unit"
+    ],
+    "note": "the g-unit era — tank tops, du-rags and a clothing line hotter than the charts",
+    "interpretations": [
+      {
+        "id": "50 cent/g-unit-era",
+        "label": "g-unit era",
+        "type": "era",
+        "summary": "tank tops, du-rags, oversized white tees and the g-unit brand worn on every trl stage — the clique whose clothing line ran to a multi-million reebok deal; merchandising as dominance",
+        "tags": [
+          "streetwear",
+          "statement",
+          "utilitarian"
+        ],
+        "colors": [
+          "white",
+          "navy"
+        ],
+        "moods": [
+          "bulletproof",
+          "commercial"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-1a2dc77c-6008-4157-8fd0-3caf699da2fc",
+    "sourceUrls": [
+      "https://www.complex.com/style/a/mike-destefano/best-rapper-owned-clothing-brands-of-all-time",
+      "https://www.one37pm.com/style/2000s-hip-hop-style"
+    ],
+    "approvedAt": 1784349080138
+  },
+  {
     "kind": "aesthetic",
     "name": "acid house",
     "aliases": [
@@ -3476,6 +3513,41 @@
     "approvedAt": 1784263039897
   },
   {
+    "kind": "music",
+    "name": "dr dre",
+    "aliases": [],
+    "note": "chronic-era la — flannel, dickies and lowrider cool",
+    "interpretations": [
+      {
+        "id": "dr dre/chronic-era",
+        "label": "chronic era",
+        "type": "era",
+        "summary": "flannels, dickies, chucks and locs in the lowrider sun — the chronic's west-coast uniform, sharing streets with the chicano style record's lineage; later traded for all-black executive minimalism",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "minimal"
+        ],
+        "colors": [
+          "flannel",
+          "black"
+        ],
+        "moods": [
+          "laid-back",
+          "commanding"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-b24d4fb4-2e24-417a-80a3-424ea9860bfb",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/90s-hip-hop-fashion/",
+      "https://hespokestyle.com/hip-hop-fashion/"
+    ],
+    "approvedAt": 1784349079408
+  },
+  {
     "kind": "aesthetic",
     "name": "drag",
     "aliases": [
@@ -3987,6 +4059,82 @@
       "https://bykerwin.com/elvis-jumpsuits-a-style-evolution-and-fashion-influence/"
     ],
     "approvedAt": 1784178613426
+  },
+  {
+    "kind": "music",
+    "name": "eminem",
+    "aliases": [
+      "slim shady"
+    ],
+    "note": "baggy jeans, hoodies and bleach — the detroit uniform at diamond scale",
+    "interpretations": [
+      {
+        "id": "eminem/slim-shady-uniform",
+        "label": "slim shady uniform",
+        "type": "era",
+        "summary": "oversized tees, baggy jeans, hoodies and the bleach-blond crop — late-90s detroit battle-rap dress carried unchanged to the biggest stages; anti-flash as its own flash",
+        "tags": [
+          "streetwear",
+          "utilitarian",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "grey"
+        ],
+        "moods": [
+          "hostile",
+          "unadorned"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-1bd25be1-8239-4d9c-a2da-18afb20678d2",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/90s-hip-hop-fashion/",
+      "https://hespokestyle.com/hip-hop-fashion/"
+    ],
+    "approvedAt": 1784349078670
+  },
+  {
+    "kind": "music",
+    "name": "emo rap",
+    "aliases": [
+      "soundcloud rap",
+      "juice wrld",
+      "xxxtentacion"
+    ],
+    "note": "the soundcloud era's uniform — face tattoos, dyed hair, grief worn openly",
+    "interpretations": [
+      {
+        "id": "emo rap/soundcloud-era",
+        "label": "soundcloud era",
+        "type": "scene",
+        "summary": "punk and metal aggression crossed with digital nostalgia — face tattoos, dyed hair, high-end streetwear over thrifted grunge; a generation led by juice wrld, xxxtentacion and the lil peep record's nam",
+        "tags": [
+          "streetwear",
+          "independent",
+          "statement"
+        ],
+        "colors": [
+          "neon pink",
+          "black"
+        ],
+        "moods": [
+          "raw",
+          "mournful"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-9a255b48-db52-4a9a-b533-2c76000d0a7a",
+    "sourceUrls": [
+      "https://academic.oup.com/book/58670/chapter/485385059",
+      "https://aesthetics.fandom.com/wiki/SoundCloud_Rap"
+    ],
+    "approvedAt": 1784349083034
   },
   {
     "kind": "figure",
@@ -7207,6 +7355,41 @@
     "approvedAt": 1784078950663
   },
   {
+    "kind": "music",
+    "name": "lil wayne",
+    "aliases": [],
+    "note": "bling bling to rockstar — white tees, girbauds and the soundcloud precedent",
+    "interpretations": [
+      {
+        "id": "lil wayne/bling-to-rockstar",
+        "label": "bling to rockstar",
+        "type": "era",
+        "summary": "white tees, girbaud jeans, platinum chains and grills — the man who coined bling bling, whose inked face and bleached dreads set the precedent soundcloud rap ran with",
+        "tags": [
+          "streetwear",
+          "statement",
+          "independent"
+        ],
+        "colors": [
+          "white",
+          "platinum"
+        ],
+        "moods": [
+          "swaggering",
+          "prophetic"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-bff5304c-16da-4eab-941c-78bcc9d7de89",
+    "sourceUrls": [
+      "https://www.highsnobiety.com/p/90s-hip-hop-fashion/",
+      "https://www.one37pm.com/style/2000s-hip-hop-style"
+    ],
+    "approvedAt": 1784349080873
+  },
+  {
     "kind": "figure",
     "name": "linda evangelista",
     "aliases": [
@@ -7332,6 +7515,41 @@
       "https://en.wikipedia.org/wiki/Little_Richard"
     ],
     "approvedAt": 1784216421764
+  },
+  {
+    "kind": "music",
+    "name": "ll cool j",
+    "aliases": [],
+    "note": "the kangol bucket and the sweatsuit — radio-era b-boy polish",
+    "interpretations": [
+      {
+        "id": "ll cool j/kangol-radio",
+        "label": "kangol radio",
+        "type": "era",
+        "summary": "the red kangol bucket over air jordan 1s on the radio back cover — sweatsuits, gold rope and a hat that became synonymous with him; b-boy essentials worn like a crown",
+        "tags": [
+          "streetwear",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "red",
+          "gold"
+        ],
+        "moods": [
+          "smooth",
+          "assured"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-91abab02-9a7f-4919-87e3-a120c4ee02ba",
+    "sourceUrls": [
+      "https://hellobeautiful.com/playlist/kangol-hat/",
+      "https://www.wmagazine.com/culture/best-hip-hop-fashion-moments-rappers-style"
+    ],
+    "approvedAt": 1784349075812
   },
   {
     "kind": "figure",
@@ -7828,6 +8046,43 @@
       "https://coveteur.com/2016/07/20/matthew-henson-asap-rocky-stylist/"
     ],
     "approvedAt": 1784259524037
+  },
+  {
+    "kind": "music",
+    "name": "mc hammer",
+    "aliases": [
+      "hammer pants"
+    ],
+    "note": "the drop-crotch harem pant at full sequin — movement as silhouette",
+    "interpretations": [
+      {
+        "id": "mc hammer/hammer-pants",
+        "label": "hammer pants",
+        "type": "era",
+        "summary": "drop-crotch harem pants in paillettes and lame, built to move — the silhouette so identified with him it carries his name; baggy's most theatrical ancestor",
+        "tags": [
+          "statement",
+          "streetwear",
+          "avant-garde"
+        ],
+        "colors": [
+          "gold",
+          "purple"
+        ],
+        "moods": [
+          "kinetic",
+          "exuberant"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-29bf5325-ec21-4f1e-a86d-92ed53a829e5",
+    "sourceUrls": [
+      "https://www.wmagazine.com/culture/best-hip-hop-fashion-moments-rappers-style",
+      "https://hespokestyle.com/hip-hop-fashion/"
+    ],
+    "approvedAt": 1784349076543
   },
   {
     "kind": "aesthetic",
@@ -8819,6 +9074,44 @@
   },
   {
     "kind": "music",
+    "name": "native tongues",
+    "aliases": [
+      "a tribe called quest",
+      "de la soul"
+    ],
+    "note": "bold pattern and black pride — the collective that dressed conscious rap",
+    "interpretations": [
+      {
+        "id": "native tongues/pattern-and-pride",
+        "label": "pattern and pride",
+        "type": "scene",
+        "summary": "bright bold patterns, african prints and heavy jewelry across tribe, de la and the extended family — conscious rap's afrocentric wardrobe, worn loose and joyful against gangsta uniformity",
+        "tags": [
+          "independent",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "mustard",
+          "green"
+        ],
+        "moods": [
+          "conscious",
+          "playful"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-9e188d62-66e5-47a6-8b11-0f26004125f8",
+    "sourceUrls": [
+      "https://blavity.com/women/90s-hip-hop-fashion-trends",
+      "https://hespokestyle.com/hip-hop-fashion/"
+    ],
+    "approvedAt": 1784349077945
+  },
+  {
+    "kind": "music",
     "name": "new jack swing",
     "aliases": [],
     "note": "the in living color era — hip-hop swing dressed loud and bright",
@@ -9754,6 +10047,41 @@
     "approvedAt": 1784348135871
   },
   {
+    "kind": "music",
+    "name": "queen latifah",
+    "aliases": [],
+    "note": "afrocentric royalty — kente, crowns and the queendom worn plainly",
+    "interpretations": [
+      {
+        "id": "queen latifah/afrocentric-royalty",
+        "label": "afrocentric royalty",
+        "type": "era",
+        "summary": "african prints, kente cloth and crown-like headwear worn as a statement that all black women are queens — golden-age hip-hop's royal register, dignity as the whole look",
+        "tags": [
+          "statement",
+          "archival",
+          "independent"
+        ],
+        "colors": [
+          "kente gold",
+          "crimson"
+        ],
+        "moods": [
+          "regal",
+          "grounded"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-3b44c0d5-e261-4b28-a280-b07ddd9f2c7f",
+    "sourceUrls": [
+      "https://blavity.com/women/90s-hip-hop-fashion-trends",
+      "https://www.wmagazine.com/culture/best-hip-hop-fashion-moments-rappers-style"
+    ],
+    "approvedAt": 1784349077245
+  },
+  {
     "kind": "figure",
     "name": "raf simons",
     "aliases": [
@@ -10261,6 +10589,43 @@
       "https://en.wikipedia.org/wiki/Rude_boy"
     ],
     "approvedAt": 1784177957166
+  },
+  {
+    "kind": "music",
+    "name": "run dmc",
+    "aliases": [
+      "run-dmc"
+    ],
+    "note": "black fedoras, dookie chains and laceless shell toes — the my adidas deal that started it all",
+    "interpretations": [
+      {
+        "id": "run dmc/my-adidas",
+        "label": "my adidas",
+        "type": "era",
+        "summary": "black fedoras, thick dookie chains and head-to-toe adidas with laceless shell toes — the 1986 my adidas moment that made a rap group a sportswear house's face and wrote hip-hop's first fashion contrac",
+        "tags": [
+          "streetwear",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "black",
+          "white"
+        ],
+        "moods": [
+          "foundational",
+          "unified"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-38c20378-b61c-480a-a05c-1d5f98b7dbf9",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Run-DMC",
+      "https://www.wmagazine.com/culture/best-hip-hop-fashion-moments-rappers-style"
+    ],
+    "approvedAt": 1784349075081
   },
   {
     "kind": "figure",
@@ -12728,6 +13093,41 @@
     "approvedAt": 1784345373874
   },
   {
+    "kind": "music",
+    "name": "the weeknd",
+    "aliases": [],
+    "note": "era-built imagery — trilogy shadows to starboy primaries to red-suit cinema",
+    "interpretations": [
+      {
+        "id": "the weeknd/era-cinema",
+        "label": "era cinema",
+        "type": "era",
+        "summary": "each album a wardrobe: trilogy's anonymous shadows, starboy's primary-color pop, the after-hours red suit and bandages — pop-noir styling built like film production design",
+        "tags": [
+          "statement",
+          "tailored",
+          "avant-garde"
+        ],
+        "colors": [
+          "red",
+          "black"
+        ],
+        "moods": [
+          "cinematic",
+          "nocturnal"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-d3eccb57-f60e-46f1-8965-a06c604e5c36",
+    "sourceUrls": [
+      "https://gridfiti.com/the-weeknds-eras/",
+      "https://www.complex.com/style/a/mike-destefano/best-dressed-rappers-since-2000"
+    ],
+    "approvedAt": 1784349081599
+  },
+  {
     "kind": "aesthetic",
     "name": "thrifting",
     "aliases": [
@@ -13215,6 +13615,41 @@
       "https://www.dazeddigital.com/fashion/article/19438/1/what-we-wore-uk-garage"
     ],
     "approvedAt": 1784321851194
+  },
+  {
+    "kind": "music",
+    "name": "usher",
+    "aliases": [],
+    "note": "2000s r&b polish — the oversized name chain and the open shirt",
+    "interpretations": [
+      {
+        "id": "usher/confessions-era",
+        "label": "confessions era",
+        "type": "era",
+        "summary": "the oversized name chain, crisp open shirts, leather and the fitted cap tilted right — 2000s r&b's dance-ready polish between hip-hop flash and grown seduction",
+        "tags": [
+          "seductive",
+          "streetwear",
+          "tailored"
+        ],
+        "colors": [
+          "white",
+          "ice"
+        ],
+        "moods": [
+          "smooth",
+          "confident"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-3d40b536-9c56-440e-a3ab-82d043752207",
+    "sourceUrls": [
+      "https://www.one37pm.com/style/2000s-hip-hop-style",
+      "https://hespokestyle.com/hip-hop-fashion/"
+    ],
+    "approvedAt": 1784349082313
   },
   {
     "kind": "figure",
