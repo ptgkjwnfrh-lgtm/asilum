@@ -93,7 +93,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.deepEqual(tagIds, [itemB.id, itemA.id],
     "tag channel orders by summed evidence confidence (B 1.8 > A 0.1)");
   const candidates = await db.searchItemCandidates("sharp", ["sharp"], 10);
-  assert.ok(candidates.some((item) => item.id === itemB.id));
+  assert.ok(candidates.rows.some((item) => item.id === itemB.id));
   const save = (item) => db.commitBoardSave({
     userId, item,
     canonicalEvent: (boardId) => ({
