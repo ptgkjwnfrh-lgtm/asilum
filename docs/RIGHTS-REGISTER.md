@@ -1,5 +1,9 @@
 # Source & Platform Rights Register
 
+Constitution v2 §4 binds this register: blocked rows stay blocked
+regardless of phase until their named approval exists, and every new
+external adapter adds its row here + FEATURE-FLAGS.md in the same PR.
+
 Per-integration policy state. Every row has an owner (the human accountable
 for the decision), a last-reviewed date, and a kill switch. **No integration
 ships, or pretends to ship, without its row being green.**

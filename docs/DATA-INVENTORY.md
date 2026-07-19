@@ -1,5 +1,9 @@
 # Data Inventory, Purposes & Retention Draft
 
+Constitution v2 §6 binds this register; the retention column remains the
+retention matrix and stays DRAFT until owner decision 10 (search_logs is
+the one class where inaction accrues risk — unbounded today).
+
 Phase 0 register of every personal-data class the system holds today plus
 the classes the roadmap adds. Retention values marked DRAFT are engineering
 proposals — final periods are owner decision #10 with counsel.
