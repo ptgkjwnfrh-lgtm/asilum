@@ -243,6 +243,9 @@ export default function Shell({ children }) {
 
   return (
     <div className="shell">
+      {/* Keyboard/screen-reader users jump past the marquee and sidebar.
+          Visually hidden until focused — no visual-identity change. */}
+      <a className="skiplink" href="#main">skip to content</a>
       <div className="marquee">
         <div className="mq">
           {tickerRun}
@@ -399,7 +402,7 @@ export default function Shell({ children }) {
         </div>
       )}
 
-      <main className="main">{children}</main>
+      <main id="main" className="main">{children}</main>
     </div>
   );
 }
