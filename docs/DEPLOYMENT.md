@@ -75,7 +75,10 @@ an app rollback never needs a schema rollback.
 
 - Owner decisions 1 (regions) and 10 (retention; unbounded search_logs)
   — needed before public announcement, not before a quiet deploy.
-- Privacy policy / ToS pages: required before ANY public launch
-  (Constitution §7); not yet written — owner + counsel item.
+- Privacy policy / ToS / accessibility pages: DRAFTED v1.0 and live at
+  /privacy, /terms, /accessibility (day33) — counsel sign-off still
+  required before public announcement; governing-law venue flagged.
+  Owner action: set up email forwarding for legal@asilummagazine.com
+  (Squarespace domain email forwarding) — the pages name that address.
 - eBay/WooCommerce keys unset → marketplace shows seed inventory
   labelled honestly; tickets refuse demo purchases by design.

@@ -863,3 +863,37 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .adisclose a { color: #e5342b; text-decoration: none; font-weight: 700; }
 .adisclose a:hover { text-decoration: underline; }
 .adisclose.full { margin: 0; padding: 10px 0 2px; border-top: 0; font-size: 12.5px; color: #222; }
+
+/* ---- Accessibility (ADA/WCAG embed, day33) --------------------------------
+   Add-only: the visual identity is untouched for users who have not asked
+   for accommodations. */
+
+/* Skip-to-content: invisible until keyboard focus lands on it. */
+.skiplink {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: #000;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.skiplink:focus {
+  left: 8px;
+  top: 8px;
+  outline: 2px solid #e5342b;
+}
+
+/* Motion stops for anyone whose system asks for reduced motion — the
+   marquee, logo motion, morse tickers, and every transition. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

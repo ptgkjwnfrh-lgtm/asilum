@@ -128,6 +128,12 @@ export default function SettingsPage() {
         <a href="/asterisk">ASTERISK CONTROL ROOM</a> for the full read and
         controls.
       </p>
+      <p className="legal">
+        the fine print, in full:{" "}
+        <a href="/privacy">PRIVACY POLICY</a> ·{" "}
+        <a href="/terms">TERMS OF SERVICE</a> ·{" "}
+        <a href="/accessibility">ACCESSIBILITY</a>
+      </p>
     </div>
   );
 }

@@ -60,7 +60,16 @@ Three layers, outermost first. Layers 2–3 are BUILT (PR 0A slice 2);
 layer 1 is a DEPLOYMENT control that must land with the first public
 deploy — it cannot exist meaningfully in app code.
 
-**Layer 1 — edge/WAF (deploy checklist, not yet deployed):**
+**Layer 1 — edge/WAF (DEPLOYED 2026-07-19, as built):** Vercel Firewall
+on the production project: managed DDoS mitigation (platform), Bot
+Protection in CHALLENGE mode (non-browser sources challenged; verified
+crawlers pass), rate-limit rule `api-rate-ceiling` (`/api/*`, 600
+req/60s per IP, 429), custom rule `challenge-identity-issuance`
+(`/api/auth`) in LOG mode — a Challenge action there broke the app's own
+fetch() bootstrap (interactive challenges cannot be answered by XHR), so
+enforcement stays with the app-level issuance throttle; never put a WAF
+challenge on an XHR path. Firewall changes apply without redeploy.
+Original checklist for reference:
 
 - managed WAF or equivalent edge rules in front of the app (hosting
   platform native, e.g. Vercel WAF / Cloudflare): IP/ASN reputation,
