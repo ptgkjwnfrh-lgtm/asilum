@@ -54,6 +54,49 @@ short retention).
 | Reflected XSS via echoed queries | responses JSON-only; UI renders text nodes (React escaping); eval case adv-3 asserts no markup reflection |
 | Cross-user reads | RLS-equivalent server-side scoping via resolveRequestUser; adversarial tests in suite (security-boundaries + new tests) |
 
+## 6. Anonymous abuse boundary (Restructure Handoff Phase 0, finding 4)
+
+Three layers, outermost first. Layers 2–3 are BUILT (PR 0A slice 2);
+layer 1 is a DEPLOYMENT control that must land with the first public
+deploy — it cannot exist meaningfully in app code.
+
+**Layer 1 — edge/WAF (deploy checklist, not yet deployed):**
+
+- managed WAF or equivalent edge rules in front of the app (hosting
+  platform native, e.g. Vercel WAF / Cloudflare): IP/ASN reputation,
+  request-rate rules per IP well above app quotas, bot-score challenge
+  on `/api/auth` GET (identity issuance) and search surfaces;
+- challenge (managed challenge / turnstile-style) is the correct
+  response at the edge; the app deliberately has NO CAPTCHA of its own —
+  per the platform constitution, bot-detection bypass and homegrown
+  challenges are both out of scope;
+- static-asset and page routes stay unchallenged; only mutation and
+  expensive read APIs carry edge rules;
+- alerting when edge rules fire at sustained volume.
+
+**Layer 2 — identity-issuance throttling (BUILT):** `/api/auth` GET
+issues anonymous device identities; issuance (not verification) is
+throttled per requesting subject (30/hour) AND draws from a global
+issuance budget (300/min default, `GLOBAL_BUDGET_IDENTITY_ISSUE`).
+Every issued identity seeds per-subject quotas everywhere else, so
+unthrottled minting would let a flood outrun every other limit.
+
+**Layer 3 — global cost circuit breakers (BUILT):** each expensive
+surface (search, interpret, discover, feed) draws from one global
+per-minute budget in addition to per-subject quotas
+(`consumeGlobalBudget` in lib/security/rateLimit.js; env-tunable via
+`GLOBAL_BUDGET_<SCOPE>`, 0 disables). Exhaustion fails closed with
+429 + Retry-After. Budgets are generous multiples of legitimate peak so
+real users never see them before an attack does; they bound worst-case
+database/compute cost, they do not replace layer 1.
+
+| Threat | Mitigation |
+|---|---|
+| Anonymous identity flood outrunning per-subject quotas | issuance throttle (L2) + global budgets (L3) + edge challenge (L1) |
+| Cost-of-goods attack on expensive queries (search/interpret) | global per-scope budgets fail closed at bounded spend |
+| Distributed low-and-slow scraping under every per-IP limit | edge bot scoring (L1); app-level budgets bound aggregate cost |
+| Rate-limit table growth as attack surface | subjects hashed; windows cleaned hourly (2-day horizon, existing) |
+
 ## Standing assumptions to re-verify each phase
 
 - Codex co-authors migrations: coordinate schema numbers (v13 next) to

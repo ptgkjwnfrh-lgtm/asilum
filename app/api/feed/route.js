@@ -19,7 +19,7 @@ import {
 } from "../../../lib/db/production.js";
 import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/correctionSignals.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 
@@ -35,6 +35,12 @@ export async function GET(req) {
   if (!quota.allowed) {
     return NextResponse.json(rateLimitResponse(quota), {
       status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
+  }
+  const globalQuota = await consumeGlobalBudget("feed");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
     });
   }
   const guidanceEnabled =

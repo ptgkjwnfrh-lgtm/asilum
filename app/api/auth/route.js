@@ -11,7 +11,8 @@ import {
 import { adoptAccountData } from "../../../lib/db/production.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,20 @@ export async function GET(req) {
   }
   let uid = verifiedDevice(req);
   if (!uid) {
+    // Identity ISSUANCE is throttled; returning an already-verified identity
+    // is not. Every issued identity seeds per-subject quotas everywhere else,
+    // so unthrottled minting would let a flood outrun every other limit.
+    const issueQuota = await consumeRateLimit({
+      scope: "identity-issue", subject: requestSubject(req), limit: 30, windowMs: 60 * 60 * 1000,
+    });
+    const globalQuota = issueQuota.allowed
+      ? await consumeGlobalBudget("identity-issue") : issueQuota;
+    if (!issueQuota.allowed || !globalQuota.allowed) {
+      const blocked = issueQuota.allowed ? globalQuota : issueQuota;
+      return NextResponse.json(rateLimitResponse(blocked), {
+        status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(blocked.retryAfterMs / 1000))) },
+      });
+    }
     uid = newDeviceId();
     const response = NextResponse.json({ uid });
     response.cookies.set(DEVICE_COOKIE, signedDeviceValue(uid), {

@@ -21,7 +21,7 @@ import { noteUnknownQuery } from "../../../lib/asterisk/unknownQueries.js";
 import {
   getMemoryPreferences, listInterpretationFeedback, recordInterpretationFeedback,
 } from "../../../lib/db/production.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -52,6 +52,12 @@ export async function GET(req) {
     scope: "interpret", subject: requestSubject(req), limit: 180, windowMs: 60_000,
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const globalQuota = await consumeGlobalBudget("interpret");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
+    });
+  }
   const q = (searchParams.get("q") || "").trim();
   if (!q || q.length > 200) {
     return NextResponse.json({ error: "q required (≤200 chars)" }, { status: 400 });
