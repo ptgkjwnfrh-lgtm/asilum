@@ -645,6 +645,41 @@
     "approvedAt": 1784344230211
   },
   {
+    "kind": "music",
+    "name": "ariana grande",
+    "aliases": [],
+    "note": "the ponytail and the oversized silhouette — a two-piece signature",
+    "interpretations": [
+      {
+        "id": "ariana grande/ponytail-oversized",
+        "label": "ponytail and oversized",
+        "type": "era",
+        "summary": "the sky-high sleek ponytail as personal brand, worn against oversized hoodies, thigh-high boots and bralettes — proportion play as pop uniform",
+        "tags": [
+          "seductive",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "blush",
+          "lavender"
+        ],
+        "moods": [
+          "polished",
+          "playful"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-c8b0ffdb-0831-497e-bd05-8f3c8ca4f09c",
+    "sourceUrls": [
+      "https://www.eonline.com/news/1431402/ariana-grandes-hair-transformation-nickelodeon-ponytail",
+      "https://styletwentysix.co.uk/pop-princess-style-guide-sabrina-chappell-olivia-billie-and-dua/"
+    ],
+    "approvedAt": 1784348745354
+  },
+  {
     "kind": "figure",
     "name": "arianne phillips",
     "aliases": [],
@@ -1489,6 +1524,47 @@
     "approvedAt": 1784344231709
   },
   {
+    "kind": "music",
+    "name": "boy band",
+    "aliases": [
+      "boy bands",
+      "nsync",
+      "backstreet boys",
+      "one direction",
+      "jonas brothers"
+    ],
+    "note": "matching outfits as a genre — the coordinated uniform from motown to 1d",
+    "interpretations": [
+      {
+        "id": "boy band/matching-uniforms",
+        "label": "matching uniforms",
+        "type": "scene",
+        "summary": "coordinated stagewear as the form's signature — nsync and backstreet boys in matching denim, velour and frosted tips, one direction's preppy update; the group dressed as one organism",
+        "tags": [
+          "streetwear",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "denim blue"
+        ],
+        "moods": [
+          "synchronized",
+          "earnest"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-9132fb47-7fb8-492f-b5b8-540c52487c09",
+    "sourceUrls": [
+      "https://www.billboard.com/photos/boy-band-style-coordinated-matching-outfits-gallery/",
+      "https://www.hypable.com/nsync-backstreet-boys-90s-boy-band-fashion/"
+    ],
+    "approvedAt": 1784348753678
+  },
+  {
     "kind": "aesthetic",
     "name": "bridal",
     "aliases": [
@@ -1982,6 +2058,41 @@
   },
   {
     "kind": "music",
+    "name": "chappell roan",
+    "aliases": [],
+    "note": "midwest princess drag-camp — pop staged as a drag act",
+    "interpretations": [
+      {
+        "id": "chappell roan/drag-camp",
+        "label": "drag camp",
+        "type": "era",
+        "summary": "bold eclectic camp built from drag performance — bright colour, daring silhouettes and painted theatricality honoring the lgbtq+ stages that taught her; the drag record holds the tradition, this is it",
+        "tags": [
+          "avant-garde",
+          "statement",
+          "seductive"
+        ],
+        "colors": [
+          "red",
+          "rhinestone"
+        ],
+        "moods": [
+          "theatrical",
+          "joyous"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-f3875f8d-93d0-4704-849d-b2fda1a36b01",
+    "sourceUrls": [
+      "https://styletwentysix.co.uk/pop-princess-style-guide-sabrina-chappell-olivia-billie-and-dua/",
+      "https://hypebae.com/2026/1/musicians-stylists-dara-allen-dua-lipa-jared-ellner-sam-woolf"
+    ],
+    "approvedAt": 1784348752981
+  },
+  {
+    "kind": "music",
     "name": "charli xcx",
     "aliases": [
       "charli"
@@ -2200,6 +2311,43 @@
       "https://www.nssgclub.com/en/fashion/43269/chloe-sevigny-it-girl-today-career-who-is-she"
     ],
     "approvedAt": 1784080234427
+  },
+  {
+    "kind": "music",
+    "name": "christina aguilera",
+    "aliases": [
+      "xtina"
+    ],
+    "note": "the dirrty pivot — assless chaps and low-rise as declaration",
+    "interpretations": [
+      {
+        "id": "christina aguilera/dirrty-stripped",
+        "label": "dirrty stripped",
+        "type": "era",
+        "summary": "the 2002 dirrty video's chaps and micro-minis, stripped-era low-rise, fedoras and biker flash — the genie-pop image torn up on purpose; a pivot today's pop stars still quote",
+        "tags": [
+          "seductive",
+          "statement",
+          "streetwear"
+        ],
+        "colors": [
+          "black",
+          "platinum"
+        ],
+        "moods": [
+          "defiant",
+          "unapologetic"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-c73017ef-b558-42e1-9181-30db8af7673b",
+    "sourceUrls": [
+      "https://i-d.co/article/christina-aguilera-2000s-style/",
+      "https://www.today.com/popculture/music/christina-aguilera-dirrty-look-20-years-later-rcna54262"
+    ],
+    "approvedAt": 1784348747439
   },
   {
     "kind": "figure",
@@ -3430,6 +3578,41 @@
       "https://theface.com/style/antwerp-six-exhibition-dries-van-noten-ann-demeulemeester"
     ],
     "approvedAt": 1784260246870
+  },
+  {
+    "kind": "music",
+    "name": "dua lipa",
+    "aliases": [],
+    "note": "future-nostalgia colour — print-on-print with a disco spine",
+    "interpretations": [
+      {
+        "id": "dua lipa/future-nostalgia",
+        "label": "future nostalgia",
+        "type": "era",
+        "summary": "colour and print played fearlessly — versace collaborations, 90s and disco quotes reworked with a modern edge; one of pop's sharpest style ascents",
+        "tags": [
+          "statement",
+          "seductive",
+          "tailored"
+        ],
+        "colors": [
+          "hot pink",
+          "butterfly blue"
+        ],
+        "moods": [
+          "kinetic",
+          "assured"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-5889a9e6-711c-4017-abd2-fa3b7b58a994",
+    "sourceUrls": [
+      "https://styletwentysix.co.uk/pop-princess-style-guide-sabrina-chappell-olivia-billie-and-dua/",
+      "https://hypebae.com/2026/1/musicians-stylists-dara-allen-dua-lipa-jared-ellner-sam-woolf"
+    ],
+    "approvedAt": 1784348750904
   },
   {
     "kind": "figure",
@@ -5926,6 +6109,44 @@
   },
   {
     "kind": "figure",
+    "name": "jennifer lopez",
+    "aliases": [
+      "jlo",
+      "the jungle dress"
+    ],
+    "note": "the versace jungle dress — the look that invented google images",
+    "interpretations": [
+      {
+        "id": "jennifer lopez/jungle-dress",
+        "label": "jungle dress",
+        "type": "era",
+        "summary": "the plunging green versace at the 2000 grammys — so searched that google built image search to answer it; the defining example of one dress changing both fashion and the internet",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "jungle green",
+          "gold"
+        ],
+        "moods": [
+          "seismic",
+          "glamorous"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-e96e7438-c953-4670-b700-d21f0c59cb14",
+    "sourceUrls": [
+      "https://en.wikipedia.org/wiki/Green_Versace_dress_of_Jennifer_Lopez",
+      "https://www.anothermag.com/fashion-beauty/12205/alexander-fury-jlo-jennifer-lopez-green-versace-jungle-dress-grammy-show"
+    ],
+    "approvedAt": 1784348750210
+  },
+  {
+    "kind": "figure",
     "name": "jerry hall",
     "aliases": [],
     "note": "studio 54 texan — honey mane and halston satin",
@@ -5956,6 +6177,41 @@
       "https://www.russh.com/jerry-hall-style/"
     ],
     "approvedAt": 1784263037680
+  },
+  {
+    "kind": "music",
+    "name": "jessica simpson",
+    "aliases": [],
+    "note": "y2k it-girl — daisy dukes, platforms and the billion-dollar denim afterlife",
+    "interpretations": [
+      {
+        "id": "jessica simpson/y2k-it-girl",
+        "label": "y2k it-girl",
+        "type": "era",
+        "summary": "daisy dukes and platform pumps, low-rise and baby tees at the height of the early 2000s — an it-girl wardrobe she later rebuilt into a billion-dollar denim brand reviving the same y2k codes",
+        "tags": [
+          "seductive",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "denim blue",
+          "pink"
+        ],
+        "moods": [
+          "sunny",
+          "unbothered"
+        ],
+        "confidence": 0.71
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-93d0ac2b-dd96-4398-a5c6-6bf1067322a2",
+    "sourceUrls": [
+      "https://www.yahoo.com/lifestyle/jessica-simpson-reviving-y2k-style-110025499.html",
+      "https://en.wikipedia.org/wiki/Jessica_Simpson"
+    ],
+    "approvedAt": 1784348748118
   },
   {
     "kind": "music",
@@ -6173,6 +6429,75 @@
       "https://fashionista.com/2022/04/june-ambrose-stylist-career-interview"
     ],
     "approvedAt": 1784258275250
+  },
+  {
+    "kind": "music",
+    "name": "justin bieber",
+    "aliases": [],
+    "note": "purple hoodie to oversized luxury — a decade of streetwear pivots",
+    "interpretations": [
+      {
+        "id": "justin bieber/oversized-era",
+        "label": "oversized era",
+        "type": "era",
+        "summary": "the my-world purple hoodie and high-tops through grunge layering into oversized streetwear luxury — drew-house slouch as the destination of a very public style decade",
+        "tags": [
+          "streetwear",
+          "independent",
+          "minimal"
+        ],
+        "colors": [
+          "lavender",
+          "beige"
+        ],
+        "moods": [
+          "slouchy",
+          "restless"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-d3bb0f7d-ce24-481d-aebb-26b6056316b6",
+    "sourceUrls": [
+      "https://www.wmagazine.com/fashion/justin-bieber-best-style-moments-fashion-red-carpet",
+      "https://www.fashionbeans.com/article/justin-bieber-style/"
+    ],
+    "approvedAt": 1784348755061
+  },
+  {
+    "kind": "music",
+    "name": "justin timberlake",
+    "aliases": [],
+    "note": "the denim suit — one 2001 red carpet that outlived every apology",
+    "interpretations": [
+      {
+        "id": "justin timberlake/denim-suit",
+        "label": "the denim suit",
+        "type": "era",
+        "summary": "the all-denim three-piece with patchwork denim hat beside britney's jean dress at the 2001 amas — mocked, apologized for, endlessly recreated; the britney spears record holds her half of the moment",
+        "tags": [
+          "streetwear",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "denim blue"
+        ],
+        "moods": [
+          "infamous",
+          "committed"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-3df4d9b6-9426-4151-936f-37edb8c7c4a0",
+    "sourceUrls": [
+      "https://www.today.com/style/justin-timberlake-looks-back-his-matching-denim-moment-britney-spears-t176671",
+      "https://sourcingjournal.com/denim/denim-trends/justin-timberlake-britney-spears-denim-suit-lance-bass-201679/"
+    ],
+    "approvedAt": 1784348754347
   },
   {
     "kind": "music",
@@ -6401,6 +6726,41 @@
       "https://www.cnn.com/style/article/katie-grand-marc-jacobs-style-show/index.html"
     ],
     "approvedAt": 1784259528382
+  },
+  {
+    "kind": "music",
+    "name": "katy perry",
+    "aliases": [],
+    "note": "candy-coated camp — the cupcake era refined into couture play",
+    "interpretations": [
+      {
+        "id": "katy perry/candy-camp",
+        "label": "candy camp",
+        "type": "era",
+        "summary": "california gurls' candy-dot dresses and cupcake bikinis — teenage dream's bubblegum camp, later refined from cartoonish kitsch into confident couture play",
+        "tags": [
+          "statement",
+          "seductive",
+          "avant-garde"
+        ],
+        "colors": [
+          "candy pink",
+          "blue"
+        ],
+        "moods": [
+          "kitsch",
+          "confectionery"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-edab52b5-2f3c-47d9-b9e8-a16eaf0b4a01",
+    "sourceUrls": [
+      "https://www.nylon.com/fashion/katy-perry-costumes-california-gurls-music-video",
+      "https://www.wmagazine.com/gallery/katy-perry-most-over-the-top-costumes"
+    ],
+    "approvedAt": 1784348746042
   },
   {
     "kind": "figure",
@@ -7218,6 +7578,41 @@
     "approvedAt": 1784321142303
   },
   {
+    "kind": "music",
+    "name": "mariah carey",
+    "aliases": [],
+    "note": "the butterfly era — ungaro tops and 90s diva glitter",
+    "interpretations": [
+      {
+        "id": "mariah carey/butterfly-era",
+        "label": "butterfly era",
+        "type": "era",
+        "summary": "the emanuel ungaro butterfly top over raw-hem low-rise, butterflies on everything, slip dresses and glitter — 90s diva glamour with a single recurring emblem",
+        "tags": [
+          "seductive",
+          "statement",
+          "archival"
+        ],
+        "colors": [
+          "champagne",
+          "lilac"
+        ],
+        "moods": [
+          "glittering",
+          "romantic"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-507fea3c-f03f-47c5-9070-2b7c79f32677",
+    "sourceUrls": [
+      "https://wwd.com/pop-culture/celebrity-news/feature/mariah-carey-style-through-the-years-1236289209/",
+      "https://www.lofficielusa.com/fashion/mariah-carey-90s-style"
+    ],
+    "approvedAt": 1784348748840
+  },
+  {
     "kind": "film",
     "name": "marie antoinette",
     "aliases": [
@@ -7968,6 +8363,43 @@
     "approvedAt": 1784347323913
   },
   {
+    "kind": "music",
+    "name": "miley cyrus",
+    "aliases": [
+      "hannah montana"
+    ],
+    "note": "disney wig to bangerz cavalli — reinvention as the whole point",
+    "interpretations": [
+      {
+        "id": "miley cyrus/bangerz",
+        "label": "bangerz",
+        "type": "era",
+        "summary": "the hannah montana wig traded for cavalli and kenzo tour costumes — campy, surreal, self-mocking provocation; the loudest child-star exit in pop wardrobe history",
+        "tags": [
+          "statement",
+          "avant-garde",
+          "seductive"
+        ],
+        "colors": [
+          "gold",
+          "flesh"
+        ],
+        "moods": [
+          "provocative",
+          "unruly"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-c352b43a-deee-4d9a-a7a5-1fec0e4927b5",
+    "sourceUrls": [
+      "https://fashionmagazine.com/flare/celebrity/miley-cyrus-bangerz-tour-costumes/",
+      "https://www.fashiongonerogue.com/see-miley-cyrus-bangerz-tour-costumes-roberto-cavalli/"
+    ],
+    "approvedAt": 1784348746762
+  },
+  {
     "kind": "figure",
     "name": "miriam makeba",
     "aliases": [
@@ -8661,6 +9093,41 @@
       "https://wwd.com/fashion-news/fashion-features/zoey-deutch-cannes-chanel-jean-seberg-nouvelle-vague-1237792591/"
     ],
     "approvedAt": 1784346778739
+  },
+  {
+    "kind": "music",
+    "name": "olivia rodrigo",
+    "aliases": [],
+    "note": "the pop-punk revival's wardrobe — plaid, chunky boots and guts purple",
+    "interpretations": [
+      {
+        "id": "olivia rodrigo/guts-pop-punk",
+        "label": "guts pop-punk",
+        "type": "era",
+        "summary": "90s-grunge plaid skirts, graphic tees and chunky boots in a black-white-red-purple palette — the sour-to-guts wardrobe that carried the pop-punk revival to gen z; kin to the soft grunge record's regis",
+        "tags": [
+          "independent",
+          "streetwear",
+          "statement"
+        ],
+        "colors": [
+          "purple",
+          "black"
+        ],
+        "moods": [
+          "bratty",
+          "earnest"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-cb6a2ed9-e418-4dc3-974a-eba058b65580",
+    "sourceUrls": [
+      "https://styletwentysix.co.uk/pop-princess-style-guide-sabrina-chappell-olivia-billie-and-dua/",
+      "https://hypebae.com/2026/1/musicians-stylists-dara-allen-dua-lipa-jared-ellner-sam-woolf"
+    ],
+    "approvedAt": 1784348751594
   },
   {
     "kind": "figure",
@@ -9868,6 +10335,41 @@
   },
   {
     "kind": "music",
+    "name": "sabrina carpenter",
+    "aliases": [],
+    "note": "girly chic at platform height — minis, corsetry and pastel polish",
+    "interpretations": [
+      {
+        "id": "sabrina carpenter/girly-chic",
+        "label": "girly chic",
+        "type": "era",
+        "summary": "mini skirts in nearly every look, corseted stagewear, playful prints and pastels on platform heels — 60s-inflected femininity played fully straight",
+        "tags": [
+          "seductive",
+          "statement",
+          "tailored"
+        ],
+        "colors": [
+          "baby blue",
+          "blonde"
+        ],
+        "moods": [
+          "flirty",
+          "precise"
+        ],
+        "confidence": 0.72
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-54712290-3c40-4043-8728-5ec77ec13bc1",
+    "sourceUrls": [
+      "https://styletwentysix.co.uk/pop-princess-style-guide-sabrina-chappell-olivia-billie-and-dua/",
+      "https://hypebae.com/2026/1/musicians-stylists-dara-allen-dua-lipa-jared-ellner-sam-woolf"
+    ],
+    "approvedAt": 1784348752302
+  },
+  {
+    "kind": "music",
     "name": "salsa",
     "aliases": [
       "fania"
@@ -10585,6 +11087,41 @@
       "https://www.theglobeandmail.com/life/style/article-shai-gilgeous-alexander-nba-conquering-fashion-world-runway-menswear/"
     ],
     "approvedAt": 1784177291784
+  },
+  {
+    "kind": "music",
+    "name": "shania twain",
+    "aliases": [],
+    "note": "leopard and a top hat — country glamour built for arenas",
+    "interpretations": [
+      {
+        "id": "shania twain/leopard-top-hat",
+        "label": "leopard and top hat",
+        "type": "era",
+        "summary": "the head-to-toe leopard of that don't impress me much and the man-i-feel-like-a-woman top hat — her own recipe, by her telling: something leopard, and a top hat; country glamour drag performers still",
+        "tags": [
+          "statement",
+          "seductive",
+          "independent"
+        ],
+        "colors": [
+          "leopard",
+          "black"
+        ],
+        "moods": [
+          "assured",
+          "showstopping"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-c3b0e3f8-13cd-47ba-a1dc-d6004f8decb8",
+    "sourceUrls": [
+      "https://www.biography.com/musicians/shania-twain-man-i-feel-like-a-woman-inspiration-drag",
+      "https://www.womanandhome.com/life/news-entertainment/shania-twain-proves-shes-still-the-one-after-wearing-the-exact-same-outfit-from-one-of-her-most-iconic-90s-music-videos/"
+    ],
+    "approvedAt": 1784348749532
   },
   {
     "kind": "music",
@@ -11395,6 +11932,63 @@
       "https://voyapon.com/horimono-history-traditional-tattoos-japan/"
     ],
     "approvedAt": 1784322553772
+  },
+  {
+    "kind": "music",
+    "name": "taylor swift",
+    "aliases": [
+      "eras tour"
+    ],
+    "note": "the era system — a wardrobe rebuilt album by album",
+    "interpretations": [
+      {
+        "id": "taylor swift/country-sweetheart",
+        "label": "country sweetheart",
+        "type": "era",
+        "summary": "the debut years — tight curls, floral sundresses and cowboy boots; girl-next-door country polish that fearless traded up to ballgowns and sequins",
+        "tags": [
+          "seductive",
+          "minimal",
+          "archival"
+        ],
+        "colors": [
+          "white",
+          "gold"
+        ],
+        "moods": [
+          "wholesome",
+          "storybook"
+        ],
+        "confidence": 0.74
+      },
+      {
+        "id": "taylor swift/the-eras",
+        "label": "the eras",
+        "type": "era",
+        "summary": "red's high-waisted shorts and red lip, 1989's polish, reputation's black sequins and combat boots, folklore's cottage knits — each album a complete wardrobe, the eras tour wearing them all in one nigh",
+        "tags": [
+          "statement",
+          "tailored",
+          "seductive"
+        ],
+        "colors": [
+          "red",
+          "sequin"
+        ],
+        "moods": [
+          "chameleonic",
+          "curated"
+        ],
+        "confidence": 0.74
+      }
+    ],
+    "provenance": "research-approved-day31-pr-review",
+    "factId": "fact-6471bc67-052b-4883-8710-ca2e975e5db5",
+    "sourceUrls": [
+      "https://www.lofficielusa.com/pop-culture/every-taylor-swift-album-era-style",
+      "https://www.billboard.com/photos/taylor-swift-style-evolution-photos-429884/"
+    ],
+    "approvedAt": 1784348744679
   },
   {
     "kind": "aesthetic",
