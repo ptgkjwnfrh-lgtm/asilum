@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid, brainEnabled,
-  authorizedFetch, claimRequest,
+  authorizedFetch,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -46,7 +46,7 @@ export default function Shell({ children }) {
   const [results, setResults] = useState(null);
   const [follows, setFollows] = useState({ brands: [], users: [] });
   const debounceRef = useRef(null);
-  const searchGenRef = useRef(0);
+  const searchRequestRef = useRef({ id: 0, controller: null });
   const pendingAdoptionRef = useRef(null);
   const deviceIdentityRef = useRef(null);
 
@@ -76,6 +76,12 @@ export default function Shell({ children }) {
     syncGuide();
     window.addEventListener("asilum:brain", syncGuide);
     return () => window.removeEventListener("asilum:brain", syncGuide);
+  }, []);
+
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    searchRequestRef.current.id++;
+    searchRequestRef.current.controller?.abort();
   }, []);
 
   // A search that is already open must be re-ranked immediately when the
@@ -189,25 +195,46 @@ export default function Shell({ children }) {
   function onSearchInput(text) {
     setQ(text);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!text.trim()) { claimRequest(searchGenRef); setResults(null); return; }
+    searchRequestRef.current.id++;
+    searchRequestRef.current.controller?.abort();
+    searchRequestRef.current.controller = null;
+    if (!text.trim()) { setResults(null); return; }
+    const requestId = searchRequestRef.current.id;
     debounceRef.current = setTimeout(async () => {
-      // The debounce serializes timers, not responses: a slow in-flight
-      // search (or one issued while guidance was still on) must not
-      // overwrite the results of the newer keystroke.
-      const isCurrent = claimRequest(searchGenRef);
+      const controller = new AbortController();
+      searchRequestRef.current.controller = controller;
       try {
         const query = new URLSearchParams({
           q: text.trim(),
           user: getUid() || "",
           brain: guideOn ? "1" : "0",
         });
-        const [d, s] = await Promise.all([
-          authorizedFetch("/api/search?" + query.toString()).then((r) => r.json()),
-          fetch("/api/suggest?q=" + encodeURIComponent(text.trim())).then((r) => r.json()).catch(() => ({ suggestions: [] })),
+        const [searchResponse, suggestResponse] = await Promise.all([
+          authorizedFetch("/api/search?" + query.toString(), { signal: controller.signal }),
+          fetch("/api/suggest?q=" + encodeURIComponent(text.trim()), { signal: controller.signal }),
         ]);
-        if (!isCurrent()) return;
-        setResults({ ...d, users: searchUsers(text).slice(0, 4), suggestions: s.suggestions || [] });
-      } catch { if (isCurrent()) setResults(null); }
+        if (!searchResponse.ok) throw new Error("search unavailable");
+        const [d, s] = await Promise.all([
+          searchResponse.json(),
+          suggestResponse.ok ? suggestResponse.json() : Promise.resolve({ suggestions: [] }),
+        ]);
+        if (requestId !== searchRequestRef.current.id) return;
+        setResults({
+          brands: Array.isArray(d.brands) ? d.brands : [],
+          items: Array.isArray(d.items) ? d.items : [],
+          aesthetics: Array.isArray(d.aesthetics) ? d.aesthetics : [],
+          users: searchUsers(text).slice(0, 4),
+          suggestions: Array.isArray(s.suggestions) ? s.suggestions : [],
+        });
+      } catch (error) {
+        if (requestId === searchRequestRef.current.id && error?.name !== "AbortError") {
+          setResults(null);
+        }
+      } finally {
+        if (requestId === searchRequestRef.current.id) {
+          searchRequestRef.current.controller = null;
+        }
+      }
     }, 220);
   }
   function submitSearch(e) {
@@ -216,7 +243,15 @@ export default function Shell({ children }) {
   }
   function closeSearch() {
     // Delayed so option mousedown handlers win over blur.
-    setTimeout(() => { claimRequest(searchGenRef); setSearchOpen(false); setResults(null); setQ(""); }, 180);
+    setTimeout(() => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      searchRequestRef.current.id++;
+      searchRequestRef.current.controller?.abort();
+      searchRequestRef.current.controller = null;
+      setSearchOpen(false);
+      setResults(null);
+      setQ("");
+    }, 180);
   }
 
   // Bag is intent only; checkout, fees, and shipping belong to source sites.
