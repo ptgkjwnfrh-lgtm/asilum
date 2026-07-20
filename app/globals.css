@@ -897,3 +897,16 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
     scroll-behavior: auto !important;
   }
 }
+
+/* Account sign-up sheet (home): real accounts only. Reuses the .sheet
+   shell; these classes only add the form/manifest layout. */
+.signupsheet { max-width: 440px; }
+.signuplist { list-style: none; margin: 0 0 18px; padding: 12px 14px; border: 1px solid var(--line); }
+.signuplist li { font-size: 12px; font-weight: 700; padding: 3px 0; }
+.signuplist li::before { content: "*"; color: var(--red); font-weight: 900; margin-right: 8px; }
+.signupactions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.signupalts { display: flex; gap: 8px; flex-wrap: wrap; }
+.signupalts .btn, .signupactions .btn { font-size: 11px; }
+.signupnote { margin-top: 12px; }
+/* The top-bar ACCOUNT link wears the same button skin as SEARCH/BAG. */
+a.tbtn { color: inherit; text-decoration: none; display: inline-block; }

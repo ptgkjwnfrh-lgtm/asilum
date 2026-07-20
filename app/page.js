@@ -494,7 +494,11 @@ export default function Home() {
   }, [filters, epsilon, craving, guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function markOnboarded() {
-    try { window.localStorage.setItem("asilum-onboarded", "1"); } catch {}
+    try {
+      window.localStorage.setItem("asilum-onboarded", "1");
+      // The account popup waits behind the first-visit sheet; let it know.
+      window.dispatchEvent(new CustomEvent("asilum:onboarded"));
+    } catch {}
   }
 
   // ---- Home tabs ----
