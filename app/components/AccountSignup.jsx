@@ -1,0 +1,262 @@
+"use client";
+
+// app/components/AccountSignup.jsx — the home-screen account hold.
+// Real Supabase accounts only (email + password, or a magic link for
+// returning readers). No account state is faked: when Supabase keys are
+// absent the popup never renders, and every outcome message reports what
+// actually happened. Creating or entering an account triggers the shell's
+// existing adoption flow (/api/auth POST), which moves the ENTIRE device
+// Passport — taste profile, moodboards, wardrobe, follows, measurements,
+// corrections, tickets, posts — into the account in one transaction.
+// This component never touches Passport data itself.
+
+import { useEffect, useRef, useState } from "react";
+import { authConfigured, getSupabase } from "../../lib/supabase.js";
+
+const SEEN_KEY = "asilum-signup-seen";
+
+const PASSPORT_MANIFEST = [
+  "taste profile — everything the brain has learned here",
+  "moodboards + saved pieces",
+  "wardrobe + measurements",
+  "follows, corrections, purchase tickets",
+];
+
+function markSeen() {
+  try { window.localStorage.setItem(SEEN_KEY, "1"); } catch {}
+}
+
+export default function AccountSignup({ suppressed }) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState("create"); // create | signin
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+  const [done, setDone] = useState(""); // "" | "created" | "confirm" | "signedin"
+  const signedInRef = useRef(false);
+
+  useEffect(() => {
+    if (!authConfigured()) return;
+    let active = true;
+    let subscription = null;
+    getSupabase().then((sb) => {
+      if (!active || !sb) return;
+      subscription = sb.auth.onAuthStateChange((event, session) => {
+        if (!active) return;
+        if (session) signedInRef.current = true;
+        if (event === "INITIAL_SESSION" && !session) {
+          const seen = (() => {
+            try { return !!window.localStorage.getItem(SEEN_KEY); } catch { return true; }
+          })();
+          if (!seen && !signedInRef.current) setOpen(true);
+        }
+        if (event === "SIGNED_OUT") signedInRef.current = false;
+      })?.data?.subscription || null;
+    });
+    return () => {
+      active = false;
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  function dismiss() {
+    markSeen();
+    setOpen(false);
+  }
+
+  function validate(needsPassword) {
+    const address = email.trim();
+    if (!address || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      setNote("enter a real email address first");
+      return null;
+    }
+    if (needsPassword && password.length < 8) {
+      setNote("password needs at least 8 characters");
+      return null;
+    }
+    return address;
+  }
+
+  async function createAccount() {
+    const address = validate(true);
+    if (!address || busy) return;
+    setBusy(true);
+    setNote("");
+    try {
+      const sb = await getSupabase();
+      const displayName = name.trim();
+      const { data, error } = await sb.auth.signUp({
+        email: address,
+        password,
+        options: {
+          ...(displayName ? { data: { display_name: displayName } } : {}),
+          emailRedirectTo: window.location.origin + "/profile",
+        },
+      });
+      if (error) {
+        setNote("could not create the account — " + error.message);
+      } else if (data?.session) {
+        // Signed in immediately: the shell's auth listener is already
+        // adopting the device Passport into this account.
+        markSeen();
+        setDone("created");
+      } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        // Supabase returns a stub user for an address that already holds an
+        // account (anti-enumeration). Say so honestly without confirming it.
+        setNote("if this email already holds an account, use SIGN IN or the magic link instead");
+        setMode("signin");
+      } else if (data?.user) {
+        markSeen();
+        setDone("confirm");
+      } else {
+        setNote("the account service gave no answer — try again");
+      }
+    } catch {
+      setNote("could not reach the account service — try again");
+    }
+    setBusy(false);
+  }
+
+  async function signIn() {
+    const address = validate(true);
+    if (!address || busy) return;
+    setBusy(true);
+    setNote("");
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signInWithPassword({ email: address, password });
+      if (error) {
+        setNote("could not sign in — " + error.message);
+      } else {
+        markSeen();
+        setDone("signedin");
+      }
+    } catch {
+      setNote("could not reach the account service — try again");
+    }
+    setBusy(false);
+  }
+
+  async function sendMagicLink() {
+    const address = validate(false);
+    if (!address || busy) return;
+    setBusy(true);
+    setNote("");
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signInWithOtp({
+        email: address,
+        options: { emailRedirectTo: window.location.origin + "/profile" },
+      });
+      setNote(error ? "could not send the link — " + error.message : "magic link sent — check your inbox");
+      if (!error) markSeen();
+    } catch {
+      setNote("could not send the link — try again");
+    }
+    setBusy(false);
+  }
+
+  if (!open || suppressed) return null;
+
+  const creating = mode === "create";
+
+  return (
+    <div className="overlay" onClick={dismiss}>
+      <div className="sheet signupsheet" onClick={(event) => event.stopPropagation()}>
+        <button className="mclose" onClick={dismiss} aria-label="close sign-up">×</button>
+
+        {done ? (
+          <>
+            <h2>
+              {done === "confirm" ? "Check your inbox" : "Account open"}
+              <span style={{ color: "var(--red)" }}>.</span>
+            </h2>
+            <p className="deck">
+              {done === "confirm"
+                ? "we sent a confirmation link. open it and your Passport boards the account on first sign-in."
+                : "your Passport is boarding — everything this device taught the brain now lives on the account."}
+            </p>
+            <div className="signupactions">
+              <a className="btn" href="/profile">GO TO PROFILE →</a>
+              <button className="btn ghost" onClick={dismiss}>KEEP BROWSING</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="psub">{creating ? "OPEN AN ACCOUNT" : "SIGN IN"}</div>
+            <h2>
+              Hold your Passport<span style={{ color: "var(--red)" }}>.</span>
+            </h2>
+            <p className="deck">
+              an account keeps your Passport — the map of taste this device is
+              building — safe across devices. private by default, inspectable
+              any time, erasable in one move.
+            </p>
+
+            <ul className="signuplist">
+              {PASSPORT_MANIFEST.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+
+            {creating ? (
+              <label className="accountemail">name — optional
+                <input
+                  type="text"
+                  value={name}
+                  placeholder="what should the magazine call you?"
+                  maxLength={80}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </label>
+            ) : null}
+            <label className="accountemail">email
+              <input
+                type="email"
+                value={email}
+                placeholder="you@example.com"
+                autoComplete="email"
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </label>
+            <label className="accountemail">password — 8+ characters, mixed case + number + symbol
+              <input
+                type="password"
+                value={password}
+                autoComplete={creating ? "new-password" : "current-password"}
+                onChange={(event) => setPassword(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") (creating ? createAccount : signIn)();
+                }}
+              />
+            </label>
+
+            <div className="signupactions">
+              <button className="btn wide" disabled={busy} onClick={creating ? createAccount : signIn}>
+                {busy ? "WORKING…" : creating ? "CREATE ACCOUNT" : "SIGN IN"}
+              </button>
+            </div>
+
+            <div className="orline">OR</div>
+            <div className="signupalts">
+              <button
+                className="btn ghost"
+                disabled={busy}
+                onClick={() => { setMode(creating ? "signin" : "create"); setNote(""); }}
+              >
+                {creating ? "I ALREADY HAVE AN ACCOUNT" : "OPEN A NEW ACCOUNT"}
+              </button>
+              <button className="btn ghost" disabled={busy} onClick={sendMagicLink}>
+                EMAIL ME A MAGIC LINK
+              </button>
+            </div>
+
+            {note ? <div className="acctline accountnotice signupnote">{note}</div> : null}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

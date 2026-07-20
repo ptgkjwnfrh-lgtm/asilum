@@ -20,6 +20,7 @@ import {
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
+import AccountSignup from "./components/AccountSignup.jsx";
 import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
@@ -908,6 +909,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* ---- Account hold: real sign-up; the Passport boards via adoption ---- */}
+      <AccountSignup suppressed={connectOpen} />
 
       {/* ---- Item detail: ALL the depth lives here ---- */}
       {modal && (
