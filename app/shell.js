@@ -19,6 +19,7 @@ import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
+import AccountSignup from "./components/AccountSignup.jsx";
 
 const NAV = [
   { href: "/", label: "YOUR EDIT" },
@@ -45,6 +46,7 @@ export default function Shell({ children }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState(null);
   const [follows, setFollows] = useState({ brands: [], users: [] });
+  const [authUser, setAuthUser] = useState(null);
   const debounceRef = useRef(null);
   const searchGenRef = useRef(0);
   const pendingAdoptionRef = useRef(null);
@@ -107,6 +109,7 @@ export default function Shell({ children }) {
       if (!active) return;
       if (!sb) { activateDevice(); return; }
       const r = sb.auth.onAuthStateChange((event, session) => {
+        if (active) setAuthUser(session?.user || null);
         if (event === "INITIAL_SESSION") {
           if (session) onSignedIn(session);
           else activateDevice();
@@ -291,7 +294,23 @@ export default function Shell({ children }) {
         <button className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
         </button>
+        {authUser ? (
+          <a className="tbtn" href="/profile#access" title={authUser.email || authUser.id}>
+            ACCOUNT
+          </a>
+        ) : (
+          <button
+            className="tbtn"
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }))
+            }
+          >
+            SIGN IN
+          </button>
+        )}
       </div>
+
+      <AccountSignup />
 
       {searchOpen && results && (
         <div className="searchpanel">

@@ -1,6 +1,6 @@
 "use client";
 
-// app/components/AccountSignup.jsx — the home-screen account hold.
+// app/components/AccountSignup.jsx — the account hold (mounted in the shell).
 // Real Supabase accounts only (email + password, or a magic link for
 // returning readers). No account state is faked: when Supabase keys are
 // absent the popup never renders, and every outcome message reports what
@@ -9,6 +9,11 @@
 // Passport — taste profile, moodboards, wardrobe, follows, measurements,
 // corrections, tickets, posts — into the account in one transaction.
 // This component never touches Passport data itself.
+//
+// Two ways in: it auto-shows ONCE per device on the home screen (only after
+// the first-visit sheet has been dismissed — "asilum:onboarded" — so the two
+// never stack), and the shell's SIGN IN button opens it on demand from any
+// page via the "asilum:signup-open" event.
 
 import { useEffect, useRef, useState } from "react";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
@@ -26,7 +31,7 @@ function markSeen() {
   try { window.localStorage.setItem(SEEN_KEY, "1"); } catch {}
 }
 
-export default function AccountSignup({ suppressed }) {
+export default function AccountSignup() {
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState("create"); // create | signin
   const [name, setName] = useState("");
@@ -41,22 +46,39 @@ export default function AccountSignup({ suppressed }) {
     if (!authConfigured()) return;
     let active = true;
     let subscription = null;
+    // Once per device, home screen only, never over the first-visit sheet.
+    const maybeAutoShow = () => {
+      if (!active || signedInRef.current) return;
+      try {
+        if (window.location.pathname !== "/") return;
+        if (!window.localStorage.getItem("asilum-onboarded")) return;
+        if (window.localStorage.getItem(SEEN_KEY)) return;
+      } catch { return; }
+      setOpen(true);
+    };
+    // The shell's SIGN IN button (any page) — always honored while signed out.
+    const onOpenRequest = (event) => {
+      if (!active || signedInRef.current) return;
+      setMode(event?.detail?.mode === "create" ? "create" : "signin");
+      setNote("");
+      setDone("");
+      setOpen(true);
+    };
+    window.addEventListener("asilum:signup-open", onOpenRequest);
+    window.addEventListener("asilum:onboarded", maybeAutoShow);
     getSupabase().then((sb) => {
       if (!active || !sb) return;
       subscription = sb.auth.onAuthStateChange((event, session) => {
         if (!active) return;
         if (session) signedInRef.current = true;
-        if (event === "INITIAL_SESSION" && !session) {
-          const seen = (() => {
-            try { return !!window.localStorage.getItem(SEEN_KEY); } catch { return true; }
-          })();
-          if (!seen && !signedInRef.current) setOpen(true);
-        }
+        if (event === "INITIAL_SESSION" && !session) maybeAutoShow();
         if (event === "SIGNED_OUT") signedInRef.current = false;
       })?.data?.subscription || null;
     });
     return () => {
       active = false;
+      window.removeEventListener("asilum:signup-open", onOpenRequest);
+      window.removeEventListener("asilum:onboarded", maybeAutoShow);
       subscription?.unsubscribe();
     };
   }, []);
@@ -158,7 +180,7 @@ export default function AccountSignup({ suppressed }) {
     setBusy(false);
   }
 
-  if (!open || suppressed) return null;
+  if (!open) return null;
 
   const creating = mode === "create";
 
