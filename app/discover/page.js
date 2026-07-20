@@ -5,7 +5,7 @@
 // exploration through the user's Passport, but the user can pause that layer.
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled, claimRequest } from "../../lib/client.js";
+import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
@@ -26,6 +26,7 @@ export default function DiscoverPage() {
   const [tag, setTag] = useState("");
   const [sort, setSort] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [favedIds, setFavedIds] = useState(() => new Set());
   const [searched, setSearched] = useState("");
@@ -40,19 +41,22 @@ export default function DiscoverPage() {
   const offsetRef = useRef(0);
   const bootedRef = useRef(false);
   const sugRef = useRef(null);
-  const loadGenRef = useRef(0);
-  const sugGenRef = useRef(0);
+  const loadRequestRef = useRef({ id: 0, controller: null });
+  const suggestRequestRef = useRef({ id: 0, controller: null });
 
   const load = useCallback(async (reset = true, qOverride = null) => {
-    // Every load claims a new generation: a slower older response — most
-    // importantly a pending Asterisk-ON rack after guidance was paused —
-    // must never overwrite the rack a newer request owns.
-    const isCurrent = claimRequest(loadGenRef);
+    loadRequestRef.current.id++;
+    loadRequestRef.current.controller?.abort();
+    const requestId = loadRequestRef.current.id;
+    const controller = new AbortController();
+    loadRequestRef.current.controller = controller;
     setLoading(true);
+    setLoadError("");
     if (reset) offsetRef.current = 0;
+    const requestOffset = reset ? 0 : offsetRef.current;
     try {
       const qval = qOverride != null ? qOverride : q;
-      const qs = new URLSearchParams({ limit: String(PAGE), offset: String(offsetRef.current) });
+      const qs = new URLSearchParams({ limit: String(PAGE), offset: String(requestOffset) });
       if (interpRef.current && interpRef.current.length) {
         // An Asterisk interpretation is active: browse by its tag signals.
         qs.set("tags", interpRef.current.join("|"));
@@ -66,15 +70,33 @@ export default function DiscoverPage() {
       if (source) qs.set("source", source);
       if (tag) qs.set("tag", tag);
       if (sort) qs.set("sort", sort);
-      const d = await authorizedFetch("/api/discover?" + qs.toString()).then((r) => r.json());
-      if (!isCurrent()) return;
+      const response = await authorizedFetch("/api/discover?" + qs.toString(), {
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("discover unavailable");
+      const d = await response.json();
+      if (requestId !== loadRequestRef.current.id) return;
+      const nextItems = Array.isArray(d.items) ? d.items : [];
       setTotal(d.total || 0);
-      setSources(d.sources || []);
-      setItems((prev) => (reset ? d.items : [...prev, ...d.items]));
-      offsetRef.current += (d.items || []).length;
+      setSources(Array.isArray(d.sources) ? d.sources : []);
+      setItems((prev) => (reset ? nextItems : [...prev, ...nextItems]));
+      offsetRef.current = requestOffset + nextItems.length;
       if (reset) setSearched(qval.trim());
-    } catch {}
-    if (isCurrent()) setLoading(false);
+    } catch (error) {
+      if (requestId === loadRequestRef.current.id && error?.name !== "AbortError") {
+        setLoadError("the racks could not be opened — retry");
+        if (reset) {
+          setItems([]);
+          setTotal(0);
+          setSources([]);
+        }
+      }
+    } finally {
+      if (requestId === loadRequestRef.current.id) {
+        loadRequestRef.current.controller = null;
+        setLoading(false);
+      }
+    }
   }, [q, source, tag, sort, guideOn]);
 
   useEffect(() => { setFollowed(followedBrands()); }, []);
@@ -85,22 +107,74 @@ export default function DiscoverPage() {
     return () => window.removeEventListener("asilum:brain", sync);
   }, []);
 
+  useEffect(() => () => {
+    if (sugRef.current) clearTimeout(sugRef.current);
+    loadRequestRef.current.id++;
+    loadRequestRef.current.controller?.abort();
+    suggestRequestRef.current.id++;
+    suggestRequestRef.current.controller?.abort();
+  }, []);
+
   // Ask Asterisk to READ the query (film / music / city / decade). Misses are
   // honest: entity null → no strip, standard search stands.
   useEffect(() => {
     if (!searched) { setReading(null); setActiveInterp(""); interpRef.current = null; return; }
-    let alive = true;
+    const controller = new AbortController();
     const user = guideOn ? "&user=" + encodeURIComponent(getUid() || "") : "";
-    authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + user)
+    authorizedFetch("/api/interpret?q=" + encodeURIComponent(searched) + user, {
+      signal: controller.signal,
+    })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         const keep = d && (d.entity || (d.interpretation &&
           (["ambiguous", "composed"].includes(d.interpretation.method) || d.interpretation.flaggedForResearch)));
-        if (alive) { setReading(keep ? d : null); setActiveInterp(""); interpRef.current = null; }
+        if (!controller.signal.aborted) {
+          setReading(keep ? d : null);
+          setActiveInterp("");
+          interpRef.current = null;
+        }
       })
-      .catch(() => { if (alive) setReading(null); });
-    return () => { alive = false; };
+      .catch(() => { if (!controller.signal.aborted) setReading(null); });
+    return () => controller.abort();
   }, [searched, guideOn]);
+
+  function cancelSuggestions() {
+    if (sugRef.current) clearTimeout(sugRef.current);
+    suggestRequestRef.current.id++;
+    suggestRequestRef.current.controller?.abort();
+    suggestRequestRef.current.controller = null;
+    setSug([]);
+  }
+
+  function queueSuggestions(value) {
+    setQ(value);
+    cancelSuggestions();
+    if (value.trim().length < 2) return;
+    const requestId = suggestRequestRef.current.id;
+    sugRef.current = setTimeout(async () => {
+      const controller = new AbortController();
+      suggestRequestRef.current.controller = controller;
+      try {
+        const response = await fetch(
+          "/api/suggest?q=" + encodeURIComponent(value.trim()),
+          { signal: controller.signal }
+        );
+        if (!response.ok) throw new Error("suggestions unavailable");
+        const d = await response.json();
+        if (requestId === suggestRequestRef.current.id) {
+          setSug(Array.isArray(d.suggestions) ? d.suggestions : []);
+        }
+      } catch (error) {
+        if (requestId === suggestRequestRef.current.id && error?.name !== "AbortError") {
+          setSug([]);
+        }
+      } finally {
+        if (requestId === suggestRequestRef.current.id) {
+          suggestRequestRef.current.controller = null;
+        }
+      }
+    }, 180);
+  }
 
   function pickInterp(i) {
     interpRef.current = i.tags || [];
@@ -115,6 +189,7 @@ export default function DiscoverPage() {
   function submitSearch(qOverride = null) {
     // A new query must never inherit the prior query's interpretation tags.
     // Refs update synchronously, avoiding the state/effect race here.
+    cancelSuggestions();
     interpRef.current = null;
     setActiveInterp("");
     setReading(null);
@@ -204,20 +279,8 @@ export default function DiscoverPage() {
             type="text"
             placeholder="search a piece, feeling, place, film, era…"
             value={q}
-            onChange={(e) => {
-              const v = e.target.value;
-              setQ(v);
-              if (sugRef.current) clearTimeout(sugRef.current);
-              if (v.trim().length < 2) { setSug([]); return; }
-              sugRef.current = setTimeout(async () => {
-                const isCurrent = claimRequest(sugGenRef);
-                try {
-                  const d = await fetch("/api/suggest?q=" + encodeURIComponent(v.trim())).then((r) => r.json());
-                  if (isCurrent()) setSug(d.suggestions || []);
-                } catch { if (isCurrent()) setSug([]); }
-              }, 180);
-            }}
-            onKeyDown={(e) => { if (e.key === "Enter") { setSug([]); submitSearch(); } }}
+            onChange={(e) => queueSuggestions(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") submitSearch(); }}
             onBlur={() => setTimeout(() => setSug([]), 180)}
             style={{ maxWidth: 280, textTransform: "none", fontWeight: 400 }}
           />
@@ -227,7 +290,7 @@ export default function DiscoverPage() {
                 <button
                   key={s.label}
                   className="sugopt"
-                  onMouseDown={() => { setQ(s.label); setSug([]); submitSearch(s.label); }}
+                  onMouseDown={() => { setQ(s.label); submitSearch(s.label); }}
                 >
                   <span className="red">*</span> {s.label}
                   <em>{s.why === "did you mean" ? "did you mean" : s.kind}</em>
@@ -353,7 +416,15 @@ export default function DiscoverPage() {
       <hr className="rule" />
 
       {loading && items.length === 0 && <div className="empty">opening the racks…</div>}
-      {!loading && items.length === 0 && <div className="empty">nothing matches — loosen a filter.</div>}
+      {!loading && loadError && items.length === 0 && (
+        <div className="empty">
+          {loadError}{" "}
+          <button className="fitbtn" onClick={() => load(true)}>RETRY</button>
+        </div>
+      )}
+      {!loading && !loadError && items.length === 0 && (
+        <div className="empty">nothing matches — loosen a filter.</div>
+      )}
 
       <div className="grid">
         {items.map((it) => (
@@ -398,7 +469,7 @@ export default function DiscoverPage() {
       {items.length < total && (
         <div className="controls" style={{ justifyContent: "center" }}>
           <button className="btn ghost" disabled={loading} onClick={() => load(false)}>
-            {loading ? "loading…" : `MORE (${total - items.length} left)`}
+            {loading ? "loading…" : loadError ? "RETRY MORE" : `MORE (${total - items.length} left)`}
           </button>
         </div>
       )}
