@@ -35,6 +35,21 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // One canonical host. The production alias asilum.vercel.app serves the
+  // identical site and is fully indexable — now that Google crawls us it
+  // could index the wrong domain. Preview deployments (asilum-git-*, per-PR
+  // URLs) are NOT matched: Vercel already noindexes them and they must stay
+  // reachable for review.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "asilum.vercel.app" }],
+        destination: "https://www.asilummagazine.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
