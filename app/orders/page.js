@@ -7,6 +7,7 @@
 // never represented as an order, shipment, or completed purchase.
 
 import { useEffect, useState } from "react";
+import Notice from "../components/Notice.jsx";
 import { getUid, authorizedFetch, thumbFor, sendJSON, postJSON } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 
@@ -58,7 +59,7 @@ export default function OrdersPage() {
         confirm, ship, track, and take returns. bag history rides below.
       </p>
       <hr className="rule" />
-      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       <h3 className="statshead">PURCHASE TICKETS</h3>
       {!tickets && <div className="empty">pulling tickets…</div>}

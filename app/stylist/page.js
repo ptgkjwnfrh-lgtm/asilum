@@ -8,6 +8,7 @@
 // BAG ALL / SET YOUR SIZE / REGENERATE.
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Notice from "../components/Notice.jsx";
 import {
   getUid, postJSON, thumbFor, bagAdd,
   loadFitProfile, authorizedFetch, brainEnabled, claimRequest,
@@ -189,7 +190,7 @@ export default function StylistPage() {
       </div>
       <hr className="rule" />
 
-      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
       {loading && <div className="empty">cutting twenty-five looks…</div>}
       {!loading && visibleGroups.every((g) => g.looks.length === 0) && groups && (
         <div className="empty">you passed on everything — REGENERATE for a fresh cut.</div>

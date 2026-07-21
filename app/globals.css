@@ -926,9 +926,18 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 .cacts { align-items: center; }
 
 /* Synergy phase 1: the one Notice surface (app/components/Notice.jsx). */
-.notice { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; font-weight: 700; line-height: 1.4; padding: 8px 0; }
+.notice { display: flex; align-items: flex-start; gap: 8px; line-height: 1.4; }
 .notice-body { flex: 1; }
-.notice-info { color: var(--ink); }
-.notice-error { color: var(--red); }
 .notice-x { border: none; background: none; cursor: pointer; font-size: 15px; line-height: 1; color: inherit; padding: 0 2px; }
 .notice-x:hover { opacity: 0.6; }
+/* inline: compact panel hint (default) */
+.notice-inline { font-size: 12px; font-weight: 700; padding: 8px 0; }
+.notice-inline.notice-info { color: var(--ink); }
+.notice-inline.notice-error { color: var(--red); }
+/* banner: the editorial red-left-border box (formerly .autonote) */
+.notice-banner {
+  margin: 8px 0 14px; padding: 10px 14px;
+  border: 1px solid var(--line); border-left: 4px solid var(--red);
+  font-family: var(--serif); font-style: italic; font-size: 14.5px; font-weight: 600;
+}
+.notice-banner.notice-error { color: var(--red); }
