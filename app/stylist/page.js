@@ -15,6 +15,7 @@ import {
 import { sourceFor } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 
 export default function StylistPage() {
   const [groups, setGroups] = useState(null);
@@ -157,7 +158,8 @@ export default function StylistPage() {
       <div className={"searchguide " + (guideOn ? "on" : "off")}>
         <b className="red">*</b> ASTERISK {guideOn ? "GUIDING" : "PAUSED"}
         <span>{guideOn ? "Passport taste + fit + wardrobe are working together" : "Fit and wardrobe still work; saved taste is not used"}</span>
-        <a href="/asterisk">CONTROL</a>
+        <AsteriskGuidanceToggle compact className="fitbtn asearchtoggle" />
+        <a href="/asterisk">CONTROL →</a>
       </div>
       {wardrobe.length > 0 && (
         <div className="wstrip">

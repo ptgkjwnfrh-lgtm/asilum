@@ -19,6 +19,7 @@ import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
+import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
 
 const NAV = [
@@ -41,6 +42,9 @@ export default function Shell({ children }) {
   const pathname = usePathname();
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
+  const [bagHow, setBagHow] = useState(false);
+  const bagPanelRef = useRef(null);
+  const bagToggleRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [guideOn, setGuideOn] = useState(true);
   const [q, setQ] = useState("");
@@ -85,6 +89,11 @@ export default function Shell({ children }) {
     searchRequestRef.current.id++;
     searchRequestRef.current.controller?.abort();
   }, []);
+
+  // One dismissal contract (synergy phase 1): Escape and click-away both
+  // close the bag panel; the toggle button still toggles.
+  useEscape(() => setBagOpen(false), bagOpen);
+  useClickAway(bagPanelRef, () => setBagOpen(false), { active: bagOpen, excludeRef: bagToggleRef });
 
   // A search that is already open must be re-ranked immediately when the
   // switch changes; stale personalized results must never sit under OFF.
@@ -326,7 +335,7 @@ export default function Shell({ children }) {
         ) : (
           <button className="tbtn" onClick={() => setSearchOpen(true)}>SEARCH</button>
         )}
-        <button className="tbtn" onClick={() => setBagOpen((o) => !o)}>
+        <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
         </button>
         {authUser ? (
@@ -410,13 +419,13 @@ export default function Shell({ children }) {
             </>
           )}
           {!results.brands.length && !results.items.length && !results.aesthetics.length && !results.users.length && (
-            <div className="pempty">nothing in the archive for that — press enter to train the feed on it.</div>
+            <div className="pempty">nothing in the archive for that — press enter to search the full racks on DISCOVER.</div>
           )}
         </div>
       )}
 
       {bagOpen && (
-        <div className="panel bagpanel">
+        <div ref={bagPanelRef} className="panel bagpanel">
           <div className="phead">BAG</div>
           {bag.length === 0 ? (
             <div className="pempty">
@@ -442,16 +451,19 @@ export default function Shell({ children }) {
                 <div><span>SOURCES</span><b>{nSources}</b></div>
                 <div className="bagfinal"><span>CHECKOUT</span><b>ON SOURCE SITES</b></div>
               </div>
-              <button
-                className="btn wide soon"
-                onClick={() => alert("ASILUM does not charge or ship. Open a piece to view its source or create a purchase request.")}
-              >
+              <button className="btn ghost wide" onClick={() => setBagHow((v) => !v)}>
                 HOW PURCHASES WORK
               </button>
+              {bagHow && (
+                <div className="pempty" style={{ padding: "6px 0 10px" }}>
+                  ASILUM does not charge or ship. Open a piece to view its
+                  source or create a purchase request.
+                </div>
+              )}
             </>
           )}
           <a className="btn ghost wide" href="/orders" style={{ display: "block", textAlign: "center" }}>
-            VIEW ORDERS & TICKETS
+            VIEW ORDERS & TICKETS →
           </a>
         </div>
       )}

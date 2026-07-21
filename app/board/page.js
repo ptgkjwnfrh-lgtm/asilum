@@ -7,10 +7,12 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
-import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, brainEnabled, setBrainEnabled, safeExternalUrl } from "../../lib/client.js";
+import { useEscape } from "../components/dismiss.js";
+import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
+import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
@@ -23,9 +25,9 @@ export default function BoardPage() {
   const [notice, setNotice] = useState("");
   const [following, setFollowing] = useState(false);
   const [trainText, setTrainText] = useState("");
-  const [brainOn, setBrainOn] = useState(true);
   const [viz, setViz] = useState(null);
   const [resetOpen, setResetOpen] = useState(false);
+  useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
   const [resetChecked, setResetChecked] = useState(false);
   const fileRef = useRef(null);
 
@@ -105,34 +107,6 @@ export default function BoardPage() {
       .catch(() => {});
   }
   useEffect(() => { if (uid) loadViz(uid); }, [uid]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const sync = () => setBrainOn(brainEnabled());
-    sync();
-    window.addEventListener("asilum:brain", sync);
-    return () => window.removeEventListener("asilum:brain", sync);
-  }, []);
-
-  async function toggleGuidance() {
-    const next = !brainOn;
-    const previous = brainOn;
-    setBrainOn(next);
-    try {
-      const res = await postJSON("/api/asterisk/memory", {
-        user: uid || getUid(), guidanceEnabled: next,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || "could not update Asterisk");
-      setBrainEnabled(data.preferences.guidanceEnabled !== false);
-      setNotice(next
-        ? "Asterisk guidance on — every rack now routes through this Passport"
-        : "Asterisk paused — your Passport stays saved, but racks are general");
-    } catch (error) {
-      setBrainOn(previous);
-      setBrainEnabled(previous);
-      setNotice(error.message || "could not update Asterisk guidance");
-    }
-  }
-
   async function train() {
     if (!trainText.trim()) return;
     await postJSON("/api/train", { user: uid, prompt: trainText.trim() }).catch(() => {});
@@ -268,12 +242,7 @@ export default function BoardPage() {
                 off: those racks stay general; the Passport remains saved.
               </div>
             </div>
-            <button
-              className={"fitbtn" + (brainOn ? " active" : "")}
-              onClick={toggleGuidance}
-            >
-              {brainOn ? "ON" : "OFF"}
-            </button>
+            <AsteriskGuidanceToggle compact className="fitbtn" />
           </div>
 
           <div className="brainband">
@@ -400,6 +369,7 @@ export default function BoardPage() {
       {resetOpen && (
         <div className="overlay" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
           <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+            <button className="mclose" aria-label="close" onClick={() => { setResetOpen(false); setResetChecked(false); }}>×</button>
             <h2>Full amnesia<span style={{ color: "var(--red)" }}>.</span></h2>
             <p className="deck">
               this permanently deletes your taste profile — every conviction,
