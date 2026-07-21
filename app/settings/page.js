@@ -5,6 +5,7 @@
 // Identity, public profile, source connections, follows, and fit live on PROFILE.
 
 import { useEffect, useState } from "react";
+import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, clearLocalPersonalizationData } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
 
@@ -47,7 +48,7 @@ export default function SettingsPage() {
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>SETTINGS</h1>
       <p className="deck">observation, privacy, and the fine print.</p>
-      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       <h3 className="statshead">ON-DEVICE TASTE OBSERVATION</h3>
       <div className="setrow">

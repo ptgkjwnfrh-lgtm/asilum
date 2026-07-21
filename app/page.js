@@ -9,6 +9,7 @@
 // The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Notice from "./components/Notice.jsx";
 import { useEscape } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
@@ -790,9 +791,9 @@ export default function Home() {
 
       <div className="splitbar">{splitLabels}</div>
 
-      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
       {epsilonAuto && (
-        <div className="autonote">trying something different — you seemed in a rut</div>
+        <Notice variant="banner">trying something different — you seemed in a rut</Notice>
       )}
 
       {tab === "curated" && (

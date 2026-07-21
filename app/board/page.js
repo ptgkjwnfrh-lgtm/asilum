@@ -7,6 +7,7 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
+import Notice from "../components/Notice.jsx";
 import { useEscape } from "../components/dismiss.js";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
@@ -212,7 +213,7 @@ export default function BoardPage() {
       </p>
       <hr className="rule" />
 
-      {notice && <div className="autonote" onClick={() => setNotice("")}>{notice}</div>}
+      {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       {!shared && (
         <>
