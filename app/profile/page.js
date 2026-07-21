@@ -115,7 +115,9 @@ export default function ProfilePage() {
                   </div>
                   <p className="ctext">{p.text}</p>
                   <div className="cacts">
-                    <button>○ {s.comments}</button><button>↻ {s.reposts}</button><button>♥ {s.likes}</button>
+                    <span className="castat" title="comments">○ {s.comments}</span>
+                    <span className="castat" title="reposts">↻ {s.reposts}</span>
+                    <span className="castat" title="likes">♥ {s.likes}</span>
                   </div>
                 </div>
               </div>

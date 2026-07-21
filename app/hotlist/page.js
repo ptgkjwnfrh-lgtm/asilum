@@ -142,8 +142,8 @@ export default function EditorialPage() {
                   </div>
                   <p className="ctext">{p.text}</p>
                   <div className="cacts">
-                    <button title="comments">○ {s.comments}</button>
-                    <button title="reposts">↻ {s.reposts}</button>
+                    <span className="castat" title="comments">○ {s.comments}</span>
+                    <span className="castat" title="reposts">↻ {s.reposts}</span>
                     <button
                       title="like"
                       className={isLiked ? "on" : ""}

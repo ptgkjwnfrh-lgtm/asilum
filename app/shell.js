@@ -21,6 +21,7 @@ import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/Pro
 import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
+import Notice from "./components/Notice.jsx";
 
 const NAV = [
   { href: "/", label: "YOUR EDIT" },
@@ -455,10 +456,10 @@ export default function Shell({ children }) {
                 HOW PURCHASES WORK
               </button>
               {bagHow && (
-                <div className="pempty" style={{ padding: "6px 0 10px" }}>
+                <Notice onDismiss={() => setBagHow(false)}>
                   ASILUM does not charge or ship. Open a piece to view its
                   source or create a purchase request.
-                </div>
+                </Notice>
               )}
             </>
           )}
