@@ -16,12 +16,13 @@ import { setFollow, MEMORY_FOLLOW_KINDS } from "../../../lib/db/production.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
 const FOLLOW_CAP = 10;
 
-export async function POST(req) {
+async function handlePOST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
   if (parsed.response) return parsed.response;
   const body = parsed.body;
@@ -64,3 +65,6 @@ export async function POST(req) {
 
   return NextResponse.json({ userId, follows });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const POST = withPrivateCache(handlePOST);

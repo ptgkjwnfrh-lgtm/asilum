@@ -11,6 +11,7 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { explainProduct, recordCorrection, CORRECTION_CODES } from "../../../lib/asterisk/explain.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ function validProductId(value) {
     !/[\u0000-\u001f\u007f]/.test(value);
 }
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
@@ -34,7 +35,7 @@ export async function GET(req) {
   return NextResponse.json({ explanation: r.explanation });
 }
 
-export async function POST(req) {
+async function handlePOST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
   if (parsed.response) return parsed.response;
   const body = parsed.body;
@@ -61,3 +62,7 @@ export async function POST(req) {
     profileUpdated: r.profileUpdated,
   });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);
+export const POST = withPrivateCache(handlePOST);

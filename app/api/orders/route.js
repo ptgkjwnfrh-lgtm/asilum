@@ -8,10 +8,11 @@ import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { getDiscoverablePool } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
   if (!userId) {
@@ -41,3 +42,6 @@ export async function GET(req) {
   });
   return NextResponse.json({ userId, count: bagHistory.length, bagHistory });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);

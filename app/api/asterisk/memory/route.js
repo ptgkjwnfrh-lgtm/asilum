@@ -13,10 +13,11 @@ import { asteriskMemory, MEMORY_SECTIONS } from "../../../../lib/asterisk/memory
 import { getMemoryPreferences, saveMemoryPreferences } from "../../../../lib/db/production.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../../lib/security/json.js";
+import { withPrivateCache } from "../../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
@@ -30,7 +31,7 @@ export async function GET(req) {
   return NextResponse.json({ memory: r.memory });
 }
 
-export async function POST(req) {
+async function handlePOST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 4 * 1024 });
   if (parsed.response) return parsed.response;
   const user = await resolveRequestUser(req, String(parsed.body.user || ""));
@@ -60,3 +61,7 @@ export async function POST(req) {
   });
   return NextResponse.json({ preferences });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);
+export const POST = withPrivateCache(handlePOST);

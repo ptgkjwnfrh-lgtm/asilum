@@ -6,13 +6,33 @@
 // GET  ?kind=user|asilum|article&limit= → visible posts, newest first
 // POST { user, handle, text, title?, imageUrl?, externalUrl?, tags?, designerRefs?, productRefs? }
 
+import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { createEditorialPost, listEditorialPosts } from "../../../lib/db/production.js";
-import { resolveRequestUser } from "../../../lib/identity.js";
+import {
+  createEditorialPost, createModerationTask, getProfileRoom, listEditorialPosts,
+} from "../../../lib/db/production.js";
+import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
+import { sanitizeStatement, screenStatement } from "../../../lib/profile/rooms.js";
 import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { requestSubject } from "../../../lib/security/request.js";
+
+const POST_MAX = 1000;
+
+// The byline is server truth, never caller input: a published room handle
+// when the account has one, otherwise a stable per-identity reader tag.
+// (Spoofing "ASILUM" or another member's handle is what this closes.)
+async function deriveAuthorHandle(user) {
+  const accountId = accountIdFromIdentity(user);
+  if (accountId) {
+    try {
+      const room = await getProfileRoom(accountId);
+      if (room?.published && room?.handle) return room.handle;
+    } catch {}
+  }
+  return "reader-" + createHash("sha256").update(String(user)).digest("hex").slice(0, 6);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -40,15 +60,25 @@ export async function POST(req) {
   const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
-  const text = String(body.text || "").trim().slice(0, 1000);
+  let text;
+  try {
+    text = sanitizeStatement(String(body.text || "").trim().slice(0, POST_MAX), POST_MAX);
+  } catch {
+    return NextResponse.json({ error: "text could not be sanitized" }, { status: 400 });
+  }
   if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });
   const quota = await consumeRateLimit({ scope: "editorial", subject: user, limit: 60, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
+    // Same deterministic screen as profile rooms: a flag never blocks the
+    // author's post from being SAVED — it parks it out of public view and
+    // files a moderation task for a human.
+    const flagged = screenStatement(text);
     const post = await createEditorialPost({
       authorId: user,
-      authorHandle: String(body.handle || "anonymous").slice(0, 80),
+      authorHandle: await deriveAuthorHandle(user),
       kind: "user",
+      moderationStatus: flagged.length ? "under_review" : "visible",
       title: body.title ? String(body.title).slice(0, 200) : null,
       body: text,
       excerpt: text.slice(0, 200),
@@ -58,7 +88,18 @@ export async function POST(req) {
       designerRefs: Array.isArray(body.designerRefs) ? body.designerRefs.slice(0, 12).map((v) => String(v).slice(0, 160)) : [],
       productRefs: Array.isArray(body.productRefs) ? body.productRefs.slice(0, 24).map((v) => String(v).slice(0, 80)) : [],
     });
-    return NextResponse.json({ id: post.id, persistent: post.persistent });
+    if (flagged.length) {
+      await createModerationTask({
+        kind: "editorial-content", subjectType: "editorial_post", subjectId: String(post.id),
+        payload: { flags: flagged, excerpt: text.slice(0, 160) }, priority: "high",
+      });
+    }
+    return NextResponse.json({
+      id: post.id, persistent: post.persistent,
+      ...(flagged.length
+        ? { held: true, note: "your post is saved and paused for a human review" }
+        : {}),
+    });
   } catch {
     return NextResponse.json({ error: "post failed" }, { status: 500 });
   }
