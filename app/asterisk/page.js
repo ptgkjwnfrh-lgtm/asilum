@@ -6,7 +6,7 @@
 // this page owns display visibility and guidance controls.
 
 import { useEffect, useRef, useState } from "react";
-import { MemorySections, useAsteriskMemory } from "../components/AsteriskMemory.jsx";
+import { AsteriskGuidanceToggle, MemorySections, useAsteriskMemory } from "../components/AsteriskMemory.jsx";
 import { clearLocalPersonalizationData, postJSON, sendJSON, getUid } from "../../lib/client.js";
 import { followedBrands, followedUsers } from "../../lib/social.js";
 
@@ -111,13 +111,7 @@ export default function AsteriskPage() {
             <div className="amemrow">
               <span className="amemlbl">GUIDANCE</span>
               <span className="amemval">
-                <button
-                  className={"btn ghost" + (memory.preferences?.guidanceEnabled !== false ? " active" : "")}
-                  aria-pressed={memory.preferences?.guidanceEnabled !== false}
-                  onClick={() => setGuidanceEnabled(memory.preferences?.guidanceEnabled === false)}
-                >
-                  {memory.preferences?.guidanceEnabled !== false ? "ON — PAUSE" : "PAUSED — TURN ON"}
-                </button>
+                <AsteriskGuidanceToggle className="btn ghost" />
                 <em>pause personalized ordering; keep your Passport saved</em>
               </span>
             </div>

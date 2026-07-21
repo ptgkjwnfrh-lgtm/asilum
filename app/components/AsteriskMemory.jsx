@@ -7,6 +7,7 @@
 // existing stores; writes are display visibility and Asterisk guidance.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useClickAway, useEscape } from "./dismiss.js";
 import {
   authorizedFetch, postJSON, getUid, brainEnabled, setBrainEnabled,
 } from "../../lib/client.js";
@@ -140,7 +141,7 @@ export function AsteriskGuidanceToggle({ compact = false, className = "" }) {
       onMouseDown={(event) => event.preventDefault()}
       onClick={toggle}
     >
-      {compact ? "" : "ASTERISK "}{saving ? "…" : on ? "ON" : "OFF"}
+      {compact ? "" : "ASTERISK — "}{saving ? "…" : on ? "PAUSE" : "TURN ON"}
     </button>
   );
 }
@@ -234,6 +235,11 @@ export function MemorySections({ memory, setHidden, full = false }) {
 
 export function AsteriskDrawer() {
   const [open, setOpen] = useState(false);
+  const drawerRef = useRef(null);
+  const triggerRef = useRef(null);
+  // One dismissal contract (synergy phase 1): Escape + click-away close.
+  useEscape(() => setOpen(false), open);
+  useClickAway(drawerRef, () => setOpen(false), { active: open, excludeRef: triggerRef });
   const [guideMirror, setGuideMirror] = useState(true);
   const { memory, err, setHidden, setGuidanceEnabled } = useAsteriskMemory(open);
 
@@ -270,6 +276,7 @@ export function AsteriskDrawer() {
   return (
     <>
       <button
+        ref={triggerRef}
         className="asterisk-trigger"
         aria-label="Asterisk guide"
         aria-expanded={open}
@@ -283,7 +290,7 @@ export function AsteriskDrawer() {
         </em>
       </button>
       {open && (
-        <div className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk guide">
+        <div ref={drawerRef} className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk guide">
           <div className="phead">ASTERISK — YOUR TRAVEL AGENT</div>
           <div className="aguideintro">
             Your Passport teaches Asterisk the route. Search sets the destination;
@@ -320,7 +327,7 @@ export function AsteriskDrawer() {
           {!err && !memory && <div className="pempty">reading…</div>}
           {memory && <MemorySections memory={memory} setHidden={setHidden} />}
           <a className="btn ghost wide" href="/asterisk" style={{ display: "block", textAlign: "center" }}>
-            OPEN PASSPORT READ & CONTROLS
+            OPEN PASSPORT READ & CONTROLS →
           </a>
           <div className="adisclose">
             ✳ Asterisk is an automated recommendation &amp; interpretation system.

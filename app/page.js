@@ -9,6 +9,7 @@
 // The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useEscape } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
@@ -291,6 +292,9 @@ export default function Home() {
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
   const [modalRel, setModalRel] = useState([]);
+  // One dismissal contract (synergy phase 1): Escape closes the open surface.
+  useEscape(() => setModal(null), !!modal);
+  useEscape(() => { markOnboarded(); setConnectOpen(false); }, connectOpen);
   const [ticketItem, setTicketItem] = useState(null);
   const [tab, setTab] = useState("curated");       // curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items

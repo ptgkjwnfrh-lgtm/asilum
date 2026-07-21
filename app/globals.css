@@ -910,3 +910,25 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .signupnote { margin-top: 12px; }
 /* The top-bar ACCOUNT link wears the same button skin as SEARCH/BAG. */
 a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
+
+/* Synergy phase 1b: ONE text-button grammar. The five borderless grey
+   action-text buttons (.railact/.wact/.amemhide/.modmore/.roomreport) now
+   share metrics; each keeps its own color/margin role. .txtbtn is the
+   canonical class for new call sites. */
+.txtbtn { border: none; background: none; font: inherit; padding: 0; cursor: pointer; color: #999; }
+.txtbtn:hover { color: var(--red); }
+.txtbtn:disabled { color: #ccc; cursor: not-allowed; }
+.railact, .wact, .amemhide, .modmore, .roomreport, .txtbtn {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+}
+/* Honest non-interactive engagement counts (not yet wired = not a button). */
+.cacts .castat { color: var(--grey); font-size: 11px; display: inline-flex; align-items: center; }
+.cacts { align-items: center; }
+
+/* Synergy phase 1: the one Notice surface (app/components/Notice.jsx). */
+.notice { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; font-weight: 700; line-height: 1.4; padding: 8px 0; }
+.notice-body { flex: 1; }
+.notice-info { color: var(--ink); }
+.notice-error { color: var(--red); }
+.notice-x { border: none; background: none; cursor: pointer; font-size: 15px; line-height: 1; color: inherit; padding: 0 2px; }
+.notice-x:hover { opacity: 0.6; }
