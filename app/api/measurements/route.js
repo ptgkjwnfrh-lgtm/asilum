@@ -4,6 +4,7 @@ import { deleteUserMeasurements, getUserMeasurements, saveUserMeasurements } fro
 import { normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ async function identity(req, claimed) {
   return user || null;
 }
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   const user = await identity(req, searchParams.get("user"));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
@@ -21,7 +22,7 @@ export async function GET(req) {
   return NextResponse.json({ profile: await getUserMeasurements(user) });
 }
 
-export async function PUT(req) {
+async function handlePUT(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
   if (parsed.response) return parsed.response;
   const user = await identity(req, parsed.body.user);
@@ -33,7 +34,7 @@ export async function PUT(req) {
   return NextResponse.json({ profile: await saveUserMeasurements(user, normalized.storage) });
 }
 
-export async function DELETE(req) {
+async function handleDELETE(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 4 * 1024 });
   if (parsed.response) return parsed.response;
   const user = await identity(req, parsed.body.user);
@@ -43,3 +44,8 @@ export async function DELETE(req) {
   await deleteUserMeasurements(user);
   return NextResponse.json({ deleted: true });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);
+export const PUT = withPrivateCache(handlePUT);
+export const DELETE = withPrivateCache(handleDELETE);

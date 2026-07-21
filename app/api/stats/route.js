@@ -8,7 +8,7 @@ import { getStats, countEvents, getItem } from "../../../lib/db/index.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { publicProduct } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
-import { requestSubject } from "../../../lib/security/request.js";
+import { requestSubject, verifiedRequestSubject } from "../../../lib/security/request.js";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,11 @@ const BY_ID = new Map(CATALOG.map((it) => [it.id, it]));
 export async function GET(req) {
   const quota = await consumeRateLimit({ scope: "stats", subject: requestSubject(req), limit: 60, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  // Internal telemetry: readable by any real visitor (the signed device
+  // cookie rides along on same-origin fetches) but not by bare scrapers.
+  if (!verifiedRequestSubject(req)) {
+    return NextResponse.json({ error: "identity required" }, { status: 401 });
+  }
   const stats = await getStats();
   // Additive: canonical Alpha-Brain event count (the /stats page ignores
   // unknown fields; this makes the event pipeline observable).

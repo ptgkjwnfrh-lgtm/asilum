@@ -25,6 +25,7 @@ import {
 } from "../../../lib/db/production.js";
 import { wardrobeAnchor, wardrobeEnabled } from "../../../lib/wardrobe/index.js";
 import { measurementProfileForBrain, normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
@@ -225,7 +226,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
   });
 }
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   // Legacy/deep-link generation deliberately ignores fit measurements in the
   // URL. The first-party UI uses POST so private measurements stay out of logs.
@@ -239,7 +240,7 @@ export async function GET(req) {
 
 // POST /api/outfits — persist a saved look (SAVE OUTFIT on /stylist) into
 // stylist_outfits: real records of what the stylist got right.
-export async function POST(req) {
+async function handlePOST(req) {
   const parsed = await readJsonRequest(req);
   if (parsed.response) return parsed.response;
   const body = parsed.body;
@@ -272,3 +273,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "outfit save failed" }, { status: 500 });
   }
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);
+export const POST = withPrivateCache(handlePOST);

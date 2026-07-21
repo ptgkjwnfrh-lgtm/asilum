@@ -12,7 +12,7 @@ import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
 import {
   getProfile, mutateProfile,
-  getEdges, getPopularity, getBoard, bumpPopularity,
+  getEdges, getBoard, bumpPopularity,
 } from "../../../lib/db/index.js";
 import {
   getMemoryPreferences, getUserCorrectionSignalSummary, getUserRecommendationExclusions,
@@ -21,7 +21,7 @@ import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/corr
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
-import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
+import { getDiscoverablePool, getPopularitySnapshot, publicProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -137,7 +137,7 @@ export async function GET(req) {
     ? (profile && profile._meta && profile._meta.recent) || [] : [];
   const [edges, popularity] = await Promise.all([
     recent.length ? getEdges(recent) : {},
-    getPopularity(),
+    getPopularitySnapshot(),
   ]);
 
   const { split, items, epsilonActive, epsilonAuto, safeMode, zones } = buildFeed(

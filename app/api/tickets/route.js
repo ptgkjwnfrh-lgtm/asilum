@@ -22,10 +22,11 @@ import { safeExternalUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { buildEvent, EVENTS } from "../../../lib/events/index.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req) {
+async function handlePOST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
   if (parsed.response) return parsed.response;
   const body = parsed.body;
@@ -103,7 +104,7 @@ export async function POST(req) {
   }
 }
 
-export async function GET(req) {
+async function handleGET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
@@ -116,7 +117,7 @@ export async function GET(req) {
   }
 }
 
-export async function PATCH(req) {
+async function handlePATCH(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
   if (parsed.response) return parsed.response;
   const body = parsed.body;
@@ -183,3 +184,8 @@ export async function PATCH(req) {
   }
   return NextResponse.json({ error: "unknown action" }, { status: 400 });
 }
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const POST = withPrivateCache(handlePOST);
+export const GET = withPrivateCache(handleGET);
+export const PATCH = withPrivateCache(handlePATCH);
