@@ -31,3 +31,15 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (engine
   front and centre, lozenge nav, [data-model="02"] variants). Structure
   changes; palette follows the theme system.
+
+## Passport UV page (redesign/passport-uv, owner inspo: Swiss passport under UV)
+The PASSPORT document on /board renders as a page under blacklight —
+`app/components/PassportSecurity.jsx` + the `.ppuv/.ppterrain/.pv*` layer in
+globals.css. Layers: registration crosses, plus-pattern mountain ridge,
+"01" page numeral, *ASILUM microprint band, topographic contour field, and
+a constellation of scattered plus marks in a thin line web whose drawn
+connecting lines trace THREE ASTERISKS (red — the ASTERISK identity hidden
+like a hologram mark). All geometry is deterministic (sin-perturbed, no
+randomness — SSR-safe). Real data only: the summit marker is the bearer's
+top conviction (weight + tag); MRZ chevron filler tints red, data runs
+green. Decorative SVG strokes use tokens (--sig/--p2/--red) via CSS classes.

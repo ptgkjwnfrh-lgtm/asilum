@@ -13,6 +13,7 @@ import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl 
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
+import PassportSecurity from "../components/PassportSecurity.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
@@ -241,6 +242,9 @@ export default function BoardPage() {
   const mrzTop = ("P<ASILUM<<" + mrzId.slice(0, 10) + "<<ARCHIVE<CITIZEN").padEnd(44, "<");
   const mrzBot = ("AS" + String(boards.length).padStart(2, "0") + "B" +
     String(convictions().length).padStart(2, "0") + "C<<" + mrzId.slice(10, 22)).padEnd(44, "<");
+  // UV tinting: data runs glow green, chevron filler reads as the red thread.
+  const mrzTint = (line) => line.split(/(<+)/).map((seg, i) =>
+    seg.startsWith("<") ? <i key={i}>{seg}</i> : seg && <b key={i}>{seg}</b>);
 
   return (
     <div className="wrap">
@@ -273,7 +277,11 @@ export default function BoardPage() {
               <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
-          <div className="ppmrz">{mrzTop}<br />{mrzBot}</div>
+          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
+          <PassportSecurity
+            topTag={convictions()[0]?.[0]}
+            topWeight={convictions()[0]?.[1] || 0}
+          />
         </div>
       )}
 

@@ -1327,3 +1327,53 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 @media (prefers-reduced-motion: reduce) {
   .dcinspect.on, .dcrow.flash { animation: none; }
 }
+
+/* ---- PASSPORT UV page (redesign/passport-uv) — the document under blacklight.
+   Registration crosses, plus-pattern ridge, topographic contours, microprint,
+   and the constellation whose connected lines trace three asterisks (red =
+   ASTERISK identity). Decoration only; every label is real state. ---- */
+.ppdoc { position: relative; }
+.ppdoc .ppbody, .ppdoc .ppmrz { position: relative; z-index: 2; }
+.ppuv { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.ppuvcross { position: absolute; top: 4px; left: 0; width: 100%; height: 60px; }
+.ppuvridge { position: absolute; top: 30px; right: 0; width: 56%; height: 150px; opacity: 0.5; }
+.pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
+.pv-s { stroke: var(--sig); opacity: 0.55; }
+.pv-p { stroke: var(--p2); opacity: 0.5; }
+.pv-r { stroke: var(--red); opacity: 0.75; }
+.pvridgeline { fill: none; stroke: var(--sig); stroke-width: 1; opacity: 0.5;
+  filter: drop-shadow(0 0 4px var(--sig)); }
+.ppvpage { position: absolute; top: 38px; right: 14px; font-family: var(--osd);
+  font-size: 26px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
+.ppmicro { border-top: 1px solid var(--line); padding: 2px 0 1px; overflow: hidden;
+  white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
+  opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
+.ppterrain { position: relative; height: 300px; border-top: 1px dashed var(--line);
+  overflow: hidden; z-index: 2;
+  background: radial-gradient(ellipse 70% 80% at 60% 45%, color-mix(in srgb, var(--sig) 5%, transparent), transparent 70%); }
+.ppterrain svg { width: 100%; height: 100%; display: block; }
+.pvcontour { fill: none; stroke-width: 1.1; }
+.pvcontour.pv-s { stroke: var(--sig); opacity: 0.42; filter: drop-shadow(0 0 3px var(--sig)); }
+.pvcontour.pv-p { stroke: var(--p2); opacity: 0.36; filter: drop-shadow(0 0 3px var(--p2)); }
+.pvweb { stroke: var(--line); stroke-width: 0.7; }
+.pvastline { stroke: var(--red); stroke-width: 0.9; opacity: 0.5;
+  filter: drop-shadow(0 0 3px var(--red)); }
+.ppterrain .pvplus.pv-r { filter: drop-shadow(0 0 4px var(--red)); }
+.ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--osd);
+  font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
+/* photo under UV: duotone tint + halftone scan */
+.ppphoto img { filter: saturate(0.55) contrast(1.12) brightness(0.96); }
+.ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 3px); }
+/* machine zone tinting: data glows, chevron filler reads as the red thread */
+.ppmrz b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
+.ppmrz i { font-style: normal; color: var(--red); opacity: 0.75; text-shadow: var(--glow-r); }
+[data-theme="light"] .ppuvridge { opacity: 0.65; }
+[data-theme="light"] .pvweb { stroke-width: 0.9; }
+@media (max-width: 760px) {
+  .ppterrain { height: 200px; }
+  .ppuvridge { width: 80%; }
+  .ppvpage { display: none; }
+}
