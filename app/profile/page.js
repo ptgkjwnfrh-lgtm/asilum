@@ -50,6 +50,31 @@ export default function ProfilePage() {
     setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
   }
 
+  // Banner and avatar images are device-local (localStorage via profile
+  // info), downscaled in-browser so they fit comfortably in storage.
+  function pickImage(key, maxW) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      const img = new Image();
+      const url = URL.createObjectURL(f);
+      img.onload = () => {
+        const scale = Math.min(1, maxW / img.width);
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * scale);
+        c.height = Math.round(img.height * scale);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        save(key, c.toDataURL("image/jpeg", 0.82));
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    };
+    input.click();
+  }
+
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
   const brands = [...new Set(bagHistory.map((o) => o.brand).filter(Boolean))];
@@ -58,9 +83,24 @@ export default function ProfilePage() {
 
   return (
     <div className="wrap">
-      <div className="pbanner"><span>*</span></div>
+      <div
+        className="pbanner"
+        style={info.bannerImg ? { backgroundImage: `url(${info.bannerImg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+      >
+        <span>*</span>
+        {editing && (
+          <div className="pbannerctl">
+            <button className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
+            <button className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
+          </div>
+        )}
+      </div>
       <div className="phead2">
-        <div className="pavatar"><Avatar name={info.name} /></div>
+        <div className="pavatar">
+          {info.avatarImg
+            ? <img className="pavimg" src={info.avatarImg} alt={info.name || "avatar"} />
+            : <Avatar name={info.name} />}
+        </div>
         <div className="pident">
           {editing ? (
             <>

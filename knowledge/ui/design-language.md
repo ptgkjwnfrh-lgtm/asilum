@@ -22,9 +22,11 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   Legacy token names (--ink/--paper/--line/--grey/--faint) carry OS values.
 - Layered depth: backlight → grid → haze blobs → content → glow →
   scanline glass. Subtlety threshold: never reduce readability.
-- Six destinations, permanent left anchor: CATALOG, EDITORIAL, PASSPORT,
-  DISCOVER, PROFILE, SETTINGS. New features must answer "which subsystem
-  do I belong to?" — never add a seventh tab.
+- Seven destinations, permanent left anchor (owner amendment July 25 —
+  FRONT COVER added as the landing edition): FRONT COVER, CATALOG,
+  EDITORIAL, PASSPORT, DISCOVER, PROFILE, SETTINGS. New features must
+  answer "which subsystem do I belong to?" — the destination list only
+  changes by owner decree.
 - Two user-switchable interfaces (Settings → Appearance, localStorage
   asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (engine
   front and centre, lozenge nav, [data-model="02"] variants). Structure

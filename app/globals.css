@@ -1125,6 +1125,89 @@ img { filter: saturate(0.92); }
 /* form controls never fall back to UA defaults (white boxes on dark) */
 input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
 
+/* ---- FRONT COVER (seventh destination, owner amendment) ---- */
+.shead-cover { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.covermeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
+.coverhero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; margin: 4px 0 18px; }
+.coverpick, .coverwire { border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); padding: 14px 16px; }
+.coverpick .psub, .coverwire .psub { margin-top: 0; }
+.coverpickbody { display: grid; grid-template-columns: minmax(180px, 300px) 1fr; gap: 16px; align-items: center; }
+.coverpickimg { position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 5; }
+.coverpickimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.coverpickimg::after { content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.10) 3px 4px),
+    radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.12), transparent 60%); }
+.coverbrand { font-family: var(--mich); font-size: 17px; letter-spacing: 0.1em; }
+.coverttl { font-size: 13px; margin: 6px 0 2px; }
+.coverline { font-size: 11px; color: var(--grey); margin-bottom: 14px; }
+.coverposter { display: flex; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 4px; }
+.coverpostbox { flex: 1; }
+.coverpostbox textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font: inherit; font-size: 12px; resize: vertical; }
+.coverpostrow { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.coverpost { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.coverpost:last-of-type { border-bottom: none; }
+.coverposthead b { font-size: 12px; font-weight: 700; }
+.coverposthead span { font-size: 10px; color: var(--grey); margin-left: 6px; }
+.coverpost p { margin: 3px 0 4px; font-size: 12px; }
+.coverpoststats { font-size: 10px; color: var(--faint); letter-spacing: 0.08em; }
+.covergrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.covergrid section { border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); padding: 14px 16px; }
+.coverstory { display: block; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.coverpub { font-size: 8.5px; letter-spacing: 0.22em; color: var(--red); text-shadow: var(--glow-r); }
+.coverstoryttl { display: block; font-family: var(--mich); font-size: 12.5px; letter-spacing: 0.05em; margin: 3px 0 3px; }
+.coverstory:hover .coverstoryttl { color: var(--sig); text-shadow: var(--glow); }
+.coverstorysum { display: block; font-size: 11px; color: var(--grey); max-width: 56ch; }
+.coverall { display: inline-block; margin-top: 10px; font-size: 10px; letter-spacing: 0.16em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 5px 13px; }
+.coverall:hover { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
+.coverlook { display: block; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.coverlookthumbs { display: flex; gap: 6px; }
+.coverlookthumbs img { width: 62px; height: 78px; object-fit: cover; border: 1px solid var(--line); border-radius: 8px; }
+.coverlookline { font-size: 10.5px; letter-spacing: 0.1em; color: var(--grey); margin-top: 6px; }
+.coverlook:hover .coverlookline { color: var(--sig); text-shadow: var(--glow); }
+.coveridx { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.coveridx a { border: 1px solid var(--line); border-radius: 12px; background: var(--bg3); padding: 10px 12px; }
+.coveridx b { display: block; font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; font-weight: 400; }
+.coveridx span { font-size: 9px; color: var(--grey); }
+.coveridx a:hover { border-color: var(--sig); }
+.coveridx a:hover b { color: var(--sig); text-shadow: var(--glow); }
+@media (max-width: 980px) { .coverhero, .covergrid { grid-template-columns: 1fr; } .coveridx { grid-template-columns: repeat(3, 1fr); } .coverpickbody { grid-template-columns: 1fr; } }
+
+/* ---- Catalog cards: mock chrome (scanline + lens + inspect) ---- */
+.imgwrap { position: relative; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.imgwrap::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.09) 3px 4px),
+    radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
+.card:hover .imgwrap::before { content: "◉ INSPECT →"; position: absolute; right: 7px; bottom: 7px; z-index: 2;
+  font-size: 8.5px; letter-spacing: 0.2em; color: var(--red); text-shadow: var(--glow-r); }
+.card { border: 1px solid transparent; border-radius: 12px; padding: 6px; transition: border-color 0.15s, background 0.15s; }
+.card:hover { border-color: var(--line); background: var(--bg3); }
+
+/* ---- Passport: bearer photo + analysis bus + conviction glow ---- */
+.ppbody { display: flex; gap: 16px; padding: 12px 16px; align-items: flex-start; }
+.ppbody .ppid { padding: 0; }
+.ppphoto { width: 92px; height: 114px; flex: none; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--bg3); cursor: pointer; position: relative; overflow: hidden; padding: 0; }
+.ppphoto img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.7) contrast(1.05); }
+.ppphotoempty { display: grid; place-items: center; gap: 6px; height: 100%; color: var(--sig); text-shadow: var(--glow); font-size: 26px; }
+.ppphotoempty em { font-style: normal; font-size: 7.5px; letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
+.ppphoto:hover { border-color: var(--sig); }
+.ppbus { border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); padding: 10px 14px; margin-bottom: 16px; }
+.ppbus .psub { margin: 0 0 6px; }
+.ppbusline { font-size: 10.5px; line-height: 1.8; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ppbust { color: var(--faint); margin-right: 7px; }
+.ppbusk { color: var(--p2); text-shadow: var(--glow-p); margin-right: 5px; text-transform: uppercase; }
+.convbar { border-radius: 999px; overflow: hidden; }
+.convbar i { background: linear-gradient(90deg, var(--sig-soft, #1e6b44), var(--sig)); box-shadow: var(--glow); border-radius: 999px; }
+
+/* ---- Profile: banner/avatar uploads ---- */
+.pbannerctl { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+.pbanner { position: relative; }
+.ppupl { border: 1px dashed var(--line); border-radius: 999px; background: var(--bg3); color: var(--grey);
+  font-size: 8.5px; letter-spacing: 0.16em; padding: 4px 11px; cursor: pointer; }
+.ppupl:hover { color: var(--sig); border-color: var(--sig); }
+.pavimg { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.pavatar { overflow: hidden; }
+
 /* ---- Phase 2: PASSPORT dossier ---- */
 .ppdoc { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
 .ppsec { height: 30px; position: relative; border-bottom: 1px solid var(--line);

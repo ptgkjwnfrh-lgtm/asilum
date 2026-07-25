@@ -31,6 +31,12 @@ export default function BoardPage() {
   useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
   const [resetChecked, setResetChecked] = useState(false);
   const fileRef = useRef(null);
+  const photoRef = useRef(null);
+  const [ppPhoto, setPpPhoto] = useState(null);
+
+  useEffect(() => {
+    try { setPpPhoto(window.localStorage.getItem("asilum-pp-photo") || null); } catch {}
+  }, []);
 
   useEffect(() => {
     const user = getUid();
@@ -203,6 +209,31 @@ export default function BoardPage() {
 
   const view = shared || active;
 
+  // Bearer photo: device-local only (localStorage), like the profile banner.
+  function onPassportPhoto(e) {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      setPpPhoto(rd.result);
+      try { window.localStorage.setItem("asilum-pp-photo", rd.result); } catch {}
+    };
+    rd.readAsDataURL(f);
+    e.target.value = "";
+  }
+
+  // The analysis bus shows the brain's real activity ring — the same
+  // interactions the viz renders, as machine log lines.
+  function recentActivity() {
+    return (viz?.profile?._meta?.activity || []).slice(0, 6);
+  }
+  function busTime(t) {
+    if (!t) return "--:--:--";
+    const d = new Date(t);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
   // Dossier strip — every field is real state: the identity class comes from
   // the uid prefix, counts from live boards/convictions, and the MRZ lines
   // are derived from them the way a passport derives its machine zone.
@@ -224,13 +255,37 @@ export default function BoardPage() {
       {!shared && (
         <div className="ppdoc" aria-label="passport document">
           <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
-          <dl className="ppid">
-            <div><dt>BEARER</dt><dd className="ppmono">{uid || "—"}</dd></div>
-            <div><dt>CLASS</dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
-            <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
-            <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
-          </dl>
+          <div className="ppbody">
+            <button
+              className="ppphoto"
+              title="add a bearer photo (stays on this device)"
+              onClick={() => photoRef.current && photoRef.current.click()}
+            >
+              {ppPhoto
+                ? <img src={ppPhoto} alt="bearer" />
+                : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
+            </button>
+            <input ref={photoRef} type="file" accept="image/*" hidden onChange={onPassportPhoto} />
+            <dl className="ppid">
+              <div><dt>BEARER</dt><dd className="ppmono">{uid || "—"}</dd></div>
+              <div><dt>CLASS</dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
+              <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
+            </dl>
+          </div>
           <div className="ppmrz">{mrzTop}<br />{mrzBot}</div>
+        </div>
+      )}
+
+      {!shared && recentActivity().length > 0 && (
+        <div className="ppbus" aria-label="asterisk analysis bus">
+          <div className="psub"><span className="red">✳</span> ASTERISK — LIVE ANALYSIS BUS</div>
+          {recentActivity().map((a, i) => (
+            <div className="ppbusline" key={i}>
+              <span className="ppbust">{busTime(a.t)}</span>
+              <span className="ppbusk">[{a.kind}]</span> {a.tag}
+            </div>
+          ))}
         </div>
       )}
 

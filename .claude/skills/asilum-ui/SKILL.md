@@ -8,9 +8,9 @@ description: Load before ANY user-interface change — the Fashion Intelligence 
 FACTS live in knowledge/ui/ (design-language, typography, motion,
 interaction). Non-negotiables when touching UI:
 
-1. Six destinations only: CATALOG, EDITORIAL, PASSPORT, DISCOVER,
-   PROFILE, SETTINGS. A new feature must live inside one — never a
-   seventh tab.
+1. Seven destinations only (owner amendment July 25): FRONT COVER,
+   CATALOG, EDITORIAL, PASSPORT, DISCOVER, PROFILE, SETTINGS. A new
+   feature must live inside one — the list changes only by owner decree.
 2. Red is the only accent voice. No second accent color, ever.
 3. Colors ONLY through tokens (--ink/--paper/--line/--grey/--faint/
    --red + OS tokens). A literal hex in a component is a defect.
