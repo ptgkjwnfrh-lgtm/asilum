@@ -1227,7 +1227,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dt { font-size: 9px; letter-spacing: 0.16em; color: var(--grey); }
 .ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
 .ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
-.ppmrz { border-top: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
+.ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
   font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; overflow-x: auto; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
@@ -1380,7 +1380,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
 /* open window — the hologram burns through at full strength here; the div
    only frames it and holds the summit annotation + the ODbL map credit */
-.ppterrain { position: relative; flex: 1; min-height: 210px; border-top: 1px dashed var(--line); z-index: 2; }
+.ppterrain { position: relative; flex: 1; min-height: 210px; z-index: 2; }
 .pposm { position: absolute; right: 14px; bottom: 8px; font-size: 6.5px;
   letter-spacing: 0.18em; color: var(--faint); }
 /* Place de l'Étoile hologram — streets as glowing hairlines */
@@ -1393,8 +1393,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px;
   border-bottom: 1px solid var(--line); font-family: var(--mich);
   font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink);
-  text-shadow: var(--glow); }
-.ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r); }
+  text-shadow: var(--glow), var(--glow); }
+.ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r), var(--glow-r); }
 /* four document-type languages stacked above the photo (EN/JA/DE/FR) */
 .ppphotocol { display: grid; gap: 8px; justify-items: center; align-self: center; }
 .ppquad { display: grid; gap: 2px; justify-items: center; font-size: 8px;

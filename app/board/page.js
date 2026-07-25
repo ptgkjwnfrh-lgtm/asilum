@@ -293,7 +293,7 @@ export default function BoardPage() {
       {!shared && (
         <div className="ppdoc" aria-label="passport document">
           <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
-          <div className="ppnation">ASiLUM MAG <b>*</b> FASHION PASSPORT</div>
+          <div className="ppnation">ASILUM MAGAZINE <b>*</b> FASHION PASSPORT</div>
           <div className="ppbody">
             <div className="ppphotocol">
               <span className="ppquad">
@@ -328,11 +328,11 @@ export default function BoardPage() {
               <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
+          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
           <PassportSecurity
             topTag={convictions()[0]?.[0]}
             topWeight={convictions()[0]?.[1] || 0}
           />
-          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
         </div>
       )}
 

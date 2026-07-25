@@ -36,7 +36,7 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 The PASSPORT document on /board renders as a page under blacklight —
 `app/components/PassportSecurity.jsx` + the `.ppuv/.ppterrain/.pv*` layer in
 globals.css. Header: registration crosses, plus-pattern ridge, "01" numeral
-(hidden ≤760px), nation line "ASiLUM MAG * FASHION PASSPORT", trilingual
+(hidden ≤760px), nation line "ASILUM MAGAZINE * FASHION PASSPORT" (doubled glow), trilingual
 type "PASSPORT · パスポート · PASSEPORT" above the photo, *ASILUM microprint.
 Hologram (owner iteration 5): REAL PARIS — actual OpenStreetMap road
 geometry rendered full-bleed across the document. Data pipeline:
@@ -51,8 +51,7 @@ star). Two masked copies (.ppholo): over the data page glow-FREE at ~0.13
 opacity; the lower window full opacity + heavy glow. Document proportions
 lock to a U.S. passport data page (aspect 125/88 ≥900px): photo 148×186
 centred on the left edge under a four-language stack (PASSPORT /
-パスポート / REISEPASS / PASSEPORT), three-column field grid, microprint
-then MRZ at the very bottom edge. Re-run the fetch script to refresh the
+パスポート / REISEPASS / PASSEPORT), three-column field grid; the MRZ sits ON THE DIVIDER between the data page and the map window (dashed above+below), microprint at the very bottom edge. Re-run the fetch script to refresh the
 map; the component only reads the JSON. Data page is U.S.-style and REAL only: username from
 the bearer's profile, TASTE CLASS = ASTERISK's one-word read of the
 conviction weights (lib/brain/taste-class.js — 12 classes: DARK, STREET,
