@@ -1354,16 +1354,15 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   overflow: hidden; z-index: 2;
   background: radial-gradient(ellipse 70% 80% at 60% 45%, color-mix(in srgb, var(--sig) 5%, transparent), transparent 70%); }
 .ppterrain svg { width: 100%; height: 100%; display: block; }
-/* thin-line pattern cutouts — hairline fills inside silhouettes, stacked */
-.pvhair { fill: none; stroke-width: 1; }
-.pvhair.pv-s { stroke: var(--sig); opacity: 0.65; }
-.pvhair.pv-p { stroke: var(--p2); opacity: 0.6; }
-.pvhair.pv-r { stroke: var(--red); opacity: 0.8; }
-.pvcut { mix-blend-mode: screen; }
-[data-theme="light"] .pvcut { mix-blend-mode: multiply; }
-.pvglow-s { filter: drop-shadow(0 0 5px var(--sig)) drop-shadow(0 0 14px var(--sig)); opacity: 0.6; }
-.pvglow-p { filter: drop-shadow(0 0 5px var(--p2)) drop-shadow(0 0 14px var(--p2)); opacity: 0.55; }
-.pvglow-r { filter: drop-shadow(0 0 6px var(--red)) drop-shadow(0 0 16px var(--red)); opacity: 0.7; }
+/* Place de l'Étoile hologram — streets as glowing hairlines */
+.pvparis-minor line { stroke: var(--p2); stroke-width: 0.8; fill: none; }
+.pvparis-minor { opacity: 0.45; filter: drop-shadow(0 0 3px var(--p2)); }
+.pvparis-major line, .pvparis-major circle { stroke: var(--sig); fill: none; }
+.pvparis-major { opacity: 0.8; filter: drop-shadow(0 0 4px var(--sig)) drop-shadow(0 0 11px var(--sig)); }
+.pvparislbl { fill: var(--grey); font-family: var(--osd); font-size: 10px;
+  letter-spacing: 0.14em; opacity: 0.85; }
+.pvistar path { stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; fill: none; }
+.pvistar { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 14px var(--red)); opacity: 0.9; }
 .ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--osd);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
 /* nation line — where a passport names its country */

@@ -1,16 +1,16 @@
 "use client";
 
 // app/components/PassportSecurity.jsx — UV security artwork for the PASSPORT
-// document (redesign/passport-uv). Modeled on a passport photo page under UV
-// light, color-matched to the OS tokens.
+// document (redesign/passport-uv), color-matched to the OS tokens.
 //
-// Owner iteration 2: the holographic layer is now OVERLAPPING THIN-LINE
-// PATTERN CUTOUTS — silhouettes (mountain ranges, three asterisks) cut out
-// of hairline fills that stack over each other with a stronger glow. The
-// three asterisks stay red: the ASTERISK identity hidden in the hologram.
+// Owner iteration 3: the hologram is the PARIS STREETS FROM SATELLITE —
+// Place de l'Étoile: twelve avenues radiating from the Arc, the
+// Tilsitt/Presbourg ring, and the Haussmann block fabric between, drawn as
+// glowing hairline streets. Red asterisks sit in a few intersections — and
+// one at the Arc itself, because Place de l'Étoile means Star Square.
 //
 // Everything here is decoration EXCEPT the summit marker, which is real
-// state: the bearer's strongest conviction labels the highest peak.
+// state: the bearer's strongest conviction annotates the map.
 
 // Registration crosses over the header area: [x, y, size, tone]
 const CROSSES = [
@@ -29,16 +29,62 @@ function Plus({ x, y, s = 5, tone = "s" }) {
   );
 }
 
-// A six-armed asterisk silhouette cut from a thin-line pattern fill.
-function AsteriskCut({ cx, cy, r, w, rot, fill, cls }) {
-  return (
-    <g className={cls} transform={`translate(${cx} ${cy}) rotate(${rot})`}>
-      {[0, 60, 120].map((a) => (
-        <rect key={a} x={-r} y={-w / 2} width={r * 2} height={w} rx={w / 2}
-          transform={`rotate(${a})`} fill={fill} />
-      ))}
-    </g>
-  );
+// ---- Place de l'Étoile, deterministic geometry ---------------------------
+const CX = 500, CY = 170, DEG = Math.PI / 180;
+const P = (r, a) => [
+  +(CX + Math.cos(a) * r).toFixed(1),
+  +(CY + Math.sin(a) * r).toFixed(1),
+];
+// Twelve avenues every 30°, offset like the photo. Named ones (real layout,
+// approximate bearings): 0 Champs-Élysées, 3 Kléber, 6 Grande Armée,
+// 7 Foch (the wide one), 10 Wagram.
+const AVE = Array.from({ length: 12 }, (_, i) => (15 + i * 30) * DEG);
+const R_HUB = 32, R_RING = 82, R_EDGE = 430;
+
+const AVENUES = AVE.map((a, i) => ({ a: P(R_HUB, a), b: P(R_EDGE, a), foch: i === 7 }));
+
+// Haussmann fabric: chords between adjacent avenues at staggered radii,
+// plus radial spurs subdividing the outer blocks. All offsets are fixed
+// arithmetic — same map every render.
+const CHORDS = [];
+for (let i = 0; i < 12; i++) {
+  const base = [64, 95, 118, 148, 178, 214, 252, 290, 330, 372];
+  base.forEach((r, k) => {
+    if ((i * 3 + k) % 7 === 0) return; // leave gaps — the fabric is irregular
+    const rr = r + ((i * 37 + k * 53) % 24) - 12;
+    // alternate full-sector chords with half-sector ones for block variety
+    const [a1, a2] = (i + k) % 3 === 0
+      ? [AVE[i] + 5 * DEG, AVE[i] + 15 * DEG]
+      : [AVE[i] + 5 * DEG, AVE[i] + 25 * DEG];
+    CHORDS.push([P(rr, a1), P(rr, a2)]);
+  });
+}
+const SPURS = [];
+for (let i = 0; i < 12; i++) {
+  const mid = AVE[i] + 15 * DEG;
+  SPURS.push([P(i % 2 ? 132 + ((i * 41) % 46) : 200 + ((i * 29) % 60), mid), P(R_EDGE, mid)]);
+}
+
+// Street labels — the real avenues, machine-annotated.
+const LABELS = [
+  { text: "AV. DES CHAMPS-ÉLYSÉES", i: 0, r: 258 },
+  { text: "AV. KLÉBER", i: 3, r: 210 },
+  { text: "AV. DE LA GRANDE ARMÉE", i: 6, r: 262 },
+  { text: "AV. FOCH", i: 7, r: 205 },
+  { text: "AV. DE WAGRAM", i: 10, r: 225 },
+];
+
+// Red asterisks seated in intersections: the ring × four avenues — and the
+// Arc itself at the centre of the star.
+const STARS = [1, 4, 7, 10].map((i) => ({ at: P(R_RING, AVE[i]), r: 7 }));
+
+function Star({ x, y, r }) {
+  const arms = [];
+  for (let k = 0; k < 6; k++) {
+    const a = k * 30 * DEG;
+    arms.push(`M ${(x - Math.cos(a) * r).toFixed(1)} ${(y - Math.sin(a) * r).toFixed(1)} L ${(x + Math.cos(a) * r).toFixed(1)} ${(y + Math.sin(a) * r).toFixed(1)}`);
+  }
+  return <path d={arms.join(" ")} />;
 }
 
 export default function PassportSecurity({ topTag, topWeight }) {
@@ -72,33 +118,45 @@ export default function PassportSecurity({ topTag, topWeight }) {
         {("*ASILUM · FASHION INTELLIGENCE OS · ").repeat(24)}
       </div>
 
-      {/* terrain: overlapping thin-line pattern cutouts under stronger glow */}
+      {/* hologram: Place de l'Étoile from above, streets as phosphor lines */}
       <div className="ppterrain" aria-hidden="true">
         <svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            {/* hairline fills: horizontal / diagonal / wave */}
-            <pattern id="pvhairh" width="8" height="5" patternUnits="userSpaceOnUse">
-              <path className="pvhair pv-s" d="M 0 2.5 H 8" />
-            </pattern>
-            <pattern id="pvhaird" width="7" height="7" patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)">
-              <path className="pvhair pv-p" d="M 0 3.5 H 7" />
-            </pattern>
-            <pattern id="pvwave" width="14" height="7" patternUnits="userSpaceOnUse">
-              <path className="pvhair pv-r" d="M 0 3.5 Q 3.5 0 7 3.5 T 14 3.5" />
-            </pattern>
-          </defs>
-
-          {/* two mountain-range cutouts, offset so they overlap */}
-          <polygon className="pvcut pvglow-s" fill="url(#pvhairh)"
-            points="0,340 150,150 290,235 460,70 640,205 815,100 1000,195 1000,340" />
-          <polygon className="pvcut pvglow-p" fill="url(#pvhaird)"
-            points="0,340 110,235 250,305 430,160 620,275 800,165 1000,270 1000,340" />
-
-          {/* three asterisk cutouts stacked over the ranges and each other */}
-          <AsteriskCut cx={335} cy={150} r={95} w={17} rot={12} fill="url(#pvwave)" cls="pvcut pvglow-r" />
-          <AsteriskCut cx={530} cy={215} r={130} w={20} rot={38} fill="url(#pvwave)" cls="pvcut pvglow-r" />
-          <AsteriskCut cx={760} cy={135} r={82} w={15} rot={64} fill="url(#pvwave)" cls="pvcut pvglow-r" />
+          {/* block fabric first — dimmer, under the avenues */}
+          <g className="pvparis-minor">
+            {CHORDS.map(([[x1, y1], [x2, y2]], i) => (
+              <line key={"c" + i} x1={x1} y1={y1} x2={x2} y2={y2} />
+            ))}
+            {SPURS.map(([[x1, y1], [x2, y2]], i) => (
+              <line key={"s" + i} x1={x1} y1={y1} x2={x2} y2={y2} />
+            ))}
+          </g>
+          {/* the étoile: avenues, ring, roundabout */}
+          <g className="pvparis-major">
+            {AVENUES.map(({ a: [x1, y1], b: [x2, y2], foch }, i) => (
+              <line key={"a" + i} x1={x1} y1={y1} x2={x2} y2={y2}
+                strokeWidth={foch ? 4 : 2.2} />
+            ))}
+            <circle cx={CX} cy={CY} r={R_HUB} fill="none" />
+            <circle cx={CX} cy={CY} r={R_RING} fill="none" strokeWidth="1.5" />
+          </g>
+          {/* real avenue names, machine-annotated */}
+          {LABELS.map(({ text, i, r }) => {
+            const deg = 15 + i * 30;
+            const flip = deg > 90 && deg < 270;
+            const [x, y] = P(r, AVE[i]);
+            return (
+              <text key={text} className="pvparislbl" x={x} y={y - 4}
+                textAnchor="middle"
+                transform={`rotate(${flip ? deg + 180 : deg} ${x} ${y})`}>
+                {text}
+              </text>
+            );
+          })}
+          {/* red asterisks in the intersections — and the Arc: the star itself */}
+          <g className="pvistar">
+            {STARS.map(({ at: [x, y], r }, i) => <Star key={i} x={x} y={y} r={r} />)}
+            <Star x={CX} y={CY} r={13} />
+          </g>
         </svg>
         <span className="ppsummit">▲ {summit}</span>
       </div>

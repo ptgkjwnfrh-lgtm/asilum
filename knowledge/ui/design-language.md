@@ -38,12 +38,17 @@ The PASSPORT document on /board renders as a page under blacklight —
 globals.css. Header: registration crosses, plus-pattern ridge, "01" numeral
 (hidden ≤760px), nation line "ASiLUM MAG * FASHION PASSPORT", trilingual
 type "PASSPORT · パスポート · PASSEPORT" above the photo, *ASILUM microprint.
-Hologram (owner iteration 2): OVERLAPPING THIN-LINE PATTERN CUTOUTS — two
-mountain-range silhouettes (horizontal / diagonal hairline fills) overlapped
-by THREE ASTERISK cutouts (wave hairline fill, red = ASTERISK identity),
-screen-blend dark / multiply light, doubled drop-shadow glow. Deterministic
-geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
-the bearer's profile, SEX X (never collected — never invent), COUNTRY OF
+Hologram (owner iteration 3): PLACE DE L'ÉTOILE FROM SATELLITE — twelve
+avenues every 30° radiating from the ringed Arc roundabout, Haussmann block
+fabric as dim purple hairlines (~114 chords/spurs, deterministic staggered
+radii), real avenue names in OSD type (Champs-Élysées, Foch wide, Grande
+Armée, Kléber, Wagram), and RED ASTERISKS seated in intersections — four on
+the Tilsitt/Presbourg ring plus one at the Arc itself (Place de l'Étoile =
+Star Square). Deterministic geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
+the bearer's profile, TASTE CLASS = ASTERISK's one-word read of the
+conviction weights (lib/brain/taste-class.js — 12 classes: DARK, STREET,
+ACTIVE, PREPPY, PROFESSIONAL, MINIMALIST, ROMANTIC, AVANT, ARCHIVIST,
+UNDERGROUND, TECHNICAL, OPULENT; UNCLASSIFIED when no signal), SEX X (never collected — never invent), COUNTRY OF
 ORIGIN = device locale region, MEMBER SINCE stamped once locally
 (asilum-member-since, local-time anchored), ACCOUNT NO = the database uid,
 which the TD3 machine zone also encodes (document + personal number

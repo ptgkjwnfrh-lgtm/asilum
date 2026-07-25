@@ -15,6 +15,7 @@ import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
 import PassportSecurity from "../components/PassportSecurity.jsx";
 import { getProfileInfo } from "../../lib/social.js";
+import { tasteClass } from "../../lib/brain/taste-class.js";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
@@ -272,7 +273,7 @@ export default function BoardPage() {
   const sinceMrz = sinceDate
     ? `${String(sinceDate.getFullYear()).slice(2)}${String(sinceDate.getMonth() + 1).padStart(2, "0")}${String(sinceDate.getDate()).padStart(2, "0")}`
     : "000000";
-  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<CITIZEN").padEnd(44, "<").slice(0, 44);
+  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<MEMBER").padEnd(44, "<").slice(0, 44);
   const mrzBot = (mrzId.slice(0, 9).padEnd(9, "<") + "0ASM" + sinceMrz + "0X<<<<<<0" +
     mrzId.slice(9, 23)).padEnd(44, "<").slice(0, 44);
   // UV tinting: data runs glow green, chevron filler reads as the red thread.
@@ -318,6 +319,7 @@ export default function BoardPage() {
               <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
               <div className="pprow2" aria-hidden="true" />
               <div><dt>CLASS<em>/ Classe</em></dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
               <div><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — FASHION INTELLIGENCE OS</dd></div>
               <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
               <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
