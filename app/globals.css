@@ -1224,7 +1224,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dd { margin: 2px 0 0; font-size: 11.5px; letter-spacing: 0.06em; }
 .ppid .ppmono { font-size: 10px; color: var(--ink); word-break: break-all; max-width: 340px; }
 .ppmrz { border-top: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
-  font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; overflow-x: auto; white-space: nowrap; }
+  font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; overflow-x: auto; white-space: nowrap;
+  scrollbar-width: none; }
+.ppmrz::-webkit-scrollbar { display: none; }
 
 /* ---- Phase 2: DISCOVER console hints ---- */
 .dhints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
@@ -1352,15 +1354,31 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   overflow: hidden; z-index: 2;
   background: radial-gradient(ellipse 70% 80% at 60% 45%, color-mix(in srgb, var(--sig) 5%, transparent), transparent 70%); }
 .ppterrain svg { width: 100%; height: 100%; display: block; }
-.pvcontour { fill: none; stroke-width: 1.1; }
-.pvcontour.pv-s { stroke: var(--sig); opacity: 0.42; filter: drop-shadow(0 0 3px var(--sig)); }
-.pvcontour.pv-p { stroke: var(--p2); opacity: 0.36; filter: drop-shadow(0 0 3px var(--p2)); }
-.pvweb { stroke: var(--line); stroke-width: 0.7; }
-.pvastline { stroke: var(--red); stroke-width: 0.9; opacity: 0.5;
-  filter: drop-shadow(0 0 3px var(--red)); }
-.ppterrain .pvplus.pv-r { filter: drop-shadow(0 0 4px var(--red)); }
+/* thin-line pattern cutouts — hairline fills inside silhouettes, stacked */
+.pvhair { fill: none; stroke-width: 1; }
+.pvhair.pv-s { stroke: var(--sig); opacity: 0.65; }
+.pvhair.pv-p { stroke: var(--p2); opacity: 0.6; }
+.pvhair.pv-r { stroke: var(--red); opacity: 0.8; }
+.pvcut { mix-blend-mode: screen; }
+[data-theme="light"] .pvcut { mix-blend-mode: multiply; }
+.pvglow-s { filter: drop-shadow(0 0 5px var(--sig)) drop-shadow(0 0 14px var(--sig)); opacity: 0.6; }
+.pvglow-p { filter: drop-shadow(0 0 5px var(--p2)) drop-shadow(0 0 14px var(--p2)); opacity: 0.55; }
+.pvglow-r { filter: drop-shadow(0 0 6px var(--red)) drop-shadow(0 0 16px var(--red)); opacity: 0.7; }
 .ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--osd);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
+/* nation line — where a passport names its country */
+.ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px;
+  border-bottom: 1px solid var(--line); font-family: var(--mich);
+  font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink);
+  text-shadow: var(--glow); }
+.ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r); }
+/* trilingual document type above the photo */
+.ppphotocol { display: grid; gap: 5px; justify-items: start; }
+.pptrio { font-size: 8px; letter-spacing: 0.14em; color: var(--grey); white-space: nowrap; }
+.pptrio b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
+/* passport data grid: labelled like a U.S. data page */
+.ppid dt em { font-style: normal; color: var(--faint); letter-spacing: 0.04em; margin-left: 4px; text-transform: none; }
+.ppid .pprow2 { flex-basis: 100%; height: 0; margin: 0; }
 /* photo under UV: duotone tint + halftone scan */
 .ppphoto img { filter: saturate(0.55) contrast(1.12) brightness(0.96); }
 .ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none;

@@ -35,11 +35,17 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 ## Passport UV page (redesign/passport-uv, owner inspo: Swiss passport under UV)
 The PASSPORT document on /board renders as a page under blacklight —
 `app/components/PassportSecurity.jsx` + the `.ppuv/.ppterrain/.pv*` layer in
-globals.css. Layers: registration crosses, plus-pattern mountain ridge,
-"01" page numeral, *ASILUM microprint band, topographic contour field, and
-a constellation of scattered plus marks in a thin line web whose drawn
-connecting lines trace THREE ASTERISKS (red — the ASTERISK identity hidden
-like a hologram mark). All geometry is deterministic (sin-perturbed, no
-randomness — SSR-safe). Real data only: the summit marker is the bearer's
-top conviction (weight + tag); MRZ chevron filler tints red, data runs
-green. Decorative SVG strokes use tokens (--sig/--p2/--red) via CSS classes.
+globals.css. Header: registration crosses, plus-pattern ridge, "01" numeral
+(hidden ≤760px), nation line "ASiLUM MAG * FASHION PASSPORT", trilingual
+type "PASSPORT · パスポート · PASSEPORT" above the photo, *ASILUM microprint.
+Hologram (owner iteration 2): OVERLAPPING THIN-LINE PATTERN CUTOUTS — two
+mountain-range silhouettes (horizontal / diagonal hairline fills) overlapped
+by THREE ASTERISK cutouts (wave hairline fill, red = ASTERISK identity),
+screen-blend dark / multiply light, doubled drop-shadow glow. Deterministic
+geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
+the bearer's profile, SEX X (never collected — never invent), COUNTRY OF
+ORIGIN = device locale region, MEMBER SINCE stamped once locally
+(asilum-member-since, local-time anchored), ACCOUNT NO = the database uid,
+which the TD3 machine zone also encodes (document + personal number
+fields); summit marker = top conviction. MRZ data runs glow green,
+chevron filler red; MRZ scrollbar hidden but scrollable.

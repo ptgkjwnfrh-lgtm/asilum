@@ -2,19 +2,15 @@
 
 // app/components/PassportSecurity.jsx — UV security artwork for the PASSPORT
 // document (redesign/passport-uv). Modeled on a passport photo page under UV
-// light: registration crosses, a plus-pattern mountain ridge, glowing
-// topographic contours, microprint bands — color-matched to the OS tokens.
+// light, color-matched to the OS tokens.
 //
-// The constellation layer is the owner's spec: a geometric array of thin
-// lines with plus marks scattered through it; the drawn connecting lines
-// trace THREE ASTERISKS (red — the ASTERISK identity) hidden in the field,
-// the way a hologram hides the issuer's mark.
+// Owner iteration 2: the holographic layer is now OVERLAPPING THIN-LINE
+// PATTERN CUTOUTS — silhouettes (mountain ranges, three asterisks) cut out
+// of hairline fills that stack over each other with a stronger glow. The
+// three asterisks stay red: the ASTERISK identity hidden in the hologram.
 //
 // Everything here is decoration EXCEPT the summit marker, which is real
-// state: the bearer's strongest conviction (top brain weight) labels the
-// highest peak. No invented data anywhere.
-
-// ---- deterministic geometry (no randomness — stable across renders/SSR) ----
+// state: the bearer's strongest conviction labels the highest peak.
 
 // Registration crosses over the header area: [x, y, size, tone]
 const CROSSES = [
@@ -24,65 +20,24 @@ const CROSSES = [
   [850, 22, 5, "s"], [912, 44, 6, "r"], [962, 12, 7, "p"],
 ];
 
-// One wobbly topographic ring as an SVG path (sin-perturbed ellipse).
-function ring(cx, cy, r, seed) {
-  const pts = [];
-  const N = 56;
-  for (let i = 0; i <= N; i++) {
-    const a = (i / N) * Math.PI * 2;
-    const wob =
-      Math.sin(a * 3 + seed) * 0.16 +
-      Math.sin(a * 5 + seed * 2.7) * 0.09 +
-      Math.sin(a * 8 + seed * 1.3) * 0.05;
-    const rr = r * (1 + wob);
-    pts.push(`${(cx + Math.cos(a) * rr * 1.7).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)}`);
-  }
-  return "M" + pts.join(" L") + " Z";
-}
-
-// Two contour nuclei — a main summit and a secondary rise, like the inspo map.
-const CONTOURS = [];
-for (let i = 0; i < 7; i++) CONTOURS.push({ d: ring(640, 168, 22 + i * 26, 1.7 + i), tone: i % 3 === 2 ? "p" : "s" });
-for (let i = 0; i < 5; i++) CONTOURS.push({ d: ring(210, 226, 18 + i * 24, 4.1 + i), tone: i % 3 === 1 ? "p" : "s" });
-
-// Three hidden asterisks: 6 spokes each; plus marks sit at every spoke tip
-// and centre, and the drawn diameter lines connect them into the figure.
-function asterisk(cx, cy, r, rot) {
-  const tips = [];
-  for (let i = 0; i < 6; i++) {
-    const a = (Math.PI / 3) * i + rot;
-    tips.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
-  }
-  const lines = [0, 1, 2].map((i) => [tips[i], tips[i + 3]]);
-  return { cx, cy, tips, lines };
-}
-const ASTERISKS = [
-  asterisk(330, 120, 46, 0.26),
-  asterisk(560, 240, 54, 0.62),
-  asterisk(810, 110, 40, 0.05),
-];
-
-// Decoy plus marks scattered through the line array — part of the field,
-// connected to nothing.
-const DECOYS = [
-  [60, 60, "s"], [130, 150, "p"], [180, 60, "s"], [260, 250, "s"], [300, 300, "p"],
-  [420, 60, "s"], [455, 180, "p"], [500, 90, "s"], [640, 300, "s"], [700, 200, "p"],
-  [745, 285, "s"], [880, 220, "s"], [930, 60, "p"], [950, 160, "s"], [90, 290, "s"],
-  [370, 210, "p"], [610, 60, "s"], [860, 300, "p"],
-];
-
-// The faint geometric web behind the constellation: chords between decoys.
-const WEB = [
-  [0, 2], [2, 5], [5, 7], [7, 16], [16, 9], [9, 11], [11, 13], [13, 12],
-  [1, 3], [3, 15], [15, 6], [6, 8], [8, 10], [10, 17], [4, 14], [14, 3],
-];
-
 function Plus({ x, y, s = 5, tone = "s" }) {
   return (
     <path
       className={"pvplus pv-" + tone}
       d={`M ${x - s} ${y} H ${x + s} M ${x} ${y - s} V ${y + s}`}
     />
+  );
+}
+
+// A six-armed asterisk silhouette cut from a thin-line pattern fill.
+function AsteriskCut({ cx, cy, r, w, rot, fill, cls }) {
+  return (
+    <g className={cls} transform={`translate(${cx} ${cy}) rotate(${rot})`}>
+      {[0, 60, 120].map((a) => (
+        <rect key={a} x={-r} y={-w / 2} width={r * 2} height={w} rx={w / 2}
+          transform={`rotate(${a})`} fill={fill} />
+      ))}
+    </g>
   );
 }
 
@@ -117,28 +72,33 @@ export default function PassportSecurity({ topTag, topWeight }) {
         {("*ASILUM · FASHION INTELLIGENCE OS · ").repeat(24)}
       </div>
 
-      {/* terrain: contour map + the three-asterisk constellation */}
+      {/* terrain: overlapping thin-line pattern cutouts under stronger glow */}
       <div className="ppterrain" aria-hidden="true">
         <svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice">
-          {CONTOURS.map((c, i) => (
-            <path key={"c" + i} className={"pvcontour pv-" + c.tone} d={c.d} />
-          ))}
-          {WEB.map(([a, b], i) => (
-            <line
-              key={"w" + i} className="pvweb"
-              x1={DECOYS[a][0]} y1={DECOYS[a][1]} x2={DECOYS[b][0]} y2={DECOYS[b][1]}
-            />
-          ))}
-          {DECOYS.map(([x, y, tone], i) => <Plus key={"d" + i} x={x} y={y} tone={tone} />)}
-          {ASTERISKS.map((a, i) => (
-            <g key={"a" + i}>
-              {a.lines.map(([[x1, y1], [x2, y2]], j) => (
-                <line key={j} className="pvastline" x1={x1} y1={y1} x2={x2} y2={y2} />
-              ))}
-              {a.tips.map(([x, y], j) => <Plus key={"t" + j} x={x} y={y} s={4} tone="r" />)}
-              <Plus x={a.cx} y={a.cy} s={4} tone="r" />
-            </g>
-          ))}
+          <defs>
+            {/* hairline fills: horizontal / diagonal / wave */}
+            <pattern id="pvhairh" width="8" height="5" patternUnits="userSpaceOnUse">
+              <path className="pvhair pv-s" d="M 0 2.5 H 8" />
+            </pattern>
+            <pattern id="pvhaird" width="7" height="7" patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)">
+              <path className="pvhair pv-p" d="M 0 3.5 H 7" />
+            </pattern>
+            <pattern id="pvwave" width="14" height="7" patternUnits="userSpaceOnUse">
+              <path className="pvhair pv-r" d="M 0 3.5 Q 3.5 0 7 3.5 T 14 3.5" />
+            </pattern>
+          </defs>
+
+          {/* two mountain-range cutouts, offset so they overlap */}
+          <polygon className="pvcut pvglow-s" fill="url(#pvhairh)"
+            points="0,340 150,150 290,235 460,70 640,205 815,100 1000,195 1000,340" />
+          <polygon className="pvcut pvglow-p" fill="url(#pvhaird)"
+            points="0,340 110,235 250,305 430,160 620,275 800,165 1000,270 1000,340" />
+
+          {/* three asterisk cutouts stacked over the ranges and each other */}
+          <AsteriskCut cx={335} cy={150} r={95} w={17} rot={12} fill="url(#pvwave)" cls="pvcut pvglow-r" />
+          <AsteriskCut cx={530} cy={215} r={130} w={20} rot={38} fill="url(#pvwave)" cls="pvcut pvglow-r" />
+          <AsteriskCut cx={760} cy={135} r={82} w={15} rot={64} fill="url(#pvwave)" cls="pvcut pvglow-r" />
         </svg>
         <span className="ppsummit">▲ {summit}</span>
       </div>
