@@ -794,7 +794,8 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .asterisk-state.off { color: var(--grey); }
 .asterisk-glyph {
   width: 27px; height: 27px; flex: none; display: grid; place-items: center;
-  background: var(--ink); color: var(--red); font-size: 25px; line-height: 1;
+  background: var(--bg3); border: 1px solid var(--line); border-radius: 7px;
+  color: var(--red); text-shadow: var(--glow-r); font-size: 25px; line-height: 1;
 }
 .asterisk-trigger[aria-expanded="true"] .asterisk-glyph { background: var(--red); color: var(--paper); }
 .adrawer { left: calc(var(--side-w) + 12px); top: 54px; width: 380px; max-height: 78vh; overflow-y: auto; }
@@ -835,7 +836,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .amempage .amemsec { padding: 16px 0; }
 .amemsub { font-size: 13px; color: #444; margin: 8px 0 18px; max-width: 560px; line-height: 1.6; }
 .amemerase { display: flex; gap: 8px; margin-top: 6px; width: 100%; }
-.amemconfirm { border: 1px solid var(--line); padding: 6px 10px; font: inherit; font-size: 11px; letter-spacing: 0.08em; flex: 1; max-width: 260px; }
+.amemconfirm { border: 1px solid var(--line); background: var(--bg3); color: var(--ink); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 11px; letter-spacing: 0.08em; flex: 1; max-width: 260px; }
 .amemconfirm:focus { outline: none; border-color: var(--red); }
 @media (max-width: 760px) {
   .asterisk-trigger { width: auto; margin: 0; padding: 0; border: 0; }
@@ -1120,6 +1121,40 @@ img { filter: saturate(0.92); }
 [data-model="02"] .snav.cur::before { display: none; }
 [data-model="02"] .snavsub { margin-left: 18px; }
 [data-model="02"] .card, [data-model="02"] .autonote { border-radius: 18px; }
+
+/* form controls never fall back to UA defaults (white boxes on dark) */
+input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
+
+/* ---- Phase 2: PASSPORT dossier ---- */
+.ppdoc { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
+.ppsec { height: 30px; position: relative; border-bottom: 1px solid var(--line);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%2377ffbb' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
+[data-theme="light"] .ppsec { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23177a8a' stroke-width='1' opacity='0.3'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
+.ppsec::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(150, 90, 255, 0.14) 30%, rgba(60, 220, 140, 0.12) 55%, rgba(70, 150, 255, 0.12) 75%, transparent); }
+.ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--osd); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
+.ppid { display: flex; flex-wrap: wrap; gap: 4px 34px; margin: 0; padding: 12px 16px; }
+.ppid dt { font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); }
+.ppid dd { margin: 2px 0 0; font-size: 11.5px; letter-spacing: 0.06em; }
+.ppid .ppmono { font-size: 10px; color: var(--ink); word-break: break-all; max-width: 340px; }
+.ppmrz { border-top: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
+  font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; overflow-x: auto; white-space: nowrap; }
+
+/* ---- Phase 2: DISCOVER console hints ---- */
+.dhints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
+.dhintlbl { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); }
+.dhint { border: 1px dashed var(--line); border-radius: 999px; background: var(--bg3);
+  padding: 4px 12px; font-size: 10.5px; letter-spacing: 0.06em; color: var(--grey);
+  cursor: pointer; font-family: var(--helv); text-transform: none; }
+.dhint:hover { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
+
+/* ---- Phase 2: PROFILE public record ---- */
+.pbanner { border: 1px solid var(--line); border-radius: 16px 16px 0 0;
+  background: linear-gradient(120deg, var(--bg3), color-mix(in srgb, var(--p2) 8%, var(--bg3)) 55%, var(--bg3)); }
+.pbanner span { text-shadow: var(--glow-r); }
+.phead2 { border: 1px solid var(--line); border-top: none; border-radius: 0 0 16px 16px; background: var(--bg2); padding: 14px 16px; }
+.pcounts span { border: 1px solid var(--line); border-radius: 10px; background: var(--bg3); padding: 5px 12px; }
+.pcounts b { font-family: var(--osd); font-size: 16px; font-weight: 400; color: var(--sig); text-shadow: var(--glow); margin-right: 5px; }
 
 @media (prefers-reduced-motion: reduce) {
   .os-boot { display: none; }
