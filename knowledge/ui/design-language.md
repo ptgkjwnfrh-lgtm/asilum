@@ -38,13 +38,17 @@ The PASSPORT document on /board renders as a page under blacklight —
 globals.css. Header: registration crosses, plus-pattern ridge, "01" numeral
 (hidden ≤760px), nation line "ASiLUM MAG * FASHION PASSPORT", trilingual
 type "PASSPORT · パスポート · PASSEPORT" above the photo, *ASILUM microprint.
-Hologram (owner iteration 3): PLACE DE L'ÉTOILE FROM SATELLITE — twelve
-avenues every 30° radiating from the ringed Arc roundabout, Haussmann block
-fabric as dim purple hairlines (~114 chords/spurs, deterministic staggered
-radii), real avenue names in OSD type (Champs-Élysées, Foch wide, Grande
-Armée, Kléber, Wagram), and RED ASTERISKS seated in intersections — four on
-the Tilsitt/Presbourg ring plus one at the Arc itself (Place de l'Étoile =
-Star Square). Deterministic geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
+Hologram (owner iteration 4): the ACTUAL PARIS ROAD MAP around the
+Étoile, FULL-BLEED across the entire document — two stacked copies of one
+SVG (.ppholo): layer A everywhere at low opacity with slight glow (masked
+dim over the data page), layer B masked to the lower window at full
+opacity with heavy glow. Twelve real avenues at true bearings (Foch wide),
+real named streets (George V, Montaigne, FDR, quays, Poincaré, Bugeaud,
+Malakoff, Lauriston, Ternes, Courcelles, Fbg-St-Honoré, Haussmann,
+Pereire, Gouvion-St-Cyr), dense irregular block fabric. RED ASTERISKS mark
+ONLY genuine 5+-way squares: l'Étoile (12), Ternes, Victor-Hugo, Alma,
+Rond-Point des Champs-Élysées — Porte Maillot is drawn but earns no star.
+The plus-pattern mountain ridge is REMOVED. Deterministic geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
 the bearer's profile, TASTE CLASS = ASTERISK's one-word read of the
 conviction weights (lib/brain/taste-class.js — 12 classes: DARK, STREET,
 ACTIVE, PREPPY, PROFESSIONAL, MINIMALIST, ROMANTIC, AVANT, ARCHIVIST,

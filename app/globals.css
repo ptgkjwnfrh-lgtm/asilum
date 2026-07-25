@@ -1338,31 +1338,46 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppdoc .ppbody, .ppdoc .ppmrz { position: relative; z-index: 2; }
 .ppuv { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
 .ppuvcross { position: absolute; top: 4px; left: 0; width: 100%; height: 60px; }
-.ppuvridge { position: absolute; top: 30px; right: 0; width: 56%; height: 150px; opacity: 0.5; }
+/* the hologram spans the whole document — two stacked copies of the map:
+   A = everywhere, dimmed toward the data page, slight glow;
+   B = masked to the lower window, full opacity, heavy glow */
+.ppholo { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.ppholo > div { position: absolute; inset: 0; }
+.ppholo svg { width: 100%; height: 100%; display: block; }
+.ppholo polyline { fill: none; }
+.ppholo-a {
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.3) 42%, #000 66%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.3) 42%, #000 66%);
+}
+.ppholo-b {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 50%, #000 72%);
+  mask-image: linear-gradient(180deg, transparent 0%, transparent 50%, #000 72%);
+}
+.ppholo-a .pvroad-minor { filter: drop-shadow(0 0 2px var(--sig)); }
+.ppholo-a .pvroad-major { filter: drop-shadow(0 0 3px var(--sig)); }
+.ppholo-a .pvistar { filter: drop-shadow(0 0 4px var(--red)); }
+.ppholo-b .pvroad-minor { filter: drop-shadow(0 0 4px var(--sig)); }
+.ppholo-b .pvroad-major { filter: drop-shadow(0 0 5px var(--sig)) drop-shadow(0 0 14px var(--sig)); }
+.ppholo-b .pvistar { filter: drop-shadow(0 0 6px var(--red)) drop-shadow(0 0 16px var(--red)); }
+.pvroad-minor line, .pvroad-minor polyline { stroke: var(--sig); stroke-width: 0.8; opacity: 0.55; }
+.pvroad-major line, .pvroad-major circle { stroke: var(--sig); fill: none; opacity: 0.92; }
 .pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
 .pv-s { stroke: var(--sig); opacity: 0.55; }
 .pv-p { stroke: var(--p2); opacity: 0.5; }
 .pv-r { stroke: var(--red); opacity: 0.75; }
-.pvridgeline { fill: none; stroke: var(--sig); stroke-width: 1; opacity: 0.5;
-  filter: drop-shadow(0 0 4px var(--sig)); }
 .ppvpage { position: absolute; top: 38px; right: 14px; font-family: var(--osd);
   font-size: 26px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
 .ppmicro { border-top: 1px solid var(--line); padding: 2px 0 1px; overflow: hidden;
   white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
   opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
-.ppterrain { position: relative; height: 300px; border-top: 1px dashed var(--line);
-  overflow: hidden; z-index: 2;
-  background: radial-gradient(ellipse 70% 80% at 60% 45%, color-mix(in srgb, var(--sig) 5%, transparent), transparent 70%); }
-.ppterrain svg { width: 100%; height: 100%; display: block; }
+/* open window at the bottom of the document — the hologram burns through
+   at full strength here; the div itself only frames it and holds the
+   summit annotation */
+.ppterrain { position: relative; height: 300px; border-top: 1px dashed var(--line); z-index: 2; }
 /* Place de l'Étoile hologram — streets as glowing hairlines */
-.pvparis-minor line { stroke: var(--p2); stroke-width: 0.8; fill: none; }
-.pvparis-minor { opacity: 0.45; filter: drop-shadow(0 0 3px var(--p2)); }
-.pvparis-major line, .pvparis-major circle { stroke: var(--sig); fill: none; }
-.pvparis-major { opacity: 0.8; filter: drop-shadow(0 0 4px var(--sig)) drop-shadow(0 0 11px var(--sig)); }
 .pvparislbl { fill: var(--grey); font-family: var(--osd); font-size: 10px;
   letter-spacing: 0.14em; opacity: 0.85; }
-.pvistar path { stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; fill: none; }
-.pvistar { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 14px var(--red)); opacity: 0.9; }
+.pvistar path { stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; fill: none; opacity: 0.9; }
 .ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--osd);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
 /* nation line — where a passport names its country */
@@ -1387,10 +1402,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* machine zone tinting: data glows, chevron filler reads as the red thread */
 .ppmrz b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
 .ppmrz i { font-style: normal; color: var(--red); opacity: 0.75; text-shadow: var(--glow-r); }
-[data-theme="light"] .ppuvridge { opacity: 0.65; }
-[data-theme="light"] .pvweb { stroke-width: 0.9; }
+[data-theme="light"] .pvroad-minor line, [data-theme="light"] .pvroad-minor polyline { stroke-width: 1; }
 @media (max-width: 760px) {
   .ppterrain { height: 200px; }
-  .ppuvridge { width: 80%; }
   .ppvpage { display: none; }
 }
