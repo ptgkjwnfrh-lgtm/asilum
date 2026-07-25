@@ -25,3 +25,8 @@ interaction). Non-negotiables when touching UI:
 8. Feed cards stay minimal (title/price/fit + Favorite/Bag); item depth
    belongs to the item modal (owner decree).
 9. Mobile ≤760px: sidebar flattens to the bottom bar — check it.
+10. DESIGN CONSOLE (knowledge/ui/design-console.md): owner-editable
+    sizes/shapes/motion route through `var(--ed-*, shipped)` in
+    globals.css with a registry entry in lib/uilab.js. When adding a
+    visible size a designer would tune, route it; never route color.
+    UI checks should pass with no overrides set (shipped fallbacks).

@@ -78,6 +78,18 @@ export default function SettingsPage() {
       </div>
       <div className="setrow">
         <div className="setinfo">
+          <div className="setname">Design console</div>
+          <div className="uhandle">edit every text size, button, layout measure, and motion speed by hand — ctrl+shift+D anywhere.</div>
+        </div>
+        <button
+          className="fitbtn"
+          onClick={() => window.dispatchEvent(new CustomEvent("asilum:uilab-open"))}
+        >
+          OPEN CONSOLE →
+        </button>
+      </div>
+      <div className="setrow">
+        <div className="setinfo">
           <div className="setname">Theme</div>
           <div className="uhandle">phosphor dark is native; ice light for daylight reading.</div>
         </div>
