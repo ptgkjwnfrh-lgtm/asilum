@@ -23,15 +23,24 @@ import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
 import Notice from "./components/Notice.jsx";
 
+// Six destinations — the complete mental model of the OS. Every legacy route
+// stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE, and
+// the brain/control-room pages highlight their parent subsystem.
 const NAV = [
-  { href: "/", label: "YOUR EDIT" },
-  { href: "/hotlist", label: "EDITORIAL / HOTLIST" },
-  { href: "/stylist", label: "BUILD A LOOK" },
-  { href: "/board", label: "PASSPORT / MOODBOARD" },
-  { href: "/discover", label: "EXPLORE / SEARCH" },
-  { href: "/orders", label: "ORDERS & TICKETS" },
-  { href: "/profile", label: "PROFILE" },
-  { href: "/settings", label: "SETTINGS" },
+  { href: "/", icon: "✦", label: "CATALOG", meta: "YOUR EDIT // CURATED",
+    match: (p) => p === "/" },
+  { href: "/hotlist", icon: "✎", label: "EDITORIAL", meta: "LIVING MAGAZINE",
+    match: (p) => p.startsWith("/hotlist") },
+  { href: "/board", icon: "✚", label: "PASSPORT", meta: "IDENT // MOODBOARD",
+    match: (p) => p.startsWith("/board") || p.startsWith("/stats") || p.startsWith("/asterisk") },
+  { href: "/discover", icon: "◎", label: "DISCOVER", meta: "OPEN INDEX",
+    match: (p) => p.startsWith("/discover") || p.startsWith("/stylist"),
+    sub: [{ href: "/stylist", label: "STYLIST ✂" }] },
+  { href: "/profile", icon: "◉", label: "PROFILE", meta: "PUBLIC RECORD",
+    match: (p) => p.startsWith("/profile") || p.startsWith("/orders") || p.startsWith("/u/"),
+    sub: [{ href: "/orders", label: "ORDERS →" }] },
+  { href: "/settings", icon: "⚙", label: "SETTINGS", meta: "CONTROL PANEL",
+    match: (p) => p.startsWith("/settings") || p.startsWith("/privacy") || p.startsWith("/terms") || p.startsWith("/accessibility") },
 ];
 
 const TICKER =
@@ -294,6 +303,11 @@ export default function Shell({ children }) {
       {/* Keyboard/screen-reader users jump past the marquee and sidebar.
           Visually hidden until focused — no visual-identity change. */}
       <a className="skiplink" href="#main">skip to content</a>
+      <div className="os-blob b1" aria-hidden="true" />
+      <div className="os-blob b2" aria-hidden="true" />
+      <div className="os-blob b3" aria-hidden="true" />
+      <div className="os-blob b4" aria-hidden="true" />
+      <OsBoot />
       <div className="marquee">
         <div className="mq">
           {tickerRun}
@@ -302,20 +316,33 @@ export default function Shell({ children }) {
       </div>
 
       <aside className="side">
-        <a className="wordmark" href="/" title="back to the feed">
-          <i>*</i>ASILUM<em>magazine</em>
+        <a className="wordmark" href="/" title="back to the catalog">
+          <i>*</i>ASILUM<em>MAGAZINE</em><small>FASHION INTELLIGENCE OS</small>
         </a>
         <AsteriskDrawer />
         <nav className="snavs">
-          {NAV.map((n) => (
-            <a key={n.href} className={"snav" + (pathname === n.href ? " cur" : "")} href={n.href}>
-              {n.label}
-            </a>
-          ))}
+          {NAV.map((n) => {
+            const cur = n.match(pathname || "/");
+            return (
+              <span key={n.href}>
+                <a className={"snav" + (cur ? " cur" : "")} href={n.href}>
+                  <span className="nic" aria-hidden="true">{n.icon}</span>
+                  {n.label}
+                  <span className="nled" aria-hidden="true" />
+                  <span className="nmeta">{n.meta}</span>
+                </a>
+                {cur && n.sub && (
+                  <span className="snavsub">
+                    {n.sub.map((s) => (
+                      <a key={s.href} className={pathname?.startsWith(s.href) ? "cur" : ""} href={s.href}>{s.label}</a>
+                    ))}
+                  </span>
+                )}
+              </span>
+            );
+          })}
         </nav>
-        <div className="sjourney">
-          <span>PASSPORT</span><i>→</i><span>ASTERISK</span><i>→</i><span>YOUR EDIT</span>
-        </div>
+        <AsteriskDock />
         <div className="sfoot">one taste record, guiding every rack</div>
       </aside>
 
@@ -338,6 +365,18 @@ export default function Shell({ children }) {
         )}
         <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
           BAG ({bag.length})
+        </button>
+        <button
+          className="tbtn"
+          title="switch phosphor dark / ice light"
+          onClick={() => {
+            const root = document.documentElement;
+            const next = root.dataset.theme === "light" ? "dark" : "light";
+            root.dataset.theme = next;
+            try { window.localStorage.setItem("asilum-theme", next); } catch {}
+          }}
+        >
+          ◐
         </button>
         {authUser ? (
           <a className="tbtn" href="/profile#access" title={authUser.email || authUser.id}>
@@ -470,6 +509,138 @@ export default function Shell({ children }) {
       )}
 
       <main id="main" className="main">{children}</main>
+
+      <OsStatus bagCount={bag.length} guideOn={guideOn} pathname={pathname || "/"} />
+      <div className="os-crt" aria-hidden="true"><div className="os-roll" /></div>
+    </div>
+  );
+}
+
+/* ---- OS chrome components (redesign/os-shell) ---- */
+
+// Live clock + honest readouts. Everything shown is real client state:
+// the route, the bag count, whether ASTERISK guidance is on.
+function OsStatus({ bagCount, guideOn, pathname }) {
+  const [now, setNow] = useState("");
+  useEffect(() => {
+    const pad = (n) => String(n).padStart(2, "0");
+    const tick = () => {
+      const d = new Date();
+      setNow(`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`);
+    };
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
+  }, []);
+  return (
+    <footer className="os-status" aria-label="system status">
+      <div className="st">
+        <span className={"os-rec" + (guideOn ? "" : " off")} />
+        <b>{guideOn ? "ASTERISK GUIDING" : "ASTERISK PAUSED"}</b>
+      </div>
+      <div className="st">ROUTE <b>{pathname}</b></div>
+      <div className="st">BAG <b>{bagCount}</b></div>
+      <div className="st">BRAIN <b>6 BRIDGES</b></div>
+      <div className="st"><span className="os-clock" suppressHydrationWarning>{now}</span></div>
+    </footer>
+  );
+}
+
+// ASTERISK's living form: rotating asterisk with colour cores in MODULE RAIL,
+// a breathing orb in ORB HUB. Pure canvas, respects prefers-reduced-motion.
+function AsteriskDock() {
+  const canvasRef = useRef(null);
+  const [state, setState] = useState("THINKING");
+  useEffect(() => {
+    const words = ["THINKING", "INDEXING", "CORRELATING", "SCANNING", "WEIGHING"];
+    const iv = setInterval(() => setState(words[Math.floor(Math.random() * words.length)]), 3400);
+    return () => clearInterval(iv);
+  }, []);
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const x = cv.getContext("2d");
+    const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    let t = 0;
+    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    const frame = () => {
+      t += 0.014;
+      const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = W * 0.36;
+      const orb = document.documentElement.dataset.model === "02";
+      x.clearRect(0, 0, W, H);
+      const cols = [css("--sig"), css("--p2"), "#5fd8e8", css("--red")];
+      if (orb) {
+        const rr = R * (0.9 + Math.sin(t * 1.4) * 0.1);
+        const g = x.createRadialGradient(cx - 6, cy - 8, 2, cx, cy, rr);
+        g.addColorStop(0, "rgba(255,255,255,.85)");
+        g.addColorStop(0.35, css("--sig"));
+        g.addColorStop(1, "rgba(0,0,0,.15)");
+        x.fillStyle = g; x.shadowColor = css("--sig"); x.shadowBlur = 16;
+        x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); x.shadowBlur = 0;
+        for (let i = 0; i < 6; i++) {
+          const a = t * 1.2 + i * 1.05;
+          x.fillStyle = "rgba(255,255,255,.8)";
+          x.beginPath(); x.arc(cx + Math.cos(a) * rr * 1.25, cy + Math.sin(a) * rr * 0.5, 1.8, 0, Math.PI * 2); x.fill();
+        }
+      } else {
+        x.save(); x.translate(cx, cy); x.rotate(-t * 0.35);
+        x.strokeStyle = css("--grey"); x.setLineDash([4, 7]); x.lineWidth = 1.4;
+        x.beginPath(); x.arc(0, 0, R * 1.08, 0, Math.PI * 2); x.stroke(); x.setLineDash([]); x.restore();
+        x.save(); x.translate(cx, cy); x.rotate(t * 0.5);
+        x.strokeStyle = css("--ink"); x.lineWidth = 3.2; x.lineCap = "round";
+        x.shadowColor = css("--sig"); x.shadowBlur = 10;
+        for (let i = 0; i < 6; i++) {
+          x.rotate(Math.PI / 3);
+          const w = R * (0.98 + Math.sin(t * 2 + i) * 0.07);
+          x.beginPath(); x.moveTo(0, -R * 0.2); x.lineTo(0, -w); x.stroke();
+        }
+        x.shadowBlur = 0; x.restore();
+        cols.forEach((c, i) => {
+          const a = t * (1.1 + i * 0.3) + i * 1.57;
+          const r = R * (0.5 + 0.3 * Math.sin(t * 0.7 + i * 2));
+          x.fillStyle = c; x.shadowColor = c; x.shadowBlur = 8;
+          x.beginPath(); x.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r * 0.92, 2.8, 0, Math.PI * 2); x.fill();
+          x.shadowBlur = 0;
+        });
+      }
+      if (!rm) raf = requestAnimationFrame(frame);
+    };
+    frame();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (
+    <div className="os-dock">
+      <canvas ref={canvasRef} width={104} height={104} aria-hidden="true" />
+      <div className="t">*ASTERISK<br /><b>{state}</b></div>
+    </div>
+  );
+}
+
+// Boot sweep: an X/Y axis pulled from the bottom-left corner resolves into
+// the sidebar and the top ticker, then fades. Runs once per full page load.
+function OsBoot() {
+  const [phase, setPhase] = useState("run");
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setPhase("gone"); return; }
+    const t1 = setTimeout(() => setPhase("done"), 1150);
+    const t2 = setTimeout(() => setPhase("gone"), 1600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  if (phase === "gone") return null;
+  return (
+    <div className={"os-boot" + (phase === "done" ? " done" : "")} aria-hidden="true">
+      <div className="by" /><div className="bx" /><div className="bdot" />
+      <div className="bty">
+        {[...NAV].reverse().map((n, i) => (
+          <span key={n.label} className="bt" style={{ animationDelay: `${0.08 + i * 0.05}s` }}>✦ {n.label}</span>
+        ))}
+      </div>
+      <div className="btx">
+        {NAV.map((n, i) => (
+          <span key={n.label} className="bt" style={{ animationDelay: `${0.42 + i * 0.05}s` }}>* {n.meta}</span>
+        ))}
+      </div>
     </div>
   );
 }

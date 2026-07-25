@@ -15,10 +15,14 @@ export default function SettingsPage() {
   const [notice, setNotice] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
+  const [iface, setIface] = useState("01");
+  const [theme, setTheme] = useState("dark");
 
   useEffect(() => {
     setUid(getUid() || "");
     setObserve(observationOn());
+    setIface(document.documentElement.dataset.model || "01");
+    setTheme(document.documentElement.dataset.theme || "dark");
     // Clear any stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
@@ -44,11 +48,44 @@ export default function SettingsPage() {
     setNotice(`personalization deleted; retained: ${(data.retained || []).join(", ")}`);
   }
 
+  function setInterfaceMode(mode) {
+    setIface(mode);
+    document.documentElement.dataset.model = mode;
+    try { window.localStorage.setItem("asilum-model", mode); } catch {}
+  }
+  function setThemeMode(mode) {
+    setTheme(mode);
+    document.documentElement.dataset.theme = mode;
+    try { window.localStorage.setItem("asilum-theme", mode); } catch {}
+  }
+
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>SETTINGS</h1>
-      <p className="deck">observation, privacy, and the fine print.</p>
+      <p className="deck">observation, appearance, privacy, and the fine print.</p>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
+
+      <h3 className="statshead">APPEARANCE</h3>
+      <div className="setrow">
+        <div className="setinfo">
+          <div className="setname">Interface mode</div>
+          <div className="uhandle">MODULE RAIL is the standard instrument stack; ORB HUB puts the engine front and centre.</div>
+        </div>
+        <div className="controls" style={{ margin: 0 }}>
+          <button className={"fitbtn" + (iface === "01" ? " active" : "")} onClick={() => setInterfaceMode("01")}>MODULE RAIL</button>
+          <button className={"fitbtn" + (iface === "02" ? " active" : "")} onClick={() => setInterfaceMode("02")}>ORB HUB</button>
+        </div>
+      </div>
+      <div className="setrow">
+        <div className="setinfo">
+          <div className="setname">Theme</div>
+          <div className="uhandle">phosphor dark is native; ice light for daylight reading.</div>
+        </div>
+        <div className="controls" style={{ margin: 0 }}>
+          <button className={"fitbtn" + (theme === "dark" ? " active" : "")} onClick={() => setThemeMode("dark")}>PHOSPHOR DARK</button>
+          <button className={"fitbtn" + (theme === "light" ? " active" : "")} onClick={() => setThemeMode("light")}>ICE LIGHT</button>
+        </div>
+      </div>
 
       <h3 className="statshead">ON-DEVICE TASTE OBSERVATION</h3>
       <div className="setrow">
