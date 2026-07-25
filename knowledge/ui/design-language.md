@@ -38,17 +38,22 @@ The PASSPORT document on /board renders as a page under blacklight —
 globals.css. Header: registration crosses, plus-pattern ridge, "01" numeral
 (hidden ≤760px), nation line "ASiLUM MAG * FASHION PASSPORT", trilingual
 type "PASSPORT · パスポート · PASSEPORT" above the photo, *ASILUM microprint.
-Hologram (owner iteration 4): the ACTUAL PARIS ROAD MAP around the
-Étoile, FULL-BLEED across the entire document — two stacked copies of one
-SVG (.ppholo): layer A everywhere at low opacity with slight glow (masked
-dim over the data page), layer B masked to the lower window at full
-opacity with heavy glow. Twelve real avenues at true bearings (Foch wide),
-real named streets (George V, Montaigne, FDR, quays, Poincaré, Bugeaud,
-Malakoff, Lauriston, Ternes, Courcelles, Fbg-St-Honoré, Haussmann,
-Pereire, Gouvion-St-Cyr), dense irregular block fabric. RED ASTERISKS mark
-ONLY genuine 5+-way squares: l'Étoile (12), Ternes, Victor-Hugo, Alma,
-Rond-Point des Champs-Élysées — Porte Maillot is drawn but earns no star.
-The plus-pattern mountain ridge is REMOVED. Deterministic geometry, SSR-safe. Data page is U.S.-style and REAL only: username from
+Hologram (owner iteration 5): REAL PARIS — actual OpenStreetMap road
+geometry rendered full-bleed across the document. Data pipeline:
+scripts/fetch-paris-roads.py → public/paris-roads.json (~525 KiB; © OSM
+contributors ODbL — credit rendered in the map window). Layers: major
+roads 14 km radius, secondary 14 km, full street core 4.6 km, building
+footprints 1.2 km as very thin NON-glowing outlines. Every road traced as
+a line; NO street names. 215 red text-style asterisks mark intersections
+where >= 5 road arms genuinely meet, computed from the road graph
+(junction clustering collapses roundabout plazas like l'Étoile to one
+star). Two masked copies (.ppholo): over the data page glow-FREE at ~0.13
+opacity; the lower window full opacity + heavy glow. Document proportions
+lock to a U.S. passport data page (aspect 125/88 ≥900px): photo 148×186
+centred on the left edge under a four-language stack (PASSPORT /
+パスポート / REISEPASS / PASSEPORT), three-column field grid, microprint
+then MRZ at the very bottom edge. Re-run the fetch script to refresh the
+map; the component only reads the JSON. Data page is U.S.-style and REAL only: username from
 the bearer's profile, TASTE CLASS = ASTERISK's one-word read of the
 conviction weights (lib/brain/taste-class.js — 12 classes: DARK, STREET,
 ACTIVE, PREPPY, PROFESSIONAL, MINIMALIST, ROMANTIC, AVANT, ARCHIVIST,

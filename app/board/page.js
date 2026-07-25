@@ -296,7 +296,12 @@ export default function BoardPage() {
           <div className="ppnation">ASiLUM MAG <b>*</b> FASHION PASSPORT</div>
           <div className="ppbody">
             <div className="ppphotocol">
-              <span className="pptrio"><b>PASSPORT</b> · パスポート · PASSEPORT</span>
+              <span className="ppquad">
+                <b>PASSPORT</b>
+                <span>パスポート</span>
+                <span>REISEPASS</span>
+                <span>PASSEPORT</span>
+              </span>
               <button
                 className="ppphoto"
                 title="add a bearer photo (stays on this device)"
@@ -312,24 +317,22 @@ export default function BoardPage() {
               <div><dt>TYPE<em>/ Type</em></dt><dd>P</dd></div>
               <div><dt>CODE<em>/ Code</em></dt><dd>ASM</dd></div>
               <div><dt>ACCOUNT NO<em>/ № de compte</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
-              <div className="pprow2" aria-hidden="true" />
-              <div><dt>USERNAME<em>/ Nom</em></dt><dd>{(pinfo.name || "UNNAMED READER").toUpperCase()} <span className="ppmono">{pinfo.handle}</span></dd></div>
+              <div className="sp3"><dt>USERNAME<em>/ Nom</em></dt><dd>{(pinfo.name || "UNNAMED READER").toUpperCase()} <span className="ppmono">{pinfo.handle}</span></dd></div>
+              <div className="sp3"><dt>CLASS<em>/ Classe</em></dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
               <div><dt>SEX<em>/ Sexe</em></dt><dd>X</dd></div>
               <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
-              <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
-              <div className="pprow2" aria-hidden="true" />
-              <div><dt>CLASS<em>/ Classe</em></dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
               <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
-              <div><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — FASHION INTELLIGENCE OS</dd></div>
+              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — FASHION INTELLIGENCE OS</dd></div>
               <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
-              <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
+              <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
-          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
           <PassportSecurity
             topTag={convictions()[0]?.[0]}
             topWeight={convictions()[0]?.[1] || 0}
           />
+          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
         </div>
       )}
 
