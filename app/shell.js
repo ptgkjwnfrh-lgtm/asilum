@@ -21,7 +21,9 @@ import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/Pro
 import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
+import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
+import { bootOn } from "../lib/uilab.js";
 
 // Six destinations — the complete mental model of the OS. Every legacy route
 // stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE, and
@@ -397,6 +399,7 @@ export default function Shell({ children }) {
       </div>
 
       <AccountSignup />
+      <DesignConsole />
 
       {searchOpen && results && (
         <div className="searchpanel">
@@ -621,10 +624,11 @@ function AsteriskDock() {
 
 // Boot sweep: an X/Y axis pulled from the bottom-left corner resolves into
 // the sidebar and the top ticker, then fades. Runs once per full page load.
+// The owner can switch it off from the DESIGN CONSOLE (localStorage asilum-boot).
 function OsBoot() {
   const [phase, setPhase] = useState("run");
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setPhase("gone"); return; }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !bootOn()) { setPhase("gone"); return; }
     const t1 = setTimeout(() => setPhase("done"), 1150);
     const t2 = setTimeout(() => setPhase("gone"), 1600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
