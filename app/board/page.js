@@ -13,6 +13,9 @@ import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl 
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import BrainViz from "../components/BrainViz.jsx";
+import PassportSecurity from "../components/PassportSecurity.jsx";
+import { getProfileInfo } from "../../lib/social.js";
+import { tasteClass } from "../../lib/brain/taste-class.js";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
@@ -33,9 +36,32 @@ export default function BoardPage() {
   const fileRef = useRef(null);
   const photoRef = useRef(null);
   const [ppPhoto, setPpPhoto] = useState(null);
+  const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "" });
+  const [ticketCount, setTicketCount] = useState(0);
 
   useEffect(() => {
     try { setPpPhoto(window.localStorage.getItem("asilum-pp-photo") || null); } catch {}
+    // Passport data page: username from the bearer's own profile, MEMBER
+    // SINCE stamped once on first passport view (device-real, never faked),
+    // COUNTRY OF ORIGIN from the device locale region.
+    try {
+      const info = getProfileInfo();
+      let since = window.localStorage.getItem("asilum-member-since");
+      if (!since) {
+        const now = new Date();
+        since = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        window.localStorage.setItem("asilum-member-since", since);
+      }
+      const locale = navigator.language || "";
+      const region = (locale.split("-")[1] || "").toUpperCase();
+      setPinfo({ name: info.name, handle: info.handle, since, origin: region || "—",
+        area: new Date().getTimezoneOffset() });
+    } catch {}
+    // B-count on the machine zone: real purchase tickets raised in the app.
+    authorizedFetch("/api/tickets?user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => r.json())
+      .then((d) => setTicketCount(Array.isArray(d.tickets) ? d.tickets.length : 0))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -234,13 +260,39 @@ export default function BoardPage() {
     return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
-  // Dossier strip — every field is real state: the identity class comes from
-  // the uid prefix, counts from live boards/convictions, and the MRZ lines
-  // are derived from them the way a passport derives its machine zone.
+  // Data page — every field is real state, U.S.-data-page labelling:
+  // the username comes from the profile the bearer wrote, MEMBER SINCE is
+  // stamped once on this device's first passport view, COUNTRY OF ORIGIN is
+  // the device locale region, SEX is X until the product ever collects one
+  // (it doesn't today — never invent it), and the machine zone encodes the
+  // bearer's REAL database account number (the uid) in the document-number
+  // and personal-number fields, TD3-style.
   const mrzId = (uid || "UNISSUED").replace(/[^a-z0-9]/gi, "").toUpperCase();
-  const mrzTop = ("P<ASILUM<<" + mrzId.slice(0, 10) + "<<ARCHIVE<CITIZEN").padEnd(44, "<");
-  const mrzBot = ("AS" + String(boards.length).padStart(2, "0") + "B" +
-    String(convictions().length).padStart(2, "0") + "C<<" + mrzId.slice(10, 22)).padEnd(44, "<");
+  const mrzName = (pinfo.name || "UNNAMED READER").replace(/[^a-z0-9 ]/gi, "")
+    .trim().toUpperCase().replace(/ +/g, "<");
+  // Date-only strings parse as UTC midnight — anchor to local time so the
+  // stamped day never shifts back a day in western timezones.
+  const sinceDate = pinfo.since ? new Date(pinfo.since + "T00:00:00") : null;
+  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const sinceDisplay = sinceDate
+    ? `${String(sinceDate.getDate()).padStart(2, "0")} ${MONTHS[sinceDate.getMonth()]} ${sinceDate.getFullYear()}`
+    : "—";
+  const sinceMrz = sinceDate
+    ? `${String(sinceDate.getFullYear()).slice(2)}${String(sinceDate.getMonth() + 1).padStart(2, "0")}${String(sinceDate.getDate()).padStart(2, "0")}`
+    : "000000";
+  // Machine-zone counters, all real: P = pins linked (items across the
+  // bearer's boards), B = purchases raised through the app (tickets),
+  // A = the device's area code in time (UTC offset, minutes).
+  const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
+  const pad3 = (n) => String(Math.min(999, Math.abs(n))).padStart(3, "0");
+  const areaCode = pinfo.area || 0;
+  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<MEMBER").padEnd(52, "<").slice(0, 52);
+  const mrzBot = (mrzId.slice(0, 9).padEnd(9, "<") + "0ASM" + sinceMrz + "0X<" +
+    "P" + pad3(pinCount) + "B" + pad3(ticketCount) + "A" + pad3(areaCode) + "<<" +
+    mrzId.slice(9, 21)).padEnd(52, "<").slice(0, 52);
+  // UV tinting: data runs glow green, chevron filler reads as the red thread.
+  const mrzTint = (line) => line.split(/(<+)/).map((seg, i) =>
+    seg.startsWith("<") ? <i key={i}>{seg}</i> : seg && <b key={i}>{seg}</b>);
 
   return (
     <div className="wrap">
@@ -255,25 +307,46 @@ export default function BoardPage() {
       {!shared && (
         <div className="ppdoc" aria-label="passport document">
           <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
+          <div className="ppnation">ASILUM MAGAZINE <b>*</b> FASHION PASSPORT</div>
           <div className="ppbody">
-            <button
-              className="ppphoto"
-              title="add a bearer photo (stays on this device)"
-              onClick={() => photoRef.current && photoRef.current.click()}
-            >
-              {ppPhoto
-                ? <img src={ppPhoto} alt="bearer" />
-                : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
-            </button>
+            <div className="ppphotocol">
+              <span className="ppquad">
+                <b>PASSPORT</b>
+                <span>パスポート</span>
+                <span>REISEPASS</span>
+                <span>PASSEPORT</span>
+              </span>
+              <button
+                className="ppphoto"
+                title="add a bearer photo (stays on this device)"
+                onClick={() => photoRef.current && photoRef.current.click()}
+              >
+                {ppPhoto
+                  ? <img src={ppPhoto} alt="bearer" />
+                  : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
+              </button>
+            </div>
             <input ref={photoRef} type="file" accept="image/*" hidden onChange={onPassportPhoto} />
             <dl className="ppid">
-              <div><dt>BEARER</dt><dd className="ppmono">{uid || "—"}</dd></div>
-              <div><dt>CLASS</dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div><dt>TYPE<em>/ Type</em></dt><dd>P</dd></div>
+              <div><dt>CODE<em>/ Code</em></dt><dd>ASM</dd></div>
+              <div><dt>ACCOUNT NO<em>/ № de compte</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
+              <div className="sp3"><dt>USERNAME<em>/ Nom</em></dt><dd>{(pinfo.name || "UNNAMED READER").toUpperCase()} <span className="ppmono">{pinfo.handle}</span></dd></div>
+              <div className="sp3"><dt>CLASS<em>/ Classe</em></dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
+              <div><dt>SEX<em>/ Sexe</em></dt><dd>X</dd></div>
+              <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
+              <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
+              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — FASHION INTELLIGENCE OS</dd></div>
               <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
-              <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
+              <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
-          <div className="ppmrz">{mrzTop}<br />{mrzBot}</div>
+          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
+          <PassportSecurity
+            topTag={convictions()[0]?.[0]}
+            topWeight={convictions()[0]?.[1] || 0}
+          />
         </div>
       )}
 
