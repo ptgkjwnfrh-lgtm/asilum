@@ -28,13 +28,16 @@ const CROSSES = [
   [850, 22, 5, "s"], [912, 44, 6, "r"], [962, 12, 7, "p"],
 ];
 
-function Plus({ x, y, s = 5, tone = "s" }) {
-  return (
-    <path
-      className={"pvplus pv-" + tone}
-      d={`M ${x - s} ${y} H ${x + s} M ${x} ${y - s} V ${y + s}`}
-    />
-  );
+// Registration asterisks (owner amendment: same placement as the old
+// pluses, six-armed glyphs instead).
+function Ast({ x, y, s = 5, tone = "s" }) {
+  const arms = [];
+  for (let k = 0; k < 3; k++) {
+    const a = (k * 60 * Math.PI) / 180;
+    const dx = Math.cos(a) * s, dy = Math.sin(a) * s;
+    arms.push(`M ${(x - dx).toFixed(1)} ${(y - dy).toFixed(1)} L ${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)}`);
+  }
+  return <path className={"pvplus pv-" + tone} d={arms.join(" ")} />;
 }
 
 function ParisMap({ map, hot }) {
@@ -81,12 +84,11 @@ export default function PassportSecurity({ topTag, topWeight }) {
         </div>
       )}
 
-      {/* overlay: registration crosses + page numeral over the header */}
+      {/* overlay: registration asterisks over the header */}
       <div className="ppuv" aria-hidden="true">
         <svg className="ppuvcross" viewBox="0 0 1000 60" preserveAspectRatio="none">
-          {CROSSES.map(([x, y, s, tone], i) => <Plus key={i} x={x} y={y} s={s} tone={tone} />)}
+          {CROSSES.map(([x, y, s, tone], i) => <Ast key={i} x={x} y={y} s={s} tone={tone} />)}
         </svg>
-        <span className="ppvpage">01</span>
       </div>
 
       {/* open window where the hologram burns at full strength */}

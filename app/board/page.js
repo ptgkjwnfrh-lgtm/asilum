@@ -37,6 +37,7 @@ export default function BoardPage() {
   const photoRef = useRef(null);
   const [ppPhoto, setPpPhoto] = useState(null);
   const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "" });
+  const [ticketCount, setTicketCount] = useState(0);
 
   useEffect(() => {
     try { setPpPhoto(window.localStorage.getItem("asilum-pp-photo") || null); } catch {}
@@ -53,8 +54,14 @@ export default function BoardPage() {
       }
       const locale = navigator.language || "";
       const region = (locale.split("-")[1] || "").toUpperCase();
-      setPinfo({ name: info.name, handle: info.handle, since, origin: region || "—" });
+      setPinfo({ name: info.name, handle: info.handle, since, origin: region || "—",
+        area: new Date().getTimezoneOffset() });
     } catch {}
+    // B-count on the machine zone: real purchase tickets raised in the app.
+    authorizedFetch("/api/tickets?user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => r.json())
+      .then((d) => setTicketCount(Array.isArray(d.tickets) ? d.tickets.length : 0))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -273,9 +280,16 @@ export default function BoardPage() {
   const sinceMrz = sinceDate
     ? `${String(sinceDate.getFullYear()).slice(2)}${String(sinceDate.getMonth() + 1).padStart(2, "0")}${String(sinceDate.getDate()).padStart(2, "0")}`
     : "000000";
-  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<MEMBER").padEnd(44, "<").slice(0, 44);
-  const mrzBot = (mrzId.slice(0, 9).padEnd(9, "<") + "0ASM" + sinceMrz + "0X<<<<<<0" +
-    mrzId.slice(9, 23)).padEnd(44, "<").slice(0, 44);
+  // Machine-zone counters, all real: P = pins linked (items across the
+  // bearer's boards), B = purchases raised through the app (tickets),
+  // A = the device's area code in time (UTC offset, minutes).
+  const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
+  const pad3 = (n) => String(Math.min(999, Math.abs(n))).padStart(3, "0");
+  const areaCode = pinfo.area || 0;
+  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<MEMBER").padEnd(52, "<").slice(0, 52);
+  const mrzBot = (mrzId.slice(0, 9).padEnd(9, "<") + "0ASM" + sinceMrz + "0X<" +
+    "P" + pad3(pinCount) + "B" + pad3(ticketCount) + "A" + pad3(areaCode) + "<<" +
+    mrzId.slice(9, 21)).padEnd(52, "<").slice(0, 52);
   // UV tinting: data runs glow green, chevron filler reads as the red thread.
   const mrzTint = (line) => line.split(/(<+)/).map((seg, i) =>
     seg.startsWith("<") ? <i key={i}>{seg}</i> : seg && <b key={i}>{seg}</b>);

@@ -1228,7 +1228,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
 .ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
 .ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
-  font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; overflow-x: auto; white-space: nowrap;
+  font-size: 21px; letter-spacing: 0.46em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
 
@@ -1373,8 +1373,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pv-s { stroke: var(--sig); opacity: 0.55; }
 .pv-p { stroke: var(--p2); opacity: 0.5; }
 .pv-r { stroke: var(--red); opacity: 0.75; }
-.ppvpage { position: absolute; top: 38px; right: 14px; font-family: var(--osd);
-  font-size: 26px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
 .ppmicro { border-top: 1px solid var(--line); padding: 2px 0 1px; overflow: hidden;
   white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
   opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
@@ -1393,6 +1391,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px;
   border-bottom: 1px solid var(--line); font-family: var(--mich);
   font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink);
+  background: color-mix(in srgb, var(--bg3) 68%, transparent);
   text-shadow: var(--glow), var(--glow); }
 .ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r), var(--glow-r); }
 /* four document-type languages stacked above the photo (EN/JA/DE/FR) */
@@ -1415,7 +1414,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 [data-theme="light"] .pvroad-minor line, [data-theme="light"] .pvroad-minor polyline { stroke-width: 1; }
 @media (max-width: 760px) {
   .ppterrain { min-height: 170px; }
-  .ppvpage { display: none; }
+  .ppmrz { font-size: 13px; letter-spacing: 0.1em; }
   .ppbody { flex-direction: column; align-items: center; }
   .ppid { grid-template-columns: 1fr 1fr; }
   .ppid .sp3, .ppid .sp2, .ppid > div:nth-child(3) { grid-column: 1 / -1; }
