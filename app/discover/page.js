@@ -273,6 +273,20 @@ export default function DiscoverPage() {
         <AsteriskGuidanceToggle compact className="fitbtn asearchtoggle" />
       </div>
 
+      <div className="dhints">
+        <span className="dhintlbl">✳ NATURAL LANGUAGE ACCEPTED —</span>
+        {[
+          "black wide leg trousers",
+          "something like helmut lang but softer",
+          "japanese minimalism from the early 2000s",
+          "goretex but elegant",
+        ].map((h) => (
+          <button key={h} className="dhint" onMouseDown={() => { setQ(h); submitSearch(h); }}>
+            » {h}
+          </button>
+        ))}
+      </div>
+
       <div className="filters">
         <div className="sugwrap">
           <input

@@ -203,6 +203,14 @@ export default function BoardPage() {
 
   const view = shared || active;
 
+  // Dossier strip — every field is real state: the identity class comes from
+  // the uid prefix, counts from live boards/convictions, and the MRZ lines
+  // are derived from them the way a passport derives its machine zone.
+  const mrzId = (uid || "UNISSUED").replace(/[^a-z0-9]/gi, "").toUpperCase();
+  const mrzTop = ("P<ASILUM<<" + mrzId.slice(0, 10) + "<<ARCHIVE<CITIZEN").padEnd(44, "<");
+  const mrzBot = ("AS" + String(boards.length).padStart(2, "0") + "B" +
+    String(convictions().length).padStart(2, "0") + "C<<" + mrzId.slice(10, 22)).padEnd(44, "<");
+
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>YOUR PASSPORT</h1>
@@ -212,6 +220,19 @@ export default function BoardPage() {
           : "your moodboard is your Passport: every save, word, and image teaches Asterisk where to take you."}
       </p>
       <hr className="rule" />
+
+      {!shared && (
+        <div className="ppdoc" aria-label="passport document">
+          <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
+          <dl className="ppid">
+            <div><dt>BEARER</dt><dd className="ppmono">{uid || "—"}</dd></div>
+            <div><dt>CLASS</dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+            <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
+            <div><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
+          </dl>
+          <div className="ppmrz">{mrzTop}<br />{mrzBot}</div>
+        </div>
+      )}
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
