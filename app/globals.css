@@ -1228,7 +1228,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
 .ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
 .ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
-  font-size: 21px; letter-spacing: 0.46em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
+  font-size: 18px; letter-spacing: 0.61em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
 

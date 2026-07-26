@@ -29,13 +29,12 @@ const CROSSES = [
 ];
 
 // Registration asterisks (owner amendment: same placement as the old
-// pluses, six-armed glyphs instead).
+// pluses, five-point glyphs — five arms radiating from centre, point up).
 function Ast({ x, y, s = 5, tone = "s" }) {
   const arms = [];
-  for (let k = 0; k < 3; k++) {
-    const a = (k * 60 * Math.PI) / 180;
-    const dx = Math.cos(a) * s, dy = Math.sin(a) * s;
-    arms.push(`M ${(x - dx).toFixed(1)} ${(y - dy).toFixed(1)} L ${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)}`);
+  for (let k = 0; k < 5; k++) {
+    const a = ((-90 + k * 72) * Math.PI) / 180;
+    arms.push(`M ${x} ${y} L ${(x + Math.cos(a) * s).toFixed(1)} ${(y + Math.sin(a) * s).toFixed(1)}`);
   }
   return <path className={"pvplus pv-" + tone} d={arms.join(" ")} />;
 }
