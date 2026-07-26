@@ -27,6 +27,8 @@ import Notice from "./components/Notice.jsx";
 // stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE, and
 // the brain/control-room pages highlight their parent subsystem.
 const NAV = [
+  { href: "/cover", icon: "▣", label: "FRONT COVER", meta: "LIVE EDITION",
+    match: (p) => p.startsWith("/cover") },
   { href: "/", icon: "✦", label: "CATALOG", meta: "YOUR EDIT // CURATED",
     match: (p) => p === "/" },
   { href: "/hotlist", icon: "✎", label: "EDITORIAL", meta: "LIVING MAGAZINE",
