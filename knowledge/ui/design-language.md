@@ -69,11 +69,16 @@ chevron filler red; MRZ scrollbar hidden but scrollable.
 MOODBOARD button at the passport's foot warps the live Paris hologram out
 of the page (.ppwarp clones the .ppholo-b SVG and expands it from the
 terrain rect to the full viewport, 600ms, reduced-motion skips straight to
-navigation) before routing. The page is the OS's one Gen X Soft Club
-surface (design law: curves, haze, milky glass) — .gx-scoped only, the
-instrument skin elsewhere is untouched: uniform 22px-radius glass cards,
-numbered modules 01 IMAGES (drag/drop → palette v0 + filename words —
-same honest pipeline as the board) / 02 WORDS (/api/train) / 03 INSTINCTS
-(the ten canonical TAGS as tap-to-train chips) / 04 READBACK (live
-conviction bars re-fetched after every signal + session heard-log). All
-signals are real training; nothing simulated.
+navigation) (1s, soft settle) before routing — and /upload KEEPS that map as its
+page background (.gxmap via shared app/components/ParisMap.jsx, which
+PassportSecurity also imports), so the hand-off reads as one continuous
+surface. The page is the OS's one Gen X Soft Club surface (design law:
+curves, haze, milky glass) — .gx-scoped only, the instrument skin
+elsewhere untouched. Layout: do-column + watching rail — main column runs
+the three feed channels 01 IMAGES (drag/drop → palette v0 + filename
+words, the board's honest pipeline) / 02 WORDS (/api/train) / 03
+INSTINCTS (ten canonical TAGS as tap-to-train chips); the sticky right
+rail is ASTERISK's home on the page: the living dock form (shared
+app/components/AsteriskDock.jsx, extracted from the shell; upload cycles
+LISTENING/LEARNING/…) above the live conviction readback and session
+heard-log. All signals are real training; nothing simulated.

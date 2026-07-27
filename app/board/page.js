@@ -58,7 +58,7 @@ export default function BoardPage() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => overlay.classList.add("on"));
     });
-    setTimeout(() => router.push("/upload"), 640);
+    setTimeout(() => router.push("/upload"), 980);
   }
 
   useEffect(() => {

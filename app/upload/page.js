@@ -1,10 +1,11 @@
 "use client";
 
 // app/upload/page.js — UPLOAD // TEACH ASTERISK (redesign/upload-station).
-// The passport's training annex: one sleek, uniform page where the bearer
-// feeds Asterisk — images (palette v0 + filename words), words, and
-// instinct taps on the ten canonical aesthetics — and watches the
-// convictions move in real time. Rides under PASSPORT in the nav.
+// The passport's training annex: the warp expands the Paris hologram out
+// of the document, and this page KEEPS that map as its background — one
+// continuous surface. ASTERISK's living form sits in the side rail,
+// watching; the three feed channels run down the main column so the path
+// is obvious: 01 drop, 02 say, 03 tap — the readback answers instantly.
 //
 // Design: Gen X Soft Club (design law: "curves, haze, milky glass —
 // atmosphere over nostalgia"). Everything trains the REAL brain through
@@ -15,7 +16,11 @@ import { getUid, postJSON, authorizedFetch } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import { TAGS } from "../../lib/brain/tags.js";
+import AsteriskDock from "../components/AsteriskDock.jsx";
+import ParisMap, { useParisRoads } from "../components/ParisMap.jsx";
 import Notice from "../components/Notice.jsx";
+
+const DOCK_WORDS = ["LISTENING", "LEARNING", "READING", "WEIGHING", "REMEMBERING"];
 
 export default function UploadPage() {
   const [uid, setUid] = useState("");
@@ -26,6 +31,7 @@ export default function UploadPage() {
   const [busy, setBusy] = useState(false);
   const [heard, setHeard] = useState([]); // this session's transmissions
   const fileRef = useRef(null);
+  const map = useParisRoads();
 
   useEffect(() => {
     const user = getUid();
@@ -113,85 +119,96 @@ export default function UploadPage() {
 
   return (
     <div className="wrap gx">
+      {/* the warped map settles here — the page's background surface */}
+      {map && (
+        <div className="gxmap" aria-hidden="true"><ParisMap map={map} hot /></div>
+      )}
       <div className="gxblob gxb1" aria-hidden="true" />
       <div className="gxblob gxb2" aria-hidden="true" />
 
       <header className="gxhero">
         <h1 className="headline"><span className="red">*</span>UPLOAD</h1>
-        <p className="deck">teach asterisk who you are — every image, word, and instinct sharpens the record.</p>
+        <p className="deck">three ways in — drop it, say it, or tap it. asterisk answers on the right.</p>
       </header>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
-      <section className="gxcard">
-        <div className="gxlabel">01 · IMAGES — DROP THE MOOD</div>
-        <div
-          className={"gxdrop" + (dragOver ? " over" : "") + (busy ? " busy" : "")}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => { e.preventDefault(); setDragOver(false); ingestFiles(e.dataTransfer.files); }}
-          onClick={() => fileRef.current && fileRef.current.click()}
-          role="button" tabIndex={0}
-          onKeyDown={(e) => { if (e.key === "Enter") fileRef.current?.click(); }}
-        >
-          <span className="gxdropmark">⇪</span>
-          <b>{busy ? "reading the pixels…" : "drop images, or tap to choose"}</b>
-          <em>palette v0 reads the colors; filename words teach too. full vision comes later — nothing is pretended.</em>
-        </div>
-        <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { ingestFiles(e.target.files); e.target.value = ""; }} />
-      </section>
+      <div className="gxlayout">
+        <main className="gxmain">
+          <section className="gxcard">
+            <div className="gxlabel">01 · IMAGES — DROP THE MOOD</div>
+            <div
+              className={"gxdrop" + (dragOver ? " over" : "") + (busy ? " busy" : "")}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => { e.preventDefault(); setDragOver(false); ingestFiles(e.dataTransfer.files); }}
+              onClick={() => fileRef.current && fileRef.current.click()}
+              role="button" tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter") fileRef.current?.click(); }}
+            >
+              <span className="gxdropmark">⇪</span>
+              <b>{busy ? "reading the pixels…" : "drop images, or tap to choose"}</b>
+              <em>palette v0 reads the colors; filename words teach too. full vision comes later — nothing is pretended.</em>
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { ingestFiles(e.target.files); e.target.value = ""; }} />
+          </section>
 
-      <section className="gxcard">
-        <div className="gxlabel">02 · WORDS — SAY IT PLAIN</div>
-        <textarea
-          className="gxtext"
-          rows={3}
-          placeholder="silver hardware, washed black, clothes that look found not bought…"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) trainWords(); }}
-        />
-        <div className="gxrow">
-          <button className="gxbtn" onClick={trainWords} disabled={!text.trim()}>TRANSMIT ✓</button>
-          <span className="gxhint">⌘↵ sends</span>
-        </div>
-      </section>
+          <section className="gxcard">
+            <div className="gxlabel">02 · WORDS — SAY IT PLAIN</div>
+            <textarea
+              className="gxtext"
+              rows={3}
+              placeholder="silver hardware, washed black, clothes that look found not bought…"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) trainWords(); }}
+            />
+            <div className="gxrow">
+              <button className="gxbtn" onClick={trainWords} disabled={!text.trim()}>TRANSMIT ✓</button>
+              <span className="gxhint">⌘↵ sends</span>
+            </div>
+          </section>
 
-      <section className="gxcard">
-        <div className="gxlabel">03 · INSTINCTS — TAP WHAT PULLS YOU</div>
-        <div className="gxchips">
-          {TAGS.map((t) => (
-            <button key={t} className="gxchip" onClick={() => trainTag(t)}>{t.toLowerCase()}</button>
-          ))}
-        </div>
-        <em className="gxfoot">each tap is a real training signal — repeat taps lean harder.</em>
-      </section>
+          <section className="gxcard">
+            <div className="gxlabel">03 · INSTINCTS — TAP WHAT PULLS YOU</div>
+            <div className="gxchips">
+              {TAGS.map((t) => (
+                <button key={t} className="gxchip" onClick={() => trainTag(t)}>{t.toLowerCase()}</button>
+              ))}
+            </div>
+            <em className="gxfoot">each tap is a real training signal — repeat taps lean harder.</em>
+          </section>
+        </main>
 
-      <section className="gxcard">
-        <div className="gxlabel">04 · READBACK — WHAT ASTERISK HOLDS</div>
-        {convictions().length === 0 ? (
-          <em className="gxfoot">nothing yet — the record starts with your first upload.</em>
-        ) : (
-          <div className="gxread">
-            {convictions().map(([tag, w]) => (
-              <div className="gxconv" key={tag}>
-                <span>{tag.toLowerCase()}</span>
-                <div className="gxbar"><i style={{ width: Math.min(100, Math.abs(w) * 100) + "%" }} /></div>
-                <b>{Math.round(Math.abs(w) * 100)}</b>
+        {/* ASTERISK lives here: the engine watches, the record answers */}
+        <aside className="gxside">
+          <section className="gxcard gxasterisk">
+            <AsteriskDock words={DOCK_WORDS} className="os-dock gxdock" />
+            <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT ASTERISK HOLDS</div>
+            {convictions().length === 0 ? (
+              <em className="gxfoot">nothing yet — the record starts with your first upload.</em>
+            ) : (
+              <div className="gxread">
+                {convictions().map(([tag, w]) => (
+                  <div className="gxconv" key={tag}>
+                    <span>{tag.toLowerCase()}</span>
+                    <div className="gxbar"><i style={{ width: Math.min(100, Math.abs(w) * 100) + "%" }} /></div>
+                    <b>{Math.round(Math.abs(w) * 100)}</b>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
-        {heard.length > 0 && (
-          <div className="gxheard">
-            <span className="gxlabel">HEARD THIS SESSION</span>
-            {heard.map((h, i) => <em key={i}>· {h}</em>)}
-          </div>
-        )}
-      </section>
-
-      <div className="gxrow gxlinks">
-        <a className="gxbtn ghost" href="/board">BACK TO PASSPORT →</a>
-        <a className="gxbtn ghost" href="/stats">FULL BRAIN READ →</a>
+            )}
+            {heard.length > 0 && (
+              <div className="gxheard">
+                <span className="gxlabel">HEARD THIS SESSION</span>
+                {heard.map((h, i) => <em key={i}>· {h}</em>)}
+              </div>
+            )}
+            <div className="gxrow gxlinks">
+              <a className="gxbtn ghost" href="/board">PASSPORT →</a>
+              <a className="gxbtn ghost" href="/stats">FULL READ →</a>
+            </div>
+          </section>
+        </aside>
       </div>
     </div>
   );
