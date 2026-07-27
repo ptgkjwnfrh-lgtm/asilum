@@ -1431,13 +1431,25 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   transition: background 0.15s, color 0.15s;
 }
 .ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
-.ppwarp {
-  display: none; position: fixed; inset: 0; z-index: 400;
-  background: var(--bg); pointer-events: none;
-  transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1),
-    -webkit-clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.ppwarp svg { width: 100%; height: 100%; }
+.ppwarp { display: none; position: fixed; inset: 0; z-index: 400; pointer-events: none; }
+.ppwarpbase { position: absolute; inset: 0; background: var(--bg); opacity: 0;
+  transition: opacity 0.9s ease; }
+.ppwarpin { position: absolute; overflow: hidden; border-radius: 16px;
+  transition: top 1s cubic-bezier(0.16, 1, 0.3, 1), left 1s cubic-bezier(0.16, 1, 0.3, 1),
+    width 1s cubic-bezier(0.16, 1, 0.3, 1), height 1s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease; }
+.ppwarpin svg { width: 100%; height: 100%; }
+/* heavy glow off while the frame moves — motion stays clean; the landing
+   background brings the glow back statically */
+.ppwarp .pvroads-hot, .ppwarp .pvstars-hot { filter: none; }
+.ppwarpgrad { position: absolute; inset: 0; opacity: 0; transition: opacity 1s ease;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 62%, transparent),
+    color-mix(in srgb, var(--bg) 30%, transparent) 45%,
+    color-mix(in srgb, var(--bg) 68%, transparent)); }
+.ppwarp.on .ppwarpbase { opacity: 1; }
+.ppwarp.on .ppwarpin { top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important; border-radius: 0; opacity: 0.5; }
+.ppwarp.on .ppwarpgrad { opacity: 1; }
 
 /* ---- /upload — TEACH ASTERISK: Gen X Soft Club ----------------------------
    Curves, haze, milky glass — atmosphere over nostalgia (design law).
@@ -1570,3 +1582,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 @keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
 @media (prefers-reduced-motion: reduce) { .gxplug { animation: none; } }
+.gxviz { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gxviz canvas { display: block; width: 100%; }
+.gxasterisk .resetlink { margin-top: 14px; align-self: start; }

@@ -24,18 +24,14 @@ import { mapArtist } from "../../lib/music-mapping/index.js";
 import { setFollowBrand, followedBrands } from "../../lib/social.js";
 import AsteriskDock from "../components/AsteriskDock.jsx";
 import ParisMap, { useParisRoads } from "../components/ParisMap.jsx";
+import BrainViz from "../components/BrainViz.jsx";
 import Notice from "../components/Notice.jsx";
+import { useEscape } from "../components/dismiss.js";
 
 const DOCK_WORDS = ["LISTENING", "LEARNING", "READING", "WEIGHING", "REMEMBERING"];
 const BOARD_KEY = "asilum-upload-board";
 const FAVS_KEY = "asilum-favorites";
 const EMPTY_FAVS = { celebrities: [], cities: [], movies: [], singers: [], styles: [] };
-const PLUGS = [
-  { name: "PINTEREST", cls: "gxplug p1" },
-  { name: "SPOTIFY", cls: "gxplug p2" },
-  { name: "APPLE MUSIC", cls: "gxplug p3" },
-  { name: "LETTERBOXD", cls: "gxplug p4" },
-];
 
 export default function UploadPage() {
   const [uid, setUid] = useState("");
@@ -49,6 +45,21 @@ export default function UploadPage() {
   const [designers, setDesigners] = useState([]);
   const fileRef = useRef(null);
   const map = useParisRoads();
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetChecked, setResetChecked] = useState(false);
+  useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
+
+  async function resetBrain() {
+    await postJSON("/api/reset", { user: uid }).catch(() => {});
+    setResetOpen(false);
+    setResetChecked(false);
+    setNotice("recommendation model reset — boards, event history, tickets, and aggregate graph signals remain");
+    loadViz();
+  }
+  function forgotten() {
+    if (!viz || !viz.profile || !viz.profile._meta) return [];
+    return (viz.profile._meta.forgotten || []).slice(0, 4);
+  }
 
   useEffect(() => {
     const user = getUid();
@@ -199,10 +210,6 @@ export default function UploadPage() {
     setDesigners(setFollowBrand(brand, false));
   }
 
-  function plugNote(name) {
-    setNotice(`${name.toLowerCase()} import needs real OAuth — coming soon, never simulated`);
-  }
-
   return (
     <div className="wrap gx">
       {map && <div className="gxmap" aria-hidden="true"><ParisMap map={map} hot /></div>}
@@ -212,14 +219,6 @@ export default function UploadPage() {
       <header className="gxhero">
         <h1 className="headline"><span className="red">*</span>UPLOAD</h1>
         <p className="deck">pin the vibe, name your people, follow your designers — asterisk answers on the right.</p>
-        <div className="gxplugs" aria-label="future imports">
-          {PLUGS.map((p, i) => (
-            <button key={p.name} className={p.cls + " soon"} style={{ animationDelay: `${i * 0.7}s` }}
-              onClick={() => plugNote(p.name)}>
-              ✳ {p.name}
-            </button>
-          ))}
-        </div>
       </header>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
@@ -293,6 +292,9 @@ export default function UploadPage() {
         <aside className="gxside">
           <section className="gxcard gxasterisk">
             <AsteriskDock words={DOCK_WORDS} className="os-dock gxdock" />
+            <div className="gxviz">
+              {viz && <BrainViz {...viz.state} height={190} />}
+            </div>
             <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT ASTERISK HOLDS</div>
             {convictions().length === 0 ? (
               <em className="gxfoot">nothing yet — the record starts with your first pin.</em>
@@ -313,13 +315,48 @@ export default function UploadPage() {
                 {heard.map((h, i) => <em key={i}>· {h}</em>)}
               </div>
             )}
+            {forgotten().length > 0 && (
+              <div className="gxheard">
+                <span className="gxlabel">RECENTLY FORGOTTEN</span>
+                {forgotten().map((f, i) => <em key={i}>· {f.tag.toLowerCase()} — let go</em>)}
+              </div>
+            )}
             <div className="gxrow gxlinks">
               <a className="gxbtn ghost" href="/board">PASSPORT →</a>
               <a className="gxbtn ghost" href="/stats">FULL READ →</a>
             </div>
+            <button className="resetlink" onClick={() => setResetOpen(true)}>
+              Reset Brain <b>[Full Amnesia]</b>
+            </button>
           </section>
         </aside>
       </div>
+
+      {resetOpen && (
+        <div className="overlay" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+            <button className="mclose" aria-label="close" onClick={() => { setResetOpen(false); setResetChecked(false); }}>×</button>
+            <h2>Full amnesia<span style={{ color: "var(--red)" }}>.</span></h2>
+            <p className="deck">
+              this permanently deletes your taste profile — every conviction,
+              streak, and forgetting log. your moodboards, orders, and the
+              shared taste graph survive. there is no undo.
+            </p>
+            <label className="toggle" style={{ margin: "10px 0 18px" }}>
+              <input type="checkbox" checked={resetChecked} onChange={(e) => setResetChecked(e.target.checked)} />
+              I understand this deletes my taste profile
+            </label>
+            <div className="controls">
+              <button className="btn" disabled={!resetChecked} onClick={resetBrain}>
+                ERASE EVERYTHING THE BRAIN KNOWS
+              </button>
+              <button className="btn ghost" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
+                keep my taste
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

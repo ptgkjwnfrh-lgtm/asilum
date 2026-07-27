@@ -9,15 +9,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
-import { useEscape } from "../components/dismiss.js";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
-import BrainViz from "../components/BrainViz.jsx";
 import PassportSecurity from "../components/PassportSecurity.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
@@ -31,9 +28,6 @@ export default function BoardPage() {
   const [following, setFollowing] = useState(false);
   const [trainText, setTrainText] = useState("");
   const [viz, setViz] = useState(null);
-  const [resetOpen, setResetOpen] = useState(false);
-  useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
-  const [resetChecked, setResetChecked] = useState(false);
   const fileRef = useRef(null);
   const photoRef = useRef(null);
   const [ppPhoto, setPpPhoto] = useState(null);
@@ -42,32 +36,35 @@ export default function BoardPage() {
   const router = useRouter();
   const warpRef = useRef(null);
 
-  // UPLOAD TO MOODBOARD: the hologram window grows to fill the page —
-  // the map itself stays put at its destination scale while the frame
-  // expands, so more roads simply fill in the excess space (no zoom).
-  // The overlay clones the live map SVG at full-viewport size and animates
-  // a clip-path from the terrain window out to the whole screen; /upload
-  // then keeps the identical full-bleed map as its background.
+  // UPLOAD TO MOODBOARD: the hologram lifts out of the document and
+  // grows to fill the page — the clone starts as an exact overlay of the
+  // document's own map (same box, same scale), then the frame expands to
+  // the viewport while a veil fades in, landing pixel-identical to
+  // /upload's background (map at 0.5 under the same gradient).
   function warpToUpload() {
-    const terrain = document.querySelector(".ppterrain");
+    const doc = document.querySelector(".ppdoc");
     const svg = document.querySelector(".ppholo-b svg");
     const overlay = warpRef.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!terrain || !svg || !overlay || reduced) { router.push("/upload"); return; }
-    const r = terrain.getBoundingClientRect();
+    if (!doc || !svg || !overlay || reduced) { router.push("/upload"); return; }
+    const r = doc.getBoundingClientRect();
     overlay.innerHTML = "";
-    overlay.appendChild(svg.cloneNode(true));
-    const inset = `inset(${Math.max(0, r.top)}px ${Math.max(0, window.innerWidth - r.right)}px ${Math.max(0, window.innerHeight - r.bottom)}px ${Math.max(0, r.left)}px round 16px)`;
+    const base = document.createElement("div");
+    base.className = "ppwarpbase";
+    const inner = document.createElement("div");
+    inner.className = "ppwarpin";
+    inner.style.cssText = `top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
+    inner.appendChild(svg.cloneNode(true));
+    const grad = document.createElement("div");
+    grad.className = "ppwarpgrad";
+    overlay.appendChild(base);
+    overlay.appendChild(inner);
+    overlay.appendChild(grad);
     overlay.style.display = "block";
-    overlay.style.clipPath = inset;
-    overlay.style.webkitClipPath = inset;
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        overlay.style.clipPath = "inset(0px round 0px)";
-        overlay.style.webkitClipPath = "inset(0px round 0px)";
-      });
+      requestAnimationFrame(() => overlay.classList.add("on"));
     });
-    setTimeout(() => router.push("/upload"), 980);
+    setTimeout(() => router.push("/upload"), 1000);
   }
 
   useEffect(() => {
@@ -233,14 +230,6 @@ export default function BoardPage() {
     loadViz();
   }
 
-  async function resetBrain() {
-    await postJSON("/api/reset", { user: uid }).catch(() => {});
-    setResetOpen(false);
-    setResetChecked(false);
-    setNotice("recommendation model reset — boards, event history, tickets, and aggregate graph signals remain");
-    loadViz();
-  }
-
   function convictions() {
     if (!viz) return [];
     return Object.entries(viz.state.weights)
@@ -248,11 +237,6 @@ export default function BoardPage() {
       .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
       .slice(0, 10);
   }
-  function forgotten() {
-    if (!viz || !viz.profile || !viz.profile._meta) return [];
-    return (viz.profile._meta.forgotten || []).slice(0, 6);
-  }
-
   async function toggleFollow(board) {
     const next = !following;
     setFollowing(next);
@@ -277,18 +261,6 @@ export default function BoardPage() {
     };
     rd.readAsDataURL(f);
     e.target.value = "";
-  }
-
-  // The analysis bus shows the brain's real activity ring — the same
-  // interactions the viz renders, as machine log lines.
-  function recentActivity() {
-    return (viz?.profile?._meta?.activity || []).slice(0, 6);
-  }
-  function busTime(t) {
-    if (!t) return "--:--:--";
-    const d = new Date(t);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
   // Data page — every field is real state, U.S.-data-page labelling:
@@ -385,18 +357,6 @@ export default function BoardPage() {
         </div>
       )}
 
-      {!shared && recentActivity().length > 0 && (
-        <div className="ppbus" aria-label="asterisk analysis bus">
-          <div className="psub"><span className="red">✳</span> ASTERISK — LIVE ANALYSIS BUS</div>
-          {recentActivity().map((a, i) => (
-            <div className="ppbusline" key={i}>
-              <span className="ppbust">{busTime(a.t)}</span>
-              <span className="ppbusk">[{a.kind}]</span> {a.tag}
-            </div>
-          ))}
-        </div>
-      )}
-
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       {!shared && (
@@ -418,50 +378,15 @@ export default function BoardPage() {
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onUpload} />
           </div>
           <p className="deck" style={{ marginTop: 4 }}>clothing or anything that&apos;s your vibe.</p>
-
-          <div className="setrow">
-            <div className="setinfo">
-              <div className="setname">Asterisk Guidance</div>
-              <div className="uhandle" style={{ maxWidth: 520, whiteSpace: "normal" }}>
-                on: Home, Search, Discover, and Stylist use this Passport.
-                off: those racks stay general; the Passport remains saved.
-              </div>
-            </div>
-            <AsteriskGuidanceToggle compact className="fitbtn" />
-          </div>
-
-          <div className="brainband">
-            <div className="brainbox">
-              {viz ? <BrainViz {...viz.state} height={320} /> : <div className="empty">waking the brain…</div>}
-            </div>
-            <div className="convictions">
-              <div className="modhead">TOP 10 CONVICTIONS</div>
-              {convictions().length === 0 && (
-                <div className="pempty">no convictions yet — train it with words, saves, or a connected account.</div>
-              )}
-              {convictions().map(([tag, w], i) => (
-                <div className="convrow" key={tag}>
-                  <span className="convn">{i + 1}.</span>
-                  <span className="convtag">{tag.charAt(0) + tag.slice(1).toLowerCase()}</span>
-                  <span className="convbar"><i style={{ width: Math.min(100, Math.abs(w) * 100) + "%" }} /></span>
-                </div>
-              ))}
-              <div className="modhead" style={{ marginTop: 16 }}>RECENTLY FORGOTTEN</div>
-              {forgotten().length === 0 ? (
-                <div className="pempty">nothing forgotten yet — convictions fade after six idle days.</div>
-              ) : (
-                forgotten().map((f, i) => (
-                  <div className="convrow faded" key={i}>
-                    <span className="convtag">{f.tag.charAt(0) + f.tag.slice(1).toLowerCase()}</span>
-                    <span className="convgone">let go</span>
-                  </div>
-                ))
-              )}
-              <button className="resetlink" onClick={() => setResetOpen(true)}>
-                Reset Brain <b>[Full Amnesia]</b>
+          <div className="gxplugs" aria-label="future imports">
+            {["PINTEREST", "SPOTIFY", "APPLE MUSIC", "LETTERBOXD"].map((n, i) => (
+              <button key={n} className={"gxplug p" + (i + 1) + " soon"} style={{ animationDelay: `${i * 0.7}s` }}
+                onClick={() => setNotice(`${n.toLowerCase()} import needs real OAuth — coming soon, never simulated`)}>
+                ✳ {n}
               </button>
-            </div>
+            ))}
           </div>
+
           <hr className="rule" />
         </>
       )}
@@ -551,35 +476,6 @@ export default function BoardPage() {
         <div className="empty">No boards yet — save a piece from the feed to start one.</div>
       )}
 
-      {resetOpen && (
-        <div className="overlay" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
-            <button className="mclose" aria-label="close" onClick={() => { setResetOpen(false); setResetChecked(false); }}>×</button>
-            <h2>Full amnesia<span style={{ color: "var(--red)" }}>.</span></h2>
-            <p className="deck">
-              this permanently deletes your taste profile — every conviction,
-              streak, and forgetting log. your moodboards, orders, and the
-              shared taste graph survive. there is no undo.
-            </p>
-            <label className="toggle" style={{ margin: "10px 0 18px" }}>
-              <input
-                type="checkbox"
-                checked={resetChecked}
-                onChange={(e) => setResetChecked(e.target.checked)}
-              />
-              I understand this deletes my taste profile
-            </label>
-            <div className="controls">
-              <button className="btn" disabled={!resetChecked} onClick={resetBrain}>
-                ERASE EVERYTHING THE BRAIN KNOWS
-              </button>
-              <button className="btn ghost" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
-                keep my taste
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

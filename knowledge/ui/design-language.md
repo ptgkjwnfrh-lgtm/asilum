@@ -74,10 +74,11 @@ page background (.gxmap via shared app/components/ParisMap.jsx, which
 PassportSecurity also imports), so the hand-off reads as one continuous
 surface. The page is the OS's one Gen X Soft Club surface (design law:
 curves, haze, milky glass) — .gx-scoped only, the instrument skin
-elsewhere untouched. The warp is a clip-path REVEAL: the map
-stays stationary at destination scale while the window opens — more roads
-fill the excess space, no zoom — landing pixel-continuous with the
-background. Layout: do-column + watching rail. Main column: 01 THE WALL —
+elsewhere untouched. The warp starts as an EXACT overlay of the
+document's own map (same box, same scale), grows the frame to the
+viewport while a base veil + the landing gradient fade in and the map
+settles to 0.5 opacity — pixel-continuous at BOTH ends; heavy glow
+filters are suspended during motion for cleanliness. Layout: do-column + watching rail. Main column: 01 THE WALL —
 a Pinterest-style moodboard (drop pieces/fit pics/vibe images → on-device
 tiles in localStorage asilum-upload-board, palette v0 + filename-word
 training per batch) / 02 YOUR PEOPLE & PLACES — favorite celebrities,
@@ -87,9 +88,13 @@ train on descriptors WITH a told readback; unmapped names are honestly
 "on your record") / 03 DESIGNERS & LEANINGS — designer input uses the
 real brand path (search match → follow via setFollowBrand → train on the
 brand's dominant tags, same as DISCOVER) plus lean-toward style words and
-the ten canonical chips. Floating plug-in pills (Pinterest/Spotify/Apple
-Music/Letterboxd) are .soon-skinned honest coming-soon controls with a
-gentle idle float. The sticky right rail is ASTERISK's home on the page: the living dock form (shared
+the ten canonical chips. ASTERISK LIVES ONLY HERE (owner decree July 27): the passport page
+carries NO asterisk instrumentation — no analysis bus, no guidance
+toggle, no brain band; /board keeps the document + STAMP THE PASSPORT
+composer (which now hosts the floating plug-in pills:
+Pinterest/Spotify/Apple Music/Letterboxd, .soon-skinned honest
+coming-soon controls with a gentle idle float) + the moodboard viewer. The sticky right rail is ASTERISK's home on the page: the living dock form (shared
 app/components/AsteriskDock.jsx, extracted from the shell; upload cycles
-LISTENING/LEARNING/…) above the live conviction readback and session
-heard-log. All signals are real training; nothing simulated.
+LISTENING/LEARNING/…) above the BrainViz word-sphere, the live conviction readback, the
+session heard-log, RECENTLY FORGOTTEN, and the two-step Reset Brain
+(full-amnesia) control — all relocated from /board. All signals are real training; nothing simulated.
