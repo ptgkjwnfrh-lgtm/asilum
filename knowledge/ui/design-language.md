@@ -62,3 +62,18 @@ ORIGIN = device locale region, MEMBER SINCE stamped once locally
 which the TD3 machine zone also encodes (document + personal number
 fields); summit marker = top conviction. MRZ data runs glow green,
 chevron filler red; MRZ scrollbar hidden but scrollable.
+
+## UPLOAD — teach Asterisk (redesign/upload-station)
+/upload is the passport's training annex, riding under PASSPORT in the nav
+(sub-link UPLOAD ⇪). Reached from the document itself: the UPLOAD TO
+MOODBOARD button at the passport's foot warps the live Paris hologram out
+of the page (.ppwarp clones the .ppholo-b SVG and expands it from the
+terrain rect to the full viewport, 600ms, reduced-motion skips straight to
+navigation) before routing. The page is the OS's one Gen X Soft Club
+surface (design law: curves, haze, milky glass) — .gx-scoped only, the
+instrument skin elsewhere is untouched: uniform 22px-radius glass cards,
+numbered modules 01 IMAGES (drag/drop → palette v0 + filename words —
+same honest pipeline as the board) / 02 WORDS (/api/train) / 03 INSTINCTS
+(the ten canonical TAGS as tap-to-train chips) / 04 READBACK (live
+conviction bars re-fetched after every signal + session heard-log). All
+signals are real training; nothing simulated.

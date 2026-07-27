@@ -1419,3 +1419,96 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .ppid { grid-template-columns: 1fr 1fr; }
   .ppid .sp3, .ppid .sp2, .ppid > div:nth-child(3) { grid-column: 1 / -1; }
 }
+
+/* ---- UPLOAD TO MOODBOARD (redesign/upload-station) ------------------------
+   Passport foot button + the warp: the hologram lifts out of the document
+   and fills the page on the way to /upload. */
+.ppupload {
+  position: relative; z-index: 2; width: 100%; border: none; cursor: pointer;
+  border-top: 1px solid var(--line); background: var(--bg3);
+  font-family: var(--mich); font-size: 10.5px; letter-spacing: 0.26em;
+  color: var(--ink); padding: 12px 0 13px; text-shadow: var(--glow-ink);
+  transition: background 0.15s, color 0.15s;
+}
+.ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
+.ppwarp {
+  display: none; position: fixed; z-index: 400; overflow: hidden;
+  background: var(--bg); border-radius: 16px; pointer-events: none;
+  transition: top 0.6s cubic-bezier(0.3, 0, 0.2, 1), left 0.6s cubic-bezier(0.3, 0, 0.2, 1),
+    width 0.6s cubic-bezier(0.3, 0, 0.2, 1), height 0.6s cubic-bezier(0.3, 0, 0.2, 1),
+    border-radius 0.6s;
+}
+.ppwarp svg { width: 100%; height: 100%; }
+.ppwarp.on { top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border-radius: 0; }
+
+/* ---- /upload — TEACH ASTERISK: Gen X Soft Club ----------------------------
+   Curves, haze, milky glass — atmosphere over nostalgia (design law).
+   Scoped to .gx; the rest of the OS keeps its instrument skin. */
+.gx { max-width: 720px; position: relative; }
+.gx .headline { letter-spacing: 0.2em; }
+.gxblob { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+.gxb1 { width: 46vw; height: 40vh; right: -10vw; top: 4vh;
+  background: color-mix(in srgb, var(--p2) 14%, transparent); }
+.gxb2 { width: 38vw; height: 36vh; left: -8vw; bottom: -6vh;
+  background: color-mix(in srgb, var(--sig) 10%, transparent); }
+.gxhero { position: relative; z-index: 1; margin-bottom: 18px; }
+.gxcard {
+  position: relative; z-index: 1; margin: 0 0 16px; padding: 22px;
+  border: 1px solid var(--line); border-radius: 22px;
+  background: var(--chrome), color-mix(in srgb, var(--bg2) 88%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+[data-theme="light"] .gxcard { box-shadow: 0 18px 50px rgba(110, 150, 165, 0.16); }
+.gxlabel { font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.26em;
+  color: var(--grey); margin-bottom: 14px; }
+.gxdrop {
+  display: grid; justify-items: center; gap: 7px; text-align: center;
+  border: 1.5px dashed var(--line); border-radius: 18px; padding: 30px 20px;
+  cursor: pointer; transition: border-color 0.2s, background 0.2s;
+}
+.gxdrop b { font-size: 13px; letter-spacing: 0.08em; font-weight: 400; }
+.gxdrop em { font-style: normal; font-size: 10px; color: var(--grey); max-width: 46ch; line-height: 1.6; }
+.gxdropmark { font-size: 30px; color: var(--sig); text-shadow: var(--glow); line-height: 1; }
+.gxdrop.over, .gxdrop:hover { border-color: var(--sig); background: color-mix(in srgb, var(--sig) 5%, transparent); }
+.gxdrop.busy { opacity: 0.6; pointer-events: none; }
+.gxtext {
+  width: 100%; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--bg3); color: var(--ink); font-family: var(--helv);
+  font-size: 14px; line-height: 1.6; padding: 13px 15px; resize: vertical; outline: none;
+}
+.gxtext:focus { border-color: var(--sig); }
+.gxrow { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.gxbtn {
+  border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
+  color: var(--ink); font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.2em;
+  padding: 11px 22px; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.gxbtn:hover:not(:disabled) { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
+.gxbtn:disabled { opacity: 0.4; cursor: default; }
+.gxbtn.ghost { background: none; }
+.gxhint { font-size: 10px; color: var(--faint); letter-spacing: 0.1em; }
+.gxchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.gxchip {
+  border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
+  color: var(--ink); font-family: var(--helv); font-size: 12px; letter-spacing: 0.05em;
+  padding: 8px 16px; cursor: pointer; transition: color 0.15s, border-color 0.15s, transform 0.15s;
+}
+.gxchip:hover { color: var(--sig); border-color: var(--sig); transform: translateY(-1px); }
+.gxchip:active { transform: scale(0.96); }
+.gxfoot { display: block; font-style: normal; font-size: 10px; color: var(--faint);
+  margin-top: 12px; letter-spacing: 0.06em; }
+.gxread { display: grid; gap: 9px; }
+.gxconv { display: grid; grid-template-columns: 110px 1fr 34px; gap: 12px; align-items: center; }
+.gxconv span { font-size: 11px; letter-spacing: 0.08em; }
+.gxconv b { font-family: var(--osd); font-size: 15px; font-weight: 400; color: var(--sig);
+  text-shadow: var(--glow); text-align: right; }
+.gxbar { height: 7px; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.gxbar i { display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--p2) 55%, var(--sig)), var(--sig));
+  box-shadow: var(--glow); }
+.gxheard { margin-top: 16px; display: grid; gap: 4px; }
+.gxheard .gxlabel { margin-bottom: 4px; }
+.gxheard em { font-style: normal; font-size: 11px; color: var(--grey); }
+.gxlinks { margin: 4px 0 30px; }
+@media (prefers-reduced-motion: reduce) { .ppwarp { transition: none; } }

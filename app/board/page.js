@@ -7,6 +7,7 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
 import { useEscape } from "../components/dismiss.js";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
@@ -38,6 +39,27 @@ export default function BoardPage() {
   const [ppPhoto, setPpPhoto] = useState(null);
   const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "" });
   const [ticketCount, setTicketCount] = useState(0);
+  const router = useRouter();
+  const warpRef = useRef(null);
+
+  // UPLOAD TO MOODBOARD: the hologram expands out of the document to fill
+  // the page, then hands the bearer to the training annex (/upload). The
+  // overlay clones the live map SVG so the exact same Paris carries over.
+  function warpToUpload() {
+    const terrain = document.querySelector(".ppterrain");
+    const svg = document.querySelector(".ppholo-b svg");
+    const overlay = warpRef.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!terrain || !svg || !overlay || reduced) { router.push("/upload"); return; }
+    const r = terrain.getBoundingClientRect();
+    overlay.innerHTML = "";
+    overlay.appendChild(svg.cloneNode(true));
+    overlay.style.cssText = `display:block;top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => overlay.classList.add("on"));
+    });
+    setTimeout(() => router.push("/upload"), 640);
+  }
 
   useEffect(() => {
     try { setPpPhoto(window.localStorage.getItem("asilum-pp-photo") || null); } catch {}
@@ -296,6 +318,7 @@ export default function BoardPage() {
 
   return (
     <div className="wrap">
+      <div className="ppwarp" ref={warpRef} aria-hidden="true" />
       <h1 className="headline"><span className="red">*</span>YOUR PASSPORT</h1>
       <p className="deck">
         {shared
@@ -347,6 +370,9 @@ export default function BoardPage() {
             topTag={convictions()[0]?.[0]}
             topWeight={convictions()[0]?.[1] || 0}
           />
+          <button className="ppupload" onClick={warpToUpload}>
+            ⇪ UPLOAD TO MOODBOARD →
+          </button>
         </div>
       )}
 
