@@ -1432,14 +1432,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 .ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
 .ppwarp {
-  display: none; position: fixed; z-index: 400; overflow: hidden;
-  background: var(--bg); border-radius: 16px; pointer-events: none;
-  transition: top 1s cubic-bezier(0.16, 1, 0.3, 1), left 1s cubic-bezier(0.16, 1, 0.3, 1),
-    width 1s cubic-bezier(0.16, 1, 0.3, 1), height 1s cubic-bezier(0.16, 1, 0.3, 1),
-    border-radius 1s cubic-bezier(0.16, 1, 0.3, 1);
+  display: none; position: fixed; inset: 0; z-index: 400;
+  background: var(--bg); pointer-events: none;
+  transition: clip-path 1s cubic-bezier(0.16, 1, 0.3, 1),
+    -webkit-clip-path 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ppwarp svg { width: 100%; height: 100%; }
-.ppwarp.on { top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; border-radius: 0; }
 
 /* ---- /upload — TEACH ASTERISK: Gen X Soft Club ----------------------------
    Curves, haze, milky glass — atmosphere over nostalgia (design law).
@@ -1536,3 +1534,39 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .gxlayout { grid-template-columns: 1fr; }
   .gxside { position: static; }
 }
+
+/* upload-station r3: pinterest wall, favorites, floating plug-ins */
+.gxdrop.slim { padding: 20px 18px; }
+.gxwall { columns: 3 150px; column-gap: 10px; margin-top: 14px; }
+.gxtile { position: relative; margin: 0 0 10px; break-inside: avoid;
+  border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gxtile img { width: 100%; display: block; }
+.gxtile .gxtilex { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px;
+  border: none; border-radius: 50%; background: color-mix(in srgb, var(--bg) 72%, transparent);
+  color: var(--ink); font-size: 13px; line-height: 1; cursor: pointer; opacity: 0;
+  transition: opacity 0.15s; }
+.gxtile:hover .gxtilex { opacity: 1; }
+.gxtile .gxtilex:hover { color: var(--red); }
+.gxfavgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.gxfav { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.gxfavinput { display: grid; gap: 8px; margin-bottom: 10px; }
+.gxfavinput .gxlabel { margin-bottom: 0; }
+.gxin { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--bg3); color: var(--ink); font-family: var(--helv);
+  font-size: 12.5px; padding: 9px 15px; outline: none; }
+.gxin:focus { border-color: var(--sig); }
+.gxchip.on { display: inline-flex; align-items: center; gap: 7px;
+  border-color: var(--sig); color: var(--sig); cursor: default; }
+.gxchip.on i { font-style: normal; cursor: pointer; color: var(--grey); }
+.gxchip.on i:hover { color: var(--red); }
+/* floating plug-ins: gentle idle drift, honest coming-soon skin */
+.gxplugs { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.gxplug { border-radius: 999px; font-family: var(--mich); font-size: 8px;
+  letter-spacing: 0.2em; padding: 8px 15px; cursor: pointer; background: var(--bg3);
+  animation: gxfloat 5.2s ease-in-out infinite; }
+.gxplug.p2 { animation-duration: 6.1s; }
+.gxplug.p3 { animation-duration: 5.6s; }
+.gxplug.p4 { animation-duration: 6.7s; }
+@keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
+@media (prefers-reduced-motion: reduce) { .gxplug { animation: none; } }

@@ -74,11 +74,22 @@ page background (.gxmap via shared app/components/ParisMap.jsx, which
 PassportSecurity also imports), so the hand-off reads as one continuous
 surface. The page is the OS's one Gen X Soft Club surface (design law:
 curves, haze, milky glass) — .gx-scoped only, the instrument skin
-elsewhere untouched. Layout: do-column + watching rail — main column runs
-the three feed channels 01 IMAGES (drag/drop → palette v0 + filename
-words, the board's honest pipeline) / 02 WORDS (/api/train) / 03
-INSTINCTS (ten canonical TAGS as tap-to-train chips); the sticky right
-rail is ASTERISK's home on the page: the living dock form (shared
+elsewhere untouched. The warp is a clip-path REVEAL: the map
+stays stationary at destination scale while the window opens — more roads
+fill the excess space, no zoom — landing pixel-continuous with the
+background. Layout: do-column + watching rail. Main column: 01 THE WALL —
+a Pinterest-style moodboard (drop pieces/fit pics/vibe images → on-device
+tiles in localStorage asilum-upload-board, palette v0 + filename-word
+training per batch) / 02 YOUR PEOPLE & PLACES — favorite celebrities,
+cities, movies, singers (localStorage asilum-favorites; every name is a
+real mood_board_uploads record; singers hit the curated music map and
+train on descriptors WITH a told readback; unmapped names are honestly
+"on your record") / 03 DESIGNERS & LEANINGS — designer input uses the
+real brand path (search match → follow via setFollowBrand → train on the
+brand's dominant tags, same as DISCOVER) plus lean-toward style words and
+the ten canonical chips. Floating plug-in pills (Pinterest/Spotify/Apple
+Music/Letterboxd) are .soon-skinned honest coming-soon controls with a
+gentle idle float. The sticky right rail is ASTERISK's home on the page: the living dock form (shared
 app/components/AsteriskDock.jsx, extracted from the shell; upload cycles
 LISTENING/LEARNING/…) above the live conviction readback and session
 heard-log. All signals are real training; nothing simulated.

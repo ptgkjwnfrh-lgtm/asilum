@@ -42,9 +42,12 @@ export default function BoardPage() {
   const router = useRouter();
   const warpRef = useRef(null);
 
-  // UPLOAD TO MOODBOARD: the hologram expands out of the document to fill
-  // the page, then hands the bearer to the training annex (/upload). The
-  // overlay clones the live map SVG so the exact same Paris carries over.
+  // UPLOAD TO MOODBOARD: the hologram window grows to fill the page —
+  // the map itself stays put at its destination scale while the frame
+  // expands, so more roads simply fill in the excess space (no zoom).
+  // The overlay clones the live map SVG at full-viewport size and animates
+  // a clip-path from the terrain window out to the whole screen; /upload
+  // then keeps the identical full-bleed map as its background.
   function warpToUpload() {
     const terrain = document.querySelector(".ppterrain");
     const svg = document.querySelector(".ppholo-b svg");
@@ -54,9 +57,15 @@ export default function BoardPage() {
     const r = terrain.getBoundingClientRect();
     overlay.innerHTML = "";
     overlay.appendChild(svg.cloneNode(true));
-    overlay.style.cssText = `display:block;top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
+    const inset = `inset(${Math.max(0, r.top)}px ${Math.max(0, window.innerWidth - r.right)}px ${Math.max(0, window.innerHeight - r.bottom)}px ${Math.max(0, r.left)}px round 16px)`;
+    overlay.style.display = "block";
+    overlay.style.clipPath = inset;
+    overlay.style.webkitClipPath = inset;
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => overlay.classList.add("on"));
+      requestAnimationFrame(() => {
+        overlay.style.clipPath = "inset(0px round 0px)";
+        overlay.style.webkitClipPath = "inset(0px round 0px)";
+      });
     });
     setTimeout(() => router.push("/upload"), 980);
   }
