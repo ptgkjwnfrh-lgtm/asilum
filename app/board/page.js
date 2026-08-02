@@ -13,6 +13,8 @@ import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl 
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
+import buildRoads from "../components/roadBuilder.js";
+import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
@@ -35,36 +37,19 @@ export default function BoardPage() {
   const [ticketCount, setTicketCount] = useState(0);
   const router = useRouter();
   const warpRef = useRef(null);
+  const parisMap = useParisRoads();
 
-  // UPLOAD TO MOODBOARD: the hologram lifts out of the document and
-  // grows to fill the page — the clone starts as an exact overlay of the
-  // document's own map (same box, same scale), then the frame expands to
-  // the viewport while a veil fades in, landing pixel-identical to
-  // /upload's background (map at 0.5 under the same gradient).
+  // UPLOAD TO MOODBOARD (r5): the map never moves — the passport document
+  // is the root, and a full-viewport Paris assembles around it, roads
+  // arriving in randomized chunks (nearest the document first) with a
+  // brief ASCII flash before each segment solidifies. 2s, landing
+  // pixel-identical to /upload's background. Logic: roadBuilder.js.
   function warpToUpload() {
     const doc = document.querySelector(".ppdoc");
-    const svg = document.querySelector(".ppholo-b svg");
     const overlay = warpRef.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!doc || !svg || !overlay || reduced) { router.push("/upload"); return; }
-    const r = doc.getBoundingClientRect();
-    overlay.innerHTML = "";
-    const base = document.createElement("div");
-    base.className = "ppwarpbase";
-    const inner = document.createElement("div");
-    inner.className = "ppwarpin";
-    inner.style.cssText = `top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
-    inner.appendChild(svg.cloneNode(true));
-    const grad = document.createElement("div");
-    grad.className = "ppwarpgrad";
-    overlay.appendChild(base);
-    overlay.appendChild(inner);
-    overlay.appendChild(grad);
-    overlay.style.display = "block";
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => overlay.classList.add("on"));
-    });
-    setTimeout(() => router.push("/upload"), 1000);
+    if (!doc || !overlay || !parisMap || reduced) { router.push("/upload"); return; }
+    buildRoads(overlay, parisMap, doc.getBoundingClientRect(), () => router.push("/upload"));
   }
 
   useEffect(() => {

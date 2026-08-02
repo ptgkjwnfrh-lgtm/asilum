@@ -1421,8 +1421,9 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 
 /* ---- UPLOAD TO MOODBOARD (redesign/upload-station) ------------------------
-   Passport foot button + the warp: the hologram lifts out of the document
-   and fills the page on the way to /upload. */
+   Passport foot button + the build: the map never moves — a full-viewport
+   Paris assembles chunk by chunk from the document on the way to /upload
+   (canvases injected by roadBuilder.js). */
 .ppupload {
   position: relative; z-index: 2; width: 100%; border: none; cursor: pointer;
   border-top: 1px solid var(--line); background: var(--bg3);
@@ -1432,24 +1433,22 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 .ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
 .ppwarp { display: none; position: fixed; inset: 0; z-index: 400; pointer-events: none; }
-.ppwarpbase { position: absolute; inset: 0; background: var(--bg); opacity: 0;
-  transition: opacity 0.9s ease; }
-.ppwarpin { position: absolute; overflow: hidden; border-radius: 16px;
-  transition: top 1s cubic-bezier(0.16, 1, 0.3, 1), left 1s cubic-bezier(0.16, 1, 0.3, 1),
-    width 1s cubic-bezier(0.16, 1, 0.3, 1), height 1s cubic-bezier(0.16, 1, 0.3, 1),
-    border-radius 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease; }
-.ppwarpin svg { width: 100%; height: 100%; }
-/* heavy glow off while the frame moves — motion stays clean; the landing
-   background brings the glow back statically */
-.ppwarp .pvroads-hot, .ppwarp .pvstars-hot { filter: none; }
-.ppwarpgrad { position: absolute; inset: 0; opacity: 0; transition: opacity 1s ease;
+/* the veil rises while the roads assemble — the passport (the root) stays
+   visible beneath the early chunks, then the build owns the frame */
+.ppbuildveil { position: absolute; inset: 0; background: var(--bg); opacity: 0;
+  transition: opacity 1.3s ease; }
+/* accumulating road canvas at 0.5 — same strength as /upload's .gxmap */
+.ppbuildmap { position: absolute; inset: 0; opacity: 0.5; }
+.ppbuildfx { position: absolute; inset: 0; }
+.ppbuildmap canvas, .ppbuildfx canvas { width: 100%; height: 100%; display: block; }
+/* /upload's background gradient fades in over the last half-second so the
+   final frame is pixel-identical to the landing page */
+.ppbuildgrad { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease 1.5s;
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 62%, transparent),
     color-mix(in srgb, var(--bg) 30%, transparent) 45%,
     color-mix(in srgb, var(--bg) 68%, transparent)); }
-.ppwarp.on .ppwarpbase { opacity: 1; }
-.ppwarp.on .ppwarpin { top: 0 !important; left: 0 !important;
-  width: 100% !important; height: 100% !important; border-radius: 0; opacity: 0.5; }
-.ppwarp.on .ppwarpgrad { opacity: 1; }
+.ppwarp.on .ppbuildveil { opacity: 1; }
+.ppwarp.on .ppbuildgrad { opacity: 1; }
 
 /* ---- /upload — TEACH ASTERISK: Gen X Soft Club ----------------------------
    Curves, haze, milky glass — atmosphere over nostalgia (design law).
