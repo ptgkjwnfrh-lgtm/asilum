@@ -18,7 +18,7 @@
 // Everything here is decoration EXCEPT the summit marker, which is real
 // state: the bearer's strongest conviction annotates the map.
 
-import { useEffect, useState } from "react";
+import ParisMap, { useParisRoads } from "./ParisMap.jsx";
 
 // Registration crosses over the header area: [x, y, size, tone]
 const CROSSES = [
@@ -39,35 +39,8 @@ function Ast({ x, y, s = 5, tone = "s" }) {
   return <path className={"pvplus pv-" + tone} d={arms.join(" ")} />;
 }
 
-function ParisMap({ map, hot }) {
-  return (
-    <svg viewBox={`0 0 ${map.w} ${map.h}`} preserveAspectRatio="xMidYMid slice">
-      {/* buildings: very thin, never glowing */}
-      <path className="pvbld" d={map.buildings} />
-      <g className={hot ? "pvroads pvroads-hot" : "pvroads"}>
-        <path className="pvrd-minor" d={map.minor} />
-        <path className="pvrd-second" d={map.secondary} />
-        <path className="pvrd-major" d={map.major} />
-      </g>
-      <g className={hot ? "pvstars pvstars-hot" : "pvstars"}>
-        {map.stars.map(([x, y], i) => (
-          <text key={i} x={x} y={y + 5} textAnchor="middle">*</text>
-        ))}
-      </g>
-    </svg>
-  );
-}
-
 export default function PassportSecurity({ topTag, topWeight }) {
-  const [map, setMap] = useState(null);
-  useEffect(() => {
-    let live = true;
-    fetch("/paris-roads.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (live && d && d.major) setMap(d); })
-      .catch(() => {});
-    return () => { live = false; };
-  }, []);
+  const map = useParisRoads();
 
   const summit = topTag
     ? `${Math.round(Math.abs(topWeight) * 100)} ${String(topTag).toUpperCase()}`

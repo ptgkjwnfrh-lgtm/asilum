@@ -1419,3 +1419,178 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .ppid { grid-template-columns: 1fr 1fr; }
   .ppid .sp3, .ppid .sp2, .ppid > div:nth-child(3) { grid-column: 1 / -1; }
 }
+
+/* ---- UPLOAD TO MOODBOARD (redesign/upload-station) ------------------------
+   Passport foot button + the build: the map never moves — a full-viewport
+   Paris assembles chunk by chunk from the document on the way to /upload
+   (canvases injected by roadBuilder.js). */
+.ppupload {
+  position: relative; z-index: 2; width: 100%; border: none; cursor: pointer;
+  border-top: 1px solid var(--line); background: var(--bg3);
+  font-family: var(--mich); font-size: 10.5px; letter-spacing: 0.26em;
+  color: var(--ink); padding: 12px 0 13px; text-shadow: var(--glow-ink);
+  transition: background 0.15s, color 0.15s;
+}
+.ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
+.ppwarp { display: none; position: fixed; inset: 0; z-index: 400; pointer-events: none; }
+/* the veil drops fast so the still frame reads as the passport's own map
+   isolated — the base the build expands from */
+.ppbuildveil { position: absolute; inset: 0; background: var(--bg); opacity: 0;
+  transition: opacity 0.25s ease; }
+/* map layers at 0.5, passport-fit, static — the base never moves or
+   rescales; glow matches the passport hologram: roads carry
+   .pvroads-hot's filter, stars .pvstars-hot's, buildings stay
+   unfiltered (never glow) */
+.ppbuildmap { position: absolute; inset: 0; opacity: 0.5; }
+.ppbuildfx { position: absolute; inset: 0; }
+.ppbuildmap canvas { position: absolute; inset: 0; }
+.ppbuildmap canvas, .ppbuildfx canvas { width: 100%; height: 100%; display: block; }
+.ppbuild-roads { filter: drop-shadow(0 0 4px var(--sig)) drop-shadow(0 0 12px var(--sig)); }
+.ppbuild-stars { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 13px var(--red)); }
+/* /upload's background gradient fades in over the last stretch so the
+   final frame is pixel-identical to the landing page */
+.ppbuildgrad { position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s ease 1.05s;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 62%, transparent),
+    color-mix(in srgb, var(--bg) 30%, transparent) 45%,
+    color-mix(in srgb, var(--bg) 68%, transparent)); }
+.ppwarp.on .ppbuildveil { opacity: 1; }
+.ppwarp.on .ppbuildgrad { opacity: 1; }
+
+/* ---- /upload — TEACH ASTERISK: Gen X Soft Club ----------------------------
+   Curves, haze, milky glass — atmosphere over nostalgia (design law).
+   Scoped to .gx; the rest of the OS keeps its instrument skin. */
+.gx { max-width: 720px; position: relative; }
+.gx .headline { letter-spacing: 0.2em; }
+.gxblob { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+.gxb1 { width: 46vw; height: 40vh; right: -10vw; top: 4vh;
+  background: color-mix(in srgb, var(--p2) 14%, transparent); }
+.gxb2 { width: 38vw; height: 36vh; left: -8vw; bottom: -6vh;
+  background: color-mix(in srgb, var(--sig) 10%, transparent); }
+.gxhero { position: relative; z-index: 1; margin-bottom: 18px; }
+.gxcard {
+  position: relative; z-index: 1; margin: 0 0 16px; padding: 22px;
+  border: 1px solid var(--line); border-radius: 22px;
+  background: var(--chrome), color-mix(in srgb, var(--bg2) 88%, transparent);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+[data-theme="light"] .gxcard { box-shadow: 0 18px 50px rgba(110, 150, 165, 0.16); }
+.gxlabel { font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.26em;
+  color: var(--grey); margin-bottom: 14px; }
+.gxdrop {
+  display: grid; justify-items: center; gap: 7px; text-align: center;
+  border: 1.5px dashed var(--line); border-radius: 18px; padding: 30px 20px;
+  cursor: pointer; transition: border-color 0.2s, background 0.2s;
+}
+.gxdrop b { font-size: 13px; letter-spacing: 0.08em; font-weight: 400; }
+.gxdrop em { font-style: normal; font-size: 10px; color: var(--grey); max-width: 46ch; line-height: 1.6; }
+.gxdropmark { font-size: 30px; color: var(--sig); text-shadow: var(--glow); line-height: 1; }
+.gxdrop.over, .gxdrop:hover { border-color: var(--sig); background: color-mix(in srgb, var(--sig) 5%, transparent); }
+.gxdrop.busy { opacity: 0.6; pointer-events: none; }
+.gxtext {
+  width: 100%; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--bg3); color: var(--ink); font-family: var(--helv);
+  font-size: 14px; line-height: 1.6; padding: 13px 15px; resize: vertical; outline: none;
+}
+.gxtext:focus { border-color: var(--sig); }
+.gxrow { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.gxbtn {
+  border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
+  color: var(--ink); font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.2em;
+  padding: 11px 22px; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.gxbtn:hover:not(:disabled) { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
+.gxbtn:disabled { opacity: 0.4; cursor: default; }
+.gxbtn.ghost { background: none; }
+.gxhint { font-size: 10px; color: var(--faint); letter-spacing: 0.1em; }
+.gxchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.gxchip {
+  border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
+  color: var(--ink); font-family: var(--helv); font-size: 12px; letter-spacing: 0.05em;
+  padding: 8px 16px; cursor: pointer; transition: color 0.15s, border-color 0.15s, transform 0.15s;
+}
+.gxchip:hover { color: var(--sig); border-color: var(--sig); transform: translateY(-1px); }
+.gxchip:active { transform: scale(0.96); }
+.gxfoot { display: block; font-style: normal; font-size: 10px; color: var(--faint);
+  margin-top: 12px; letter-spacing: 0.06em; }
+.gxread { display: grid; gap: 9px; }
+.gxconv { display: grid; grid-template-columns: 110px 1fr 34px; gap: 12px; align-items: center; }
+.gxconv span { font-size: 11px; letter-spacing: 0.08em; }
+.gxconv b { font-family: var(--osd); font-size: 15px; font-weight: 400; color: var(--sig);
+  text-shadow: var(--glow); text-align: right; }
+.gxbar { height: 7px; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.gxbar i { display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--p2) 55%, var(--sig)), var(--sig));
+  box-shadow: var(--glow); }
+.gxheard { margin-top: 16px; display: grid; gap: 4px; }
+.gxheard .gxlabel { margin-bottom: 4px; }
+.gxheard em { font-style: normal; font-size: 11px; color: var(--grey); }
+.gxlinks { margin: 4px 0 30px; }
+@media (prefers-reduced-motion: reduce) { .ppwarp { transition: none; } }
+
+/* upload-station r2: the warped map settles as the page background; the
+   layout splits into a do-column and ASTERISK's watching rail. */
+.gxmap { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; overflow: hidden; }
+.gxmap svg { width: 100%; height: 100%; }
+/* warp hand-off: the map pinned at the passport build's exact fit; the
+   wide road tiers live outside the viewBox, so let the svg paint them */
+.gxmapfit { position: absolute; }
+.gxmapfit svg { overflow: visible; }
+.gxmap::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 62%, transparent),
+    color-mix(in srgb, var(--bg) 30%, transparent) 45%,
+    color-mix(in srgb, var(--bg) 68%, transparent)); }
+.gx { max-width: 1060px; }
+.gxlayout { position: relative; z-index: 1; display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.gxmain { display: grid; gap: 16px; min-width: 0; }
+.gxmain .gxcard { margin: 0; }
+.gxside { position: sticky; top: calc(var(--mq-h) + 22px); }
+.gxside .gxcard { margin: 0; }
+.gxasterisk { display: flex; flex-direction: column; }
+.gxdock { border-top: none; padding: 0; justify-content: center; }
+.gxdock canvas { width: 84px; height: 84px; }
+.gxlinks { margin: 16px 0 0; }
+@media (max-width: 900px) {
+  .gxlayout { grid-template-columns: 1fr; }
+  .gxside { position: static; }
+}
+
+/* upload-station r3: pinterest wall, favorites, floating plug-ins */
+.gxdrop.slim { padding: 20px 18px; }
+.gxwall { columns: 3 150px; column-gap: 10px; margin-top: 14px; }
+.gxtile { position: relative; margin: 0 0 10px; break-inside: avoid;
+  border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gxtile img { width: 100%; display: block; }
+.gxtile .gxtilex { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px;
+  border: none; border-radius: 50%; background: color-mix(in srgb, var(--bg) 72%, transparent);
+  color: var(--ink); font-size: 13px; line-height: 1; cursor: pointer; opacity: 0;
+  transition: opacity 0.15s; }
+.gxtile:hover .gxtilex { opacity: 1; }
+.gxtile .gxtilex:hover { color: var(--red); }
+.gxfavgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.gxfav { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.gxfavinput { display: grid; gap: 8px; margin-bottom: 10px; }
+.gxfavinput .gxlabel { margin-bottom: 0; }
+.gxin { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--bg3); color: var(--ink); font-family: var(--helv);
+  font-size: 12.5px; padding: 9px 15px; outline: none; }
+.gxin:focus { border-color: var(--sig); }
+.gxchip.on { display: inline-flex; align-items: center; gap: 7px;
+  border-color: var(--sig); color: var(--sig); cursor: default; }
+.gxchip.on i { font-style: normal; cursor: pointer; color: var(--grey); }
+.gxchip.on i:hover { color: var(--red); }
+/* floating plug-ins: gentle idle drift, honest coming-soon skin */
+.gxplugs { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.gxplug { border-radius: 999px; font-family: var(--mich); font-size: 8px;
+  letter-spacing: 0.2em; padding: 8px 15px; cursor: pointer; background: var(--bg3);
+  animation: gxfloat 5.2s ease-in-out infinite; }
+.gxplug.p2 { animation-duration: 6.1s; }
+.gxplug.p3 { animation-duration: 5.6s; }
+.gxplug.p4 { animation-duration: 6.7s; }
+@keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
+@media (prefers-reduced-motion: reduce) { .gxplug { animation: none; } }
+.gxviz { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gxviz canvas { display: block; width: 100%; }
+.gxasterisk .resetlink { margin-top: 14px; align-self: start; }

@@ -7,16 +7,16 @@
 // "explore this taste" hand-off.
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
-import { useEscape } from "../components/dismiss.js";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
-import BrainViz from "../components/BrainViz.jsx";
 import PassportSecurity from "../components/PassportSecurity.jsx";
+import buildRoads, { primeRoads } from "../components/roadBuilder.js";
+import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
@@ -30,14 +30,30 @@ export default function BoardPage() {
   const [following, setFollowing] = useState(false);
   const [trainText, setTrainText] = useState("");
   const [viz, setViz] = useState(null);
-  const [resetOpen, setResetOpen] = useState(false);
-  useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
-  const [resetChecked, setResetChecked] = useState(false);
   const fileRef = useRef(null);
   const photoRef = useRef(null);
   const [ppPhoto, setPpPhoto] = useState(null);
   const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "" });
   const [ticketCount, setTicketCount] = useState(0);
+  const router = useRouter();
+  const warpRef = useRef(null);
+  const parisMap = useParisRoads();
+  // pre-parse the road geometry while the bearer reads the passport, so
+  // the UPLOAD click starts its build without a parse hitch
+  useEffect(() => { if (parisMap) primeRoads(parisMap); }, [parisMap]);
+
+  // UPLOAD TO MOODBOARD (r5): the map never moves — the passport document
+  // is the root, and a full-viewport Paris assembles around it, roads
+  // arriving in randomized chunks (nearest the document first) with a
+  // brief ASCII flash before each segment solidifies. 1.5s, landing
+  // pixel-identical to /upload's background. Logic: roadBuilder.js.
+  function warpToUpload() {
+    const doc = document.querySelector(".ppdoc");
+    const overlay = warpRef.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!doc || !overlay || !parisMap || reduced) { router.push("/upload"); return; }
+    buildRoads(overlay, parisMap, doc.getBoundingClientRect(), () => router.push("/upload"));
+  }
 
   useEffect(() => {
     try { setPpPhoto(window.localStorage.getItem("asilum-pp-photo") || null); } catch {}
@@ -202,14 +218,6 @@ export default function BoardPage() {
     loadViz();
   }
 
-  async function resetBrain() {
-    await postJSON("/api/reset", { user: uid }).catch(() => {});
-    setResetOpen(false);
-    setResetChecked(false);
-    setNotice("recommendation model reset — boards, event history, tickets, and aggregate graph signals remain");
-    loadViz();
-  }
-
   function convictions() {
     if (!viz) return [];
     return Object.entries(viz.state.weights)
@@ -217,11 +225,6 @@ export default function BoardPage() {
       .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
       .slice(0, 10);
   }
-  function forgotten() {
-    if (!viz || !viz.profile || !viz.profile._meta) return [];
-    return (viz.profile._meta.forgotten || []).slice(0, 6);
-  }
-
   async function toggleFollow(board) {
     const next = !following;
     setFollowing(next);
@@ -246,18 +249,6 @@ export default function BoardPage() {
     };
     rd.readAsDataURL(f);
     e.target.value = "";
-  }
-
-  // The analysis bus shows the brain's real activity ring — the same
-  // interactions the viz renders, as machine log lines.
-  function recentActivity() {
-    return (viz?.profile?._meta?.activity || []).slice(0, 6);
-  }
-  function busTime(t) {
-    if (!t) return "--:--:--";
-    const d = new Date(t);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
   }
 
   // Data page — every field is real state, U.S.-data-page labelling:
@@ -296,6 +287,7 @@ export default function BoardPage() {
 
   return (
     <div className="wrap">
+      <div className="ppwarp" ref={warpRef} aria-hidden="true" />
       <h1 className="headline"><span className="red">*</span>YOUR PASSPORT</h1>
       <p className="deck">
         {shared
@@ -347,18 +339,9 @@ export default function BoardPage() {
             topTag={convictions()[0]?.[0]}
             topWeight={convictions()[0]?.[1] || 0}
           />
-        </div>
-      )}
-
-      {!shared && recentActivity().length > 0 && (
-        <div className="ppbus" aria-label="asterisk analysis bus">
-          <div className="psub"><span className="red">✳</span> ASTERISK — LIVE ANALYSIS BUS</div>
-          {recentActivity().map((a, i) => (
-            <div className="ppbusline" key={i}>
-              <span className="ppbust">{busTime(a.t)}</span>
-              <span className="ppbusk">[{a.kind}]</span> {a.tag}
-            </div>
-          ))}
+          <button className="ppupload" onClick={warpToUpload}>
+            ⇪ UPLOAD TO MOODBOARD →
+          </button>
         </div>
       )}
 
@@ -383,50 +366,15 @@ export default function BoardPage() {
             <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onUpload} />
           </div>
           <p className="deck" style={{ marginTop: 4 }}>clothing or anything that&apos;s your vibe.</p>
-
-          <div className="setrow">
-            <div className="setinfo">
-              <div className="setname">Asterisk Guidance</div>
-              <div className="uhandle" style={{ maxWidth: 520, whiteSpace: "normal" }}>
-                on: Home, Search, Discover, and Stylist use this Passport.
-                off: those racks stay general; the Passport remains saved.
-              </div>
-            </div>
-            <AsteriskGuidanceToggle compact className="fitbtn" />
-          </div>
-
-          <div className="brainband">
-            <div className="brainbox">
-              {viz ? <BrainViz {...viz.state} height={320} /> : <div className="empty">waking the brain…</div>}
-            </div>
-            <div className="convictions">
-              <div className="modhead">TOP 10 CONVICTIONS</div>
-              {convictions().length === 0 && (
-                <div className="pempty">no convictions yet — train it with words, saves, or a connected account.</div>
-              )}
-              {convictions().map(([tag, w], i) => (
-                <div className="convrow" key={tag}>
-                  <span className="convn">{i + 1}.</span>
-                  <span className="convtag">{tag.charAt(0) + tag.slice(1).toLowerCase()}</span>
-                  <span className="convbar"><i style={{ width: Math.min(100, Math.abs(w) * 100) + "%" }} /></span>
-                </div>
-              ))}
-              <div className="modhead" style={{ marginTop: 16 }}>RECENTLY FORGOTTEN</div>
-              {forgotten().length === 0 ? (
-                <div className="pempty">nothing forgotten yet — convictions fade after six idle days.</div>
-              ) : (
-                forgotten().map((f, i) => (
-                  <div className="convrow faded" key={i}>
-                    <span className="convtag">{f.tag.charAt(0) + f.tag.slice(1).toLowerCase()}</span>
-                    <span className="convgone">let go</span>
-                  </div>
-                ))
-              )}
-              <button className="resetlink" onClick={() => setResetOpen(true)}>
-                Reset Brain <b>[Full Amnesia]</b>
+          <div className="gxplugs" aria-label="future imports">
+            {["PINTEREST", "SPOTIFY", "APPLE MUSIC", "LETTERBOXD"].map((n, i) => (
+              <button key={n} className={"gxplug p" + (i + 1) + " soon"} style={{ animationDelay: `${i * 0.7}s` }}
+                onClick={() => setNotice(`${n.toLowerCase()} import needs real OAuth — coming soon, never simulated`)}>
+                ✳ {n}
               </button>
-            </div>
+            ))}
           </div>
+
           <hr className="rule" />
         </>
       )}
@@ -516,35 +464,6 @@ export default function BoardPage() {
         <div className="empty">No boards yet — save a piece from the feed to start one.</div>
       )}
 
-      {resetOpen && (
-        <div className="overlay" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
-            <button className="mclose" aria-label="close" onClick={() => { setResetOpen(false); setResetChecked(false); }}>×</button>
-            <h2>Full amnesia<span style={{ color: "var(--red)" }}>.</span></h2>
-            <p className="deck">
-              this permanently deletes your taste profile — every conviction,
-              streak, and forgetting log. your moodboards, orders, and the
-              shared taste graph survive. there is no undo.
-            </p>
-            <label className="toggle" style={{ margin: "10px 0 18px" }}>
-              <input
-                type="checkbox"
-                checked={resetChecked}
-                onChange={(e) => setResetChecked(e.target.checked)}
-              />
-              I understand this deletes my taste profile
-            </label>
-            <div className="controls">
-              <button className="btn" disabled={!resetChecked} onClick={resetBrain}>
-                ERASE EVERYTHING THE BRAIN KNOWS
-              </button>
-              <button className="btn ghost" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
-                keep my taste
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
