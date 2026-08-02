@@ -1,27 +1,31 @@
 // app/components/roadBuilder.js — passport → /upload build animation
-// (upload-station r5, owner decree). The map never moves: the passport
-// document is the root, and a full-viewport Paris assembles around it —
-// roads arriving chunk by chunk (nearest the document first, spreading
-// outward), each segment flashing up as ASCII line-art for a beat before
-// it solidifies into a phosphor stroke. Chunk lengths are randomized so
-// the growth reads uneven, like terrain streaming in. Exactly 2s; the
-// final frame matches /upload's static background (map at 0.5 under the
-// same gradient), so the hand-off stays continuous.
+// (upload-station r5, owner decree). At click the overlay shows a still
+// of EXACTLY the passport's own map — same fit, same pixels, isolated
+// by a fast veil. That still is the base and it NEVER moves or rescales:
+// roads assemble outward from the document's edges chunk by chunk
+// (fresh major/secondary chunks flash as ASCII dashes riding the
+// .os-scan 4px scanline grid) until Paris fills the frame at the
+// passport's own scale, then the page hands off to /upload.
 //
-// Canvas, not SVG: the map is ~26k polylines / ~52k points — an
-// accumulating canvas draws each chunk once; an FX canvas above it is
-// cleared per frame for the ASCII materialization and star pops.
+// Performance law (owner: "smooth, not heavy"): canvas, no shadowBlur
+// anywhere. Glow matches the passport hologram exactly by putting the
+// .pvroads-hot / .pvstars-hot drop-shadow filters on whole canvases
+// (GPU, once per frame) — buildings keep their own unfiltered canvas
+// because they never glow. Strokes batched into ONE path per layer per
+// frame; the expansion is a single GPU transform on the wrapper.
 
-const DURATION = 2000;
-const ASCII_MS = 90; // how long a fresh segment stays ASCII before solidifying
+const DURATION = 1500;
+const STILL_MS = 150; // the isolated passport-map beat before growth
+const ASCII_MS = 80; // how long a fresh chunk rides the scanlines
+const SCAN_PITCH = 4; // .os-scan: repeating 0 2px transparent / 2px 4px line
 
 const LAYERS = {
-  buildings: { width: 0.35, alpha: 0.5, glow: 0, ascii: false },
-  minor: { width: 0.55, alpha: 0.6, glow: 5, ascii: true },
-  secondary: { width: 0.9, alpha: 0.8, glow: 7, ascii: true },
-  major: { width: 1.4, alpha: 0.95, glow: 10, ascii: true },
+  buildings: { width: 0.35, alpha: 0.5, ascii: false },
+  minor: { width: 0.55, alpha: 0.6, ascii: false },
+  secondary: { width: 0.9, alpha: 0.8, ascii: true },
+  major: { width: 1.4, alpha: 0.95, ascii: true },
 };
-const ROAD_DELAY = { major: 0, secondary: 90, minor: 180 };
+const ROAD_DELAY = { major: 0, secondary: 60, minor: 120 };
 
 // "M97 1079L96 1067M95 1067L97 1080" → [[[97,1079],[96,1067]], …]
 function parsePolys(d) {
@@ -47,63 +51,99 @@ function chunkPoly(pts) {
   const runs = [];
   let i = 0;
   while (i < pts.length - 1) {
-    const n = 2 + Math.floor(Math.random() * 6);
+    const n = 3 + Math.floor(Math.random() * 7);
     runs.push(pts.slice(i, i + n + 1));
     i += n;
   }
   return runs;
 }
 
-// Direction → ASCII line-art character (screen y grows downward).
-const DIR_CHARS = ["-", "\\", "|", "/"];
+// Click-time smoothness: parsing ~52k points is the expensive part, so
+// the passport page primes it while the bearer is still reading — the
+// click itself only schedules and draws.
+let parsedCache = null; // { map, layers: { key: polylines } }
+export function primeRoads(map) {
+  if (!map || (parsedCache && parsedCache.map === map)) return;
+  const layers = {};
+  for (const key of Object.keys(LAYERS)) layers[key] = parsePolys(map[key]);
+  parsedCache = { map, layers };
+}
 
 export default function buildRoads(overlay, map, docRect, onDone) {
   const css = getComputedStyle(document.documentElement);
-  const SIG = css.getPropertyValue("--sig").trim() || "#38e08f";
-  const RED = css.getPropertyValue("--red").trim() || "#e5342b";
-  const GREY = css.getPropertyValue("--grey").trim() || "#8a8f98";
+  const SIG = css.getPropertyValue("--sig").trim();
+  const RED = css.getPropertyValue("--red").trim();
+  const GREY = css.getPropertyValue("--grey").trim();
   const OSD = css.getPropertyValue("--osd").trim() || "monospace";
 
   const W = window.innerWidth;
   const H = window.innerHeight;
-  // same fit as the SVG's preserveAspectRatio="xMidYMid slice"
-  const s = Math.max(W / map.w, H / map.h);
-  const tx = (W - map.w * s) / 2;
-  const ty = (H - map.h * s) / 2;
-  // the root: passport document centre, in map coordinates
-  const rx = (docRect.left + docRect.width / 2 - tx) / s;
-  const ry = (docRect.top + docRect.height / 2 - ty) / s;
+  // BASE fit: exactly the passport document's own map. Read the rendered
+  // SVG's real transform so the still frame overlays it pixel-for-pixel
+  // (the doc border shaves the box, so computing from the rect drifts ~1px)
+  let s, tx, ty;
+  const docSvg = document.querySelector(".ppholo-b svg");
+  const ctm = docSvg && docSvg.getScreenCTM && docSvg.getScreenCTM();
+  if (ctm) {
+    s = ctm.a;
+    tx = ctm.e;
+    ty = ctm.f;
+  } else {
+    s = Math.max(docRect.width / map.w, docRect.height / map.h);
+    tx = docRect.left + (docRect.width - map.w * s) / 2;
+    ty = docRect.top + (docRect.height - map.h * s) / 2;
+  }
+  // document box in map coordinates — growth radiates from its edges
+  const rl = (docRect.left - tx) / s;
+  const rt = (docRect.top - ty) / s;
+  const rr = (docRect.right - tx) / s;
+  const rb = (docRect.bottom - ty) / s;
+  const distToDoc = (p) => {
+    const dx = Math.max(rl - p[0], 0, p[0] - rr);
+    const dy = Math.max(rt - p[1], 0, p[1] - rb);
+    return Math.hypot(dx, dy);
+  };
 
   overlay.innerHTML = "";
   const veil = document.createElement("div");
   veil.className = "ppbuildveil";
   const mapWrap = document.createElement("div");
   mapWrap.className = "ppbuildmap";
-  const base = document.createElement("canvas");
-  mapWrap.appendChild(base);
-  const grad = document.createElement("div");
-  grad.className = "ppbuildgrad";
+  const cvBld = document.createElement("canvas");
+  const cvRoads = document.createElement("canvas");
+  cvRoads.className = "ppbuild-roads";
+  const cvStars = document.createElement("canvas");
+  cvStars.className = "ppbuild-stars";
+  mapWrap.append(cvBld, cvRoads, cvStars);
   const fxWrap = document.createElement("div");
   fxWrap.className = "ppbuildfx";
   const fx = document.createElement("canvas");
   fxWrap.appendChild(fx);
+  const grad = document.createElement("div");
+  grad.className = "ppbuildgrad";
   overlay.append(veil, mapWrap, grad, fxWrap);
   overlay.style.display = "block";
   requestAnimationFrame(() => {
     requestAnimationFrame(() => overlay.classList.add("on"));
   });
 
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  for (const c of [base, fx]) {
+  // persistent layers at capped retina; FX is transient — 1x is fine
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const ctxOf = (c) => {
     c.width = Math.round(W * dpr);
     c.height = Math.round(H * dpr);
-  }
-  const bctx = base.getContext("2d");
+    const g = c.getContext("2d");
+    g.scale(dpr, dpr);
+    g.lineCap = "round";
+    g.lineJoin = "round";
+    return g;
+  };
+  const gBld = ctxOf(cvBld);
+  const gRoads = ctxOf(cvRoads);
+  const gStars = ctxOf(cvStars);
+  fx.width = W;
+  fx.height = H;
   const fctx = fx.getContext("2d");
-  bctx.scale(dpr, dpr);
-  fctx.scale(dpr, dpr);
-  bctx.lineCap = "round";
-  bctx.lineJoin = "round";
   fctx.textAlign = "center";
   fctx.textBaseline = "middle";
 
@@ -111,39 +151,38 @@ export default function buildRoads(overlay, map, docRect, onDone) {
   const Y = (p) => p[1] * s + ty;
 
   // ---- schedule: every chunk gets an arrival time; distance from the
-  // root decides the wave, jitter + per-chunk step keep it uneven ----
+  // document's edge decides the wave, jitter keeps it uneven. Geometry
+  // inside the document is NOT scheduled — it is the base still frame ----
   const events = [];
   let maxD = 1;
-  const polysByLayer = {};
+  primeRoads(map);
+  const polysByLayer = parsedCache.layers;
   for (const key of Object.keys(LAYERS)) {
-    const polys = parsePolys(map[key]);
-    polysByLayer[key] = polys;
-    for (const pts of polys) {
-      const head = pts[0];
-      const tail = pts[pts.length - 1];
-      const dh = Math.hypot(head[0] - rx, head[1] - ry);
-      const dt = Math.hypot(tail[0] - rx, tail[1] - ry);
-      if (dt < dh) pts.reverse(); // grow away from the root
+    for (const pts of polysByLayer[key]) {
+      const dh = distToDoc(pts[0]);
+      const dt = distToDoc(pts[pts.length - 1]);
+      if (dt < dh) pts.reverse(); // grow away from the document
       const d = Math.min(dh, dt);
       pts.d = d;
       if (d > maxD) maxD = d;
     }
   }
   for (const key of Object.keys(LAYERS)) {
-    const L = LAYERS[key];
     for (const pts of polysByLayer[key]) {
       if (key === "buildings") {
-        // substrate: thin dim outlines, no ASCII, settled early
-        events.push({ t: (pts.d / maxD) * 700 + Math.random() * 250, layer: key, pts });
+        events.push({ t: STILL_MS + (pts.d / maxD) * 450 + Math.random() * 150, layer: key, pts });
         continue;
       }
       const runs = chunkPoly(pts);
-      const t0 = Math.min(
-        (pts.d / maxD) * 1150 + Math.random() * 350 + ROAD_DELAY[key],
-        1500
+      // quantize arrivals to ~90ms ticks: roads land in discrete pulses
+      // (the chunk-wave feel) instead of a smooth drizzle
+      let t0 = Math.min(
+        STILL_MS + (pts.d / maxD) * 680 + Math.random() * 180 + ROAD_DELAY[key],
+        1050
       );
-      let step = 45 + Math.random() * 75;
-      const budget = DURATION - 120 - ASCII_MS - t0;
+      t0 = STILL_MS + Math.round((t0 - STILL_MS) / 90) * 90;
+      let step = 55 + Math.random() * 70;
+      const budget = DURATION - 150 - ASCII_MS - t0;
       if (step * runs.length > budget) step = budget / runs.length;
       runs.forEach((run, i) => {
         events.push({ t: t0 + i * step, layer: key, pts: run });
@@ -151,70 +190,95 @@ export default function buildRoads(overlay, map, docRect, onDone) {
     }
   }
   for (const [x, y] of map.stars) {
-    events.push({ t: 1500 + Math.random() * 380, star: true, x, y });
+    events.push({
+      t: STILL_MS + (distToDoc([x, y]) / maxD) * 680 + Math.random() * 180,
+      star: true, x, y,
+    });
   }
   events.sort((a, b) => a.t - b.t);
 
-  // ---- drawing ----
-  function commit(e) {
-    if (e.star) {
-      bctx.save();
-      bctx.font = `${15 * s}px ${OSD}`;
-      bctx.textAlign = "center";
-      bctx.fillStyle = RED;
-      bctx.shadowColor = RED;
-      bctx.shadowBlur = 9;
-      bctx.fillText("*", e.x * s + tx, (e.y + 5) * s + ty);
-      bctx.restore();
-      return;
+  // ---- drawing: one path per layer per frame, no canvas shadows;
+  // glow lives on the canvas elements' CSS filters ----
+  const batch = { buildings: [], minor: [], secondary: [], major: [], star: [] };
+
+  function strokeBatch(g, list, width, alpha, color) {
+    g.beginPath();
+    for (const e of list) {
+      g.moveTo(X(e.pts[0]), Y(e.pts[0]));
+      for (let i = 1; i < e.pts.length; i++) g.lineTo(X(e.pts[i]), Y(e.pts[i]));
     }
-    const L = LAYERS[e.layer];
-    bctx.save();
-    bctx.globalAlpha = L.alpha;
-    bctx.strokeStyle = e.layer === "buildings" ? GREY : SIG;
-    bctx.lineWidth = L.width * s;
-    if (L.glow) {
-      bctx.shadowColor = SIG;
-      bctx.shadowBlur = L.glow;
-    }
-    bctx.beginPath();
-    bctx.moveTo(X(e.pts[0]), Y(e.pts[0]));
-    for (let i = 1; i < e.pts.length; i++) bctx.lineTo(X(e.pts[i]), Y(e.pts[i]));
-    bctx.stroke();
-    bctx.restore();
+    g.globalAlpha = alpha;
+    g.strokeStyle = color;
+    g.lineWidth = width;
+    g.stroke();
+    g.globalAlpha = 1;
+    list.length = 0;
   }
 
-  // fresh segment as ASCII line-art: direction-matched characters laid
-  // along the line, rerolled every few frames so it flickers
-  function drawAscii(e, age) {
-    const flick = Math.floor(age / 45);
-    fctx.globalAlpha = 0.85;
+  function drawStars(list) {
+    gStars.globalAlpha = 0.95;
+    gStars.fillStyle = RED;
+    gStars.font = `${15 * s}px ${OSD}`;
+    gStars.textAlign = "center";
+    for (const e of list) gStars.fillText("*", e.x * s + tx, (e.y + 5) * s + ty);
+    gStars.globalAlpha = 1;
+    list.length = 0;
+  }
+
+  function flushBatch() {
+    if (batch.buildings.length)
+      strokeBatch(gBld, batch.buildings, LAYERS.buildings.width * s, LAYERS.buildings.alpha, GREY);
+    for (const key of ["minor", "secondary", "major"]) {
+      if (batch[key].length)
+        strokeBatch(gRoads, batch[key], LAYERS[key].width * s, LAYERS[key].alpha, SIG);
+    }
+    if (batch.star.length) drawStars(batch.star);
+  }
+
+  // the base still frame: everything the passport itself shows, clipped
+  // to the document box — identical fit, so it overlays its own map
+  function drawStill() {
+    for (const g of [gBld, gRoads, gStars]) {
+      g.save();
+      g.beginPath();
+      g.rect(docRect.left, docRect.top, docRect.width, docRect.height);
+      g.clip();
+    }
+    const all = { buildings: [], minor: [], secondary: [], major: [] };
+    for (const key of Object.keys(all))
+      for (const pts of polysByLayer[key]) all[key].push({ pts });
+    strokeBatch(gBld, all.buildings, LAYERS.buildings.width * s, LAYERS.buildings.alpha, GREY);
+    for (const key of ["minor", "secondary", "major"])
+      strokeBatch(gRoads, all[key], LAYERS[key].width * s, LAYERS[key].alpha, SIG);
+    drawStars(map.stars.map(([x, y]) => ({ x, y })));
+    for (const g of [gBld, gRoads, gStars]) g.restore();
+  }
+  drawStill();
+
+  // fresh chunk as scanline ASCII: dashes snapped to the .os-scan 4px
+  // rows, sampled sparsely along the chunk — batched, capped, tiny font
+  function drawAsciiBatch(list) {
+    if (!list.length) return;
+    fctx.globalAlpha = 0.8;
     fctx.fillStyle = SIG;
-    fctx.font = `9px ${OSD}`;
-    for (let i = 1; i < e.pts.length; i++) {
-      const x0 = X(e.pts[i - 1]);
-      const y0 = Y(e.pts[i - 1]);
-      const x1 = X(e.pts[i]);
-      const y1 = Y(e.pts[i]);
-      const dx = x1 - x0;
-      const dy = y1 - y0;
-      const len = Math.hypot(dx, dy);
-      const a = Math.atan2(dy, dx);
-      const oct = ((Math.round(a / (Math.PI / 4)) % 4) + 4) % 4;
-      const n = Math.max(1, Math.round(len / 8));
-      for (let k = 0; k <= n; k++) {
-        const ch = (k + flick) % 5 === 0 ? "·" : DIR_CHARS[oct];
-        fctx.fillText(ch, x0 + (dx * k) / n, y0 + (dy * k) / n);
+    fctx.font = `8px ${OSD}`;
+    for (const e of list) {
+      let drawn = 0;
+      for (let i = 1; i < e.pts.length && drawn < 8; i++) {
+        const x0 = X(e.pts[i - 1]);
+        const y0 = Y(e.pts[i - 1]);
+        const x1 = X(e.pts[i]);
+        const y1 = Y(e.pts[i]);
+        const len = Math.hypot(x1 - x0, y1 - y0);
+        const n = Math.min(2, Math.max(1, Math.round(len / 12)));
+        for (let j = 0; j <= n && drawn < 8; j++, drawn++) {
+          const px = x0 + ((x1 - x0) * j) / n;
+          const py = Math.round((y0 + ((y1 - y0) * j) / n) / SCAN_PITCH) * SCAN_PITCH;
+          fctx.fillText("-", px, py);
+        }
       }
     }
-  }
-
-  function drawStarPop(e, age) {
-    const k = 1 - age / ASCII_MS; // shrink into place
-    fctx.globalAlpha = 0.9;
-    fctx.fillStyle = RED;
-    fctx.font = `${(15 + 10 * k) * s}px ${OSD}`;
-    fctx.fillText("*", e.x * s + tx, (e.y + 5) * s + ty);
+    fctx.globalAlpha = 1;
   }
 
   let start;
@@ -231,9 +295,22 @@ export default function buildRoads(overlay, map, docRect, onDone) {
     finished = true;
     clearTimeout(failSafe);
     cancelAnimationFrame(raf);
-    while (idx < events.length) commit(events[idx++]);
-    for (const p of pending) commit(p.e);
+    while (idx < events.length) {
+      const e = events[idx++];
+      (e.star ? batch.star : batch[e.layer]).push(e);
+    }
+    for (const p of pending) batch[p.e.layer].push(p.e);
+    pending.length = 0;
+    flushBatch();
     fctx.clearRect(0, 0, W, H);
+    // hand the exact fit to /upload so its background renders the map at
+    // the same passport scale — no reframe cut at landing
+    try {
+      window.sessionStorage.setItem(
+        "asilum-warp-fit",
+        JSON.stringify({ s, tx, ty, vw: W, vh: H })
+      );
+    } catch {}
     onDone();
   }
 
@@ -246,22 +323,20 @@ export default function buildRoads(overlay, map, docRect, onDone) {
     }
     while (idx < events.length && events[idx].t <= t) {
       const e = events[idx++];
-      if (!e.star && !LAYERS[e.layer].ascii) commit(e);
-      else pending.push({ e, born: t });
+      if (e.star) batch.star.push(e);
+      else if (LAYERS[e.layer].ascii) pending.push({ e, born: t });
+      else batch[e.layer].push(e);
     }
-    fctx.clearRect(0, 0, W, H);
     for (let i = pending.length - 1; i >= 0; i--) {
       const p = pending[i];
-      const age = t - p.born;
-      if (age >= ASCII_MS) {
-        commit(p.e);
+      if (t - p.born >= ASCII_MS) {
+        batch[p.e.layer].push(p.e);
         pending.splice(i, 1);
-      } else if (p.e.star) {
-        drawStarPop(p.e, age);
-      } else {
-        drawAscii(p.e, age);
       }
     }
+    flushBatch();
+    fctx.clearRect(0, 0, W, H);
+    drawAsciiBatch(pending.map((p) => p.e));
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);

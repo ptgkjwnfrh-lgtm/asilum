@@ -5,10 +5,13 @@
 # by hand. Re-run to refresh. Requires network; no external packages.
 #
 # Layers fetched around Paris centre (48.8566, 2.3522):
-#   major:     motorway/trunk/primary within 14 km
-#   secondary: secondary within 14 km
+#   major:     motorway/trunk/primary within 31 km (fills passport-scale
+#              screens edge to edge — upload-station r5 warp landing)
+#   secondary: secondary within 22 km
 #   minor:     tertiary + residential-grade within 4.6 km (full city core)
 #   buildings: building footprints within 1.2 km
+# The viewBox stays 1420x1000: the passport document still crops to the
+# same frame; the wider tiers only exist for full-screen renderings.
 # Stars: junction clusters in the full-detail core where >= 5 road arms
 # genuinely meet (roundabout plazas like l'Étoile collapse to one cluster).
 
@@ -64,11 +67,17 @@ def dp(points, eps):
         return left[:-1] + dp(points[imax:], eps)
     return [points[0], points[-1]]
 
-def path_of(ways_geom, eps, closed=False):
+# wide tiers keep everything a passport-scale screen can show (desktop,
+# ultrawide, tall phones); core tiers keep the old tight crop
+ROAD_BOUNDS = (-900, W + 900, -700, H + 600)
+CORE_BOUNDS = (-80, W + 80, -80, H + 80)
+
+def path_of(ways_geom, eps, closed=False, bounds=CORE_BOUNDS):
+    x0, x1, y0, y1 = bounds
     parts, pts_total = [], 0
     for geom in ways_geom:
         pts = [project(g["lat"], g["lon"]) for g in geom]
-        pts = [(x, y) for x, y in pts if -80 <= x <= W + 80 and -80 <= y <= H + 80] \
+        pts = [(x, y) for x, y in pts if x0 <= x <= x1 and y0 <= y <= y1] \
             if not closed else pts
         if len(pts) < 2:
             continue
@@ -85,16 +94,16 @@ def path_of(ways_geom, eps, closed=False):
     return "".join(parts), pts_total
 
 print("fetching major roads…", file=sys.stderr)
-major = overpass('way["highway"~"^(motorway|trunk|primary)$"](around:14000,%f,%f);out geom qt;' % CENTER)
+major = overpass('way["highway"~"^(motorway|trunk|primary)$"](around:31000,%f,%f);out geom qt;' % CENTER)
 print("fetching secondary…", file=sys.stderr)
-second = overpass('way["highway"="secondary"](around:14000,%f,%f);out geom qt;' % CENTER)
+second = overpass('way["highway"="secondary"](around:22000,%f,%f);out geom qt;' % CENTER)
 print("fetching core streets (with node refs)…", file=sys.stderr)
 core = overpass('way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|pedestrian)$"](around:4600,%f,%f);out body qt;>;out skel qt;' % CENTER)
 print("fetching buildings…", file=sys.stderr)
 blds = overpass('way["building"](around:1200,%f,%f);out geom qt;' % CENTER)
 
-major_path, n1 = path_of([w["geometry"] for w in major["elements"] if "geometry" in w], 1.6)
-second_path, n2 = path_of([w["geometry"] for w in second["elements"] if "geometry" in w], 1.4)
+major_path, n1 = path_of([w["geometry"] for w in major["elements"] if "geometry" in w], 1.6, bounds=ROAD_BOUNDS)
+second_path, n2 = path_of([w["geometry"] for w in second["elements"] if "geometry" in w], 1.4, bounds=ROAD_BOUNDS)
 
 nodes = {e["id"]: (e["lat"], e["lon"]) for e in core["elements"] if e["type"] == "node"}
 core_ways = [e for e in core["elements"] if e["type"] == "way"]

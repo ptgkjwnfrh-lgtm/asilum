@@ -45,6 +45,22 @@ export default function UploadPage() {
   const [designers, setDesigners] = useState([]);
   const fileRef = useRef(null);
   const map = useParisRoads();
+  // arriving from the passport build: reuse its exact fit so the
+  // background IS the animation's last frame (no reframe cut). Read
+  // synchronously so the first painted frame already matches; direct
+  // visits (or a resized window) fall back to the viewport slice fit.
+  const [warpFit] = useState(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const f = JSON.parse(window.sessionStorage.getItem("asilum-warp-fit"));
+      if (
+        f && Number.isFinite(f.s) && f.s > 0 &&
+        Math.abs(f.vw - window.innerWidth) < 2 &&
+        Math.abs(f.vh - window.innerHeight) < 2
+      ) return f;
+    } catch {}
+    return null;
+  });
   const [resetOpen, setResetOpen] = useState(false);
   const [resetChecked, setResetChecked] = useState(false);
   useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
@@ -212,7 +228,23 @@ export default function UploadPage() {
 
   return (
     <div className="wrap gx">
-      {map && <div className="gxmap" aria-hidden="true"><ParisMap map={map} hot /></div>}
+      {map && (
+        <div className="gxmap" aria-hidden="true">
+          {warpFit ? (
+            <div
+              className="gxmapfit"
+              style={{
+                left: warpFit.tx, top: warpFit.ty,
+                width: map.w * warpFit.s, height: map.h * warpFit.s,
+              }}
+            >
+              <ParisMap map={map} hot />
+            </div>
+          ) : (
+            <ParisMap map={map} hot />
+          )}
+        </div>
+      )}
       <div className="gxblob gxb1" aria-hidden="true" />
       <div className="gxblob gxb2" aria-hidden="true" />
 

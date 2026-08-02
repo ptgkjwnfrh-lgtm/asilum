@@ -13,7 +13,7 @@ import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl 
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
-import buildRoads from "../components/roadBuilder.js";
+import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
@@ -38,11 +38,14 @@ export default function BoardPage() {
   const router = useRouter();
   const warpRef = useRef(null);
   const parisMap = useParisRoads();
+  // pre-parse the road geometry while the bearer reads the passport, so
+  // the UPLOAD click starts its build without a parse hitch
+  useEffect(() => { if (parisMap) primeRoads(parisMap); }, [parisMap]);
 
   // UPLOAD TO MOODBOARD (r5): the map never moves — the passport document
   // is the root, and a full-viewport Paris assembles around it, roads
   // arriving in randomized chunks (nearest the document first) with a
-  // brief ASCII flash before each segment solidifies. 2s, landing
+  // brief ASCII flash before each segment solidifies. 1.5s, landing
   // pixel-identical to /upload's background. Logic: roadBuilder.js.
   function warpToUpload() {
     const doc = document.querySelector(".ppdoc");
