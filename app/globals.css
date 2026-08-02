@@ -1552,7 +1552,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxside .gxcard { margin: 0; }
 .gxasterisk { display: flex; flex-direction: column; }
 .gxdock { border-top: none; padding: 0; justify-content: center; }
-.gxdock canvas { width: 84px; height: 84px; }
+.gxdock canvas { width: 200px; height: 200px; }
 .gxlinks { margin: 16px 0 0; }
 @media (max-width: 900px) {
   .gxlayout { grid-template-columns: 1fr; }

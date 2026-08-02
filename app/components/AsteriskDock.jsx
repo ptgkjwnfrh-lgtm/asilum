@@ -3,10 +3,11 @@
 // app/components/AsteriskDock.jsx — ASTERISK's living form (owner decree,
 // redesign/asterisk-hologram): an interactive 3D hologram entity built
 // from exactly three layers —
-//   1. the five-point asterisk core: thick, dense, strongest glow (red);
-//   2. a translucent body of color breathing inside the shell;
-//   3. the ASCII hologram shell: semi-translucent character sphere with
-//      two tilted orbit rings (OG console-dashboard silhouette),
+//   1. the five-point asterisk core: blocky, dense, thick, strongest
+//      glow (red, square-capped triple pass);
+//   2. a body of color filling the shell, present but see-through;
+//   3. the ASCII hologram shell: transparent character sphere whose
+//      glyphs flash bright as it flickers,
 // all under a classic sci-fi hologram treatment (scanline banding,
 // flutter, a slow roll bar, the odd glitch slice). Drag to spin it; it
 // keeps drifting with inertia. Pure canvas, no libraries. Same form in
@@ -47,18 +48,6 @@ export default function AsteriskDock({
       for (let j = 0; j < n; j++) {
         const th = (j / n) * Math.PI * 2;
         shell.push({ x: Math.cos(th) * r, y, z: Math.sin(th) * r, seed: Math.random() });
-      }
-    }
-    const rings = [];
-    for (let k = 0; k < 2; k++) {
-      const tilt = k ? 0.85 : -0.55;
-      const ct = Math.cos(tilt);
-      const st = Math.sin(tilt);
-      for (let j = 0; j < 26; j++) {
-        const th = (j / 26) * Math.PI * 2;
-        const rx = Math.cos(th) * 1.3;
-        const rz = Math.sin(th) * 1.3;
-        rings.push({ x: rx, y: st * rz, z: ct * rz, dir: k ? 1 : -1, seed: Math.random() });
       }
     }
     // five arms of the inner asterisk (object space, point up)
@@ -107,16 +96,18 @@ export default function AsteriskDock({
       x.textAlign = "center";
       x.textBaseline = "middle";
 
-      // layer 3 — the ASCII shell: semi-translucent, never solid
-      const drawPoint = (px2, py2, z, seed, ring) => {
+      // layer 3 — the ASCII shell: genuinely transparent at rest, with
+      // individual glyphs flashing bright as the hologram flickers
+      const drawPoint = (px2, py2, z, seed) => {
         const depth = (z + 1.3) / 2.6; // 0 back → 1 front
-        const a = (0.08 + depth * 0.55) * flick * (0.85 + hover * 0.15);
-        const ch = ring
-          ? "·"
-          : depth > 0.72 ? "*" : depth > 0.45 ? "+" : seed > 0.5 ? "·" : ":";
-        x.globalAlpha = a;
+        const spark = Math.sin(t * 6 + seed * 47) > 0.9;
+        const a = spark
+          ? (0.55 + depth * 0.45) * flick
+          : (0.04 + depth * 0.22) * flick * (0.85 + hover * 0.15);
+        const ch = spark ? "*" : depth > 0.6 ? "*" : depth > 0.4 ? "+" : seed > 0.5 ? "·" : ":";
+        x.globalAlpha = Math.min(1, a);
         x.fillStyle = SIG;
-        x.font = `${Math.max(6, W * (ring ? 0.055 : 0.07) * (0.75 + depth * 0.45))}px ${OSD}`;
+        x.font = `${Math.max(6, W * 0.07 * (0.75 + depth * 0.45))}px ${OSD}`;
         x.fillText(ch, px2, py2);
       };
 
@@ -125,33 +116,28 @@ export default function AsteriskDock({
       const projected = [];
       for (const p of shell) {
         const [X1, Y1, Z1] = rot(p, sy, cy2, sp, cp);
-        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed, 0]);
-      }
-      const spin = t * 0.5;
-      for (const p of rings) {
-        const th = spin * p.dir;
-        const q = { x: p.x * Math.cos(th) + p.z * Math.sin(th), y: p.y, z: -p.x * Math.sin(th) + p.z * Math.cos(th) };
-        const [X1, Y1, Z1] = rot(q, sy, cy2, sp, cp);
-        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed, 1]);
+        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed]);
       }
       for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
 
-      // layer 2 — the translucent body of color, breathing inside the shell
-      const br = R * (0.78 + Math.sin(t * 1.1) * 0.04);
+      // layer 2 — the body of color: big and present, filling the shell
+      // so the core has room to breathe inside it
+      const br = R * (0.98 + Math.sin(t * 1.1) * 0.03);
       const body = x.createRadialGradient(cx - br * 0.2, cyM - br * 0.25, br * 0.1, cx, cyM, br);
       body.addColorStop(0, SIG);
-      body.addColorStop(0.65, SIG);
+      body.addColorStop(0.7, SIG);
       body.addColorStop(1, "rgba(0,0,0,0)");
       x.save();
-      x.globalAlpha = (0.16 + hover * 0.06) * flick;
+      x.globalAlpha = (0.32 + hover * 0.08) * flick;
       x.fillStyle = body;
       x.beginPath();
       x.arc(cx, cyM, br, 0, Math.PI * 2);
       x.fill();
       x.restore();
 
-      // layer 1 — the five-point asterisk core: thick, dense, strongest
-      // glow — red, the only accent voice; slow counter-rotation
+      // layer 1 — the five-point asterisk core: blocky, dense, thick —
+      // square-capped triple pass, strongest glow on the entity; red,
+      // the only accent voice; slow counter-rotation
       const aspin = -t * 0.35;
       const tips = ARMS.map(([ax, ay]) => {
         const p = { x: ax * Math.cos(aspin), y: -ay, z: ax * Math.sin(aspin) };
@@ -171,9 +157,10 @@ export default function AsteriskDock({
       x.save();
       x.strokeStyle = RED;
       x.shadowColor = RED;
-      x.lineCap = "round";
-      strokeArms(Math.max(3, W * 0.075), 0.3 * flick, W * 0.12); // halo pass
-      strokeArms(Math.max(2, W * 0.042), (0.92 + hover * 0.08) * flick, W * 0.07); // dense core
+      x.lineCap = "square";
+      strokeArms(Math.max(5, W * 0.15), 0.22 * flick, W * 0.16); // halo pass
+      strokeArms(Math.max(4, W * 0.1), 0.6 * flick, W * 0.1); // density pass
+      strokeArms(Math.max(3, W * 0.065), (0.98 + hover * 0.02) * flick, W * 0.06); // blocky core
       x.restore();
 
       for (const pr of projected) if (pr[2] >= 0) drawPoint(...pr);
