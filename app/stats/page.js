@@ -7,7 +7,7 @@
 // most-engaged pieces.
 
 import { useEffect, useState } from "react";
-import BrainViz from "../components/BrainViz.jsx";
+import AsteriskDock from "../components/AsteriskDock.jsx";
 import { vizState } from "../../lib/brain/memory.js";
 import { getUid, authorizedFetch } from "../../lib/client.js";
 
@@ -36,7 +36,7 @@ export default function StatsPage() {
         <>
           <h3 className="statshead">your brain — drag to rotate</h3>
           <div style={{ border: "1px solid var(--line)", marginBottom: 10 }}>
-            <BrainViz {...viz} />
+            <AsteriskDock size={220} className="os-dock statsdock" />
           </div>
         </>
       )}

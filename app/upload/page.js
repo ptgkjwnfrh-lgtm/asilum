@@ -24,7 +24,6 @@ import { mapArtist } from "../../lib/music-mapping/index.js";
 import { setFollowBrand, followedBrands } from "../../lib/social.js";
 import AsteriskDock from "../components/AsteriskDock.jsx";
 import ParisMap, { useParisRoads } from "../components/ParisMap.jsx";
-import BrainViz from "../components/BrainViz.jsx";
 import Notice from "../components/Notice.jsx";
 import { useEscape } from "../components/dismiss.js";
 
@@ -324,9 +323,6 @@ export default function UploadPage() {
         <aside className="gxside">
           <section className="gxcard gxasterisk">
             <AsteriskDock words={DOCK_WORDS} className="os-dock gxdock" />
-            <div className="gxviz">
-              {viz && <BrainViz {...viz.state} height={190} />}
-            </div>
             <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT ASTERISK HOLDS</div>
             {convictions().length === 0 ? (
               <em className="gxfoot">nothing yet — the record starts with your first pin.</em>

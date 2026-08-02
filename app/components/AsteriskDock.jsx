@@ -1,15 +1,19 @@
 "use client";
 
 // app/components/AsteriskDock.jsx — ASTERISK's living form (owner decree,
-// redesign/asterisk-hologram): an interactive 3D ASCII hologram orb in
-// the spirit of the OG console dashboard — a character-built sphere with
-// two tilted orbit rings, rendered like a classic sci-fi hologram
-// (scanline banding, flutter, a slow roll bar, the odd glitch slice),
-// with a transparent glowing five-point red asterisk suspended inside.
-// Drag to spin it; it keeps drifting with inertia. Pure canvas, no
-// libraries. Same form in both interfaces; colors come from the tokens
-// so both themes hold. prefers-reduced-motion: one static frame, no
-// ambient loop (drag still re-renders, user-initiated).
+// redesign/asterisk-hologram): an interactive 3D hologram entity built
+// from exactly three layers —
+//   1. the five-point asterisk core: thick, dense, strongest glow (red);
+//   2. a translucent body of color breathing inside the shell;
+//   3. the ASCII hologram shell: semi-translucent character sphere with
+//      two tilted orbit rings (OG console-dashboard silhouette),
+// all under a classic sci-fi hologram treatment (scanline banding,
+// flutter, a slow roll bar, the odd glitch slice). Drag to spin it; it
+// keeps drifting with inertia. Pure canvas, no libraries. Same form in
+// both interfaces; colors come from tokens so both themes hold.
+// prefers-reduced-motion: one static frame, no ambient loop (drag still
+// re-renders, user-initiated). This entity also replaced BrainViz (the
+// floating-word taste sphere) on /stats and /upload.
 // Optional props: size (canvas px), words (state cycle), className.
 
 import { useEffect, useRef, useState } from "react";
@@ -103,9 +107,10 @@ export default function AsteriskDock({
       x.textAlign = "center";
       x.textBaseline = "middle";
 
+      // layer 3 — the ASCII shell: semi-translucent, never solid
       const drawPoint = (px2, py2, z, seed, ring) => {
         const depth = (z + 1.3) / 2.6; // 0 back → 1 front
-        const a = (0.1 + depth * 0.75) * flick * (0.85 + hover * 0.15);
+        const a = (0.08 + depth * 0.55) * flick * (0.85 + hover * 0.15);
         const ch = ring
           ? "·"
           : depth > 0.72 ? "*" : depth > 0.45 ? "+" : seed > 0.5 ? "·" : ":";
@@ -131,24 +136,44 @@ export default function AsteriskDock({
       }
       for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
 
-      // the five-point asterisk: transparent, glowing, slowly counter-
-      // rotating inside the shell — red, the only accent voice
+      // layer 2 — the translucent body of color, breathing inside the shell
+      const br = R * (0.78 + Math.sin(t * 1.1) * 0.04);
+      const body = x.createRadialGradient(cx - br * 0.2, cyM - br * 0.25, br * 0.1, cx, cyM, br);
+      body.addColorStop(0, SIG);
+      body.addColorStop(0.65, SIG);
+      body.addColorStop(1, "rgba(0,0,0,0)");
       x.save();
-      x.globalAlpha = (0.42 + hover * 0.18) * flick;
+      x.globalAlpha = (0.16 + hover * 0.06) * flick;
+      x.fillStyle = body;
+      x.beginPath();
+      x.arc(cx, cyM, br, 0, Math.PI * 2);
+      x.fill();
+      x.restore();
+
+      // layer 1 — the five-point asterisk core: thick, dense, strongest
+      // glow — red, the only accent voice; slow counter-rotation
+      const aspin = -t * 0.35;
+      const tips = ARMS.map(([ax, ay]) => {
+        const p = { x: ax * Math.cos(aspin), y: -ay, z: ax * Math.sin(aspin) };
+        return rot({ x: p.x * 0.62, y: p.y * 0.62, z: p.z * 0.62 }, sy, cy2, sp, cp);
+      });
+      const strokeArms = (width, alpha, blur) => {
+        x.globalAlpha = alpha;
+        x.lineWidth = width;
+        x.shadowBlur = blur;
+        x.beginPath();
+        for (const [X1, Y1] of tips) {
+          x.moveTo(cx, cyM);
+          x.lineTo(cx + X1 * R, cyM - Y1 * R);
+        }
+        x.stroke();
+      };
+      x.save();
       x.strokeStyle = RED;
       x.shadowColor = RED;
-      x.shadowBlur = W * 0.05;
-      x.lineWidth = Math.max(1.4, W * 0.02);
       x.lineCap = "round";
-      const aspin = -t * 0.35;
-      x.beginPath();
-      for (const [ax, ay] of ARMS) {
-        const p = { x: ax * Math.cos(aspin), y: -ay, z: ax * Math.sin(aspin) };
-        const [X1, Y1] = rot({ x: p.x * 0.62, y: p.y * 0.62, z: p.z * 0.62 }, sy, cy2, sp, cp);
-        x.moveTo(cx, cyM);
-        x.lineTo(cx + X1 * R, cyM - Y1 * R);
-      }
-      x.stroke();
+      strokeArms(Math.max(3, W * 0.075), 0.3 * flick, W * 0.12); // halo pass
+      strokeArms(Math.max(2, W * 0.042), (0.92 + hover * 0.08) * flick, W * 0.07); // dense core
       x.restore();
 
       for (const pr of projected) if (pr[2] >= 0) drawPoint(...pr);

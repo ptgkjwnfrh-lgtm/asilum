@@ -1594,6 +1594,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 @keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
 @media (prefers-reduced-motion: reduce) { .gxplug { animation: none; } }
-.gxviz { margin-top: 12px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
-.gxviz canvas { display: block; width: 100%; }
+/* /stats: the asterisk entity at reading size (replaced BrainViz) */
+.statsdock { border-top: none; justify-content: center; padding: 16px 0; }
+.statsdock canvas { width: 220px; height: 220px; }
 .gxasterisk .resetlink { margin-top: 14px; align-self: start; }
