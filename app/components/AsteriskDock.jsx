@@ -1,9 +1,15 @@
 "use client";
 
-// app/components/AsteriskDock.jsx — ASTERISK's living form: rotating
-// asterisk with colour cores in MODULE RAIL, a breathing orb in ORB HUB.
-// Pure canvas, respects prefers-reduced-motion. Extracted from the shell
-// (redesign/upload-station) so the engine can also live on /upload.
+// app/components/AsteriskDock.jsx — ASTERISK's living form (owner decree,
+// redesign/asterisk-hologram): an interactive 3D ASCII hologram orb in
+// the spirit of the OG console dashboard — a character-built sphere with
+// two tilted orbit rings, rendered like a classic sci-fi hologram
+// (scanline banding, flutter, a slow roll bar, the odd glitch slice),
+// with a transparent glowing five-point red asterisk suspended inside.
+// Drag to spin it; it keeps drifting with inertia. Pure canvas, no
+// libraries. Same form in both interfaces; colors come from the tokens
+// so both themes hold. prefers-reduced-motion: one static frame, no
+// ambient loop (drag still re-renders, user-initiated).
 // Optional props: size (canvas px), words (state cycle), className.
 
 import { useEffect, useRef, useState } from "react";
@@ -24,57 +30,213 @@ export default function AsteriskDock({
     if (!cv) return;
     const x = cv.getContext("2d");
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+    // ---- 3D point field: sphere shell + two tilted orbit rings ----
+    const shell = [];
+    const LATS = 7;
+    for (let i = 1; i <= LATS; i++) {
+      const phi = (i / (LATS + 1)) * Math.PI;
+      const r = Math.sin(phi);
+      const y = Math.cos(phi);
+      const n = Math.max(6, Math.round(r * 22));
+      for (let j = 0; j < n; j++) {
+        const th = (j / n) * Math.PI * 2;
+        shell.push({ x: Math.cos(th) * r, y, z: Math.sin(th) * r, seed: Math.random() });
+      }
+    }
+    const rings = [];
+    for (let k = 0; k < 2; k++) {
+      const tilt = k ? 0.85 : -0.55;
+      const ct = Math.cos(tilt);
+      const st = Math.sin(tilt);
+      for (let j = 0; j < 26; j++) {
+        const th = (j / 26) * Math.PI * 2;
+        const rx = Math.cos(th) * 1.3;
+        const rz = Math.sin(th) * 1.3;
+        rings.push({ x: rx, y: st * rz, z: ct * rz, dir: k ? 1 : -1, seed: Math.random() });
+      }
+    }
+    // five arms of the inner asterisk (object space, point up)
+    const ARMS = [];
+    for (let k = 0; k < 5; k++) {
+      const a = ((-90 + k * 72) * Math.PI) / 180;
+      ARMS.push([Math.cos(a), Math.sin(a)]);
+    }
+
+    let yaw = 0.7;
+    let pitch = -0.3;
+    let vyaw = 0.0055;
+    let vpitch = 0;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let hover = 0;
     let raf = 0;
     let t = 0;
-    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+    const rot = (p, sy, cy2, sp, cp) => {
+      const x1 = p.x * cy2 + p.z * sy;
+      const z1 = -p.x * sy + p.z * cy2;
+      const y1 = p.y * cp - z1 * sp;
+      const z2 = p.y * sp + z1 * cp;
+      return [x1, y1, z2];
+    };
+
+    const draw = () => {
+      const W = cv.width;
+      const H = cv.height;
+      const cx = W / 2;
+      const cyM = H / 2;
+      const R = W * 0.3;
+      const SIG = css("--sig");
+      const RED = css("--red");
+      const OSD = css("--osd") || "monospace";
+      x.clearRect(0, 0, W, H);
+
+      // hologram flutter: the whole projection breathes in brightness
+      const flick = rm ? 1 : 0.78 + 0.22 * Math.abs(Math.sin(t * 9.1) * Math.sin(t * 3.7));
+      const sy = Math.sin(yaw);
+      const cy2 = Math.cos(yaw);
+      const sp = Math.sin(pitch);
+      const cp = Math.cos(pitch);
+      x.textAlign = "center";
+      x.textBaseline = "middle";
+
+      const drawPoint = (px2, py2, z, seed, ring) => {
+        const depth = (z + 1.3) / 2.6; // 0 back → 1 front
+        const a = (0.1 + depth * 0.75) * flick * (0.85 + hover * 0.15);
+        const ch = ring
+          ? "·"
+          : depth > 0.72 ? "*" : depth > 0.45 ? "+" : seed > 0.5 ? "·" : ":";
+        x.globalAlpha = a;
+        x.fillStyle = SIG;
+        x.font = `${Math.max(6, W * (ring ? 0.055 : 0.07) * (0.75 + depth * 0.45))}px ${OSD}`;
+        x.fillText(ch, px2, py2);
+      };
+
+      // back hemisphere first, inner asterisk, then front — so the glyph
+      // reads as INSIDE the transparent shell
+      const projected = [];
+      for (const p of shell) {
+        const [X1, Y1, Z1] = rot(p, sy, cy2, sp, cp);
+        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed, 0]);
+      }
+      const spin = t * 0.5;
+      for (const p of rings) {
+        const th = spin * p.dir;
+        const q = { x: p.x * Math.cos(th) + p.z * Math.sin(th), y: p.y, z: -p.x * Math.sin(th) + p.z * Math.cos(th) };
+        const [X1, Y1, Z1] = rot(q, sy, cy2, sp, cp);
+        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed, 1]);
+      }
+      for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
+
+      // the five-point asterisk: transparent, glowing, slowly counter-
+      // rotating inside the shell — red, the only accent voice
+      x.save();
+      x.globalAlpha = (0.42 + hover * 0.18) * flick;
+      x.strokeStyle = RED;
+      x.shadowColor = RED;
+      x.shadowBlur = W * 0.05;
+      x.lineWidth = Math.max(1.4, W * 0.02);
+      x.lineCap = "round";
+      const aspin = -t * 0.35;
+      x.beginPath();
+      for (const [ax, ay] of ARMS) {
+        const p = { x: ax * Math.cos(aspin), y: -ay, z: ax * Math.sin(aspin) };
+        const [X1, Y1] = rot({ x: p.x * 0.62, y: p.y * 0.62, z: p.z * 0.62 }, sy, cy2, sp, cp);
+        x.moveTo(cx, cyM);
+        x.lineTo(cx + X1 * R, cyM - Y1 * R);
+      }
+      x.stroke();
+      x.restore();
+
+      for (const pr of projected) if (pr[2] >= 0) drawPoint(...pr);
+      x.globalAlpha = 1;
+
+      // ---- classic hologram treatment ----
+      // scanline banding: thin every other band regardless of theme
+      x.globalCompositeOperation = "destination-out";
+      x.fillStyle = "rgba(0,0,0,0.32)";
+      for (let yy = 0; yy < H; yy += 4) x.fillRect(0, yy, W, 1.5);
+      // slow roll bar brightening what it crosses
+      if (!rm) {
+        x.globalCompositeOperation = "source-atop";
+        const ry = ((t * 26) % (H + 30)) - 15;
+        x.fillStyle = "rgba(255,255,255,0.15)";
+        x.fillRect(0, ry, W, H * 0.09);
+      }
+      x.globalCompositeOperation = "source-over";
+      // the odd glitch: a horizontal slice slips sideways for a beat
+      if (!rm && Math.sin(t * 1.3) > 0.995) {
+        const gy = (t * 173) % (H * 0.8);
+        x.drawImage(cv, 0, gy, W, H * 0.06, W * 0.035, gy, W, H * 0.06);
+      }
+    };
+
     const frame = () => {
       t += 0.014;
-      const W = cv.width, H = cv.height, cx = W / 2, cy = H / 2, R = W * 0.36;
-      const orb = document.documentElement.dataset.model === "02";
-      x.clearRect(0, 0, W, H);
-      const cols = [css("--sig"), css("--p2"), "#5fd8e8", css("--red")];
-      if (orb) {
-        const rr = R * (0.9 + Math.sin(t * 1.4) * 0.1);
-        const g = x.createRadialGradient(cx - 6, cy - 8, 2, cx, cy, rr);
-        g.addColorStop(0, "rgba(255,255,255,.85)");
-        g.addColorStop(0.35, css("--sig"));
-        g.addColorStop(1, "rgba(0,0,0,.15)");
-        x.fillStyle = g; x.shadowColor = css("--sig"); x.shadowBlur = 16;
-        x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); x.shadowBlur = 0;
-        for (let i = 0; i < 6; i++) {
-          const a = t * 1.2 + i * 1.05;
-          x.fillStyle = "rgba(255,255,255,.8)";
-          x.beginPath(); x.arc(cx + Math.cos(a) * rr * 1.25, cy + Math.sin(a) * rr * 0.5, 1.8, 0, Math.PI * 2); x.fill();
-        }
-      } else {
-        x.save(); x.translate(cx, cy); x.rotate(-t * 0.35);
-        x.strokeStyle = css("--grey"); x.setLineDash([4, 7]); x.lineWidth = 1.4;
-        x.beginPath(); x.arc(0, 0, R * 1.08, 0, Math.PI * 2); x.stroke(); x.setLineDash([]); x.restore();
-        x.save(); x.translate(cx, cy); x.rotate(t * 0.5);
-        x.strokeStyle = css("--ink"); x.lineWidth = 3.2; x.lineCap = "round";
-        x.shadowColor = css("--sig"); x.shadowBlur = 10;
-        for (let i = 0; i < 6; i++) {
-          x.rotate(Math.PI / 3);
-          const w = R * (0.98 + Math.sin(t * 2 + i) * 0.07);
-          x.beginPath(); x.moveTo(0, -R * 0.2); x.lineTo(0, -w); x.stroke();
-        }
-        x.shadowBlur = 0; x.restore();
-        cols.forEach((c, i) => {
-          const a = t * (1.1 + i * 0.3) + i * 1.57;
-          const r = R * (0.5 + 0.3 * Math.sin(t * 0.7 + i * 2));
-          x.fillStyle = c; x.shadowColor = c; x.shadowBlur = 8;
-          x.beginPath(); x.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r * 0.92, 2.8, 0, Math.PI * 2); x.fill();
-          x.shadowBlur = 0;
-        });
+      if (!dragging) {
+        yaw += vyaw;
+        pitch += vpitch;
+        vyaw += (0.0055 - vyaw) * 0.01; // inertia settles back to idle drift
+        vpitch *= 0.95;
+        pitch = Math.max(-1.2, Math.min(1.2, pitch));
       }
-      if (!rm) raf = requestAnimationFrame(frame);
+      draw();
+      raf = requestAnimationFrame(frame);
     };
-    frame();
-    return () => cancelAnimationFrame(raf);
+
+    // ---- interaction: drag to spin, inertia on release ----
+    const down = (e) => {
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      cv.setPointerCapture && cv.setPointerCapture(e.pointerId);
+    };
+    const move = (e) => {
+      if (dragging) {
+        const k = 1 / (cv.getBoundingClientRect().width || 1);
+        vyaw = (e.clientX - lastX) * k * 4 * 0.06;
+        vpitch = (e.clientY - lastY) * k * 4 * 0.06;
+        yaw += (e.clientX - lastX) * k * 4;
+        pitch = Math.max(-1.2, Math.min(1.2, pitch + (e.clientY - lastY) * k * 4));
+        lastX = e.clientX;
+        lastY = e.clientY;
+        if (rm) draw();
+      }
+    };
+    const up = () => { dragging = false; };
+    const enter = () => { hover = 1; };
+    const leave = () => { hover = 0; };
+    cv.addEventListener("pointerdown", down);
+    cv.addEventListener("pointermove", move);
+    cv.addEventListener("pointerup", up);
+    cv.addEventListener("pointercancel", up);
+    cv.addEventListener("pointerenter", enter);
+    cv.addEventListener("pointerleave", leave);
+
+    if (rm) draw();
+    else frame();
+    return () => {
+      cancelAnimationFrame(raf);
+      cv.removeEventListener("pointerdown", down);
+      cv.removeEventListener("pointermove", move);
+      cv.removeEventListener("pointerup", up);
+      cv.removeEventListener("pointercancel", up);
+      cv.removeEventListener("pointerenter", enter);
+      cv.removeEventListener("pointerleave", leave);
+    };
   }, []);
   return (
     <div className={className}>
-      <canvas ref={canvasRef} width={size} height={size} aria-hidden="true" />
+      <canvas
+        ref={canvasRef}
+        width={size * 2}
+        height={size * 2}
+        aria-hidden="true"
+        className="os-holo"
+      />
       <div className="t">*ASTERISK<br /><b>{state}</b></div>
     </div>
   );
