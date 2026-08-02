@@ -151,19 +151,48 @@ export default function AsteriskDock({
       }
       for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
 
-      // layer 2 — the body of color: big and present, filling the shell
-      // so the core has room to breathe inside it
+      // layer 2 — the body: OG-console-orb energy. A white-hot core
+      // bleeding into the signal color, wrapped in wobbling translucent
+      // gel membranes, with gas-wisp filaments swirling around the rim.
       const br = R * (0.98 + Math.sin(t * 1.1) * 0.03);
-      const body = x.createRadialGradient(cx - br * 0.2, cyM - br * 0.25, br * 0.1, cx, cyM, br);
-      body.addColorStop(0, SIG);
-      body.addColorStop(0.7, SIG);
+      const body = x.createRadialGradient(cx - br * 0.18, cyM - br * 0.22, br * 0.05, cx, cyM, br);
+      body.addColorStop(0, "rgba(255,255,255,0.95)");
+      body.addColorStop(0.28, SIG);
+      body.addColorStop(0.75, SIG);
       body.addColorStop(1, "rgba(0,0,0,0)");
       x.save();
-      x.globalAlpha = (0.32 + hover * 0.08) * flick;
+      x.globalAlpha = (0.44 + hover * 0.08) * flick;
       x.fillStyle = body;
       x.beginPath();
       x.arc(cx, cyM, br, 0, Math.PI * 2);
       x.fill();
+      // gel membranes: three offset translucent shells, each wobbling on
+      // its own clock, edges catching the light like layered glass
+      x.strokeStyle = SIG;
+      x.shadowColor = SIG;
+      x.shadowBlur = W * 0.02;
+      for (let m = 0; m < 3; m++) {
+        const wob = t * (0.5 + m * 0.17) + m * 2.1;
+        const mrx = br * (0.82 + m * 0.09 + Math.sin(wob) * 0.05);
+        const mry = br * (0.82 + m * 0.09 + Math.cos(wob * 0.8) * 0.05);
+        x.globalAlpha = (0.14 + m * 0.03) * flick;
+        x.lineWidth = Math.max(1, W * 0.012);
+        x.beginPath();
+        x.ellipse(cx + Math.sin(wob) * br * 0.05, cyM + Math.cos(wob * 1.3) * br * 0.04,
+          mrx, mry, Math.sin(wob * 0.4) * 0.6, 0, Math.PI * 2);
+        x.stroke();
+      }
+      // gas wisps: filament arcs streaming around the orb
+      for (let k = 0; k < 5; k++) {
+        const wr = br * (1.02 + k * 0.07);
+        const tilt = 0.35 + Math.abs(Math.sin(k * 2.4)) * 0.55; // stays positive — ellipse() throws on negative radii
+        const a0 = t * (0.3 + k * 0.09) * (k % 2 ? 1 : -1) + k * 1.9;
+        x.globalAlpha = 0.12 * flick;
+        x.lineWidth = Math.max(1, W * 0.008);
+        x.beginPath();
+        x.ellipse(cx, cyM, wr, wr * tilt, a0 * 0.3, a0, a0 + Math.PI * (0.5 + (k % 3) * 0.25));
+        x.stroke();
+      }
       x.restore();
 
       // the body's tesseract: a 4-cube wireframe turning through two 4D
