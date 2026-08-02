@@ -5,9 +5,11 @@
 // from exactly three layers —
 //   1. the five-point asterisk core: blocky, dense, thick, strongest
 //      glow (red, square-capped triple pass);
-//   2. a body of color filling the shell, present but see-through;
-//   3. the ASCII hologram shell: transparent character sphere whose
-//      glyphs flash bright as it flickers,
+//   2. a body of color filling the shell, with a slowly turning 4D
+//      tesseract wireframe living inside it;
+//   3. the ASCII hologram shell: latitude rings + meridians drawn as
+//      transparent character lines hugging the body, brightened by a
+//      scanline that sweeps the orb,
 // all under a classic sci-fi hologram treatment (scanline banding,
 // flutter, a slow roll bar, the odd glitch slice). Drag to spin it; it
 // keeps drifting with inertia. Pure canvas, no libraries. Same form in
@@ -37,19 +39,43 @@ export default function AsteriskDock({
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
-    // ---- 3D point field: sphere shell + two tilted orbit rings ----
+    // ---- 3D line field: latitude rings + meridians as ASCII lines,
+    // each point carrying its tangent so the glyph matches the line ----
     const shell = [];
-    const LATS = 7;
+    const LATS = 6;
     for (let i = 1; i <= LATS; i++) {
       const phi = (i / (LATS + 1)) * Math.PI;
       const r = Math.sin(phi);
       const y = Math.cos(phi);
-      const n = Math.max(6, Math.round(r * 22));
+      const n = Math.max(8, Math.round(r * 30));
       for (let j = 0; j < n; j++) {
         const th = (j / n) * Math.PI * 2;
-        shell.push({ x: Math.cos(th) * r, y, z: Math.sin(th) * r, seed: Math.random() });
+        // tangent along the ring: d/dθ
+        shell.push({
+          x: Math.cos(th) * r, y, z: Math.sin(th) * r,
+          tx: -Math.sin(th) * r, ty: 0, tz: Math.cos(th) * r,
+        });
       }
     }
+    for (let m = 0; m < 4; m++) {
+      const lam = (m / 4) * Math.PI;
+      for (let j = 0; j < 26; j++) {
+        const phi = (j / 26) * Math.PI * 2;
+        // meridian circle through the poles; tangent along d/dφ
+        shell.push({
+          x: Math.cos(lam) * Math.sin(phi), y: Math.cos(phi), z: Math.sin(lam) * Math.sin(phi),
+          tx: Math.cos(lam) * Math.cos(phi), ty: -Math.sin(phi), tz: Math.sin(lam) * Math.cos(phi),
+        });
+      }
+    }
+    // tesseract: 16 vertices of the 4-cube, edges join vertices that
+    // differ in exactly one coordinate
+    const T_VERTS = [];
+    for (let i = 0; i < 16; i++)
+      T_VERTS.push([i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1, i & 8 ? 1 : -1]);
+    const T_EDGES = [];
+    for (let i = 0; i < 16; i++)
+      for (let b = 0; b < 4; b++) if (!(i & (1 << b))) T_EDGES.push([i, i | (1 << b)]);
     // five arms of the inner asterisk (object space, point up)
     const ARMS = [];
     for (let k = 0; k < 5; k++) {
@@ -96,19 +122,22 @@ export default function AsteriskDock({
       x.textAlign = "center";
       x.textBaseline = "middle";
 
-      // layer 3 — the ASCII shell: genuinely transparent at rest, with
-      // individual glyphs flashing bright as the hologram flickers
-      const drawPoint = (px2, py2, z, seed) => {
+      // layer 3 — the ASCII lines: transparent dashes tracing the body's
+      // latitude/meridian wireframe; a scanline sweeps the orb and
+      // brightens the characters it crosses
+      const DIRS = ["-", "\\", "|", "/"];
+      const scanY = cyM - R * 1.15 + ((t * 55) % (R * 2.3));
+      const drawPoint = (px2, py2, z, ang) => {
         const depth = (z + 1.3) / 2.6; // 0 back → 1 front
-        const spark = Math.sin(t * 6 + seed * 47) > 0.9;
-        const a = spark
-          ? (0.55 + depth * 0.45) * flick
-          : (0.04 + depth * 0.22) * flick * (0.85 + hover * 0.15);
-        const ch = spark ? "*" : depth > 0.6 ? "*" : depth > 0.4 ? "+" : seed > 0.5 ? "·" : ":";
+        const onScan = Math.abs(py2 - scanY) < Math.max(3, W * 0.03);
+        const a = onScan
+          ? (0.6 + depth * 0.4) * flick
+          : (0.05 + depth * 0.2) * flick * (0.85 + hover * 0.15);
+        const oct = ((Math.round(ang / (Math.PI / 4)) % 4) + 4) % 4;
         x.globalAlpha = Math.min(1, a);
         x.fillStyle = SIG;
-        x.font = `${Math.max(6, W * 0.07 * (0.75 + depth * 0.45))}px ${OSD}`;
-        x.fillText(ch, px2, py2);
+        x.font = `${Math.max(5, W * 0.055 * (0.8 + depth * 0.35))}px ${OSD}`;
+        x.fillText(DIRS[oct], px2, py2);
       };
 
       // back hemisphere first, inner asterisk, then front — so the glyph
@@ -116,7 +145,9 @@ export default function AsteriskDock({
       const projected = [];
       for (const p of shell) {
         const [X1, Y1, Z1] = rot(p, sy, cy2, sp, cp);
-        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, p.seed]);
+        const [TX, TY] = rot({ x: p.tx, y: p.ty, z: p.tz }, sy, cy2, sp, cp);
+        // screen-space tangent angle (y flips when projecting)
+        projected.push([cx + X1 * R, cyM - Y1 * R, Z1, Math.atan2(-TY, TX)]);
       }
       for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
 
@@ -135,13 +166,41 @@ export default function AsteriskDock({
       x.fill();
       x.restore();
 
+      // the body's tesseract: a 4-cube wireframe turning through two 4D
+      // planes, projected 4D→3D→2D inside the color
+      const a4 = t * 0.4;
+      const b4 = t * 0.27;
+      const ca = Math.cos(a4), sa = Math.sin(a4);
+      const cb = Math.cos(b4), sb = Math.sin(b4);
+      const tPts = T_VERTS.map(([vx, vy, vz, vw]) => {
+        // rotate in xw then yw planes
+        const x4 = vx * ca - vw * sa;
+        const w1 = vx * sa + vw * ca;
+        const y4 = vy * cb - w1 * sb;
+        const w2 = vy * sb + w1 * cb;
+        const k = 1 / (2.6 - w2); // 4D perspective
+        const [X1, Y1] = rot({ x: x4 * k, y: y4 * k, z: vz * k }, sy, cy2, sp, cp);
+        return [cx + X1 * R * 0.9, cyM - Y1 * R * 0.9];
+      });
+      x.save();
+      x.globalAlpha = 0.24 * flick;
+      x.strokeStyle = SIG;
+      x.lineWidth = Math.max(1, W * 0.007);
+      x.beginPath();
+      for (const [i, j] of T_EDGES) {
+        x.moveTo(tPts[i][0], tPts[i][1]);
+        x.lineTo(tPts[j][0], tPts[j][1]);
+      }
+      x.stroke();
+      x.restore();
+
       // layer 1 — the five-point asterisk core: blocky, dense, thick —
       // square-capped triple pass, strongest glow on the entity; red,
       // the only accent voice; slow counter-rotation
       const aspin = -t * 0.35;
       const tips = ARMS.map(([ax, ay]) => {
         const p = { x: ax * Math.cos(aspin), y: -ay, z: ax * Math.sin(aspin) };
-        return rot({ x: p.x * 0.62, y: p.y * 0.62, z: p.z * 0.62 }, sy, cy2, sp, cp);
+        return rot({ x: p.x * 0.5, y: p.y * 0.5, z: p.z * 0.5 }, sy, cy2, sp, cp);
       });
       const strokeArms = (width, alpha, blur) => {
         x.globalAlpha = alpha;
@@ -158,9 +217,9 @@ export default function AsteriskDock({
       x.strokeStyle = RED;
       x.shadowColor = RED;
       x.lineCap = "square";
-      strokeArms(Math.max(5, W * 0.15), 0.22 * flick, W * 0.16); // halo pass
-      strokeArms(Math.max(4, W * 0.1), 0.6 * flick, W * 0.1); // density pass
-      strokeArms(Math.max(3, W * 0.065), (0.98 + hover * 0.02) * flick, W * 0.06); // blocky core
+      strokeArms(Math.max(4, W * 0.12), 0.22 * flick, W * 0.14); // halo pass
+      strokeArms(Math.max(3, W * 0.08), 0.6 * flick, W * 0.09); // density pass
+      strokeArms(Math.max(2, W * 0.052), (0.98 + hover * 0.02) * flick, W * 0.055); // blocky core
       x.restore();
 
       for (const pr of projected) if (pr[2] >= 0) drawPoint(...pr);
