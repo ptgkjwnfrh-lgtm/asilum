@@ -3,15 +3,14 @@
 // app/components/AsteriskDock.jsx — ASTERISK's living form (owner decree,
 // redesign/asterisk-hologram): an interactive 3D hologram entity built
 // from exactly three layers —
-//   1. the five-point asterisk core: blocky, dense, thick, strongest
-//      glow (red, square-capped triple pass);
-//   2. a body of color filling the shell, with a slowly turning 4D
-//      tesseract wireframe living inside it;
+//   1. the five-point asterisk core: blocky, dense, strongest glow (red);
+//   2. a body of color: hot centre bleeding into the signal color, one
+//      soft membrane giving the shell its edge;
 //   3. the ASCII hologram shell: latitude rings + meridians drawn as
 //      transparent character lines hugging the body, brightened by a
 //      scanline that sweeps the orb,
-// all under a classic sci-fi hologram treatment (scanline banding,
-// flutter, a slow roll bar, the odd glitch slice). Drag to spin it; it
+// all under a classic sci-fi hologram treatment (scanline banding and
+// brightness flutter, nothing else). Drag to spin it; it
 // keeps drifting with inertia. Pure canvas, no libraries. Same form in
 // both interfaces; colors come from tokens so both themes hold.
 // prefers-reduced-motion: one static frame, no ambient loop (drag still
@@ -68,14 +67,6 @@ export default function AsteriskDock({
         });
       }
     }
-    // tesseract: 16 vertices of the 4-cube, edges join vertices that
-    // differ in exactly one coordinate
-    const T_VERTS = [];
-    for (let i = 0; i < 16; i++)
-      T_VERTS.push([i & 1 ? 1 : -1, i & 2 ? 1 : -1, i & 4 ? 1 : -1, i & 8 ? 1 : -1]);
-    const T_EDGES = [];
-    for (let i = 0; i < 16; i++)
-      for (let b = 0; b < 4; b++) if (!(i & (1 << b))) T_EDGES.push([i, i | (1 << b)]);
     // five arms of the inner asterisk (object space, point up)
     const ARMS = [];
     for (let k = 0; k < 5; k++) {
@@ -151,9 +142,8 @@ export default function AsteriskDock({
       }
       for (const pr of projected) if (pr[2] < 0) drawPoint(...pr);
 
-      // layer 2 — the body: OG-console-orb energy. A white-hot core
-      // bleeding into the signal color, wrapped in wobbling translucent
-      // gel membranes, with gas-wisp filaments swirling around the rim.
+      // layer 2 — the body: hot centre bleeding into the signal color,
+      // one soft membrane giving the shell its edge
       const br = R * (0.98 + Math.sin(t * 1.1) * 0.03);
       const body = x.createRadialGradient(cx - br * 0.18, cyM - br * 0.22, br * 0.05, cx, cyM, br);
       body.addColorStop(0, "rgba(255,255,255,0.95)");
@@ -166,60 +156,12 @@ export default function AsteriskDock({
       x.beginPath();
       x.arc(cx, cyM, br, 0, Math.PI * 2);
       x.fill();
-      // gel membranes: three offset translucent shells, each wobbling on
-      // its own clock, edges catching the light like layered glass
       x.strokeStyle = SIG;
-      x.shadowColor = SIG;
-      x.shadowBlur = W * 0.02;
-      for (let m = 0; m < 3; m++) {
-        const wob = t * (0.5 + m * 0.17) + m * 2.1;
-        const mrx = br * (0.82 + m * 0.09 + Math.sin(wob) * 0.05);
-        const mry = br * (0.82 + m * 0.09 + Math.cos(wob * 0.8) * 0.05);
-        x.globalAlpha = (0.14 + m * 0.03) * flick;
-        x.lineWidth = Math.max(1, W * 0.012);
-        x.beginPath();
-        x.ellipse(cx + Math.sin(wob) * br * 0.05, cyM + Math.cos(wob * 1.3) * br * 0.04,
-          mrx, mry, Math.sin(wob * 0.4) * 0.6, 0, Math.PI * 2);
-        x.stroke();
-      }
-      // gas wisps: filament arcs streaming around the orb
-      for (let k = 0; k < 5; k++) {
-        const wr = br * (1.02 + k * 0.07);
-        const tilt = 0.35 + Math.abs(Math.sin(k * 2.4)) * 0.55; // stays positive — ellipse() throws on negative radii
-        const a0 = t * (0.3 + k * 0.09) * (k % 2 ? 1 : -1) + k * 1.9;
-        x.globalAlpha = 0.12 * flick;
-        x.lineWidth = Math.max(1, W * 0.008);
-        x.beginPath();
-        x.ellipse(cx, cyM, wr, wr * tilt, a0 * 0.3, a0, a0 + Math.PI * (0.5 + (k % 3) * 0.25));
-        x.stroke();
-      }
-      x.restore();
-
-      // the body's tesseract: a 4-cube wireframe turning through two 4D
-      // planes, projected 4D→3D→2D inside the color
-      const a4 = t * 0.4;
-      const b4 = t * 0.27;
-      const ca = Math.cos(a4), sa = Math.sin(a4);
-      const cb = Math.cos(b4), sb = Math.sin(b4);
-      const tPts = T_VERTS.map(([vx, vy, vz, vw]) => {
-        // rotate in xw then yw planes
-        const x4 = vx * ca - vw * sa;
-        const w1 = vx * sa + vw * ca;
-        const y4 = vy * cb - w1 * sb;
-        const w2 = vy * sb + w1 * cb;
-        const k = 1 / (2.6 - w2); // 4D perspective
-        const [X1, Y1] = rot({ x: x4 * k, y: y4 * k, z: vz * k }, sy, cy2, sp, cp);
-        return [cx + X1 * R * 0.9, cyM - Y1 * R * 0.9];
-      });
-      x.save();
-      x.globalAlpha = 0.24 * flick;
-      x.strokeStyle = SIG;
-      x.lineWidth = Math.max(1, W * 0.007);
+      x.globalAlpha = 0.16 * flick;
+      x.lineWidth = Math.max(1, W * 0.012);
       x.beginPath();
-      for (const [i, j] of T_EDGES) {
-        x.moveTo(tPts[i][0], tPts[i][1]);
-        x.lineTo(tPts[j][0], tPts[j][1]);
-      }
+      x.ellipse(cx, cyM, br * 0.9, br * (0.88 + Math.sin(t * 0.5) * 0.04),
+        Math.sin(t * 0.2) * 0.4, 0, Math.PI * 2);
       x.stroke();
       x.restore();
 
@@ -246,32 +188,18 @@ export default function AsteriskDock({
       x.strokeStyle = RED;
       x.shadowColor = RED;
       x.lineCap = "square";
-      strokeArms(Math.max(4, W * 0.12), 0.22 * flick, W * 0.14); // halo pass
-      strokeArms(Math.max(3, W * 0.08), 0.6 * flick, W * 0.09); // density pass
-      strokeArms(Math.max(2, W * 0.052), (0.98 + hover * 0.02) * flick, W * 0.055); // blocky core
+      strokeArms(Math.max(3, W * 0.1), 0.28 * flick, W * 0.12); // halo pass
+      strokeArms(Math.max(2, W * 0.055), (0.96 + hover * 0.04) * flick, W * 0.06); // blocky core
       x.restore();
 
       for (const pr of projected) if (pr[2] >= 0) drawPoint(...pr);
       x.globalAlpha = 1;
 
-      // ---- classic hologram treatment ----
-      // scanline banding: thin every other band regardless of theme
+      // ---- hologram treatment: scanline banding, nothing else ----
       x.globalCompositeOperation = "destination-out";
       x.fillStyle = "rgba(0,0,0,0.32)";
       for (let yy = 0; yy < H; yy += 4) x.fillRect(0, yy, W, 1.5);
-      // slow roll bar brightening what it crosses
-      if (!rm) {
-        x.globalCompositeOperation = "source-atop";
-        const ry = ((t * 26) % (H + 30)) - 15;
-        x.fillStyle = "rgba(255,255,255,0.15)";
-        x.fillRect(0, ry, W, H * 0.09);
-      }
       x.globalCompositeOperation = "source-over";
-      // the odd glitch: a horizontal slice slips sideways for a beat
-      if (!rm && Math.sin(t * 1.3) > 0.995) {
-        const gy = (t * 173) % (H * 0.8);
-        x.drawImage(cv, 0, gy, W, H * 0.06, W * 0.035, gy, W, H * 0.06);
-      }
     };
 
     const frame = () => {
