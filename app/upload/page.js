@@ -117,10 +117,11 @@ export default function UploadPage() {
     canvas.height = Math.max(1, Math.round(bmp.height * Math.min(1, scale)));
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    const px = ctx.getImageData(0, 0, Math.min(48, canvas.width), Math.min(48, canvas.height)).data;
+    const pxW = Math.min(48, canvas.width);
+    const px = ctx.getImageData(0, 0, pxW, Math.min(48, canvas.height)).data;
     const url = canvas.toDataURL("image/jpeg", 0.72);
     if (bmp.close) bmp.close();
-    return { url, px };
+    return { url, px, pxW };
   }
   async function ingestFiles(fileList) {
     const files = [...(fileList || [])].filter((f) => /^image\//.test(f.type || ""));
@@ -131,8 +132,8 @@ export default function UploadPage() {
     const newTiles = [];
     for (const f of files.slice(0, 8)) {
       try {
-        const { url, px } = await thumbOf(f);
-        const a = analyzePalette(px);
+        const { url, px, pxW } = await thumbOf(f);
+        const a = analyzePalette(px, 5, pxW);
         if (a) analyses.push(a);
         newTiles.push({ id: (window.crypto?.randomUUID?.() || String(Date.now()) + Math.random()), src: url, name: f.name.slice(0, 80) });
       } catch {}
