@@ -19,6 +19,7 @@ import {
 } from "../../../lib/db/production.js";
 import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/correctionSignals.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { crossUserCandidates } from "../../../lib/taste-graph/index.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
 import { getDiscoverablePool, getPopularitySnapshot, publicProduct } from "../../../lib/products.js";
@@ -140,11 +141,28 @@ export async function GET(req) {
     getPopularitySnapshot(),
   ]);
 
+  // Cross-user layer (asterisk-boost r1): what taste-neighbors engaged
+  // with lifts the DISCOVERY zone. Only for users with standing taste,
+  // best-effort — the feed never fails because of it. Weights normalized
+  // to the strongest candidate so the boost is bounded 0..1.
+  let crossUser = null;
+  if (guidanceEnabled && hasProfile) {
+    try {
+      const xu = await crossUserCandidates(userId, 24);
+      const cands = xu?.data?.candidates || [];
+      if (cands.length) {
+        const top = cands[0].score || 1;
+        crossUser = {};
+        for (const c of cands) crossUser[c.itemId] = c.score / top;
+      }
+    } catch {}
+  }
+
   const { split, items, epsilonActive, epsilonAuto, safeMode, zones } = buildFeed(
     {
       profile,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
-      edges, popularity, boardVec, contextVec, novelty: craving.novelty,
+      edges, popularity, boardVec, contextVec, crossUser, novelty: craving.novelty,
     },
     pool
   );

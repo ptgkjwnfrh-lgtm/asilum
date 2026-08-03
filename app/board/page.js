@@ -193,7 +193,7 @@ export default function BoardPage() {
     // vision model. Files that fail to decode fall back to filename words.
     const analyses = [];
     for (const f of files.slice(0, 6)) {
-      try { const a = analyzePalette(await pixelsFrom(f)); if (a) analyses.push(a); } catch {}
+      try { const a = analyzePalette(await pixelsFrom(f), 5, 48); if (a) analyses.push(a); } catch {}
     }
     const merged = mergePalettes(analyses);
     const paletteWords = [...new Set(analyses.flatMap((a) => [...a.words, ...a.moods]))].slice(0, 14);

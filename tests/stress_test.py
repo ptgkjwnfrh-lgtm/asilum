@@ -10,12 +10,51 @@ behavior, then an evaluation phase measuring CROSS-ACCOUNT learning:
   5. archetype separation: do different personas get different feeds?
   6. zones: core (already like) vs discovery (probably like) vs far reach
 """
-import json, math, random, time, statistics, threading
+import json, math, random, re, time, statistics, threading
+import http.cookiejar
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 BASE = "http://localhost:3457"
 random.seed(42)
+
+# Identity hardening (July audit) means the server ignores claimed user=
+# params: anonymous identity lives in the signed HttpOnly device cookie
+# from GET /api/auth. Every logical bot therefore carries its own cookie
+# jar, exactly like a real device. The user= params below are kept only
+# as session keys for the jar routing; the server never trusts them.
+SESS = {}
+SESS_LOCK = threading.Lock()
+
+def opener_for(uid):
+    with SESS_LOCK:
+        op = SESS.get(uid)
+        if op is None:
+            jar = http.cookiejar.CookieJar()
+            op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+            op._asilum_jar = jar
+            op._asilum_booted = False
+            SESS[uid] = op
+    if not op._asilum_booted:
+        try:
+            with op.open(BASE + "/api/auth", timeout=30) as r:
+                json.load(r)
+            # production builds mark the cookie Secure; we test over
+            # plain http on localhost, so clear the flag client-side
+            for c in op._asilum_jar:
+                c.secure = False
+        except Exception as e:
+            ERRORS.append(f"AUTH {uid}: {e}")
+        op._asilum_booted = True
+    return op
+
+def uid_of(path, payload):
+    m = re.search(r"[?&]user=([^&]+)", path)
+    if m:
+        return m.group(1)
+    if isinstance(payload, dict) and payload.get("user"):
+        return str(payload["user"])
+    return "__anon__"
 
 LAT = []
 LAT_LOCK = threading.Lock()
@@ -25,12 +64,13 @@ CALLS = [0]
 def call(method, path, payload=None):
     t0 = time.time()
     try:
+        op = opener_for(uid_of(path, payload))
         if payload is None:
             req = urllib.request.Request(BASE + path)
         else:
             req = urllib.request.Request(BASE + path, json.dumps(payload).encode(),
                                          {"Content-Type": "application/json"}, method=method)
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with op.open(req, timeout=30) as r:
             out = json.load(r)
     except Exception as e:
         ERRORS.append(f"{method} {path}: {e}")
@@ -293,12 +333,14 @@ for z in ["core", "discovery", "reach"]:
         s, e = zone_stats[z]
         print(f"     {z:9s} considered {s:5d}, engaged {e:4d} ({100*e/max(1,s):.0f}%)")
 
-# bored user should get 5 far-reach slots instead of 2
+# bored user should get 5 far-reach slots instead of 2. Skips must name REAL
+# catalog items (the interaction route 400s on unknown ids — the old synthetic
+# ids silently broke this probe).
 uid = "bored-tester"
-call("GET", f"/api/feed?user={uid}&q=quiet%20luxury")
-for i in range(3):
+seed_feed = call("GET", f"/api/feed?user={uid}&q=quiet%20luxury")
+for it in (seed_feed or {}).get("items", [])[:3]:
     call("POST", "/api/interaction",
-         {"user": uid, "item": {"id": f"synthetic-{i}", "tags": {"GORP": 1}},
+         {"user": uid, "item": {"id": it["id"], "tags": it.get("tags") or {}},
           "action": "skip", "dwellMs": 300})
 fb = call("GET", f"/api/feed?user={uid}")
 print(f"   bored user: epsilonAuto={fb['epsilonAuto']}, reach slots={fb['zones']['reach']} (expect 5, normal is 2)")
