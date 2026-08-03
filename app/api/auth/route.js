@@ -25,8 +25,12 @@ export async function GET(req) {
     // Identity ISSUANCE is throttled; returning an already-verified identity
     // is not. Every issued identity seeds per-subject quotas everywhere else,
     // so unthrottled minting would let a flood outrun every other limit.
+    // IDENTITY_ISSUE_SUBJECT_LIMIT exists ONLY for the localhost stress
+    // harness (tests/stress_test.py enrolls 1000 bot devices); unset, the
+    // production posture of 30/hour is unchanged.
+    const issueLimit = Math.max(1, parseInt(process.env.IDENTITY_ISSUE_SUBJECT_LIMIT, 10) || 30);
     const issueQuota = await consumeRateLimit({
-      scope: "identity-issue", subject: requestSubject(req), limit: 30, windowMs: 60 * 60 * 1000,
+      scope: "identity-issue", subject: requestSubject(req), limit: issueLimit, windowMs: 60 * 60 * 1000,
     });
     const globalQuota = issueQuota.allowed
       ? await consumeGlobalBudget("identity-issue") : issueQuota;
