@@ -333,12 +333,14 @@ for z in ["core", "discovery", "reach"]:
         s, e = zone_stats[z]
         print(f"     {z:9s} considered {s:5d}, engaged {e:4d} ({100*e/max(1,s):.0f}%)")
 
-# bored user should get 5 far-reach slots instead of 2
+# bored user should get 5 far-reach slots instead of 2. Skips must name REAL
+# catalog items (the interaction route 400s on unknown ids — the old synthetic
+# ids silently broke this probe).
 uid = "bored-tester"
-call("GET", f"/api/feed?user={uid}&q=quiet%20luxury")
-for i in range(3):
+seed_feed = call("GET", f"/api/feed?user={uid}&q=quiet%20luxury")
+for it in (seed_feed or {}).get("items", [])[:3]:
     call("POST", "/api/interaction",
-         {"user": uid, "item": {"id": f"synthetic-{i}", "tags": {"GORP": 1}},
+         {"user": uid, "item": {"id": it["id"], "tags": it.get("tags") or {}},
           "action": "skip", "dwellMs": 300})
 fb = call("GET", f"/api/feed?user={uid}")
 print(f"   bored user: epsilonAuto={fb['epsilonAuto']}, reach slots={fb['zones']['reach']} (expect 5, normal is 2)")
