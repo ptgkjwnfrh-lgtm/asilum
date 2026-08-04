@@ -48,5 +48,16 @@ WITHIN bottoms. Kill-switch SEARCH_GARMENT_TITLE_EQUIV=0. Measured
 (same declared-criteria battery, r5+r6): 3/3 improve probes — storm and
 hike put GORE-TEX shells/hardshells at rank 1 (from rank 98), climbing
 pants sweep holds; 0 hold regressions, canonical probes byte-identical,
-163/163 tests. Users/boards embeddings + pgvector migration are
-deliberate later steps.
+163/163 tests.
+
+Semantic tie-breaking (r7): equal literal scores order by sim to the
+query instead of arbitrary pool order — sort key (_score, sim), scores
+never mutated, so items CANNOT cross score clusters by construction.
+Fires whenever embeddings are engaged ("slip dress" 11-way conf-1 tie,
+the r6-levelled "jacket" 112-way tie); inert unkeyed; kill-switch
+SEARCH_SEMANTIC_TIEBREAK=0. Measured (scripts/measure-tiebreak.mjs,
+criteria declared pre-run): 0 invariance breaks / 0 assert fails / 0
+determinism breaks over 7 probes at FULL-list resolution. HARNESS LAW
+learned here: measure order-invariance on the full result list — a
+windowed check fakes breaks when a tie cluster straddles the limit.
+Users/boards embeddings + pgvector migration are deliberate later steps.
