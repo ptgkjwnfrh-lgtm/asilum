@@ -17,10 +17,18 @@ in the same PR as the round they describe.
   interactions into `user_events` payloads (whitelisted) and aggregates
   per-user impressions in `profile._meta.bridgeStats`. Instrumentation only
   — measured byte-identical feeds (5/5 scenarios) with 100% coverage.
-- **r15 — offline replay harness**: replay attributed sessions against
-  candidate bridge-weight policies, scored by recorded outcomes. Calibration
-  criterion: replay's policy ranking must agree with the live 1000-bot
-  stress harness on known policies before it is trusted.
+- **r15 — offline replay harness** (SHIPPED): lib/brain/replay.js —
+  deterministic seeded bot world (affinity-expanded judgment, the stress-
+  harness doctrine) + ADVANTAGE-form counterfactual replay (candidate
+  position weight minus logged-slot weight; the behavior policy scores ~0
+  by construction, killing self-coverage bias). splitOverride plumbing in
+  buildFeed is validated-or-ignored and reachable ONLY from measurement
+  code — no route reads it. CALIBRATED (scripts/measure-replay.mjs,
+  amendments declared): decided pairs 6/6 agree between live and replay
+  (pairs separated beyond 2× the half-sample noise floor; 4 genuine
+  tie-pairs reported undecided, never scored), deterministic run-to-run,
+  120 bots × 6 pages. The python 1000-bot harness remains the live gate
+  for r16's shipped candidate.
 - **r16 — bounded bridge self-tuning**: per-user bridge win-rates
   (engagements from `user_events` ÷ impressions from `bridgeStats`,
   time-decayed) drift blend weights inside DECLARED bounded ranges. Alpha
