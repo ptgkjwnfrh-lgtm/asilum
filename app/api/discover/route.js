@@ -16,6 +16,7 @@ import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { rankByInterpretationTags } from "../../../lib/discover/tagRank.js";
+import { resolveSearchAssumption, applyPassportAssumption } from "../../../lib/search/passportAssumption.js";
 import { createdAtOf, sortNewestFirst, stripRecencyKey } from "../../../lib/discover/recency.js";
 import { getMemoryPreferences } from "../../../lib/db/production.js";
 
@@ -43,6 +44,7 @@ export async function GET(req) {
   let items = [];
   let demo = false;
   let guidanceEnabled = false;
+  let assumption = null;
   if (q) {
     const requestedGuidance = searchParams.get("brain") === "1";
     const userId = requestedGuidance
@@ -69,6 +71,15 @@ export async function GET(req) {
     .split("|").filter(Boolean).map((t) => t.toUpperCase()).slice(0, 8);
   if (interpTags.length) {
     items = rankByInterpretationTags(items, interpTags);
+  } else if (q && guidanceEnabled) {
+    // Influenced-assumption clause (r10): a broad cultural query narrows to
+    // the user's taste-favored reading — visible in `assumption`, overridden
+    // by any explicit pill, killed by SEARCH_PASSPORT_ASSUMPTION=0.
+    const userId = await resolveRequestUser(req, searchParams.get("user") || "");
+    const resolved = await resolveSearchAssumption(q, userId);
+    const applied = applyPassportAssumption(items, resolved);
+    items = applied.items;
+    assumption = applied.assumption;
   }
   if (source) items = items.filter((it) => it.src === source);
   const brands = (searchParams.get("brands") || "").split("|").filter(Boolean)
@@ -89,6 +100,7 @@ export async function GET(req) {
     demo,
     sources,
     guidanceEnabled,
+    assumption,
     items: stripRecencyKey(items.slice(offset, offset + limit)),
   });
 }

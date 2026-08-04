@@ -89,6 +89,42 @@ matches the category — closed coverage, so new title vocabulary in
 those categories fails CI until it is consciously classified. This is
 the r8 beanie miscategorization made impossible to reintroduce
 silently.
+Fan-tribe study + cultural fallback + Passport assumption (r10):
+11 curated culture records (provenance curated-image-informed-2026-08,
+fan-tribe readings derived from the owner-supplied fan-portrait image
+series — what the FANS wear, not stage costume): marilyn manson, the
+casualties, p diddy, arctic monkeys, oasis, klaxons, merle haggard,
+jimmy buffett, m.i.a, rod stewart, gossip. Measured need
+(scripts/measure-disciples.mjs, 366 deterministic variants/term × 18
+terms, criteria + amendments declared in the script): recognition for
+the 11 was 0/366 (baseline) → 366/366; the 7 pre-existing artist terms
+held at 366/366. The battery also surfaced that bare cultural queries
+returned an EMPTY rack even for KNOWN entities (36 zero-result
+variants) — the culture catalog only reached results through a clicked
+interpretation pill. Three engine changes, all kill-switchable:
+(1) cultural fallback (SEARCH_CULTURE_FALLBACK=0): when the literal
+engine and compositional read both come up empty — or the rack carries
+zero query evidence (every reason "moodboard brain": the personal
+nudge alone admits items, so guided unmatched queries used to return
+query-independent taste noise) — the query interprets through the
+asterisk orchestrator and the pool ranks by the reading's tag slate
+(tagRank; deterministic id tie-break), labeled "cultural read", conf
+≤ 0.45; guided users get the taste-favored reading (influenced),
+anonymous users the top-confidence reading (broad).
+(2) Passport influenced-assumption clause (SEARCH_PASSPORT_ASSUMPTION=0,
+lib/search/passportAssumption.js): on the discover route, a broad
+garment-noun-free cultural query narrows the slate to the guided
+user's taste-favored reading (tasteAffinity > 0 required; explicit
+pills override; never below a 6-item floor; anonymous inert —
+measured byte-identical). Surfaced in the response `assumption` field
+and a discover-page areadnote.
+(3) `cultural:{engaged,entity,interpretationId,label,personalized}`
+rides in every search response beside `semantic`.
+Zero-result variants 36 → 0; alignment improved for all 11 new terms
+with all holds intact. Declared-criterion miss reported honestly:
+probe-vs-probe slate differential measured 5/18 route-layer (3/18
+engine) vs declared ≥6 — structural, 16/18 records are
+single-reading; differential influence needs multi-reading records.
 
 HARNESS LAWS (accumulated, binding for future ranking measurement):
 1. Measure the KEYED DB path — the in-memory store lacks _textRank and
