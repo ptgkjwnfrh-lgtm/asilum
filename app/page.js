@@ -363,7 +363,7 @@ export default function Home() {
         if (t < DWELL_MIN_MS) continue;
         const item = itemsRef.current.find((x) => x.id === id);
         if (!item) continue;
-        events.push({ item: { id: item.id, tags: item.tags }, action: "dwell", dwellMs: Math.round(t) });
+        events.push({ item: { id: item.id, tags: item.tags, _bridge: item._bridge }, action: "dwell", dwellMs: Math.round(t) });
         d.sent.add(id);
       }
       if (events.length) {

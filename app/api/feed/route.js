@@ -6,7 +6,7 @@
 // taste-rotation memory. Impressions still feed global popularity.
 
 import { NextResponse } from "next/server";
-import { buildFeed, coldStart, markSeen, itemsVector } from "../../../lib/brain/index.js";
+import { buildFeed, coldStart, markSeen, markBridgeImpressions, itemsVector } from "../../../lib/brain/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
@@ -177,7 +177,10 @@ export async function GET(req) {
       writes.push(mutateProfile(userId, (current) => {
         const base = current && Object.keys(current).length ? current : profileBeforeCorrections;
         const { profile: decayed } = applyTimeDecay(base);
-        return markSeen(decayed, ids);
+        // (r14) attribution: count this serve's bridges on the profile.
+        const bridgeCounts = {};
+        for (const it of items) if (it._bridge) bridgeCounts[it._bridge] = (bridgeCounts[it._bridge] || 0) + 1;
+        return markBridgeImpressions(markSeen(decayed, ids), bridgeCounts);
       }));
     }
     await Promise.all(writes);
