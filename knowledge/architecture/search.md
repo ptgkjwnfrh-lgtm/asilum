@@ -137,6 +137,32 @@ canonical asserts and the r10 cultural read. The remaining probe
 ("trouser" bare) is catalog truth, not a defect: items titled "pleated
 wool trouser" are FILED UNDER TAILORING and product-name match rightly
 outranks category evidence.
+Literal-engine typo bridge (r12): lib/search/typo.js
+(fastest-levenshtein, MIT) corrects unknown 5+ char tokens at
+interpretation time — before category evidence, title matching, the
+tag layer, and single-word mapping hits. Known tokens (exact or r11
+stem) are NEVER corrected; distance ties correct nothing; brands
+excluded; corrections ride interpreted.typoCorrections + the response
+note. SEARCH_TYPO_BRIDGE=0 kills it. The brain's compositional typo
+bridge (asterisk-boost r2) is separate and untouched. Measured
+(scripts/measure-typo.mjs): typo probes 1/8 → 7/8 category-correct
+with clean-slate overlap, holds 7/7 set+score invariant, zero
+corrections on clean probes. Residual ("sweter" bare): category-
+correct but different slice of the 90-item generic-noun tie cluster —
+the phrase-level bonus can't apply to a misspelled phrase.
+Fashionpedia vocabulary (r13): lib/search/fashionpedia-ontology.json
+is a CC BY 4.0 ontology extract (46 categories + 294 attributes, names
+only — no images/annotations; attribution in NOTICE; reproducible via
+scripts/extract-fashionpedia.mjs). The curated crosswalk
+lib/search/ontology.js spreads ~40 single-word garment nouns into
+GARMENT_CATEGORY (windbreaker, sweatshirt, sweatpants, leggings,
+culottes, trench, camisole, kaftan…). The landmine list is explicit
+and tested: top, tie, crop, halter, sheath, jumper, and all garment
+PARTS are excluded with reasons. Attribute vocabulary (silhouette/
+textile/pattern) is vendored unused — a future dense-layer round.
+Measured (scripts/measure-ontology.mjs): improve 4/10 → 10/10
+category-correct top-3, holds 10/10 set+score invariant incl. the
+landmine phrases (tie dye tee, canvas high-top, crop top).
 
 HARNESS LAWS (accumulated, binding for future ranking measurement):
 1. Measure the KEYED DB path — the in-memory store lacks _textRank and
