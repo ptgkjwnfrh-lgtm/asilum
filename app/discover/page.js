@@ -34,6 +34,7 @@ export default function DiscoverPage() {
   const [sug, setSug] = useState([]);
   const [ticketItem, setTicketItem] = useState(null);
   const [reading, setReading] = useState(null);      // Asterisk's cultural read of the query
+  const [assumption, setAssumption] = useState(null); // Passport influenced-assumption (r10)
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
@@ -81,7 +82,10 @@ export default function DiscoverPage() {
       setSources(Array.isArray(d.sources) ? d.sources : []);
       setItems((prev) => (reset ? nextItems : [...prev, ...nextItems]));
       offsetRef.current = requestOffset + nextItems.length;
-      if (reset) setSearched(qval.trim());
+      if (reset) {
+        setSearched(qval.trim());
+        setAssumption(d.assumption && d.assumption.applied ? d.assumption : null);
+      }
     } catch (error) {
       if (requestId === loadRequestRef.current.id && error?.name !== "AbortError") {
         setLoadError("the racks could not be opened — retry");
@@ -424,6 +428,11 @@ export default function DiscoverPage() {
       {reading && reading.interpretation && reading.interpretation.flaggedForResearch ? (
         <div className="areadnote">
           <b className="red">*</b> asterisk flagged this for research — answering with its best current reading
+        </div>
+      ) : null}
+      {assumption && !activeInterp ? (
+        <div className="areadnote">
+          <b className="red">*</b> passport assumption — narrowed to “{assumption.label || assumption.entity}” ({assumption.tags.join(" · ").toLowerCase()}); pick any reading above to override
         </div>
       ) : null}
       {!searched && !activeInterp && <DiscoverRails onPickTags={pickInterp} />}
