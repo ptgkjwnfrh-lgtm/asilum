@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.5",
+    "fastest-levenshtein": "^1.0.16",
     "next": "16.2.10",
     "pg": "8.22.0",
     "react": "18.3.1",
