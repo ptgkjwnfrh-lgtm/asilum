@@ -32,11 +32,21 @@ min(2, max(0, sim − 0.30) × 10) on _score, order-only (confidence and
 matchReason untouched); every other query class is byte-identical to the
 append-only design, and unkeyed stays inert. Measured (scripts/
 measure-rerank.mjs, criteria declared pre-run): mountain-pants probe
-swept climbing pants into all of top 3; storm/hike probes improved
-directionally (technical liners/field jackets over varsity) but shells
-stay outside top 3 — the literal engine double-counts the garment noun
-(title-token bonus + category bonus), a gap the bounded nudge cannot
-and should not overpower. KNOWN NEXT: stop garment nouns from earning
-the title-token bonus when category alignment fires (literal-engine
-change — own experiment, canonical probes must hold). Users/boards
-embeddings + pgvector migration are deliberate later steps.
+swept climbing pants into all of top 3; storm/hike probes needed r6.
+
+Generic garment nouns (r6): GENERIC_GARMENT_NOUNS (jacket/coat →
+outerwear, shoes → footwear, dress → dresses) name the CATEGORY, not a
+subtype — for these nouns only, (a) the title-token hit extends to every
+item of the category and (b) the noun is EXCLUDED from the typed
+product_tags query. Measured root cause: the noun triple-counted —
+title-token bonus (+0.625) AND typed tag layer (up to +4, the dominant
+term in the DB-backed path) AND category bonus — so "hardshell parka"
+started ~5 points behind any "* jacket" title on "jacket that survives
+a storm". Subtype nouns (jeans, parka, bomber, hoodie…) keep literal
+matching and tag credit: "trashed jeans" must rank jeans above trousers
+WITHIN bottoms. Kill-switch SEARCH_GARMENT_TITLE_EQUIV=0. Measured
+(same declared-criteria battery, r5+r6): 3/3 improve probes — storm and
+hike put GORE-TEX shells/hardshells at rank 1 (from rank 98), climbing
+pants sweep holds; 0 hold regressions, canonical probes byte-identical,
+163/163 tests. Users/boards embeddings + pgvector migration are
+deliberate later steps.
