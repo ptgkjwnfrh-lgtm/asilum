@@ -23,6 +23,20 @@ channel "semantic match" is APPEND-ONLY: sim floor 0.45, cap 12, conf
 battery, PR #101): bridges vocabulary the literal engine cannot
 ("something slinky for a night out" → slip dress), contributes 0 on
 garment-noun queries because literal ranking already covers the category.
-Next lever (unshipped, measure first): bounded semantic RE-RANKING of
-already-ranked results. Users/boards embeddings + pgvector migration are
-deliberate later steps.
+
+Semantic re-ranking (r5): fires ONLY on garment-noun queries with ≥2
+modifier tokens. The garment noun is stripped from the embedded query —
+measured Aug 3: the noun's lexical pull ranks varsity jackets above
+GORE-TEX shells, the modifiers alone rank shells first. Nudge =
+min(2, max(0, sim − 0.30) × 10) on _score, order-only (confidence and
+matchReason untouched); every other query class is byte-identical to the
+append-only design, and unkeyed stays inert. Measured (scripts/
+measure-rerank.mjs, criteria declared pre-run): mountain-pants probe
+swept climbing pants into all of top 3; storm/hike probes improved
+directionally (technical liners/field jackets over varsity) but shells
+stay outside top 3 — the literal engine double-counts the garment noun
+(title-token bonus + category bonus), a gap the bounded nudge cannot
+and should not overpower. KNOWN NEXT: stop garment nouns from earning
+the title-token bonus when category alignment fires (literal-engine
+change — own experiment, canonical probes must hold). Users/boards
+embeddings + pgvector migration are deliberate later steps.
