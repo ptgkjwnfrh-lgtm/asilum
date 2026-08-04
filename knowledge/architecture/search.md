@@ -76,6 +76,19 @@ embed-catalog — idempotent fill). Measured (scripts/
 measure-noun-coverage.mjs, two-arm baseline/after, criteria + all
 amendments declared): 2/2 improve (knit targets rank 14→1, 21→1), 4/4
 defect fixed, 0 hold breaks, canonical asserts pass.
+Sweater retest (r9): GENERIC_GARMENT_NOUNS += sweater → knitwear,
+re-measured on the cleaned catalog under the same declared guard that
+rejected it in r8 (scripts/measure-sweater.mjs): 2/2 improve, 0 holds
+broken, no beanies in any probe top-10.
+Generic-noun consistency guard (CI): tests/
+generic-noun-consistency.test.js asserts, on every push, that the two
+tables agree (GENERIC_GARMENT_NOUNS vs GARMENT_CATEGORY), that every
+generic-noun category is populated, and that every item in a
+generic-noun category has a classifiable title head noun whose class
+matches the category — closed coverage, so new title vocabulary in
+those categories fails CI until it is consciously classified. This is
+the r8 beanie miscategorization made impossible to reintroduce
+silently.
 
 HARNESS LAWS (accumulated, binding for future ranking measurement):
 1. Measure the KEYED DB path — the in-memory store lacks _textRank and
