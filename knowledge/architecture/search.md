@@ -125,6 +125,18 @@ with all holds intact. Declared-criterion miss reported honestly:
 probe-vs-probe slate differential measured 5/18 route-layer (3/18
 engine) vs declared ≥6 — structural, 16/18 records are
 single-reading; differential influence needs multi-reading records.
+Stem-indexed vocabulary (r11): lib/search/vocab.js (words/stemmer,
+MIT) replaces the strip-trailing-s heuristic for GARMENT_CATEGORY +
+GENERIC_GARMENT_NOUNS lookups — tables indexed by the Porter stems of
+their own keys at load, exact key always wins, -ves irregulars
+("scarves") handled, stems never displayed or stored. Newly resolving:
+trouser, sneaker, loafer, cargo, boot, jean, scarves, gowns, hoodies…
+Measured (scripts/measure-stems.mjs): improve 7/10 → 9/10 probes
+category-correct top-3, holds 8/8 full-list set+score invariant incl.
+canonical asserts and the r10 cultural read. The remaining probe
+("trouser" bare) is catalog truth, not a defect: items titled "pleated
+wool trouser" are FILED UNDER TAILORING and product-name match rightly
+outranks category evidence.
 
 HARNESS LAWS (accumulated, binding for future ranking measurement):
 1. Measure the KEYED DB path — the in-memory store lacks _textRank and
