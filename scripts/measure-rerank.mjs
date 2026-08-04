@@ -55,9 +55,9 @@ const line = (r, targets) =>
 
 // One probe arm; retries while the semantic layer reports not-engaged
 // (rate limit surfaces as a silent no-op — silence must not be measured).
-async function arm(q, semanticRerank) {
+async function arm(q, opts) {
   for (let attempt = 0; attempt < 6; attempt++) {
-    const res = await searchProducts(q, { limit: 48, semanticRerank });
+    const res = await searchProducts(q, { limit: 48, ...opts });
     if (res.semantic?.engaged) return res;
     console.error(`  [${q}] semantic layer not engaged (likely 429) — waiting 25s`);
     await sleep(25_000);
@@ -65,10 +65,16 @@ async function arm(q, semanticRerank) {
   throw new Error(`semantic layer never engaged for "${q}" — aborting, do not trust partial numbers`);
 }
 
+// v3 arms: improve probes measure the r6 title-equiv fix ON TOP of the
+// shipped r5 rerank (OFF = r5 alone, ON = r5 + r6). Hold probes bracket the
+// widest span: OFF = original r4 behavior, ON = everything enabled.
 let improveWins = 0, improveTotal = 0, holdBreaks = 0;
 for (const probe of PROBES) {
-  const off = await arm(probe.q, false);
-  const on = await arm(probe.q, true); // memo: no second provider call
+  const isImprove = probe.kind === "improve";
+  const off = await arm(probe.q, isImprove
+    ? { semanticRerank: true, garmentTitleEquiv: false }
+    : { semanticRerank: false, garmentTitleEquiv: false });
+  const on = await arm(probe.q, { semanticRerank: true, garmentTitleEquiv: true }); // memo: no second provider call
   const offTop = off.results.slice(0, 3), onTop = on.results.slice(0, 3);
 
   console.log(`\n=== "${probe.q}" [${probe.kind}] · reranked ${on.semantic.reranked}, appended ${on.semantic.appended}`);
