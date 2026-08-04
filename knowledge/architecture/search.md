@@ -60,4 +60,34 @@ criteria declared pre-run): 0 invariance breaks / 0 assert fails / 0
 determinism breaks over 7 probes at FULL-list resolution. HARNESS LAW
 learned here: measure order-invariance on the full result list — a
 windowed check fakes breaks when a tie cluster straddles the limit.
+Generic-noun coverage + category truth (r8): GENERIC_GARMENT_NOUNS +=
+knit → knitwear. "sweater" was measured and REJECTED — the declared
+beanie guard fired (balaclava beanies, then miscategorized as knitwear,
+topped the sweater probes); the catalog cleanup below unblocks its
+retest. "top" is documented out (tokenizer splits "high-top").
+GARMENT_CATEGORY now follows the CATALOG, not garment taxonomy:
+hoodie → tops, fleece → outerwear (all 19 hoodies and all 14 fleeces
+live there; the old knitwear mappings ranked the first real hoodie 47th
+and fleece 92nd on modifier queries — plain-noun queries masked it
+because name match +6 dwarfs the −2). Catalog cleanup shipped in the
+same change: 10 balaclava beanies → accessories, 10 tabi boots →
+footwear, catalog.json + prod items + re-embedded (delete rows + rerun
+embed-catalog — idempotent fill). Measured (scripts/
+measure-noun-coverage.mjs, two-arm baseline/after, criteria + all
+amendments declared): 2/2 improve (knit targets rank 14→1, 21→1), 4/4
+defect fixed, 0 hold breaks, canonical asserts pass.
+
+HARNESS LAWS (accumulated, binding for future ranking measurement):
+1. Measure the KEYED DB path — the in-memory store lacks _textRank and
+   the tag layer (r6).
+2. Order-invariance on the FULL result list — windows fake breaks when
+   tie clusters straddle the limit (r7).
+3. Cross-process comparison uses CLUSTER INVARIANCE, never byte
+   identity — provider re-embeds jitter and flip r7 tie-break order
+   inside flat clusters; semantic-append confidences are sim-derived
+   and need ±0.01 tolerance (r8).
+4. The capped append slate DISPLACES: a changed item leaving the top-12
+   pulls the next candidate in — one-for-one untouched membership
+   change is the change under test, not a regression (r8).
+
 Users/boards embeddings + pgvector migration are deliberate later steps.
