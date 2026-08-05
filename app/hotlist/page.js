@@ -29,7 +29,9 @@ export default function EditorialPage() {
           setLive(true);
           setRows(s.topItems.map((t) => ({
             id: t.id, title: t.title, brand: t.brand,
-            stat: Math.round(t.eng * 10) / 10 + " engagements", item: t.item || null,
+            // People, not events: the ranked quantity and the printed label
+            // must agree, or the page keeps publishing a forgeable number.
+            stat: (t.engagers ?? 0) + (t.engagers === 1 ? " person" : " people"), item: t.item || null,
           })));
           return;
         }

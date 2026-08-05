@@ -9,6 +9,7 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { buildFeed, coldStart, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
 import { examinedImpressionsEnabled } from "../../../lib/brain/attribution.js";
+import { popularityDedupEnabled } from "../../../lib/brain/popularity.js";
 import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
 import { baseSplit } from "../../../lib/brain/bridges.js";
 import { listEvents } from "../../../lib/db/index.js";
@@ -196,7 +197,20 @@ export async function GET(req) {
   const ids = items.map((it) => it.id);
   const serveId = randomUUID();
   try {
-    const writes = [bumpPopularity(ids.map((id) => ({ id, imp: 1 })))];
+    // (Aug 6) A GET no longer mutates global ranking state. This write counted
+    // an impression for all 60 served slots on every serve, while
+    // caller-controlled category/maxPrice/fit filters chose WHICH items got
+    // them — ~3600 aimed impressions/minute, enough to collapse a targeted
+    // item's novelty to 0.007 for everyone, permanently. It also sat OUTSIDE
+    // the guidanceEnabled gate, so users who had explicitly turned Asterisk
+    // off still moved global ranking. Exposure is now counted from the r19
+    // examined-slot beacon (POST /api/impressions), where the identity is
+    // known and one person counts once. BRAIN_POPULARITY_DEDUP=0 restores
+    // this write together with the raw-count scoring, as one behaviour.
+    const writes = [];
+    if (!popularityDedupEnabled()) {
+      writes.push(bumpPopularity(ids.map((id) => ({ id, imp: 1 }))));
+    }
     if (guidanceEnabled) {
       writes.push(mutateProfile(userId, (current) => {
         const base = current && Object.keys(current).length ? current : profileBeforeCorrections;
