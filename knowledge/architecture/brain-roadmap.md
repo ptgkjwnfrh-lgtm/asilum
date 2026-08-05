@@ -74,10 +74,30 @@ in the same PR as the round they describe.
   do NOT train in v1 — only the explicit apply. The pill click is the
   cleanest consent signal; implicit channels are a future round with
   their own battery.
-- **r18 — vectors into the feed**: precomputed item-item vector neighbors
-  (catalog embeddings already in DB; no query-time API calls) supplement
-  gamma where the co-engagement graph is sparse; epsilon prefers
-  far-in-tag-space / near-in-vector-space items — novelty with coherence.
+- **r18 — vectors into the feed** (SHIPPED): precomputed item-item vector
+  neighbors supplement the feed with no query-time API calls — a vendored
+  top-12 neighbor artifact (lib/brain/vector-neighbors.json, built from
+  the prod catalog embeddings over 915 items via
+  scripts/build-vector-neighbors.mjs; provenance asserted by
+  tests/vector-neighbors.test.js, and any catalog re-embed must rerun the
+  build script in the same PR). Two uses: gamma sparse-graph fallback
+  (vector neighbors at a 0.6 discount ONLY where co-engagement edges are
+  missing — behavioral edges always win) and reach coherence (epsilon
+  prefers far-in-tag-space / near-in-vector-space items — novelty with a
+  thread of coherence). BRAIN_VECTOR_NEIGHBORS=0 kills it. Measured:
+  unit 5/5 (suite 222); offline battery (scripts/measure-vector-feed.mjs)
+  PASS — reach-slot affinity 0.1025→0.1417 with top-24 identity held,
+  per-page structure identical, deterministic run-to-run; live 1000-bot
+  two-arm gate PASS — ON alignment gain +0.231 (196/200 bots improved)
+  vs OFF +0.214 (197/200), zone mix structurally identical
+  (46.9/11.9/1.2 vs 46.6/12/1.4), engagement by zone equal within noise
+  (core 36% both arms; discovery 52% vs 55%, inside ~2σ at n≈1250),
+  bored-user law holds in both arms (reach 5/5, epsilonAuto), 0 errors
+  either arm (9181/9204 calls). HONEST NOTE: the gamma-fallback
+  criterion is vacuous at sim warmup scale — 0 gamma-attributed slots
+  appeared in either arm, so the fallback's bounds are unit-tested but
+  its slot-level effect is unmeasured until the co-engagement graph is
+  denser (real traffic).
 - **r19 — anti-taste vector**: slow-decay negative profile from fast-skips
   and hides; fences far-reach/discovery candidates ONLY (never core — the
   declared anti-bubble guard). Reset Brain wipes it.
