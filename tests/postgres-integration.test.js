@@ -433,3 +433,46 @@ test("Postgres edge corroboration: one identity contributes once", { skip: !data
   const edges = await db.getEdges([A]);
   assert.equal(edges[A][B], 3, "getEdges reports the distinct-contributor count");
 });
+
+// The path that broke production: writeEdges called with a transaction CLIENT
+// rather than a pool. A pooled client also exposes .connect(), so a naive
+// pool check called connect() on it and every /api/interaction 500'd. The unit
+// suite runs mem-mode and the test above uses the POOL path, so neither could
+// see it — this drives the real commit transaction.
+test("Postgres edge corroboration through commitInteractionBatch", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?corroboration-txn=1");
+  const { learn } = await import("../lib/brain/index.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const userId = `u-txn-${suffix}`;
+  const anchor = `txn-anchor-${suffix}`;
+  const item = { id: `txn-item-${suffix}`, tags: { MINIMAL: 0.7 }, brand: "X" };
+  t.after(async () => {
+    for (const table of ["user_events", "interactions", "processed_operations", "profiles"]) {
+      await pool.query(`DELETE FROM ${table} WHERE user_id=$1`, [userId]);
+    }
+    await pool.query("DELETE FROM edge_contributors WHERE identity_hash=$1", [db.identityHash(userId)]);
+    await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [[anchor, item.id]]);
+  });
+
+  const commit = async (op) => db.commitInteractionBatch({
+    userId, operationId: op,
+    events: [{ itemId: item.id, action: "bag", dwellMs: null,
+      canonicalEvent: { userId, type: "USER_ADDED_TO_BAG", payload: { itemId: item.id }, at: Date.now(), v: 1 } }],
+    reduce: (cur) => ({
+      profile: learn(cur || {}, item, "bag"),
+      edgePairs: [{ a: anchor, b: item.id, w: 2 }],
+      popularity: [{ id: item.id, eng: 1 }],
+    }),
+  });
+
+  await commit(null);
+  await commit(null);
+  await commit(null);
+  const lo = anchor < item.id ? anchor : item.id;
+  const hi = anchor < item.id ? item.id : anchor;
+  const row = (await pool.query("SELECT w,contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi])).rows[0];
+  assert.ok(row, "the in-transaction write must actually land");
+  assert.equal(row.contributors, 1, "three commits by one identity remain one contributor");
+});
