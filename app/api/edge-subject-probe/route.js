@@ -50,5 +50,13 @@ export async function GET(req) {
     if (prevSalt === undefined) delete process.env.RATE_LIMIT_SUBJECT_SALT;
     else process.env.RATE_LIMIT_SUBJECT_SALT = prevSalt;
   }
-  return NextResponse.json({ env: process.env.VERCEL_ENV || null, candidates: out });
+  return NextResponse.json({
+    env: process.env.VERCEL_ENV || null,
+    // Positive control: a header Vercel has no reason to touch. If a forged
+    // run shows this arriving while the IP headers show the true client IP,
+    // the forgeries provably left the client and were overwritten at the
+    // edge — the safe result is not an artifact of headers never being sent.
+    control: req.headers.get("x-probe-control"),
+    candidates: out,
+  });
 }
