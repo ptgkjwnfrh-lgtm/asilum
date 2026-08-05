@@ -33,7 +33,10 @@ export async function GET(req) {
       title: it ? it.title : t.id,
       brand: it ? it.brand : "",
       item: it ? publicProduct(it) : null,
-      rate: t.imp > 0 ? +(t.eng / t.imp).toFixed(3) : null,
+      // Rate is people-per-viewer now; the raw event ratio rides alongside as
+      // an abuse fingerprint (120 events from 1 person is a signature).
+      rate: t.viewers > 0 ? +(t.engagers / t.viewers).toFixed(3) : null,
+      eventRatio: t.engagers > 0 ? +(t.eng / t.engagers).toFixed(1) : null,
     };
   }));
   return NextResponse.json(stats);

@@ -15,7 +15,7 @@
 import { NextResponse } from "next/server";
 import { applyExaminationReport } from "../../../lib/brain/index.js";
 import { examinedBridgeCounts, examinedImpressionsEnabled, MAX_EXAMINED_PER_SERVE } from "../../../lib/brain/attribution.js";
-import { mutateProfile, getProfile } from "../../../lib/db/index.js";
+import { mutateProfile, getProfile, bumpPopularity } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
@@ -61,9 +61,21 @@ export async function POST(req) {
     if (known && last.reported) {
       return NextResponse.json({ userId, applied: 0, dropped: 0, duplicate: true });
     }
-    const { counts, examined: n, dropped: d } = examinedBridgeCounts(examined, known ? (last.bridges || {}) : {});
+    const servedBridges = known ? (last.bridges || {}) : {};
+    const { counts, examined: n, dropped: d } = examinedBridgeCounts(examined, servedBridges);
     applied = n; dropped = d;
-    if (n > 0) await mutateProfile(userId, (current) => applyExaminationReport(current, serveId, counts));
+    if (n > 0) {
+      await mutateProfile(userId, (current) => applyExaminationReport(current, serveId, counts));
+      // (Aug 6) Global exposure is counted HERE, from slots this identity
+      // actually examined and was actually served — one person counts once
+      // per item, enforced by the ledger's primary key. The old rule counted
+      // every served slot on a GET, which let one identity aim ~3600
+      // impressions a minute at a chosen item and bury it for everyone.
+      const seenIds = [...new Set(examined.map(String))].filter((id) => servedBridges[id]);
+      if (seenIds.length) {
+        await bumpPopularity(seenIds.map((id) => ({ id, imp: 1 })), userId).catch(() => {});
+      }
+    }
   } catch {
     // A lost beacon must never fail the page — the fallback denominator holds.
     return NextResponse.json({ userId, applied: 0, dropped: 0 });

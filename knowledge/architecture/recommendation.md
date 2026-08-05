@@ -75,3 +75,64 @@ trust to the most-likely-poisoned edges.
 deploy. Battery: scripts/measure-graph-corroboration.mjs (6 declared criteria,
 one declared amendment) — the forged item sits at rank 37 of the victim's
 60-slot page under the legacy rule and is absent under the fix.
+
+## Popularity counts PEOPLE (Aug 6, 2026 — confirmed vulnerability, fixed)
+
+The delta bridge's counters were global, monotone and unauthenticated in BOTH
+directions, and neither ever decayed:
+
+- **Upward**: POST /api/interaction added `eng+1` per positive action with no
+  per-identity dedup. 120 favourites/minute from one cookie put an item's
+  volume term at 0.94 for every user in the system.
+- **Downward, and worse**: GET /api/feed wrote `imp+1` for ALL 60 served items
+  on EVERY serve, while caller-controlled category/maxPrice/fit filters chose
+  WHICH items received them — ~3600 aimed impressions/minute. `novelty =
+  25/(imp+25)` then collapses to 0.007, permanently removing a targeted item
+  from every user's exploration and reach zones. A READ endpoint mutating
+  global ranking state, and one that sat OUTSIDE the guidance gate, so users
+  who had explicitly turned Asterisk off still moved everyone's ranking.
+
+Suppression is the asymmetric direction because the exploration floors protect
+the ZONE, not any particular item.
+
+**Why novelty became a percentile.** The obvious fix — keep `K/(V+K)` and feed
+it distinct viewers — cannot work. K=25 is calibrated to an EVENT scale that
+people-counting compresses by more than an order of magnitude. Keep K and every
+item sits near novelty 1.0, so epsilon degenerates into a second
+anti-similarity term. Shrink K and the price of halving a target's novelty
+becomes exactly K device cookies. **Calibration and attack cost are the same
+number**, so no K is both useful and safe. A midrank percentile has no such
+constant: scale-free, relative (suppressing an item means out-viewing the
+pool), and on day one — every count zero — it returns 0.5 for everything,
+uniform and honest rather than a fabricated ordering.
+
+Delta's own constants are unchanged in VALUE and changed in UNIT (people, not
+events), which moves them strictly conservative — eight distinct people is a
+far higher bar than eight clicks. The neutral prior is now keyed on EVIDENCE
+and blended rather than branched: it used to trigger only when the row was
+ABSENT, and the feed's impression write created a row for every served item,
+so in production the "neutral prior" was already dead and unproven items
+scored 0.0. Removing that write would have silently resurrected it
+catalog-wide — a ranking change smuggled inside a security fix.
+
+Supporting rules: `popularity_contributors` PK (item_id, identity_hash) IS the
+bound, so no per-identity cap is needed; there is deliberately **no cap on
+viewers** (unlike CONTRIB_CAP for edges — novelty is monotone DECREASING, so a
+cap would install a permanent novelty floor beneath the most-exposed items and
+manufacture the monoculture epsilon exists to prevent); exposure is counted
+from the r19 examined-slot beacon where identity is known; account deletion
+erases ledger rows and recomputes; `/hotlist` and `/stats` rank and label
+PEOPLE, or a forged leaderboard would stay published after ranking was fixed;
+raw eng/imp are retained as diagnostics and as an abuse fingerprint, since a
+120:1 event-to-people ratio is a signature.
+
+**Honest limit**: this does not abolish suppression. It raises the price of one
+unit of novelty damage from one HTTP request to one distinct signed device
+identity, and leaves the damage function unchanged — the residual risk
+concentrates on cold-start items, exactly the population epsilon protects.
+Identity issuance prices the remainder. Measured price is published in the
+battery output and the PR.
+
+`BRAIN_POPULARITY_DEDUP=0` restores raw-event scoring AND the feed-side write
+as one coupled behaviour (a switch restoring only half would create a third
+mode nobody has tested). Battery: scripts/measure-popularity-people.mjs.

@@ -185,7 +185,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 22);
+  assert.equal(schema.rows[0].version, 23);
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
   {
