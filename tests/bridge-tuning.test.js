@@ -6,7 +6,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { tunedSplit, bridgeEngagementFromEvents, explainMix, MIN_IMPRESSIONS, MIN_ENGAGEMENTS } from "../lib/brain/tuning.js";
+import { tunedSplit, bridgeEngagementFromEvents, explainMix, weightedEventTypes, MIN_IMPRESSIONS, MIN_ENGAGEMENTS } from "../lib/brain/tuning.js";
+import { EVENTS, eventFromInteraction } from "../lib/events/index.js";
 import { baseSplit } from "../lib/brain/bridges.js";
 import { buildFeed } from "../lib/brain/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
@@ -83,15 +84,41 @@ test("cold users are byte-identical (tunedSplit null path)", () => {
 
 test("bridgeEngagementFromEvents reads only whitelisted attributed events", () => {
   const { eng, evidence } = bridgeEngagementFromEvents([
-    { type: "USER_BAGGED_ITEM", payload: { bridge: "gamma" } },
-    { type: "USER_SKIPPED_ITEM", payload: { bridge: "epsilon" } },
-    { type: "USER_BAGGED_ITEM", payload: { bridge: "not-a-bridge" } },
-    { type: "USER_SEARCHED_QUERY", payload: { bridge: "alpha" } },
-    { type: "USER_BAGGED_ITEM", payload: {} },
+    { type: EVENTS.USER_ADDED_TO_BAG, payload: { bridge: "gamma" } },
+    { type: EVENTS.USER_SKIPPED_PRODUCT, payload: { bridge: "epsilon" } },
+    { type: EVENTS.USER_ADDED_TO_BAG, payload: { bridge: "not-a-bridge" } },
+    { type: EVENTS.USER_SEARCHED_QUERY, payload: { bridge: "alpha" } },
+    { type: EVENTS.USER_ADDED_TO_BAG, payload: {} },
   ]);
   assert.equal(eng.gamma, 2);
   assert.equal(eng.epsilon, -1);
   assert.equal(evidence, 3);
+});
+
+// The defect this guards: EVENT_ACTION_WEIGHT was keyed on four names that do
+// not exist in the frozen vocabulary (USER_BAGGED_ITEM / USER_DWELLED_ITEM /
+// USER_SKIPPED_ITEM / USER_HID_ITEM), so bag — the strongest signal — and BOTH
+// negative weights silently scored zero. Weights must key on real event types,
+// or the declared law "skips count against" cannot hold.
+test("every weighted action is a real event type, and every interaction action is weighted", () => {
+  const weighted = weightedEventTypes();
+  for (const type of weighted) {
+    assert.ok(EVENTS[type], `EVENT_ACTION_WEIGHT keys a non-existent event type: ${type}`);
+  }
+  for (const action of ["bag", "share", "save", "favorite", "dwell", "skip", "hide"]) {
+    const ev = eventFromInteraction("u-x", action, { id: "i1", _bridge: "gamma" }, 5000);
+    assert.ok(ev, `no canonical event for action ${action}`);
+    const { evidence } = bridgeEngagementFromEvents([ev]);
+    assert.ok(evidence > 0, `action ${action} (${ev.type}) carries zero tuning weight`);
+  }
+});
+
+test("skips and hides count AGAINST their bridge (the declared negative law)", () => {
+  const skip = eventFromInteraction("u-x", "skip", { id: "i1", _bridge: "delta" });
+  const hide = eventFromInteraction("u-x", "hide", { id: "i2", _bridge: "delta" });
+  const { eng, evidence } = bridgeEngagementFromEvents([skip, hide]);
+  assert.equal(eng.delta, -2, "two negatives must sum to -2, not 0");
+  assert.equal(evidence, 2, "negatives are evidence too (|weight|)");
 });
 
 test("explainMix speaks plainly in both states", () => {

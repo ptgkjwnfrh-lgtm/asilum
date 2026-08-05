@@ -8,7 +8,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { buildFeed, markBridgeImpressions } from "../lib/brain/index.js";
-import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
+import { publicProduct, productSnapshot, withReportedBridge, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 
@@ -64,4 +64,35 @@ test("markBridgeImpressions accumulates, ignores junk, and caps", () => {
   assert.equal(p._meta.bridgeStats.negative, undefined);
   p = markBridgeImpressions(p, { alpha: 200_000 });
   assert.equal(p._meta.bridgeStats.alpha, 100_000);
+});
+
+// The defect this guards (found Aug 5): the interaction route rebuilds every
+// event item from server inventory via productSnapshot, whose allowlist has no
+// _bridge field. The client-reported attribution was therefore discarded
+// BEFORE eventFromInteraction ever saw it, so no production user_events row
+// ever carried payload.bridge and r16 tuning could never reach its evidence
+// gate. The unit above passes a hand-made item and cannot see that; this one
+// walks the route's own resolve-then-build sequence.
+test("route sequence: a server-resolved snapshot still yields payload.bridge", () => {
+  const source = { ...CATALOG[0], _zone: "core", _bridge: "gamma" };
+  const snapshot = productSnapshot(source);
+  assert.equal(snapshot._bridge, undefined,
+    "guard premise: the server snapshot allowlist must NOT carry _bridge");
+
+  // Exactly what app/api/interaction/route.js now does before building events.
+  const routeItem = withReportedBridge(snapshot, source._bridge);
+  const ev = eventFromInteraction("u-test", "bag", routeItem);
+  assert.equal(ev.payload.bridge, "gamma",
+    "attribution must survive the route's snapshot swap into the event payload");
+  assert.equal(ev.payload.itemId, snapshot.id, "server-resolved id still wins");
+
+  const forged = withReportedBridge(snapshot, "totally-made-up");
+  assert.equal(forged._bridge, undefined, "a fabricated bridge string never attaches");
+  assert.equal(eventFromInteraction("u-test", "bag", forged).payload.bridge, undefined);
+
+  // Server fields still win over anything the client claimed.
+  const lying = withReportedBridge(snapshot, "alpha");
+  assert.equal(lying.title, snapshot.title);
+  assert.equal(lying.price, snapshot.price);
+  assert.deepEqual(lying.tags, snapshot.tags);
 });
