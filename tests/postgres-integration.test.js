@@ -405,7 +405,10 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
 // local dev running the ungated rule while reporting success.
 test("Postgres edge corroboration: one identity contributes once", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
-  const db = await import("../lib/db/index.js");
+  // Fresh module instance: the test above ends the shared pool in its
+  // cleanup, and a second test reusing it dies with "Cannot use a pool after
+  // calling end on the pool".
+  const db = await import("../lib/db/index.js?corroboration=1");
   const pool = await db.getPool();
   const suffix = randomUUID();
   const A = `pgcorr-a-${suffix}`;
