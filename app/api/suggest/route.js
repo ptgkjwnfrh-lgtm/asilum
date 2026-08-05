@@ -10,6 +10,7 @@ import { getProductPool } from "../../../lib/search/index.js";
 import { listSearchMappings } from "../../../lib/db/production.js";
 import { DEFAULT_MAPPINGS } from "../../../lib/search/mappings-seed.js";
 import { buildVocabulary, suggest } from "../../../lib/search/suggest.js";
+import { cultureSuggestView } from "../../../lib/asterisk/culture.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 
@@ -30,7 +31,11 @@ export async function GET(req) {
       const pool = await getProductPool();
       let mappings = [];
       try { mappings = await listSearchMappings(); } catch { mappings = []; }
-      _vocab = buildVocabulary(pool, mappings.length ? mappings : DEFAULT_MAPPINGS, TAGS);
+      // Cultural references guide typing toward entities the engine actually
+      // knows (owner report Aug 5: celebrity queries suggested nothing).
+      // SEARCH_CULTURE_SUGGEST=0 restores the old vocabulary without a deploy.
+      const culture = process.env.SEARCH_CULTURE_SUGGEST !== "0" ? cultureSuggestView() : [];
+      _vocab = buildVocabulary(pool, mappings.length ? mappings : DEFAULT_MAPPINGS, TAGS, culture);
       _vocabAt = Date.now();
     }
     return NextResponse.json({ q, suggestions: suggest(q, _vocab) });
