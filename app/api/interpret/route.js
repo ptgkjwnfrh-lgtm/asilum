@@ -23,6 +23,9 @@ import {
 } from "../../../lib/db/production.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { learn } from "../../../lib/brain/index.js";
+import { mutateProfile, recordEvent } from "../../../lib/db/index.js";
+import { buildEvent, EVENTS } from "../../../lib/events/index.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
@@ -110,5 +113,38 @@ export async function POST(req) {
     userId: user, normalizedQuery: nq, interpretationId,
     contractVersion: INTERPRETATION_CONTRACT_VERSION, verdict,
   });
-  return NextResponse.json({ ok: true, feedback: saved });
+
+  // (r17) the search→brain loop: an APPLIED reading is the user saying
+  // "this is what I meant" — the one moment a search becomes a taste
+  // signal. Law, all enforced here: tags resolve SERVER-SIDE from the
+  // culture catalog (the client's tags are never trusted); only catalog
+  // readings train (composed/lexical ids resolve to nothing); guidance off
+  // = no training; the canonical event persists BEFORE the derived profile
+  // mutation (day-8 retry-safe law); training is one bounded "save"-weight
+  // learn() — decay, halo and clamps included. Ignored readings train
+  // nothing because this endpoint only hears about applied ones, and GET
+  // stays side-effect-free (day-5 law). SEARCH_BRAIN_LOOP=0 kills it.
+  let trained = null;
+  if (verdict === "meant" && process.env.SEARCH_BRAIN_LOOP !== "0") {
+    try {
+      const interp = await orchestrateInterpretation(nq, null);
+      const reading = (interp?.interpretations || []).find((i) => i.id === interpretationId);
+      const guidanceEnabled =
+        (await getMemoryPreferences(user).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
+      if (reading?.tags?.length && guidanceEnabled) {
+        // One applied reading carries ONE item's worth of signal, spread
+        // across its tags — measured 8/5: un-normalized multi-tag training
+        // collapsed a standing dominant taste from 23 to 7 of the top 24
+        // in a single click. A reading is a signal, not a takeover.
+        const conf = Math.max(0.3, Math.min(1, Number(reading.confidence) || 0.7)) / reading.tags.length;
+        const tags = Object.fromEntries(reading.tags.map((t) => [String(t).toUpperCase(), conf]));
+        await recordEvent(buildEvent(user, EVENTS.USER_SEARCHED_QUERY, {
+          query: nq, interpretationId, tags: reading.tags,
+        }));
+        await mutateProfile(user, (current) => learn(current || {}, { id: "reading:" + interpretationId, tags }, "save"));
+        trained = { interpretationId, tags: reading.tags };
+      }
+    } catch { trained = null; }
+  }
+  return NextResponse.json({ ok: true, feedback: saved, trained });
 }
