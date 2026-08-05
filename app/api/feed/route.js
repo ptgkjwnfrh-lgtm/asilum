@@ -27,6 +27,7 @@ import { applyCorrectionSignalsToBrainProfile } from "../../../lib/asterisk/corr
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { crossUserCandidates } from "../../../lib/taste-graph/index.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
 import { getDiscoverablePool, getPopularitySnapshot, publicProduct } from "../../../lib/products.js";
 
@@ -35,10 +36,15 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const userId = await resolveRequestUser(req, searchParams.get("user") || "guest");
-  if (!userId) {
-    return NextResponse.json({ error: "authentication required" }, { status: 401 });
-  }
-  const quota = await consumeRateLimit({ scope: "feed", subject: userId, limit: 60, windowMs: 60_000 });
+  // A visitor without an identity gets the cold-start feed rather than a 401.
+  // /api/feed was the ONLY read surface that failed closed — discover, search,
+  // related, suggest and editorial all already serve anonymously — so this one
+  // route turned an issuance hiccup into a blank product. Anonymous callers
+  // get no personalization, no profile writes, and no attribution; they get
+  // the catalog. Their quota is the shared public bucket, not a per-user one.
+  const anonymous = !userId;
+  const quotaSubject = userId || requestSubject(req);
+  const quota = await consumeRateLimit({ scope: "feed", subject: quotaSubject, limit: 60, windowMs: 60_000 });
   if (!quota.allowed) {
     return NextResponse.json(rateLimitResponse(quota), {
       status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
@@ -50,8 +56,12 @@ export async function GET(req) {
       status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
     });
   }
-  const guidanceEnabled =
-    (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
+  // No identity ⇒ no guidance, which makes every profile read and write below
+  // fall away by construction: an anonymous serve reads nothing personal and
+  // records nothing. It is a catalog view, not a de-personalized user.
+  const guidanceEnabled = anonymous
+    ? false
+    : (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
   const epsilonParam = searchParams.get("epsilon") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
@@ -75,7 +85,7 @@ export async function GET(req) {
   try {
     [correctionSummary, exclusions] = await Promise.all([
       guidanceEnabled ? getUserCorrectionSignalSummary(userId) : Promise.resolve({}),
-      getUserRecommendationExclusions(userId),
+      anonymous ? Promise.resolve({ brands: [], productIds: [] }) : getUserRecommendationExclusions(userId),
     ]);
   } catch {
     return NextResponse.json({ error: "correction state unavailable" }, { status: 503 });
