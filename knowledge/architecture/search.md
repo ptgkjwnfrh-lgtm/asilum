@@ -178,3 +178,39 @@ HARNESS LAWS (accumulated, binding for future ranking measurement):
    change is the change under test, not a regression (r8).
 
 Users/boards embeddings + pgvector migration are deliberate later steps.
+
+## Honest disclosure (Aug 5, 2026 — owner-reported defect)
+
+Owner report: "I'd search different things and get the same result."
+Reproduced on production — `wool sweater` and `knitted scarf` returned a
+BYTE-IDENTICAL knitwear rack; `leather jacket` returned all 170 outerwear
+items in raw catalog order. Cause chain, all three parts real:
+
+1. **The catalog cannot answer attribute queries.** `material`, `color`,
+   `colors`, `fit`, `silhouette` and `subcategory` are NULL on all 915 items,
+   and there are only 67 distinct product names. No item is silk, black, or
+   plaid; no leather jacket exists. Words like those match nothing anywhere.
+2. **The engine hid that.** An unmatchable word contributed no score, so
+   every item in the garment category tied — and ties fell to POOL order
+   (DB row order in production, catalog order locally: the same query
+   returned different orders on different backends). Every row was still
+   labelled `garment match` with a confidence score.
+3. **Three layers actively corrupted queries**: the r12 typo bridge rewrote
+   real vocabulary (`shift`→`shirt`, `plaid`→`plain`, `smock`→`sock`); the
+   r11 stem index resolved `-ed`/`-ing` modifiers into decisive category
+   evidence (`coated`→outerwear, `knitted`→knitwear); and `warm` was mapped
+   to warm-weather, hard-filtering 94 of 170 outerwear items — every FW
+   puffer and parka — out of `warm coat`.
+
+The round's law: **the engine may return a category browse, but it must
+never call it a match.** Unmatched tokens ride the response
+(`unmatchedTokens`), the note says them out loud ("no piece here matches
+"wool" — showing knitwear instead"), rows admitted only by category report
+`category browse`, and ties break on id so order is stable across backends.
+Ranking weights are deliberately UNCHANGED — this round is disclosure and
+de-corruption, not re-ranking. Battery: scripts/measure-search-honesty.mjs
+(7 declared criteria + the canonical probes; 15/15 after, 6/15 before).
+
+What this does NOT fix: attribute search itself. Until items carry real
+material/colour data, "silk blouse" has no right answer — the engine now
+says so instead of implying one.
