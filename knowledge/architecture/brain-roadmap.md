@@ -120,7 +120,47 @@ in the same PR as the round they describe.
   appeared in either arm, so the fallback's bounds are unit-tested but
   its slot-level effect is unmeasured until the co-engagement graph is
   denser (real traffic).
-- **r19 — anti-taste vector**: slow-decay negative profile from fast-skips
+- **r19 — position-weighted attribution** (SHIPPED, renumbered ahead of the
+  anti-taste vector at the audit's recommendation — it is the substrate every
+  attribution-consuming round stands on): r16's lift denominator counted every
+  slot the server SENT. A page is 60 slots and nobody scrolls 60, so bridges
+  filling deep slots banked impressions no eye reached, their lift was
+  deflated by pure position, and tuning drifted away from them for reasons
+  unrelated to taste. The denominator is now what the reader actually LOOKED
+  AT: the client's IntersectionObserver (0.55 coverage, tracking cards since
+  the dwell work) reports examined slot ids to POST /api/impressions, and the
+  bridge for each id comes from the SERVER's record of that serve
+  (`profile._meta.lastServe`) — the client names slots, never their
+  provenance. Declared bounds: one count per slot per serve; one report per
+  serve (replays and unknown serves apply nothing and say so); ids capped at
+  120; unknown ids dropped. `_meta.bridgeServed` keeps serve counts as a
+  diagnostic and as the declared fallback denominator when no report ever
+  arrives (a JS-disabled client must not be frozen out of tuning forever);
+  `examinationCoverage()` reports which denominator is in play.
+  BRAIN_EXAMINED_IMPRESSIONS=0 restores serve-counting without a deploy.
+  A position-decay CURVE was rejected deliberately: its constants would be
+  invented numbers, and real observation was already available.
+  Measured: unit 7/7 (suite 232); E2E through the running app — 60 served, 12
+  examined, denominator 12 and served 60, replay and forged-id reports apply
+  0; live two-arm gate ON +0.225 (197/200) vs OFF +0.230 (200/200), zone mix
+  46.7/11.9/1.4 vs 46.8/11.9/1.3, engagement by zone equal (core 36% both),
+  bored-user law holds both arms, 0 errors either arm.
+  The harness itself was fixed in the same round: bots stripped `_bridge`
+  before posting interactions and reported no examination at all — which is
+  precisely why no battery ever caught the attribution break that the Aug 5
+  code audit found by reading. Bots now carry the bridge back and report the
+  16 of 60 slots they actually examine.
+  **CONSEQUENCE, UNRESOLVED AND OWNER-FACING:** measured examination coverage
+  is ~0.27 (16 of 60 slots), so evidence now accrues ~3.75× more slowly. The
+  r16 gate constant (MIN_IMPRESSIONS = 120, commented "~2 pages of attributed
+  serving") was calibrated in SERVED units; in examined units two pages is
+  ~32. Left unchanged in this round on purpose — recalibrating changes when
+  tuning activates for real users and deserves its own declared measurement.
+  The two arms are statistically indistinguishable at sim scale (run-to-run
+  variance on this harness is ~±0.02, larger than the 0.005 gap), so this
+  gate proves no regression, NOT an improvement; the improvement it buys is
+  an unbiased denominator, which only real traffic can demonstrate.
+- **r19b — anti-taste vector** (was r19): slow-decay negative profile from fast-skips
   and hides; fences far-reach/discovery candidates ONLY (never core — the
   declared anti-bubble guard). Reset Brain wipes it.
 

@@ -311,6 +311,11 @@ export default function Home() {
 
   // ---- Dwell tracking ----
   const dwellRef = useRef({ vis: new Map(), sent: new Set() });
+  // (r19) Which slots of the current serve the user actually looked at. The
+  // tuning denominator used to be every slot the server sent — position bias
+  // straight into the training signal. We report ids only; the server knows
+  // which bridge each was.
+  const serveRef = useRef({ id: null, examined: new Set(), sent: false });
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
   useEffect(() => {
@@ -331,6 +336,7 @@ export default function Home() {
         const rec = d.vis.get(id) || { start: null, total: 0 };
         if (en.isIntersecting) {
           if (rec.start == null) rec.start = now;
+          serveRef.current.examined.add(id);
         } else if (rec.start != null) {
           rec.total += now - rec.start;
           rec.start = null;
@@ -369,6 +375,16 @@ export default function Home() {
       if (events.length) {
         postJSON("/api/interaction", { user, events }).catch(() => {});
       }
+      // (r19) one examination report per serve, sent once the page has
+      // settled. A lost beacon is harmless: the server falls back to served
+      // counts and says so through examinationCoverage.
+      const serve = serveRef.current;
+      if (serve.id && !serve.sent && serve.examined.size) {
+        serve.sent = true;
+        postJSON("/api/impressions", {
+          user, serveId: serve.id, examined: [...serve.examined],
+        }).catch(() => { serve.sent = false; });
+      }
     }, DWELL_FLUSH_MS);
     return () => clearInterval(iv);
   }, []);
@@ -404,6 +420,8 @@ export default function Home() {
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
       else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
       dwellRef.current = { vis: new Map(), sent: new Set() };
+      // (r19) a new serve: report examined slots against THIS id, once.
+      serveRef.current = { id: data.serveId || null, examined: new Set(), sent: false };
     } catch (e) {
       console.error(e);
     } finally {

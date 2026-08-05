@@ -171,11 +171,21 @@ def run_bot(bot):
         if not feed or not feed.get("items"):
             break
         dwell_batch = []
+        # (r19) A bot examines the first 16 of 60 slots — the same shape a
+        # real reader has, and the reason serve-counted impressions were
+        # position-biased. Report exactly what was examined, and carry the
+        # slot's bridge back the way the browser client does (the harness used
+        # to strip _bridge, which is why it never caught the attribution
+        # break the Aug 5 audit found by reading code).
+        examined_ids = [x["id"] for x in feed["items"][:16]]
+        if feed.get("serveId") and examined_ids:
+            call("POST", "/api/impressions",
+                 {"user": uid, "serveId": feed["serveId"], "examined": examined_ids})
         for it in feed["items"][:16]:
             if interactions >= 7:
                 break
             sim = cos(it.get("tags") or {}, bot["judge"])
-            slim = {"id": it["id"], "tags": it.get("tags") or {}}
+            slim = {"id": it["id"], "tags": it.get("tags") or {}, "_bridge": it.get("_bridge")}
             r = random.random()
             engaged = sim > 0.55 and r < 0.55
             note_zone(it.get("_zone"), engaged)

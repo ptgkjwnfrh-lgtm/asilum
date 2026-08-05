@@ -5,8 +5,10 @@
 // uses general signals plus explicit fit/craving filters and does not update
 // taste-rotation memory. Impressions still feed global popularity.
 
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
-import { buildFeed, coldStart, markSeen, markBridgeImpressions, itemsVector } from "../../../lib/brain/index.js";
+import { buildFeed, coldStart, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
+import { examinedImpressionsEnabled } from "../../../lib/brain/attribution.js";
 import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
 import { baseSplit } from "../../../lib/brain/bridges.js";
 import { listEvents } from "../../../lib/db/index.js";
@@ -192,6 +194,7 @@ export async function GET(req) {
   // re-read inside the lock so we never clobber a concurrent interaction, and
   // the clock decay is persisted so idle forgetting sticks.
   const ids = items.map((it) => it.id);
+  const serveId = randomUUID();
   try {
     const writes = [bumpPopularity(ids.map((id) => ({ id, imp: 1 })))];
     if (guidanceEnabled) {
@@ -201,7 +204,17 @@ export async function GET(req) {
         // (r14) attribution: count this serve's bridges on the profile.
         const bridgeCounts = {};
         for (const it of items) if (it._bridge) bridgeCounts[it._bridge] = (bridgeCounts[it._bridge] || 0) + 1;
-        return markBridgeImpressions(markSeen(decayed, ids), bridgeCounts);
+        // (r19) Serving is not seeing. Served counts are diagnostic; the
+        // tuning denominator (bridgeStats) is fed by POST /api/impressions
+        // with the slots the user actually examined. A client that never
+        // reports examination still accrues evidence here — otherwise a
+        // JS-disabled or beacon-blocked user could never tune at all — but
+        // that fallback is declared, and examinationCoverage reports it.
+        const served = markBridgeServed(markSeen(decayed, ids), bridgeCounts);
+        if (!examinedImpressionsEnabled()) return markBridgeImpressions(served, bridgeCounts);
+        // Remember what this serve WAS, so the examination beacon is
+        // attributed from the server's record rather than the client's word.
+        return recordServe(served, serveId, items);
       }));
     }
     await Promise.all(writes);
@@ -209,6 +222,7 @@ export async function GET(req) {
 
   return NextResponse.json({
     userId,
+    serveId,
     epsilonActive,
     epsilonAuto,
     safeMode,
