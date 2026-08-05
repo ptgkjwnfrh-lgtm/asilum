@@ -7,6 +7,9 @@
 
 import { NextResponse } from "next/server";
 import { buildFeed, coldStart, markSeen, markBridgeImpressions, itemsVector } from "../../../lib/brain/index.js";
+import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
+import { baseSplit } from "../../../lib/brain/bridges.js";
+import { listEvents } from "../../../lib/db/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
@@ -158,11 +161,29 @@ export async function GET(req) {
     } catch {}
   }
 
+  // (r16) bounded bridge self-tuning: the user's attributed history drifts
+  // the base blend inside declared floors/caps. Server-computed only —
+  // nothing here reads request input. Evidence-gated: cold users get null
+  // and stay byte-identical to the shipped split. BRAIN_BRIDGE_TUNING=0
+  // kills it without a deploy.
+  let tuned = null;
+  if (guidanceEnabled && hasProfile && tuningEnabled()) {
+    try {
+      const events = await listEvents(userId, 300);
+      tuned = tunedSplit(
+        (profile._meta && profile._meta.bridgeStats) || {},
+        bridgeEngagementFromEvents(events),
+        baseSplit()
+      );
+    } catch { tuned = null; }
+  }
+
   const { split, items, epsilonActive, epsilonAuto, safeMode, zones } = buildFeed(
     {
       profile,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
       edges, popularity, boardVec, contextVec, crossUser, novelty: craving.novelty,
+      tunedSplit: tuned,
     },
     pool
   );
@@ -195,6 +216,9 @@ export async function GET(req) {
     boardSeeded: !!boardVec,
     craving: cravingActive ? craving : null,
     split,
+    // (r16) honest influence: whether tuning shaped THIS page's blend
+    // (safety modes suppress it even when computed), and the tuned weights.
+    tuning: { active: !!tuned && !epsilonActive && !safeMode, split: tuned },
     zones,
     count: items.length,
     items: items.map(publicProduct).filter(Boolean),

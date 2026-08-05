@@ -14,6 +14,7 @@ import { getUid, authorizedFetch } from "../../lib/client.js";
 export default function StatsPage() {
   const [stats, setStats] = useState(null);
   const [viz, setViz] = useState(null);
+  const [mix, setMix] = useState(null); // (r16) bridge mix, plain words
 
   useEffect(() => {
     fetch("/api/stats")
@@ -22,7 +23,7 @@ export default function StatsPage() {
       .catch(() => {});
     authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
       .then((r) => r.json())
-      .then((d) => setViz(vizState(d.profile)))
+      .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
       .catch(() => {});
   }, []);
 
@@ -30,6 +31,7 @@ export default function StatsPage() {
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>STATS</h1>
       <p className="deck">what the brain has learned so far.</p>
+      {mix ? <p className="areadnote"><b className="red">*</b> {mix.line}</p> : null}
       <hr className="rule" />
 
       {viz && (
