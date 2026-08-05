@@ -3,7 +3,9 @@
 // the brain visualization (vizState runs client-side on this payload).
 
 import { NextResponse } from "next/server";
-import { getProfile } from "../../../lib/db/index.js";
+import { getProfile, listEvents } from "../../../lib/db/index.js";
+import { tunedSplit, bridgeEngagementFromEvents, explainMix } from "../../../lib/brain/tuning.js";
+import { baseSplit } from "../../../lib/brain/bridges.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
@@ -19,7 +21,19 @@ async function handleGET(req) {
   const quota = await consumeRateLimit({ scope: "profile-read", subject: userId, limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const profile = await getProfile(userId).catch(() => ({}));
-  return NextResponse.json({ userId, profile });
+  // (r16) the user's bridge mix, in plain words — same computation as the
+  // feed route, purely explanatory here.
+  let bridgeMix = null;
+  try {
+    const events = await listEvents(userId, 300);
+    const tuned = tunedSplit(
+      (profile?._meta && profile._meta.bridgeStats) || {},
+      bridgeEngagementFromEvents(events),
+      baseSplit()
+    );
+    bridgeMix = explainMix(baseSplit(), tuned);
+  } catch { bridgeMix = null; }
+  return NextResponse.json({ userId, profile, bridgeMix });
 }
 
 // Personal data: never shared-cacheable (see withPrivateCache).

@@ -29,14 +29,28 @@ in the same PR as the round they describe.
   tie-pairs reported undecided, never scored), deterministic run-to-run,
   120 bots × 6 pages. The python 1000-bot harness remains the live gate
   for r16's shipped candidate.
-- **r16 — bounded bridge self-tuning**: per-user bridge win-rates
-  (engagements from `user_events` ÷ impressions from `bridgeStats`,
-  time-decayed) drift blend weights inside DECLARED bounded ranges. Alpha
-  floor and epsilon floor are hard guarantees (anti-bubble,
-  anti-addiction). Cold-start = today's hand-tuned split.
-  `BRAIN_BRIDGE_TUNING=0` kills it. Measured by r15 replay + live stress
-  harness + byte-exact feed invariants (brand cap, discovery cadence,
-  reach slots). /stats explains the user's own mix in plain words.
+- **r16 — bounded bridge self-tuning** (SHIPPED): lib/brain/tuning.js —
+  per-bridge LIFT (engagement share ÷ impression share; engagements
+  action-weighted from attributed user_events, impressions from
+  profile._meta.bridgeStats) drifts the CORE blend, lift clamped
+  [0.5, 1.5]. HARD LAW: alpha ≥ 20% and epsilon ≥ 5% shares always
+  (anti-drift, anti-bubble); no bridge > 50% (anti-monoculture); ads
+  NEVER self-amplify (excluded from tuning); safety modes
+  (epsilon-active, safe) stay hand-tuned and suppress tuning; evidence
+  gates (120 attributed impressions + 8 engagements) keep cold users
+  byte-identical forever. BRAIN_BRIDGE_TUNING=0 kills it. /stats and
+  /api/profile explain the user's mix in plain words; the feed response
+  carries `tuning:{active,split}`. Measured (scripts/measure-tuning.mjs,
+  3 declared amendments — including the PERMUTATION CONTROL that made
+  advantage-replay honest about near-policies: on-slate replay is
+  pessimistically biased against any policy differing from behavior, so
+  the null is the bot's own lifts on the WRONG bridges): live-sim tuned
+  0.33247 ≥ base 0.33032, degraded 17/120 under the 30 cap, tuned beats
+  its scrambled twins (−0.0063 vs −0.0089) beyond noise, structure
+  invariants 0 breaks, page-0 byte-identity, deterministic. LIVE GATE
+  (python 1000-bot harness, mem-mode, ON vs OFF): alignment +0.213 vs
+  +0.208, zone mix and engagement rates unchanged, bored-user probe
+  correct in both, 0 errors in both.
 
 ## Phase 2 — feed the brain (each independent; can interleave)
 
