@@ -15,7 +15,7 @@ import {
 } from "../../../lib/db/index.js";
 import { eventFromInteraction } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { resolveProducts } from "../../../lib/products.js";
+import { resolveProducts, withReportedBridge } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -50,7 +50,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "unknown product" }, { status: 400 });
   }
   const valid = events.map((event) => ({
-    item: products.get(event.item.id),
+    // Server inventory decides every product field; withReportedBridge only
+    // re-attaches the client's whitelisted attribution so r16 tuning can see
+    // which bridge earned the interaction (see lib/products.js).
+    item: withReportedBridge(products.get(event.item.id), event.item._bridge),
     action: event.action,
     dwellMs: event.action === "dwell" && Number.isFinite(Number(event.dwellMs))
       ? Math.max(0, Math.min(600_000, Math.round(Number(event.dwellMs)))) : null,

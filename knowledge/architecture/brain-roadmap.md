@@ -11,6 +11,28 @@ in the same PR as the round they describe.
 
 ## Phase 1 — make learning measurable
 
+> **Correction (Aug 5, 2026 — audit round).** r14's attribution passthrough
+> and r16's tuning were BOTH inert in production from the day they shipped,
+> for two independent reasons found by a code audit, not by any battery:
+> (1) `/api/interaction` rebuilt every event item from server inventory via
+> `productSnapshot`, whose allowlist has no `_bridge` — so the client's
+> reported attribution was discarded *before* `eventFromInteraction` saw it,
+> and no production `user_events` row ever carried `payload.bridge`;
+> (2) `tuning.js` keyed its action weights on four event names that do not
+> exist in the frozen vocabulary (`USER_BAGGED_ITEM`, `USER_DWELLED_ITEM`,
+> `USER_SKIPPED_ITEM`, `USER_HID_ITEM` vs the canonical `USER_ADDED_TO_BAG`,
+> `USER_VIEWED_PRODUCT`, `USER_SKIPPED_PRODUCT`,
+> `USER_REJECTED_RECOMMENDATION`), so bag — the strongest signal — and BOTH
+> negative weights scored zero, and the declared law "skips count against"
+> could not hold. Impressions accrued; engagement evidence was structurally
+> zero, so `tunedSplit` failed its gate forever and `tuning.active` was
+> permanently false. Every r16 measurement passed because the offline
+> harnesses (`replay.js`, `measure-tuning.mjs`) build engagement in-process
+> from `it._bridge`, bypassing the route entirely — the batteries never
+> crossed the API boundary they claimed to validate. Fixed and verified
+> end-to-end through the running app (tuning activates, floors hold, cold
+> users byte-identical); the harness lesson is recorded below.
+
 - **r14 — bridge attribution** (SHIPPED with this file): every feed slot
   carries `_bridge` (core: dominant weighted bridge of the six; zoned:
   `discovery-adjacent` / `discovery-crossuser` / `reach`). Attribution rides
@@ -110,6 +132,25 @@ in the same PR as the round they describe.
 - **r21 — taste clusters**: deterministic seeded clustering of existing
   profiles; new users snap to a cluster prior. Cold-start battery: fewer
   interactions to satisfaction, established profiles byte-identical.
+
+## Harness laws (learned the hard way)
+
+- **A battery that never crosses the API boundary cannot validate a
+  production path.** r16's offline harnesses built engagement in-process
+  from `it._bridge`, so they measured a feature that was inert behind the
+  real route for its entire shipped life. Any round whose value depends on
+  data written by a route must include at least one assertion driven
+  THROUGH that route (or an equivalent test of the route's own helper), not
+  around it.
+- **Vocabulary keyed by hand-written string literals is untested by
+  construction.** A wrong event name is indistinguishable from an
+  unweighted event at runtime — both score zero, silently. Key off the
+  frozen `EVENTS` object, and assert every weighted key exists and every
+  live action carries weight (tests/bridge-tuning.test.js).
+- **A test that fabricates its own fixtures can encode the same mistake as
+  the code.** The r16 test hand-wrote the same four wrong event names, so
+  the suite agreed with the bug. Fixtures for vocabulary-bound data should
+  be produced by the real constructor (`eventFromInteraction`), not typed.
 
 ## Deferred with named triggers
 
