@@ -54,9 +54,26 @@ in the same PR as the round they describe.
 
 ## Phase 2 — feed the brain (each independent; can interleave)
 
-- **r17 — search→brain loop**: searches, interpretation-pill clicks, and
-  engaged Passport assumptions become bounded profile training through the
-  existing event pipeline. Ignored readings train nothing.
+- **r17 — search→brain loop** (SHIPPED): an APPLIED cultural reading —
+  the pill click, "this is what I meant" — trains the profile through
+  POST /api/interpret verdict "meant". Law: tags resolve SERVER-SIDE from
+  the culture catalog (client tags never trusted; fabricated ids train
+  nothing); ONE reading carries ONE item's worth of signal (confidence ÷
+  tag count — the un-normalized version measurably collapsed a standing
+  dominant taste 23→7 in one click and was fixed before shipping);
+  guidance-off trains nothing; the USER_SEARCHED_QUERY event (a
+  placeholder since day 5) goes live and persists BEFORE the mutation
+  (day-8 law); GET stays side-effect-free (day-5 law); ignored readings
+  train nothing by construction. SEARCH_BRAIN_LOOP=0 kills it. Measured
+  (scripts/measure-search-loop.mjs, 2 declared amendments): reading-tag
+  feed presence 6/6 up-or-at-ceiling (14→23, 16→23, 19→23), standing
+  dominant taste held 6/6, ignore-arm byte-identical 6/6, deterministic;
+  verified end-to-end in the running app (trained tags returned, bounded
+  profile delta, negative paths inert). Deviation from the original
+  roadmap wording, declared: raw searches and assumption-slate engagement
+  do NOT train in v1 — only the explicit apply. The pill click is the
+  cleanest consent signal; implicit channels are a future round with
+  their own battery.
 - **r18 — vectors into the feed**: precomputed item-item vector neighbors
   (catalog embeddings already in DB; no query-time API calls) supplement
   gamma where the co-engagement graph is sparse; epsilon prefers

@@ -184,6 +184,16 @@ export default function DiscoverPage() {
     interpRef.current = i.tags || [];
     setActiveInterp(i.id);
     load(true);
+    // (r17) an applied reading is "this is what I meant" — tell the brain.
+    // Fire-and-forget; the server resolves the reading's tags itself and
+    // trains only when guidance is on.
+    if (searched && i.id && i.id.includes("/")) {
+      authorizedFetch("/api/interpret", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: getUid(), query: searched, interpretationId: i.id, verdict: "meant" }),
+      }).catch(() => {});
+    }
   }
   function clearInterp() {
     interpRef.current = null;
