@@ -1,0 +1,8185 @@
+[
+ {
+  "q": "blade runner",
+  "cls": "culture:movie",
+  "n": 11,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the matrix",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "fight club",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "american psycho",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "in the mood for love",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "drive",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "heat",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "a clockwork orange",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ghost in the shell",
+  "cls": "culture:movie",
+  "n": 23,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "kill bill",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the royal tenenbaums",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "trainspotting",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lost in translation",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "akira",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paris texas",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the talented mr ripley",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chungking express",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dune",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the crow",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "american gigolo",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "la haine",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "almost famous",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "annie hall",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bollywood",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "do the right thing",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "challengers",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "clueless",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bonnie and clyde",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dirty dancing",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "flashdance",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "goodfellas",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grease",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "quadrophenia",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "james bond",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marie antoinette",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "heathers",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pulp fiction",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "romeo and juliet",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "saltburn",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "saturday night fever",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "top gun",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the craft",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the fifth element",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the warriors",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "scarface",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fightclub",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bladerunner",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "matrix",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "drill",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "royal tenenbaums",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paris, texas",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "deftones",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "clockwork orange",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ambient",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "post-punk",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "goth",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "metal",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "techno",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "house",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hip-hop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "shoegaze",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "emo",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "indie sleaze",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "city pop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sade",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jazz",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "david bowie",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "prince",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "r&b",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grace jones",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "aaliyah",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "joy division",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the casualties",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "nirvana",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the cure",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "outkast",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marilyn manson",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "p diddy",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "arctic monkeys",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "oasis",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rod stewart",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "merle haggard",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "klaxons",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jimmy buffett",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "m.i.a",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gossip",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "asap rocky",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tyler, the creator",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kanye west",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ken carson",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "playboi carti",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "destroy lonely",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "yeat",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "travis scott",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "young thug",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "future",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lil uzi vert",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kendrick lamar",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "drake",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "frank ocean",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kid cudi",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "snoop dogg",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tupac",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the notorious big",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "missy elliott",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nas",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jay-z",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "wu-tang clan",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mf doom",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lil kim",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rihanna",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "beyonce",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sza",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cardi b",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nicki minaj",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "megan thee stallion",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "doja cat",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "solange",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "erykah badu",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lauryn hill",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "central cee",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rosalia",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fka twigs",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bad bunny",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "skepta",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "stormzy",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "little simz",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pop smoke",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "westside gunn",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "yung lean",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lil peep",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bladee",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chief keef",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gunna",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "offset",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "21 savage",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "50 cent",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rico nasty",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lil yachty",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "machine gun kelly",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "post malone",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "afrobeats",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "alice cooper",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "amapiano",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "black sabbath",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ariana grande",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "amy winehouse",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "billie eilish",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bjork",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "blackpink",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bob marley",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bossa nova",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "celia cruz",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "britney spears",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "boy band",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "britpop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bruce springsteen",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chappell roan",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "charli xcx",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chet baker",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "diana ross",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "daft punk",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "christina aguilera",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dancehall",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dev hynes",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "doechii",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dr dre",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dua lipa",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fela kuti",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "elvis presley",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "duran duran",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "eminem",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "emo rap",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "frank sinatra",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "freddie mercury",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grime",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "janelle monae",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "guns n roses",
+  "cls": "culture:musical-artist",
+  "n": 18,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "highlife",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hyperpop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "james brown",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "janet jackson",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jessica simpson",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jimi hendrix",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "katy perry",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "johnny cash",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "justin bieber",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "justin timberlake",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "k-pop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kiss",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lady gaga",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lana del rey",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "madchester",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "led zeppelin",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lil wayne",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "little richard",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ll cool j",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "madonna",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mariah carey",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mary j blige",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miley cyrus",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mc hammer",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "metallica",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "michael jackson",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miles davis",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "motley crue",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "native tongues",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "new jack swing",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "queen latifah",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nina simone",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "olivia rodrigo",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pharrell",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "queen",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ramones",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "reggaeton",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "run dmc",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sex pistols",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sabrina carpenter",
+  "cls": "culture:musical-artist",
+  "n": 12,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "salsa",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "salt-n-pepa",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "selena quintanilla",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "shania twain",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "shibuya-kei",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "siouxsie sioux",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the beatles",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "spice girls",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "talking heads",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "taylor swift",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tejano",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the clash",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the smiths",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the rolling stones",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "uk garage",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the strokes",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the velvet underground",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the weeknd",
+  "cls": "culture:musical-artist",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "tlc",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "usher",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "passenger deftones",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "whitney houston",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "house music",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "uk drill",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ambient techno",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "post punk",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gothic",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hip hop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "indie",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "heavy metal",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tokyo",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "citypop",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rnb",
+  "cls": "culture:musical-artist",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "berlin",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paris",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "washington dc",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "new york",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "london",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "antwerp",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "los angeles",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "seoul",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "copenhagen",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "milan",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "atlanta",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mexico city",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lagos",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dc",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miami",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "new orleans",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "stockholm",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "parisian",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nyc",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "atl",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "la",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "y2k",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lagos nigeria",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cdmx",
+  "cls": "culture:city",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "70s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "90s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "20s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "50s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "40s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1970s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "60s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "2010s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "B",
+  "why": "literal: era match"
+ },
+ {
+  "q": "80s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1990s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "B",
+  "why": "literal: era match"
+ },
+ {
+  "q": "30s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "2000s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "B",
+  "why": "literal: era match"
+ },
+ {
+  "q": "1920s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tens",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1940s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1960s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1950s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "1930s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the sopranos",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "1980s",
+  "cls": "culture:era",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "succession",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mad men",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "twin peaks",
+  "cls": "culture:movie",
+  "n": 10,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "friends",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "euphoria",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miami vice",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "peaky blinders",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gossip girl",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "seinfeld",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the rachel",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "sex and the city",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the bear",
+  "cls": "culture:movie",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "the fresh prince of bel-air",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "blair waldorf",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "don draper",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sopranos",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "shelby",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "old money",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "satc",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "carmy",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fresh prince",
+  "cls": "culture:movie",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "techwear",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gorpcore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dark academia",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cottagecore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "preppy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mob wife",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "balletcore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "western",
+  "cls": "culture:aesthetic",
+  "n": 15,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "military surplus",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rockabilly",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "coastal",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "opium",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "boho revival",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "office siren",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "clean girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pilates princess",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gym goblin",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "acubi",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "downtown girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tomato girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "archive fashion",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "eclectic grandpa",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "coquette",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "whimsigoth",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "blokecore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "avant basic",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "blokette",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "coastal cowgirl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "brat",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "goblincore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "soft girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "castlecore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "demure",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cyber y2k",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dark feminine",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "e-girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fairycore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "e-boy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "that girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "baddie",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "art kid",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "model off-duty",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "vsco girl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "airport style",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "terrace casuals",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "athleisure",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hypebeast",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "heritage workwear",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "city boy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sneakerhead",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "skater",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "amekaji",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dad style",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "k-pop idol",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "normcore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grunge",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "acid house",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "afrofuturism",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "festival",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "apres-ski",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "black dandyism",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "aso ebi",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "b-boy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ballroom culture",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "black tie",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bosozoku",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "barbiecore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bridal",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "deadhead",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chicano style",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "club kids",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cosplay",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "disco",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "drag",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cowboycore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fisherman aesthetic",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "greasers",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "flamenco",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gabber",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "glam metal",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gyaru",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "harajuku",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gothic lolita",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "harlem renaissance",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "met gala",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hippie",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "light academia",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mall goth",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "metalhead",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mods",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mcbling",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "moto boho",
+  "cls": "culture:aesthetic",
+  "n": 12,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "power dressing",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "motorsport style",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "raw denim",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "new romantics",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "northern soul",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "punk",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paninari",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "riot grrrl",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "school uniform",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rockstar girlfriend",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "skinhead",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rude boy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sapeurs",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "skate culture",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "scene",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "soft grunge",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tango",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sprezzatura",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "teddy boys",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sukeban",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "surf culture",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tattoo style",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "swenkas",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tenniscore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "twee",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "the afro",
+  "cls": "culture:aesthetic",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "watch culture",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "the mullet",
+  "cls": "culture:aesthetic",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "thrifting",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "visual kei",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "trad goth",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "zoot suit",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "mob-wife",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "darkacademia",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "quiet luxury",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cowboy",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tech wear",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "ballet core",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gorp",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "milsurp",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "clean girl aesthetic",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "prep",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "coastal grandmother",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "opiumcore",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "concrete",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rain",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "corp-core",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gas station at night",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "forest",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "banana",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "midnight",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "desert",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rust",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "snow",
+  "cls": "culture:concept",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "ocean",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fog",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rainy day",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "little black dress",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "the perfecto",
+  "cls": "culture:concept",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "tartan",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gas station",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "brutalist",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "trench coat",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "3am",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lbd",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sea",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "winter",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "woods",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "perfecto",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "plaid",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mist",
+  "cls": "culture:concept",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bauhaus",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "wabi-sabi",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "brutalism",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "baroque",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "art deco",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "memphis design",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "antwerp six",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "surrealism",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nouvelle vague",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "french new wave",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "deco",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "antwerp 6",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "wabi sabi",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gigi hadid",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bella hadid",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "memphis milano",
+  "cls": "culture:aesthetic",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kendall jenner",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "timothee chalamet",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hailey bieber",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kylie jenner",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kim kardashian",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jaden smith",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "harry styles",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "zendaya",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "emma chamberlain",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "90s supermodels",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "matilda djerf",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "alexa chung",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "wisdom kaye",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "carolyn bessette-kennedy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "princess diana",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kate moss",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "audrey hepburn",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marlon brando",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jane birkin",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paul newman",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "steve mcqueen",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "michael jordan",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "david beckham",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "james dean",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "allen iverson",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tracee ellis ross",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dennis rodman",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "zoe kravitz",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nba tunnel style",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "anna wintour",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "iris apfel",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "teyana taylor",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "victoria beckham",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "andrew mukamal",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "olsen twins",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "alexander mcqueen",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "alek wek",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "anna karina",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "andy warhol",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "andre leon talley",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "arianne phillips",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "brigitte bardot",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "beverly johnson",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bianca jagger",
+  "cls": "culture:celebrity",
+  "n": 12,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "bob mackie",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "carine roitfeld",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "caitlin clark",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "brad pitt",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cary grant",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cindy crawford",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "catherine martin",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "cher",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "chloe sevigny",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "coco chanel",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "claudia schiffer",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "christy turlington",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "colleen atwood",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "debbie harry",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "corinne day",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "courtney love",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "danessa myricks",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "deion sanders",
+  "cls": "culture:celebrity",
+  "n": 12,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "demna",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dapper dan",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "diana vreeland",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dita von teese",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "duke of windsor",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dolly parton",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "donyale luna",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "eartha kitt",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "edith head",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "dries van noten",
+  "cls": "culture:celebrity",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "edward enninful",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "eiko ishioka",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "eugene souleiman",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "elizabeth stewart",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ellen von unwerth",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "francoise hardy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "fred astaire",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "elsa schiaparelli",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "frida kahlo",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gabriella karefa-johnson",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grace kelly",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gianni agnelli",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gilbert adrian",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "guido palau",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "guy bourdin",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "grace coddington",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "halston",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "harry lambert",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ib kamara",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "helmut newton",
+  "cls": "culture:celebrity",
+  "n": 13,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "hedi slimane",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ilaria urbinati",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "iman",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "herb ritts",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "irving penn",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jean paul gaultier",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "isabella blow",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "issey miyake",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "isamaya ffrench",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jean seberg",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "jean-michel basquiat",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "jackie kennedy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jennifer lopez",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "josephine baker",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jeremy allen white",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "john galliano",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jerry hall",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "juergen teller",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "june ambrose",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "johnny depp",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "karl lagerfeld",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "keanu reeves",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "karla welch",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "katharine hepburn",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kate young",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kevyn aucoin",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "law roach",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "katie grand",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "leigh bowery",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marilyn monroe",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "leonardo dicaprio",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "linda evangelista",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lewis hamilton",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marlene dietrich",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "marni senofonte",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "lotta volkova",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "martin margiela",
+  "cls": "culture:celebrity",
+  "n": 21,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "miriam makeba",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "matthew henson",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "melanie ward",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miuccia prada",
+  "cls": "culture:celebrity",
+  "n": 13,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "mel ottenberg",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "misa hylton",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "milena canonero",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "mona may",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nicole richie",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "muhammad ali",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "naomi osaka",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "paris hilton",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "naomi campbell",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "orry-kelly",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "nick knight",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pat cleveland",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "philip treacy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pat mcgrath",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "raf simons",
+  "cls": "culture:celebrity",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "patricia field",
+  "cls": "culture:celebrity",
+  "n": 12,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "patti smith",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "phoebe philo",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "peter lindbergh",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rei kawakubo",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ruth e. carter",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "richard avedon",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "rick owens",
+  "cls": "culture:celebrity",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "sam mcknight",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "roger federer",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "ryan gosling",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "russell westbrook",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sandy powell",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sienna miller",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sarah jessica parker",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "serena williams",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "sophia loren",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "serge gainsbourg",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "simon foxton",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "shai gilgeous-alexander",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "stephen jones",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "travis kelce",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "steven meisel",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "stevie nicks",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tyra banks",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tina turner",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "twiggy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "tom ford",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "veruschka",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "yohji yamamoto",
+  "cls": "culture:celebrity",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "virgil abloh",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "vivienne westwood",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bella",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "way bandy",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "yves saint laurent",
+  "cls": "culture:celebrity",
+  "n": 15,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "winona ryder",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "gigi",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "timothée chalamet",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kendall",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "hailey",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "djerf",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kim k",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "jaden",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "kylie",
+  "cls": "culture:celebrity",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "acne studios",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "ann demeulemeester",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "adidas originals",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "aimé leon dore",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "auralee",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "alaïa",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "arc'teryx",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "and wander",
+  "cls": "designer",
+  "n": 18,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "balenciaga",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "cav empt",
+  "cls": "designer",
+  "n": 11,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "bianca saunders",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "bode",
+  "cls": "designer",
+  "n": 17,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "chrome hearts",
+  "cls": "designer",
+  "n": 18,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "bottega veneta",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "celine",
+  "cls": "designer",
+  "n": 7,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "carhartt wip",
+  "cls": "designer",
+  "n": 11,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "comme des garçons",
+  "cls": "designer",
+  "n": 14,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "fendi",
+  "cls": "designer",
+  "n": 17,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "craig green",
+  "cls": "designer",
+  "n": 21,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "dior men",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "gucci",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "erl",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "ferragamo",
+  "cls": "designer",
+  "n": 14,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "fear of god",
+  "cls": "designer",
+  "n": 17,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "helmut lang",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "kaptain sunshine",
+  "cls": "designer",
+  "n": 8,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "jw anderson",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "jil sander",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "kiko kostadinov",
+  "cls": "designer",
+  "n": 21,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "junya watanabe",
+  "cls": "designer",
+  "n": 21,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "khaite",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "kapital",
+  "cls": "designer",
+  "n": 7,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "lemaire",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "martine rose",
+  "cls": "designer",
+  "n": 18,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "loewe",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "louis vuitton",
+  "cls": "designer",
+  "n": 12,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "namacheko",
+  "cls": "designer",
+  "n": 9,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "maison margiela",
+  "cls": "designer",
+  "n": 21,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "miu miu",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "marine serre",
+  "cls": "designer",
+  "n": 8,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "needles",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "prada",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "nike acg",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "off-white",
+  "cls": "designer",
+  "n": 24,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "saint laurent",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "our legacy",
+  "cls": "designer",
+  "n": 11,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "sacai",
+  "cls": "designer",
+  "n": 14,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "patagonia",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "salomon",
+  "cls": "designer",
+  "n": 24,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "the row",
+  "cls": "designer",
+  "n": 9,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "snow peak",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "stone island",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "vetements",
+  "cls": "designer",
+  "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "stüssy",
+  "cls": "designer",
+  "n": 11,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "undercover",
+  "cls": "designer",
+  "n": 16,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "supreme",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "visvim",
+  "cls": "designer",
+  "n": 14,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "like adidas originals",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "wales bonner",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "willy chavarria",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "y/project",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "like alaïa",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like aimé leon dore",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like acne studios",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like and wander",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like bianca saunders",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like ann demeulemeester",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like arc'teryx",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like auralee",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like bottega veneta",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like bode",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like balenciaga",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like carhartt wip",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like craig green",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like cav empt",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like celine",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like chrome hearts",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like dries van noten",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like dior men",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like comme des garçons",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like erl",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like helmut lang",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like fear of god",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like fendi",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like ferragamo",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like jil sander",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like jw anderson",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like gucci",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like junya watanabe",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like lemaire",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like kapital",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like kaptain sunshine",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like khaite",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like louis vuitton",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like loewe",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like kiko kostadinov",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like maison margiela",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "bode varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "like marine serre",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like martine rose",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "miu miu anorak",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "like miu miu",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "supreme bomber jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "willy chavarria varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "undercover bomber jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "off-white coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "comme des garçons coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "lemaire hardshell parka",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "bottega veneta gore-tex shell",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "chrome hearts hardshell parka",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "y/project down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "vetements anorak",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "acne studios field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "auralee moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "sacai coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "helmut lang padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "visvim chore coat",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "junya watanabe anorak",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "the row down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "arc'teryx down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "jw anderson field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "khaite padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "needles anorak",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "patagonia coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "salomon chore coat",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "alaïa varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "raf simons down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "fendi moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "martine rose varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "carhartt wip gore-tex shell",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "snow peak field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "craig green down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "marine serre moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "saint laurent moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "balenciaga coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "kaptain sunshine down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "adidas originals anorak",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "and wander field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "aimé leon dore coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "yohji yamamoto bomber jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "stone island hardshell parka",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "kiko kostadinov coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "dries van noten padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "stüssy padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "ann demeulemeester field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "rick owens fleece jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "nike acg field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "namacheko field jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "bianca saunders padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "ferragamo varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "maison margiela moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "dior men chore coat",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "kapital fleece jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "erl coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "jil sander gore-tex shell",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "prada down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "gucci bomber jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "loewe coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "fear of god varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "wales bonner hardshell parka",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "cav empt zip hoodie",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "adidas originals coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "louis vuitton rugby shirt",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "celine work shirt",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "and wander gore-tex shell",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "our legacy rugby shirt",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "aimé leon dore padded liner jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "acne studios moto jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "ann demeulemeester gore-tex shell",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "bode down puffer",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "arc'teryx zip hoodie",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "auralee work shirt",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "carhartt wip padded liner jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "balenciaga hardshell parka",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "bottega veneta chore coat",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "bianca saunders coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cav empt coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "dries van noten field jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "celine varsity jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "chrome hearts moto jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "fear of god anorak",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "comme des garçons varsity jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "erl gore-tex shell",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "dior men padded liner jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "fendi fleece jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "junya watanabe rugby shirt",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "ferragamo down puffer",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "gucci padded liner jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "kaptain sunshine moto jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "helmut lang coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "kapital moto jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "jil sander coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "khaite varsity jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "coach jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "kiko kostadinov anorak",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "varsity jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "down puffer",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "bomber jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "hardshell parka",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "anorak",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "gore-tex shell",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "fleece jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "field jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "padded liner jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "logo hoodie",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "moto jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "football jersey",
+  "cls": "garment",
+  "n": 15,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "chore coat",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "oversized shirt",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "zip hoodie",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "graphic tee",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "mesh long-sleeve",
+  "cls": "garment",
+  "n": 16,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "baselayer top",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "western snap shirt",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "striped knit polo",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "rugby shirt",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "work shirt",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "parachute pants",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "boxy tee",
+  "cls": "garment",
+  "n": 24,
+  "out": "A",
+  "why": "9/12 carry slate tags"
+ },
+ {
+  "q": "climbing pants",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "carpenter jeans",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "baggy denim",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "pleated trousers",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "sweatpants",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "wide-leg trousers",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "climbing approach shoe",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "cargo pants",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "tech shorts",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "gore-tex hiker",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "nylon track pants",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "canvas high-top",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "chunky trail sneaker",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "mule slide",
+  "cls": "garment",
+  "n": 13,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "nylon crossbody",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "suede runner",
+  "cls": "garment",
+  "n": 11,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "leather derby",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "trucker cap",
+  "cls": "garment",
+  "n": 12,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "balaclava",
+  "cls": "garment",
+  "n": 20,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "chain necklace",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "carabiner belt",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "leather tote",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "zip-up knit",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "tech gloves",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "beanie",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "chunky cardigan",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "tabi boots",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "cropped knit",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "ribbed turtleneck",
+  "cls": "garment",
+  "n": 16,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "balaclava beanie",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "pleated wool trouser",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "distressed mohair sweater",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "intarsia crewneck",
+  "cls": "garment",
+  "n": 12,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "deconstructed blazer",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "tailored vest",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "double-breasted coat",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "boxy suit jacket",
+  "cls": "garment",
+  "n": 24,
+  "out": "A",
+  "why": "11/12 carry slate tags"
+ },
+ {
+  "q": "relaxed suit",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "black jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "draped mini",
+  "cls": "garment",
+  "n": 10,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "slip dress",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "black boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "utility shirt dress",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "black trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "knit column dress",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
+ },
+ {
+  "q": "black dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "black coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "leather trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "leather boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "leather bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "leather sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "browse rack carries the modifier deeper in (amendment 4)"
+ },
+ {
+  "q": "leather shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "vintage knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "vintage jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "vintage trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "vintage coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "vintage boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "vintage shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "vintage dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "vintage sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "vintage bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "vintage skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "oversized dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "oversized coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "cropped trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "oversized sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "cropped dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "oversized skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "cropped boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cropped jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cropped shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "japanese jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cropped coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "cropped sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cropped bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "cropped skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "deconstructed jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "japanese coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "deconstructed coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "deconstructed dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "deconstructed skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "waxed knit",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "waxed jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "waxed trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "waxed coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "waxed boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "waxed shirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "waxed dress",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "waxed sneakers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "winter jacket",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "waxed bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "waxed skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "winter dress",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter coat",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer jacket",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer coat",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer dress",
+  "cls": "season",
+  "n": 16,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter trousers",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter knit",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer knit",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter shirt",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter boots",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer trousers",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer boots",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer shirt",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter parka",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter bag",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer bag",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter sneakers",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "summer parka",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "cherry",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "summer sneakers",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "mango",
+  "cls": "fruit",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed cultural read"
+ },
+ {
+  "q": "plum",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "peach",
+  "cls": "fruit",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "grape",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lemon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "melon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "papaya",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "apricot",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "kiwi",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "nectarine",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "guava",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "pomegranate",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "raspberry",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "durian",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lychee",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "tangerine",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "persimmon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "blackberry",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "coconut",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "watermelon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "dragonfruit",
+  "cls": "fruit",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "cantaloupe",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "chicago",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "clementine",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "houston",
+  "cls": "city-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed cultural read"
+ },
+ {
+  "q": "vienna",
+  "cls": "city-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "madrid",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lisbon",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "dubai",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "oslo",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "mumbai",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "prague",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "shanghai",
+  "cls": "city-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "phoenix",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "cairo",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "nairobi",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "montreal",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "toronto",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "dublin",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "denver",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "zurich",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "typewriter",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "helsinki",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "toaster",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "kettle",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lamp",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "ladder",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "bicycle",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "hammer",
+  "cls": "object",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed cultural read"
+ },
+ {
+  "q": "wheelbarrow",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "telescope",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "umbrella stand",
+  "cls": "object",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "stapler",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "doorknob",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "microscope",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "chandelier",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "surfboard",
+  "cls": "object",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "bookshelf",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "canoe",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lawnmower",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "thermostat",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "fireplace",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "spatula",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "aquarium",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "corkscrew",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "turbine",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "flashlight",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "compass",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "gearbox",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "anvil",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "piston",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "pulley",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "inception",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "gladiator",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "the godfather",
+  "cls": "movie-other",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "jurassic park",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "casablanca",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "the matrix reloaded",
+  "cls": "movie-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "titanic",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "interstellar",
+  "cls": "movie-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "finding nemo",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "alien resurrection",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "shrek",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "avatar",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "the shining",
+  "cls": "movie-other",
+  "n": 9,
+  "out": "B",
+  "why": "literal: partial title match"
+ },
+ {
+  "q": "toy story",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "die hard",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "rocky horror",
+  "cls": "movie-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "braveheart",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lebron james",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "jaws",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "david attenborough",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "tom hanks",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "meryl streep",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "oprah winfrey",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "denzel washington",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "gordon ramsay",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "stephen hawking",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "neil armstrong",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "marie curie",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "warren buffett",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "jane goodall",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "usain bolt",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "simone biles",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "bill nye",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "glimwrack",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "greta thunberg",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "malala yousafzai",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "vrembast",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "sploctern",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "xqzvbl",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "fnorbulate",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "quolthing",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "fizzlewick",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "zzyzx drift",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "blenkorp",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "plimsollx",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "gronkular",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "sniggleworth",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "crumbolic",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "wobbegong hat",
+  "cls": "nonsense",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "threnkle",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ }
+]

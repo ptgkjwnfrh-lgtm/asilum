@@ -69,3 +69,39 @@ test("climate constraint no longer inverts insulation words", () => {
     applyDenseConstraints(items, parseDenseConstraints(["warm", "coat"]).constraints).map((i) => i.id),
     ["fw", "ss"], "an insulation word must not remove cold-weather pieces");
 });
+
+test("typo bridge protects catalog vocabulary and culture names (vibe sweep)", () => {
+  // "liner" is a real product word (padded liner jacket) that was rewritten
+  // to "linen"; "hiker" (GORE-TEX hiker) became "biker"; "drake" (culture
+  // entity) became "drape"; "grape" is produce, not a typo of "drape".
+  for (const w of ["liner", "hiker", "drake", "diana", "grape", "light", "french"]) {
+    assert.ok(isProtectedWord(w), `"${w}" must be protected from correction`);
+  }
+});
+
+test("a known culture entity outranks the lexicon guess (entity precedence)", async () => {
+  process.env.DATABASE_URL = "";
+  const { searchProducts } = await import("../lib/search/index.js");
+  const { CULTURE } = await import("../lib/asterisk/culture.js");
+  const e = CULTURE.find((x) => x.name === "john galliano");
+  assert.ok(e, "test premise: the entity exists");
+  const slate = new Set();
+  for (const it of e.interpretations || []) for (const t of it.tags || []) slate.add(t.toUpperCase());
+  const r = await searchProducts("john galliano", { limit: 12 });
+  assert.equal(r.cultural?.engaged, true, "the curated read must serve, not the lexicon guess");
+  assert.ok(r.results.length > 0);
+  for (const it of r.results) {
+    assert.ok(Object.keys(it.tags || {}).some((t) => slate.has(t.toUpperCase())),
+      `${it.id} carries none of the entity's slate tags`);
+  }
+});
+
+test("product-name match requires a word boundary", async () => {
+  process.env.DATABASE_URL = "";
+  const { searchProducts } = await import("../lib/search/index.js");
+  const r = await searchProducts("deco", { limit: 8 });
+  for (const it of r.results) {
+    assert.notEqual(it.matchReason, "product name match",
+      `"deco" must not product-name-match inside "deconstructed" (${it.id})`);
+  }
+});

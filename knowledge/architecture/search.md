@@ -214,3 +214,35 @@ de-corruption, not re-ranking. Battery: scripts/measure-search-honesty.mjs
 What this does NOT fix: attribute search itself. Until items carry real
 material/colour data, "silk blouse" has no right answer — the engine now
 says so instead of implying one.
+
+## Vibe sweep (Aug 5, 2026 — owner-directed 1000-query verification)
+
+Owner directive after merging the honesty round: run 1000 cross-domain
+searches (fruit, city, musical artist, celebrity, object, movie, season,
+designer, designer piece…) and verify each yields pieces tagged to the vibe.
+Battery: scripts/measure-vibe-sweep.mjs — 1169 unique queries over all 607
+culture entities, every brand, every product name, plus unknown/nonsense
+controls. Declared outcome classes: A vibe-served (interpretation engaged AND
+≥70% of top-12 carry the slate) / B literal-served / C honest-miss / D defect.
+
+Run 1 found 82 defects in four families; all fixed, four classifier
+amendments declared in the script. Final: **679 A / 313 B / 177 C / 0 D.**
+
+Laws this added to the engine:
+- **Entity precedence**: a query that IS a known cultural reference routes to
+  the curated read when the literal rack is empty or weak — the compositional
+  lexicon guess no longer blocks the cultural tier by producing junk racks
+  from proper-noun fragments ("miley cyrus" → minimal/tailored was wrong in
+  kind, not degree). The guess remains the fallback for unknown queries and
+  the last resort when an entity's tags match nothing.
+- **The typo bridge may never rewrite known vocabulary**: garment tables,
+  brain tags, mapping words, the declared stoplist, every word of every
+  culture entity name/alias, and every word of the catalog's own titles and
+  brands ("liner"→"linen" corrupted a search for an actual product name).
+  Corrections of system-unknown words remain, disclosed in the note.
+- **All token/phrase title matching sits on word boundaries**: "ross" must
+  not match inside "crossbody", "deco" not inside "deconstructed", "tens"
+  not inside "Noten". Substring junk was both mislabeling racks and blocking
+  the cultural tier by making them look grounded.
+- **Subtype disclosure**: a subtype garment noun with zero title hits says so
+  ("no trench pieces here — showing outerwear") instead of a silent slab.
