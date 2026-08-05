@@ -253,6 +253,7 @@ export default function Shell({ children }) {
           aesthetics: Array.isArray(d.aesthetics) ? d.aesthetics : [],
           users: searchUsers(text).slice(0, 4),
           suggestions: Array.isArray(s.suggestions) ? s.suggestions : [],
+          note: typeof d.note === "string" ? d.note : null,
         });
       } catch (error) {
         if (requestId === searchRequestRef.current.id && error?.name !== "AbortError") {
@@ -409,6 +410,11 @@ export default function Shell({ children }) {
             <b className="red">*</b> ASTERISK {guideOn ? "IS GUIDING" : "IS PAUSED"}
             <span>{guideOn ? " · ordered through your Passport" : " · general results"}</span>
           </div>
+          {results.note && (
+            <div className="searchnote">
+              <b className="red">*</b> {results.note}
+            </div>
+          )}
           {(results.suggestions || []).length > 0 && (
             <>
               <div className="psub">SUGGESTIONS</div>

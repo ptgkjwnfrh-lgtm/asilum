@@ -71,6 +71,11 @@ export async function GET(req) {
     total: out.total,
     guidanceEnabled,
     interpreted: out.interpreted,
+    // Honest disclosure of words the catalog could not match (Aug 5). The
+    // engine used to drop them silently and return the whole garment
+    // category as though it had understood.
+    note: out.note || null,
+    unmatchedTokens: out.unmatchedTokens || [],
     results: out.results.map((it) => ({
       id: it.id, title: it.title, brand: it.brand, price: it.price,
       currency: it.currency, img: it.img, tags: it.tags, category: it.category,

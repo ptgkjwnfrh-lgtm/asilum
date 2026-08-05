@@ -1,0 +1,7464 @@
+{
+  "arm": "after",
+  "criteria": "see header",
+  "terms": {
+    "marilyn manson": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "marilyn manson",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "marilyn manson fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like marilyn manson",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like marilyn manson",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a marilyn manson concert",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a marilyn manson concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "marilyn manson inspired coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "marilyn manson inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "black marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "black marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "white marilyn manson coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 6
+        },
+        {
+          "q": "white marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "leather marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "leather marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed marilyn manson sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 15
+        },
+        {
+          "q": "baggy marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "slim marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "slim marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "studded marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "studded marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "neon marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "neon marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "denim marilyn manson coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "denim marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped marilyn manson sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 20
+        },
+        {
+          "q": "longline marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "longline marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky marilyn manson coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky marilyn manson sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "marilyn manson winter outfit",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cheap marilyn manson look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "faded marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy marilyn manson dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 26
+        },
+        {
+          "q": "boxy marilyn manson vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored marilyn manson dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 45
+        },
+        {
+          "q": "tailored marilyn manson vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal marilyn manson vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 2
+        },
+        {
+          "q": "utility marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic marilyn manson vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "punk marilyn manson dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.839,
+        "meanFallOff": 5.1
+      }
+    },
+    "the casualties": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "the casualties",
+          "total": 37,
+          "alignment": 1,
+          "fallOff": 14
+        },
+        {
+          "q": "the casualties fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat like the casualties",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like the casualties",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat for a the casualties concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a the casualties concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "the casualties inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "the casualties inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "black the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "black the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "white the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "white the casualties sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 13
+        },
+        {
+          "q": "vintage the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "leather the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "leather the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "oversized the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "distressed the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed the casualties sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "slim the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "slim the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "studded the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "studded the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "neon the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "neon the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "plaid the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "denim the casualties coat",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 15
+        },
+        {
+          "q": "denim the casualties sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 25
+        },
+        {
+          "q": "cropped the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "longline the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "longline the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "chunky the casualties coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky the casualties sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "the casualties winter outfit",
+          "total": 18,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "cheap the casualties look",
+          "total": 37,
+          "alignment": 1,
+          "fallOff": 14
+        },
+        {
+          "q": "ripped the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "ripped the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "faded the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "faded the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "waxed the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "quilted the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy the casualties dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "boxy the casualties vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 7
+        },
+        {
+          "q": "tailored the casualties dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 25
+        },
+        {
+          "q": "tailored the casualties vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "minimal the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 27
+        },
+        {
+          "q": "minimal the casualties vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "utility the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 24
+        },
+        {
+          "q": "utility the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "gothic the casualties vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "punk the casualties dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.831,
+        "meanFallOff": 8.1
+      }
+    },
+    "p diddy": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "p diddy",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "p diddy fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "coat like p diddy",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "sweater like p diddy",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "coat for a p diddy concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "sweater for a p diddy concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "p diddy inspired coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "p diddy inspired sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "black p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "black p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "white p diddy coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 12
+        },
+        {
+          "q": "white p diddy sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 8
+        },
+        {
+          "q": "vintage p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "vintage p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "leather p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "leather p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "oversized p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "distressed p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed p diddy sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "baggy p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "slim p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "slim p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "studded p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "studded p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "neon p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "neon p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "plaid p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "denim p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "denim p diddy sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "cropped p diddy sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "longline p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "longline p diddy sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "chunky p diddy coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky p diddy sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "p diddy winter outfit",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "cheap p diddy look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "faded p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "waxed p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "quilted p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "boxy p diddy dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 33
+        },
+        {
+          "q": "boxy p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "tailored p diddy dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 41
+        },
+        {
+          "q": "tailored p diddy vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "minimal p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal p diddy vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 3
+        },
+        {
+          "q": "utility p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "gothic p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic p diddy vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "punk p diddy dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.814,
+        "meanFallOff": 7.4
+      }
+    },
+    "arctic monkeys": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "arctic monkeys",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "arctic monkeys fan style",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 9
+        },
+        {
+          "q": "arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "coat like arctic monkeys",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "sweater like arctic monkeys",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "coat for a arctic monkeys concert",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "sweater for a arctic monkeys concert",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "arctic monkeys inspired coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "arctic monkeys inspired sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "black arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "black arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "white arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 7
+        },
+        {
+          "q": "white arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "vintage arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "vintage arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "leather arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "leather arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "oversized arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "oversized arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "distressed arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "distressed arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "baggy arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "slim arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "slim arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "studded arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "studded arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "neon arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "neon arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "plaid arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "plaid arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "denim arctic monkeys coat",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 16
+        },
+        {
+          "q": "denim arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cropped arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "cropped arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "longline arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "longline arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "chunky arctic monkeys coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "chunky arctic monkeys sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "arctic monkeys winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap arctic monkeys look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "ripped arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "faded arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "faded arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "waxed arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "quilted arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "boxy arctic monkeys dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 30
+        },
+        {
+          "q": "boxy arctic monkeys vest",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "tailored arctic monkeys dress",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "tailored arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "minimal arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 10
+        },
+        {
+          "q": "minimal arctic monkeys vest",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 32
+        },
+        {
+          "q": "utility arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "utility arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "gothic arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic arctic monkeys vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 2
+        },
+        {
+          "q": "punk arctic monkeys dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.783,
+        "meanFallOff": 4.2
+      }
+    },
+    "oasis": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "oasis",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "oasis fan style",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 9
+        },
+        {
+          "q": "oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "coat like oasis",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "sweater like oasis",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "coat for a oasis concert",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "sweater for a oasis concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "oasis inspired coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "oasis inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "black oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "black oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "white oasis coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 9
+        },
+        {
+          "q": "white oasis sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "vintage oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "vintage oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "leather oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "leather oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "oversized oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "oversized oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "distressed oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "distressed oasis sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "baggy oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "slim oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "slim oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "studded oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "studded oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "neon oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "neon oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "plaid oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "plaid oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "denim oasis coat",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 18
+        },
+        {
+          "q": "denim oasis sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 19
+        },
+        {
+          "q": "cropped oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "cropped oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "longline oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "longline oasis sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "chunky oasis coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "chunky oasis sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "oasis winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap oasis look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "ripped oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "faded oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "faded oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "waxed oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "quilted oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "boxy oasis dress",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "boxy oasis vest",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 14
+        },
+        {
+          "q": "tailored oasis dress",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored oasis vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "minimal oasis dress",
+          "total": 40,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "minimal oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "utility oasis dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "utility oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "gothic oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic oasis vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "punk oasis dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.81,
+        "meanFallOff": 4.8
+      }
+    },
+    "klaxons": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "klaxons",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "klaxons fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like klaxons",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater like klaxons",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a klaxons concert",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater for a klaxons concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "klaxons inspired coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "klaxons inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "black klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "black klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "white klaxons coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 8
+        },
+        {
+          "q": "white klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "vintage klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "leather klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "leather klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "oversized klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "distressed klaxons sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "baggy klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "slim klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "slim klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "studded klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "studded klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "neon klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "neon klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "plaid klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "denim klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "denim klaxons sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "cropped klaxons sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 9
+        },
+        {
+          "q": "longline klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "longline klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky klaxons coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "chunky klaxons sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "klaxons winter outfit",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "cheap klaxons look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "faded klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "faded klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy klaxons dress",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy klaxons vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "tailored klaxons dress",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored klaxons vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "minimal klaxons dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal klaxons vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 3
+        },
+        {
+          "q": "utility klaxons dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "utility klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic klaxons vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 3
+        },
+        {
+          "q": "punk klaxons dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.823,
+        "meanFallOff": 4.4
+      }
+    },
+    "merle haggard": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "merle haggard",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "merle haggard fan style",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "coat like merle haggard",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "sweater like merle haggard",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "coat for a merle haggard concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "sweater for a merle haggard concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "merle haggard inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "merle haggard inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "black merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "black merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "white merle haggard coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 9
+        },
+        {
+          "q": "white merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "vintage merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "leather merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "leather merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "oversized merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "oversized merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "distressed merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "distressed merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "baggy merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "slim merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "slim merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "studded merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "studded merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "neon merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "neon merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "plaid merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "plaid merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "denim merle haggard coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "denim merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "cropped merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "cropped merle haggard sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "longline merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "longline merle haggard sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "chunky merle haggard coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "chunky merle haggard sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 3
+        },
+        {
+          "q": "merle haggard winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap merle haggard look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "ripped merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "faded merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "faded merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "waxed merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "quilted merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "boxy merle haggard dress",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 3
+        },
+        {
+          "q": "tailored merle haggard dress",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored merle haggard vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "minimal merle haggard dress",
+          "total": 40,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "minimal merle haggard vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "utility merle haggard dress",
+          "total": 40,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "utility merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "gothic merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic merle haggard vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "punk merle haggard dress",
+          "total": 40,
+          "alignment": 0.417,
+          "fallOff": 1
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.702,
+        "meanFallOff": 3.8
+      }
+    },
+    "jimmy buffett": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "jimmy buffett",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "jimmy buffett fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like jimmy buffett",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like jimmy buffett",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a jimmy buffett concert",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a jimmy buffett concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "jimmy buffett inspired coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "jimmy buffett inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "black jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "black jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "white jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 6
+        },
+        {
+          "q": "white jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "leather jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "leather jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "slim jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "slim jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "studded jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "studded jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "neon jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "neon jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "denim jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "denim jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "longline jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "longline jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky jimmy buffett coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky jimmy buffett sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "jimmy buffett winter outfit",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 1
+        },
+        {
+          "q": "cheap jimmy buffett look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "faded jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy jimmy buffett dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored jimmy buffett dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.333,
+          "fallOff": 4
+        },
+        {
+          "q": "minimal jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 2
+        },
+        {
+          "q": "utility jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "utility jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic jimmy buffett vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "punk jimmy buffett dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.705,
+        "meanFallOff": 3.3
+      }
+    },
+    "m.i.a": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "m.i.a",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "m.i.a fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like m.i.a",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater like m.i.a",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a m.i.a concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater for a m.i.a concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "m.i.a inspired coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "m.i.a inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "black m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "black m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "white m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 8
+        },
+        {
+          "q": "white m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "vintage m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "leather m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "leather m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "oversized m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "distressed m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "baggy m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "slim m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "slim m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "studded m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "studded m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "neon m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "neon m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "plaid m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "denim m.i.a coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "denim m.i.a sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "cropped m.i.a sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 20
+        },
+        {
+          "q": "longline m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "longline m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky m.i.a coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "chunky m.i.a sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "m.i.a winter outfit",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "cheap m.i.a look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "faded m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy m.i.a dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy m.i.a vest",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 13
+        },
+        {
+          "q": "tailored m.i.a dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal m.i.a vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 3
+        },
+        {
+          "q": "utility m.i.a dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "utility m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic m.i.a vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "punk m.i.a dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.873,
+        "meanFallOff": 4.7
+      }
+    },
+    "rod stewart": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "rod stewart",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "rod stewart fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat like rod stewart",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like rod stewart",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat for a rod stewart concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a rod stewart concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "rod stewart inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "rod stewart inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "black rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "black rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "white rod stewart coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 6
+        },
+        {
+          "q": "white rod stewart sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 13
+        },
+        {
+          "q": "vintage rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "leather rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "leather rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "oversized rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "distressed rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "slim rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "slim rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "studded rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "studded rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "neon rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "neon rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "plaid rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "denim rod stewart coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "denim rod stewart sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "longline rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "longline rod stewart sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "chunky rod stewart coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky rod stewart sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "rod stewart winter outfit",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "cheap rod stewart look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "faded rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy rod stewart dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy rod stewart vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored rod stewart dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored rod stewart vest",
+          "total": 48,
+          "alignment": 0.333,
+          "fallOff": 4
+        },
+        {
+          "q": "minimal rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "utility rod stewart dress",
+          "total": 40,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "utility rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic rod stewart vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "punk rod stewart dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.765,
+        "meanFallOff": 4.4
+      }
+    },
+    "gossip": {
+      "kind": "new",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "gossip",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 31
+        },
+        {
+          "q": "gossip fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat like gossip",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like gossip",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "coat for a gossip concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a gossip concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "gossip inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gossip inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "black gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "black gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "white gossip coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 6
+        },
+        {
+          "q": "white gossip sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 13
+        },
+        {
+          "q": "vintage gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "leather gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "leather gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "oversized gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "distressed gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "slim gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "slim gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "studded gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "studded gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "neon gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "neon gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "plaid gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "denim gossip coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "denim gossip sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "longline gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "longline gossip sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "chunky gossip coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky gossip sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "gossip winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "cheap gossip look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 31
+        },
+        {
+          "q": "ripped gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "faded gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy gossip dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy gossip vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored gossip dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "minimal gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "utility gossip dress",
+          "total": 40,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "utility gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic gossip vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "punk gossip dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.779,
+        "meanFallOff": 5.5
+      }
+    },
+    "50 cent": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "50 cent",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "50 cent fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "coat like 50 cent",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater like 50 cent",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "coat for a 50 cent concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "sweater for a 50 cent concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "50 cent inspired coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "50 cent inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "black 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "black 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "white 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 8
+        },
+        {
+          "q": "white 50 cent sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 13
+        },
+        {
+          "q": "vintage 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "vintage 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "leather 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "leather 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "oversized 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "oversized 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "distressed 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "distressed 50 cent sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "baggy 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "slim 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "slim 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "studded 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "studded 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "neon 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "neon 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "plaid 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "plaid 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "denim 50 cent coat",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "denim 50 cent sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 25
+        },
+        {
+          "q": "cropped 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "cropped 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "longline 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "longline 50 cent sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "chunky 50 cent coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "chunky 50 cent sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "50 cent winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap 50 cent look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "ripped 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "faded 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "faded 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "waxed 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "quilted 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy 50 cent dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 12
+        },
+        {
+          "q": "boxy 50 cent vest",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 33
+        },
+        {
+          "q": "tailored 50 cent dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 12
+        },
+        {
+          "q": "tailored 50 cent vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 3
+        },
+        {
+          "q": "minimal 50 cent dress",
+          "total": 40,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "minimal 50 cent vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 3
+        },
+        {
+          "q": "utility 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 24
+        },
+        {
+          "q": "utility 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        },
+        {
+          "q": "gothic 50 cent vest",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "punk 50 cent dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": 17
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.903,
+        "meanFallOff": 8.7
+      }
+    },
+    "bjork": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 2,
+          "recovered": 316,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "bjork",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "bjork fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like bjork",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like bjork",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a bjork concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a bjork concert",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "bjork inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "bjork inspired sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "black bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "black bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "white bjork coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 6
+        },
+        {
+          "q": "white bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "leather bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "leather bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "slim bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "slim bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "studded bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "studded bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "neon bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "neon bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "denim bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "denim bjork sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped bjork sweater",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 20
+        },
+        {
+          "q": "longline bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "longline bjork sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky bjork coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky bjork sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "bjork winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap bjork look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "faded bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy bjork dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy bjork vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored bjork dress",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored bjork vest",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal bjork vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 2
+        },
+        {
+          "q": "utility bjork dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "utility bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic bjork vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "punk bjork dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.782,
+        "meanFallOff": 3.7
+      }
+    },
+    "katy perry": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "katy perry",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "katy perry fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "coat like katy perry",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like katy perry",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "coat for a katy perry concert",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a katy perry concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "katy perry inspired coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "katy perry inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "black katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "black katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "white katy perry coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "white katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "vintage katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "leather katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "leather katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "oversized katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "distressed katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed katy perry sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 5
+        },
+        {
+          "q": "baggy katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "slim katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "slim katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "studded katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "studded katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "neon katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "neon katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "plaid katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "denim katy perry coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "denim katy perry sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped katy perry sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 11
+        },
+        {
+          "q": "longline katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "longline katy perry sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "chunky katy perry coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky katy perry sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "katy perry winter outfit",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "cheap katy perry look",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "ripped katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "faded katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy katy perry dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 16
+        },
+        {
+          "q": "boxy katy perry vest",
+          "total": 48,
+          "alignment": 0.083,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored katy perry dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 41
+        },
+        {
+          "q": "tailored katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 3
+        },
+        {
+          "q": "minimal katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal katy perry vest",
+          "total": 48,
+          "alignment": 0.333,
+          "fallOff": 2
+        },
+        {
+          "q": "utility katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic katy perry vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "punk katy perry dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.725,
+        "meanFallOff": 2.9
+      }
+    },
+    "lady gaga": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "lady gaga",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "lady gaga fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 29
+        },
+        {
+          "q": "lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "coat like lady gaga",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like lady gaga",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "coat for a lady gaga concert",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a lady gaga concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "lady gaga inspired coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "lady gaga inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "black lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "black lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "white lady gaga coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "white lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "vintage lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "leather lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "leather lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "oversized lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "distressed lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed lady gaga sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "baggy lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "slim lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "slim lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "studded lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "studded lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "neon lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "neon lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "plaid lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "denim lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "denim lady gaga sweater",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 9
+        },
+        {
+          "q": "longline lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "longline lady gaga sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 2
+        },
+        {
+          "q": "chunky lady gaga coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky lady gaga sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "lady gaga winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 40
+        },
+        {
+          "q": "cheap lady gaga look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "ripped lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "faded lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "faded lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "waxed lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "quilted lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy lady gaga dress",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "boxy lady gaga vest",
+          "total": 48,
+          "alignment": 0.083,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored lady gaga dress",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 10
+        },
+        {
+          "q": "tailored lady gaga vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 3
+        },
+        {
+          "q": "minimal lady gaga dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 5
+        },
+        {
+          "q": "minimal lady gaga vest",
+          "total": 48,
+          "alignment": 0.333,
+          "fallOff": 2
+        },
+        {
+          "q": "utility lady gaga dress",
+          "total": 40,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "utility lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        },
+        {
+          "q": "gothic lady gaga vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "punk lady gaga dress",
+          "total": 40,
+          "alignment": 0.833,
+          "fallOff": 3
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.668,
+        "meanFallOff": 3.1
+      }
+    },
+    "dolly parton": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "dolly parton",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "dolly parton fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "coat like dolly parton",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like dolly parton",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "coat for a dolly parton concert",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a dolly parton concert",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "dolly parton inspired coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "dolly parton inspired sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "black dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "black dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "white dolly parton coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "white dolly parton sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 4
+        },
+        {
+          "q": "vintage dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "leather dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "leather dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "oversized dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "distressed dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 5
+        },
+        {
+          "q": "baggy dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "slim dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "slim dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "studded dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "studded dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "neon dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "neon dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "plaid dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "denim dolly parton coat",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "denim dolly parton sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "longline dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "longline dolly parton sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 2
+        },
+        {
+          "q": "chunky dolly parton coat",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky dolly parton sweater",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 4
+        },
+        {
+          "q": "dolly parton winter outfit",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "cheap dolly parton look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "faded dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy dolly parton dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 16
+        },
+        {
+          "q": "boxy dolly parton vest",
+          "total": 48,
+          "alignment": 0.083,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored dolly parton dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 41
+        },
+        {
+          "q": "tailored dolly parton vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 3
+        },
+        {
+          "q": "minimal dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 2
+        },
+        {
+          "q": "utility dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic dolly parton vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 1
+        },
+        {
+          "q": "punk dolly parton dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.675,
+        "meanFallOff": 2.7
+      }
+    },
+    "madonna": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 2,
+          "recovered": 316,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "madonna",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "madonna fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "coat like madonna",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater like madonna",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "coat for a madonna concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "sweater for a madonna concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "madonna inspired coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "madonna inspired sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "black madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "black madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "white madonna coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 6
+        },
+        {
+          "q": "white madonna sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 9
+        },
+        {
+          "q": "vintage madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "vintage madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "leather madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "leather madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "oversized madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "distressed madonna sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 7
+        },
+        {
+          "q": "baggy madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "slim madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "slim madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "studded madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "studded madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "neon madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "neon madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "plaid madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "denim madonna coat",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "denim madonna sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped madonna sweater",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 4
+        },
+        {
+          "q": "longline madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "longline madonna sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky madonna coat",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "chunky madonna sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4
+        },
+        {
+          "q": "madonna winter outfit",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "cheap madonna look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "faded madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "waxed madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "quilted madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "boxy madonna dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 25
+        },
+        {
+          "q": "boxy madonna vest",
+          "total": 48,
+          "alignment": 0.167,
+          "fallOff": 1
+        },
+        {
+          "q": "tailored madonna dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 43
+        },
+        {
+          "q": "tailored madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 2
+        },
+        {
+          "q": "minimal madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal madonna vest",
+          "total": 48,
+          "alignment": 0.5,
+          "fallOff": 2
+        },
+        {
+          "q": "utility madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "gothic madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic madonna vest",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 1
+        },
+        {
+          "q": "punk madonna dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 1,
+        "meanAlignment": 0.781,
+        "meanFallOff": 4.5
+      }
+    },
+    "spice girls": {
+      "kind": "held",
+      "recognition": {
+        "recognized": 366,
+        "byMethod": {
+          "exact": 1,
+          "recovered": 317,
+          "composed": 48
+        },
+        "misses": [],
+        "rate": 1
+      },
+      "retrieval": [
+        {
+          "q": "spice girls",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "spice girls fan style",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "coat like spice girls",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "sweater like spice girls",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "coat for a spice girls concert",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "sweater for a spice girls concert",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "spice girls inspired coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "spice girls inspired sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "black spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "black spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "white spice girls coat",
+          "total": 48,
+          "alignment": 0.917,
+          "fallOff": 12
+        },
+        {
+          "q": "white spice girls sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 8
+        },
+        {
+          "q": "vintage spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "vintage spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "leather spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "leather spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "oversized spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "oversized spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "distressed spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "distressed spice girls sweater",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 1
+        },
+        {
+          "q": "baggy spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "baggy spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "slim spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "slim spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "studded spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "studded spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "neon spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "neon spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "plaid spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "plaid spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "denim spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "denim spice girls sweater",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 1
+        },
+        {
+          "q": "cropped spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "cropped spice girls sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "longline spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "longline spice girls sweater",
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 6
+        },
+        {
+          "q": "chunky spice girls coat",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "chunky spice girls sweater",
+          "total": 48,
+          "alignment": 0.75,
+          "fallOff": 4
+        },
+        {
+          "q": "spice girls winter outfit",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "cheap spice girls look",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "ripped spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "faded spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "faded spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "waxed spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "waxed spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "quilted spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "quilted spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "boxy spice girls dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 34
+        },
+        {
+          "q": "boxy spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 11
+        },
+        {
+          "q": "tailored spice girls dress",
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 41
+        },
+        {
+          "q": "tailored spice girls vest",
+          "total": 48,
+          "alignment": 0.583,
+          "fallOff": 3
+        },
+        {
+          "q": "minimal spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "minimal spice girls vest",
+          "total": 48,
+          "alignment": 0.417,
+          "fallOff": 3
+        },
+        {
+          "q": "utility spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "utility spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "gothic spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        },
+        {
+          "q": "gothic spice girls vest",
+          "total": 48,
+          "alignment": 0.833,
+          "fallOff": 7
+        },
+        {
+          "q": "punk spice girls dress",
+          "total": 40,
+          "alignment": 1,
+          "fallOff": null
+        }
+      ],
+      "retrievalSummary": {
+        "n": 61,
+        "zeroResults": 0,
+        "weak": 0,
+        "meanAlignment": 0.817,
+        "meanFallOff": 7.5
+      }
+    }
+  },
+  "passport": {
+    "perTerm": {
+      "marilyn manson": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 7,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "the casualties": {
+        "anonymous": {
+          "total": 37,
+          "alignment": 1,
+          "fallOff": 14,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 31,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 31,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "p diddy": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 5.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "arctic monkeys": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 1.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "oasis": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 3.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "klaxons": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 4,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "merle haggard": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 3.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "jimmy buffett": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "m.i.a": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 4,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "rod stewart": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 1,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "gossip": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": 31,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 1,
+            "total": 45,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 45,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "50 cent": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 2.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "bjork": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 4,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "katy perry": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 0.667,
+          "fallOff": 4,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 0.667,
+            "fallOff": 4
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 7,
+            "total": 26,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "lady gaga": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 1,
+            "total": 26,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 4,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "dolly parton": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 1,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 5.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "madonna": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 7,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      },
+      "spice girls": {
+        "anonymous": {
+          "total": 48,
+          "alignment": 1,
+          "fallOff": null,
+          "applied": false
+        },
+        "probes": {
+          "u-probe-disciples-gorp": {
+            "applied": false,
+            "reason": "no taste overlap",
+            "affinity": 0,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          },
+          "u-probe-disciples-glam": {
+            "applied": true,
+            "reason": "taste-favored reading",
+            "affinity": 5.5,
+            "total": 48,
+            "alignment": 1,
+            "fallOff": null
+          }
+        }
+      }
+    },
+    "differentialTerms": 5,
+    "anonymousInert": true
+  }
+}
