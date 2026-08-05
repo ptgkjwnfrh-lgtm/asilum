@@ -2,9 +2,11 @@
 -- Idempotent and additive. Apply after schema-v20-asterisk-guidance.sql.
 --
 -- NOTE ON NUMBERING: live production carries a v21 "account-profiles" row in
--- app_schema_migrations with NO corresponding file in this repo (applied
--- out-of-band). This file therefore takes v22 rather than colliding. The
--- drift itself is recorded in the PR for the owner; it is not resolved here.
+-- app_schema_migrations whose file was applied out-of-band and never
+-- committed. This file therefore takes v22 rather than colliding. The drift
+-- was closed Aug 5 2026 by schema-v21-account-profiles.sql — a reconstructed
+-- stub carrying the forensic result (no unique structural footprint) and the
+-- version row for rebuilds.
 --
 -- WHY THIS EXISTS. The co-engagement graph (`edges`) was a global, monotone,
 -- unauthenticated counter: POST /api/interaction wrote up to 100 pair-writes
