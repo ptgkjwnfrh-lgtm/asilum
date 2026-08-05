@@ -185,7 +185,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 20);
+  assert.equal(schema.rows[0].version, 22);
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
   {
@@ -397,4 +397,36 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     ) AS public_function_execute
   `);
   assert.equal(defaults.rows[0].public_function_execute, false);
+});
+
+// v22 — gamma edge corroboration. The mem path is unit-tested in
+// tests/graph-corroboration.test.js; this is the Postgres half, because a
+// ledger that existed on only one path would leave every preview deploy and
+// local dev running the ungated rule while reporting success.
+test("Postgres edge corroboration: one identity contributes once", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const A = `pgcorr-a-${suffix}`;
+  const B = `pgcorr-b-${suffix}`;
+  const lo = A < B ? A : B, hi = A < B ? B : A;
+  t.after(async () => {
+    await pool.query("DELETE FROM edge_contributors WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [[A, B]]);
+    await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [[A, B]]);
+  });
+
+  // The attack: one identity, the same pair, 25 times.
+  for (let i = 0; i < 25; i++) await db.bumpEdges([{ a: A, b: B, w: 2 }], "pg-attacker");
+  let row = (await pool.query("SELECT w,contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi])).rows[0];
+  assert.equal(row.contributors, 1, "25 forged engagements must remain ONE contributor");
+  assert.equal(Number(row.w), 2, "w is that contributor's BEST action, never a sum");
+
+  for (const who of ["pg-2", "pg-3"]) await db.bumpEdges([{ a: A, b: B, w: 1 }], who);
+  row = (await pool.query("SELECT w,contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi])).rows[0];
+  assert.equal(row.contributors, 3, "distinct people accumulate");
+  assert.equal(Number(row.w), 4, "sum of per-contributor bests (2 + 1 + 1)");
+
+  const edges = await db.getEdges([A]);
+  assert.equal(edges[A][B], 3, "getEdges reports the distinct-contributor count");
 });

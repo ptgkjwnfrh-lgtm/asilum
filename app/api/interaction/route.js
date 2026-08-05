@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 import { learn } from "../../../lib/brain/index.js";
 import { applyTimeDecay, noteActivity } from "../../../lib/brain/memory.js";
 import {
-  commitInteractionBatch,
+  commitInteractionBatch, getProfile,
 } from "../../../lib/db/index.js";
 import { eventFromInteraction } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
@@ -71,6 +71,19 @@ export async function POST(req) {
   if (canonicalEvents.some((event) => !event)) {
     return NextResponse.json({ error: "unsupported interaction action" }, { status: 400 });
   }
+  // Anchors the reduce() may link FROM: the stored recent ring (which can
+  // hold r17 pseudo-items), resolved against the catalog once, before the
+  // transaction. Items resolved for THIS batch are already server-verified,
+  // so they join the set directly — they enter the ring as the batch is
+  // learned and would otherwise be filtered out of their own edges.
+  const storedRecent = ((await getProfile(userId).catch(() => null))?._meta?.recent || [])
+    .map(String).slice(0, 40);
+  const anchors = new Set(valid.map((e) => e.item.id));
+  if (storedRecent.length) {
+    const resolved = await resolveProducts(storedRecent).catch(() => new Map());
+    for (const id of resolved.keys()) anchors.add(id);
+  }
+
   const commit = await commitInteractionBatch({
     userId,
     operationId: body.operationId,
@@ -86,7 +99,18 @@ export async function POST(req) {
         prof = noteActivity(learn(prof, item, action, { dwellMs }), item, action);
         if (POSITIVE.has(action)) {
           const w = action === "bag" ? 2 : action === "share" ? 1.5 : 1;
-          for (const rid of recentBefore.slice(0, CO_ENGAGE_SPAN)) edgePairs.push({ a: rid, b: item.id, w });
+          // BOTH endpoints must be real catalog products. `b` was already
+          // server-resolved, but `a` came straight out of stored _meta.recent
+          // and was never re-checked — and r17 pushes a pseudo-item
+          // ("reading:<interpretationId>") into that ring. Those ids are
+          // DETERMINISTIC AND GLOBAL, so the same phantom anchor is shared by
+          // every user who applied the reading: corroborating one edge from it
+          // would steer everyone who later applies that reading, bypassing the
+          // catalog entirely. Anchors are filtered here, at the write.
+          for (const rid of recentBefore.slice(0, CO_ENGAGE_SPAN)) {
+            if (!anchors.has(rid)) continue;
+            edgePairs.push({ a: rid, b: item.id, w });
+          }
           popularity.push({ id: item.id, eng: 1 });
         } else if (action === "dwell" && dwellMs >= 4000) {
           popularity.push({ id: item.id, eng: 0.3 });
