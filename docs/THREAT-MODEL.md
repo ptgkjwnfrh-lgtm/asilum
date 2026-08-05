@@ -83,12 +83,66 @@ Original checklist for reference:
   expensive read APIs carry edge rules;
 - alerting when edge rules fire at sustained volume.
 
-**Layer 2 — identity-issuance throttling (BUILT):** `/api/auth` GET
-issues anonymous device identities; issuance (not verification) is
-throttled per requesting subject (30/hour) AND draws from a global
-issuance budget (300/min default, `GLOBAL_BUDGET_IDENTITY_ISSUE`).
-Every issued identity seeds per-subject quotas everywhere else, so
-unthrottled minting would let a flood outrun every other limit.
+**Layer 2 — identity-issuance throttling (BUILT; REWRITTEN 2026-08-06):**
+`/api/auth` GET issues anonymous device identities; issuance (not
+verification) is throttled. Every issued identity seeds per-subject
+quotas everywhere else, so unthrottled minting would let a flood outrun
+every other limit.
+
+*Correction.* This section previously claimed issuance was "throttled per
+requesting subject (30/hour)". That posture did not exist in code. The
+route returns early for an already-verified cookie, so every request
+reaching the limiter had NO cookie by construction and the subject was
+the literal constant `unverified-public` — one GLOBAL bucket. Thirty
+cookie-less requests from any script locked issuance product-wide for the
+rest of the clock hour, and the same lockout occurred with no attacker at
+all once 30 genuinely new visitors arrived in an hour.
+
+Three buckets now, in increasing coarseness:
+
+1. **Per-subject** — a trusted edge caller when the deployment declares
+   one (`TRUSTED_EDGE_IP_HEADER`, default EMPTY; production Vercel:
+   `x-vercel-forwarded-for`), otherwise still the shared constant.
+   Default `IDENTITY_ISSUE_SUBJECT_LIMIT` 2000/hour. This is an
+   **ISOLATION** control — one caller can no longer exhaust everyone
+   else's issuance — and explicitly **NOT a sybil price**: no per-IP
+   limit can be both NAT-safe (a carrier NAT fronts 10^4–10^5
+   subscribers) and tight enough to price minting. IPv6 is masked to a
+   /64 before hashing, because a subscriber holds a whole /64 and keying
+   on the full address would hand one customer 2^64 subjects.
+2. **Shared public ceiling** — `IDENTITY_ISSUE_PUBLIC_LIMIT` 5000/hour
+   for callers with no trusted subject: far above legitimate traffic so
+   it can never be what locks out a first visitor.
+3. **Hourly global** — `IDENTITY_ISSUE_GLOBAL_HOURLY` 3000/hour, scope
+   `identity-issue-global`. **This is the actual aggregate bound.**
+   `consumeGlobalBudget` only supports 60-second windows, so
+   `GLOBAL_BUDGET_IDENTITY_ISSUE` (300/min) permits 18,000/hour
+   sustained; before this ceiling existed the accidental 30/hour bucket
+   was the only sustained limit. Lower it against measured new-visitor
+   volume; never raise it against a guess.
+
+Issuance fails **OPEN** on limiter INFRASTRUCTURE failure and **CLOSED**
+on quota exhaustion (`IDENTITY_ISSUE_FAIL_OPEN=0` restores fail-closed).
+Issuance writes nothing — a `randomUUID` and one HMAC — and everything
+the identity can subsequently do is separately quota'd per identity, so
+an over-issued identity costs ~0 while a denied one costs a real visitor
+the product.
+
+**Degradation (2026-08-06):** identity is a preference, not a
+precondition. `authorizedFetch` proceeds without an identity instead of
+throwing, and `/api/feed` — previously the ONLY read surface that failed
+closed — serves an anonymous cold-start feed. An issuance outage now
+de-personalizes rather than blanking the product.
+
+*Honest limits.* The per-subject bucket is dead code unless a deployment
+names a trusted header: Next.js does NOT sanitize `x-forwarded-for`
+(`base-server` uses `??=`, preserving a client value), so an unguarded
+read would trust the attacker anywhere that is not behind an overwriting
+edge — worse than a shared bucket, since it means one identity per forged
+value. Enabling it requires empirically confirming the header cannot be
+spoofed on the live deployment. The fail-open counter is per-instance, so
+a serverless fleet multiplies it. Env changes require a REDEPLOY on
+Vercel; the Firewall rule is the only true no-deploy lever.
 
 **Layer 3 — global cost circuit breakers (BUILT):** each expensive
 surface (search, interpret, discover, feed) draws from one global

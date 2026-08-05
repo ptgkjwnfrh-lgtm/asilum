@@ -11,17 +11,59 @@ import {
   adoptAccountData, createTicket, transitionTicket, updateTicket,
 } from "../lib/db/production.js";
 
+const headerReq = (headers) => ({ headers: new Headers(headers), cookies: { get: () => null } });
+
 test("public quota subjects ignore forgeable forwarding headers", () => {
-  const request = {
-    headers: new Headers({
-      "cf-connecting-ip": "198.51.100.7",
-      "x-forwarded-for": "203.0.113.9",
-      "user-agent": "rotating-agent",
-    }),
-    cookies: { get: () => null },
-  };
+  // Unconfigured is the default and must stay byte-for-byte today's behaviour:
+  // Next.js does NOT sanitize x-forwarded-for (base-server does `??=`, which
+  // PRESERVES a client value), so on localhost, next dev, tests, or any
+  // non-Vercel host an IP header is fully attacker-controlled. A spoofable
+  // subject is worse than a shared one — it means one identity per forged
+  // header value.
+  const request = headerReq({
+    "cf-connecting-ip": "198.51.100.7",
+    "x-forwarded-for": "203.0.113.9",
+    "x-real-ip": "203.0.113.10",
+    "x-vercel-forwarded-for": "203.0.113.11",
+    "user-agent": "rotating-agent",
+  });
   assert.equal(verifiedRequestSubject(request), null);
   assert.equal(requestSubject(request), "unverified-public");
+});
+
+test("a declared trusted header is read, and ONLY that header", () => {
+  const prev = { h: process.env.TRUSTED_EDGE_IP_HEADER, s: process.env.RATE_LIMIT_SUBJECT_SALT };
+  process.env.TRUSTED_EDGE_IP_HEADER = "x-vercel-forwarded-for";
+  process.env.RATE_LIMIT_SUBJECT_SALT = "s".repeat(48);
+  try {
+    const a = requestSubject(headerReq({ "x-vercel-forwarded-for": "203.0.113.7", "x-forwarded-for": "6.6.6.6" }));
+    const b = requestSubject(headerReq({ "x-vercel-forwarded-for": "203.0.113.7", "x-forwarded-for": "7.7.7.7" }));
+    const c = requestSubject(headerReq({ "x-vercel-forwarded-for": "203.0.113.8" }));
+    assert.equal(a, b, "a forged x-forwarded-for must not move the bucket");
+    assert.notEqual(a, c, "a genuinely different edge IP must");
+    assert.ok(a.startsWith("edge:") && !a.includes("203.0"), "the subject must not carry the address");
+
+    // An IPv6 subscriber holds a whole /64 — keying on the full address would
+    // hand one ordinary customer 2^64 subjects, i.e. unlimited minting with no
+    // spoofing at all.
+    const v6a = requestSubject(headerReq({ "x-vercel-forwarded-for": "2001:db8:1:2:aaaa::1" }));
+    const v6b = requestSubject(headerReq({ "x-vercel-forwarded-for": "2001:db8:1:2:ffff::9" }));
+    const v6c = requestSubject(headerReq({ "x-vercel-forwarded-for": "2001:db8:1:3::1" }));
+    assert.equal(v6a, v6b, "one /64 is one subject");
+    assert.notEqual(v6a, v6c, "a different /64 is a different subject");
+
+    // No guessing on anomalies — that is how a spoofable value gets trusted.
+    assert.equal(requestSubject(headerReq({ "x-vercel-forwarded-for": "1.2.3.4, 5.6.7.8" })), "unverified-public");
+    assert.equal(requestSubject(headerReq({ "x-vercel-forwarded-for": "not-an-ip" })), "unverified-public");
+
+    // An unsalted digest of an IPv4 address is not anonymization: the whole
+    // 2^32 space is minutes of laptop time.
+    process.env.RATE_LIMIT_SUBJECT_SALT = "tooshort";
+    assert.equal(requestSubject(headerReq({ "x-vercel-forwarded-for": "203.0.113.7" })), "unverified-public");
+  } finally {
+    if (prev.h === undefined) delete process.env.TRUSTED_EDGE_IP_HEADER; else process.env.TRUSTED_EDGE_IP_HEADER = prev.h;
+    if (prev.s === undefined) delete process.env.RATE_LIMIT_SUBJECT_SALT; else process.env.RATE_LIMIT_SUBJECT_SALT = prev.s;
+  }
 });
 
 test("concurrent first saves share one default board", async () => {

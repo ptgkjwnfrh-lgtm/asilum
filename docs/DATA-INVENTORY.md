@@ -25,8 +25,18 @@ proposals — final periods are owner decision #10 with counsel.
 | Brand cases (opener id, evidence URLs, transition ledger) | `brand_cases`/`brand_case_events` | trust & impersonation adjudication | operator-only (admin token) | operational record — NOT purged by privacy delete (trust/audit basis; counsel to confirm period) | none (operator data; reporter ids appear as opener/actor) |
 | Moodboard uploads (filenames, palette swatches — NO image bytes today) | `mood_board_uploads` | taste training | owner-scoped | DRAFT: account lifetime | reset/delete via privacy delete |
 | Purchase tickets + user-reported outcomes | `purchase_tickets` | purchase assistance | server-only | DRAFT: 36 months | consent-gated creation |
-| Rate-limit subjects | `api_rate_limits` (sha-256 hashed) | abuse control | server-only | window + cleanup sweep | n/a (hashed) |
+| Rate-limit subjects | `api_rate_limits` — a MIX: signed device identities (sha-256) and, only where `TRUSTED_EDGE_IP_HEADER` is configured, IP-derived values (keyed HMAC with rotatable `RATE_LIMIT_SUBJECT_SALT`, IPv6 truncated to /64) | abuse control | server-only | rate-limit window + 2-day sweep | n/a — unlinkable to a subject record and expired within 2 days (NOT because "hashed": an unsalted digest of an IPv4 address is reversible by enumerating 2^32) |
 | AI model audit events | `ai_model_events` | honesty/audit | admin-only | DRAFT: 12 months | n/a |
+
+> **IP classification (2026-08-06).** An IP address is personal data under
+> GDPR, and a keyed hash of one is **pseudonymous, not anonymous**. IP-derived
+> subjects exist only when a deployment names a trusted edge header; a verified
+> device short-circuits before any IP is read, so the overwhelming majority of
+> requests never touch one. The value never leaves the deriving function: never
+> in a response, never in `user_events`/`popularity`/`edges`/either contributor
+> ledger, never joined to a device or account, and never logged — including the
+> fail-open log line, which carries the scope and error class only.
+
 | Research facts / culture proposals | `learned_facts` | knowledge pipeline | admin-only | permanent (audited lifecycle) | n/a (not personal data; sources public) |
 
 ## Added by roadmap (consent & notice requirements)
@@ -47,7 +57,7 @@ proposals — final periods are owner decision #10 with counsel.
 ## Consent matrix (summary)
 
 - **Implicit in product use**: taste events, searches (with published
-  retention), rate-limit hashes.
+  retention), rate-limit subjects including IP-derived keyed hashes.
 - **Explicit per-feature consent**: measurements (exists), AI stylist/
   moodboard external-model use (`aiConsent`, exists), wardrobe photo
   upload (new), source connections (new), messaging (new).
