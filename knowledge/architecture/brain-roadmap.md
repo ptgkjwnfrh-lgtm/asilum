@@ -73,21 +73,46 @@ in the same PR as the round they describe.
   (python 1000-bot harness, mem-mode, ON vs OFF): alignment +0.213 vs
   +0.208, zone mix and engagement rates unchanged, bored-user probe
   correct in both, 0 errors in both.
-  STATUS NOTE (Aug 5, audit #23 — do NOT delete; correct wording, not the
-  record): the numbers above are the shipped run's evidence. A re-run of
-  scripts/measure-tuning.mjs at current head IN MEM-MODE now reports
-  VERDICT: FAIL — the live-sim still improves (tuned 0.33406 ≥ base
-  0.32048) and the cohort/structure/determinism criteria still pass, but
-  the replay cross-check advantage (−0.01998) sits below the run's own
-  known-neutral permutation control (−0.0158) by more than its noise
-  (0.00155). The recorded run was under prod-DB conditions; this re-run is
-  mem-mode/synthetic, so the two are not directly comparable. UNTIL this is
-  re-verified under the original conditions and the divergence understood,
-  no tuning-adjacent change should ship, and the "beats its scrambled twins
-  beyond noise" claim above holds only for the recorded prod-DB run — not
-  at head in mem-mode. This is flagged, not resolved: recalibrating the
-  battery to force a pass would be goalpost-moving, and changing the tuned
-  policy needs the full algorithm-evaluation process, not a doc chore.
+  STATUS NOTE (Aug 5, audit #23 — do NOT delete; the numbers above are the
+  shipped run's evidence and stand as recorded). scripts/measure-tuning.mjs
+  now reports VERDICT: FAIL at head. INVESTIGATED AND EXPLAINED, owner-
+  approved read-only prod-DB run + git bisection:
+
+    commit                         base    tuned   advantage  control  verdict
+    #119 r19 attribution           0.34179 0.34520 −0.01509   −0.01517 PASS
+    #121 gamma corroboration       0.34196 0.34544 −0.01470   −0.01498 PASS
+    #123 popularity counts people  0.32974 0.34035 −0.01726   −0.01300 FAIL
+
+  The failure is NOT from the r14/r16 attribution repair (#117/#119) — those
+  pass. It appears exactly at #123, and it is a BATTERY-FIDELITY artifact of
+  that intentional fix, not a product regression:
+
+    * #123 made delta/epsilon score DISTINCT PEOPLE instead of raw counts.
+      In this simulator every bot is one identity that sees each item once,
+      so — measured — every item has viewers = 1 and engagers ∈ {0,1}, and
+      the delta bridge collapses to exactly TWO distinct scores across the
+      whole pool (0.2722 / 0.3). A bridge with two values carries almost no
+      ranking signal, so the replay cross-check's tuned-vs-control
+      comparison on delta is noise-dominated. This is the same truth the
+      #123 PR declared up front: "delta is uniform until real people
+      accumulate."
+    * The REALISTIC arm moved the other way: tuning's live-sim margin over
+      base TRIPLED (+0.0035 at #121 → +0.0106 at #123) and degraded bots
+      halved (4/120 → 2/120). By the arm that actually simulates sessions,
+      tuning helps MORE after #123, not less.
+    * The prod-DB failure margin is 0.00045 — about 12% of the run's own
+      noise band (advantage −0.01726 vs threshold −0.01681).
+
+  CONCLUSION: no tuning-policy change is warranted by this. The instrument
+  needs the fix, not the product — the bot world must model a SHARED
+  POPULATION so items accumulate distinct viewers/engagers and people-counted
+  delta regains discriminating power (this is exactly audit #10, bot realism).
+  Until the simulator models multiple identities per item, the replay
+  cross-check's delta comparison should be read as uninformative rather than
+  as evidence against tuning. Deliberately NOT done: recalibrating the
+  battery to force a pass (goalpost-moving), and changing the tuned policy
+  (the evidence points at the harness, and a policy change needs the full
+  algorithm-evaluation process).
 
 ## Phase 2 — feed the brain (each independent; can interleave)
 
