@@ -266,6 +266,29 @@ in the same PR as the round they describe.
   cleared the floor, the one that did NOT also weaken a second knob was
   taken. Record the sweep — an unrecorded constant is indistinguishable
   from one chosen for the answer it gave.
+- **A metric scored against state the system itself trained is circular**
+  (r23, Aug 6). Feed-to-profile calibration ranked the injected concentrator
+  BEST: the profile is learned from the feed being judged, so an arm that
+  serves a narrow slice trains a reader who wants that slice and then scores
+  well for matching them. Same class of error as scoring a policy on outcomes
+  its own ordering produced. Calibration targets must be exogenous to the
+  thing under test.
+- **When a metric has no power, shrink the claim — do not keep changing the
+  metric until the sign comes out right** (r23). Latent-taste calibration
+  ranked the concentrator non-monotonically too (loop-free 0.8275, base
+  0.8318, concentrator 0.8293), because L1 to a broad target rewards breadth
+  and a healthy personalized feed is deliberately narrow. Trying a third
+  target until one ranked the fault worst would be fishing for a sign, which
+  is recalibrating-to-pass wearing different clothes. The metric is reported
+  and gates nothing, and audit #12's calibration item is recorded as still
+  OPEN rather than closed by a number that exists.
+- **Concentration has to be measured against a loop-free control, not an
+  absolute ceiling** (r23). A 915-item synthetic catalog served to two-tag
+  bots is concentrated whatever the engine does, so an absolute band mostly
+  measures the fixture — and needs a number invented before anyone knows what
+  the fixture produces. Running delta = 0 as a third arm makes the loop's own
+  contribution the measured quantity: 0.0011 of top-decile share at shipped
+  weights, on the production pool, with concentration FALLING across cohorts.
 - **A rate limiter in front of a load test measures the rate limiter**
   (r22). The 1000-bot gate ran every bot from 127.0.0.1 against a global
   300/minute identity-issuance budget: ~2000 failed calls, 0.47 of 3 rounds
