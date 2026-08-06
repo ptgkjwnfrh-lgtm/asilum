@@ -19,7 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { listEmbeddings } from "../lib/db/index.js";
-import { TEXT_SPACE, cosine } from "../lib/embeddings/index.js";
+import { TEXT_SPACE, cosine, catalogEmbedHash } from "../lib/embeddings/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 
 const K = 12;
@@ -47,6 +47,11 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const dest = path.join(here, "..", "lib", "brain", "vector-neighbors.json");
 fs.writeFileSync(dest, JSON.stringify({
   space: TEXT_SPACE, k: K, items: vecs.length, embeddingRows: rows.length,
+  // (audit #17) content hash of the catalog these embeddings were built from.
+  // tests/vector-neighbors.test.js recomputes it and fails if the catalog's
+  // embed-relevant content has drifted since — catching a stale artifact a
+  // count check would miss (a retagged item, a changed title).
+  catalogHash: catalogEmbedHash(CATALOG),
   neighbors,
 }));
 console.log(`wrote ${dest}: ${vecs.length} items × top-${K}`);
