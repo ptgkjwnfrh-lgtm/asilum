@@ -124,8 +124,12 @@ export async function POST(req) {
   // learn() — decay, halo and clamps included. Ignored readings train
   // nothing because this endpoint only hears about applied ones, and GET
   // stays side-effect-free (day-5 law). SEARCH_BRAIN_LOOP=0 kills it.
+  // Train only on a verdict TRANSITION (audit #5): re-clicking an already-
+  // "meant" pill records the same verdict and must add no new signal, or one
+  // reading stacks unbounded — 25 clicks saturate a tag to 1.0. saved.changed
+  // is false when the stored verdict already equalled this one.
   let trained = null;
-  if (verdict === "meant" && process.env.SEARCH_BRAIN_LOOP !== "0") {
+  if (verdict === "meant" && saved.changed && process.env.SEARCH_BRAIN_LOOP !== "0") {
     try {
       const interp = await orchestrateInterpretation(nq, null);
       const reading = (interp?.interpretations || []).find((i) => i.id === interpretationId);
@@ -141,7 +145,12 @@ export async function POST(req) {
         await recordEvent(buildEvent(user, EVENTS.USER_SEARCHED_QUERY, {
           query: nq, interpretationId, tags: reading.tags,
         }));
-        await mutateProfile(user, (current) => learn(current || {}, { id: "reading:" + interpretationId, tags }, "save"));
+        // anchor:false keeps this synthetic "reading:<id>" out of the
+        // co-engagement anchor ring — it has no edges or vector neighbours,
+        // and RECENT_CAP such ids would evict every real anchor and zero the
+        // gamma + vector bridges for the user (audit #13/#21). Taste trains;
+        // the graph seed does not.
+        await mutateProfile(user, (current) => learn(current || {}, { id: "reading:" + interpretationId, tags }, "save", { anchor: false }));
         trained = { interpretationId, tags: reading.tags };
       }
     } catch { trained = null; }
