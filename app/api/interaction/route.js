@@ -23,6 +23,9 @@ export const dynamic = "force-dynamic";
 
 const VALID = new Set(["bag", "share", "save", "favorite", "dwell", "skip", "hide"]);
 const POSITIVE = new Set(["bag", "share", "save", "favorite"]);
+// Actions whose considered-time is a real signal: dwell strength, and the
+// fast-skip rejection multiplier for skip/hide (audit #3).
+const DWELL_TIMED = new Set(["dwell", "skip", "hide"]);
 const CO_ENGAGE_SPAN = 5; // link a new positive to this many recent engagements
 const MAX_EVENTS = 20;
 
@@ -55,7 +58,14 @@ export async function POST(req) {
     // which bridge earned the interaction (see lib/products.js).
     item: withReportedBridge(products.get(event.item.id), event.item._bridge),
     action: event.action,
-    dwellMs: event.action === "dwell" && Number.isFinite(Number(event.dwellMs))
+    // Considered-time carries signal for dwell AND for skip/hide: a skip
+    // faster than FAST_SKIP_MS is a much stronger rejection than a considered
+    // pass, and learn() applies FAST_SKIP_MULT to it. The route used to null
+    // dwellMs for every non-dwell action, so the client's real skip timing
+    // (app/page.js dwellMsFor) was discarded and fast-skip detection could
+    // never fire in production (audit #3). Clamp is shared. Positive actions
+    // keep null — nothing reads their considered-time.
+    dwellMs: DWELL_TIMED.has(event.action) && Number.isFinite(Number(event.dwellMs))
       ? Math.max(0, Math.min(600_000, Math.round(Number(event.dwellMs)))) : null,
   }));
   const quota = await consumeRateLimit({
