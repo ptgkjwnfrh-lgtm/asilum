@@ -55,6 +55,24 @@
 //     its reading measures pure reorder-pessimism. Criterion: tuned
 //     advantage ≥ control advantage − estimator noise. This subtracts the
 //     instrument's measured bias instead of lowering the bar.
+//   4 (8/6) — THE WORLD, NOT THE THRESHOLD. The 8/6 prod-DB run FAILED the
+//     replay cross-check, and bisection put the change at #123 (popularity
+//     counts distinct people), not at the attribution repair. The mechanism
+//     was then measured rather than inferred: every bot browsed a PRIVATE
+//     world, so no item could ever reach a second viewer, and delta collapsed
+//     to exactly TWO distinct scores across the whole pool. A two-valued
+//     bridge cannot rank, so the cross-check was comparing tuned and control
+//     on noise. Nothing here lowers a bar: the bots now share ONE world
+//     (lib/brain/replay.js r22), which is what prod has, and delta carries
+//     158 distinct scores over the same pool. The battery is additionally run
+//     in a second, harsher world with the audit-#10 realism knobs on.
+//     WHICH ARM GATES, declared before the run: the FLAT world is primary —
+//     it is the world r16's criteria were written against, changed only by
+//     making the population shared. The SATIATING world is a declared
+//     SENSITIVITY ARM (the audit's own wording): its numbers are reported
+//     every run and a failure there is a finding about robustness, not a
+//     merge blocker, because that world is new and not yet calibrated against
+//     anything real. Both verdicts are printed either way; neither is hidden.
 //   3 (8/5) — amendment 2's control was NOT MAGNITUDE-MATCHED: ±1% jitter
 //     earns far less reorder-pessimism than a policy drifting weights up
 //     to 1.5×, so the floor was underestimated (tuned −0.0063 vs control
@@ -65,23 +83,33 @@
 //     assigned lifts don't beat their own scrambled twins, replay cannot
 //     corroborate the policy and says so.
 
-import { makeBots, simulateSession, replayEstimate } from "../lib/brain/replay.js";
+import { makeBots, simulatePopulation, replayEstimate, WORLDS } from "../lib/brain/replay.js";
 import { tunedSplit } from "../lib/brain/tuning.js";
 import { baseSplit } from "../lib/brain/bridges.js";
 import { getDiscoverablePool } from "../lib/products.js";
+import { deltaScore } from "../lib/brain/popularity.js";
 
 const BOTS = 120, PAGES = 8, SEED = 20260805;
 const pool = await getDiscoverablePool({ limit: 5000 });
 
-function arm(tune, bots) {
-  return bots.map((bot) => simulateSession(bot, null, { pool, pages: PAGES, tune }));
+// One arm = one world. The population shares it, which is the whole point of
+// amendment 4: counters that count people need more than one person.
+function arm(tune, bots, world) {
+  return simulatePopulation(bots, { pool, pages: PAGES, tune, world });
 }
 const mean = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length;
 
-function battery() {
+function battery(world) {
   const bots = makeBots(BOTS, SEED);
-  const base = arm(false, bots);
-  const tuned = arm(true, bots);
+  const baseRun = arm(false, bots, world);
+  const tunedRun = arm(true, bots, world);
+  const base = baseRun.sessions;
+  const tuned = tunedRun.sessions;
+  // The degeneracy guard (amendment 4). If delta is two-valued again, the
+  // replay cross-check below is measuring noise and NOTHING here is
+  // admissible — the same failure the 8/6 investigation traced, made visible
+  // in the output instead of inferred afterwards.
+  const distinctDelta = new Set(pool.map((it) => +deltaScore(it, baseRun.popularity).toFixed(6))).size;
   const baseSat = base.map((s) => s.satisfaction);
   const tunedSat = tuned.map((s) => s.satisfaction);
   const noise = Math.abs(mean(baseSat.slice(0, BOTS / 2)) - mean(baseSat.slice(BOTS / 2)));
@@ -132,24 +160,35 @@ function battery() {
   const advNoise = advantages.length >= 2
     ? Math.abs(mean(advantages.slice(0, advantages.length >> 1)) - mean(advantages.slice(advantages.length >> 1)))
     : 0;
-  return { baseSat: +mean(baseSat).toFixed(5), tunedSat: +mean(tunedSat).toFixed(5), noise: +noise.toFixed(5), degraded, structureBreaks, pageZeroBreaks, advantages: advantages.length ? +mean(advantages).toFixed(5) : null, advNoise: +advNoise.toFixed(5), controlAdv: +mean(controlAdvs).toFixed(5), tunedApplied: advantages.length };
+  return { distinctDelta, retention: +mean(base.map((s) => s.pagesBrowsed)).toFixed(2), baseSat: +mean(baseSat).toFixed(5), tunedSat: +mean(tunedSat).toFixed(5), noise: +noise.toFixed(5), degraded, structureBreaks, pageZeroBreaks, advantages: advantages.length ? +mean(advantages).toFixed(5) : null, advNoise: +advNoise.toFixed(5), controlAdv: +mean(controlAdvs).toFixed(5), tunedApplied: advantages.length };
 }
 
-const run1 = battery();
-const run2 = battery();
-const deterministic = JSON.stringify(run1) === JSON.stringify(run2);
+function verdict(world) {
+  const run1 = battery(world);
+  const run2 = battery(world);
+  const deterministic = JSON.stringify(run1) === JSON.stringify(run2);
+  console.log(`\n--- world: ${world.name} ---`);
+  console.log(`distinct delta     : ${run1.distinctDelta} over ${pool.length} items (2 = the private-world degeneracy; gate is > 2)`);
+  console.log(`mean pages browsed : ${run1.retention} of ${PAGES}`);
+  console.log(`base satisfaction  : ${run1.baseSat}`);
+  console.log(`tuned satisfaction : ${run1.tunedSat}  (noise floor ${run1.noise})`);
+  console.log(`degraded bots      : ${run1.degraded}/${BOTS} (cap ${Math.floor(BOTS * 0.25)})`);
+  console.log(`replay advantage   : ${run1.advantages} ± noise ${run1.advNoise} over ${run1.tunedApplied} evidenced bots`);
+  console.log(`control (pessimism): ${run1.controlAdv} — the estimator's floor for a known-neutral policy`);
+  console.log(`structure breaks   : ${run1.structureBreaks} (must be 0); page-0 zone breaks: ${run1.pageZeroBreaks} (must be 0)`);
+  const pass = run1.distinctDelta > 2
+    && run1.tunedSat >= run1.baseSat - run1.noise
+    && run1.degraded <= BOTS * 0.25
+    && run1.structureBreaks === 0
+    && run1.pageZeroBreaks === 0
+    && (run1.advantages === null || run1.advantages >= run1.controlAdv - run1.advNoise)
+    && deterministic;
+  console.log(`VERDICT (${world.name}): ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
+  return pass;
+}
 
-console.log(`base satisfaction  : ${run1.baseSat}`);
-console.log(`tuned satisfaction : ${run1.tunedSat}  (noise floor ${run1.noise})`);
-console.log(`degraded bots      : ${run1.degraded}/${BOTS} (cap ${Math.floor(BOTS * 0.25)})`);
-console.log(`replay advantage   : ${run1.advantages} ± noise ${run1.advNoise} over ${run1.tunedApplied} evidenced bots`);
-console.log(`control (pessimism): ${run1.controlAdv} — the estimator's floor for a known-neutral policy`);
-console.log(`structure breaks   : ${run1.structureBreaks} (must be 0); page-0 zone breaks: ${run1.pageZeroBreaks} (must be 0)`);
-const pass = run1.tunedSat >= run1.baseSat - run1.noise
-  && run1.degraded <= BOTS * 0.25
-  && run1.structureBreaks === 0
-  && run1.pageZeroBreaks === 0
-  && (run1.advantages === null || run1.advantages >= run1.controlAdv - run1.advNoise)
-  && deterministic;
-console.log(`VERDICT: ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
-process.exit(pass ? 0 : 1);
+// Primary arm gates; sensitivity arm is measured and printed either way.
+const primary = verdict(WORLDS.flat);
+const sensitivity = verdict(WORLDS.satiating);
+console.log(`\nGATE = flat world: ${primary ? "PASS" : "FAIL"} | sensitivity (satiating, reported only): ${sensitivity ? "PASS" : "FAIL"}`);
+process.exit(primary ? 0 : 1);

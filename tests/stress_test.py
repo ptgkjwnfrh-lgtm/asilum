@@ -9,14 +9,99 @@ behavior, then an evaluation phase measuring CROSS-ACCOUNT learning:
   4. board taste transfer: does a shared board steer a stranger's feed?
   5. archetype separation: do different personas get different feeds?
   6. zones: core (already like) vs discovery (probably like) vs far reach
+
+RUNNING IT (r22 — read this before trusting a run):
+
+    # production build, then a server the harness can actually saturate
+    GLOBAL_BUDGET_IDENTITY_ISSUE=20000 GLOBAL_BUDGET_FEED=60000 \
+    GLOBAL_BUDGET_SEARCH=20000 GLOBAL_BUDGET_DISCOVER=20000 \
+    GLOBAL_BUDGET_INTERPRET=20000 \
+    TRUSTED_EDGE_IP_HEADER=x-asilum-bot-ip \
+    RATE_LIMIT_SUBJECT_SALT=<32+ chars> \
+    npx next start -p 3457
+    python3 tests/stress_test.py
+
+Without those two blocks the gate measures the RATE LIMITER, not the brain,
+and says so only in its error count:
+
+  · The anonymous-abuse boundary (release blocker 0A-4) caps identity issuance
+    at 300/minute GLOBALLY. A thousand bots mint in seconds, so ~700 of them
+    never get an identity. The budgets are documented as tunable per scope for
+    exactly this reason; a bench raises them, a deployment does not.
+  · Every bot arrives from 127.0.0.1 unless it carries its own edge IP, so the
+    per-subject quota sees one caller. See EDGE_IP_HEADER below.
+
+Measured at head on 8/6 with neither set: 4430 API calls, 2042 errors, 0.47 of
+3 rounds per bot — a fifth of a run, printing full-looking numbers. Check the
+error count and rounds/bot in the SIMULATION header before reading anything
+below it.
 """
-import json, math, random, re, time, statistics, threading
+import json, math, os, random, re, time, statistics, threading
 import http.cookiejar
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
-BASE = "http://localhost:3457"
+# The harness ritual runs a production server on :3457; ASILUM_STRESS_BASE
+# points it at another port when one is already up.
+BASE = os.environ.get("ASILUM_STRESS_BASE", "http://localhost:3457")
 random.seed(42)
+
+# ---- bot world (r22, audit #10) ---------------------------------------------
+# The offline harness (lib/brain/replay.js) and this live gate must model the
+# SAME reader, or the two instruments disagree about what a good feed is. The
+# constants below mirror REALISM there exactly; see that file for the
+# declaration and the calibration record.
+#
+#   flat       — the pre-r22 bot: position-flat inside the examined window,
+#                never leaves, never tires, cannot see a price. DEFAULT, so
+#                historical runs of this gate stay comparable.
+#   satiating  — all four knobs on. The declared sensitivity arm.
+#
+#   ASILUM_BOT_WORLD=satiating python3 tests/stress_test.py
+#
+# Each bot also gets its OWN seeded RNG. The old code drew from the global
+# `random` inside a 24-thread pool, so `random.seed(42)` bought nothing —
+# interleaving decided the draws and no run reproduced another.
+WORLD = os.environ.get("ASILUM_BOT_WORLD", "flat")
+KNOBS = {"attention": WORLD == "satiating", "dropout": WORLD == "satiating",
+         "satiation": WORLD == "satiating", "price": WORLD == "satiating"}
+REALISM = {
+    "ATTENTION_TAU": 12, "ATTENTION_FLOOR": 0.25,
+    "DROPOUT_BASE": 0.04, "DROPOUT_PER_SKIP": 0.06,
+    "DROPOUT_PER_POSITIVE": 0.03, "DROPOUT_MAX": 0.6,
+    "SAT_RATE": 0.06, "SAT_DECAY": 0.4,
+    "PRICE_FLOOR": 0.35, "BUDGET_LO": 250, "BUDGET_HI": 1600,
+}
+
+def attention_at(slot):
+    if not KNOBS["attention"]:
+        return 1.0
+    f, tau = REALISM["ATTENTION_FLOOR"], REALISM["ATTENTION_TAU"]
+    return f + (1 - f) * math.exp(-slot / tau)
+
+def price_factor(budget, item):
+    if not KNOBS["price"]:
+        return 1.0
+    price = item.get("price") or 0
+    try:
+        price = float(price)
+    except (TypeError, ValueError):
+        return 1.0
+    if not price or price <= budget:
+        return 1.0
+    return max(REALISM["PRICE_FLOOR"], budget / price)
+
+def satiation_factor(sat, tag):
+    if not KNOBS["satiation"] or not tag:
+        return 1.0
+    return 1.0 / (1.0 + REALISM["SAT_RATE"] * sat.get(tag, 0.0))
+
+def dominant_tag(item):
+    tags = item.get("tags") or {}
+    if not tags:
+        return None
+    # ties break on tag name, matching lib/brain/replay.js dominantTag
+    return sorted(tags.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
 
 # Identity hardening (July audit) means the server ignores claimed user=
 # params: anonymous identity lives in the signed HttpOnly device cookie
@@ -25,6 +110,29 @@ random.seed(42)
 # as session keys for the jar routing; the server never trusts them.
 SESS = {}
 SESS_LOCK = threading.Lock()
+
+# (r22) ONE THOUSAND READERS ARE NOT ONE IP.
+# Every bot used to arrive from 127.0.0.1, so the anonymous-minting boundary
+# (lib/security/request.js) saw a single subject and 429'd identity issuance
+# after the first few dozen. At head that costs ~2000 failed calls and about
+# half a round per bot — the documented 1000-bot gate could not complete, on
+# main or on this branch, and the numbers it printed were a fifth of a run.
+# Each bot now carries its own synthetic edge IP, which is what a real
+# thousand-device population looks like to the limiter.
+#
+# THIS IS TEST-BENCH CONFIGURATION, NOT A PRODUCTION PATTERN. It works only
+# because the local harness server is started with TRUSTED_EDGE_IP_HEADER
+# naming this header. request.js is explicit that a request-supplied IP header
+# is attacker-controlled anywhere the platform does not set it, and trusting a
+# client-settable header in production would hand one caller unlimited
+# identities. Do not set this header name on a deployed environment.
+EDGE_IP_HEADER = os.environ.get("ASILUM_STRESS_IP_HEADER", "x-asilum-bot-ip")
+
+def bot_ip(uid):
+    h = 0
+    for ch in uid:
+        h = (h * 131 + ord(ch)) & 0xFFFFFF
+    return "10.%d.%d.%d" % ((h >> 16) & 0xFF, (h >> 8) & 0xFF, (h & 0xFF) or 1)
 
 def opener_for(uid):
     with SESS_LOCK:
@@ -37,7 +145,8 @@ def opener_for(uid):
             SESS[uid] = op
     if not op._asilum_booted:
         try:
-            with op.open(BASE + "/api/auth", timeout=30) as r:
+            boot = urllib.request.Request(BASE + "/api/auth", headers={EDGE_IP_HEADER: bot_ip(uid)})
+            with op.open(boot, timeout=30) as r:
                 json.load(r)
             # production builds mark the cookie Secure; we test over
             # plain http on localhost, so clear the flag client-side
@@ -64,12 +173,15 @@ CALLS = [0]
 def call(method, path, payload=None):
     t0 = time.time()
     try:
-        op = opener_for(uid_of(path, payload))
+        uid = uid_of(path, payload)
+        op = opener_for(uid)
+        headers = {EDGE_IP_HEADER: bot_ip(uid)}
         if payload is None:
-            req = urllib.request.Request(BASE + path)
+            req = urllib.request.Request(BASE + path, headers=headers)
         else:
+            headers["Content-Type"] = "application/json"
             req = urllib.request.Request(BASE + path, json.dumps(payload).encode(),
-                                         {"Content-Type": "application/json"}, method=method)
+                                         headers, method=method)
         with op.open(req, timeout=30) as r:
             out = json.load(r)
     except Exception as e:
@@ -146,12 +258,18 @@ for name, persona in ARCHETYPES.items():
 BOTS = []
 for i in range(1000):
     arch = list(ARCHETYPES)[i % 10]
+    brnd = random.Random(0xA51 ^ i)
     BOTS.append({"id": f"bot-{arch}-{i}", "arch": arch, "persona": ARCHETYPES[arch],
                  "judge": latent_taste(ARCHETYPES[arch]),
+                 "seed": 0xA51 ^ i,
+                 "budget": REALISM["BUDGET_LO"] + brnd.random() * (REALISM["BUDGET_HI"] - REALISM["BUDGET_LO"]),
                  "trains": (i // 10) % 2 == 0})  # half of EACH archetype trains with a prompt, half learns purely from behavior
 
 stats = {"favorite": 0, "save": 0, "share": 0, "skip": 0, "dwell": 0}
 zone_stats = {}  # zone -> [considered, engaged]
+# r22: what the realism knobs cost, reported so a run says how much of the
+# feed the crowd actually saw rather than how much was served.
+world_stats = {"rounds": 0, "dropped": 0, "examined": 0, "offered": 0}
 stats_lock = threading.Lock()
 
 def note_zone(zone, engaged):
@@ -163,30 +281,50 @@ def note_zone(zone, engaged):
 
 def run_bot(bot):
     uid, persona = bot["id"], bot["persona"]
+    rnd = random.Random(bot["seed"])
+    sat = {}          # dominant tag -> accumulated satiation
     if bot["trains"]:
         call("POST", "/api/train", {"user": uid, "prompt": PROMPTS[bot["arch"]]})
     interactions = 0
+    rounds_done, dropped = 0, False
     for round_ in range(3):
         feed = call("GET", f"/api/feed?user={uid}")
         if not feed or not feed.get("items"):
             break
+        rounds_done += 1
         dwell_batch = []
+        page_skips, page_positives = 0, 0
         # (r19) A bot examines the first 16 of 60 slots — the same shape a
         # real reader has, and the reason serve-counted impressions were
         # position-biased. Report exactly what was examined, and carry the
         # slot's bridge back the way the browser client does (the harness used
         # to strip _bridge, which is why it never caught the attribution
         # break the Aug 5 audit found by reading code).
-        examined_ids = [x["id"] for x in feed["items"][:16]]
+        # (r22) Within that window attention now DECAYS: the eye does not land
+        # on slot 15 as reliably as on slot 0. A slot that was never examined
+        # is not reported as an impression, which is the whole point of the
+        # examined-ids channel.
+        window = list(enumerate(feed["items"][:16]))
+        looked = [(slot, it) for slot, it in window if rnd.random() < attention_at(slot)]
+        examined_ids = [it["id"] for _, it in looked]
+        with stats_lock:
+            world_stats["offered"] += len(window)
+            world_stats["examined"] += len(looked)
         if feed.get("serveId") and examined_ids:
             call("POST", "/api/impressions",
                  {"user": uid, "serveId": feed["serveId"], "examined": examined_ids})
-        for it in feed["items"][:16]:
+        for slot, it in looked:
             if interactions >= 7:
                 break
-            sim = cos(it.get("tags") or {}, bot["judge"])
+            # Effective taste: latent affinity, discounted by what the bot can
+            # afford and by how much of this aesthetic it has just consumed.
+            # Both factors are 1.0 in the flat world, so judgment is unchanged.
+            dom = dominant_tag(it)
+            sim = (cos(it.get("tags") or {}, bot["judge"])
+                   * price_factor(bot["budget"], it)
+                   * satiation_factor(sat, dom))
             slim = {"id": it["id"], "tags": it.get("tags") or {}, "_bridge": it.get("_bridge")}
-            r = random.random()
+            r = rnd.random()
             engaged = sim > 0.55 and r < 0.55
             note_zone(it.get("_zone"), engaged)
             if engaged:
@@ -196,24 +334,42 @@ def run_bot(bot):
                 else:
                     call("POST", "/api/interaction",
                          {"user": uid, "item": slim, "action": act,
-                          "dwellMs": random.randint(4000, 9000)})
+                          "dwellMs": rnd.randint(4000, 9000)})
                 with stats_lock: stats[act] += 1
                 interactions += 1
+                page_positives += 1
+                if dom:
+                    sat[dom] = sat.get(dom, 0.0) + 1.0
             elif sim < 0.22 and r < 0.6:
                 call("POST", "/api/interaction",
                      {"user": uid, "item": slim, "action": "skip",
-                      "dwellMs": random.randint(200, 900)})
+                      "dwellMs": rnd.randint(200, 900)})
                 with stats_lock: stats["skip"] += 1
                 interactions += 1
+                page_skips += 1
             elif 0.35 < sim <= 0.55 and r < 0.25:
                 dwell_batch.append({"item": slim, "action": "dwell",
-                                    "dwellMs": random.randint(2500, 7000)})
+                                    "dwellMs": rnd.randint(2500, 7000)})
         if dwell_batch:
             call("POST", "/api/interaction", {"user": uid, "events": dwell_batch})
             with stats_lock: stats["dwell"] += len(dwell_batch)
             interactions += len(dwell_batch)
+        if KNOBS["satiation"]:
+            for k in list(sat):
+                sat[k] *= REALISM["SAT_DECAY"]
+        if KNOBS["dropout"]:
+            hazard = min(REALISM["DROPOUT_MAX"],
+                         max(0.0, REALISM["DROPOUT_BASE"]
+                             + REALISM["DROPOUT_PER_SKIP"] * page_skips
+                             - REALISM["DROPOUT_PER_POSITIVE"] * page_positives))
+            if rnd.random() < hazard:
+                dropped = True
+                break
         if interactions >= 7:
             break
+    with stats_lock:
+        world_stats["rounds"] += rounds_done
+        world_stats["dropped"] += 1 if dropped else 0
 
 t0 = time.time()
 with ThreadPoolExecutor(max_workers=24) as ex:
@@ -223,6 +379,11 @@ sim_secs = time.time() - t0
 # ---- Phase 2: evaluation ------------------------------------------------------
 print("=" * 64)
 print(f"SIMULATION  {CALLS[0]} API calls | {len(BOTS)} bots | {sim_secs:.0f}s | errors: {len(ERRORS)}")
+print(f"  bot world: {WORLD}  knobs: {', '.join(k for k, v in KNOBS.items() if v) or 'none'}")
+print(f"  attention: examined {world_stats['examined']}/{world_stats['offered']} offered slots"
+      f" ({100*world_stats['examined']/max(1,world_stats['offered']):.0f}%)"
+      f" | rounds/bot {world_stats['rounds']/max(1,len(BOTS)):.2f} of 3"
+      f" | left early: {world_stats['dropped']}/{len(BOTS)}")
 print(f"  actions: {stats}")
 lat = sorted(LAT)
 print(f"  latency ms  p50={lat[len(lat)//2]:.0f}  p95={lat[int(len(lat)*0.95)]:.0f}  max={lat[-1]:.0f}")

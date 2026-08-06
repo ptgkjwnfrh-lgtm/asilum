@@ -191,6 +191,39 @@ in the same PR as the round they describe.
   the code.** The r16 test hand-wrote the same four wrong event names, so
   the suite agreed with the bug. Fixtures for vocabulary-bound data should
   be produced by the real constructor (`eventFromInteraction`), not typed.
+- **A simulated world that cannot produce the thing being measured will
+  measure noise and report a verdict anyway** (r22, Aug 6). Every bot
+  browsed a PRIVATE world, so after #123 made the counters count distinct
+  people, no item could ever reach a second viewer: delta held exactly TWO
+  values across all 915 items, and the r16 replay cross-check was ranking
+  policies on a constant. Measured, not inferred — a lone bot still prints
+  2 distinct delta scores, and `tests/bot-realism.test.js` asserts that
+  reproduction deliberately so the degeneracy can never return silently.
+  Before trusting any bridge comparison, assert the bridge under test
+  actually VARIES in the world doing the comparing.
+- **When an instrument gets sharper, the criteria it used to pass start
+  failing — check whether the old pass was real** (r22). Making the world
+  shared did not break r15 and r18; it revealed that r18's headline
+  "thin-graph gamma" arm had matched **0 bots** on main (private edges
+  can't produce co-engagement neighbors of your own recent items), and that
+  r15's calibration passed partly because the pairs where its estimator is
+  biased were classed UNDECIDED by a noise floor that has now dropped. A
+  battery whose central arm has n = 0 is not a passing battery.
+- **A world model has its own calibration criteria, declared before the
+  numbers, and a measurability floor is a floor rather than a target**
+  (r22). The satiation strengths were swept against W3 (mean pages browsed,
+  mean engagers) and never against a tuning verdict; where two grid points
+  cleared the floor, the one that did NOT also weaken a second knob was
+  taken. Record the sweep — an unrecorded constant is indistinguishable
+  from one chosen for the answer it gave.
+- **A rate limiter in front of a load test measures the rate limiter**
+  (r22). The 1000-bot gate ran every bot from 127.0.0.1 against a global
+  300/minute identity-issuance budget: ~2000 failed calls, 0.47 of 3 rounds
+  per bot, and full-looking output underneath. Board taste transfer read
+  `seeded=False` and the bored-user probe read `reach=0` purely because the
+  bots never got identities. Properly provisioned (per-bot edge IP + raised
+  bench budgets) the same gate returns 0 errors and both invariants pass.
+  Read the error count in the header before reading any number below it.
 
 ## Deferred with named triggers
 

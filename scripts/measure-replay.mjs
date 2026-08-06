@@ -35,7 +35,23 @@
 //     blanket threshold is superseded by 100%-of-decided-pairs, which is
 //     STRICTER where measurement is meaningful and honest where it is not.
 
-import { makeBots, simulateSession, replayEstimate, rankAgreement } from "../lib/brain/replay.js";
+//   2 (8/6) — SHARED WORLD + a declared sensitivity arm (r22, audit #10 and
+//     the #23 investigation). Every bot used to browse a private world, so
+//     after #123 no item could ever reach a second viewer and the delta
+//     bridge held exactly two distinct values pool-wide — the delta-heavy
+//     policy was being ranked on a constant. The population now shares one
+//     world per arm, as prod does. Both worlds are calibrated, in full:
+//       flat      — the pre-r22 bot, shared world only.
+//       satiating — attention decay, dropout, satiation, price sensitivity.
+//     DECLARED CRITERION FOR THE KNOBS THEMSELVES (stated before the run, and
+//     deliberately NOT "exploration must stop losing" — demanding a
+//     particular winner is how a harness gets built toward an answer):
+//     the two worlds must produce DIFFERENT live rankings. Identical rankings
+//     would mean the realism knobs are decorative and audit #10's blind spot
+//     survives them. Where the exploration-heavy policy lands in each world is
+//     printed, as the audit asked, but is reported rather than gated.
+
+import { makeBots, simulatePopulation, replayEstimate, rankAgreement, WORLDS } from "../lib/brain/replay.js";
 import { getDiscoverablePool } from "../lib/products.js";
 
 const POLICIES = {
@@ -49,25 +65,27 @@ const BOTS = 120, PAGES = 6, SEED = 20260804;
 
 const pool = await getDiscoverablePool({ limit: 5000 });
 
-function liveScores(bots) {
+function liveScores(bots, world) {
   const live = {};
   for (const [name, policy] of Object.entries(POLICIES)) {
-    let s = 0;
-    for (const bot of bots) s += simulateSession(bot, policy, { pool, pages: PAGES }).satisfaction;
-    live[name] = +(s / bots.length).toFixed(5);
+    // One shared world per policy arm — bots browse it together, so the
+    // crowd-fed bridges (delta, gamma) carry real signal for the policy that
+    // leans on them.
+    const { sessions } = simulatePopulation(bots, { pool, pages: PAGES, policy, world });
+    live[name] = +(sessions.reduce((s, x) => s + x.satisfaction, 0) / bots.length).toFixed(5);
   }
   return live;
 }
 
-function battery() {
+function battery(world) {
   const bots = makeBots(BOTS, SEED);
-  const live = liveScores(bots);
+  const live = liveScores(bots, world);
   // Noise floor: live scores on two disjoint half-samples; σ per policy pair
   // = |halfA Δ − halfB Δ| gives the scale of sampling noise for that pair.
-  const halfA = liveScores(bots.slice(0, BOTS / 2));
-  const halfB = liveScores(bots.slice(BOTS / 2));
+  const halfA = liveScores(bots.slice(0, BOTS / 2), world);
+  const halfB = liveScores(bots.slice(BOTS / 2), world);
   // behavior corpus: sessions logged under the shipped policy
-  const sessions = bots.map((bot) => simulateSession(bot, null, { pool, pages: PAGES }));
+  const { sessions } = simulatePopulation(bots, { pool, pages: PAGES, world });
   const replay = {};
   for (const [name, policy] of Object.entries(POLICIES)) {
     replay[name] = +replayEstimate(sessions, policy, { pool }).toFixed(5);
@@ -75,32 +93,43 @@ function battery() {
   return { live, halfA, halfB, replay };
 }
 
-const run1 = battery();
-const run2 = battery();
-
-console.log("live  :", JSON.stringify(run1.live));
-console.log("replay:", JSON.stringify(run1.replay));
-const names = Object.keys(POLICIES);
-let decided = 0, agreed = 0, undecided = [];
-for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) {
-  const a = names[i], b = names[j];
-  const dLive = run1.live[a] - run1.live[b];
-  const noise = Math.abs((run1.halfA[a] - run1.halfA[b]) - (run1.halfB[a] - run1.halfB[b]));
-  if (Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4) {
-    decided++;
-    const dReplay = run1.replay[a] - run1.replay[b];
-    if (Math.sign(dLive) === Math.sign(dReplay)) agreed++;
-    else console.log(`DECIDED PAIR DISAGREES: ${a} vs ${b} (live Δ ${dLive.toFixed(4)}, replay Δ ${dReplay.toFixed(4)})`);
-  } else {
-    undecided.push(`${a}~${b}`);
+function calibrate(world) {
+  const run1 = battery(world);
+  const run2 = battery(world);
+  console.log(`\n--- world: ${world.name} ---`);
+  console.log("live  :", JSON.stringify(run1.live));
+  console.log("replay:", JSON.stringify(run1.replay));
+  const names = Object.keys(POLICIES);
+  let decided = 0, agreed = 0, undecided = [];
+  for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) {
+    const a = names[i], b = names[j];
+    const dLive = run1.live[a] - run1.live[b];
+    const noise = Math.abs((run1.halfA[a] - run1.halfA[b]) - (run1.halfB[a] - run1.halfB[b]));
+    if (Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4) {
+      decided++;
+      const dReplay = run1.replay[a] - run1.replay[b];
+      if (Math.sign(dLive) === Math.sign(dReplay)) agreed++;
+      else console.log(`DECIDED PAIR DISAGREES: ${a} vs ${b} (live Δ ${dLive.toFixed(4)}, replay Δ ${dReplay.toFixed(4)})`);
+    } else {
+      undecided.push(`${a}~${b}`);
+    }
   }
+  const deterministic = JSON.stringify(run1) === JSON.stringify(run2);
+  const liveRanking = Object.entries(run1.live).sort((x, y) => y[1] - x[1]).map(([n]) => n);
+  const baseNotLast = liveRanking[liveRanking.length - 1] !== "base";
+  console.log(`live ranking: ${liveRanking.join(" > ")}`);
+  console.log(`  exploration-heavy (epsilon-heavy) sits at position ${liveRanking.indexOf("epsilon-heavy") + 1}/${liveRanking.length} (reported, per audit #10)`);
+  console.log(`undecided pairs (reported, not scored): ${undecided.join(", ") || "none"}`);
+  console.log(`blanket rank agreement (informational): ${rankAgreement(run1.live, run1.replay)}`);
+  const ok = decided > 0 && agreed === decided && deterministic && baseNotLast;
+  console.log(`VERDICT (${world.name}): decided pairs ${agreed}/${decided} agree (need all); deterministic ${deterministic}; base-not-last ${baseNotLast} → ${ok ? "CALIBRATED" : "NOT CALIBRATED"}`);
+  return { ok, ranking: liveRanking };
 }
-const deterministic = JSON.stringify(run1) === JSON.stringify(run2);
-const liveRanking = Object.entries(run1.live).sort((x, y) => y[1] - x[1]).map(([n]) => n);
-const baseNotLast = liveRanking[liveRanking.length - 1] !== "base";
-console.log(`live ranking: ${liveRanking.join(" > ")}`);
-console.log(`undecided pairs (reported, not scored): ${undecided.join(", ") || "none"}`);
-console.log(`blanket rank agreement (informational): ${rankAgreement(run1.live, run1.replay)}`);
-console.log(`VERDICT: decided pairs ${agreed}/${decided} agree (need all); deterministic ${deterministic}; base-not-last ${baseNotLast}`);
-if (decided === 0 || agreed !== decided || !deterministic || !baseNotLast) process.exit(1);
-console.log("CALIBRATED");
+
+const flat = calibrate(WORLDS.flat);
+const sati = calibrate(WORLDS.satiating);
+// Amendment 2's knob criterion: the worlds must be able to disagree.
+const worldsDiffer = JSON.stringify(flat.ranking) !== JSON.stringify(sati.ranking);
+console.log(`\nrealism knobs move the verdict: ${worldsDiffer} (identical rankings would mean the knobs are decorative)`);
+console.log(`GATE = flat world: ${flat.ok ? "CALIBRATED" : "NOT CALIBRATED"} | sensitivity (satiating, reported only): ${sati.ok ? "CALIBRATED" : "NOT CALIBRATED"}`);
+if (!flat.ok || !worldsDiffer) process.exit(1);

@@ -25,7 +25,15 @@
 //     cohort half-sample noise; cold users byte-identical (unit-tested);
 //     determinism run-to-run.
 
-import { makeBots, simulateSession } from "../lib/brain/replay.js";
+// AMENDMENT (8/6, r22): the warm-up population now shares ONE world, as prod
+// does — a global edge graph and shared popularity counters. r18 is a
+// GAMMA-and-reach round, so this is not cosmetic: the neighbor graph the
+// feature falls back on is by definition built by other people, and a
+// per-bot private graph could only ever contain the bot's own five recent
+// engagements. The battery is additionally run in the audit-#10 satiating
+// world as a declared sensitivity arm; the flat world gates.
+
+import { makeBots, simulatePopulation, WORLDS } from "../lib/brain/replay.js";
 import { buildFeed } from "../lib/brain/index.js";
 import { vecSim } from "../lib/brain/bridges.js";
 import { getDiscoverablePool } from "../lib/products.js";
@@ -54,13 +62,14 @@ function serveBoth(bot, state) {
   };
 }
 
-function battery() {
+function battery(world) {
   const bots = makeBots(BOTS, SEED);
   const rows = [];
-  for (const bot of bots) {
-    process.env.BRAIN_VECTOR_NEIGHBORS = "0"; // behavior world = shipped
-    const session = simulateSession(bot, null, { pool, pages: WARMUP_PAGES });
-    delete process.env.BRAIN_VECTOR_NEIGHBORS;
+  process.env.BRAIN_VECTOR_NEIGHBORS = "0"; // behavior world = shipped
+  const { sessions } = simulatePopulation(bots, { pool, pages: WARMUP_PAGES, world });
+  delete process.env.BRAIN_VECTOR_NEIGHBORS;
+  for (const session of sessions) {
+    const bot = bots.find((b) => b.id === session.botId);
     const last = session.log[session.log.length - 1].stateSnapshot;
     // recents exist only if the bot engaged; keep only warm bots (declared:
     // the feature targets warm users; cold inertness is unit-tested).
@@ -70,8 +79,9 @@ function battery() {
   return rows;
 }
 
-const r1 = battery();
-const r2 = battery();
+function report(world) {
+const r1 = battery(world);
+const r2 = battery(world);
 const deterministic = JSON.stringify(r1) === JSON.stringify(r2);
 
 const withReach = r1.filter((r) => r.reachOff > 0 || r.reachOn > 0);
@@ -87,11 +97,18 @@ const noise = Math.abs(mean(r1.slice(0, half).map((r) => r.topOff)) - mean(r1.sl
 const zonesSame = r1.every((r) => r.zonesSame);
 const brandOk = r1.every((r) => r.brandOk);
 
+console.log(`\n--- world: ${world.name} ---`);
 console.log(`warm bots          : ${r1.length}/${BOTS}`);
 console.log(`reach affinity     : off ${reachOff.toFixed(4)} → on ${reachOn.toFixed(4)} (${withReach.length} bots with reach slots)`);
 console.log(`gamma-slot affinity: off ${gammaOff.toFixed(4)} → on ${gammaOn.toFixed(4)} (${withGamma.length} bots with gamma slots)`);
 console.log(`top-24 affinity    : off ${topOff.toFixed(4)} → on ${topOn.toFixed(4)} (noise ${noise.toFixed(4)})`);
 console.log(`zone structure identical: ${zonesSame}; brand cap ok: ${brandOk}`);
 const pass = reachOn > reachOff && gammaOn >= gammaOff - 1e-9 && topOn >= topOff - noise && zonesSame && brandOk && deterministic;
-console.log(`VERDICT: ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
-process.exit(pass ? 0 : 1);
+console.log(`VERDICT (${world.name}): ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
+return pass;
+}
+
+const primary = report(WORLDS.flat);
+const sensitivity = report(WORLDS.satiating);
+console.log(`\nGATE = flat world: ${primary ? "PASS" : "FAIL"} | sensitivity (satiating, reported only): ${sensitivity ? "PASS" : "FAIL"}`);
+process.exit(primary ? 0 : 1);
