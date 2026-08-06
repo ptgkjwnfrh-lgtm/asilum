@@ -73,6 +73,21 @@ in the same PR as the round they describe.
   (python 1000-bot harness, mem-mode, ON vs OFF): alignment +0.213 vs
   +0.208, zone mix and engagement rates unchanged, bored-user probe
   correct in both, 0 errors in both.
+  STATUS NOTE (Aug 5, audit #23 — do NOT delete; correct wording, not the
+  record): the numbers above are the shipped run's evidence. A re-run of
+  scripts/measure-tuning.mjs at current head IN MEM-MODE now reports
+  VERDICT: FAIL — the live-sim still improves (tuned 0.33406 ≥ base
+  0.32048) and the cohort/structure/determinism criteria still pass, but
+  the replay cross-check advantage (−0.01998) sits below the run's own
+  known-neutral permutation control (−0.0158) by more than its noise
+  (0.00155). The recorded run was under prod-DB conditions; this re-run is
+  mem-mode/synthetic, so the two are not directly comparable. UNTIL this is
+  re-verified under the original conditions and the divergence understood,
+  no tuning-adjacent change should ship, and the "beats its scrambled twins
+  beyond noise" claim above holds only for the recorded prod-DB run — not
+  at head in mem-mode. This is flagged, not resolved: recalibrating the
+  battery to force a pass would be goalpost-moving, and changing the tuned
+  policy needs the full algorithm-evaluation process, not a doc chore.
 
 ## Phase 2 — feed the brain (each independent; can interleave)
 
@@ -104,12 +119,22 @@ in the same PR as the round they describe.
   tests/vector-neighbors.test.js, and any catalog re-embed must rerun the
   build script in the same PR). Two uses: gamma sparse-graph fallback
   (vector neighbors at a 0.6 discount ONLY where co-engagement edges are
-  missing — behavioral edges always win) and reach coherence (epsilon
+  missing — a WELL-CORROBORATED edge wins, but since #121 gammaScore counts
+  distinct contributors a solo-identity edge scores 0.333, below the vector
+  floor, so the vector fallback deliberately outranks it) and reach
+  coherence (epsilon
   prefers far-in-tag-space / near-in-vector-space items — novelty with a
   thread of coherence). BRAIN_VECTOR_NEIGHBORS=0 kills it. Measured:
   unit 5/5 (suite 222); offline battery (scripts/measure-vector-feed.mjs)
-  PASS — reach-slot affinity 0.1025→0.1417 with top-24 identity held,
-  per-page structure identical, deterministic run-to-run; live 1000-bot
+  PASS — reach-slot affinity 0.1025→0.1417 with the top-24 latent-affinity
+  satisfaction proxy not degraded beyond noise (re-run at head, mem-mode:
+  top-24 affinity off 0.5337 → on 0.5415, noise 0.0088). AUDIT #23: the gate
+  asserts top-24 AFFINITY, not item IDENTITY — the earlier "top-24 identity
+  held" wording was wrong. The supplement is MEANT to change which items
+  fill reach slots, so exact top-24 membership is NOT expected to hold and
+  the gate rightly never checks it; affinity-not-degraded is the honest
+  claim. Per-page structure identical, deterministic run-to-run; live
+  1000-bot
   two-arm gate PASS — ON alignment gain +0.231 (196/200 bots improved)
   vs OFF +0.214 (197/200), zone mix structurally identical
   (46.9/11.9/1.2 vs 46.6/12/1.4), engagement by zone equal within noise
