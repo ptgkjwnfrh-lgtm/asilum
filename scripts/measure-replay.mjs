@@ -52,6 +52,7 @@
 //     printed, as the audit asked, but is reported rather than gated.
 
 import { makeBots, simulatePopulation, replayEstimate, rankAgreement, WORLDS } from "../lib/brain/replay.js";
+import { resampledPairSigma, singleSplitNoise } from "../lib/brain/noise.js";
 import { getDiscoverablePool } from "../lib/products.js";
 
 const POLICIES = {
@@ -67,30 +68,30 @@ const pool = await getDiscoverablePool({ limit: 5000 });
 
 function liveScores(bots, world) {
   const live = {};
+  const perBot = {};
   for (const [name, policy] of Object.entries(POLICIES)) {
     // One shared world per policy arm — bots browse it together, so the
     // crowd-fed bridges (delta, gamma) carry real signal for the policy that
     // leans on them.
     const { sessions } = simulatePopulation(bots, { pool, pages: PAGES, policy, world });
+    // (r26) PER-BOT scores are kept, not just the mean: the pair noise floor
+    // is now resampled from them instead of read off one fixed half-split.
+    perBot[name] = sessions.map((s) => s.satisfaction);
     live[name] = +(sessions.reduce((s, x) => s + x.satisfaction, 0) / bots.length).toFixed(5);
   }
-  return live;
+  return { live, perBot };
 }
 
 function battery(world) {
   const bots = makeBots(BOTS, SEED);
-  const live = liveScores(bots, world);
-  // Noise floor: live scores on two disjoint half-samples; σ per policy pair
-  // = |halfA Δ − halfB Δ| gives the scale of sampling noise for that pair.
-  const halfA = liveScores(bots.slice(0, BOTS / 2), world);
-  const halfB = liveScores(bots.slice(BOTS / 2), world);
+  const { live, perBot } = liveScores(bots, world);
   // behavior corpus: sessions logged under the shipped policy
   const { sessions } = simulatePopulation(bots, { pool, pages: PAGES, world });
   const replay = {};
   for (const [name, policy] of Object.entries(POLICIES)) {
     replay[name] = +replayEstimate(sessions, policy, { pool }).toFixed(5);
   }
-  return { live, halfA, halfB, replay };
+  return { live, perBot, replay };
 }
 
 function calibrate(world) {
@@ -104,8 +105,17 @@ function calibrate(world) {
   for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) {
     const a = names[i], b = names[j];
     const dLive = run1.live[a] - run1.live[b];
-    const noise = Math.abs((run1.halfA[a] - run1.halfA[b]) - (run1.halfB[a] - run1.halfB[b]));
-    if (Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4) {
+    // (r26) sigma of the paired half-split difference over 25 seeded shuffles,
+    // not one fixed split. The old single draw is computed alongside and
+    // printed whenever the two estimators disagree about a pair.
+    const noise = resampledPairSigma(run1.perBot[a], run1.perBot[b], { seed: 26 });
+    const oldNoise = Math.abs(singleSplitNoise(run1.perBot[a]) - singleSplitNoise(run1.perBot[b]));
+    const decidedNow = Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4;
+    const decidedBefore = Math.abs(dLive) > 2 * oldNoise && Math.abs(dLive) > 1e-4;
+    if (decidedNow !== decidedBefore) {
+      console.log(`  ESTIMATOR CHANGED ${a} vs ${b}: ${decidedBefore ? "decided" : "undecided"} -> ${decidedNow ? "decided" : "undecided"} (Δ ${dLive.toFixed(5)}, sigma ${noise.toFixed(5)} vs single-draw ${oldNoise.toFixed(5)})`);
+    }
+    if (decidedNow) {
       decided++;
       const dReplay = run1.replay[a] - run1.replay[b];
       if (Math.sign(dLive) === Math.sign(dReplay)) agreed++;
