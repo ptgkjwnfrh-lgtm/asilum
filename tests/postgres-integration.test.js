@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const run = promisify(execFile);
 
 // The applied schema version must match the migrations actually committed.
 // DERIVED rather than hardcoded (it read a literal 23 until Aug 6): CI applies
@@ -236,6 +240,78 @@ test("Postgres refuses a replayed operation after sign-in", { skip: !databaseUrl
     "SELECT eng,imp FROM popularity WHERE item_id=$1", [item])).rows[0];
   assert.equal(Number(pop.eng), 1, "raw engagement counter did not double");
   assert.equal(Number(pop.imp), 1, "raw impression counter did not double");
+});
+
+// THE STRUCTURAL TEST. Round A found four bugs in adoption, and THREE of them
+// were invisible for the same reason: mem and Postgres disagreed, and almost
+// every test runs mem. Each was caught by hand, one at a time:
+//
+//   #149  the identity_hash ledgers were never moved
+//   #150  the early return could skip that move (Postgres only)
+//   #151  mem deleted operation ids where Postgres rekeyed them
+//
+// Hand-diffing two backends does not scale and does not stay done. This runs
+// ONE scenario through BOTH and asserts the observable outcomes are identical,
+// so the next divergence fails a test instead of waiting to be noticed.
+//
+// Two child processes rather than two module instances: getPool() caches, and
+// production.js imports "./index.js" without a query string, so a suffixed
+// import still binds the default pool. One process cannot host both backends.
+//
+// Skipped without TEST_DATABASE_URL — there is no Postgres to differ FROM.
+//
+// IT LIVES IN THIS FILE ON PURPOSE. It was written as its own suite and its
+// first CI run reported "ok ... # SKIP": CI sets TEST_DATABASE_URL only on the
+// step that runs THIS file, so a database-gated suite anywhere else skips in
+// the unit step and never runs at all, reporting as coverage while providing
+// none. Adding it to the workflow would have been the other fix; this one
+// needs no `workflow` token scope. A new database-backed test belongs here
+// unless someone also edits .github/workflows/ci.yml.
+//
+// It spawns child processes and does not touch the shared pool, so its
+// position relative to the board/ticket test does not matter — but it is kept
+// above it with the others for one obvious rule rather than two.
+test("mem and Postgres agree on the whole adoption scenario",
+  { skip: !databaseUrl }, async () => {
+  const scenario = path.join(process.cwd(), "tests", "helpers", "adoption-scenario.mjs");
+
+  // Distinct run ids: the two runs must not collide on shared state, and the
+  // Postgres run writes real rows it then cleans up.
+  const memRun = await run(process.execPath, [scenario, `mem${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: "", TEST_DATABASE_URL: "" },
+  });
+  const pgRun = await run(process.execPath, [scenario, `pg${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: databaseUrl },
+  });
+
+  const mem = JSON.parse(memRun.stdout.trim().split("\n").pop());
+  const pg = JSON.parse(pgRun.stdout.trim().split("\n").pop());
+
+  // Field by field, so a failure names the divergence instead of dumping two
+  // blobs and leaving the reader to spot the difference.
+  for (const key of Object.keys(mem)) {
+    assert.deepEqual(pg[key], mem[key],
+      `backends diverge on "${key}":\n  mem = ${JSON.stringify(mem[key])}\n  pg  = ${JSON.stringify(pg[key])}`);
+  }
+  assert.deepEqual(Object.keys(pg).sort(), Object.keys(mem).sort(),
+    "both backends must report the same snapshot shape");
+
+  // Guard the guard: a scenario that silently degraded to nothing would make
+  // every comparison above trivially true. Pin the facts Round A established.
+  assert.equal(mem.adoption.movedProfile, true, "the scenario must actually adopt a profile");
+  assert.equal(mem.deviceProfileEmpty, true, "adoption empties the device (#148)");
+  assert.equal(mem.edgeContributors, 1, "one human is one contributor (#149)");
+  assert.equal(mem.popularity.engagers, 1, "one human is one engager (#149)");
+  assert.equal(mem.replayAfterAdoptionDuplicate, true, "a replayed op is refused (#151)");
+  // #148. This scenario's evidence ratio is 45:5, not the 500:5 of the unit
+  // battery, so the account keeps ~77% of its conviction rather than ~99%.
+  // The property being pinned is that it beats the OLD flat average, which for
+  // 0.8 and 0.1 was exactly 0.45 — not any particular tuned number.
+  assert.ok(mem.accountLong.TAILORED > 0.55,
+    `evidence weighting must beat the old 0.45 flat average (#148), got ${mem.accountLong.TAILORED}`);
+  assert.ok(mem.accountLong.TAILORED < 0.8,
+    "and the device must still move it — this is a merge, not account-wins");
+  assert.deepEqual(mem.accountSeen, ["acct-a", "dev-a"], "the _meta rings merge, not overwrite");
 });
 
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
