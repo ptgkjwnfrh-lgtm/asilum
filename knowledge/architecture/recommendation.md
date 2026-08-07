@@ -41,7 +41,33 @@ r18 already supplies a vector-nearness floor of 0.6 × median neighbour cosine
 0.848 ≈ 0.509, and blendedScore takes `Math.max(behavioural, vector)`. One
 identity scores 0.333 — BELOW that floor — so a solo actor can never lift an
 item above the score it would have had with no edge at all, however hard it
-engages. No gate, no per-viewer bifurcation, no tail deletion, and the public
+engages.
+
+**r27 adds a THIRD source to the same bridge: what the photographs look like.**
+Gamma now takes `Math.max(behavioural, text × 0.6, visual × 0.45)`, ranked by
+how much each kind of evidence actually knows:
+
+    behaviour (corroborated)   up to 0.80    people co-engaged these two
+    text embedding             up to 0.60    the descriptions are near
+    VISUAL (image-v0)          up to 0.45    the photographs look alike
+
+Visual is discounted hardest because image-v0 has NO SEMANTICS
+(lib/vision/embed.js) — it cannot tell a black wool coat from a black leather
+one, so a high score is weaker evidence than a text match of the same size.
+Below a 0.80 similarity floor it contributes NOTHING rather than a discounted
+something: a colour-dominated descriptor scoring 0.5 means "both are darkish",
+which is noise wearing a number.
+
+That floor was derived, not picked. The weakest visual match that counts scores
+0.80 × 0.45 = 0.36, landing just above the 0.333 a solo-identity edge scores —
+so a genuine visual likeness narrowly outranks one unverified person's click,
+and nothing weaker gets a say. An anchor is excluded from its own neighbour map
+(a thing does not go with itself). BRAIN_IMAGE_GAMMA=0 removes the source.
+
+INERT IN PRODUCTION TODAY: the catalog carries zero photographs, so no request
+supplies image vectors and every feed is byte-identical to r26 — asserted in
+tests/image-gamma.test.js and confirmed by measure-tuning and
+measure-vector-feed returning numbers identical to main, digit for digit. No gate, no per-viewer bifurcation, no tail deletion, and the public
 /api/related (which has no viewer identity by design) needs no special case.
 
 Supporting rules, all in the same round:
