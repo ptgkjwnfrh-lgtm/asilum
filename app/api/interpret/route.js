@@ -102,6 +102,14 @@ export async function POST(req) {
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "interpret-feedback", subject: user, limit: 60, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  // (audit #20) aggregate write breaker — feedback POST records a verdict row
+  // and may mutate the profile (an applied reading trains taste).
+  const globalQuota = await consumeGlobalBudget("interpret-feedback");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
+    });
+  }
 
   const nq = normalizeQuery(body.query);
   const interpretationId = String(body.interpretationId || "").slice(0, 120);

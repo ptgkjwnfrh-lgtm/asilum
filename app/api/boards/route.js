@@ -17,7 +17,7 @@ import { createBoard, getBoards, getBoard, removeBoardItem, renameBoard, commitB
 import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { publicProduct, resolveProduct } from "../../../lib/products.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { requestSubject } from "../../../lib/security/request.js";
 
@@ -65,6 +65,14 @@ export async function POST(req) {
   if (!quota.allowed) {
     return NextResponse.json(rateLimitResponse(quota), {
       status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
+  }
+  // (audit #20) aggregate write breaker — a board save writes board_items,
+  // a canonical event, and the strongest co-engagement edge signal.
+  const globalQuota = await consumeGlobalBudget("boards");
+  if (!globalQuota.allowed) {
+    return NextResponse.json(rateLimitResponse(globalQuota), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
     });
   }
   const requestedItem = body.item || null;
