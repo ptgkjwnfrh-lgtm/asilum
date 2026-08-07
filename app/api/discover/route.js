@@ -18,7 +18,8 @@ import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { rankByInterpretationTags } from "../../../lib/discover/tagRank.js";
 import { resolveSearchAssumption, applyPassportAssumption } from "../../../lib/search/passportAssumption.js";
 import { createdAtOf, sortNewestFirst, stripRecencyKey } from "../../../lib/discover/recency.js";
-import { getMemoryPreferences } from "../../../lib/db/production.js";
+import { getMemoryPreferences, listInterpretationFeedback } from "../../../lib/db/production.js";
+import { normalizeQuery } from "../../../lib/asterisk/orchestrator.js";
 
 export const dynamic = "force-dynamic";
 
@@ -76,7 +77,11 @@ export async function GET(req) {
     // the user's taste-favored reading — visible in `assumption`, overridden
     // by any explicit pill, killed by SEARCH_PASSPORT_ASSUMPTION=0.
     const userId = await resolveRequestUser(req, searchParams.get("user") || "");
-    const resolved = await resolveSearchAssumption(q, userId);
+    // Honor this user's prior rejections so a reading they dismissed in the
+    // pills is not silently re-applied to search (audit #6). Best-effort:
+    // a feedback read failure must not fail the search.
+    const feedback = await listInterpretationFeedback(userId, normalizeQuery(q)).catch(() => []);
+    const resolved = await resolveSearchAssumption(q, userId, feedback);
     const applied = applyPassportAssumption(items, resolved);
     items = applied.items;
     assumption = applied.assumption;
