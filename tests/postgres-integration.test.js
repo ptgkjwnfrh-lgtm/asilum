@@ -1,6 +1,25 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+
+// The applied schema version must match the migrations actually committed.
+// DERIVED rather than hardcoded (it read a literal 23 until Aug 6): CI applies
+// every supabase/schema-v*.sql, so a literal turns "someone added a migration"
+// into a red build that says only "25 !== 23" — and it fails on the ONE suite
+// that skips locally without a database, so the author sees it first in CI.
+// The substantive guard is unchanged: applied state must equal committed
+// files, which still catches an out-of-band apply and a migration that forgot
+// its app_schema_migrations row.
+function committedSchemaVersion() {
+  const dir = path.join(process.cwd(), "supabase");
+  const versions = fs.readdirSync(dir)
+    .map((f) => /^schema-v(\d+)-/.exec(f))
+    .filter(Boolean)
+    .map((m) => Number(m[1]));
+  return versions.length ? Math.max(...versions) : 0;
+}
 
 const databaseUrl = process.env.TEST_DATABASE_URL || "";
 
@@ -185,7 +204,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const schema = await pool.query(
     "SELECT max(version)::int AS version FROM app_schema_migrations"
   );
-  assert.equal(schema.rows[0].version, 23);
+  assert.equal(schema.rows[0].version, committedSchemaVersion());
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
   {
