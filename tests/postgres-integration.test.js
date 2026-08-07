@@ -23,6 +23,160 @@ function committedSchemaVersion() {
 
 const databaseUrl = process.env.TEST_DATABASE_URL || "";
 
+// The ledger REKEY that adoption performs had no Postgres coverage — exactly
+// the gap #144 existed to close for the popularity write path. The statements
+// run INSIDE adoptAccountData's transaction, and the unit suite that proves
+// them runs mem-mode, so a Postgres-only fault (a parse error, a wrong
+// conflict target, a recompute that reads a pre-write snapshot) would ship
+// green. This drives the real transaction against a real database.
+//
+// THESE TWO TESTS RUN FIRST, ON PURPOSE, ON THE DEFAULT MODULE INSTANCE.
+// The `?suffix=1` trick the later tests use gives each of them a private pool,
+// but production.js imports "./index.js" WITHOUT a query string — so a
+// suffixed production.js still reaches for the DEFAULT pool, which the
+// board/ticket test below ends in its cleanup. The tests that survive that do
+// it by injecting a live pool through `queryTarget`, and adoptAccountData
+// takes no such parameter (it owns its own BEGIN/COMMIT and advisory locks).
+// Running before anything calls pool.end() is the fix that needs no
+// testability seam in production code. Neither test may end the pool.
+// CI caught this the first time these ran: "Cannot use a pool after calling
+// end on the pool", both tests, which is the failure this comment exists to
+// stop someone re-introducing by moving them.
+test("Postgres adoption rekeys the identity_hash ledgers", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const device = `u-${randomUUID()}`;
+  const account = `sb-${randomUUID()}`;
+  const A = `pgadopt-a-${suffix}`;
+  const B = `pgadopt-b-${suffix}`;
+  const lo = A < B ? A : B, hi = A < B ? B : A;
+  const item = `pgadopt-item-${suffix}`;
+
+  t.after(async () => {
+    await pool.query("DELETE FROM edge_contributors WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [[A, B]]);
+    await pool.query("DELETE FROM edges WHERE a=ANY($1::text[]) OR b=ANY($1::text[])", [[A, B]]);
+    await pool.query("DELETE FROM popularity_contributors WHERE item_id=$1", [item]);
+    await pool.query("DELETE FROM popularity WHERE item_id=$1", [item]);
+    await pool.query(
+      "DELETE FROM identity_adoptions WHERE from_user_id=ANY($1::text[]) OR to_user_id=ANY($1::text[])",
+      [[device, account]]);
+    for (const uid of [device, account]) await production.purgePersonalizationData(uid).catch(() => {});
+  });
+
+  // The device corroborates a pair and an item, hard. Repetition buys nothing.
+  for (let i = 0; i < 5; i++) {
+    await db.bumpEdges([{ a: A, b: B, w: 2 }], device);
+    await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], device);
+  }
+  let edge = (await pool.query("SELECT w,contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi])).rows[0];
+  assert.equal(edge.contributors, 1, "device is ONE contributor before sign-in");
+
+  // Sign in.
+  await db.saveProfile(device, { long: { MINIMAL: 0.5 }, session: {}, _meta: {} });
+  await production.adoptAccountData(device, account);
+
+  // The rows must now BELONG to the account, not merely still exist.
+  const stranded = await pool.query(
+    "SELECT count(*)::int n FROM edge_contributors WHERE a=$1 AND b=$2 AND identity_hash=$3",
+    [lo, hi, db.identityHash(device)]);
+  assert.equal(stranded.rows[0].n, 0, "no ledger row left stranded under the device hash");
+
+  // The same human, now signed in, engages the SAME pair and item again.
+  await db.bumpEdges([{ a: A, b: B, w: 1 }], account);
+  await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], account);
+
+  edge = (await pool.query("SELECT w,contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi])).rows[0];
+  assert.equal(edge.contributors, 1, "one human is still ONE contributor after signing in");
+  assert.equal(Number(edge.w), 2, "GREATEST of the two bests (2 and 1), never their sum");
+
+  const pop = (await pool.query(
+    "SELECT engagers,viewers,engagers_decayed FROM popularity WHERE item_id=$1", [item])).rows[0];
+  assert.equal(pop.engagers, 1, "one human, one engager");
+  assert.equal(pop.viewers, 1, "one human, one viewer");
+  // The recompute is a separate statement from the rekey for the same reason
+  // writeEdges splits its two: a CTE fused onto the write reads a snapshot
+  // taken at statement start and would lag by exactly one contributor.
+  assert.ok(Math.abs(Number(pop.engagers_decayed) - 1) < 1e-4,
+    `decayed engagers must collapse to one person, got ${pop.engagers_decayed}`);
+
+  // Erasure must now reach what was corroborated BEFORE sign-in.
+  await production.purgePersonalizationData(account);
+  const leftEdge = await pool.query(
+    "SELECT contributors FROM edges WHERE a=$1 AND b=$2", [lo, hi]);
+  assert.equal(leftEdge.rows[0]?.contributors ?? 0, 0,
+    "pre-sign-in edge corroboration is erased with the account");
+  const leftPop = await pool.query("SELECT engagers FROM popularity WHERE item_id=$1", [item]);
+  assert.equal(leftPop.rows[0]?.engagers ?? 0, 0,
+    "pre-sign-in engager is erased with the account");
+});
+
+// The early return that made the rekey above unreachable. adoptAccountData
+// short-circuits when a prior adoption exists and the device shows no NEW
+// signals — but "signals" enumerated user_id tables only, and the ledgers are
+// keyed by identity_hash. GET /api/interpret writes unknown_query_votes and
+// nothing else, so a signed-out search between two sign-ins produced exactly
+// the state the short-circuit could not see.
+//
+// Postgres-only by construction: the mem path dedupes on an in-flight promise
+// it deletes in `finally`, so it has no persistent `prior` and never takes
+// this branch. That is why every mem-mode unit test misses it.
+test("Postgres adoption does not short-circuit past ledger-only signals",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const device = `u-${randomUUID()}`;
+  const account = `sb-${randomUUID()}`;
+  const query = `pgshort-unknown-${suffix}`;
+
+  t.after(async () => {
+    await pool.query(
+      `DELETE FROM unknown_query_votes WHERE query_id IN
+         (SELECT id FROM unknown_queries WHERE normalized_query=$1)`, [query]);
+    await pool.query("DELETE FROM unknown_queries WHERE normalized_query=$1", [query]);
+    await pool.query(
+      "DELETE FROM identity_adoptions WHERE from_user_id=ANY($1::text[]) OR to_user_id=ANY($1::text[])",
+      [[device, account]]);
+    for (const uid of [device, account]) await production.purgePersonalizationData(uid).catch(() => {});
+  });
+
+  // 1. A first, ordinary sign-in. This is what writes the identity_adoptions
+  //    row that arms the short circuit.
+  await db.saveProfile(device, { long: { MINIMAL: 0.4 }, session: {}, _meta: {} });
+  await production.adoptAccountData(device, account);
+  const prior = await pool.query(
+    "SELECT 1 FROM identity_adoptions WHERE from_user_id=$1 AND to_user_id=$2", [device, account]);
+  assert.equal(prior.rowCount, 1, "the prior adoption row exists");
+
+  // 2. Signed out. A research-flagged search writes a vote and NOTHING else —
+  //    no profile, no event, no search log, no interaction.
+  await production.recordUnknownQuery(query, db.identityHash(device), "none");
+  const linked = await pool.query(
+    `SELECT (
+       (SELECT count(*) FROM interactions WHERE user_id=$1) +
+       (SELECT count(*) FROM user_events WHERE user_id=$1) +
+       (SELECT count(*) FROM search_logs WHERE user_id=$1)
+     )::int AS n`, [device]);
+  assert.equal(linked.rows[0].n, 0, "the device really has no user_id-keyed signal");
+
+  // 3. Sign back in. The short circuit must NOT fire.
+  await production.adoptAccountData(device, account);
+
+  const stranded = await pool.query(
+    "SELECT count(*)::int n FROM unknown_query_votes WHERE identity_hash=$1",
+    [db.identityHash(device)]);
+  assert.equal(stranded.rows[0].n, 0, "the vote was rekeyed, not skipped");
+
+  // And the tally is still honest: one human, one vote.
+  const again = await production.recordUnknownQuery(query, db.identityHash(account), "none");
+  assert.equal(again.distinctIdentities, 1, "one human is still one voter after signing back in");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
