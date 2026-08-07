@@ -88,6 +88,7 @@ import { tunedSplit } from "../lib/brain/tuning.js";
 import { baseSplit } from "../lib/brain/bridges.js";
 import { getDiscoverablePool } from "../lib/products.js";
 import { deltaScore } from "../lib/brain/popularity.js";
+import { resampledSigma, stdev, singleSplitNoise } from "../lib/brain/noise.js";
 
 const BOTS = 120, PAGES = 8, SEED = 20260805;
 const pool = await getDiscoverablePool({ limit: 5000 });
@@ -112,8 +113,37 @@ function battery(world) {
   const distinctDelta = new Set(pool.map((it) => +deltaScore(it, baseRun.popularity).toFixed(6))).size;
   const baseSat = base.map((s) => s.satisfaction);
   const tunedSat = tuned.map((s) => s.satisfaction);
-  const noise = Math.abs(mean(baseSat.slice(0, BOTS / 2)) - mean(baseSat.slice(BOTS / 2)));
-  const degraded = tunedSat.filter((s, i) => s < baseSat[i] - noise).length;
+  // (r26, audit #26) TWO different quantities, which the pre-r26 script used
+  // one number for.
+  //   noise      — the COHORT-mean floor, for the mean-satisfaction criterion.
+  //                Resampled over 25 seeded half-splits instead of read off
+  //                one fixed split.
+  //   perBotBand — the PER-BOT scale, for the degradation criterion. The old
+  //                code applied the cohort floor here, and the two are
+  //                different quantities: a cohort-mean floor is a
+  //                sigma/sqrt(n)-scale number, a per-bot threshold is a
+  //                sigma-scale one. Derived now from the spread of the per-bot
+  //                differences themselves, which is the scale the criterion is
+  //                actually about.
+  //
+  //                MEASURED, and it corrects the theory: the sqrt(n) argument
+  //                predicts the old threshold was uniformly ~7.7x too SMALL,
+  //                and it is not. Because it came from ONE draw it was
+  //                erratic rather than biased — across four bot seeds the old
+  //                cohort floor ranged 0.00675 to 0.04195, a 6x spread, so it
+  //                landed both above and below the per-bot band and the
+  //                degraded count moves in BOTH directions when replaced
+  //                (1->2, 0->1, 0->2, 3->2). The defect worth fixing is the
+  //                instability, not a systematic direction.
+  //                (scripts/measure-noise-stability.mjs, flat world.)
+  const noise = resampledSigma(baseSat, { seed: 26 });
+  const perBotDiffs = tunedSat.map((s, i) => s - baseSat[i]);
+  const perBotBand = stdev(perBotDiffs);
+  const degraded = tunedSat.filter((s, i) => s < baseSat[i] - perBotBand).length;
+  // Both pre-r26 readings, computed alongside so the boundary move is visible
+  // in every run rather than argued about in a PR body.
+  const oldNoise = singleSplitNoise(baseSat);
+  const oldDegraded = tunedSat.filter((s, i) => s < baseSat[i] - oldNoise).length;
 
   // replay cross-check: per-bot tuned policy from the bot's OWN logged
   // evidence — real slate impressions (session.bridgeImpressions) + action-
@@ -160,7 +190,7 @@ function battery(world) {
   const advNoise = advantages.length >= 2
     ? Math.abs(mean(advantages.slice(0, advantages.length >> 1)) - mean(advantages.slice(advantages.length >> 1)))
     : 0;
-  return { distinctDelta, retention: +mean(base.map((s) => s.pagesBrowsed)).toFixed(2), baseSat: +mean(baseSat).toFixed(5), tunedSat: +mean(tunedSat).toFixed(5), noise: +noise.toFixed(5), degraded, structureBreaks, pageZeroBreaks, advantages: advantages.length ? +mean(advantages).toFixed(5) : null, advNoise: +advNoise.toFixed(5), controlAdv: +mean(controlAdvs).toFixed(5), tunedApplied: advantages.length };
+  return { noiseOld: +oldNoise.toFixed(5), degradedOld: oldDegraded, perBotBand: +perBotBand.toFixed(5), distinctDelta, retention: +mean(base.map((s) => s.pagesBrowsed)).toFixed(2), baseSat: +mean(baseSat).toFixed(5), tunedSat: +mean(tunedSat).toFixed(5), noise: +noise.toFixed(5), degraded, structureBreaks, pageZeroBreaks, advantages: advantages.length ? +mean(advantages).toFixed(5) : null, advNoise: +advNoise.toFixed(5), controlAdv: +mean(controlAdvs).toFixed(5), tunedApplied: advantages.length };
 }
 
 function verdict(world) {
@@ -171,8 +201,9 @@ function verdict(world) {
   console.log(`distinct delta     : ${run1.distinctDelta} over ${pool.length} items (2 = the private-world degeneracy; gate is > 2)`);
   console.log(`mean pages browsed : ${run1.retention} of ${PAGES}`);
   console.log(`base satisfaction  : ${run1.baseSat}`);
-  console.log(`tuned satisfaction : ${run1.tunedSat}  (noise floor ${run1.noise})`);
-  console.log(`degraded bots      : ${run1.degraded}/${BOTS} (cap ${Math.floor(BOTS * 0.25)})`);
+  console.log(`tuned satisfaction : ${run1.tunedSat}  (resampled cohort floor ${run1.noise}; pre-r26 single draw ${run1.noiseOld})`);
+  console.log(`degraded bots      : ${run1.degraded}/${BOTS} (cap ${Math.floor(BOTS * 0.25)}) at per-bot band ${run1.perBotBand}`);
+  console.log(`  pre-r26 estimator : ${run1.degradedOld}/${BOTS} at cohort floor ${run1.noiseOld} — the scale mismatch audit #26 named`);
   console.log(`replay advantage   : ${run1.advantages} ± noise ${run1.advNoise} over ${run1.tunedApplied} evidenced bots`);
   console.log(`control (pessimism): ${run1.controlAdv} — the estimator's floor for a known-neutral policy`);
   console.log(`structure breaks   : ${run1.structureBreaks} (must be 0); page-0 zone breaks: ${run1.pageZeroBreaks} (must be 0)`);

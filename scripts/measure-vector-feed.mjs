@@ -34,6 +34,7 @@
 // world as a declared sensitivity arm; the flat world gates.
 
 import { makeBots, simulatePopulation, WORLDS } from "../lib/brain/replay.js";
+import { resampledPairSigma, singleSplitNoise } from "../lib/brain/noise.js";
 import { buildFeed } from "../lib/brain/index.js";
 import { vecSim } from "../lib/brain/bridges.js";
 import { getDiscoverablePool } from "../lib/products.js";
@@ -92,8 +93,12 @@ const gammaOff = mean(withGamma.map((r) => r.gammaOff));
 const gammaOn = mean(withGamma.map((r) => r.gammaOn));
 const topOff = mean(r1.map((r) => r.topOff));
 const topOn = mean(r1.map((r) => r.topOn));
-const half = Math.floor(r1.length / 2);
-const noise = Math.abs(mean(r1.slice(0, half).map((r) => r.topOff)) - mean(r1.slice(half).map((r) => r.topOff)));
+// (r26) The criterion is a PAIRED contrast (same bot state, vectors on vs
+// off), so the floor is the sigma of that paired difference over 25 seeded
+// shuffles — not one split of the OFF arm alone, which measured between-bot
+// spread rather than the spread of the thing under test.
+const noise = resampledPairSigma(r1.map((r) => r.topOff), r1.map((r) => r.topOn), { seed: 26 });
+const oldNoise = singleSplitNoise(r1.map((r) => r.topOff));
 const zonesSame = r1.every((r) => r.zonesSame);
 const brandOk = r1.every((r) => r.brandOk);
 
@@ -101,7 +106,8 @@ console.log(`\n--- world: ${world.name} ---`);
 console.log(`warm bots          : ${r1.length}/${BOTS}`);
 console.log(`reach affinity     : off ${reachOff.toFixed(4)} → on ${reachOn.toFixed(4)} (${withReach.length} bots with reach slots)`);
 console.log(`gamma-slot affinity: off ${gammaOff.toFixed(4)} → on ${gammaOn.toFixed(4)} (${withGamma.length} bots with gamma slots)`);
-console.log(`top-24 affinity    : off ${topOff.toFixed(4)} → on ${topOn.toFixed(4)} (noise ${noise.toFixed(4)})`);
+console.log(`top-24 affinity    : off ${topOff.toFixed(4)} → on ${topOn.toFixed(4)} (paired sigma ${noise.toFixed(4)}; pre-r26 single draw ${oldNoise.toFixed(4)})`);
+if ((topOn >= topOff - noise) !== (topOn >= topOff - oldNoise)) console.log(`  ESTIMATOR CHANGED the top-24 verdict: ${topOn >= topOff - oldNoise ? "pass" : "fail"} -> ${topOn >= topOff - noise ? "pass" : "fail"}`);
 console.log(`zone structure identical: ${zonesSame}; brand cap ok: ${brandOk}`);
 const pass = reachOn > reachOff && gammaOn >= gammaOff - 1e-9 && topOn >= topOff - noise && zonesSame && brandOk && deterministic;
 console.log(`VERDICT (${world.name}): ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
