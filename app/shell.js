@@ -149,7 +149,18 @@ export default function Shell({ children }) {
         if (event === "SIGNED_OUT") {
           pendingAdoptionRef.current = null;
           clearFitProfile();
-          setAuthNotice("signed out — device taste remains; account measurements are locked");
+          // WHAT WAS WRONG (Aug 7, Round A): this said "device taste remains".
+          // It does not. Adoption MOVES taste — it deletes the device's profile
+          // row, reassigns its boards, interactions, follows and wardrobe to the
+          // account, and leaves the device identity at {} / [] / []. Measured
+          // directly against the db layer. Signing out then resumes that same,
+          // now-empty device id, so the old notice told the user their taste was
+          // still here while the feed they got back was a cold start.
+          //
+          // The move itself is correct — copying instead would double-count the
+          // same taste in aggregates and leave account-derived taste sitting on
+          // a possibly shared device. So the message changes, not the behaviour.
+          setAuthNotice("signed out — your taste stays with your account; this device starts fresh");
           activateDevice();
         }
       });
