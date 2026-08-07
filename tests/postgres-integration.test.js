@@ -495,3 +495,154 @@ test("Postgres edge corroboration through commitInteractionBatch", { skip: !data
   assert.ok(row, "the in-transaction write must actually land");
   assert.equal(row.contributors, 1, "three commits by one identity remain one contributor");
 });
+
+// The popularity write path had NO Postgres coverage until now, and it is the
+// one place a ranking-critical SQL statement reached production untested: the
+// v25 decayed-aggregate recompute runs INSIDE the interaction transaction, so
+// a syntax or type error there would 500 every /api/interaction. The unit
+// suite exercises only mem mode, which computes the same quantity in
+// JavaScript and therefore cannot see a broken query.
+//
+// This is the same class of gap that once broke production through
+// writeEdges — covered by the two tests above only after it shipped.
+test("Postgres popularity: people counted once, evidence ages, erasure recomputes",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?popularity=1");
+  // production.js imports "./index.js" WITHOUT a query string, so its module
+  // graph points at the instance whose pool the first test in this file ends
+  // (getPool caches, and an ended pool stays ended). Every call below therefore
+  // injects THIS test's live pool via queryTarget rather than letting the
+  // erasure path reach for a dead one.
+  const production = await import("../lib/db/production.js?popularity=1");
+  const { halfLifeMs } = await import("../lib/brain/popularity.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const item = `pgpop-item-${suffix}`;
+  const people = [1, 2, 3, 4].map((n) => `pgpop-u${n}-${suffix}`);
+  const HALF_SECONDS = Math.round(halfLifeMs() / 1000);
+  const row = async () => (await pool.query(
+    "SELECT engagers,viewers,engagers_decayed,viewers_decayed,decayed_at FROM popularity WHERE item_id=$1",
+    [item]
+  )).rows[0];
+
+  t.after(async () => {
+    await pool.query("DELETE FROM popularity_contributors WHERE item_id=$1", [item]);
+    await pool.query("DELETE FROM popularity WHERE item_id=$1", [item]);
+    for (const table of ["user_events", "interactions", "processed_operations", "profiles"]) {
+      await pool.query(`DELETE FROM ${table} WHERE user_id=ANY($1::text[])`, [people]);
+    }
+    await pool.end();
+  });
+
+  // ---- the counting rule, through real SQL ---------------------------------
+  for (let i = 0; i < 12; i++) await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], people[0]);
+  let r = await row();
+  assert.equal(r.engagers, 1, "twelve forged engagements from one identity remain ONE engager");
+  assert.equal(r.viewers, 1);
+
+  for (const who of people.slice(1)) await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], who);
+  r = await row();
+  assert.equal(r.engagers, 4, "distinct people accumulate");
+  assert.equal(r.viewers, 4);
+
+  // ---- v25: the decayed aggregate the mem path cannot validate -------------
+  assert.ok(r.decayed_at, "the recompute must stamp decayed_at");
+  assert.ok(Math.abs(Number(r.engagers_decayed) - 4) < 1e-4,
+    `fresh evidence is worth a whole person each: ${r.engagers_decayed}`);
+  assert.ok(Math.abs(Number(r.viewers_decayed) - 4) < 1e-4);
+
+  // Age every contributor by exactly ONE half-life, then force a recompute
+  // that changes no counts (a repeat from a known identity). This is the
+  // assertion that actually exercises power(0.5, epoch/half_life) against a
+  // real interval — the arithmetic no other test in the repo runs on Postgres.
+  await pool.query(
+    "UPDATE popularity_contributors SET first_seen = now() - make_interval(secs => $2) WHERE item_id=$1",
+    [item, HALF_SECONDS]
+  );
+  await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], people[0]);
+  r = await row();
+  assert.equal(r.engagers, 4, "ageing changes what evidence is WORTH, never who is counted");
+  assert.ok(Math.abs(Number(r.engagers_decayed) - 2) < 0.02,
+    `four people at one half-life must weigh ~2.0, got ${r.engagers_decayed}`);
+  assert.ok(Number(r.engagers_decayed) <= r.engagers + 1e-6, "decayed can never exceed lifetime");
+
+  // ---- materialize-then-carry, through the real reader ---------------------
+  // Backdate the stamp rather than the ledger: this is the OTHER half of the
+  // arithmetic — the read-time factor getPopularity applies to a sum that was
+  // materialized in the past.
+  const storedAt = Number((await row()).engagers_decayed);
+  await pool.query(
+    "UPDATE popularity SET decayed_at = now() - make_interval(secs => $2) WHERE item_id=$1",
+    [item, HALF_SECONDS]
+  );
+  const snapshot = await db.getPopularity(5000);
+  assert.ok(snapshot[item], "the item must appear in the popularity snapshot");
+  assert.ok(Math.abs(snapshot[item].engagersDecayed - storedAt / 2) < 0.02,
+    `a sum materialized one half-life ago must read at half: ${snapshot[item].engagersDecayed} vs ${storedAt / 2}`);
+  assert.equal(snapshot[item].engagers, 4, "lifetime counts are carried through unaged");
+
+  // ---- erasure recomputes the DECAYED columns too --------------------------
+  // The bug this catches: an erasure that updated only engagers/viewers would
+  // leave a departed person's recency-weighted contribution scoring forever.
+  // queryTarget is used as the CLIENT, not as a pool to connect from — the
+  // function runs BEGIN/COMMIT on it directly. Handing it a Pool would scatter
+  // those across different connections and leave a dangling transaction, so
+  // this checks out one dedicated client and releases it here (ownsClient is
+  // false when queryTarget is supplied, so the function will not release it).
+  const purgeClient = await pool.connect();
+  try {
+    await production.purgePersonalizationData(people[0], { queryTarget: purgeClient });
+  } finally {
+    purgeClient.release();
+  }
+  r = await row();
+  assert.equal(r.engagers, 3, "a departed person stops being an engager");
+  assert.equal(r.viewers, 3);
+  assert.ok(Math.abs(Number(r.engagers_decayed) - 1.5) < 0.02,
+    `and stops being counted in the WEIGHTED total too: ${r.engagers_decayed} (three people at one half-life = 1.5)`);
+  assert.equal(
+    (await pool.query("SELECT count(*)::int n FROM popularity_contributors WHERE item_id=$1", [item])).rows[0].n,
+    3, "the ledger row is gone, not merely ignored");
+});
+
+// The transaction path, for the same reason the edge version of this test
+// exists: /api/interaction writes popularity inside commitInteractionBatch,
+// against a transaction CLIENT rather than the pool. A statement that works on
+// the pool and fails on the client 500s every interaction, and nothing else in
+// the suite would notice.
+test("Postgres popularity through commitInteractionBatch", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?popularity-txn=1");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const userId = `pgpoptxn-u-${suffix}`;
+  const item = `pgpoptxn-item-${suffix}`;
+
+  t.after(async () => {
+    await pool.query("DELETE FROM popularity_contributors WHERE item_id=$1", [item]);
+    await pool.query("DELETE FROM popularity WHERE item_id=$1", [item]);
+    for (const table of ["user_events", "interactions", "processed_operations", "profiles"]) {
+      await pool.query(`DELETE FROM ${table} WHERE user_id=$1`, [userId]);
+    }
+    await pool.end();
+  });
+
+  const result = await db.commitInteractionBatch({
+    userId,
+    operationId: randomUUID(),
+    events: [{
+      itemId: item, action: "favorite", dwellMs: null,
+      canonicalEvent: { userId, type: "USER_FAVORITED_ITEM", payload: { itemId: item }, at: Date.now(), v: 1 },
+    }],
+    reduce: () => ({ profile: { long: { MINIMAL: 0.4 }, session: {}, _meta: {} }, edgePairs: [], popularity: [{ id: item, eng: 1 }] }),
+  });
+  assert.equal(result.duplicate, false);
+
+  const r = (await pool.query(
+    "SELECT engagers,engagers_decayed,decayed_at FROM popularity WHERE item_id=$1", [item])).rows[0];
+  assert.ok(r, "the transaction must have written a popularity row");
+  assert.equal(r.engagers, 1, "the identity ledger is written inside the transaction");
+  assert.ok(r.decayed_at, "and the v25 recompute runs there too — this is the statement that had never executed on Postgres");
+  assert.ok(Math.abs(Number(r.engagers_decayed) - 1) < 1e-4, "one fresh person weighs 1.0");
+});
