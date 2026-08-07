@@ -38,10 +38,24 @@
 //       not restore the old behaviour is not a rollback.
 //   C10 DETERMINISM. Run twice, byte-identical.
 //
+// (r25, audit #15) EVIDENCE AGES — added with the decay round:
+//   C11 STALENESS. The criterion the audit named: an item whose N engagers are
+//       all older than the half-life must score delta BELOW an item with an
+//       equal or better recent engagement rate. FAILS IF stale evidence still
+//       wins — that is the pre-r25 behaviour, in which 10 lifetime engagers
+//       (delta 0.5000) beat a currently-hot 5-engager item (0.3654) forever.
+//   C12 THE SWITCH IS A ROLLBACK, NOT AN APPROXIMATION. With
+//       BRAIN_POPULARITY_DECAY=0 the same fixture must score EXACTLY what the
+//       pre-r25 code scored. FAILS otherwise — a switch that does not restore
+//       the old behaviour is not a rollback, the C9 rule applied to decay.
+//   C13 DECAY NEVER INFLATES. No item's recency-weighted count may exceed its
+//       lifetime count, at any age. FAILS otherwise — evidence would be being
+//       manufactured rather than aged.
+//
 // AMENDMENT HISTORY: none yet (first run).
 process.env.DATABASE_URL = "";
 
-const { buildNoveltyIndex, deltaScore, noveltyFactor } = await import("../lib/brain/popularity.js");
+const { buildNoveltyIndex, deltaScore, noveltyFactor, decayedSum } = await import("../lib/brain/popularity.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
 const fs = await import("node:fs");
 
@@ -154,6 +168,40 @@ const legacy = (fn) => {
 {
   const burned = legacy(() => noveltyFactor({ id: TARGET }, { [TARGET]: { eng: 0, imp: 3600 } }));
   check("C9 kill switch", burned < 0.01, `with BRAIN_POPULARITY_DEDUP=0 the attack works again → novelty ${burned.toFixed(4)}`);
+}
+
+// C11/C12/C13 — evidence ages (r25).
+{
+  const DAY = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const stamps = (n, ageDays) => Array.from({ length: n }, () => now - ageDays * DAY);
+  // Same counts, same rate; only recency differs.
+  const stale = stamps(10, 365);
+  const fresh = stamps(10, 1);
+  const withDecayed = {
+    stale: { engagers: 10, viewers: 10, engagersDecayed: decayedSum(stale, now), viewersDecayed: decayedSum(stale, now) },
+    fresh: { engagers: 10, viewers: 10, engagersDecayed: decayedSum(fresh, now), viewersDecayed: decayedSum(fresh, now) },
+  };
+  const dStale = deltaScore({ id: "stale" }, withDecayed);
+  const dFresh = deltaScore({ id: "fresh" }, withDecayed);
+  check("C11 staleness", dFresh > dStale,
+    `same 10 engagers: 1 day old scores ${dFresh.toFixed(4)}, 365 days old scores ${dStale.toFixed(4)}`);
+
+  const before = process.env.BRAIN_POPULARITY_DECAY;
+  process.env.BRAIN_POPULARITY_DECAY = "0";
+  const offStale = deltaScore({ id: "stale" }, withDecayed);
+  const offFresh = deltaScore({ id: "fresh" }, withDecayed);
+  const lifetimeOnly = deltaScore({ id: "stale" }, { stale: { engagers: 10, viewers: 10 } });
+  if (before === undefined) delete process.env.BRAIN_POPULARITY_DECAY; else process.env.BRAIN_POPULARITY_DECAY = before;
+  check("C12 switch is a rollback", offStale === offFresh && offStale === lifetimeOnly,
+    `OFF scores both at ${offStale.toFixed(4)}, identical to a row with no decayed fields (${lifetimeOnly.toFixed(4)})`);
+
+  let inflated = 0;
+  for (const ageDays of [0, 1, 7, 30, 90, 365, 3650]) {
+    if (decayedSum(stamps(9, ageDays), now) > 9 + 1e-9) inflated++;
+  }
+  check("C13 decay never inflates", inflated === 0,
+    inflated ? `${inflated} ages produced more evidence than existed` : "weighted count <= lifetime count at every age tested");
 }
 
 // C10 — determinism.
