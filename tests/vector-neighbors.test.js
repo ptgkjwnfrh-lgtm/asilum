@@ -11,6 +11,7 @@ import VECTOR_NEIGHBORS from "../lib/brain/vector-neighbors.json" with { type: "
 import { buildVecNear, blendedScore } from "../lib/brain/bridges.js";
 import { buildFeed } from "../lib/brain/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
+import { catalogEmbedHash } from "../lib/embeddings/index.js";
 
 const IDS = new Set(CATALOG.map((it) => it.id));
 
@@ -24,6 +25,32 @@ test("artifact provenance and catalog truth", () => {
       assert.ok(sim > 0 && sim <= 1);
     }
   }
+});
+
+test("#17 the artifact's catalog content hash matches the current catalog", () => {
+  // A count/id check catches structural drift; this catches a same-COUNT
+  // CONTENT change (retagged item, changed title) that silently invalidates
+  // every embedding. A mismatch means re-run scripts/embed-catalog.mjs +
+  // scripts/build-vector-neighbors.mjs in the same PR (the re-embed law).
+  assert.ok(VECTOR_NEIGHBORS.catalogHash, "artifact carries a catalog content hash");
+  assert.equal(
+    VECTOR_NEIGHBORS.catalogHash,
+    catalogEmbedHash(CATALOG),
+    "vector artifact is STALE — the catalog's embed-relevant content changed since it was built"
+  );
+});
+
+test("#17 the hash is sensitive to any embed-relevant content change", () => {
+  const base = catalogEmbedHash(CATALOG);
+  // A retag of a single item must move the hash (else drift would slip past).
+  const retagged = CATALOG.map((it, i) =>
+    i === 0 ? { ...it, tags: { ...(it.tags || {}), ZZPROVENANCE: 0.99 } } : it);
+  assert.notEqual(catalogEmbedHash(retagged), base, "a changed tag must change the hash");
+  // A changed title too.
+  const retitled = CATALOG.map((it, i) => (i === 1 ? { ...it, title: it.title + " (v2)" } : it));
+  assert.notEqual(catalogEmbedHash(retitled), base, "a changed title must change the hash");
+  // Order-independence: the hash is over sorted content, so reordering is inert.
+  assert.equal(catalogEmbedHash([...CATALOG].reverse()), base, "hash is order-independent");
 });
 
 test("cold users are inert: no recents → null map → byte-identical feed", () => {
