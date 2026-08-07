@@ -8,7 +8,7 @@
 // engagements) and the popularity counters.
 
 import { NextResponse } from "next/server";
-import { learn } from "../../../lib/brain/index.js";
+import { learn, serveContextFor } from "../../../lib/brain/index.js";
 import { applyTimeDecay, noteActivity } from "../../../lib/brain/memory.js";
 import {
   commitInteractionBatch, getProfile,
@@ -86,8 +86,17 @@ export async function POST(req) {
       status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(globalQuota.retryAfterMs / 1000))) },
     });
   }
+  // One profile read serves two purposes: the co-engagement anchors below,
+  // and (r24) the server's own record of where each of these items sat when
+  // it served them. Read once, before the events are built. It sits AFTER the
+  // breaker on purpose: a request the budget is going to refuse should not
+  // spend a database read first.
+  const storedProfile = await getProfile(userId).catch(() => null);
   const canonicalEvents = valid.map((e) =>
-    eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null));
+    // The slot/zone come from serveContextFor — the server's memory — and
+    // never from `e.item`, which has been through the client's hands.
+    eventFromInteraction(userId, e.action, e.item, e.dwellMs ?? null,
+      storedProfile ? serveContextFor(storedProfile, e.item.id) : null));
   if (canonicalEvents.some((event) => !event)) {
     return NextResponse.json({ error: "unsupported interaction action" }, { status: 400 });
   }
@@ -96,7 +105,7 @@ export async function POST(req) {
   // transaction. Items resolved for THIS batch are already server-verified,
   // so they join the set directly — they enter the ring as the batch is
   // learned and would otherwise be filtered out of their own edges.
-  const storedRecent = ((await getProfile(userId).catch(() => null))?._meta?.recent || [])
+  const storedRecent = (storedProfile?._meta?.recent || [])
     .map(String).slice(0, 40);
   const anchors = new Set(valid.map((e) => e.item.id));
   if (storedRecent.length) {
