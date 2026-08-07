@@ -134,6 +134,7 @@ import { vecSim, baseSplit, normalizeSplit } from "../lib/brain/bridges.js";
 import { tasteVector } from "../lib/brain/index.js";
 import { getDiscoverablePool } from "../lib/products.js";
 import { gini, topShare, exposureVector, calibrationError, pagesToAlignment } from "../lib/brain/distribution.js";
+import { seededShuffle, stdev, singleSplitNoise } from "../lib/brain/noise.js";
 
 const COHORTS = 3, PER_COHORT = 40, PAGES = 4, SEED = 20260806;
 const ALIGN_THRESHOLD = 0.45, ALIGN_BUDGET = 3, TOP_K = 24;
@@ -221,31 +222,42 @@ function battery(world) {
   const bots = makeBots(COHORTS * PER_COHORT, SEED);
   const arms = {};
   for (const [name, policy] of Object.entries(ARMS)) arms[name] = runArm(policy, world, bots);
-  // Noise band: the base arm over two disjoint half-cohorts, each its own
-  // world — the same half-sample technique the r15/r16 batteries use.
-  const halves = [0, 1].map((h) => {
-    const half = bots.filter((_, i) => i % (COHORTS * PER_COHORT) < COHORTS * PER_COHORT && (i % 2) === h);
-    let carry = null, last = null;
-    const per = Math.floor(half.length / COHORTS);
+  // (r26, audit #26) The floor is RESAMPLED. Each half-cohort has to run its
+  // own world here — concentration is a property of a population, not of a
+  // subset of one — so this is the expensive estimator in the repo, and the
+  // round count is set accordingly and declared: 5 shuffles, not 25.
+  const RESAMPLE_ROUNDS = 5;
+  const halfShare = (subset) => {
+    let carry = null, last = 0;
+    const per = Math.max(1, Math.floor(subset.length / COHORTS));
     for (let c = 0; c < COHORTS; c++) {
-      const run = simulatePopulation(half.slice(c * per, (c + 1) * per), { pool, pages: PAGES, world, carry });
+      const run = simulatePopulation(subset.slice(c * per, (c + 1) * per), { pool, pages: PAGES, world, carry });
       carry = { popularity: run.popularity, edges: run.edges };
       last = topShare(exposureVector(pool, run.popularity));
     }
     return last;
-  });
-  return { arms, noise: Math.abs(halves[0] - halves[1]) };
+  };
+  const diffs = [];
+  for (let r = 0; r < RESAMPLE_ROUNDS; r++) {
+    const shuffled = seededShuffle(bots, 26 + r * 7919);
+    const h = shuffled.length >> 1;
+    diffs.push(halfShare(shuffled.slice(0, h)) - halfShare(shuffled.slice(h)));
+  }
+  // The pre-r26 reading — one fixed even/odd split — kept for the comparison.
+  const evens = bots.filter((_, i) => i % 2 === 0), odds = bots.filter((_, i) => i % 2 === 1);
+  const oldNoise = Math.abs(halfShare(evens) - halfShare(odds));
+  return { arms, noise: stdev(diffs), oldNoise };
 }
 
 function report(world) {
   const r1 = battery(world);
   const r2 = battery(world);
   const deterministic = JSON.stringify(r1) === JSON.stringify(r2);
-  const { arms, noise } = r1;
+  const { arms, noise, oldNoise } = r1;
   const A = arms["loop-free"], B = arms.base, C = arms.concentrator;
 
   console.log(`\n=== world: ${world.name} ===`);
-  console.log(`cohorts ${COHORTS} x ${PER_COHORT} strangers x ${PAGES} pages, one shared world; noise band ${noise.toFixed(4)}`);
+  console.log(`cohorts ${COHORTS} x ${PER_COHORT} strangers x ${PAGES} pages, one shared world; resampled sigma ${noise.toFixed(4)} (pre-r26 single draw ${oldNoise.toFixed(4)})`);
   console.log(`                    top-decile   gini  calib(latent)  pages-to-align  never   calib(profile, diagnostic)`);
   for (const [n, a] of Object.entries(arms)) {
     console.log(`  ${n.padEnd(16)} ${a.top.toFixed(4).padStart(8)} ${a.gini.toFixed(4).padStart(7)} ${a.calErr.toFixed(4).padStart(12)} ${String(a.pagesToAlign).padStart(14)} ${String(`${a.neverAligned}/${a.coldBots}`).padStart(7)} ${a.profileCalErr.toFixed(4).padStart(12)}`);
@@ -253,6 +265,8 @@ function report(world) {
   console.log(`  base drift by cohort: ${B.perCohort.map((c) => c.top.toFixed(4)).join(" -> ")}`);
 
   const p1 = C.top > A.top + noise;
+  const p1Old = C.top > A.top + oldNoise;
+  if (p1 !== p1Old) console.log(`  ESTIMATOR CHANGED P1: ${p1Old ? "ok" : "FAIL"} -> ${p1 ? "ok" : "FAIL"}`);
   const p2 = C.calErr > B.calErr + 1e-9;
   const p3 = C.pagesToAlign >= B.pagesToAlign;
   const loopGain = B.top - A.top;
