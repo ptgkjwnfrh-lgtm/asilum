@@ -121,9 +121,13 @@ export async function GET(req) {
   }
   let profile = storedProfile;
   ({ profile } = applyTimeDecay(profile));
-  const hasProfile =
-    Object.keys(profile.long || {}).length > 0 ||
-    Object.keys(profile.session || {}).length > 0;
+  // Gate on MAGNITUDE, not key presence (audit #4): a persisted all-zero
+  // vector (a pre-fix gibberish coldStart, or any decayed-to-zero profile)
+  // has keys but no taste, and treating it as a real profile blocks the
+  // coldStart re-seed forever. A profile counts only when some tag actually
+  // carries signal.
+  const hasSignal = (vec) => Object.values(vec || {}).some((v) => Math.abs(Number(v)) > 1e-9);
+  const hasProfile = hasSignal(profile.long) || hasSignal(profile.session);
   if (guidanceEnabled && !hasProfile && q) profile = coldStart(q).profile;
   const profileBeforeCorrections = profile;
   profile = guidanceEnabled
