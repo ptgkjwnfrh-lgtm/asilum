@@ -30,7 +30,8 @@ const databaseUrl = process.env.TEST_DATABASE_URL || "";
 // conflict target, a recompute that reads a pre-write snapshot) would ship
 // green. This drives the real transaction against a real database.
 //
-// THESE TWO TESTS RUN FIRST, ON PURPOSE, ON THE DEFAULT MODULE INSTANCE.
+// EVERY TEST DOWN TO THE BOARD/TICKET ONE RUNS FIRST, ON PURPOSE, ON THE
+// DEFAULT MODULE INSTANCE.
 // The `?suffix=1` trick the later tests use gives each of them a private pool,
 // but production.js imports "./index.js" WITHOUT a query string — so a
 // suffixed production.js still reaches for the DEFAULT pool, which the
@@ -38,10 +39,10 @@ const databaseUrl = process.env.TEST_DATABASE_URL || "";
 // it by injecting a live pool through `queryTarget`, and adoptAccountData
 // takes no such parameter (it owns its own BEGIN/COMMIT and advisory locks).
 // Running before anything calls pool.end() is the fix that needs no
-// testability seam in production code. Neither test may end the pool.
+// testability seam in production code. None of them may end the pool.
 // CI caught this the first time these ran: "Cannot use a pool after calling
-// end on the pool", both tests, which is the failure this comment exists to
-// stop someone re-introducing by moving them.
+// end on the pool", which is the failure this comment exists to stop someone
+// re-introducing by moving them below the board/ticket test.
 test("Postgres adoption rekeys the identity_hash ledgers", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
@@ -175,6 +176,66 @@ test("Postgres adoption does not short-circuit past ledger-only signals",
   // And the tally is still honest: one human, one vote.
   const again = await production.recordUnknownQuery(query, db.identityHash(account), "none");
   assert.equal(again.distinctIdentities, 1, "one human is still one voter after signing back in");
+});
+
+// The mem/pg DIFFERENTIAL for operation replay across sign-in. Postgres rekeys
+// processed_operations to the account; mem deleted the keys outright, so a
+// replayed batch was refused on Postgres and re-applied in mem — the backend
+// nearly every test and every preview deploy actually runs on. This is the
+// Postgres half; tests/adoption-replay.test.js is the mem half, asserting the
+// SAME answer, so the two can no longer drift apart silently.
+test("Postgres refuses a replayed operation after sign-in", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const device = `u-${randomUUID()}`;
+  const account = `sb-${randomUUID()}`;
+  const item = `pgreplay-item-${suffix}`;
+  const op = `pgreplay-op-${suffix}`.slice(0, 80);
+
+  t.after(async () => {
+    await pool.query("DELETE FROM popularity_contributors WHERE item_id=$1", [item]);
+    await pool.query("DELETE FROM popularity WHERE item_id=$1", [item]);
+    await pool.query(
+      "DELETE FROM identity_adoptions WHERE from_user_id=ANY($1::text[]) OR to_user_id=ANY($1::text[])",
+      [[device, account]]);
+    for (const uid of [device, account]) await production.purgePersonalizationData(uid).catch(() => {});
+  });
+
+  const mkEvent = (uid) => ({
+    itemId: item, action: "favorite", dwellMs: null,
+    canonicalEvent: { userId: uid, type: "USER_FAVORITED_ITEM", payload: { itemId: item } },
+  });
+  const reduce = () => ({
+    profile: { long: { TAILORED: 1 }, session: {}, _meta: {} },
+    edgePairs: [],
+    popularity: [{ id: item, eng: 1, imp: 1 }],
+  });
+
+  const first = await db.commitInteractionBatch({
+    userId: device, operationId: op, events: [mkEvent(device)], reduce });
+  assert.equal(first.duplicate, false, "the first commit applies");
+
+  await production.adoptAccountData(device, account);
+
+  const moved = await pool.query(
+    "SELECT count(*)::int n FROM processed_operations WHERE user_id=$1 AND operation_id=$2",
+    [account, op]);
+  assert.equal(moved.rows[0].n, 1, "the operation id moved to the account");
+  const stranded = await pool.query(
+    "SELECT count(*)::int n FROM processed_operations WHERE user_id=$1", [device]);
+  assert.equal(stranded.rows[0].n, 0, "and nothing is left under the device");
+
+  const replay = await db.commitInteractionBatch({
+    userId: account, operationId: op, events: [mkEvent(account)], reduce });
+  assert.equal(replay.duplicate, true, "replay after sign-in is refused, same as mem");
+
+  const pop = (await pool.query(
+    "SELECT eng,imp FROM popularity WHERE item_id=$1", [item])).rows[0];
+  assert.equal(Number(pop.eng), 1, "raw engagement counter did not double");
+  assert.equal(Number(pop.imp), 1, "raw impression counter did not double");
 });
 
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
