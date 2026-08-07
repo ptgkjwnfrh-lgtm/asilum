@@ -15,7 +15,7 @@ import {
 } from "../../../lib/db/index.js";
 import { eventFromInteraction } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { resolveProducts, withReportedBridge } from "../../../lib/products.js";
+import { resolveProducts, withReportedBridge, isSponsoredContent } from "../../../lib/products.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -117,6 +117,15 @@ export async function POST(req) {
       for (const { item, action, dwellMs } of valid) {
         const recentBefore = prof?._meta?.recent || [];
         prof = noteActivity(learn(prof, item, action, { dwellMs }), item, action);
+        // AD FIREWALL (audit #19): a user's OWN taste may learn from a
+        // sponsored engagement (it's their private profile), but the item must
+        // never enter the ORGANIC cross-user ranking surfaces — the
+        // co-engagement edge graph (gamma) or the popularity counters (delta).
+        // Otherwise a flagged campaign could buy organic reach into every other
+        // user's feed. The event is separately tagged sponsored so the
+        // cross-user discovery reader excludes it too. Unreachable today (no
+        // sponsored items exist), a live backdoor the day one is flagged.
+        if (isSponsoredContent(item)) continue;
         if (POSITIVE.has(action)) {
           const w = action === "bag" ? 2 : action === "share" ? 1.5 : 1;
           // BOTH endpoints must be real catalog products. `b` was already
