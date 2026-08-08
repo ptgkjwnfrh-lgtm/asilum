@@ -41,8 +41,12 @@
 //     determinism means ranks compare within one process run only.
 //
 // Probe rows: two profiles rows (profiles + derived user_style_profiles) are
-// created for the passport arm and MUST be deleted after (cleanup step at
-// the end of the after arm; before-state = both uids absent, verified).
+// created for the passport arm and ARE DELETED AUTOMATICALLY in a finally at
+// the end of the after arm (before-state = both uids absent, verified).
+// (Aug 8) That used to say "MUST be deleted" while the cleanup step was a
+// console.log asking a human — against the KEYED database, so each run left
+// two synthetic Passports where listProfiles(500) and the taste-graph
+// neighbour scan could read them. A note is not a cleanup step.
 //
 // AMENDMENT HISTORY (declared, chronological):
 //   1 (8/4) — the passport phase measures assumption-over-anonymous-slate;
@@ -172,6 +176,9 @@ if (ARM === "after") {
     { uid: "u-probe-disciples-glam", vec: { long: { SEDUCTIVE: 3, STATEMENT: 2.5, "AVANT-GARDE": 1.5 }, session: {}, _meta: {} } },
   ];
   for (const p of PROBES) await saveProfile(p.uid, p.vec);
+  // try/finally so the cleanup at the bottom runs even when a measurement
+  // above throws — which is precisely the run a human would forget to tidy.
+  try {
   const pass = { perTerm: {}, differentialTerms: 0, anonymousInert: true };
   for (const { term, tags } of TERMS) {
     const res = await searchProducts(term, { limit: 48 });
@@ -195,7 +202,31 @@ if (ARM === "after") {
   }
   report.passport = pass;
   console.log(`passport differential terms: ${pass.differentialTerms}/18  anonymous inert: ${pass.anonymousInert}`);
-  console.log("NOTE: probe profiles u-probe-disciples-gorp/glam + derived user_style_profiles rows MUST now be deleted (cleanup step).");
+
+  // WHAT WAS WRONG (Aug 8, codebase audit). The header promises these probe
+  // rows "MUST be deleted after (cleanup step at the end of the after arm)",
+  // and the cleanup step was this console.log — a message asking a human to
+  // remember. This script runs against the KEYED database, so every run of the
+  // after arm left two synthetic Passports in production, where they are
+  // visible to listProfiles(500) and therefore to the taste-graph neighbour
+  // scan: a measurement probe silently becoming other people's recommendation
+  // input. (Checked at the time of the fix: production had 0 stranded rows, so
+  // the arm had not been run against it or someone cleaned up by hand.)
+  //
+  // The cleanup now happens, in a finally, so it also runs when a measurement
+  // above throws — which is exactly when a human would forget.
+  } finally {
+    const { purgePersonalizationData } = await import("../lib/db/production.js");
+    const leftovers = [];
+    for (const p of PROBES) {
+      try { await purgePersonalizationData(p.uid); } catch { leftovers.push(p.uid); }
+    }
+    if (leftovers.length) {
+      console.log(`CLEANUP FAILED for ${leftovers.join(", ")} — DELETE THESE BY HAND before trusting any later measurement.`);
+    } else {
+      console.log(`cleanup: purged ${PROBES.length} probe Passports (profiles + derived rows).`);
+    }
+  }
 }
 
 const here = path.dirname(fileURLToPath(import.meta.url));
