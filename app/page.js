@@ -237,7 +237,12 @@ function Slide({ items, onOpenItem }) {
 // from the user's actual strongest aesthetics. Gated by the on-device
 // observation toggle in Settings.
 function ObservationTracker() {
-  const [lines, setLines] = useState(["ARCHIVAL", "MINIMAL", "STREETWEAR"]);
+  // WHAT WAS WRONG (Aug 8, codebase audit). This seeded with three hardcoded
+  // aesthetics and rendered them through the same line as real data, so a cold
+  // user was shown ARCHIVAL / MINIMAL / STREETWEAR as though they had been
+  // OBSERVED about them. Placeholders must not be presented as findings; the
+  // empty state below says there is nothing yet instead of inventing three.
+  const [lines, setLines] = useState([]);
   const [idx, setIdx] = useState(0);
   const [on, setOn] = useState(true);
 
@@ -261,15 +266,27 @@ function ObservationTracker() {
   if (!on) {
     return <div className="obsline dim">on-device observation is off — enable it in settings</div>;
   }
+  if (!lines.length) {
+    return <div className="obsline dim">nothing observed yet — browse, and your convictions appear here</div>;
+  }
   return (
     <>
       {lines.slice(0, 5).map((tag, i) => (
         <div className={"obsline" + (i === idx % lines.length ? "" : " past")} key={tag + i}>
           <span className="pulse" />
-          observed interest in <b>{tag}</b> on an external tab
+          {/* WHAT WAS WRONG (Aug 8, codebase audit): this read "observed
+              interest in <tag> ON AN EXTERNAL TAB". ASILUM has no cross-site
+              observation capability anywhere in the codebase — and /privacy
+              tells the user, correctly, "no cross-site tracking". The product
+              was claiming a surveillance power it does not have, on the home
+              page, while denying it on the privacy page.
+              These tags come from GET /api/profile: the user's OWN taste
+              vector, built from what they did inside ASILUM. The line now says
+              that. */}
+          <b>{tag}</b> — from what you lingered on here
         </div>
       ))}
-      <div className="obsnote">signals stay on this device where possible.</div>
+      <div className="obsnote">read from your own taste profile on this device. ASILUM cannot see other tabs.</div>
     </>
   );
 }
@@ -361,6 +378,35 @@ export default function Home() {
       const user = uidRef.current;
       if (!user) return;
       const d = dwellRef.current;
+      // WHAT WAS WRONG (Aug 8, codebase audit). The ON-DEVICE TASTE OBSERVATION
+      // switch in Settings was decorative. observationOn() was read in exactly
+      // two places — to render this module and to render the toggle itself —
+      // and NOTHING gated the sends below. Turning it OFF hid a panel while
+      // dwell events and examination reports kept flowing to the server, under
+      // settings copy promising "the brain only learns from explicit actions".
+      // A privacy control that controls nothing is worse than no control.
+      //
+      // Dwell and examination are both PASSIVE attention signals, so both are
+      // gated. Explicit actions (favourite, bag, share, skip) are unaffected,
+      // which is exactly what the copy promises. Pending records are consumed
+      // rather than left queued, so turning observation back on never flushes
+      // a backlog collected while it was off.
+      //
+      // HONEST LIMIT: this is a client-side control. It genuinely stops this
+      // client sending, and the r19 path already treats a missing examination
+      // report as normal (the server falls back to served counts and says so
+      // through examinationCoverage). It is not a server-enforced consent
+      // record; a modified client could still post. Making it server-side
+      // wants asterisk_memory_preferences and its own round.
+      if (!observationOn()) {
+        for (const [id, rec] of d.vis) {
+          const t = rec.total + (rec.start != null ? performance.now() - rec.start : 0);
+          if (t >= DWELL_MIN_MS) d.sent.add(id);
+        }
+        const s = serveRef.current;
+        if (s.id) s.sent = true;
+        return;
+      }
       const now = performance.now();
       const events = [];
       for (const [id, rec] of d.vis) {
