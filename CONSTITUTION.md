@@ -35,6 +35,8 @@ time is never optimized as the mission.
 - **UI is LOCKED.** No redesign, simplification, or genericization of the
   magazine visual identity. Navigation/flow restructures only after an
   approved information-architecture spec with before/after screenshots.
+  > **SUPERSEDED by Amendment A1 (July 21, 2026) — see §10.** The owner
+  > unlocked the UI. This paragraph is kept for history, not obeyed.
 - **No faking.** No pretend partnerships, fake OAuth, simulated data
   presented as real, invented products/sizes/purchases/celebrity
   looks/runway references, or claimed AI capability that does not exist.
@@ -46,6 +48,12 @@ time is never optimized as the mission.
 - **Git.** Never work on `main`. Branch → focused PR → Codex review →
   merge only at the owner's explicit word. Every report: summary, files
   changed, build/test status, remaining issues, manual tests, Codex focus.
+  > **PARTLY SUPERSEDED by Amendment A2 (Aug 5, 2026) — see §10.** The
+  > Codex-review step is retired; the reviewer is Claude. Everything else
+  > in this rule — never work on `main`, branch per change-set, merge only
+  > at the owner's explicit word, the report format — still stands.
+  > Amendment A3 (Aug 6, 2026) adds a verification step before merging a
+  > STACKED PR.
 - **Secrets.** Env only; never client-side; `service_role` never in
   bundles; DB runtime as least-privilege `asilum_app`.
 - **Stability bar.** Every page loads with no runtime errors; no crash on
@@ -189,10 +197,67 @@ Every PR: objective + user journey; exists-vs-new; schema/API/event
 changes; privacy/security/moderation/rights/commercial impact; flag +
 rollback; migration/backfill notes; tests with exact results;
 screenshots for UI changes; manual test instructions; known limitations;
-doc updates; explicit Codex review focus. Required gates: unit/contract
+doc updates; explicit review focus (Codex focus retired by A2 — state what
+the reviewer should attack). Required gates: unit/contract
 tests, Postgres integration (constraints, concurrency, RLS, Storage),
 cross-account negatives, accessibility + browser flows, load/cursor
 tests for feeds/search, production build, dependency review, Supabase
 advisors after DB changes, no unresolved P1/P2, and **no fake
 partnership, connection, purchase, trend, verification, or AI
 capability**.
+
+## 10. Amendments (owner-issued, in force)
+
+Each entry is a decision the OWNER made after v2 was written. They were
+being carried in session memory only, so this document contradicted the
+owner for weeks — §2 still ordered a locked UI the owner had unlocked, and
+still routed reviews through Codex after that was retired. A binding
+document that outlives its decisions is worse than no document, so
+amendments live here from now on. Superseded text above is annotated in
+place rather than deleted, so the history stays readable.
+
+**A1 — UI UNLOCKED (July 21, 2026).** Supersedes "UI is LOCKED" in §2.
+Full creative redesign is authorized ("full in on ultra creative web
+design"). Sequencing mandated by the owner: FIRST streamline systems and
+normalize button placement/interactions ("everything more synergized"),
+THEN the creative redesign. No-faking, branch+PR, build-must-pass and the
+report format are untouched by this.
+
+**A2 — CODEX REVIEW RETIRED (Aug 5, 2026).** Supersedes the "Codex review"
+step in §2 Git and "explicit Codex review focus" in §9. Claude reviews its
+own work: adversarial verification, declared-criteria batteries, and the
+harness laws. Stop posting @codex review comments. Branch + PR + CI green +
+merge at the owner's word all still stand.
+
+**A3 — VERIFY A STACKED MERGE (Aug 6, 2026).** Adds a required step to §2
+Git. A stacked PR merged with `--delete-branch=false` merges into its BASE
+BRANCH, not `main` — and still reports `MERGED`, with nothing in
+`gh pr list` showing the difference. GitHub only re-targets a child PR when
+its base branch is DELETED, and this project keeps branches (deleting one
+auto-closed PR #2 once). Before merging a stack, either retarget each child
+to `main` explicitly once its parent lands, or verify afterwards with
+`git merge-base --is-ancestor <child-sha> origin/main`. Never trust
+`MERGED` on a stacked PR to mean "on main". Cost when learned: recovery
+PR #143.
+
+**A4 — HOLDINGS DEFERRED (Aug 7, 2026).** Scope decision, extends §4.
+Asked whether a "hold" should be a soft user-owned "keep this for me", an
+availability-checked extension of `purchase_tickets`, or deferred, the
+owner chose DEFER ENTIRELY: ASILUM controls no inventory, so any hold
+implying a purchase guarantee is exactly the fake §2 forbids. No holdings
+work starts until a real availability signal exists (eBay keys → ingest).
+The bag stays client-side until then. Same decision: sign-in from a second
+device MERGES both sides (not account-wins, not ask-the-user), with the
+shared-device pollution risk accepted knowingly.
+
+**Operational note (July 26, 2026), not a rule change.** The device-flow
+ritual is retired at the owner's request; a repo-scoped `gh` token is
+stored durably in `~/.config/gh/hosts.yml` (chmod 600) with
+`gh auth git-credential` as the credential helper. It carries no `workflow`
+scope, so `.github/workflows/` cannot be pushed without a re-auth — put
+database-backed tests in `tests/postgres-integration.test.js`, which CI
+already runs with `TEST_DATABASE_URL`, rather than adding a workflow step.
+
+> Owner: these are transcribed from session records of your own decisions.
+> Correct any wording that does not match what you meant — the point is
+> that the binding document stops disagreeing with you.
