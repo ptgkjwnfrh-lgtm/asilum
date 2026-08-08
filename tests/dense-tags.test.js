@@ -60,9 +60,21 @@ test("price bands and fit labels hit their boundaries", () => {
   assert.equal(priceBand(899), "400-900");
   assert.equal(priceBand(900), "900-plus");
   assert.equal(priceBand(null), null);
-  assert.equal(fitLabel(-1), "runs-small");
+  // (Aug 8) THESE TWO ASSERTIONS WERE INVERTED AND ARE NOW FLIPPED. They
+  // codified a bug rather than a contract: they asserted that fitLabel does
+  // what fitLabel did, without ever crossing to lib/brain/sizing.js, which
+  // OWNS runsBias. Three independent checks say positive means runs SMALL:
+  //   1. the arithmetic — fitsLikeUS does fitFromIndex(bi - bias), so a Prada
+  //      (+1) "M" fits like an S: the garment is smaller than its label.
+  //   2. the phrase sizing.js renders — `runsBias > 0` -> "· runs small".
+  //   3. the world — Prada/Miu Miu/Jil Sander are +1 and run small; Kapital/
+  //      Fear of God/ERL are -1 and run large.
+  // So the dense `fit` tag contradicted the size note on the same product, and
+  // filtering "runs-small" returned the oversized brands.
+  // tests/sizing-honesty.test.js Z4/Z5 now pin the cross-module invariant.
+  assert.equal(fitLabel(-1), "runs-large");
   assert.equal(fitLabel(0), "true-to-size");
-  assert.equal(fitLabel(2), "runs-large");
+  assert.equal(fitLabel(2), "runs-small");
   assert.equal(fitLabel(undefined), null);
 });
 
