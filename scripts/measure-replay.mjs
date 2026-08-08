@@ -51,18 +51,161 @@
 //     survives them. Where the exploration-heavy policy lands in each world is
 //     printed, as the audit asked, but is reported rather than gated.
 
+//   3 (8/8) — MATCHED PERMUTATION CONTROL. Declared BEFORE the run, and the
+//     CALIBRATION CRITERION IS UNCHANGED: all decided pairs must still agree,
+//     determinism still required, base-still-not-last still required. Only the
+//     ESTIMATOR changes. If the adjusted estimator still disagrees, the verdict
+//     stays NOT CALIBRATED and is reported as such — this amendment is not
+//     permitted to buy a pass.
+//
+//     THE DEFECT, read off the source rather than guessed. replayEstimate
+//     scores ADVANTAGE = candidate position weight minus the LOGGED slot's
+//     weight, over sessions logged under the shipped policy. For `base` the
+//     candidate feed IS the logged feed, so every term is exactly zero and the
+//     arm scores exactly 0 by construction — visible in every run as
+//     `replay: {"base":0,...}` with every other arm negative. A policy is
+//     penalised in proportion to how far it MOVES logged interactions, so raw
+//     advantage ranks by SIMILARITY TO THE SHIPPED POLICY, not by quality.
+//
+//     That this is not merely a base-vs-rest artifact is what makes it worth
+//     fixing: the pair `alpha-heavy vs gamma-heavy` disagrees today and does
+//     not involve base at all. The more-reordering arm loses regardless of
+//     whether it is better.
+//
+//     THE CONTROL, following the measure-tuning precedent (#138, which
+//     resolved the #23 failure by comparing an arm against a control carrying
+//     the same structural term rather than against an absolute threshold).
+//     For each policy P, ROTATE P's weight values across the five TASTE
+//     bridges — the construction measure-tuning already uses. A rotated policy
+//     has the SAME weight distribution — so it reorders the feed by a
+//     comparable amount and inherits the same reorder penalty — but its
+//     assignment of weight to bridges is arbitrary and carries no quality
+//     signal. adjusted[P] = replay[P] - mean(replay over the 4 rotations).
+//
+//     The systematic reorder term is shared and cancels; what survives is
+//     "does putting the weight on THESE bridges beat putting the same weight
+//     on arbitrary ones".
+//
+//     `ad` is held fixed, and this is the part that decided the verdict. A
+//     first version of this amendment shuffled all SIX weights and was wrong:
+//     it let a control put alpha-heavy's 60 onto the AD bridge, flooding that
+//     control's slates with ads, tanking its score, and inflating
+//     `adjusted = raw - control` by subtraction. That version returned 10/10
+//     and 7/7 — CALIBRATED in both worlds. It was discarded, not shipped.
+//     The tell was in its own numbers: alpha-heavy held the largest single
+//     weight AND showed the most negative control (-0.24883), which is exactly
+//     the signature the confound produces. Ad load is a commercial axis, not a
+//     taste axis; a control must vary the thing under test and nothing else.
+//
+//     `base` is scored through baseSplit() rather than the null shipped-policy
+//     path, so all five arms go through one code path and base receives a
+//     control too. Leaving base on the null path would have preserved exactly
+//     the structural advantage this amendment exists to remove.
+//
+//     WHAT THAT COSTS, stated plainly because it is a real change to what the
+//     arm MEANS. buildFeed reads `ctx.splitOverride || activeSplit(...)`
+//     (lib/brain/bridges.js), so an explicit split BYPASSES the dynamic
+//     epsilon and safe-mode switching. `base` is therefore now the STATIC
+//     shipped weights, not the shipped policy including its auto-epsilon. Its
+//     live score moved 0.28959 -> 0.29466 in the flat world for exactly that
+//     reason, and that is the whole of the difference.
+//
+//     It is still the better arrangement, and the reason is the inconsistency
+//     it removes: the four alternative policies were ALWAYS explicit overrides
+//     and therefore always static. Base was the only arm whose epsilon switch
+//     was live, so the battery was comparing one dynamic policy against four
+//     static ones and calling the result a ranking. All five are now static
+//     and comparable.
+//
+//     The honest scope limit that follows: this calibrates replay against live
+//     for STATIC policies. The shipped system's dynamic epsilon switching is
+//     not covered by this measurement, and a harness user must not read
+//     "CALIBRATED" as "replay predicts the shipped system including auto
+//     -epsilon". That wants its own arm, and is not claimed here.
+//
+//     Raw, control and adjusted are all printed, and any pair whose agreement
+//     the control FLIPS is called out — the same shape as the r26 estimator
+//     lines, so the change to the instrument is auditable rather than implied.
+//
+//     OUTCOME (recorded after the run, as declared — the amendment was not
+//     allowed to buy a pass, and it did not):
+//
+//                          raw        adjusted     verdict
+//       flat            8/10 pairs   9/10 pairs   NOT CALIBRATED
+//       satiating       5/7  pairs   7/7  pairs   CALIBRATED
+//       blanket agree   0.8 / 0.7    0.9 / 0.8
+//
+//     The estimator is strictly better and the gate is still red. Both worlds
+//     recovered `alpha-heavy vs gamma-heavy`, the pair that proved the defect
+//     was not merely a base-vs-rest artifact. The flat world's remaining
+//     disagreement is base vs gamma-heavy: live Δ +0.0241 (decided, 2×sigma
+//     0.0061) against adjusted Δ -0.0031.
+//
+//     THE NEXT QUESTION, and deliberately NOT answered here. That -0.0031 is
+//     being read as a confident "gamma beats base" when base and gamma sit at
+//     0.12238 and 0.12545 — a gap far smaller than anything this estimator can
+//     resolve. The criterion tests the LIVE Δ against a live noise floor and
+//     then takes the REPLAY Δ's sign at face value, with no noise floor on the
+//     replay side at all. Giving replay its own floor, and treating pairs
+//     inside it as undecided the way live pairs already are, is the obvious
+//     next amendment — and it is exactly the move that would turn this red
+//     light green, so it does not get made in the same round that wants the
+//     pass. It needs its own declared criteria and its own run.
+
 import { makeBots, simulatePopulation, replayEstimate, rankAgreement, WORLDS } from "../lib/brain/replay.js";
 import { resampledPairSigma, singleSplitNoise } from "../lib/brain/noise.js";
+import { baseSplit } from "../lib/brain/bridges.js";
 import { getDiscoverablePool } from "../lib/products.js";
 
 const POLICIES = {
-  base: null, // the shipped split
+  // (amendment 3) the shipped split, EXPLICIT rather than the null path, so
+  // base goes through the same estimator as every other arm and gets a control.
+  base: baseSplit(),
   "alpha-heavy": { alpha: 60, beta: 10, gamma: 10, delta: 10, epsilon: 5, ad: 5 },
   "gamma-heavy": { alpha: 20, beta: 5, gamma: 45, delta: 10, epsilon: 15, ad: 5 },
   "delta-heavy": { alpha: 15, beta: 5, gamma: 10, delta: 55, epsilon: 10, ad: 5 },
   "epsilon-heavy": { alpha: 10, beta: 5, gamma: 10, delta: 10, epsilon: 60, ad: 5 },
 };
 const BOTS = 120, PAGES = 6, SEED = 20260804;
+// (amendment 3) K permutations per arm. Each is a full replayEstimate pass, so
+// K trades runtime against control precision; 4 is enough to average out the
+// arbitrary bridge assignment while keeping the battery inside a few minutes.
+// The five TASTE bridges. `ad` is deliberately excluded and held at the arm's
+// own value — see permutedControls.
+const TASTE_BRIDGES = ["alpha", "beta", "gamma", "delta", "epsilon"];
+
+/** Rotations of a policy's weight values across the five taste bridges.
+ *
+ *  Same weight distribution, so the reorder penalty is matched; arbitrary
+ *  assignment, so the quality signal is destroyed. This is the construction
+ *  measure-tuning already uses ("the bot's own lift vector rotated onto the
+ *  wrong bridges — magnitude-matched, signal-free"), and matching it matters
+ *  twice over: it is the house method, and rotation is a DERANGEMENT, so no
+ *  control can accidentally reproduce the arm it is controlling for.
+ *
+ *  `ad` IS HELD FIXED, and that is not cosmetic. My first version shuffled all
+ *  six weights, which let a control put alpha-heavy's 60 onto the AD bridge —
+ *  flooding the slate with ads, tanking that control, and inflating
+ *  `adjusted = raw - control` by subtraction. alpha-heavy holds the largest
+ *  single weight AND showed the most negative control (-0.24883), which is
+ *  precisely the shape that confound would produce. Ad load is a commercial
+ *  axis, not a taste axis; a control must vary the thing under test and
+ *  nothing else. */
+function permutedControls(policy) {
+  const values = TASTE_BRIDGES.map((k) => policy[k]);
+  const out = [];
+  for (let rot = 1; rot <= CONTROLS; rot++) {
+    const rotated = { ad: policy.ad };
+    TASTE_BRIDGES.forEach((k, ix) => {
+      rotated[k] = values[(ix + rot) % TASTE_BRIDGES.length];
+    });
+    out.push(rotated);
+  }
+  return out;
+}
+// Four rotations = every non-identity rotation of five bridges, so the control
+// is the exhaustive mean over them and there is no seed to be lucky with.
+const CONTROLS = 4;
 
 const pool = await getDiscoverablePool({ limit: 5000 });
 
@@ -87,19 +230,27 @@ function battery(world) {
   const { live, perBot } = liveScores(bots, world);
   // behavior corpus: sessions logged under the shipped policy
   const { sessions } = simulatePopulation(bots, { pool, pages: PAGES, world });
-  const replay = {};
+  const replay = {}, control = {}, adjusted = {};
   for (const [name, policy] of Object.entries(POLICIES)) {
     replay[name] = +replayEstimate(sessions, policy, { pool }).toFixed(5);
+    // (amendment 3) matched permutation control: same weight distribution,
+    // arbitrary bridge assignment, so the reorder penalty cancels on subtraction.
+    const controls = permutedControls(policy)
+      .map((p) => replayEstimate(sessions, p, { pool }));
+    control[name] = +(controls.reduce((s, x) => s + x, 0) / controls.length).toFixed(5);
+    adjusted[name] = +(replay[name] - control[name]).toFixed(5);
   }
-  return { live, perBot, replay };
+  return { live, perBot, replay, control, adjusted };
 }
 
 function calibrate(world) {
   const run1 = battery(world);
   const run2 = battery(world);
   console.log(`\n--- world: ${world.name} ---`);
-  console.log("live  :", JSON.stringify(run1.live));
-  console.log("replay:", JSON.stringify(run1.replay));
+  console.log("live    :", JSON.stringify(run1.live));
+  console.log("replay  :", JSON.stringify(run1.replay), "(raw advantage — carries the reorder penalty)");
+  console.log("control :", JSON.stringify(run1.control), "(matched permutations of the same weights)");
+  console.log("adjusted:", JSON.stringify(run1.adjusted), "(raw minus control — SCORED)");
   const names = Object.keys(POLICIES);
   let decided = 0, agreed = 0, undecided = [];
   for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) {
@@ -117,9 +268,17 @@ function calibrate(world) {
     }
     if (decidedNow) {
       decided++;
-      const dReplay = run1.replay[a] - run1.replay[b];
-      if (Math.sign(dLive) === Math.sign(dReplay)) agreed++;
-      else console.log(`DECIDED PAIR DISAGREES: ${a} vs ${b} (live Δ ${dLive.toFixed(4)}, replay Δ ${dReplay.toFixed(4)})`);
+      // (amendment 3) ADJUSTED is what is scored. Raw is still computed so the
+      // control's effect on each pair is visible rather than implied.
+      const dAdj = run1.adjusted[a] - run1.adjusted[b];
+      const dRaw = run1.replay[a] - run1.replay[b];
+      const agreesNow = Math.sign(dLive) === Math.sign(dAdj);
+      const agreedRaw = Math.sign(dLive) === Math.sign(dRaw);
+      if (agreesNow !== agreedRaw) {
+        console.log(`  CONTROL FLIPPED ${a} vs ${b}: ${agreedRaw ? "agreed" : "disagreed"} -> ${agreesNow ? "agrees" : "disagrees"} (live Δ ${dLive.toFixed(4)}, raw Δ ${dRaw.toFixed(4)}, adjusted Δ ${dAdj.toFixed(4)})`);
+      }
+      if (agreesNow) agreed++;
+      else console.log(`DECIDED PAIR DISAGREES: ${a} vs ${b} (live Δ ${dLive.toFixed(4)}, adjusted Δ ${dAdj.toFixed(4)}, raw Δ ${dRaw.toFixed(4)})`);
     } else {
       undecided.push(`${a}~${b}`);
     }
@@ -130,7 +289,7 @@ function calibrate(world) {
   console.log(`live ranking: ${liveRanking.join(" > ")}`);
   console.log(`  exploration-heavy (epsilon-heavy) sits at position ${liveRanking.indexOf("epsilon-heavy") + 1}/${liveRanking.length} (reported, per audit #10)`);
   console.log(`undecided pairs (reported, not scored): ${undecided.join(", ") || "none"}`);
-  console.log(`blanket rank agreement (informational): ${rankAgreement(run1.live, run1.replay)}`);
+  console.log(`blanket rank agreement (informational): raw ${rankAgreement(run1.live, run1.replay)} → adjusted ${rankAgreement(run1.live, run1.adjusted)}`);
   const ok = decided > 0 && agreed === decided && deterministic && baseNotLast;
   console.log(`VERDICT (${world.name}): decided pairs ${agreed}/${decided} agree (need all); deterministic ${deterministic}; base-not-last ${baseNotLast} → ${ok ? "CALIBRATED" : "NOT CALIBRATED"}`);
   return { ok, ranking: liveRanking };
