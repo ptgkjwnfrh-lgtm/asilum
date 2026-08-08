@@ -87,10 +87,38 @@ if (mode === "legacy") {
   check("L4 anonymous surfaces serve", codes.every((c) => c.endsWith(":200")), codes.join(" "));
 }
 
+// WHAT WAS WRONG (Aug 8, codebase audit). This battery DECLARES five criteria
+// and evaluates three. L3 and L5 have never been implemented — there is no
+// code anywhere in this file that measures either — and it printed "PASS"
+// regardless, then exited 0.
+//
+// L3 is the SECURITY criterion, and its own text names the stake: "FAILS IF
+// minting is unbounded — that would trade a lockout for a sybil supply, which
+// is the specific mistake this round must not make." A reader saw PASS and
+// concluded the ceiling had been verified. It had not been looked at.
+// (The audit found L3; L5 turned up while confirming it.)
+//
+// The structural fix is below, and it generalizes: a declared criterion that
+// produced no check is now a LOUD omission, not a silent one. Implementing L3
+// and L5 needs the live harness ritual (a server on :3459 with the declared
+// env), so writing them blind and letting them report PASS would repeat the
+// exact fault this is fixing. They are named as unevaluated until someone runs
+// them for real.
+const DECLARED = ["L1", "L2", "L3", "L4", "L5"];
+const evaluated = new Set(
+  [...out.pass, ...out.fail].map((line) => line.slice(0, 2)));
+const unevaluated = DECLARED.filter((id) => !evaluated.has(id));
+
 console.log("\nIDENTITY ISSUANCE — ISOLATION, NOT LOCKOUT   (mode: " + mode + ")");
-console.log("PASS");
+const verdict = out.fail.length || unevaluated.length ? "INCOMPLETE" : "PASS";
+console.log(verdict);
 for (const p of out.pass) console.log("  ✓", p);
 if (out.notes.length) { console.log("NOTES"); for (const n of out.notes) console.log("  ·", n); }
 if (out.fail.length) { console.log("FAIL"); for (const f of out.fail) console.log("  ✗", f); }
-console.log(`\n${out.pass.length} passed, ${out.fail.length} failed`);
-process.exit(out.fail.length ? 1 : 0);
+if (unevaluated.length) {
+  console.log("NOT EVALUATED — declared in the header, never measured:");
+  for (const id of unevaluated) console.log("  ?", id);
+  console.log("  A battery may not report PASS for a criterion it did not run.");
+}
+console.log(`\n${out.pass.length} passed, ${out.fail.length} failed, ${unevaluated.length} not evaluated`);
+process.exit(out.fail.length || unevaluated.length ? 1 : 0);
