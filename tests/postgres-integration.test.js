@@ -314,6 +314,51 @@ test("mem and Postgres agree on the whole adoption scenario",
   assert.deepEqual(mem.accountSeen, ["acct-a", "dev-a"], "the _meta rings merge, not overwrite");
 });
 
+// The §6 export has a mem branch and a Postgres branch, and AGENTS.md makes
+// mem/pg parity a hard rule — the unit battery in tests/privacy-export.test.js
+// runs mem, so a Postgres-only fault in the export would ship green.
+test("Postgres assembles the §6 export with the same shape as mem", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const pool = await db.getPool();
+  const user = `u-${randomUUID()}`;
+  const item = `pgexport-item-${randomUUID()}`;
+
+  t.after(async () => {
+    await pool.query("DELETE FROM popularity_contributors WHERE item_id=$1", [item]);
+    await pool.query("DELETE FROM popularity WHERE item_id=$1", [item]);
+    await production.purgePersonalizationData(user).catch(() => {});
+  });
+
+  await db.saveProfile(user, { long: { TAILORED: 0.8 }, session: {}, _meta: { seen: ["x"] } });
+  await db.recordInteraction(user, item, "favorite", null);
+  await production.setFollow(user, "brand", "Helmut Lang", true);
+  await db.bumpPopularity([{ id: item, eng: 1, imp: 1 }], user);
+
+  const out = await production.exportPersonalizationData(user);
+
+  assert.equal(out.persistent, true, "this must be the Postgres branch, not a mem fallback");
+  assert.equal(out.identity.kind, "device");
+  assert.equal(out.data.taste.long.TAILORED, 0.8, "taste comes back");
+  assert.equal(out.data.interactions.rows.length, 1, "interactions come back");
+  assert.deepEqual(out.data.follows.map((f) => f.target), ["Helmut Lang"]);
+  assert.equal(out.counts.corroboration.popularity, 1, "the ledger count is real on Postgres too");
+
+  // Same SHAPE as mem: every bounded domain reports its cap and truncation.
+  for (const d of [out.data.interactions, out.data.events, out.data.searches,
+                   out.data.wardrobe, out.data.corrections, out.data.editorial,
+                   out.data.aiEvents, out.data.stylist.requests]) {
+    assert.ok(Array.isArray(d.rows), "bounded domain carries rows");
+    assert.equal(typeof d.cap, "number", "and states its cap (§6: no silent caps)");
+    assert.equal(typeof d.truncated, "boolean", "and whether it truncated");
+  }
+
+  // Export and delete must describe the same retained world on this backend too.
+  const purged = await production.purgePersonalizationData(user);
+  assert.deepEqual(out.retained, purged.retained);
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
