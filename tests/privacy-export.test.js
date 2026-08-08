@@ -83,7 +83,14 @@ test("E3 the export actually contains the user's data", async () => {
 });
 
 // §6: "No silent caps: any bounded retrieval reports its truncation."
-test("E4 every bounded domain reports its cap and whether it truncated", async () => {
+//
+// E4 CHECKS SHAPE ONLY, and on a near-empty identity it asserts
+// `truncated === false` — which is true no matter how broken the caps are.
+// It passed while the export was silently returning 500 of a user's 3,000
+// interactions under `cap: 5000, truncated: false`. E8 below is the test that
+// actually detects that; this one is kept for the shape contract, relabelled
+// so nobody mistakes it for a truncation test again.
+test("E4 every bounded domain carries the cap/truncated SHAPE (not the values)", async () => {
   const user = "u-export-e4";
   await fresh(user);
   await saveProfile(user, { long: { GORP: 0.5 }, session: {}, _meta: {} });
@@ -148,6 +155,68 @@ test("E7 an account identity is reported as an account", async () => {
 
   const out = await exportPersonalizationData(user);
   assert.equal(out.identity.kind, "account");
+
+  await fresh(user);
+});
+
+// THE TEST THAT SHOULD HAVE EXISTED. Found by the Aug 8 codebase audit, in
+// code shipped hours earlier: EXPORT_CAPS asked for 5000 interactions, but
+// getInteractions clamps its own limit to 500, and bounded() stamped the short
+// list with the REQUESTED cap and `truncated: false`. A user with 3,000
+// interactions downloaded 500 of them under a header saying nothing was cut —
+// the §6 "no silent caps" rule broken by the feature built to satisfy it.
+//
+// E4 could never have caught it: it asserts truncated === false on an identity
+// with almost no data, which is true whatever the caps say. The detector has to
+// OVERFLOW a cap and demand the export admit it.
+test("E8 a user past a cap gets exactly the cap, and is TOLD it was cut", async () => {
+  const user = "u-export-e8";
+  await fresh(user);
+  await saveProfile(user, { long: { TAILORED: 0.5 }, session: {}, _meta: {} });
+
+  // 520 > the 500 ceiling getInteractions actually enforces.
+  const OVERFLOW = 520;
+  for (let i = 0; i < OVERFLOW; i++) {
+    await recordInteraction(user, `e8-item-${i}`, "favorite", null);
+  }
+
+  const out = await exportPersonalizationData(user);
+  const d = out.data.interactions;
+
+  // The declared cap must be one the reader can actually honour. Before the
+  // fix this read 5000 while the reader returned 500.
+  assert.equal(d.cap, 500, "the declared cap must be the reader's REAL ceiling");
+  assert.equal(d.rows.length, d.cap, "a user past the ceiling gets exactly the ceiling");
+  assert.equal(d.truncated, true,
+    "and the export must SAY it was cut — reporting false here is the §6 violation");
+
+  await fresh(user);
+});
+
+// The general form of the same defect: any cap that exceeds what its reader
+// will return is a silent lie waiting to happen. Assert the invariant directly
+// rather than one instance of it.
+test("E9 no declared cap exceeds what its reader will actually return", async () => {
+  const user = "u-export-e9";
+  await fresh(user);
+  await saveProfile(user, { long: { GORP: 0.4 }, session: {}, _meta: {} });
+
+  const out = await exportPersonalizationData(user);
+  const caps = [
+    ["interactions", out.data.interactions.cap, 500],
+    ["events", out.data.events.cap, 1000],
+    ["wardrobe", out.data.wardrobe.cap, 500],
+    ["moodboard.uploads", out.data.moodboard.uploads.cap, 200],
+    ["moodboard.analyses", out.data.moodboard.analyses.cap, 200],
+    ["stylist.outfits", out.data.stylist.outfits.cap, 100],
+    ["stylist.feedback", out.data.stylist.feedback.cap, 500],
+    ["corrections", out.data.corrections.cap, 500],
+  ];
+  for (const [name, declared, readerCeiling] of caps) {
+    assert.ok(declared <= readerCeiling,
+      `${name}: export declares cap ${declared} but its reader clamps to ${readerCeiling} — ` +
+      "the difference is data the user never receives and is never told about");
+  }
 
   await fresh(user);
 });
