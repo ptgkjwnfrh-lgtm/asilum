@@ -59,6 +59,7 @@ function serveBoth(bot, state) {
     gammaOff: gammaAff(off), gammaOn: gammaAff(on),
     topOff: top24(off), topOn: top24(on),
     zonesSame: JSON.stringify(zones(off)) === JSON.stringify(zones(on)),
+    zonesOff: zones(off), zonesOn: zones(on),
     brandOk: brandMax(on) <= 2,
   };
 }
@@ -109,6 +110,46 @@ console.log(`gamma-slot affinity: off ${gammaOff.toFixed(4)} → on ${gammaOn.to
 console.log(`top-24 affinity    : off ${topOff.toFixed(4)} → on ${topOn.toFixed(4)} (paired sigma ${noise.toFixed(4)}; pre-r26 single draw ${oldNoise.toFixed(4)})`);
 if ((topOn >= topOff - noise) !== (topOn >= topOff - oldNoise)) console.log(`  ESTIMATOR CHANGED the top-24 verdict: ${topOn >= topOff - oldNoise ? "pass" : "fail"} -> ${topOn >= topOff - noise ? "pass" : "fail"}`);
 console.log(`zone structure identical: ${zonesSame}; brand cap ok: ${brandOk}`);
+// (Aug 7) `zonesSame` reported a bare `false` and nothing else, so every look
+// at it started by re-deriving what had moved. It says WHAT now. The verdict
+// arithmetic below is deliberately UNCHANGED: this criterion is failing, and
+// making a red light legible is not the same as making it green.
+//
+// MEASURED, flat world: 2 of 120 bots, exactly ONE slot each, in BOTH
+// directions (core 46->47/discovery 12->11, and core 52->51/discovery 6->7).
+// Feed length identical. Zero of the mismatches were key-ORDER artifacts of
+// the JSON.stringify comparison — that was the first hypothesis and it was
+// wrong; the counts genuinely differ.
+//
+// MECHANISM, lib/brain/bridges.js: a discovery slot is not guaranteed. It
+// falls back to CORE when the discovery candidates run out, when the best
+// remaining one is below DISCOVERY_FLOOR, or when the brand cap rejects it.
+// The vector feature legitimately changes the candidate set and the order the
+// brand cap is consumed in, so a slot can cross that floor in either
+// direction. Zone composition is therefore EMERGENT, not structural — this
+// criterion asserts an equality the feed has never promised.
+//
+// That makes it a criterion question, not a bug: it wants a bound on the
+// drift (how many bots, how many slots) rather than absolute equality. Left
+// for the r18 round that owns it, with the evidence now printed rather than
+// re-derived. NOTE the flat-world FAIL is NOT only this — the top-24 drop
+// above (0.0162 against a paired sigma of 0.0070) is the substantive half.
+if (!zonesSame) {
+  const bad = r1.filter((r) => !r.zonesSame);
+  const sortKeys = (o) => JSON.stringify(Object.fromEntries(Object.entries(o).sort()));
+  const orderOnly = bad.filter((r) => sortKeys(r.zonesOff) === sortKeys(r.zonesOn)).length;
+  const slotsMoved = bad.map((r) => {
+    const keys = new Set([...Object.keys(r.zonesOff), ...Object.keys(r.zonesOn)]);
+    let n = 0;
+    for (const k of keys) n += Math.abs((r.zonesOff[k] || 0) - (r.zonesOn[k] || 0));
+    return n / 2; // each moved slot shows up as one loss and one gain
+  });
+  console.log(`  zone drift: ${bad.length}/${r1.length} bots; max ${Math.max(...slotsMoved)} slot(s), mean ${mean(slotsMoved).toFixed(2)}`);
+  console.log(`  key-order artifacts (same counts, different order): ${orderOnly}`);
+  for (const r of bad.slice(0, 3)) {
+    console.log(`    off=${JSON.stringify(r.zonesOff)}  on=${JSON.stringify(r.zonesOn)}`);
+  }
+}
 const pass = reachOn > reachOff && gammaOn >= gammaOff - 1e-9 && topOn >= topOff - noise && zonesSame && brandOk && deterministic;
 console.log(`VERDICT (${world.name}): ${pass ? "PASS" : "FAIL"}; deterministic ${deterministic}`);
 return pass;
