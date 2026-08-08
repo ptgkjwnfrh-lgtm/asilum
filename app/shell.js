@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid, brainEnabled,
-  authorizedFetch,
+  authorizedFetch, SIGN_OUT_NOTICE,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -160,7 +160,13 @@ export default function Shell({ children }) {
           // The move itself is correct — copying instead would double-count the
           // same taste in aggregates and leave account-derived taste sitting on
           // a possibly shared device. So the message changes, not the behaviour.
-          setAuthNotice("signed out — your taste stays with your account; this device starts fresh");
+          //
+          // (Aug 8) The wording now lives in ONE place. app/profile/page.js has
+          // its own SIGN OUT handler that publishes the same notice, and it
+          // still carried the old false string — this fix landed in shell.js
+          // only and never grepped for a second emitter. Both fire, so they
+          // raced. Import the constant; do not retype it.
+          setAuthNotice(SIGN_OUT_NOTICE);
           activateDevice();
         }
       });

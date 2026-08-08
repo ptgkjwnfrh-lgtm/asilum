@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import {
   EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
-  saveFitProfile, saveServerFitProfile, sendJSON, postJSON,
+  saveFitProfile, saveServerFitProfile, sendJSON, postJSON, SIGN_OUT_NOTICE,
 } from "../../lib/client.js";
 import {
   convertMeasurementUnit, hasMeasurementProfile, MEASUREMENT_KEYS,
@@ -252,7 +252,9 @@ function ProfileAccess() {
       const { error } = await sb.auth.signOut({ scope: "local" });
       if (error) throw error;
       setAuthUser(null);
-      publishNotice("signed out — device taste remains; account measurements are locked");
+      // Shared with app/shell.js's SIGNED_OUT handler: BOTH fire on sign-out
+      // and raced with different wording until Aug 8. See SIGN_OUT_NOTICE.
+      publishNotice(SIGN_OUT_NOTICE);
     } catch { publishNotice("could not sign out — try again"); }
   }
 
