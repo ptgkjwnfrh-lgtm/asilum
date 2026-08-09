@@ -684,13 +684,39 @@ export default function Home() {
     react(item, "bag");
   }
 
-  async function muteTag(tag) {
-    const synthetic = { id: "mute:" + tag + ":" + Date.now(), tags: { [tag]: 1 } };
+  // WHAT WAS WRONG (Aug 8, codebase audit). This posted a SYNTHETIC item with
+  // a made-up id ("mute:TAG:timestamp"). /api/interaction resolves every id
+  // through resolveProducts and answers 400 "unknown product" for anything not
+  // in the catalog, so the request ALWAYS failed. postJSON returns a fetch,
+  // which does not throw on 4xx, so the catch never ran and the code went
+  // straight on to close the modal and reload the feed — the control looked
+  // like it worked, every time, and taught the brain nothing.
+  //
+  // It now sends a REAL skip on the REAL piece being viewed. That is an
+  // existing, honoured negative signal, and because the brain scores a skip
+  // against the item's whole tag vector it does move the clicked tag down.
+  //
+  // WHAT IT IS NOT: a tag-scoped mute. Nothing in the codebase supports one —
+  // user_corrections exclusions are brand- and product-scoped only, and
+  // getUserRecommendationExclusions reads nothing else. Building a real
+  // per-tag mute is new product behaviour and an owner decision, not something
+  // to invent inside a bug fix. The tooltip now says what actually happens.
+  async function muteTag(item) {
+    if (!item?.id) return;
     try {
-      await postJSON("/api/interaction", { user: uidRef.current, item: synthetic, action: "skip" });
+      const res = await postJSON("/api/interaction", {
+        user: uidRef.current, item, action: "skip",
+      });
+      if (!res?.ok) {
+        setNotice("could not record that — try again");
+        return;
+      }
       setModal(null);
       loadFeed();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setNotice("could not record that — try again");
+    }
   }
 
   async function saveToBoard(item) {
@@ -1046,7 +1072,10 @@ export default function Home() {
                 {Object.keys(modal.tags || {}).slice(0, 4).map((t) => (
                   <span className="t" key={t}>
                     {t}
-                    <button className="mute" title={"less " + t} onClick={() => muteTag(t)}>×</button>
+                    {/* The tooltip used to promise "less <tag>", which the
+                        code never delivered — see muteTag. It now describes
+                        the signal actually sent. */}
+                    <button className="mute" title="show me less like this piece" onClick={() => muteTag(modal)}>×</button>
                   </span>
                 ))}
               </div>
