@@ -13,14 +13,30 @@ import { getUid, authorizedFetch } from "../../lib/client.js";
 
 export default function StatsPage() {
   const [stats, setStats] = useState(null);
+  const [statsError, setStatsError] = useState(null);
   const [viz, setViz] = useState(null);
   const [mix, setMix] = useState(null); // (r16) bridge mix, plain words
 
   useEffect(() => {
+    // WHAT WAS WRONG (Aug 8, codebase audit). This never checked r.ok, so an
+    // ERROR BODY was stored as `stats`. The render below treats any truthy
+    // `stats` as the dashboard and reaches `Object.entries(stats.actions)` —
+    // undefined on an error body — which THROWS and takes the whole page down.
+    // /api/stats really does return 401 "identity required" and 429, and the
+    // 401 is reachable from the identity bug fixed alongside this in
+    // lib/client.js: no device cookie, so no identity, so 401, so a crash.
     fetch("/api/stats")
-      .then((r) => r.json())
-      .then(setStats)
-      .catch(() => {});
+      .then(async (r) => {
+        if (!r.ok) {
+          setStatsError(r.status === 401
+            ? "sign of life needed — this dashboard reads your own identity, and none was issued"
+            : `stats unavailable (${r.status})`);
+          return null;
+        }
+        return r.json();
+      })
+      .then((d) => { if (d) setStats(d); })
+      .catch(() => setStatsError("stats unavailable — the request did not complete"));
     authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
       .then((r) => r.json())
       .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
@@ -43,7 +59,9 @@ export default function StatsPage() {
         </>
       )}
 
-      {!stats ? (
+      {statsError ? (
+        <div className="empty">{statsError}</div>
+      ) : !stats ? (
         <div className="empty">loading…</div>
       ) : (
         <>
