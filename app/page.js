@@ -1,24 +1,26 @@
 "use client";
 
-// app/page.js — HOME.
-// The big feed: Pinterest masonry (different-sized listings, community posts
-// smooshed between them) with a Grailed-white editorial skin. Cards stay
-// minimal — name, price, fit estimate, FAVORITE / ADD TO BAG — everything else
-// lives in the detail view. First visit offers a buyer-history scan via a
-// connected account; otherwise the moodboard + following jump-start applies.
-// The brain underneath is unchanged: dwell, skips, zones, graph, rotation.
+// app/page.js — CATALOG (home).
+// Two sub-pages under one feed (owner order, Aug 12): CATALOG lands the user
+// straight on clothing — mode row, one collapsed craving line, filters, then
+// the masonry immediately; POST is the wire — composer plus the first real
+// reader of GET /api/editorial, merged with this device's own posts. Cards
+// stay minimal — name, price, fit estimate, FAVORITE / ADD TO BAG —
+// everything else lives in the detail view. First visit offers a
+// buyer-history scan; the brain underneath is unchanged: dwell, skips,
+// zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useEscape } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
-  getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, safeExternalUrl,
-  fitProfileForBrain, brainEnabled, claimRequest, watchRequest,
+  getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
+  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
 } from "../lib/client.js";
 import {
-  addPost, getProfileInfo, observationOn, followedUsers, followedBrands,
-  setFollowBrand, STORIES, listPosts, timeAgo, DEMO_SOCIAL_ENABLED,
+  addPost, getProfileInfo, observationOn, followedBrands,
+  setFollowBrand, listPosts, timeAgo,
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
@@ -27,11 +29,9 @@ import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.js
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
 const MAX_RENDERED = 300;
-const POST_EVERY = 7; // one community post per N listings
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
-const ASPECTS = ["3 / 4", "1 / 1", "4 / 5", "2 / 3", "3 / 4", "5 / 6"];
 
 const BRIDGE_REASON = {
   alpha: "matches your taste",
@@ -41,19 +41,6 @@ const BRIDGE_REASON = {
   epsilon: "a wildcard for you",
   ad: "sponsored",
 };
-
-// Community voices woven into the masonry (Pinterest's "people" texture).
-const HANDLES = ["@arc.hive", "@vex.wears", "@tabi.lord", "@grey.market", "@hem.line", "@spine.press"];
-const QUOTES = [
-  "the collar is doing all the work and it knows it.",
-  "bought one size up. living inside it now.",
-  "this is what the archive smells like.",
-  "wore it to a funeral and a gallery opening. both correct.",
-  "the drape argues with gravity and wins.",
-  "found the exact one from the runway. hands shaking.",
-  "it photographs badly and looks incredible. keep it.",
-  "my tailor refused to touch it. respect.",
-];
 
 function reasonFor(item) {
   if (item._contextMatch >= 0.2) return "matches what you're craving right now";
@@ -78,223 +65,14 @@ function eraLabel(era) {
   return null;
 }
 
-function aspectFor(id) {
-  return ASPECTS[hashStr(id) % ASPECTS.length];
-}
-
-// ---- Collapsed cube: header always visible, body pops out on hover/click ----
-function Collapsible({ title, children }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className={"module col" + (open ? " open" : "")}>
-      <button className="modhead colhead" onClick={() => setOpen((o) => !o)}>
-        {title} <i>{open ? "−" : "+"}</i>
-      </button>
-      <div className="modbody">{children}</div>
-    </div>
-  );
-}
-
-// ---- Morse ticker: spells the brands you follow, full-width --------------
-// Red * = dot, black bar = dash, cycling brand by brand.
-const MORSE = {
-  a: ".-", b: "-...", c: "-.-.", d: "-..", e: ".", f: "..-.", g: "--.", h: "....",
-  i: "..", j: ".---", k: "-.-", l: ".-..", m: "--", n: "-.", o: "---", p: ".--.",
-  q: "--.-", r: ".-.", s: "...", t: "-", u: "..-", v: "...-", w: ".--", x: "-..-",
-  y: "-.--", z: "--..",
-};
-function morseSeq(word) {
-  const letters = word.toLowerCase().replace(/[^a-z]/g, "");
-  return letters.split("").flatMap((ch, i) =>
-    [...(MORSE[ch] || "").split(""), ...(i < letters.length - 1 ? [" "] : [])]
-  );
-}
-
-function FollowMorse() {
-  const [words, setWords] = useState(["asilum"]);
-  const morseRef = useRef(null);
-  useEffect(() => {
-    const sync = () => {
-      const brands = followedBrands();
-      setWords(brands.length ? brands : ["asilum"]);
-    };
-    sync();
-    window.addEventListener("asilum:follow", sync);
-    window.addEventListener("focus", sync);
-    return () => {
-      window.removeEventListener("asilum:follow", sync);
-      window.removeEventListener("focus", sync);
-    };
-  }, []);
-  // Spell the followed brands back-to-back until the sequence is long enough
-  // to fill the whole strip, then sweep left-to-right and start over.
-  const base = words.flatMap((w) => [...morseSeq(w), " ", " ", " "]);
-  const seqFull = [];
-  while (seqFull.length < 160 && base.length) seqFull.push(...base);
-
-  useEffect(() => {
-    const root = morseRef.current;
-    if (!root) return;
-    const marks = Array.from(root.querySelectorAll("[data-morse-mark]"));
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let pos = 0;
-    let visible = true;
-    let iv = null;
-
-    const stop = () => {
-      if (iv) clearInterval(iv);
-      iv = null;
-    };
-    const start = () => {
-      if (iv || document.hidden || !visible || reducedMotion) return;
-      iv = setInterval(() => {
-        if (pos >= marks.length + 10) {
-          marks.forEach((mark) => { mark.hidden = true; });
-          pos = 0;
-          return;
-        }
-        if (pos < marks.length) marks[pos].hidden = false;
-        pos += 1;
-      }, 130);
-    };
-    const onVisibility = () => {
-      if (document.hidden) stop();
-      else start();
-    };
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      if (visible) start();
-      else stop();
-    });
-
-    if (reducedMotion) marks.forEach((mark) => { mark.hidden = false; });
-    observer.observe(root);
-    document.addEventListener("visibilitychange", onVisibility);
-    start();
-    return () => {
-      stop();
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [seqFull.length]);
-
-  return (
-    <div ref={morseRef} className="morse" title={"spelling: " + words.join(", ")}>
-      {seqFull.map((s, k) =>
-        s === "." ? <span hidden data-morse-mark className="mstar" key={k}>*</span>
-        : s === "-" ? <span hidden data-morse-mark className="mdash" key={k} />
-        : <span hidden data-morse-mark className="mgap" key={k} />
-      )}
-      <span className="mcursor" />
-    </div>
-  );
-}
-
-// ---- The slide: rotates a stylist look / editorial story / far-reach piece ---
-function Slide({ items, onOpenItem }) {
-  const [look, setLook] = useState(null);
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    authorizedFetch("/api/outfits?user=" + encodeURIComponent(getUid() || "guest") + "&n=1")
-      .then((r) => r.json())
-      .then((d) => setLook((d.outfits || [])[0] || null))
-      .catch(() => {});
-    const iv = setInterval(() => setIdx((i) => i + 1), 8000);
-    return () => clearInterval(iv);
-  }, []);
-  const reach = items.find((it) => it._zone === "reach");
-  const slides = [];
-  if (look) slides.push({ type: "LOOK OF THE MOMENT", body: (
-    <a href="/stylist" className="slidelook">
-      <span className="slidethumbs">
-        {look.items.slice(0, 3).map((it) => <img key={it.id} src={it.img || thumbFor(it)} alt="" />)}
-      </span>
-      <span>{look.dominantTag} · {look.conf} match · USD {Math.round(look.total || 0)} →</span>
-    </a>
-  )});
-  slides.push({ type: "FROM THE MAGAZINE", body: (
-    <a href="/hotlist" className="slidestory">
-      <b>{STORIES[idx % STORIES.length].pub}</b> — {STORIES[idx % STORIES.length].title} →
-    </a>
-  )});
-  if (reach) slides.push({ type: "A FAR REACH", body: (
-    <button className="slidereach" onClick={() => onOpenItem(reach)}>
-      <img src={reach.img || thumbFor(reach)} alt="" />
-      <span>{reach.title} — break your pattern →</span>
-    </button>
-  )});
-  const s = slides[idx % slides.length];
-  return (
-    <>
-      <div className="psub" style={{ margin: "0 0 8px" }}>{s.type}</div>
-      {s.body}
-    </>
-  );
-}
-
-// ---- Live observation tracker ------------------------------------------------
-// A subtle sign the taste engine is alive: cycles observed-signal lines built
-// from the user's actual strongest aesthetics. Gated by the on-device
-// observation toggle in Settings.
-function ObservationTracker() {
-  // WHAT WAS WRONG (Aug 8, codebase audit). This seeded with three hardcoded
-  // aesthetics and rendered them through the same line as real data, so a cold
-  // user was shown ARCHIVAL / MINIMAL / STREETWEAR as though they had been
-  // OBSERVED about them. Placeholders must not be presented as findings; the
-  // empty state below says there is nothing yet instead of inventing three.
-  const [lines, setLines] = useState([]);
-  const [idx, setIdx] = useState(0);
-  const [on, setOn] = useState(true);
-
-  useEffect(() => {
-    setOn(observationOn());
-    authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
-      .then((r) => r.json())
-      .then((d) => {
-        const p = d.profile || {};
-        const w = { ...(p.long || {}) };
-        for (const k in p.session || {}) w[k] = (w[k] || 0) + p.session[k];
-        const top = Object.entries(w).filter(([, v]) => v > 0.05)
-          .sort((a, b) => b[1] - a[1]).map(([k]) => k).slice(0, 6);
-        if (top.length >= 2) setLines(top);
-      })
-      .catch(() => {});
-    const iv = setInterval(() => setIdx((i) => i + 1), 5200);
-    return () => clearInterval(iv);
-  }, []);
-
-  if (!on) {
-    return <div className="obsline dim">on-device observation is off — enable it in settings</div>;
-  }
-  if (!lines.length) {
-    return <div className="obsline dim">nothing observed yet — browse, and your convictions appear here</div>;
-  }
-  return (
-    <>
-      {lines.slice(0, 5).map((tag, i) => (
-        <div className={"obsline" + (i === idx % lines.length ? "" : " past")} key={tag + i}>
-          <span className="pulse" />
-          {/* WHAT WAS WRONG (Aug 8, codebase audit): this read "observed
-              interest in <tag> ON AN EXTERNAL TAB". ASILUM has no cross-site
-              observation capability anywhere in the codebase — and /privacy
-              tells the user, correctly, "no cross-site tracking". The product
-              was claiming a surveillance power it does not have, on the home
-              page, while denying it on the privacy page.
-              These tags come from GET /api/profile: the user's OWN taste
-              vector, built from what they did inside ASILUM. The line now says
-              that. */}
-          <b>{tag}</b> — from what you lingered on here
-        </div>
-      ))}
-      <div className="obsnote">read from your own taste profile on this device. ASILUM cannot see other tabs.</div>
-    </>
-  );
-}
+// (Removed Aug 12 at the owner's word — "get rid of a lot of the excess
+// header stuff": the FollowMorse strip, THE SLIDE, LIVE OBSERVATION, and
+// WHO TO FOLLOW cubes no longer ride above the racks. The observation
+// PRIVACY GATE inside the dwell flusher below is separate and stays.)
 
 export default function Home() {
   const [epsilon, setEpsilon] = useState(false);
   const [epsilonAuto, setEpsilonAuto] = useState(false);
-  const [split, setSplit] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [guideOn, setGuideOn] = useState(true);
@@ -314,9 +92,12 @@ export default function Home() {
   useEscape(() => setModal(null), !!modal);
   useEscape(() => { markOnboarded(); setConnectOpen(false); }, connectOpen);
   const [ticketItem, setTicketItem] = useState(null);
-  const [tab, setTab] = useState("curated");       // curated | following | new
+  const [view, setView] = useState("catalog");     // catalog | post (the two sub-pages)
+  const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
   const [composer, setComposer] = useState("");
+  const [wire, setWire] = useState(null);          // POST sub-page: server+local posts
+  const [cravingOpen, setCravingOpen] = useState(false);
   const promptRef = useRef("");
   const boardParamRef = useRef("");
   const uidRef = useRef(null);
@@ -460,7 +241,6 @@ export default function Home() {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       if (!isCurrent()) return;
-      setSplit(data.split || null);
       setItems(data.items || []);
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
@@ -476,7 +256,9 @@ export default function Home() {
   }, [feedQS]);
 
   function applyCraving() {
+    setView("catalog");
     setTab("curated");
+    setCravingOpen(false);
     setCraving({ ...cravingDraft, text: cravingDraft.text.trim().slice(0, 240) });
   }
 
@@ -570,16 +352,14 @@ export default function Home() {
     } catch {}
   }
 
-  // ---- Home tabs ----
-  // Following: pieces from brands you follow + boards you follow + posts from
-  // people you follow. What's New: the freshest inventory across the
-  // affiliated sites, source-labeled.
-  const [tabPosts, setTabPosts] = useState([]);
+  // ---- Catalog modes ----
+  // Following: pieces from brands you follow + boards you follow (posts from
+  // people live on the POST sub-page now). What's New: the freshest inventory
+  // across the affiliated sites, source-labeled.
   async function switchTab(next) {
     setTab(next);
     if (next === "curated") return;
     setTabItems(null);
-    setTabPosts([]);
     try {
       if (next === "new") {
         const d = await fetch("/api/discover?sort=new&limit=48").then((r) => r.json());
@@ -608,12 +388,49 @@ export default function Home() {
             if (!seen.has(it.id)) { seen.add(it.id); pool.push(it); }
           }
         }
-        // posts from followed people
-        const fu = new Set(followedUsers());
-        setTabPosts(listPosts().filter((p) => fu.has(p.handle)));
         setTabItems(pool);
       }
     } catch { setTabItems([]); }
+  }
+
+  // ---- POST sub-page: the wire ----
+  // The first real reader of GET /api/editorial: everyone's visible posts
+  // (server-moderated, bylines are server truth) merged with this device's
+  // own posts — a local copy renders instantly and covers the held-for-review
+  // case; exact-text duplicates defer to the server record. No engagement
+  // counters: there is no like/comment/repost machinery, so none is drawn.
+  async function loadWire() {
+    const mine = listPosts().filter((p) => p.mine);
+    try {
+      const d = await fetch("/api/editorial?kind=user&limit=60").then((r) => r.json());
+      const server = (d.posts || [])
+        .map((p) => ({
+          id: "srv-" + p.id,
+          name: p.authorHandle || "reader",
+          handle: p.authorHandle || "reader",
+          at: p.createdAt || 0,
+          text: (p.body || p.title || "").trim(),
+          mine: false,
+        }))
+        .filter((p) => p.text);
+      const serverTexts = new Set(server.map((p) => p.text));
+      // The server copy wins the dedupe (its byline is server truth), but a
+      // matching local record still proves authorship — keep the "you" chip.
+      const mineTexts = new Set(mine.map((p) => (p.text || "").trim()));
+      for (const p of server) if (mineTexts.has(p.text)) p.mine = true;
+      const merged = [
+        ...server,
+        ...mine.filter((p) => !serverTexts.has((p.text || "").trim())),
+      ].sort((a, b) => b.at - a.at);
+      setWire(merged);
+    } catch {
+      setWire(mine);
+    }
+  }
+
+  function switchView(next) {
+    setView(next);
+    if (next === "post" && wire === null) loadWire();
   }
 
   function publishPost() {
@@ -622,9 +439,12 @@ export default function Home() {
     addPost(composer.trim(), info);
     // Real editorial_posts record too — localStorage stays the instant-render
     // path, the database is the durable one.
-    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: composer.trim() }).catch(() => {});
+    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: composer.trim() })
+      .then(() => loadWire())
+      .catch(() => {});
     setComposer("");
-    setNotice("posted — it's live on the community tab of EDITORIAL and on your profile");
+    loadWire();
+    setNotice("posted — it's live here, on EDITORIAL's community tab, and on your profile");
   }
 
   async function connect(platform) {
@@ -741,20 +561,8 @@ export default function Home() {
       .catch(() => {});
   }
 
-  // Community post tile content, deterministic per feed position. The quote
-  // index steps by 3 (+ a small per-item offset) per post slot so neighboring
-  // posts can never repeat.
-  function postFor(item, idx) {
-    const h = hashStr(item.id + ":" + idx);
-    const ord = Math.floor((idx + 1) / POST_EVERY);
-    return {
-      quote: QUOTES[(ord * 3 + (h % 3)) % QUOTES.length],
-      handle: HANDLES[(h >> 4) % HANDLES.length],
-      ctx: "on the " + item.brand,
-    };
-  }
-
-  const splitLabels = split ? <FollowMorse /> : null;
+  const cravingActive =
+    craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery";
 
   return (
     <div className="wrap">
@@ -766,216 +574,220 @@ export default function Home() {
       </p>
 
       <div className="tabs">
-        {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
-          <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
-            {label}
-          </button>
-        ))}
+        <button className={"tab" + (view === "catalog" ? " cur" : "")} onClick={() => switchView("catalog")}>
+          CATALOG
+        </button>
+        <button className={"tab" + (view === "post" ? " cur" : "")} onClick={() => switchView("post")}>
+          POST
+        </button>
       </div>
-
-      <div className="composer2">
-        <Avatar name={getProfileInfo().name} />
-        <div className="cright">
-          <textarea
-            rows={2}
-            maxLength={400}
-            placeholder="what are you wearing?"
-            value={composer}
-            onChange={(e) => setComposer(e.target.value)}
-          />
-          <div className="cbar">
-            <span className="cicons">
-              <button title="image — soon" onClick={() => setNotice("image posts arrive with the vibe reader")}>▣</button>
-              <button title="tag a piece — soon" onClick={() => setNotice("piece-tagging is on the cutting table")}>#</button>
-            </span>
-            <span className="ccount">{composer.length}/400</span>
-            <button className="btn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
-          </div>
-        </div>
-      </div>
-
-      <div className="homeband">
-        <Collapsible title="LIVE OBSERVATION">
-          <ObservationTracker />
-        </Collapsible>
-        <Collapsible title="WHO TO FOLLOW">
-          <WhoToFollowList compact withSearch />
-        </Collapsible>
-        <Collapsible title="THE SLIDE">
-          <Slide items={items} onOpenItem={openModal} />
-        </Collapsible>
-      </div>
-
-      <section className="cravingbox" aria-labelledby="craving-title">
-        <div className="cravinghead">
-          <div>
-            <div className="psub" id="craving-title">CURRENT CRAVING</div>
-            <p className="deck">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
-          </div>
-          {craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery" ? (
-            <button className="fitbtn" onClick={clearCraving}>CLEAR</button>
-          ) : null}
-        </div>
-        <div className="cravinggrid">
-          <input
-            type="text"
-            maxLength={240}
-            placeholder="dark dinner look, clean but strange, airport armor…"
-            value={cravingDraft.text}
-            onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
-            onKeyDown={(e) => e.key === "Enter" && applyCraving()}
-          />
-          <select value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
-            <option value="">any occasion</option>
-            <option value="everyday">everyday</option><option value="work">work</option>
-            <option value="date">date</option><option value="night">night</option>
-            <option value="event">event</option><option value="travel">travel</option>
-            <option value="outdoors">outdoors</option>
-          </select>
-          <select value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
-            <option value="">any mood</option>
-            <option value="quiet">quiet</option><option value="sharp">sharp</option>
-            <option value="romantic">romantic</option><option value="experimental">experimental</option>
-            <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
-          </select>
-          <select value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
-            <option value="safe">safe bet</option><option value="discovery">discovery</option>
-            <option value="wildcard">wildcard</option>
-          </select>
-          <button className="btn" onClick={applyCraving}>POINT THE WAY</button>
-        </div>
-      </section>
-
-      <div className="filters">
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
-        >
-          <option value="">all categories</option>
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <input
-          type="number"
-          placeholder="max price"
-          value={filters.maxPrice}
-          onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
-        />
-        <label className="toggle" title={fit.usualSize ? "" : "set your size in PROFILE first"}>
-          <input
-            type="checkbox"
-            disabled={!fit.usualSize}
-            checked={filters.fitsMe}
-            onChange={(e) => setFilters((f) => ({ ...f, fitsMe: e.target.checked }))}
-          />
-          fits me
-        </label>
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={epsilon}
-            onChange={(e) => setEpsilon(e.target.checked)}
-          />
-          epsilon
-        </label>
-      </div>
-
-      <div className="splitbar">{splitLabels}</div>
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
-      {epsilonAuto && (
-        <Notice variant="banner">trying something different — you seemed in a rut</Notice>
-      )}
 
-      {tab === "curated" && (
+      {view === "catalog" && (
         <>
-          {loading && <div className="empty">thinking…</div>}
-          {!loading && items.length === 0 && (
-            <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
-          )}
-          <div className="grid">
-            {items.map((it, i) => {
-              const fitLine = fitPhrase(it.size, fitBrain);
-              const post = DEMO_SOCIAL_ENABLED && (i + 1) % POST_EVERY === 0 ? postFor(it, i) : null;
-              return (
-                <FragmentCard
-                  key={it.id}
-                  it={it}
-                  fitLine={fitLine}
-                  bagged={baggedIds.has(it.id)}
-                  onOpen={() => openModal(it)}
-                  onFavorite={() => react(it, "favorite")}
-                  onBag={() => addToBag(it)}
-                  post={post}
-                />
-              );
-            })}
+          <div className="fmodes">
+            {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
+              <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
+                {label}
+              </button>
+            ))}
+            <button className="fmode cravtoggle" onClick={() => setCravingOpen((o) => !o)}>
+              CURRENT CRAVING {cravingActive ? "· ON" : ""} {cravingOpen ? "−" : "+"}
+            </button>
+            {cravingActive && (
+              <button className="txtbtn" onClick={clearCraving}>CLEAR CRAVING</button>
+            )}
           </div>
-          <div ref={sentinelRef} className="sentinel" />
+
+          {cravingOpen && (
+            <section className="cravingline" aria-label="current craving">
+              <p className="cravnote">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
+              <div className="cravinggrid">
+                <input
+                  type="text"
+                  maxLength={240}
+                  placeholder="dark dinner look, clean but strange, airport armor…"
+                  value={cravingDraft.text}
+                  onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
+                  onKeyDown={(e) => e.key === "Enter" && applyCraving()}
+                />
+                <select value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
+                  <option value="">any occasion</option>
+                  <option value="everyday">everyday</option><option value="work">work</option>
+                  <option value="date">date</option><option value="night">night</option>
+                  <option value="event">event</option><option value="travel">travel</option>
+                  <option value="outdoors">outdoors</option>
+                </select>
+                <select value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
+                  <option value="">any mood</option>
+                  <option value="quiet">quiet</option><option value="sharp">sharp</option>
+                  <option value="romantic">romantic</option><option value="experimental">experimental</option>
+                  <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
+                </select>
+                <select value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
+                  <option value="safe">safe bet</option><option value="discovery">discovery</option>
+                  <option value="wildcard">wildcard</option>
+                </select>
+                <button className="btn" onClick={applyCraving}>POINT THE WAY</button>
+              </div>
+            </section>
+          )}
+
+          <div className="filters">
+            <select
+              value={filters.category}
+              onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
+            >
+              <option value="">all categories</option>
+              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <input
+              type="number"
+              placeholder="max price"
+              value={filters.maxPrice}
+              onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
+            />
+            <label className="toggle" title={fit.usualSize ? "" : "set your size in PROFILE first"}>
+              <input
+                type="checkbox"
+                disabled={!fit.usualSize}
+                checked={filters.fitsMe}
+                onChange={(e) => setFilters((f) => ({ ...f, fitsMe: e.target.checked }))}
+              />
+              fits me
+            </label>
+            <label className="toggle">
+              <input
+                type="checkbox"
+                checked={epsilon}
+                onChange={(e) => setEpsilon(e.target.checked)}
+              />
+              epsilon
+            </label>
+          </div>
+
+          {epsilonAuto && (
+            <Notice variant="banner">trying something different — you seemed in a rut</Notice>
+          )}
+
+          {tab === "curated" && (
+            <>
+              {loading && <div className="empty">thinking…</div>}
+              {!loading && items.length === 0 && (
+                <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
+              )}
+              <div className="grid">
+                {items.map((it) => (
+                  <FragmentCard
+                    key={it.id}
+                    it={it}
+                    fitLine={fitPhrase(it.size, fitBrain)}
+                    bagged={baggedIds.has(it.id)}
+                    onOpen={() => openModal(it)}
+                    onFavorite={() => react(it, "favorite")}
+                    onBag={() => addToBag(it)}
+                  />
+                ))}
+              </div>
+              <div ref={sentinelRef} className="sentinel" />
+            </>
+          )}
+
+          {tab === "following" && (
+            <>
+              {!tabItems && <div className="empty">reading who and what you follow…</div>}
+              {tabItems && tabItems.length === 0 && (
+                <div className="empty">
+                  nothing here yet — follow brands (from any piece) and moodboards
+                  (open a shared board and hit FOLLOW) to build this rack.
+                  posts from people live on the POST page.
+                </div>
+              )}
+              {tabItems && tabItems.length > 0 && (
+                <div className="grid">
+                  {tabItems.map((it) => (
+                    <FragmentCard
+                      key={it.id}
+                      it={it}
+                      fitLine={fitPhrase(it.size, fitBrain)}
+                      bagged={baggedIds.has(it.id)}
+                      onOpen={() => openModal(it)}
+                      onFavorite={() => react(it, "favorite")}
+                      onBag={() => addToBag(it)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === "new" && (
+            <>
+              <p className="deck">just in from the affiliated sites — freshest first.</p>
+              {!tabItems && <div className="empty">pulling the fresh racks…</div>}
+              {tabItems && (
+                <div className="grid">
+                  {tabItems.map((it) => (
+                    <FragmentCard
+                      key={it.id}
+                      it={it}
+                      fitLine={fitPhrase(it.size, fitBrain)}
+                      bagged={baggedIds.has(it.id)}
+                      onOpen={() => openModal(it)}
+                      onFavorite={() => react(it, "favorite")}
+                      onBag={() => addToBag(it)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
 
-      {tab === "following" && (
-        <>
-          {!tabItems && <div className="empty">reading who and what you follow…</div>}
-          {tabPosts.length > 0 && tabPosts.map((p) => (
-            <div className="cpost" key={p.id}>
-              <Avatar name={p.name} />
-              <div className="cbody">
-                <div className="chead">
-                  <span className="uname">{p.name}</span>
-                  <span className="uhandle">{p.handle} · {timeAgo(p.at)}</span>
-                </div>
-                <p className="ctext">{p.text}</p>
+      {view === "post" && (
+        <div className="fwire" aria-label="the wire">
+          <div className="composer2">
+            <Avatar name={getProfileInfo().name} />
+            <div className="cright">
+              <textarea
+                rows={2}
+                maxLength={400}
+                placeholder="what are you wearing?"
+                value={composer}
+                onChange={(e) => setComposer(e.target.value)}
+              />
+              <div className="cbar">
+                <span className="cicons">
+                  <button title="image — soon" onClick={() => setNotice("image posts arrive with the vibe reader")}>▣</button>
+                  <button title="video — soon" onClick={() => setNotice("video posts arrive with the media pipeline — nothing here is faked in the meantime")}>▶</button>
+                  <button title="tag a piece — soon" onClick={() => setNotice("piece-tagging is on the cutting table")}>#</button>
+                </span>
+                <span className="ccount">{composer.length}/400</span>
+                <button className="btn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
               </div>
             </div>
-          ))}
-          {tabItems && tabItems.length === 0 && tabPosts.length === 0 && (
-            <div className="empty">
-              nothing here yet — follow brands (from any piece), moodboards
-              (open a shared board and hit FOLLOW), and people
-              ({followedUsers().length} followed so far) to build this tab.
-            </div>
-          )}
-          {tabItems && tabItems.length > 0 && (
-            <div className="grid">
-              {tabItems.map((it) => (
-                <FragmentCard
-                  key={it.id}
-                  it={it}
-                  fitLine={fitPhrase(it.size, fitBrain)}
-                  bagged={baggedIds.has(it.id)}
-                  onOpen={() => openModal(it)}
-                  onFavorite={() => react(it, "favorite")}
-                  onBag={() => addToBag(it)}
-                  post={null}
-                />
-              ))}
-            </div>
-          )}
-        </>
-      )}
+          </div>
 
-      {tab === "new" && (
-        <>
-          <p className="deck">just in from the affiliated sites — freshest first.</p>
-          {!tabItems && <div className="empty">pulling the fresh racks…</div>}
-          {tabItems && (
-            <div className="grid">
-              {tabItems.map((it) => (
-                <FragmentCard
-                  key={it.id}
-                  it={it}
-                  fitLine={fitPhrase(it.size, fitBrain)}
-                  bagged={baggedIds.has(it.id)}
-                  onOpen={() => openModal(it)}
-                  onFavorite={() => react(it, "favorite")}
-                  onBag={() => addToBag(it)}
-                  post={null}
-                />
-              ))}
-            </div>
+          {wire === null && <div className="empty">pulling the wire…</div>}
+          {wire && wire.length === 0 && (
+            <div className="empty">no transmissions yet — yours opens the wire.</div>
           )}
-        </>
+          {(wire || []).map((p) => (
+            <div className="fpost" key={p.id}>
+              <p className="fposttext">{p.text}</p>
+              <span className="fposthandle">
+                {p.handle}{p.mine ? <i className="cmine">you</i> : null} · {timeAgo(p.at)}
+              </span>
+            </div>
+          ))}
+
+          <div className="fwho">
+            <div className="cvkick">WHO TO FOLLOW</div>
+            <WhoToFollowList compact withSearch />
+          </div>
+        </div>
       )}
 
       {/* ---- First visit: buyer-history scan (always escapable) ---- */}
@@ -1126,37 +938,30 @@ export default function Home() {
   );
 }
 
-// One masonry cell: the minimal listing card, plus (sometimes) a community
-// post tile smooshed in after it.
-function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, post }) {
+// One masonry cell: the minimal listing card. (The synthetic community post
+// tiles that used to smoosh in after every 7th card are gone — Aug 12,
+// owner order: the catalog is pieces of clothing only; real posts live on
+// the POST sub-page.)
+function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
   return (
-    <>
-      <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-        <div className="imgwrap" onClick={onOpen} style={{ aspectRatio: aspectFor(it.id) }}>
-          <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
-        </div>
-        <div className="body">
-          <div className="ttl" onClick={onOpen}>{it.title}</div>
-          {it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
-          {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
-          <ColorEvidenceLine item={it} />
-          {fitLine ? <div className="fitline">{fitLine}</div> : null}
-          <div className="cardacts">
-            <button onClick={onFavorite}>Favorite</button>
-            <button className={bagged ? "on" : ""} onClick={onBag}>
-              {bagged ? "In bag ✓" : "Add to bag"}
-            </button>
-          </div>
+    <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
+      <div className="imgwrap" onClick={onOpen} style={{ aspectRatio: aspectFor(it.id) }}>
+        <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
+      </div>
+      <div className="body">
+        <div className="ttl" onClick={onOpen}>{it.title}</div>
+        {it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
+        {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
+        <ColorEvidenceLine item={it} />
+        {fitLine ? <div className="fitline">{fitLine}</div> : null}
+        <div className="cardacts">
+          <button onClick={onFavorite}>Favorite</button>
+          <button className={bagged ? "on" : ""} onClick={onBag}>
+            {bagged ? "In bag ✓" : "Add to bag"}
+          </button>
         </div>
       </div>
-      {post ? (
-        <div className="post">
-          <div className="quote">“{post.quote}”</div>
-          <div className="handle">{post.handle}</div>
-          <div className="ctx">{post.ctx}</div>
-        </div>
-      ) : null}
-    </>
+    </div>
   );
 }
 

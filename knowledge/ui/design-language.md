@@ -47,6 +47,19 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   and a slight horizontal motion blur — never black/ink (owner: "it's
   ugly"). Red-law elements (buy/home/reset) keep red with the same
   treatment. One grouped rule at the end of globals.css.
+- CATALOG (/) has two sub-pages (owner order, Aug 12): CATALOG lands
+  straight on clothing — floating mode row (curated/following/new), one
+  collapsed CURRENT CRAVING line, filters, masonry immediately; POST is
+  the wire — composer + the app's first real reader of GET /api/editorial
+  merged with the device's own posts, WHO TO FOLLOW below, no fake
+  engagement counters ever. The old header cubes (live observation, who
+  to follow, the slide), the morse strip, and the synthetic post tiles
+  are gone from the page.
+- Feed cards are Grailed-cut: square floating images (no border, no card
+  box, no hover bubble; radius 0 unless the owner tunes --ed-img-rad),
+  tile aspects vary per item over the shared 8-ratio table in
+  lib/client.js (aspectFor — the ONE aspect source for every grid). The
+  red reach frame and ◉ INSPECT badge survive.
 - Two user-switchable interfaces (Settings → Appearance, localStorage
   asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (pill nav,
   softer surfaces, [data-model="02"] variants — rebased onto the top-nav
