@@ -22,15 +22,27 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   Legacy token names (--ink/--paper/--line/--grey/--faint) carry OS values.
 - Layered depth: backlight → grid → haze blobs → content → glow →
   scanline glass. Subtlety threshold: never reduce readability.
-- Seven destinations, permanent left anchor (owner amendment July 25 —
-  FRONT COVER added as the landing edition): FRONT COVER, CATALOG,
-  EDITORIAL, PASSPORT, DISCOVER, PROFILE, SETTINGS. New features must
-  answer "which subsystem do I belong to?" — the destination list only
-  changes by owner decree.
+- Seven destinations in a row directly under the top ticker (owner order,
+  Aug 12 2026 — the left sidebar is GONE; header strip is thick enough that
+  the wordmark keeps full size): FRONT COVER, CATALOG, EDITORIAL, PASSPORT,
+  DISCOVER, PROFILE, SETTINGS. New features must answer "which subsystem do
+  I belong to?" — the destination list only changes by owner decree.
+- Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
+  SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
+  row (ASTERISK drawer trigger, seven buttons, compact dock). Theme toggle
+  lives in SETTINGS only; the default follows the device preference
+  (prefers-color-scheme) until the owner pins a theme.
+- Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW
+  poster, ambient-era CD print, State 3.0 stills): really THIN lines that
+  are NOT uniform as put-together excess detail; text allowed to float in
+  space; small white outline squares/hairlines slightly bordering the page
+  (`.os-frame`). Background grid: big cells, very transparent lines.
+- Clickable words carry a slight horizontal motion blur + glow overtop —
+  the site-wide clickability signal (grouped rule at the end of globals.css).
 - Two user-switchable interfaces (Settings → Appearance, localStorage
-  asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (engine
-  front and centre, lozenge nav, [data-model="02"] variants). Structure
-  changes; palette follows the theme system.
+  asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (pill nav,
+  softer surfaces, [data-model="02"] variants — rebased onto the top-nav
+  shell). Structure changes; palette follows the theme system.
 
 ## Passport UV page (redesign/passport-uv, owner inspo: Swiss passport under UV)
 The PASSPORT document on /board renders as a page under blacklight —

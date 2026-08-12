@@ -24,7 +24,7 @@ theme: dark/light and MODULE RAIL/ORB HUB stay in Settings → Appearance.
 - Per-control ⟲ removes the override → fallback returns. RESET ALL clears
   everything (two-step arm).
 - Special controls: text glow (writes `--glow-ink: none` — the one non-`--ed-`
-  key allowed), boot sweep (localStorage `asilum-boot`, read by OsBoot).
+  key allowed). (The boot-sweep toggle died with the boot sweep, Aug 12.)
 
 ## INSPECT mode
 Each registry control carries `selectors`. INSPECT walks up from the clicked
@@ -43,7 +43,8 @@ malformed values are dropped and counted, never applied.
 - Never route COLOR through the console — red-only-accent and theme law stay
   in tokens. Sizes, shapes, opacity levels, and durations only.
 - The mobile (≤760px) overrides in globals.css win over console values where
-  they set literals (e.g. `--side-w: 0`); that is intentional — hand edits
-  must not break the bottom-bar layout.
-- `--side-w`, `--mq-h`, `--status-h` now read `var(--ed-…, shipped)` — edit
-  the `--ed-` side, never reintroduce a literal on the legacy name.
+  they set literals (e.g. `--mq-h: 54px`); that is intentional — hand edits
+  must not break the small-screen header.
+- `--mq-h` (header bar height) and `--status-h` read `var(--ed-…, shipped)` —
+  edit the `--ed-` side, never reintroduce a literal on the legacy name.
+  (`--side-w` died with the sidebar, Aug 12.)

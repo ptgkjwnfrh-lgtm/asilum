@@ -16,7 +16,7 @@ import {
   GROUPS, ALL_CONTROLS, UILAB_KEY,
   loadOverrides, saveOverrides, applyOverrides,
   formatValue, parseValue, validValue,
-  bootOn, setBoot, loadPresets, savePresets, sanitizeImport,
+  loadPresets, savePresets, sanitizeImport,
 } from "../../lib/uilab.js";
 import { useEscape } from "./dismiss.js";
 
@@ -26,7 +26,6 @@ export default function DesignConsole() {
   const [openGroups, setOpenGroups] = useState({ type: true });
   const [inspecting, setInspecting] = useState(false);
   const [flashKeys, setFlashKeys] = useState([]);
-  const [boot, setBootState] = useState(true);
   const [presets, setPresets] = useState({});
   const [presetName, setPresetName] = useState("");
   const [importOpen, setImportOpen] = useState(false);
@@ -39,7 +38,6 @@ export default function DesignConsole() {
 
   useEffect(() => {
     setOverrides(loadOverrides());
-    setBootState(bootOn());
     setPresets(loadPresets());
     const onOpen = () => setOpen(true);
     const onKey = (event) => {
@@ -89,8 +87,6 @@ export default function DesignConsole() {
     if (!resetArmed) { setResetArmed(true); return; }
     setResetArmed(false);
     commit({});
-    setBoot(true);
-    setBootState(true);
     setMessage("all hand edits cleared — shipped design restored");
   }
 
@@ -236,9 +232,7 @@ export default function DesignConsole() {
         <div className="dcbody">
           {GROUPS.map((group) => {
             const isOpen = !!openGroups[group.id];
-            const touched = group.controls.filter((c) =>
-              c.kind === "boot" ? !boot : overrides[c.key] !== undefined
-            ).length;
+            const touched = group.controls.filter((c) => overrides[c.key] !== undefined).length;
             return (
               <section key={group.id} className={"dcgroup" + (isOpen ? " open" : "")}>
                 <button
@@ -256,13 +250,11 @@ export default function DesignConsole() {
                         key={control.key}
                         control={control}
                         overrides={overrides}
-                        boot={boot}
                         flash={flashKeys.includes(control.key)}
                         rowRef={(el) => { rowRefs.current[control.key] = el; }}
                         onSet={setControl}
                         onClear={clearControl}
                         onToggle={toggleControl}
-                        onBoot={(on) => { setBoot(on); setBootState(on); }}
                       />
                     ))}
                   </div>
@@ -320,19 +312,7 @@ export default function DesignConsole() {
   );
 }
 
-function ControlRow({ control, overrides, boot, flash, rowRef, onSet, onClear, onToggle, onBoot }) {
-  if (control.kind === "boot") {
-    return (
-      <div className={"dcrow" + (!boot ? " set" : "") + (flash ? " flash" : "")} ref={rowRef}>
-        <label>{control.label}</label>
-        <span />
-        <button className="fitbtn" style={{ gridColumn: "3 / 5" }} onClick={() => onBoot(!boot)}>
-          {boot ? "ON" : "OFF"}
-        </button>
-        {control.note && <div className="dcnote">{control.note}</div>}
-      </div>
-    );
-  }
+function ControlRow({ control, overrides, flash, rowRef, onSet, onClear, onToggle }) {
   if (control.kind === "toggle") {
     const off = overrides[control.key] !== undefined;
     return (

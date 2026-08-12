@@ -1,10 +1,11 @@
 "use client";
 
 // app/shell.js
-// The magazine shell around every page: *ASILUM magazine wordmark (always a
-// way home) + the eight page buttons in the left sidebar, multi-search + bag,
-// and the always-moving ticker. Account controls live on PROFILE so identity
-// has one obvious home.
+// The magazine shell around every page: one fixed top header — wordmark at
+// full size, the always-moving ticker, big search/bag/sign-in — with the
+// seven destinations in a row directly under it (owner order, Aug 12: the
+// left sidebar is gone). Account controls live on PROFILE so identity has
+// one obvious home.
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -24,7 +25,6 @@ import AccountSignup from "./components/AccountSignup.jsx";
 import AsteriskDock from "./components/AsteriskDock.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
-import { bootOn } from "../lib/uilab.js";
 
 // Six destinations — the complete mental model of the OS. Every legacy route
 // stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE, and
@@ -98,6 +98,22 @@ export default function Shell({ children }) {
     syncGuide();
     window.addEventListener("asilum:brain", syncGuide);
     return () => window.removeEventListener("asilum:brain", syncGuide);
+  }, []);
+
+  // Theme follows the device unless the owner picked one in SETTINGS.
+  // The pre-paint script (app/layout.js) resolves the first frame; this
+  // listener keeps an un-pinned session in step with a live OS switch.
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: light)");
+    const followDevice = () => {
+      let stored = null;
+      try { stored = window.localStorage.getItem("asilum-theme"); } catch {}
+      if (stored !== "dark" && stored !== "light") {
+        document.documentElement.dataset.theme = mq.matches ? "light" : "dark";
+      }
+    };
+    mq.addEventListener("change", followDevice);
+    return () => mq.removeEventListener("change", followDevice);
   }, []);
 
   useEffect(() => () => {
@@ -324,99 +340,95 @@ export default function Shell({ children }) {
 
   return (
     <div className="shell">
-      {/* Keyboard/screen-reader users jump past the marquee and sidebar.
+      {/* Keyboard/screen-reader users jump past the header.
           Visually hidden until focused — no visual-identity change. */}
       <a className="skiplink" href="#main">skip to content</a>
       <div className="os-blob b1" aria-hidden="true" />
       <div className="os-blob b2" aria-hidden="true" />
       <div className="os-blob b3" aria-hidden="true" />
       <div className="os-blob b4" aria-hidden="true" />
-      <OsBoot />
-      <div className="marquee">
-        <div className="mq">
-          {tickerRun}
-          {tickerRun}
-        </div>
-      </div>
+      {/* thin non-uniform hairlines + small outline squares slightly
+          bordering the page (owner reference language, Aug 12) */}
+      <div className="os-frame" aria-hidden="true"><i /><i /><i /><i /></div>
 
-      <aside className="side">
-        <a className="wordmark" href="/" title="back to the catalog">
-          <i>*</i>ASILUM<em>MAGAZINE</em><small>FASHION INTELLIGENCE OS</small>
-        </a>
-        <AsteriskDrawer />
-        <nav className="snavs">
-          {NAV.map((n) => {
-            const cur = n.match(pathname || "/");
-            return (
-              <span key={n.href}>
-                <a className={"snav" + (cur ? " cur" : "")} href={n.href}>
-                  <span className="nic" aria-hidden="true">{n.icon}</span>
-                  {n.label}
-                  <span className="nled" aria-hidden="true" />
-                  <span className="nmeta">{n.meta}</span>
-                </a>
-                {cur && n.sub && (
-                  <span className="snavsub">
-                    {n.sub.map((s) => (
-                      <a key={s.href} className={pathname?.startsWith(s.href) ? "cur" : ""} href={s.href}>{s.label}</a>
-                    ))}
-                  </span>
-                )}
-              </span>
-            );
-          })}
-        </nav>
-        <AsteriskDock />
-        <div className="sfoot">one taste record, guiding every rack</div>
-      </aside>
-
-      <div className="topright">
-        {searchOpen ? (
-          <>
-            <input
-              autoFocus
-              className="search"
-              placeholder="ask for a piece, feeling, place, film, era…"
-              value={q}
-              onChange={(e) => onSearchInput(e.target.value)}
-              onKeyDown={submitSearch}
-              onBlur={closeSearch}
-            />
-            <AsteriskGuidanceToggle className="fitbtn asearchtoggle" />
-          </>
-        ) : (
-          <button className="tbtn" onClick={() => setSearchOpen(true)}>SEARCH</button>
-        )}
-        <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
-          BAG ({bag.length})
-        </button>
-        <button
-          className="tbtn"
-          title="switch phosphor dark / ice light"
-          onClick={() => {
-            const root = document.documentElement;
-            const next = root.dataset.theme === "light" ? "dark" : "light";
-            root.dataset.theme = next;
-            try { window.localStorage.setItem("asilum-theme", next); } catch {}
-          }}
-        >
-          ◐
-        </button>
-        {authUser ? (
-          <a className="tbtn" href="/profile#access" title={authUser.email || authUser.id}>
-            ACCOUNT
+      <header className="tophead">
+        <div className="thbar">
+          <a className="wordmark" href="/" title="back to the catalog">
+            <i>*</i>ASILUM<em>MAGAZINE</em><small>FASHION INTELLIGENCE OS</small>
           </a>
-        ) : (
-          <button
-            className="tbtn"
-            onClick={() =>
-              window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }))
-            }
-          >
-            SIGN IN
-          </button>
-        )}
-      </div>
+          <div className="marquee">
+            <div className="mq">
+              {tickerRun}
+              {tickerRun}
+            </div>
+          </div>
+          <div className="topright">
+            {searchOpen ? (
+              <>
+                <input
+                  autoFocus
+                  className="search"
+                  placeholder="ask for a piece, feeling, place, film, era…"
+                  value={q}
+                  onChange={(e) => onSearchInput(e.target.value)}
+                  onKeyDown={submitSearch}
+                  onBlur={closeSearch}
+                />
+                <AsteriskGuidanceToggle className="fitbtn asearchtoggle" />
+              </>
+            ) : (
+              <button className="tbtn" onClick={() => setSearchOpen(true)}>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.7" cy="6.7" r="4.6" fill="none" stroke="currentColor" strokeWidth="1.6" /><line x1="10.2" y1="10.2" x2="14.4" y2="14.4" stroke="currentColor" strokeWidth="1.6" /></svg>
+                SEARCH
+              </button>
+            )}
+            <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 5h10.8l-.9 9H3.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M5.4 5V4a2.6 2.6 0 0 1 5.2 0v1" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+              BAG ({bag.length})
+            </button>
+            {authUser ? (
+              <a className="tbtn" href="/profile#access" title={authUser.email || authUser.id}>
+                ACCOUNT
+              </a>
+            ) : (
+              <button
+                className="tbtn"
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }))
+                }
+              >
+                SIGN IN
+              </button>
+            )}
+          </div>
+        </div>
+        <nav className="topnav">
+          <AsteriskDrawer />
+          <div className="snavs">
+            {NAV.map((n) => {
+              const cur = n.match(pathname || "/");
+              return (
+                <span className="snavwrap" key={n.href}>
+                  <a className={"snav" + (cur ? " cur" : "")} href={n.href}>
+                    <span className="nic" aria-hidden="true">{n.icon}</span>
+                    {n.label}
+                    <span className="nled" aria-hidden="true" />
+                    <span className="nmeta">{n.meta}</span>
+                  </a>
+                  {cur && n.sub && (
+                    <span className="snavsub">
+                      {n.sub.map((s) => (
+                        <a key={s.href} className={pathname?.startsWith(s.href) ? "cur" : ""} href={s.href}>{s.label}</a>
+                      ))}
+                    </span>
+                  )}
+                </span>
+              );
+            })}
+          </div>
+          <AsteriskDock size={38} className="os-dock navdock" />
+        </nav>
+      </header>
 
       <AccountSignup />
       <DesignConsole />
@@ -576,31 +588,3 @@ function OsStatus({ bagCount, guideOn, pathname }) {
   );
 }
 
-// Boot sweep: an X/Y axis pulled from the bottom-left corner resolves into
-// the sidebar and the top ticker, then fades. Runs once per full page load.
-// The owner can switch it off from the DESIGN CONSOLE (localStorage asilum-boot).
-function OsBoot() {
-  const [phase, setPhase] = useState("run");
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !bootOn()) { setPhase("gone"); return; }
-    const t1 = setTimeout(() => setPhase("done"), 1150);
-    const t2 = setTimeout(() => setPhase("gone"), 1600);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
-  if (phase === "gone") return null;
-  return (
-    <div className={"os-boot" + (phase === "done" ? " done" : "")} aria-hidden="true">
-      <div className="by" /><div className="bx" /><div className="bdot" />
-      <div className="bty">
-        {[...NAV].reverse().map((n, i) => (
-          <span key={n.label} className="bt" style={{ animationDelay: `${0.08 + i * 0.05}s` }}>✦ {n.label}</span>
-        ))}
-      </div>
-      <div className="btx">
-        {NAV.map((n, i) => (
-          <span key={n.label} className="bt" style={{ animationDelay: `${0.42 + i * 0.05}s` }}>* {n.meta}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
