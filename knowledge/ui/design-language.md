@@ -55,6 +55,16 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   engagement counters ever. The old header cubes (live observation, who
   to follow, the slide), the morse strip, and the synthetic post tiles
   are gone from the page.
+- EDITORIAL (/hotlist) is one page, a descending visibility ladder (owner
+  order, Aug 12): 1 THE HOTLIST loudest (big ghost numerals, teal titles,
+  red person-counts), 2 ASILUM MAGAZINE (house dispatches from
+  editorial_posts kind=asilum; honest empty state; submissions still
+  coming-soon), 3 AD SPACE (dashed = honestly open, "sponsored placements
+  are always disclosed", never a fake advertiser), 4 THE COMMUNITY FLOOR
+  (real wire via fetchWire, no fabricated counters, videos honestly
+  absent), 5 EXTERNAL DISPATCHES quietest (grey title-only links out —
+  deliberately excluded from the teal clickable rule; the ladder wins).
+  The old three tabs, the fake like-button, and postStats zeros are gone.
 - Feed cards are Grailed-cut: square floating images (no border, no card
   box, no hover bubble; radius 0 unless the owner tunes --ed-img-rad),
   tile aspects vary per item over the shared 8-ratio table in

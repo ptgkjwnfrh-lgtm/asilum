@@ -588,25 +588,51 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   color: var(--red); cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 0;
 }
 
-/* ---- Editorial stories ---- */
-.storyband { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
-.storybig { flex: 2; min-width: 300px; border: 1px solid var(--line); padding: 22px; display: block; }
-.storybig:hover .storyttl { color: var(--red); }
-.storypub { font-size: 10px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); margin-bottom: 8px; }
-.storyttl { font-size: clamp(24px, 3.4vw, 44px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; text-transform: uppercase; }
-.storyttl.small { font-size: 19px; }
-.storysum { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--grey); margin: 10px 0; line-height: 1.5; }
-.readlink { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid var(--ink); }
-.storybig:hover .readlink, .storycard:hover .readlink { color: var(--red); border-color: var(--red); }
-.storygrid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-.storycard { border: 1px solid var(--line); padding: 16px; display: block; }
-.storycard:hover .storyttl { color: var(--red); }
-.adbox { flex: 1; min-width: 200px; border: 1px solid var(--line); display: flex; flex-direction: column; }
-.adbox.slim { min-height: 140px; }
-.adlabel { font-size: 9px; font-weight: 800; letter-spacing: 0.18em; color: var(--grey); border-bottom: 1px solid var(--line); padding: 8px 12px; }
-.adbody { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--grey); padding: 18px; text-align: center; }
+/* ---- EDITORIAL ladder (owner order, Aug 12): one page, descending
+   visibility — hotlist loudest, then the house, open ad slots (dashed =
+   honestly empty), the community floor, external links quietest. ---- */
 .adstar { font-size: 44px; font-weight: 900; color: var(--red); font-style: normal; line-height: 1; }
-.adbody em { font-size: 11px; }
+.elmast { font-family: var(--mich); font-size: clamp(30px, 5vw, 60px); font-weight: 700; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; margin: 10px 0 2px; }
+.elnote { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--grey); margin: 0 0 14px; }
+.elhot { margin-bottom: 46px; }
+.elrow { display: flex; align-items: center; gap: 18px; padding: 10px 0; }
+.elrow:nth-of-type(even) { margin-left: 30px; }
+.elnum { font-family: var(--osd); font-size: clamp(34px, 4.5vw, 56px); line-height: 1; color: color-mix(in srgb, var(--ink) 22%, transparent); text-shadow: none; flex: none; width: 1.5em; }
+.elthumb { width: 84px; height: 106px; object-fit: cover; flex: none; }
+.elinfo { flex: 1; min-width: 0; }
+.elttl { font-family: var(--mich); font-size: clamp(15px, 2vw, 22px); letter-spacing: 0.04em; line-height: 1.2; }
+.elbrand { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; margin-top: 2px; }
+.elstat { font-family: var(--osd); font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.08em; flex: none; text-align: right; }
+.elhouse { margin-bottom: 44px; }
+.elhousenote { font-size: 12.5px; color: var(--grey); max-width: 56ch; margin: 8px 0 14px; }
+.elpiece { margin: 0 0 18px; }
+.elpiecettl { font-family: var(--mich); font-size: 16px; letter-spacing: 0.04em; }
+.elpiecesum { font-size: 12px; color: var(--grey); max-width: 60ch; margin: 4px 0; }
+.elpiecedate { font-family: var(--osd); font-size: 12px; color: var(--faint); }
+.elsubmit { display: flex; align-items: center; gap: 10px; font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); margin-top: 8px; }
+.elsubmit .adstar { font-size: 20px; }
+.elsubmit em { font-style: normal; color: var(--red); }
+.elads { margin-bottom: 44px; }
+.eladrow { display: flex; gap: 40px; flex-wrap: wrap; margin-top: 8px; }
+.elad { flex: 1; min-width: 220px; min-height: 110px; border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent); display: grid; place-content: center; justify-items: center; gap: 4px; padding: 18px; text-align: center; }
+.elad b { font-size: 9px; letter-spacing: 0.22em; font-weight: 400; color: var(--grey); }
+.elad em { font-style: italic; font-size: 11px; color: var(--faint); }
+.elad .adstar { font-size: 26px; }
+.elfloor { margin-bottom: 44px; max-width: 760px; }
+.elhouse .cvkick, .elads .cvkick, .elfloor .cvkick, .elext .cvkick { margin-bottom: 10px; }
+.elfloornote { font-size: 10px; color: var(--faint); letter-spacing: 0.06em; margin-top: 14px; }
+.elext { padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); }
+.elextrow { display: flex; align-items: baseline; gap: 10px; padding: 3px 0; }
+.elextpub { font-size: 7.5px; letter-spacing: 0.2em; color: var(--faint); flex: none; width: 110px; }
+.elextttl { font-size: 11px; color: var(--grey); }
+.elextrow:hover .elextttl { color: var(--sig); }
+.elextnote { font-size: 9px; color: var(--faint); margin-top: 10px; }
+@media (max-width: 700px) {
+  .elrow:nth-of-type(even) { margin-left: 0; }
+  .elnum { width: 1.2em; }
+  .elthumb { width: 64px; height: 82px; }
+  .eladrow { gap: 16px; }
+}
 
 /* ---- Community posts ---- */
 .cpost { display: flex; gap: 12px; border-bottom: 1px solid var(--line); padding: 14px 0; }
@@ -1597,10 +1623,10 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    Red-law elements (buy, home, reset) keep red with the same treatment.
    Hover states keep their own glow (higher specificity or later wins). ---- */
 .tbtn, .snav, .snavsub a, .txtbtn, .railact, .wact, .amemhide, .modmore,
-.roomreport, .readlink, .shit, .mqlink, .tab,
+.roomreport, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode {
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode, .elttl {
   color: var(--sig);
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
