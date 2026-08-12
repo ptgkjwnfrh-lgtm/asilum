@@ -8,9 +8,10 @@ Nothing is static; nothing is frantic. Motion communicates system activity.
   Hub), scanline roll bar, haze drift (40–60s cycles).
 - Mechanical, not springy CSS: steps() for state changes; transitions
   0.12–0.28s.
-- Clickable words carry a slight horizontal motion-blur + glow overtop
-  (owner rule, Aug 12) — the site-wide "this word is clickable" signal,
-  written once in globals.css as a grouped text-shadow rule; add new
-  text-action classes to that list, don't restate the shadow.
+- Clickable words carry a slight horizontal motion-blur + glow overtop,
+  painted the logo gradient's teal (--sig), never black (owner rule,
+  Aug 12) — the site-wide "this word is clickable" signal, written once
+  in globals.css as a grouped color+text-shadow rule; add new text-action
+  classes to that list, don't restate the shadow.
 - prefers-reduced-motion: canvases freeze after first frame,
   ambient loops off. This is non-negotiable.

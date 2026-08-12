@@ -37,8 +37,16 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   are NOT uniform as put-together excess detail; text allowed to float in
   space; small white outline squares/hairlines slightly bordering the page
   (`.os-frame`). Background grid: big cells, very transparent lines.
-- Clickable words carry a slight horizontal motion blur + glow overtop —
-  the site-wide clickability signal (grouped rule at the end of globals.css).
+- Aug 12 round 2 (owner pictures: Rag & Bone Denim '23 campaign, Helmut
+  Lang ad archive): BOLD FLOATING TEXT — oversized stacked headline blocks
+  sitting directly on the page ground; GREATLY limit bubbles — content
+  floats, borders are the exception not the default; UNORTHODOX image
+  placement — slight rotations, overlaps, off-grid collage, film-strip
+  thumbnail columns, type crossing images.
+- Clickable words are painted the logo gradient's teal (--sig) with a glow
+  and a slight horizontal motion blur — never black/ink (owner: "it's
+  ugly"). Red-law elements (buy/home/reset) keep red with the same
+  treatment. One grouped rule at the end of globals.css.
 - Two user-switchable interfaces (Settings → Appearance, localStorage
   asilum-model): 01 MODULE RAIL (instrument stack) / 02 ORB HUB (pill nav,
   softer surfaces, [data-model="02"] variants — rebased onto the top-nav
