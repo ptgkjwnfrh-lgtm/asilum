@@ -543,8 +543,31 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   assert.equal(schema.rows[0].version, committedSchemaVersion());
 
   // v18 brand cases: CAS transition + same-transaction ledger row.
+  //
+  // WHAT WAS WRONG (Aug 9): the cleanup was `DELETE FROM brand_cases`, which
+  // schema-v19-integrity-hardening.sql:82 REVOKES from asilum_app on purpose —
+  // brand cases are an append-only enforcement ledger. The delete only ever
+  // worked because CI connects to a DISPOSABLE container as the `postgres`
+  // superuser, which bypasses both the grant and RLS. Pointed at a real
+  // database as the role the app actually runs as, the delete was denied, the
+  // `finally` threw, and the test left a live `under_review` case behind on
+  // EVERY run. Measured before the fix: 12 stranded rows in production.
+  //
+  // So the role decides the contract. Where a hard delete is permitted (CI's
+  // owner role) keep the cascade coverage. Where it is not (any real database)
+  // assert the hardening ITSELF — the check that would have caught someone
+  // "restoring" the v18 grant — and retire the case through its own lifecycle
+  // instead of trying to erase it.
   {
     const { validateOpenCase, validateTransition } = await import("../lib/brands/cases.js");
+    const priv = await pool.query(
+      `SELECT has_table_privilege(current_user,'brand_cases','DELETE')       AS can_delete_case,
+              has_table_privilege(current_user,'brand_case_events','UPDATE') AS can_update_event,
+              has_table_privilege(current_user,'brand_case_events','DELETE') AS can_delete_event,
+              current_user AS role`
+    );
+    const { can_delete_case: canHardDelete, can_update_event, can_delete_event, role } = priv.rows[0];
+
     let kase = await production.insertBrandCase(validateOpenCase({
       kind: "verification", brandName: `IT Brand ${suffix.slice(0, 8)}`, openedBy: "it-admin" }));
     try {
@@ -558,11 +581,41 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
       assert.deepEqual(ledger.map((e) => e.toStatus), ["open", "under_review"]);
       assert.deepEqual((await production.listBrandCaseEvents(kase.id, 1)).map((e) => e.toStatus),
         ["under_review"], "a capped ledger returns the latest transition");
+
+      if (!canHardDelete) {
+        // v19's own verification block, asserted rather than commented.
+        assert.equal(can_update_event, false, "brand_case_events must not be updatable (v19)");
+        assert.equal(can_delete_event, false, "brand_case_events must not be deletable (v19)");
+        // The cascade is still declared, even though this role may not fire it.
+        const fk = await pool.query(
+          `SELECT confdeltype FROM pg_constraint
+            WHERE conrelid='public.brand_case_events'::regclass AND contype='f'`
+        );
+        assert.ok(fk.rows.length, "brand_case_events must carry a foreign key to its case");
+        assert.ok(fk.rows.every((r) => r.confdeltype === "c"),
+          "the ledger FK must still be declared ON DELETE CASCADE");
+      }
     } finally {
-      await pool.query("DELETE FROM brand_cases WHERE id=$1", [kase.id]);
-      const orphans = await pool.query(
-        "SELECT count(*)::int AS n FROM brand_case_events WHERE case_id=$1", [kase.id]);
-      assert.equal(orphans.rows[0].n, 0, "ledger cascades with the case");
+      if (canHardDelete) {
+        await pool.query("DELETE FROM brand_cases WHERE id=$1", [kase.id]);
+        const orphans = await pool.query(
+          "SELECT count(*)::int AS n FROM brand_case_events WHERE case_id=$1", [kase.id]);
+        assert.equal(orphans.rows[0].n, 0, "ledger cascades with the case");
+      } else {
+        // Append-only: retire through the domain's terminal state so the run
+        // never leaves an ACTIVE case behind, and say plainly that a row
+        // remains. A silent retention would read as "cleaned up".
+        const current = await production.getBrandCase(kase.id);
+        if (current && current.status !== "archived") {
+          await production.applyBrandCaseTransition(kase.id, current.status,
+            validateTransition(current, { to: "archived", actor: "it-admin" }));
+        }
+        console.error(
+          `[postgres-integration] brand case ${kase.id} archived, not deleted: ` +
+          `role "${role}" has no DELETE on brand_cases (schema-v19, by design). ` +
+          `Append-only ledger — remove with an owner-role connection if this is a shared database.`
+        );
+      }
     }
   }
 
@@ -575,14 +628,47 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
   const roomHandle = `it-${suffix.slice(0, 12)}`;
   // profile_rooms carries an FK to auth.users wherever the auth schema
   // exists (Supabase, and CI's shim) — give the test accounts parent rows.
-  const authUsersPresent = (await pool.query(
-    "SELECT to_regclass('auth.users') IS NOT NULL AS present")).rows[0].present;
-  if (authUsersPresent) {
+  //
+  // WHAT WAS WRONG (Aug 9): this asked whether auth.users EXISTS, then wrote
+  // to it. Existence is not permission. On CI the connected role is the
+  // `postgres` superuser so the INSERT succeeds; on real Supabase the app role
+  // has no rights on the auth schema at all, so the INSERT raised "permission
+  // denied for schema auth" (42501) and failed the whole test. Same shape as
+  // the brand-cases cleanup above: "the code path exists" is not "this role
+  // may use it". Ask for the privilege, not the table.
+  // Neither catalog probe survives a role without rights on the auth schema:
+  // has_table_privilege() RAISES "permission denied for schema auth" instead of
+  // returning false, and to_regclass() returns NULL — making "absent" and
+  // "invisible to me" indistinguishable, which is how a first attempt at this
+  // fix sailed past the guard and hit the foreign key anyway. Let the INSERT's
+  // own SQLSTATE decide; it is the only answer that is never ambiguous.
+  //   seeded            -> parents exist, run the block
+  //   42P01 / 3F000     -> no auth.users at all (plain CI Postgres), no FK to
+  //                        satisfy, run the block
+  //   42501             -> the table is there but this role may not write it,
+  //                        so the FK can never be satisfied: skip, loudly
+  let authUsersSeeded = false;
+  let authUsersAbsent = false;
+  try {
     await pool.query(
       "INSERT INTO auth.users (id) VALUES ($1::uuid), ($2::uuid) ON CONFLICT DO NOTHING",
       [accountA, accountB]);
+    authUsersSeeded = true;
+  } catch (err) {
+    if (err.code === "42P01" || err.code === "3F000") authUsersAbsent = true;
+    else if (err.code !== "42501") throw err;
   }
-  try {
+  const roomsRunnable = authUsersSeeded || authUsersAbsent;
+  if (!roomsRunnable) {
+    const who = (await pool.query("SELECT current_user AS role")).rows[0].role;
+    console.error(
+      `[postgres-integration] SKIPPED the v17 profile-rooms block: role ` +
+      `"${who}" cannot seed auth.users (no rights on the auth schema), and ` +
+      `profile_rooms carries an FK to it. This block is covered in CI, which ` +
+      `connects as the database owner.`
+    );
+  }
+  if (roomsRunnable) try {
     await assert.rejects(() => production.upsertProfileRoom(accountB, { published: true }),
       /handle-required/, "published rooms require a claimed handle");
     await production.upsertProfileRoom(accountA, { handle: roomHandle, themeId: "after-dark", published: true });
@@ -601,7 +687,7 @@ test("Postgres enforces board, ticket, and adoption integrity", { skip: !databas
     assert.equal(orphanModules.rows[0].n, 0, "modules cascade with the room");
   } finally {
     await pool.query("DELETE FROM profile_rooms WHERE account_id=ANY($1::uuid[])", [[accountA, accountB]]);
-    if (authUsersPresent) {
+    if (authUsersSeeded) {
       await pool.query("DELETE FROM auth.users WHERE id=ANY($1::uuid[])", [[accountA, accountB]]);
     }
   }
