@@ -70,6 +70,15 @@ function eraLabel(era) {
 // WHO TO FOLLOW cubes no longer ride above the racks. The observation
 // PRIVACY GATE inside the dwell flusher below is separate and stays.)
 
+// The catalog's hairline field (magazine treatment, owner order Aug 13):
+// pinned to the page's first stretch so infinite scroll runs past it;
+// hand-placed, deterministic, and the masonry keeps the floor — the
+// furniture costs zero height.
+const CT_HAIRLINES = [
+  "ctln-h1", "ctln-h2", "ctln-h3", "ctln-h4",
+  "ctln-v1", "ctln-v2", "ctln-v3",
+];
+
 export default function Home() {
   const [epsilon, setEpsilon] = useState(false);
   const [epsilonAuto, setEpsilonAuto] = useState(false);
@@ -99,6 +108,7 @@ export default function Home() {
   const [wire, setWire] = useState(null);          // POST sub-page: server+local posts
   const [wireLive, setWireLive] = useState(true);  // false = server unreachable
   const [cravingOpen, setCravingOpen] = useState(false);
+  const [stamp, setStamp] = useState("");
   const promptRef = useRef("");
   const boardParamRef = useRef("");
   const uidRef = useRef(null);
@@ -107,6 +117,13 @@ export default function Home() {
   const sentinelRef = useRef(null);
 
   const fitBrain = fitProfileForBrain(fit);
+
+  // The folio's edition date — set on mount like the cover's masthead.
+  useEffect(() => {
+    setStamp(new Date().toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    }).toUpperCase());
+  }, []);
 
   // ---- Dwell tracking ----
   const dwellRef = useRef({ vis: new Map(), sent: new Set() });
@@ -557,9 +574,30 @@ export default function Home() {
   const cravingActive =
     craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery";
 
+  // Real zone composition of the loaded pass — printed as gutter
+  // marginalia (magazine treatment, owner order Aug 13; every value is
+  // real state).
+  const zones = items.reduce(
+    (z, it) => { z[it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : "core"] += 1; return z; },
+    { core: 0, discovery: 0, reach: 0 },
+  );
+
   return (
-    <div className="wrap">
-      <h1 className="headline"><span className="red">*</span>THE FEED</h1>
+    <div className="wrap ctr">
+      <div className="cvlines ctlines" aria-hidden="true">
+        {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
+      </div>
+      <header className="cthead">
+        <h1 className="headline"><span className="red">*</span>THE FEED</h1>
+        {stamp && (
+          <div className="ctmeta">
+            LIVE EDIT · {stamp}
+            {view === "catalog" && items.length > 0 && (
+              <span>{items.length} PIECES THIS PASS</span>
+            )}
+          </div>
+        )}
+      </header>
       <p className="deck">
         {guideOn
           ? "Asterisk routed this edit through your Passport — six bridges, three zones, no reruns."
@@ -579,6 +617,14 @@ export default function Home() {
 
       {view === "catalog" && (
         <>
+          {items.length > 0 && (
+            <span className="cvside ctside" aria-hidden="true">
+              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach}
+            </span>
+          )}
+          <span className="cvside cvsider ctsider" aria-hidden="true">
+            ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
+          </span>
           <div className="fmodes">
             {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>

@@ -1283,6 +1283,29 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   .cvpost.cvlead .cvposttext { font-size: 16px; }
 }
 
+/* ---- CATALOG magazine furniture (owner order, Aug 13): the cover's
+   print language — hairline field, gutter marginalia, live folio — at
+   ZERO height cost; the masonry keeps the floor. The field pins to the
+   page's first 1500px so infinite scroll runs past it clean. ---- */
+.ctr { position: relative; }
+.ctr > * { position: relative; }
+.ctr .cvlines { position: absolute; inset: auto; top: 0; left: 0; right: 0; height: 1500px; }
+.ctr .cvside { position: absolute; }
+.cthead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ctmeta { font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
+.ctmeta span { display: block; }
+.ctside { top: 470px; left: -26px; }
+.ctsider { top: 700px; }
+/* the field's lines — 2 thick of 7, most barely there (law ratios) */
+.cvlines .ctln-h1 { top: 58px; left: -2%; width: 34%; opacity: 0.20; }
+.cvlines .ctln-h2 { top: 208px; left: 46%; width: 56%; border-top-width: 3px; opacity: 0.07; }
+.cvlines .ctln-h3 { top: 860px; left: -3%; width: 52%; opacity: 0.05; }
+.cvlines .ctln-h4 { top: 1380px; left: 30%; width: 60%; opacity: 0.10; }
+.cvlines .ctln-v1, .cvlines .ctln-v2, .cvlines .ctln-v3 { height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
+.cvlines .ctln-v1 { left: 23%; top: 96px; height: 130px; opacity: 0.16; }
+.cvlines .ctln-v2 { left: 97.5%; top: 260px; height: 520px; opacity: 0.12; }
+.cvlines .ctln-v3 { left: 1.5%; top: 420px; height: 640px; border-left-width: 4px; opacity: 0.06; }
+
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
    Aug 12 (owner order: more Grailed — square-cut floating images, no card
    border, no hover box; the red reach frame and INSPECT badge stay) ---- */

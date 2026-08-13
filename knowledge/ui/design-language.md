@@ -82,7 +82,11 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   collapsed CURRENT CRAVING line, filters, masonry immediately; POST is
   the wire — composer + the app's first real reader of GET /api/editorial
   merged with the device's own posts, WHO TO FOLLOW below, no fake
-  engagement counters ever. The old header cubes (live observation, who
+  engagement counters ever. The page carries the magazine furniture
+  (owner order, Aug 13) at ZERO height cost — the pieces keep the
+  floor: a hairline field pinned to the first stretch, a live folio
+  beside the headline (date + pieces-this-pass), and gutter verticals
+  printing the pass's real zone composition and the Asterisk state. The old header cubes (live observation, who
   to follow, the slide), the morse strip, and the synthetic post tiles
   are gone from the page.
 - EDITORIAL (/hotlist) is one page, a descending visibility ladder (owner
