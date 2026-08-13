@@ -1128,7 +1128,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* the hairline field — horizontal + vertical contrast lines (owner
    order, Aug 13: diagonals swapped for verticals); a few thick, most
    thin; a few visible, most barely there. */
-.cvlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+/* the whole field runs at 85% (owner order, Aug 13: overall opacity
+   down 15%) — per-line values keep their ratios under it */
+.cvlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
 .cvlines i { position: absolute; display: block; height: 0; border-top: 1px solid var(--ink); }
 /* per-line rules ride under .cvlines so they outrank the `.cvlines i`
    base (0,1,1) — bare .cvln-* (0,1,0) silently loses its widths */
