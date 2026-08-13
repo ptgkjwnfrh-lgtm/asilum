@@ -75,6 +75,14 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   personality editor) / SIZING / ACCOUNT (sign-in, connections, follows,
   people search; /profile#access opens it). No boxed cards — the red
   offset-shadow measure card is gone.
+- SETTINGS is the rack (owner order, Aug 12: old music-making software):
+  numbered hardware modules — 01 APPEARANCE / 02 ASTERISK / 03 IDENTITY /
+  04 DATA / 05 LEGAL — heavy top rule + hairline channel rows, engraved
+  Michroma labels, OSD module numbers, decorative screws, and LEDs that
+  reflect ONLY real state (guidance, observation). ASTERISK's controls
+  (guidance toggle, observation, model reset, dashboard + control-room
+  links) live on module 02; identity still has one home on PROFILE and
+  module 03 just points there.
 - Feed cards are Grailed-cut: square floating images (no border, no card
   box, no hover bubble; radius 0 unless the owner tunes --ed-img-rad),
   tile aspects vary per item over the shared 8-ratio table in
