@@ -65,6 +65,15 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   absent), 5 EXTERNAL DISPATCHES quietest (grey title-only links out —
   deliberately excluded from the teal clickable rule; the ladder wins).
   The old three tabs, the fake like-button, and postStats zeros are gone.
+- PROFILE is standard social format (owner order, Aug 12: Grailed ×
+  Twitter × MySpace, legibility first): banner → overlapping avatar →
+  name/handle/bio → MEMBER SINCE (same once-stamped device date the
+  passport uses) → one plain counts row (posts/following/brands/
+  followers, all real) → ONE tab row holding everything: POSTS (floating,
+  no fabricated counters) / BRANDS / BAG / WARDROBE / ROOM (the MySpace
+  personality editor) / SIZING / ACCOUNT (sign-in, connections, follows,
+  people search; /profile#access opens it). No boxed cards — the red
+  offset-shadow measure card is gone.
 - Feed cards are Grailed-cut: square floating images (no border, no card
   box, no hover bubble; radius 0 unless the owner tunes --ed-img-rad),
   tile aspects vary per item over the shared 8-ratio table in

@@ -1,9 +1,12 @@
 "use client";
 
 // app/profile/page.js — PROFILE.
-// Banner, avatar, identity, counts, and three tabs: Posts / Brands /
-// Bag. Identity is local until real accounts exist; all displayed counts are
-// derived from real local/server state.
+// Standard social format (owner order, Aug 12: Grailed × Twitter ×
+// MySpace, legibility first): banner, overlapping avatar, name/handle/bio,
+// a member-since line, one plain counts row, then ONE tab row holding
+// everything — posts, brands, bag, wardrobe, the room (MySpace
+// personality), sizing, and account. Identity is local until real accounts
+// exist; all displayed counts are derived from real local/server state.
 
 import { useEffect, useState } from "react";
 import {
@@ -14,7 +17,7 @@ import {
   convertMeasurementUnit, hasMeasurementProfile, MEASUREMENT_KEYS,
 } from "../../lib/brain/measurements.js";
 import {
-  getProfileInfo, saveProfileInfo, listPosts, postStats, timeAgo,
+  getProfileInfo, saveProfileInfo, listPosts, timeAgo,
   followedUsers, followedBrands, setFollowBrand, setFollowUser, sourceFor,
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
@@ -33,10 +36,21 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState([]);
   const [bagHistory, setBagHistory] = useState([]);
   const [boardFollows, setBoardFollows] = useState(0);
+  const [since, setSince] = useState("");
 
   useEffect(() => {
     setInfo(getProfileInfo());
     setPosts(listPosts().filter((p) => p.mine));
+    // MEMBER SINCE: same once-stamped device-real date the passport uses.
+    try {
+      let s = window.localStorage.getItem("asilum-member-since");
+      if (!s) {
+        const now = new Date();
+        s = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+        window.localStorage.setItem("asilum-member-since", s);
+      }
+      setSince(s);
+    } catch {}
     const user = getUid() || "guest";
     authorizedFetch("/api/orders?user=" + encodeURIComponent(user))
       .then((r) => r.json()).then((d) => setBagHistory(d.bagHistory || [])).catch(() => {});
@@ -44,6 +58,15 @@ export default function ProfilePage() {
       .then((r) => r.json())
       .then((d) => setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0))
       .catch(() => {});
+  }, []);
+
+  // The shell's ACCOUNT link lands on /profile#access — open that tab, on
+  // fresh mounts AND on hash-only changes while already here.
+  useEffect(() => {
+    const onHash = () => { if (window.location.hash === "#access") setTab("account"); };
+    onHash();
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   function save(k, v) {
@@ -115,7 +138,9 @@ export default function ProfilePage() {
               <p className="pbio">{info.bio}</p>
             </>
           )}
+          {since && <div className="pmeta">MEMBER SINCE {since}</div>}
           <div className="pcounts">
+            <span><b>{posts.length}</b> POSTS</span>
             <span><b>{followingCount}</b> FOLLOWING</span>
             <span><b>{brands.length}</b> BRANDS</span>
             <span><b>{followers}</b> FOLLOWERS</span>
@@ -126,12 +151,12 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      <ProfileAccess />
-      <RoomEditor />
-      <MeasurementsEditor />
-
       <div className="tabs">
-        {[["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"], ["wardrobe", "WARDROBE"]].map(([k, label]) => (
+        {[
+          ["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"],
+          ["wardrobe", "WARDROBE"], ["room", "ROOM"], ["sizing", "SIZING"],
+          ["account", "ACCOUNT"],
+        ].map(([k, label]) => (
           <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
             {label}
           </button>
@@ -141,33 +166,30 @@ export default function ProfilePage() {
       {tab === "posts" && (
         <>
           {posts.length === 0 && (
-            <div className="empty">no posts yet — the composer lives on HOME.</div>
+            <div className="empty">no posts yet — the composer lives on THE FEED&apos;s POST page.</div>
           )}
-          {posts.map((p) => {
-            const s = postStats(p);
-            return (
-              <div className="cpost" key={p.id}>
-                <Avatar name={p.name} />
-                <div className="cbody">
-                  <div className="chead">
-                    <span className="uname">{p.name}</span>
-                    <span className="uhandle">{p.handle} · {timeAgo(p.at)}</span>
-                  </div>
-                  <p className="ctext">{p.text}</p>
-                  <div className="cacts">
-                    <span className="castat" title="comments">○ {s.comments}</span>
-                    <span className="castat" title="reposts">↻ {s.reposts}</span>
-                    <span className="castat" title="likes">♥ {s.likes}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {posts.map((p) => (
+            <div className="fpost" key={p.id}>
+              <p className="fposttext">{p.text}</p>
+              <span className="fposthandle">{p.handle} · {timeAgo(p.at)}</span>
+            </div>
+          ))}
         </>
       )}
 
       {tab === "brands" && <BrandsTab bagBrands={brands} />}
       {tab === "wardrobe" && <WardrobeTab />}
+      {tab === "room" && <RoomEditor />}
+      {tab === "sizing" && <MeasurementsEditor />}
+      {tab === "account" && (
+        <>
+          <ProfileAccess />
+          <h3 className="statshead">FIND PEOPLE</h3>
+          <div style={{ maxWidth: 420 }}>
+            <UserSearch placeholder="search users to follow…" />
+          </div>
+        </>
+      )}
 
       {tab === "bag" && (
         <>
@@ -189,12 +211,6 @@ export default function ProfilePage() {
           </a>
         </>
       )}
-
-      <hr className="rule" style={{ marginTop: 30 }} />
-      <h3 className="statshead">FIND PEOPLE</h3>
-      <div style={{ maxWidth: 420 }}>
-        <UserSearch placeholder="search users to follow…" />
-      </div>
     </div>
   );
 }
@@ -283,12 +299,12 @@ function ProfileAccess() {
   }
 
   return (
-    <section className="accountcard" id="access">
+    <section className="pfsec" id="access">
       <div className="measurehead">
         <div>
-          <div className="psub">PROFILE ACCESS</div>
+          <div className="psub">ACCOUNT</div>
           <h2>One identity<span className="red">.</span></h2>
-          <p className="deck">Sign-in, settings, connections, follows, and fit all live on this profile.</p>
+          <p className="deck">sign in, connect sources, and manage who you follow — it all lives here.</p>
         </div>
         <a className="btn ghost" href="/settings">SETTINGS →</a>
       </div>
@@ -383,12 +399,12 @@ function MeasurementsEditor() {
   }
 
   return (
-    <section className="measurecard" id="measurements">
+    <section className="pfsec" id="measurements">
       <div className="measurehead">
         <div>
-          <div className="psub">YOUR MEASUREMENTS</div>
+          <div className="psub">SIZING</div>
           <h2>Know before you buy<span className="red">.</span></h2>
-          <p className="deck">Private first-party fit scoring. ASILUM never sends these measurements to a model or merchant.</p>
+          <p className="deck">private first-party fit scoring. ASILUM never sends these measurements to a model or merchant.</p>
         </div>
         <div className="unitpick" role="group" aria-label="measurement unit">
           {["in", "cm"].map((unit) => (
