@@ -1,14 +1,13 @@
 "use client";
 
 // app/page.js — CATALOG (home).
-// Two sub-pages under one feed (owner order, Aug 12): CATALOG lands the user
-// straight on clothing — mode row, one collapsed craving line, filters, then
-// the masonry immediately; POST is the wire — composer plus the first real
-// reader of GET /api/editorial, merged with this device's own posts. Cards
-// stay minimal — name, price, fit estimate, FAVORITE / ADD TO BAG —
-// everything else lives in the detail view. First visit offers a
-// buyer-history scan; the brain underneath is unchanged: dwell, skips,
-// zones, graph, rotation.
+// Straight clothing (owner order, Aug 12; POST folded into THE WIRE at
+// /hotlist by the Aug 13 overhaul — all user posts live there now):
+// mode row, one collapsed craving line, filters, then the masonry
+// immediately. Cards stay minimal — name, price, fit estimate,
+// FAVORITE / ADD TO BAG — everything else lives in the detail view.
+// First visit offers a buyer-history scan; the brain underneath is
+// unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
@@ -19,10 +18,8 @@ import {
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
 } from "../lib/client.js";
 import {
-  addPost, getProfileInfo, observationOn, followedBrands,
-  setFollowBrand, fetchWire, timeAgo,
+  observationOn, followedBrands, setFollowBrand,
 } from "../lib/social.js";
-import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
 
@@ -101,12 +98,8 @@ export default function Home() {
   useEscape(() => setModal(null), !!modal);
   useEscape(() => { markOnboarded(); setConnectOpen(false); }, connectOpen);
   const [ticketItem, setTicketItem] = useState(null);
-  const [view, setView] = useState("catalog");     // catalog | post (the two sub-pages)
   const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
-  const [composer, setComposer] = useState("");
-  const [wire, setWire] = useState(null);          // POST sub-page: server+local posts
-  const [wireLive, setWireLive] = useState(true);  // false = server unreachable
   const [cravingOpen, setCravingOpen] = useState(false);
   const [stamp, setStamp] = useState("");
   const promptRef = useRef("");
@@ -162,10 +155,9 @@ export default function Home() {
     }, { threshold: 0.55 });
     document.querySelectorAll(".card[data-id]").forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-    // `view` is a dependency because switching CATALOG→POST→CATALOG remounts
-    // every card node without changing `items` — the observer must re-attach
-    // to the new nodes or dwell/examination reporting silently dies.
-  }, [items, view]);
+    // (The POST sub-view is gone — owner overhaul, Aug 13 — so the card
+    // nodes only remount when `items` changes.)
+  }, [items]);
 
   function dwellMsFor(id) {
     const rec = dwellRef.current.vis.get(id);
@@ -277,7 +269,6 @@ export default function Home() {
   }, [feedQS]);
 
   function applyCraving() {
-    setView("catalog");
     setTab("curated");
     setCravingOpen(false);
     setCraving({ ...cravingDraft, text: cravingDraft.text.trim().slice(0, 240) });
@@ -318,9 +309,9 @@ export default function Home() {
     }, { rootMargin: "700px" });
     obs.observe(sentinelRef.current);
     return () => obs.disconnect();
-    // `view` re-binds the observer to the REMOUNTED sentinel node after a
-    // CATALOG→POST→CATALOG round trip — else infinite scroll dies.
-  }, [loadMore, view]);
+    // (The POST sub-view is gone — owner overhaul, Aug 13 — so the
+    // sentinel node never remounts out from under the observer.)
+  }, [loadMore]);
 
   // ---- Boot: identity, search hand-off, shared links, first-visit connect ----
   useEffect(() => {
@@ -416,46 +407,8 @@ export default function Home() {
     } catch { setTabItems([]); }
   }
 
-  // ---- POST sub-page: the wire ----
-  // fetchWire (lib/social.js) reads GET /api/editorial for real and merges
-  // this device's own instant-render copies. No engagement counters: there
-  // is no like/comment/repost machinery, so none is drawn. live:false means
-  // the server was unreachable — say so, never claim the wire is empty.
-  async function loadWire() {
-    const w = await fetchWire();
-    setWire(w.posts);
-    setWireLive(w.live);
-  }
-
-  function switchView(next) {
-    setView(next);
-    if (next === "post" && wire === null) loadWire();
-  }
-
-  function publishPost() {
-    if (!composer.trim()) return;
-    const info = getProfileInfo();
-    addPost(composer.trim(), info);
-    // Real editorial_posts record too — localStorage stays the instant-render
-    // path, the database is the durable one. The server's verdict decides the
-    // notice: a held-for-review post is SAVED but not visible to anyone else,
-    // and telling the author otherwise would be a lie.
-    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: composer.trim() })
-      .then(async (res) => {
-        const d = await res.json().catch(() => null);
-        if (d && d.held) {
-          setNotice(d.note || "your post is saved and paused for a human review");
-        } else {
-          setNotice("posted — it's live here, on THE COMMUNITY FLOOR of EDITORIAL, and on your profile");
-        }
-        loadWire();
-      })
-      .catch(() => {
-        setNotice("saved on this device — the shared wire could not be reached, so others cannot see it yet");
-      });
-    setComposer("");
-    loadWire();
-  }
+  // (The POST sub-page moved to THE WIRE — owner overhaul, Aug 13: all
+  // user posts live at /hotlist now; this page is straight clothing.)
 
   async function connect(platform) {
     if (connecting) return;
@@ -592,7 +545,7 @@ export default function Home() {
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}
-            {view === "catalog" && items.length > 0 && (
+            {items.length > 0 && (
               <span>{items.length} PIECES THIS PASS</span>
             )}
           </div>
@@ -604,19 +557,9 @@ export default function Home() {
           : "Asterisk is paused — this is a general edit. Your Passport is still waiting when you return."}
       </p>
 
-      <div className="tabs">
-        <button className={"tab" + (view === "catalog" ? " cur" : "")} onClick={() => switchView("catalog")}>
-          CATALOG
-        </button>
-        <button className={"tab" + (view === "post" ? " cur" : "")} onClick={() => switchView("post")}>
-          POST
-        </button>
-      </div>
-
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
-      {view === "catalog" && (
-        <>
+      <>
           {items.length > 0 && (
             <span className="cvside ctside" aria-hidden="true">
               ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach}
@@ -783,57 +726,6 @@ export default function Home() {
             </>
           )}
         </>
-      )}
-
-      {view === "post" && (
-        <div className="fwire" aria-label="the wire">
-          <div className="composer2">
-            <Avatar name={getProfileInfo().name} />
-            <div className="cright">
-              <textarea
-                rows={3}
-                maxLength={400}
-                placeholder="what are you wearing?"
-                value={composer}
-                onChange={(e) => setComposer(e.target.value)}
-              />
-              <div className="cbar">
-                <span className="cicons">
-                  <button title="image — soon" onClick={() => setNotice("image posts arrive with the vibe reader")}>▣</button>
-                  <button title="video — soon" onClick={() => setNotice("video posts arrive with the media pipeline — nothing here is faked in the meantime")}>▶</button>
-                  <button title="tag a piece — soon" onClick={() => setNotice("piece-tagging is on the cutting table")}>#</button>
-                </span>
-                <span className="ccount">{composer.length}/400</span>
-                <button className="btn postbtn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
-              </div>
-            </div>
-          </div>
-
-          {wire === null && <div className="empty">pulling the wire…</div>}
-          {wire && !wireLive && (
-            <div className="empty">
-              the shared wire could not be reached — showing this device&apos;s
-              posts only.
-            </div>
-          )}
-          {wire && wireLive && wire.length === 0 && (
-            <div className="empty">no transmissions yet — yours opens the wire.</div>
-          )}
-          {(wire || []).map((p) => (
-            <div className="fpost" key={p.id}>
-              <p className="fposttext">{p.text}</p>
-              <span className="fposthandle">
-                {p.handle}{p.mine ? <i className="cmine">you</i> : null} · {timeAgo(p.at)}
-              </span>
-            </div>
-          ))}
-
-          <div className="fwho">
-            <div className="cvkick">WHO TO FOLLOW</div>
-            <WhoToFollowList compact withSearch />
-          </div>
-        </div>
-      )}
 
       {/* ---- First visit: buyer-history scan (always escapable) ---- */}
       {connectOpen && (

@@ -18,7 +18,12 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { requestSubject } from "../../../lib/security/request.js";
 
-const POST_MAX = 1000;
+// The wire's transmission law (owner order, Aug 13): text posts cap at
+// 5000 characters; the caption (title) acts as the transmission's header
+// and keeps its 200-char cap. Video (≤3:00) and image carousels (≤6)
+// arrive with the media pipeline — this route stays text-only until
+// storage exists, honestly.
+const POST_MAX = 5000;
 
 // The byline is server truth, never caller input: a published room handle
 // when the account has one, otherwise a stable per-identity reader tag.

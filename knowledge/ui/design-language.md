@@ -24,9 +24,10 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   scanline glass. Subtlety threshold: never reduce readability.
 - Seven destinations in a row directly under the top ticker (owner order,
   Aug 12 2026 — the left sidebar is GONE; header strip is thick enough that
-  the wordmark keeps full size): FRONT COVER, CATALOG, EDITORIAL, PASSPORT,
-  DISCOVER, PROFILE, SETTINGS. New features must answer "which subsystem do
-  I belong to?" — the destination list only changes by owner decree.
+  the wordmark keeps full size): FRONT COVER, CATALOG, THE WIRE (renamed
+  from EDITORIAL by owner decree, Aug 13), PASSPORT, DISCOVER, PROFILE,
+  SETTINGS. New features must answer "which subsystem do I belong to?" —
+  the destination list only changes by owner decree.
 - Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
   row (ASTERISK drawer trigger, seven buttons, compact dock). Theme toggle
@@ -77,37 +78,43 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   and a slight horizontal motion blur — never black/ink (owner: "it's
   ugly"). Red-law elements (buy/home/reset) keep red with the same
   treatment. One grouped rule at the end of globals.css.
-- CATALOG (/) has two sub-pages (owner order, Aug 12): CATALOG lands
-  straight on clothing — floating mode row (curated/following/new), one
-  collapsed CURRENT CRAVING line, filters, masonry immediately; POST is
-  the wire — composer + the app's first real reader of GET /api/editorial
-  merged with the device's own posts, WHO TO FOLLOW below, no fake
-  engagement counters ever. The page carries the magazine furniture
+- CATALOG (/) lands straight on clothing (owner order, Aug 12; the POST
+  sub-page folded into THE WIRE by the Aug 13 overhaul): floating mode
+  row (curated/following/new), one collapsed CURRENT CRAVING line,
+  filters, masonry immediately. The page carries the magazine furniture
   (owner order, Aug 13) at ZERO height cost — the pieces keep the
   floor: a hairline field pinned to the first stretch, a live folio
   beside the headline (date + pieces-this-pass), and gutter verticals
-  printing the pass's real zone composition and the Asterisk state. The old header cubes (live observation, who
-  to follow, the slide), the morse strip, and the synthetic post tiles
-  are gone from the page.
-- EDITORIAL (/hotlist) is one page, a descending visibility ladder (owner
-  order, Aug 12): 1 THE HOTLIST loudest (big ghost numerals, teal titles,
-  red person-counts; the slots are held for DESIGNER ACCOUNTS and stay
-  VACANT until real people move — owner order Aug 13, the caller's feed
-  never stands in; rows sit in clean vertical placement, never
-  staggered — on the cover preview too), 2 ASILUM MAGAZINE (house dispatches from
-  editorial_posts kind=asilum; honest empty state; submissions still
-  coming-soon), 3 AD SPACE (dashed = honestly open, "sponsored placements
-  are always disclosed", never a fake advertiser), 4 THE COMMUNITY FLOOR
-  (real wire via fetchWire, no fabricated counters, videos honestly
-  absent), 5 EXTERNAL DISPATCHES quietest (grey title-only links out —
-  deliberately excluded from the teal clickable rule; the ladder wins).
-  The old three tabs, the fake like-button, and postStats zeros are gone.
-  The ladder's descent is carried by TYPE SCALE (owner order, Aug 13):
-  rung 1 keeps the masthead, rungs 2–5 step down (.elh2 21px → .elh5
-  9.5px grey). The page carries the magazine furniture at zero height
-  cost — hairline field pinned to the first stretch, live folio, gutter
-  verticals (slots filled / transmissions on the floor), and a colophon
-  of live counters.
+  printing the pass's real zone composition and the Asterisk state. The
+  old header cubes (live observation, who to follow, the slide), the
+  morse strip, and the synthetic post tiles are gone from the page.
+- THE WIRE (/hotlist; owner overhaul Aug 13, renamed from EDITORIAL) is
+  where ALL user posts live, and where the hotlist stands.
+  - THE POSTING LAW (owner order, Aug 13): three ways to post —
+    TRANSMISSIONS (text ≤5000 chars; the caption IS the header, ≤200,
+    stored as the post's title), IMAGES (up to SIX in one carousel,
+    caption allowed), VIDEO (one, capped 3:00, caption allowed). Images
+    and video wait on the real media pipeline (storage/moderation/
+    playback) and are honest coming-soon modes until it exists — no
+    fake uploads, ever. The composer's three modes state the caps.
+  - THE HOTLIST LAW (owner order, Aug 13): the hotlist is TEN BOOTH
+    SLOTS held for independent Shopify-based brands. A PASSPORT account
+    becomes a BUSINESS account by verifying itself, connecting its
+    Shopify, and connecting its personal website; ONLY business
+    accounts get a chance at a booth. Until the commerce pipeline
+    exists every booth honestly reads OPEN — nothing stands in, and
+    the cover preview mirrors the same vacancy. The old
+    engagement-ranking rows are retired from this surface.
+  - Page order: masthead + live folio → composer → the floor (every
+    post, caption headers on transmissions, no fabricated counters) →
+    WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
+    dispatches, honest empty) → AD SPACE (dashed = honestly open,
+    disclosure line) → EXTERNAL DISPATCHES quietest (grey title-only
+    links out — deliberately excluded from the teal clickable rule).
+    The graded descent by TYPE SCALE survives (.elmast masthead;
+    .elh2 21px → .elh5 9.5px grey), as does the magazine furniture at
+    zero height cost (field, folio, gutters, colophon of live
+    counters).
 - PROFILE is standard social format (owner order, Aug 12: Grailed ×
   Twitter × MySpace, legibility first): banner → overlapping avatar →
   name/handle/bio → MEMBER SINCE (same once-stamped device date the

@@ -1217,6 +1217,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvhotnum { font-family: var(--osd); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
 .cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
+/* booth preview rows are NOT links — same cut as cvhotttl, no teal */
+.cvboothttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
+.cvboothttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
 .cvhotstat { margin-left: auto; font-family: var(--osd); font-size: 12px; color: var(--grey); text-shadow: none; letter-spacing: 0.1em; flex: none; }
 /* outfit strips stay uniform and organized (owner order, Aug 12) —
    but the lead piece of each strip carries a THICK floating frame that
@@ -1312,6 +1315,31 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvlines .ctln-v1 { left: 23%; top: 96px; height: 130px; opacity: 0.16; }
 .cvlines .ctln-v2 { left: 97.5%; top: 260px; height: 520px; opacity: 0.12; }
 .cvlines .ctln-v3 { left: 1.5%; top: 420px; height: 640px; border-left-width: 4px; opacity: 0.06; }
+
+/* ---- THE WIRE (owner overhaul, Aug 13): the composer's three modes,
+   the floor's transmissions (caption = header), and the hotlist's ten
+   booths — every booth honestly OPEN until business accounts exist ---- */
+.wcomposer { margin: 6px 0 26px; }
+.wmodes { display: flex; gap: 18px; margin-bottom: 14px; align-items: center; }
+.wcompose { display: flex; gap: 12px; }
+.wcright { flex: 1; min-width: 0; }
+.wcright .wcap { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
+.wcright textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
+.wcright .wcap:focus, .wcright textarea:focus { border-bottom-color: var(--sig); }
+.wsoonpanel { font-size: 12.5px; color: var(--grey); max-width: 60ch; line-height: 1.7; padding: 6px 0 2px; }
+.wsoonpanel b { color: var(--ink); letter-spacing: 0.08em; }
+.wsoonpanel em { font-style: normal; color: var(--red); letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; }
+.wfloor { margin-top: 8px; }
+.wpost { margin-bottom: 22px; }
+.wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
+.wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
+.fwho { margin: 8px 0 46px; max-width: 560px; }
+/* the booths — ten open slots on dashed hairlines (honestly open) */
+.booth { display: flex; align-items: center; gap: 18px; padding: 9px 0; border-bottom: 1px dashed color-mix(in srgb, var(--ink) 12%, transparent); }
+.booth .elnum { font-size: clamp(24px, 3vw, 38px); }
+.boothbody b { display: block; font-family: var(--mich); font-size: 12px; letter-spacing: 0.14em; font-weight: 400; }
+.boothbody span { font-size: 10px; color: var(--grey); letter-spacing: 0.08em; }
+.boothtag { margin-left: auto; font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); flex: none; }
 
 /* EDITORIAL's field + gutters (owner order, Aug 13) — same zero-height
    magazine furniture, ladder-specific placements; 2 thick of 7 */
