@@ -16,13 +16,16 @@ export default function SettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
   const [iface, setIface] = useState("01");
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("system");
 
   useEffect(() => {
     setUid(getUid() || "");
     setObserve(observationOn());
     setIface(document.documentElement.dataset.model || "01");
-    setTheme(document.documentElement.dataset.theme || "dark");
+    // "system" = no stored pick; the shell follows the device preference.
+    let storedTheme = null;
+    try { storedTheme = window.localStorage.getItem("asilum-theme"); } catch {}
+    setTheme(storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system");
     // Clear any stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
@@ -55,6 +58,12 @@ export default function SettingsPage() {
   }
   function setThemeMode(mode) {
     setTheme(mode);
+    if (mode === "system") {
+      try { window.localStorage.removeItem("asilum-theme"); } catch {}
+      document.documentElement.dataset.theme =
+        window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      return;
+    }
     document.documentElement.dataset.theme = mode;
     try { window.localStorage.setItem("asilum-theme", mode); } catch {}
   }
@@ -91,9 +100,10 @@ export default function SettingsPage() {
       <div className="setrow">
         <div className="setinfo">
           <div className="setname">Theme</div>
-          <div className="uhandle">phosphor dark is native; ice light for daylight reading.</div>
+          <div className="uhandle">MATCH DEVICE follows your system; or pin phosphor dark / ice light.</div>
         </div>
         <div className="controls" style={{ margin: 0 }}>
+          <button className={"fitbtn" + (theme === "system" ? " active" : "")} onClick={() => setThemeMode("system")}>MATCH DEVICE</button>
           <button className={"fitbtn" + (theme === "dark" ? " active" : "")} onClick={() => setThemeMode("dark")}>PHOSPHOR DARK</button>
           <button className={"fitbtn" + (theme === "light" ? " active" : "")} onClick={() => setThemeMode("light")}>ICE LIGHT</button>
         </div>

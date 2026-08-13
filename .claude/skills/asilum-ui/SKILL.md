@@ -24,7 +24,8 @@ interaction). Non-negotiables when touching UI:
 7. prefers-reduced-motion support is mandatory for any animation added.
 8. Feed cards stay minimal (title/price/fit + Favorite/Bag); item depth
    belongs to the item modal (owner decree).
-9. Mobile ≤760px: sidebar flattens to the bottom bar — check it.
+9. Mobile ≤760px: the top header tightens and the destination row
+   scrolls horizontally (no sidebar exists anymore) — check it.
 10. DESIGN CONSOLE (knowledge/ui/design-console.md): owner-editable
     sizes/shapes/motion route through `var(--ed-*, shipped)` in
     globals.css with a registry entry in lib/uilab.js. When adding a
