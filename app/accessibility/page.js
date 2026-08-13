@@ -31,8 +31,9 @@ export default function AccessibilityPage() {
         skip-to-content link for keyboard and screen-reader users; full
         keyboard operability of navigation and controls; visible focus;
         text alternatives on imagery, including our generated product
-        placeholders; a high-contrast editorial palette (black on white with
-        red accents); motion that respects your system&apos;s
+        placeholders; a high-contrast palette in both themes (phosphor
+        greens on near-black, or dark teal on near-white, with red reserved
+        for alerts and identity); motion that respects your system&apos;s
         &quot;reduce motion&quot; setting — animations, marquees, and
         tickers stop when your device asks them to; and forms with
         real labels and explicit confirmation steps for destructive actions.
@@ -40,9 +41,9 @@ export default function AccessibilityPage() {
 
       <h2 className="statshead">KNOWN LIMITATIONS</h2>
       <p className="legal">
-        we are honest about gaps while we close them: the moving ticker and
-        morse-code motifs are part of the magazine&apos;s visual identity and,
-        outside reduced-motion mode, remain animated; some data-dense
+        we are honest about gaps while we close them: the moving ticker is
+        part of the magazine&apos;s visual identity and,
+        outside reduced-motion mode, remains animated; some data-dense
         surfaces (the stats room, the stylist grid) are still being tuned for
         screen-reader flow; and third-party merchant pages we link to are
         outside our control. accessibility review is a standing item in our

@@ -12,6 +12,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="wrap">
+      <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>TERMS OF SERVICE</h1>
       <p className="deck">
         the agreement for using ASiLUM magazine. version 1.0 — effective

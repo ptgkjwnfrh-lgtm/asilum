@@ -12,6 +12,7 @@ export const metadata = {
 export default function PrivacyPage() {
   return (
     <div className="wrap">
+      <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>PRIVACY POLICY</h1>
       <p className="deck">
         what we collect, why, and the controls you hold. version 1.0 —

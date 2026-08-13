@@ -148,6 +148,7 @@ export default function StylistPage() {
 
   return (
     <div className="wrap">
+      <div className="locline"><a href="/discover">← DISCOVER</a><span>/ THE STYLIST</span></div>
       <h1 className="headline"><span className="red">*</span>THE STYLIST</h1>
       <p className="deck">
         whole looks cut across sources. {guideOn

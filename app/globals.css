@@ -1,6 +1,6 @@
 /* app/globals.css — *ASILUM — FASHION INTELLIGENCE OS.
    Phosphor dark native / ice light optional (data-theme on <html>).
-   Red is still the only color allowed to speak. */
+   Red is the alert/identity accent; clickable words speak teal (Aug 12). */
 
 @font-face { font-family: "Michroma"; src: url("/fonts/michroma.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "STM"; src: url("/fonts/sharetech.woff2") format("woff2"); font-display: swap; }
@@ -253,6 +253,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 }
 .empty { font-family: var(--serif); font-style: italic; color: var(--grey); padding: 50px 0; text-align: center; }
 .sentinel { height: 1px; }
+.controls + .grid { margin-top: 16px; }
 
 .cravinggrid { display: grid; grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(120px, 0.7fr)) auto; gap: 8px; }
 .cravinggrid input, .cravinggrid select {
@@ -426,6 +427,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   border-bottom: 1px solid var(--line); padding: 14px 0; cursor: pointer;
 }
 .hlrow:hover .hlttl { color: var(--red); }
+div.hlrow.static { cursor: default; }
 .hlnum { font-size: clamp(34px, 5vw, 64px); font-weight: 900; letter-spacing: -0.05em; width: 1.6em; flex: none; }
 .hlrow img { width: 64px; height: 84px; object-fit: cover; border: 1px solid var(--line); flex: none; }
 .hlinfo { flex: 1; min-width: 0; }
@@ -457,16 +459,17 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   .grid { columns: 2 150px; column-gap: 12px; }
 }
 
-/* ---- The Stylist: outfit slates ---- */
-.otf { border: 1px solid var(--line); padding: 16px 16px 14px; margin-bottom: 22px; }
+/* ---- The Stylist: outfit slates (de-bubbled Aug 12: rack-rule tops,
+   floating content) ---- */
+.otf { border: none; border-top: 2px solid color-mix(in srgb, var(--ink) 30%, transparent); padding: 14px 0 12px; margin-bottom: 28px; }
 .otfhead { display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; }
 .otfnum { font-size: 13px; font-weight: 900; letter-spacing: 0.12em; }
 .otfdom { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--grey); }
-.otfconf { margin-left: auto; font-size: 34px; font-weight: 900; letter-spacing: -0.04em; color: var(--red); line-height: 1; }
+.otfconf { margin-left: auto; font-size: 26px; font-weight: 900; letter-spacing: -0.04em; color: var(--red); line-height: 1; }
 .otfconf i { font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--grey); margin-left: 5px; text-transform: uppercase; }
 .otfrow { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
 .otfitem { flex: 0 0 132px; display: block; }
-.otfitem img { width: 132px; height: 168px; object-fit: cover; border: 1px solid var(--line); display: block; transition: transform 0.4s ease; }
+.otfitem img { width: 132px; height: 168px; object-fit: cover; display: block; transition: transform 0.4s ease; }
 .otfitem:hover img { transform: scale(1.04); }
 .otfttl { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; line-height: 1.3; margin-top: 6px; }
 .otfitem:hover .otfttl { color: var(--red); }
@@ -475,7 +478,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .otfacts { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
 .otfwhy { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--grey); }
 
-/* ---- Tabs (Home, Editorial, Profile) ---- */
+/* ---- Tabs (the feed CATALOG/POST switch, profile record) ---- */
 .tabs { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 4px 0 14px; }
 .tab {
   background: none; border: none; border-right: 1px solid var(--line);
@@ -528,7 +531,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .shit.item em { font-style: normal; font-size: 10px; color: var(--grey); flex: none; }
 .searchguide {
   display: flex; align-items: center; gap: 7px; width: fit-content; max-width: 100%;
-  border: 1px solid var(--line); padding: 7px 10px; margin: 8px 0 12px;
+  border-left: 2px solid var(--line); padding: 4px 0 4px 10px; margin: 8px 0 12px;
   font-size: 10px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
 }
 
@@ -541,8 +544,8 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   font-size: 10px; letter-spacing: 0.06em; color: var(--grey); text-transform: lowercase;
 }
 .searchguide span { color: var(--grey); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
-.searchguide a { margin-left: auto; color: var(--red); border-bottom: 1px solid var(--red); }
-.searchguide.off { border-style: dashed; color: var(--grey); }
+.searchguide a { margin-left: auto; border-bottom: 1px solid var(--sig); }
+.searchguide.off { border-left-style: dashed; color: var(--grey); }
 .searchpanel .searchguide { width: 100%; margin: 0 0 8px; }
 .asearchtoggle {
   flex: none; min-width: 44px; padding: 5px 9px; margin-left: auto;
@@ -572,17 +575,6 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .lookstats b { color: var(--ink); font-size: 12px; }
 .lookstats b.red, .ticketline b.red, b.red { color: var(--red); }
 
-/* ---- Moodboard: brain band + convictions ---- */
-.brainband { display: flex; gap: 16px; margin: 14px 0 8px; flex-wrap: wrap; }
-.brainbox { flex: 1.4; min-width: 300px; border: 1px solid var(--line); }
-.convictions { flex: 1; min-width: 260px; border: 1px solid var(--line); padding: 12px 14px; }
-.convrow { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
-.convn { font-weight: 900; width: 22px; }
-.convtag { font-weight: 800; letter-spacing: 0.03em; width: 110px; }
-.convbar { flex: 1; height: 8px; border: 1px solid var(--line); }
-.convbar i { display: block; height: 100%; background: var(--red); }
-.convrow.faded { color: var(--grey); }
-.convgone { font-family: var(--serif); font-style: italic; font-size: 11px; color: var(--red); }
 .resetlink {
   margin-top: 16px; background: none; border: none; border-bottom: 1px solid var(--red);
   color: var(--red); cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 0;
@@ -659,7 +651,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .setname { font-size: var(--ed-fs-setname, 14.5px); font-weight: 900; letter-spacing: 0.03em; }
 .setstatus { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: var(--grey); border: 1px solid var(--line); padding: 3px 8px; flex: none; }
 .setstatus.on { color: var(--paper); background: var(--red); border-color: var(--red); }
-.legal { font-family: var(--serif); font-size: var(--ed-fs-legal, 14.5px); font-weight: 500; line-height: 1.7; color: var(--grey); max-width: 640px; }
+.legal { font-family: var(--serif); font-size: var(--ed-fs-legal, 14.5px); font-weight: 500; line-height: 1.7; color: var(--ink); max-width: 640px; }
 
 /* ---- Profile ---- */
 .pbanner {
@@ -734,7 +726,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .sugopt:last-child { border-bottom: 0; }
 .sugopt:hover { background: var(--ink); color: var(--bg); }
 .sugopt em { margin-left: auto; font-style: normal; font-size: 10px; color: var(--grey); letter-spacing: .04em; }
-.sugopt:hover em { color: #ccc; }
+.sugopt:hover em { color: var(--faint); }
 
 /* Asterisk AI — why-this panel (Day 11, add-only) */
 .awhy { border-top: 1px solid var(--ink); margin-top: 10px; padding-top: 8px; }
@@ -748,10 +740,11 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .achip:disabled { opacity: 0.5; cursor: default; }
 .achip.on:disabled { opacity: 1; }
 
-/* Asterisk AI — cultural reading strip on DISCOVER (Day 12, add-only) */
-.aread { border: 1px solid var(--line); padding: 10px 12px; margin: 10px 0 2px; }
-.areadhead { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; }
-.areadhead em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: #555; }
+/* Asterisk AI — cultural reading strip on DISCOVER (Day 12, add-only;
+   de-bubbled Aug 12) */
+.aread { border: none; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); padding: 10px 0 2px; margin: 12px 0 2px; }
+.areadhead { font-family: var(--mich); font-size: 10px; font-weight: 400; letter-spacing: 0.18em; }
+.areadhead em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--grey); }
 .areadpills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .apill { font-size: 11px; border: 1px solid var(--line); background: var(--paper); padding: 3px 10px; cursor: pointer; font-family: inherit; font-weight: 700; }
 .apill:hover { background: var(--ink); color: var(--bg); }
@@ -759,7 +752,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .apill.clearpill { border-color: var(--red); color: var(--red); font-weight: 400; }
 .apill.clearpill:hover { background: var(--red); color: #fff; }
 .areadsum { font-family: var(--serif); font-style: italic; font-size: 12px; margin-top: 7px; }
-.areadnote { font-size: 10px; color: #777; margin-top: 5px; }
+.areadnote { font-size: 10px; color: var(--grey); margin-top: 5px; }
 
 /* ── Asterisk memory (drawer + /asterisk page, Phase 2) ─────────────────── */
 .asterisk-trigger {
@@ -809,14 +802,14 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .amemhide:hover { color: var(--red); }
 .amembody { padding-top: 8px; display: grid; gap: 6px; }
 .amemrow { display: flex; gap: 10px; align-items: baseline; font-size: 12px; line-height: 1.5; }
-.amemlbl { flex: 0 0 110px; font-weight: 900; font-size: 10px; letter-spacing: 0.12em; color: #666; }
+.amemlbl { flex: 0 0 110px; font-weight: 900; font-size: 10px; letter-spacing: 0.12em; color: var(--grey); }
 .amemval { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
 .amemval em { font-style: normal; border: 1px solid var(--line); padding: 1px 6px; font-size: 11px; white-space: nowrap; }
-.amemnote { font-size: 11px; color: #666; border-left: 2px solid var(--red); padding-left: 8px; }
-.amemgo { font-size: 10px; font-weight: 900; letter-spacing: 0.12em; color: var(--red); text-decoration: none; border-bottom: 1px solid var(--red); }
+.amemnote { font-size: 11px; color: var(--grey); border-left: 2px solid var(--red); padding-left: 8px; }
+.amemgo { font-size: 10px; font-weight: 900; letter-spacing: 0.12em; text-decoration: none; border-bottom: 1px solid var(--sig); }
 .amempage { max-width: 760px; padding: 24px; }
 .amempage .amemsec { padding: 16px 0; }
-.amemsub { font-size: 13px; color: #444; margin: 8px 0 18px; max-width: 560px; line-height: 1.6; }
+.amemsub { font-size: 13px; color: var(--grey); margin: 8px 0 18px; max-width: 560px; line-height: 1.6; }
 .amemerase { display: flex; gap: 8px; margin-top: 6px; width: 100%; }
 .amemconfirm { border: 1px solid var(--line); background: var(--bg3); color: var(--ink); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 11px; letter-spacing: 0.08em; flex: 1; max-width: 260px; }
 .amemconfirm:focus { outline: none; border-color: var(--red); }
@@ -838,8 +831,8 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 }
 
 /* ── Wardrobe (Feature C, Phase 3a) ─────────────────────────────────────── */
-.wstrip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; border: 1px solid var(--line); padding: 10px 12px; margin: 12px 0; }
-.wstriplbl { font-size: 10px; font-weight: 900; letter-spacing: 0.14em; margin-right: 4px; white-space: nowrap; }
+.wstrip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); padding: 10px 0 0; margin: 14px 0; }
+.wstriplbl { font-family: var(--mich); font-size: 10px; font-weight: 400; letter-spacing: 0.18em; margin-right: 4px; white-space: nowrap; }
 .wchip { border: 1px solid var(--line); background: var(--paper); font: inherit; font-size: 11px; padding: 3px 10px; cursor: pointer; }
 .wchip:hover { border-color: var(--red); color: var(--red); }
 .wchip.cur { background: var(--ink); color: var(--paper); border-color: var(--ink); }
@@ -865,8 +858,8 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 
 /* ── Discover rails (Feature D) ─────────────────────────────────────────── */
 .rails { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 14px 0; }
-.rail { border: 1px solid var(--line); padding: 10px 12px; min-width: 0; }
-.railhead { display: flex; align-items: baseline; gap: 8px; font-size: 11px; font-weight: 900; letter-spacing: 0.14em; }
+.rail { border: none; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); padding: 10px 0 0; min-width: 0; }
+.railhead { display: flex; align-items: baseline; gap: 8px; font-family: var(--mich); font-size: 10px; font-weight: 400; letter-spacing: 0.18em; }
 .railmeta { font-weight: 400; letter-spacing: 0.02em; font-size: 10px; color: var(--grey); text-transform: lowercase; }
 .railact { margin-left: auto; border: none; background: none; font: inherit; font-size: 10px; letter-spacing: 0.12em; color: var(--grey); cursor: pointer; }
 .railact + .railact { margin-left: 10px; }
@@ -875,7 +868,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .railcard { flex: 0 0 240px; border: 1px solid var(--line); padding: 8px 10px; }
 .railname { font-size: 12px; font-weight: 900; letter-spacing: 0.06em; }
 .railphase { font-style: italic; font-weight: 400; color: var(--red); font-size: 10px; }
-.railnote { font-size: 10px; color: #666; line-height: 1.45; margin: 4px 0 6px; }
+.railnote { font-size: 10px; color: var(--grey); line-height: 1.45; margin: 4px 0 6px; }
 .railpills { display: flex; flex-wrap: wrap; gap: 4px; }
 .railitem { flex: 0 0 120px; text-decoration: none; color: inherit; display: grid; gap: 3px; }
 .railitem img { width: 120px; height: 150px; object-fit: cover; border: 1px solid var(--line); }
@@ -916,10 +909,10 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .roommods .chip, .roomthemes { margin-top: 2px; }
 
 /* Day 30 pt2 — EU transparency disclosure line (drawer footer + /asterisk block) */
-.adisclose { margin-top: 10px; padding-top: 8px; border-top: 1px solid #111; font-size: 11px; line-height: 1.5; color: #555; }
-.adisclose a { color: #e5342b; text-decoration: none; font-weight: 700; }
+.adisclose { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; line-height: 1.5; color: var(--grey); }
+.adisclose a { color: var(--red); text-decoration: none; font-weight: 700; }
 .adisclose a:hover { text-decoration: underline; }
-.adisclose.full { margin: 0; padding: 10px 0 2px; border-top: 0; font-size: 12.5px; color: #222; }
+.adisclose.full { margin: 0; padding: 10px 0 2px; border-top: 0; font-size: 12.5px; color: var(--ink); }
 
 /* ---- Accessibility (ADA/WCAG embed, day33) --------------------------------
    Add-only: the visual identity is untouched for users who have not asked
@@ -945,7 +938,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 }
 
 /* Motion stops for anyone whose system asks for reduced motion — the
-   marquee, logo motion, morse tickers, and every transition. */
+   marquee, ambient loops, and every transition. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1002,7 +995,7 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 
 /* ================================================================
    OS LAYER — Fashion Intelligence OS chrome (redesign/os-shell).
-   Atmosphere, boot sweep, status bar, ASTERISK dock, surface polish.
+   Atmosphere, status bar, ASTERISK dock, surface polish.
    ================================================================ */
 
 /* looking through glass: scanlines + vignette above everything, never blocking */
@@ -1089,10 +1082,10 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 .btn.ghost.active { color: var(--red); background: var(--bg3); border-color: var(--red); text-shadow: var(--glow-r); }
 button.soon, a.soon, .btn.soon, .btn.ghost.soon, .fitbtn.soon, .platform.soon { background: none; }
 .panel { border-radius: 0 0 var(--ed-panel-rad, 14px) var(--ed-panel-rad, 14px); background: var(--bg2); backdrop-filter: blur(12px); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
-.autonote, .cravingbox, .otf { border-radius: 12px; }
+.autonote { border-radius: 12px; }
 .headline { font-family: var(--mich); font-size: var(--ed-fs-headline, clamp(26px, 4vw, 46px)); font-weight: 400; letter-spacing: var(--ed-ls-headline, 0.1em); line-height: 1.1; }
 .headline .red { text-shadow: var(--glow-r); }
-h3.statshead, .phead, .psub { font-family: var(--mich); font-weight: 400; letter-spacing: 0.18em; }
+.statshead, .phead, .psub { font-family: var(--mich); font-weight: 400; letter-spacing: 0.18em; }
 .deck { font-style: normal; color: var(--grey); font-size: var(--ed-fs-deck, 13px); }
 .searchpanel, .bagpanel { border-radius: 0 0 var(--ed-panel-rad, 14px) var(--ed-panel-rad, 14px); }
 .search { border-bottom-color: var(--sig); caret-color: var(--sig); }
@@ -1223,13 +1216,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppphotoempty { display: grid; place-items: center; gap: 6px; height: 100%; color: var(--sig); text-shadow: var(--glow); font-size: 26px; }
 .ppphotoempty em { font-style: normal; font-size: 7.5px; letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
 .ppphoto:hover { border-color: var(--sig); }
-.ppbus { border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); padding: 10px 14px; margin-bottom: 16px; }
-.ppbus .psub { margin: 0 0 6px; }
-.ppbusline { font-size: 10.5px; line-height: 1.8; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ppbust { color: var(--faint); margin-right: 7px; }
-.ppbusk { color: var(--p2); text-shadow: var(--glow-p); margin-right: 5px; text-transform: uppercase; }
-.convbar { border-radius: 999px; overflow: hidden; }
-.convbar i { background: linear-gradient(90deg, var(--sig-soft, #1e6b44), var(--sig)); box-shadow: var(--glow); border-radius: 999px; }
 
 /* ---- Profile: banner/avatar uploads ---- */
 .pbannerctl { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
@@ -1256,13 +1242,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
 .ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
 .ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
-  font-size: 18px; letter-spacing: 0.61em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
+  font-size: 18px; letter-spacing: 0.54em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
 
 /* ---- Phase 2: DISCOVER console hints ---- */
 .dhints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
-.dhintlbl { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); }
+.dhintlbl { font-family: var(--mich); font-size: 9px; letter-spacing: 0.2em; color: var(--grey); }
 .dhint { border: 1px dashed var(--line); border-radius: 999px; background: var(--bg3);
   padding: 4px 12px; font-size: 10.5px; letter-spacing: 0.06em; color: var(--grey);
   cursor: pointer; font-family: var(--helv); text-transform: none; }
@@ -1623,6 +1609,18 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .statsdock { border-top: none; justify-content: center; padding: 16px 0; }
 .statsdock canvas { width: 220px; height: 220px; }
 
+/* ---- wayfinding locator (owner rule: users must never get lost) — every
+   secondary page names the destination that owns it and offers the way
+   back, in one mono line above the headline ---- */
+.locline { display: flex; align-items: baseline; gap: 8px; font-family: var(--osd); font-size: 13px; letter-spacing: 0.1em; margin: 0 0 4px; }
+.locline span { color: var(--faint); }
+
+/* ever-so-slight motion blur on the passport→upload build (owner order,
+   Aug 12): rides only the growth window; roadBuilder removes the class
+   220ms before landing so the final frame stays pixel-identical */
+.ppwarp .ppbuildmap { transition: filter 0.22s ease; }
+.ppwarp.ppwarp-motion .ppbuildmap { filter: blur(0.7px); }
+
 /* ---- SETTINGS rack (owner order, Aug 12: old music-making software —
    numbered hardware modules, engraved labels, honest LEDs). The heavy
    top rule + hairline channel rows read as rack units, not bubbles. ---- */
@@ -1655,12 +1653,21 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode, .elttl,
-.hlttl, .card .ttl, .actions button {
+.hlttl, .card .ttl, .actions button, .locline a, .otfttl,
+.sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
     4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
     var(--glow);
+}
+/* red hover states swap the WHOLE signal to red — never red text inside
+   a teal blur */
+.hlrow:hover .hlttl, .card .ttl:hover, .shit:hover, .otfitem:hover .otfttl {
+  text-shadow:
+    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    var(--glow-r);
 }
 .buy, .mqhome, .resetlink {
   text-shadow:

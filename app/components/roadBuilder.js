@@ -301,6 +301,7 @@ export default function buildRoads(overlay, map, docRect, onDone) {
     }
     for (const p of pending) batch[p.e.layer].push(p.e);
     pending.length = 0;
+    overlay.classList.remove("ppwarp-motion");
     flushBatch();
     fctx.clearRect(0, 0, W, H);
     // hand the exact fit to /upload so its background renders the map at
@@ -317,6 +318,11 @@ export default function buildRoads(overlay, map, docRect, onDone) {
   function frame(now) {
     if (start === undefined) start = now;
     const t = now - start;
+    // Ever-so-slight motion blur riding ONLY the growth window (owner
+    // order, Aug 12): on after the still beat, eased off 220ms before
+    // landing so the final frame stays pixel-identical to /upload.
+    if (t >= STILL_MS && t < DURATION - 220) overlay.classList.add("ppwarp-motion");
+    else overlay.classList.remove("ppwarp-motion");
     if (t >= DURATION) {
       finish();
       return;

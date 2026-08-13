@@ -26,9 +26,10 @@ import AsteriskDock from "./components/AsteriskDock.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
 
-// Six destinations — the complete mental model of the OS. Every legacy route
-// stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE, and
-// the brain/control-room pages highlight their parent subsystem.
+// Seven destinations — the complete mental model of the OS. Every legacy
+// route stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE,
+// STATS/UPLOAD under PASSPORT, and the brain/control-room pages highlight
+// their parent subsystem.
 const NAV = [
   { href: "/cover", icon: "▣", label: "FRONT COVER", meta: "LIVE EDITION",
     match: (p) => p.startsWith("/cover") },
@@ -38,7 +39,7 @@ const NAV = [
     match: (p) => p.startsWith("/hotlist") },
   { href: "/board", icon: "✚", label: "PASSPORT", meta: "IDENT // MOODBOARD",
     match: (p) => p.startsWith("/board") || p.startsWith("/stats") || p.startsWith("/asterisk") || p.startsWith("/upload"),
-    sub: [{ href: "/upload", label: "UPLOAD ⇪" }] },
+    sub: [{ href: "/upload", label: "UPLOAD ⇪" }, { href: "/stats", label: "STATS →" }] },
   { href: "/discover", icon: "◎", label: "DISCOVER", meta: "OPEN INDEX",
     match: (p) => p.startsWith("/discover") || p.startsWith("/stylist"),
     sub: [{ href: "/stylist", label: "STYLIST ✂" }] },

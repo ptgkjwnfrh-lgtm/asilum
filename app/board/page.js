@@ -376,6 +376,7 @@ export default function BoardPage() {
           </div>
 
           <hr className="rule" />
+          <h3 className="statshead">BOARDS &amp; PINS</h3>
         </>
       )}
 
