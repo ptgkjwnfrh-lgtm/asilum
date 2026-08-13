@@ -1127,52 +1127,92 @@ img { filter: saturate(var(--ed-img-sat, 0.92)); }
 /* form controls never fall back to UA defaults (white boxes on dark) */
 input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
 
-/* ---- FRONT COVER (seventh destination, owner amendment) ---- */
-.shead-cover { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.covermeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
-.coverhero { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; margin: 4px 0 18px; }
-.coverpick, .coverwire { border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); padding: 14px 16px; }
-.coverpick .psub, .coverwire .psub { margin-top: 0; }
-.coverpickbody { display: grid; grid-template-columns: minmax(180px, 300px) 1fr; gap: 16px; align-items: center; }
-.coverpickimg { position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; aspect-ratio: 4 / 5; }
-.coverpickimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.coverpickimg::after { content: ""; position: absolute; inset: 0;
+/* ---- FRONT COVER (owner refinement round, Aug 12): a true magazine
+   cover — bold floating masthead, off-grid rotated hero with type
+   crossing the image, floating hotlist, wire, look film-strips, and a
+   text-only subsystem index. Bubbles deliberately absent: content sits
+   on the page ground; hairlines are the exception. All .cv* classes are
+   cover-only; shared classes get overridden only under .cvr scope. ---- */
+.cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+.cvmastblock { display: grid; }
+.cvmastline { font-family: var(--mich); font-size: var(--ed-fs-covermast, clamp(44px, 7.5vw, 96px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase; }
+.cvmastline .red { margin-right: 0.06em; }
+.cvyear { display: flex; gap: 0.14em; }
+.cvyear i { font-style: normal; color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; transform: translateY(0.06em); }
+.cvmeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
+
+/* hero — the pick floats off-grid: rotated image, one offset hairline
+   frame behind it (never hugging), type crossing the image's right edge */
+.cvhero { position: relative; display: block; margin: 18px 0 46px; }
+.cvhero::before { content: ""; position: absolute; left: calc(11% + 22px); top: 26px; width: min(44%, 420px); aspect-ratio: 4 / 5; border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); pointer-events: none; }
+.cvvert { position: absolute; left: calc(11% - 24px); top: 6px; writing-mode: vertical-rl; font-size: 8.5px; letter-spacing: 0.3em; color: var(--grey); }
+.cvheroimg { position: relative; width: min(44%, 420px); margin-left: 11%; aspect-ratio: 4 / 5; overflow: hidden; }
+.cvheroimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cvheroimg::after { content: ""; position: absolute; inset: 0;
   background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.10) 3px 4px),
     radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.12), transparent 60%); }
-.coverbrand { font-family: var(--mich); font-size: 17px; letter-spacing: 0.1em; }
-.coverttl { font-size: 13px; margin: 6px 0 2px; }
-.coverline { font-size: 11px; color: var(--grey); margin-bottom: 14px; }
-.coverposter { display: flex; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 4px; }
-.coverpostbox { flex: 1; }
-.coverpostbox textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font: inherit; font-size: 12px; resize: vertical; }
-.coverpostrow { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-.coverpost { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.coverpost:last-of-type { border-bottom: none; }
-.coverposthead b { font-size: 12px; font-weight: 700; }
-.coverposthead span { font-size: 10px; color: var(--grey); margin-left: 6px; }
-.coverpost p { margin: 3px 0 4px; font-size: 12px; }
-.coverpoststats { font-size: 10px; color: var(--faint); letter-spacing: 0.08em; }
-.covergrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-.covergrid section { border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); padding: 14px 16px; }
-.coverstory { display: block; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.coverpub { font-size: 8.5px; letter-spacing: 0.22em; color: var(--red); text-shadow: var(--glow-r); }
-.coverstoryttl { display: block; font-family: var(--mich); font-size: 12.5px; letter-spacing: 0.05em; margin: 3px 0 3px; }
-.coverstory:hover .coverstoryttl { color: var(--sig); text-shadow: var(--glow); }
-.coverstorysum { display: block; font-size: 11px; color: var(--grey); max-width: 56ch; }
-.coverall { display: inline-block; margin-top: 10px; font-size: 10px; letter-spacing: 0.16em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 5px 13px; }
-.coverall:hover { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
-.coverlook { display: block; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.coverlookthumbs { display: flex; gap: 6px; }
-.coverlookthumbs img { width: 62px; height: 78px; object-fit: cover; border: 1px solid var(--line); border-radius: 8px; }
-.coverlookline { font-size: 10.5px; letter-spacing: 0.1em; color: var(--grey); margin-top: 6px; }
-.coverlook:hover .coverlookline { color: var(--sig); text-shadow: var(--glow); }
-.coveridx { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-.coveridx a { border: 1px solid var(--line); border-radius: 12px; background: var(--bg3); padding: 10px 12px; }
-.coveridx b { display: block; font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; font-weight: 400; }
-.coveridx span { font-size: 9px; color: var(--grey); }
-.coveridx a:hover { border-color: var(--sig); }
-.coveridx a:hover b { color: var(--sig); text-shadow: var(--glow); }
-@media (max-width: 980px) { .coverhero, .covergrid { grid-template-columns: 1fr; } .coveridx { grid-template-columns: repeat(3, 1fr); } .coverpickbody { grid-template-columns: 1fr; } }
+.cvherotext { position: absolute; left: calc(11% + min(44%, 420px) - 90px); bottom: 8%; display: grid; gap: 6px; max-width: 46ch; }
+.cvherobrand { font-family: var(--mich); font-size: clamp(24px, 3.6vw, 46px); font-weight: 700; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; text-shadow: 0 0 18px var(--bg); }
+.cvherottl { font-size: 13px; letter-spacing: 0.04em; text-shadow: 0 0 12px var(--bg); }
+.cvheroline { font-family: var(--osd); font-size: 14px; color: var(--ink); letter-spacing: 0.08em; text-shadow: 0 0 12px var(--bg), 0 0 5px var(--bg); }
+.cvhero.cvempty::before { display: none; }
+.cvhero.cvempty { min-height: 0; }
+.cvhero.cvempty .pempty { margin-left: 11%; }
+.cvlink { font-size: 10px; letter-spacing: 0.16em; }
+.cvmore { display: inline-block; margin-top: 14px; }
+
+/* bands: hotlist + looks, then wire + dispatches — no boxes, staggered */
+.cvband, .cvband2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; margin: 0 0 40px; }
+.cvkick { font-family: var(--mich); font-size: 10px; letter-spacing: 0.2em; margin-bottom: 4px; }
+.cvnote { font-size: 10px; color: var(--grey); margin-bottom: 12px; }
+.cvhotrow { display: flex; align-items: baseline; gap: 14px; padding: 7px 0; }
+.cvhotrow:nth-of-type(even) { margin-left: 28px; }
+.cvhotnum { font-family: var(--osd); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
+.cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
+.cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
+.cvhotstat { margin-left: auto; font-family: var(--osd); font-size: 12px; color: var(--grey); text-shadow: none; letter-spacing: 0.1em; flex: none; }
+/* outfit strips stay uniform and organized (owner order, Aug 12) */
+.cvlook { display: block; margin: 6px 0 18px; }
+.cvlookstrip { display: flex; gap: 6px; padding: 6px 0 4px; }
+.cvlookstrip img { width: 84px; height: 106px; object-fit: cover; }
+.cvlookline { font-size: 10.5px; letter-spacing: 0.1em; color: var(--grey); margin-top: 8px; }
+.cvlook:hover .cvlookline { color: var(--sig); text-shadow: var(--glow); }
+
+/* the wire — floating transmissions, no boxes, no counters */
+.cvcompose { display: flex; gap: 12px; margin: 10px 0 18px; }
+.cvcomposebox { flex: 1; }
+.cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font: inherit; font-size: 13px; resize: vertical; outline: none; }
+.cvr .cvcomposebox textarea:focus { border-bottom-color: var(--sig); }
+.cvcomposerow { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.cvpost { margin: 0 0 16px; }
+.cvpost:nth-of-type(even) { margin-left: 30px; }
+.cvposttext { margin: 0 0 3px; font-size: 14px; line-height: 1.45; max-width: 52ch; }
+.cvposthandle { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
+
+/* dispatches — floating cover lines */
+.cvstory { display: block; margin: 0 0 16px; }
+.cvstory:nth-of-type(even) { margin-left: 26px; }
+.cvpub { font-size: 8.5px; letter-spacing: 0.22em; color: var(--red); text-shadow: var(--glow-r); }
+.cvstoryttl { display: block; font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; margin: 3px 0; }
+.cvstorysum { display: block; font-size: 11px; color: var(--grey); max-width: 52ch; }
+
+/* subsystem index — words only, one non-uniform hairline pair above */
+.cvindex { position: relative; display: flex; flex-wrap: wrap; gap: 10px 34px; padding-top: 18px; border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); }
+.cvindex::before { content: ""; position: absolute; top: 3px; left: 0; width: 38%; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+.cvindex a b { display: block; font-family: var(--mich); font-size: 10px; letter-spacing: 0.16em; font-weight: 400; }
+.cvindex a span { font-size: 9px; color: var(--grey); text-shadow: none; }
+.cvindex a:hover b { color: var(--sig); text-shadow: var(--glow); }
+
+@media (max-width: 980px) {
+  .cvband, .cvband2 { grid-template-columns: 1fr; gap: 30px; }
+  .cvheroimg { width: 78%; margin-left: 6%; }
+  .cvhero::before { left: calc(6% + 18px); width: 78%; top: 18px; }
+  .cvvert { left: 0; }
+  /* text keeps overlapping the image at every width (owner: "overlap
+     text with the image, it's that simple") */
+  .cvherotext { left: calc(6% + 18px); right: 4%; bottom: 6%; max-width: none; }
+  .cvhotrow:nth-of-type(even), .cvpost:nth-of-type(even), .cvstory:nth-of-type(even) { margin-left: 0; }
+}
 
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect) ---- */
 .imgwrap { position: relative; border: 1px solid var(--line); border-radius: var(--ed-img-rad, 10px); overflow: hidden; }
@@ -1593,19 +1633,29 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .statsdock { border-top: none; justify-content: center; padding: 16px 0; }
 .statsdock canvas { width: 220px; height: 220px; }
 
-/* ---- CLICKABLE WORDS (owner rule, Aug 12): a word you are meant to click
-   carries a slight horizontal motion blur + a glow overtop — the site-wide
-   clickability signal. Base look only; hover states keep their own glow
-   (higher specificity or later rules win). currentColor keeps it honest in
-   both themes and every state. ---- */
+/* ---- CLICKABLE WORDS (owner rule, Aug 12, recolored same day: "not
+   black, it's ugly"): a word you are meant to click is painted the logo
+   gradient's teal (--sig — phosphor green dark / teal light) with a glow
+   and a slight horizontal motion blur — the site-wide clickability signal.
+   Red-law elements (buy, home, reset) keep red with the same treatment.
+   Hover states keep their own glow (higher specificity or later wins). ---- */
 .tbtn, .snav, .snavsub a, .txtbtn, .railact, .wact, .amemhide, .modmore,
-.roomreport, .readlink, .buy, .shit, .mqlink, .mqhome, .tab, .resetlink,
-.dhint, .coverall, .amemgo, .actions2 button, .cacts button, .cardacts button,
-.chip.clickable, .apill, .achip {
+.roomreport, .readlink, .shit, .mqlink, .tab,
+.dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
+.chip.clickable, .apill, .achip,
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b {
+  color: var(--sig);
   text-shadow:
-    -4px 0 5px color-mix(in srgb, currentColor 16%, transparent),
-    4px 0 5px color-mix(in srgb, currentColor 16%, transparent),
-    0 0 6px color-mix(in srgb, currentColor 32%, transparent);
+    -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
+    4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
+    var(--glow);
+}
+.readlink { border-bottom-color: var(--sig); }
+.buy, .mqhome, .resetlink {
+  text-shadow:
+    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    var(--glow-r);
 }
 
 /* ---- HEADER COMPRESSION (must stay LAST — these override OS-layer base
