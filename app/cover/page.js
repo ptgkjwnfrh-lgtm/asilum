@@ -9,9 +9,10 @@
 // Warp-sleeve credit stacks, a field of non-uniform contrast hairlines,
 // and magazine marginalia in every gutter. Every displayed value is real
 // state: the pick is the feed's actual top item, the hotlist is the live
-// person-deduped popularity ranking (feed-fallback labeled honestly),
-// the looks come from the live stylist engine, and the marginalia print
-// the system ledger's own counters — nothing decorative is invented.
+// person-deduped popularity ranking (vacant until real people move —
+// owner order Aug 13, no feed stand-in), the looks come from the live
+// stylist engine, and the marginalia print the system ledger's own
+// counters — nothing decorative is invented.
 
 import { useEffect, useState } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor } from "../../lib/client.js";
@@ -67,33 +68,26 @@ export default function CoverPage() {
       year: "numeric", month: "long", day: "numeric",
     }).toUpperCase());
     setYear(String(now.getFullYear()));
-    // The hotlist preview mirrors /hotlist exactly: live person-deduped
-    // popularity counters when at least 3 items have them, otherwise the
-    // caller's own ranked feed, labeled as such — never dressed as live.
-    const feedPromise = authorizedFetch("/api/feed?user=" + encodeURIComponent(user))
+    // The hotlist preview mirrors /hotlist exactly: only pieces a real
+    // person moved on fill slots; the rest stay VACANT (owner order,
+    // Aug 13: the hotlist is held for designer accounts) — the caller's
+    // own feed never stands in.
+    authorizedFetch("/api/feed?user=" + encodeURIComponent(user))
       .then((r) => r.json())
-      .catch(() => null);
-    feedPromise.then((d) => setFeed(((d && d.items) || []).slice(0, 9)));
+      .then((d) => setFeed(((d && d.items) || []).slice(0, 9)))
+      .catch(() => {});
     authorizedFetch("/api/stats")
       .then((r) => r.json())
-      .then(async (s) => {
+      .then((s) => {
         setSys(s);
-        if (s.topItems && s.topItems.length >= 3) {
-          setHot({
-            live: true,
-            rows: s.topItems.slice(0, 5).map((t) => ({
-              id: t.id, title: t.title, brand: t.brand,
-              stat: (t.engagers ?? 0) + (t.engagers === 1 ? " PERSON" : " PEOPLE"),
-            })),
-          });
-          return;
-        }
-        const d = await feedPromise;
+        // A slot fills only when a real person moved (owner order,
+        // Aug 13): impression-only entries stay vacant, no stand-in.
+        const moved = (s.topItems || []).filter((t) => (t.engagers ?? 0) > 0);
         setHot({
-          live: false,
-          rows: ((d && d.items) || []).slice(0, 5).map((it) => ({
-            id: it.id, title: it.title, brand: it.brand,
-            stat: it._zone === "reach" ? "FAR REACH" : (it._zone || "").toUpperCase(),
+          live: moved.length > 0,
+          rows: moved.slice(0, 5).map((t) => ({
+            id: t.id, title: t.title, brand: t.brand,
+            stat: (t.engagers ?? 0) + (t.engagers === 1 ? " PERSON" : " PEOPLE"),
           })),
         });
       })
@@ -212,7 +206,7 @@ export default function CoverPage() {
               ? "counting…"
               : hot.live
                 ? "ranked live by what everyone is favoriting, bagging, and sharing."
-                : "the counters are warming up — this is your own feed standing in, not a shared list."}
+                : "held for designer accounts — the ranking fills as real people favorite, bag, and share. nothing stands in."}
           </div>
           {(hot?.rows || []).map((r, i) => (
             <a className="cvhotrow" key={r.id} href={"/?item=" + encodeURIComponent(r.id)}>
@@ -225,7 +219,7 @@ export default function CoverPage() {
             </a>
           ))}
           {hot && hot.rows.length === 0 && (
-            <div className="pempty">nothing yet — go touch the feed.</div>
+            <div className="pempty">the slots are open — no one has moved yet.</div>
           )}
           <a className="cvlink cvmore" href="/hotlist">THE FULL HOTLIST →</a>
         </section>

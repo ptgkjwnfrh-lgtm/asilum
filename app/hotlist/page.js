@@ -2,8 +2,10 @@
 
 // app/hotlist/page.js — EDITORIAL.
 // One page, a descending visibility ladder (owner order, Aug 12):
-//   1. THE HOTLIST — loudest: the live person-deduped ranking (or the
-//      caller's feed, labeled honestly as an editorial pick).
+//   1. THE HOTLIST — loudest: the live person-deduped ranking. The
+//      slots are held for designer accounts and stay VACANT until real
+//      people move (owner order, Aug 13) — the caller's own feed never
+//      stands in.
 //   2. ASILUM MAGAZINE — the house's own dispatches from editorial_posts
 //      (kind=asilum); honest empty state until the first one is written,
 //      with the submissions intake still marked coming-soon.
@@ -14,7 +16,7 @@
 //   5. EXTERNAL DISPATCHES — quietest: publication links, titles only.
 
 import { useEffect, useState } from "react";
-import { getUid, authorizedFetch, thumbFor } from "../../lib/client.js";
+import { thumbFor } from "../../lib/client.js";
 import { STORIES, fetchWire, timeAgo } from "../../lib/social.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
@@ -37,21 +39,16 @@ export default function EditorialPage() {
     fetch("/api/stats")
       .then((r) => r.json())
       .then(async (s) => {
-        if (s.topItems && s.topItems.length >= 3) {
-          setLive(true);
-          setRows(s.topItems.map((t) => ({
-            id: t.id, title: t.title, brand: t.brand,
-            // People, not events: the ranked quantity and the printed label
-            // must agree, or the page keeps publishing a forgeable number.
-            stat: (t.engagers ?? 0) + (t.engagers === 1 ? " PERSON" : " PEOPLE"), item: t.item || null,
-          })));
-          return;
-        }
-        setLive(false);
-        const f = await authorizedFetch("/api/feed?user=" + encodeURIComponent(getUid() || "guest")).then((r) => r.json());
-        setRows((f.items || []).slice(0, 10).map((it) => ({
-          id: it.id, title: it.title, brand: it.brand,
-          stat: it._zone === "reach" ? "FAR REACH" : (it._zone || "").toUpperCase(), item: it,
+        // A slot fills only when a real person moved (owner order,
+        // Aug 13): impression-only entries stay vacant, and nothing
+        // stands in for the missing rows.
+        const moved = (s.topItems || []).filter((t) => (t.engagers ?? 0) > 0);
+        setLive(moved.length > 0);
+        setRows(moved.map((t) => ({
+          id: t.id, title: t.title, brand: t.brand,
+          // People, not events: the ranked quantity and the printed label
+          // must agree, or the page keeps publishing a forgeable number.
+          stat: (t.engagers ?? 0) + (t.engagers === 1 ? " PERSON" : " PEOPLE"), item: t.item || null,
         })));
       })
       .catch(() => setRows([]));
@@ -69,10 +66,10 @@ export default function EditorialPage() {
           <span className="pulse" />
           {live
             ? "ranked live by what everyone is favoriting, bagging, and sharing."
-            : "the counters are warming up — this is your own feed standing in, not a shared list."}
+            : "held for designer accounts — the ranking fills as real people favorite, bag, and share. nothing stands in."}
         </p>
         {!rows && <div className="empty">counting…</div>}
-        {rows && rows.length === 0 && <div className="empty">nothing yet — go touch the feed.</div>}
+        {rows && rows.length === 0 && <div className="empty">the slots are open — no one has moved yet.</div>}
         {rows && rows.map((r, i) => (
           <a className="elrow" key={r.id} href={"/?item=" + encodeURIComponent(r.id)}>
             <div className="elnum" aria-hidden="true">{String(i + 1).padStart(2, "0")}</div>

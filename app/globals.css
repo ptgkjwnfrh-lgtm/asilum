@@ -592,8 +592,9 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .elmast { font-family: var(--mich); font-size: clamp(30px, 5vw, 60px); font-weight: 700; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; margin: 10px 0 2px; }
 .elnote { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--grey); margin: 0 0 14px; }
 .elhot { margin-bottom: 46px; }
+/* clean vertical placement — the hotlist never staggers (owner order,
+   Aug 13) */
 .elrow { display: flex; align-items: center; gap: 18px; padding: 10px 0; }
-.elrow:nth-of-type(even) { margin-left: 30px; }
 .elnum { font-family: var(--osd); font-size: clamp(34px, 4.5vw, 56px); line-height: 1; color: color-mix(in srgb, var(--ink) 22%, transparent); text-shadow: none; flex: none; width: 1.5em; }
 .elthumb { width: 84px; height: 106px; object-fit: cover; flex: none; }
 .elinfo { flex: 1; min-width: 0; }
@@ -625,7 +626,6 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .elextrow:hover .elextttl { color: var(--sig); }
 .elextnote { font-size: 9px; color: var(--faint); margin-top: 10px; }
 @media (max-width: 700px) {
-  .elrow:nth-of-type(even) { margin-left: 0; }
   .elnum { width: 1.2em; }
   .elthumb { width: 64px; height: 82px; }
   .eladrow { gap: 16px; }
@@ -1204,8 +1204,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvsider { left: auto; right: -24px; }
 .cvkick { font-family: var(--mich); font-size: 10px; letter-spacing: 0.2em; margin-bottom: 4px; }
 .cvnote { font-size: 10px; color: var(--grey); margin-bottom: 12px; }
+/* clean vertical placement — the hotlist never staggers (owner order,
+   Aug 13) */
 .cvhotrow { display: flex; align-items: baseline; gap: 14px; padding: 7px 0; }
-.cvhotrow:nth-of-type(even) { margin-left: 28px; }
 .cvhotnum { font-family: var(--osd); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
 .cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
@@ -1273,7 +1274,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   /* text keeps overlapping the image at every width (owner: "overlap
      text with the image, it's that simple") */
   .cvherotext { left: calc(6% + 18px); right: 4%; bottom: 6%; max-width: none; }
-  .cvhotrow:nth-of-type(even), .cvpost:nth-of-type(even), .cvstory:nth-of-type(even) { margin-left: 0; }
+  .cvpost:nth-of-type(even), .cvstory:nth-of-type(even) { margin-left: 0; }
   /* the film strip lies down as a contact-sheet row */
   .cvfilm { grid-template-columns: repeat(6, 1fr); gap: 8px; padding-top: 0; }
   .cvfilmlbl { grid-column: 1 / -1; }

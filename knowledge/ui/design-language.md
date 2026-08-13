@@ -87,7 +87,10 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   are gone from the page.
 - EDITORIAL (/hotlist) is one page, a descending visibility ladder (owner
   order, Aug 12): 1 THE HOTLIST loudest (big ghost numerals, teal titles,
-  red person-counts), 2 ASILUM MAGAZINE (house dispatches from
+  red person-counts; the slots are held for DESIGNER ACCOUNTS and stay
+  VACANT until real people move — owner order Aug 13, the caller's feed
+  never stands in; rows sit in clean vertical placement, never
+  staggered — on the cover preview too), 2 ASILUM MAGAZINE (house dispatches from
   editorial_posts kind=asilum; honest empty state; submissions still
   coming-soon), 3 AD SPACE (dashed = honestly open, "sponsored placements
   are always disclosed", never a fake advertiser), 4 THE COMMUNITY FLOOR
