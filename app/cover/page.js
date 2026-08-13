@@ -278,7 +278,7 @@ export default function CoverPage() {
             <Avatar name={getProfileInfo().name} />
             <div className="cvcomposebox">
               <textarea
-                rows={2}
+                rows={3}
                 maxLength={400}
                 placeholder="today's uniform, tonight's find…"
                 value={text}
@@ -286,7 +286,7 @@ export default function CoverPage() {
               />
               <div className="cvcomposerow">
                 <span className="ccount">{text.length}/400</span>
-                <button className="btn" onClick={post} disabled={!text.trim()}>POST</button>
+                <button className="btn cvpostbtn" onClick={post} disabled={!text.trim()}>POST</button>
               </div>
             </div>
           </div>

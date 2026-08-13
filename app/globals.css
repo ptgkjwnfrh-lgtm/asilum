@@ -1231,8 +1231,12 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvwire::after { content: ""; position: absolute; top: 9px; left: 0; width: 88%; border-top: 1px solid var(--ink); opacity: 0.12; }
 .cvcompose { display: flex; gap: 12px; margin: 10px 0 18px; }
 .cvcomposebox { flex: 1; }
-.cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font: inherit; font-size: 13px; resize: vertical; outline: none; }
+/* the composer reads a touch louder (owner order, Aug 13): bigger
+   entry type, a stronger underline, and POST carries the teal
+   clickable smear — but only once there is something to post */
+.cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .cvr .cvcomposebox textarea:focus { border-bottom-color: var(--sig); }
+.cvr .cvpostbtn:disabled { color: var(--grey); text-shadow: none; }
 .cvcomposerow { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
 .cvpost { margin: 0 0 16px; }
 .cvpost:nth-of-type(even) { margin-left: 30px; }
@@ -1732,7 +1736,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .roomreport, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .fmode, .elttl,
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .cvpostbtn, .fmode, .elttl,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);
