@@ -23,11 +23,17 @@ export default function EditorialPage() {
   const [rows, setRows] = useState(null);
   const [live, setLive] = useState(true);
   const [posts, setPosts] = useState(null);
+  const [postsLive, setPostsLive] = useState(true);
   const [house, setHouse] = useState(null);
+  const [houseLive, setHouseLive] = useState(true);
 
   useEffect(() => {
-    fetchWire("user").then(setPosts).catch(() => setPosts([]));
-    fetchWire("asilum").then(setHouse).catch(() => setHouse([]));
+    fetchWire("user")
+      .then((w) => { setPosts(w.posts); setPostsLive(w.live); })
+      .catch(() => { setPosts([]); setPostsLive(false); });
+    fetchWire("asilum")
+      .then((w) => { setHouse(w.posts); setHouseLive(w.live); })
+      .catch(() => { setHouse([]); setHouseLive(false); });
     fetch("/api/stats")
       .then((r) => r.json())
       .then(async (s) => {
@@ -63,7 +69,7 @@ export default function EditorialPage() {
           <span className="pulse" />
           {live
             ? "ranked live by what everyone is favoriting, bagging, and sharing."
-            : "the counters are warming up — today's list is an editorial pick."}
+            : "the counters are warming up — this is your own feed standing in, not a shared list."}
         </p>
         {!rows && <div className="empty">counting…</div>}
         {rows && rows.length === 0 && <div className="empty">nothing yet — go touch the feed.</div>}
@@ -86,7 +92,10 @@ export default function EditorialPage() {
       <section className="elhouse" aria-label="asilum magazine">
         <div className="cvkick">ASILUM MAGAZINE</div>
         {house === null && <div className="empty">opening the house pages…</div>}
-        {house && house.length === 0 && (
+        {house && !houseLive && (
+          <p className="elhousenote">the house pages could not be reached — try again in a moment.</p>
+        )}
+        {house && houseLive && house.length === 0 && (
           <p className="elhousenote">
             the first ASILUM dispatch is on the cutting table — the house
             writes here, under its own byline, when there is something worth
@@ -127,7 +136,13 @@ export default function EditorialPage() {
       <section className="elfloor" aria-label="the community floor">
         <div className="cvkick">THE COMMUNITY FLOOR</div>
         {posts === null && <div className="empty">pulling the wire…</div>}
-        {posts && posts.length === 0 && (
+        {posts && !postsLive && (
+          <div className="empty">
+            the shared wire could not be reached — showing this device&apos;s
+            posts only.
+          </div>
+        )}
+        {posts && postsLive && posts.length === 0 && (
           <div className="empty">no transmissions yet — yours opens the wire.</div>
         )}
         {(posts || []).map((p) => (

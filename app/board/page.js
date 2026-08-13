@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
-import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl, aspectFor } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
@@ -435,7 +435,7 @@ export default function BoardPage() {
             <div className="grid">
               {view.items.map((it) => (
                 <div className="card" key={it.id}>
-                  <div className="imgwrap">
+                  <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
                     <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
                   </div>
                   <div className="body">

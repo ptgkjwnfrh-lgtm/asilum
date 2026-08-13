@@ -26,9 +26,12 @@ export default function SettingsPage() {
     let storedTheme = null;
     try { storedTheme = window.localStorage.getItem("asilum-theme"); } catch {}
     setTheme(storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system");
-    // Clear any stale "connected" flag from the old simulated import — no
-    // real connection exists until a real OAuth adapter ships.
-    try { window.localStorage.removeItem("asilum-connected"); } catch {}
+    // Clear stale flags: the old simulated-import "connected" marker, and
+    // the boot-sweep opt-out left behind when the boot sweep was deleted.
+    try {
+      window.localStorage.removeItem("asilum-connected");
+      window.localStorage.removeItem("asilum-boot");
+    } catch {}
   }, []);
 
   async function resetTaste() {

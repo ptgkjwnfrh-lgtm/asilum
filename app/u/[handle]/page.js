@@ -5,7 +5,7 @@
 // aesthetic. Users are placeholder accounts until real ones exist.
 
 import { use, useEffect, useState } from "react";
-import { thumbFor, hashStr } from "../../../lib/client.js";
+import { thumbFor, hashStr, aspectFor } from "../../../lib/client.js";
 import { MOCK_USERS, listPosts, postStats, timeAgo } from "../../../lib/social.js";
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
 import { PublicRoom } from "../../components/ProfileRoom.jsx";
@@ -109,7 +109,7 @@ export default function UserPage({ params }) {
       <div className="grid">
         {pieces.map((it) => (
           <a className="card" key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
-            <div className="imgwrap">
+            <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
               <img src={it.img || thumbFor(it)} alt={it.title} loading="lazy" />
             </div>
             <div className="body">

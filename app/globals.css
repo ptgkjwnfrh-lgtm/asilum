@@ -825,9 +825,12 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   .asterisk-trigger span { display: none; }
   .asterisk-state { display: none; }
   .asterisk-glyph { width: 32px; height: 32px; }
+  /* top-anchored below the header: the drawer LIVES inside .tophead, whose
+     backdrop-filter makes it the containing block for fixed descendants —
+     a bottom anchor would grow the panel upward off-screen */
   .adrawer {
-    left: 12px; right: 12px; top: auto; bottom: 12px; width: auto;
-    max-height: calc(100vh - 110px);
+    left: 12px; right: 12px; top: calc(var(--head-h) + 8px); bottom: auto; width: auto;
+    max-height: calc(100vh - var(--head-h) - 24px);
   }
   .amemlbl { flex-basis: 84px; }
   .searchguide { align-items: flex-start; flex-wrap: wrap; }
@@ -1126,8 +1129,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvyear i { font-style: normal; color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; transform: translateY(0.06em); }
 .cvmeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
 
-/* hero — the pick floats off-grid: rotated image, one offset hairline
-   frame behind it (never hugging), type crossing the image's right edge */
+/* hero — the pick floats off-grid: straight image (rotation is banned,
+   owner order Aug 12), one offset hairline frame behind it (never
+   hugging), type crossing the image's right edge */
 .cvhero { position: relative; display: block; margin: 18px 0 46px; }
 .cvhero::before { content: ""; position: absolute; left: calc(11% + 22px); top: 26px; width: min(44%, 420px); aspect-ratio: 4 / 5; border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); pointer-events: none; }
 .cvvert { position: absolute; left: calc(11% - 24px); top: 6px; writing-mode: vertical-rl; font-size: 8.5px; letter-spacing: 0.3em; color: var(--grey); }
@@ -1629,14 +1633,14 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .roomreport, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode, .elttl {
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode, .elttl,
+.hlttl, .card .ttl, .actions button {
   color: var(--sig);
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
     4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
     var(--glow);
 }
-.readlink { border-bottom-color: var(--sig); }
 .buy, .mqhome, .resetlink {
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),

@@ -3,7 +3,7 @@
 // app/cover/page.js — FRONT COVER.
 // The landing edition (owner amendment, July 25: seventh destination),
 // rebuilt as a true magazine cover (owner refinement round, Aug 12):
-// bold floating masthead type, the machine's pick as an off-grid rotated
+// bold floating masthead type, the machine's pick as an off-grid straight
 // hero with type crossing the image, a floating hotlist preview, the wire,
 // tonight's looks as a film-strip collage, and editorial dispatches —
 // borders only where they earn it. Every displayed value is real state:
@@ -14,7 +14,7 @@
 import { useEffect, useState } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor } from "../../lib/client.js";
 import {
-  STORIES, listPosts, addPost, timeAgo, getProfileInfo, sourceFor,
+  STORIES, fetchWire, addPost, timeAgo, getProfileInfo, sourceFor,
 } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
 
@@ -30,15 +30,23 @@ const SUBSYSTEMS = [
 export default function CoverPage() {
   const [pick, setPick] = useState(null);
   const [looks, setLooks] = useState([]);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
+  const [postsLive, setPostsLive] = useState(true);
+  const [wireNote, setWireNote] = useState("");
   const [hot, setHot] = useState(null);
   const [text, setText] = useState("");
   const [stamp, setStamp] = useState("");
   const [year, setYear] = useState("");
 
+  function loadCoverWire() {
+    fetchWire()
+      .then((w) => { setPosts(w.posts); setPostsLive(w.live); })
+      .catch(() => { setPosts([]); setPostsLive(false); });
+  }
+
   useEffect(() => {
     const user = getUid() || "guest";
-    setPosts(listPosts());
+    loadCoverWire();
     const now = new Date();
     setStamp(now.toLocaleDateString("en-US", {
       year: "numeric", month: "long", day: "numeric",
@@ -85,8 +93,16 @@ export default function CoverPage() {
     if (!t) return;
     const info = getProfileInfo();
     addPost(t, info);
-    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: t }).catch(() => {});
-    setPosts(listPosts());
+    // The server's verdict decides the note — a held-for-review post is
+    // saved but invisible to others, and saying "live" would be a lie.
+    postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: t })
+      .then(async (res) => {
+        const d = await res.json().catch(() => null);
+        setWireNote(d && d.held ? (d.note || "your post is saved and paused for a human review") : "");
+        loadCoverWire();
+      })
+      .catch(() => setWireNote("saved on this device — the shared wire could not be reached"));
+    loadCoverWire();
     setText("");
   }
 
@@ -142,7 +158,7 @@ export default function CoverPage() {
               ? "counting…"
               : hot.live
                 ? "ranked live by what everyone is favoriting, bagging, and sharing."
-                : "the counters are warming up — today's list is an editorial pick."}
+                : "the counters are warming up — this is your own feed standing in, not a shared list."}
           </div>
           {(hot?.rows || []).map((r, i) => (
             <a className="cvhotrow" key={r.id} href={"/?item=" + encodeURIComponent(r.id)}>
@@ -203,13 +219,22 @@ export default function CoverPage() {
               </div>
             </div>
           </div>
-          {posts.slice(0, 4).map((p) => (
+          {wireNote && <div className="pempty">{wireNote}</div>}
+          {(posts || []).slice(0, 4).map((p) => (
             <div className="cvpost" key={p.id}>
               <p className="cvposttext">{p.text}</p>
-              <span className="cvposthandle">{p.name} {p.handle} · {timeAgo(p.at)}</span>
+              <span className="cvposthandle">
+                {p.handle}{p.mine ? <i className="cmine">you</i> : null} · {timeAgo(p.at)}
+              </span>
             </div>
           ))}
-          {posts.length === 0 && (
+          {posts && !postsLive && (
+            <div className="pempty">
+              the shared wire could not be reached — showing this device&apos;s
+              posts only.
+            </div>
+          )}
+          {posts && postsLive && posts.length === 0 && (
             <div className="pempty">no transmissions yet — yours opens the wire.</div>
           )}
         </section>
