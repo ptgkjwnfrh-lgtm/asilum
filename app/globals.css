@@ -1125,22 +1125,26 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* content children stack above the hairline field by DOM order */
 .cvr > * { position: relative; }
 
-/* the hairline field — horizontal + diagonal contrast lines; a few
-   thick, most thin; a few visible, most barely there (owner order,
-   Aug 13). Lines may take angles; images never do (rotation ban). */
+/* the hairline field — horizontal + vertical contrast lines (owner
+   order, Aug 13: diagonals swapped for verticals); a few thick, most
+   thin; a few visible, most barely there. */
 .cvlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .cvlines i { position: absolute; display: block; height: 0; border-top: 1px solid var(--ink); }
-.cvln-h1 { top: 9%; left: -3%; width: 55%; opacity: 0.30; }
-.cvln-h2 { top: 21%; left: 30%; width: 68%; opacity: 0.07; }
-.cvln-h3 { top: 38%; left: -2%; width: 40%; border-top-width: 4px; opacity: 0.10; }
-.cvln-h4 { top: 55%; left: 48%; width: 54%; opacity: 0.05; }
-.cvln-h5 { top: 71%; left: -4%; width: 82%; opacity: 0.12; }
-.cvln-h6 { top: 88%; left: 22%; width: 30%; border-top-width: 6px; opacity: 0.22; }
-.cvln-d1 { top: 14%; left: 52%; width: 60%; transform: rotate(-17deg); transform-origin: left; opacity: 0.16; }
-.cvln-d2 { top: 33%; left: -6%; width: 48%; transform: rotate(11deg); transform-origin: left; opacity: 0.05; }
-.cvln-d3 { top: 47%; left: 30%; width: 75%; border-top-width: 3px; transform: rotate(-28deg); transform-origin: left; opacity: 0.06; }
-.cvln-d4 { top: 66%; left: 10%; width: 65%; transform: rotate(21deg); transform-origin: left; opacity: 0.04; }
-.cvln-d5 { top: 83%; left: 46%; width: 58%; transform: rotate(-9deg); transform-origin: left; opacity: 0.14; }
+/* per-line rules ride under .cvlines so they outrank the `.cvlines i`
+   base (0,1,1) — bare .cvln-* (0,1,0) silently loses its widths */
+.cvlines .cvln-h1 { top: 9%; left: -3%; width: 55%; opacity: 0.30; }
+.cvlines .cvln-h2 { top: 21%; left: 30%; width: 68%; opacity: 0.07; }
+.cvlines .cvln-h3 { top: 38%; left: -2%; width: 40%; border-top-width: 4px; opacity: 0.10; }
+.cvlines .cvln-h4 { top: 55%; left: 48%; width: 54%; opacity: 0.05; }
+.cvlines .cvln-h5 { top: 71%; left: -4%; width: 82%; opacity: 0.12; }
+.cvlines .cvln-h6 { top: 88%; left: 22%; width: 30%; border-top-width: 6px; opacity: 0.22; }
+.cvlines .cvln-v1, .cvlines .cvln-v2, .cvlines .cvln-v3, .cvlines .cvln-v4, .cvlines .cvln-v5 {
+  height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
+.cvlines .cvln-v1 { top: 6%; left: 24%; height: 30%; opacity: 0.26; }
+.cvlines .cvln-v2 { top: 18%; left: 58%; height: 55%; opacity: 0.06; }
+.cvlines .cvln-v3 { top: 42%; left: 8%; height: 34%; border-left-width: 4px; opacity: 0.09; }
+.cvlines .cvln-v4 { top: 30%; left: 82%; height: 48%; opacity: 0.04; }
+.cvlines .cvln-v5 { top: 62%; left: 40%; height: 33%; opacity: 0.13; }
 
 .cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
 .cvmastblock { display: grid; }

@@ -52,13 +52,15 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     HIGHLIGHT piece plus some empty air; they may overlap each other
     (State 3.0's double frame) and overlap neighbouring pieces. A frame
     marks a TRUE highlight only — the strip's lead piece on the cover,
-    the anchor piece or an owned wardrobe piece in the stylist. Frames
-    and hairlines may take angles; images still never rotate.
-  - HAIRLINE FIELD (`.cvlines`): hand-placed horizontal AND diagonal
-    contrast lines behind the content — a few thick (3–6px), most 1px;
-    a few visible (0.12–0.30 opacity), most barely there (0.04–0.10).
-    Deterministic (no render-time random), pointer-events none, always
-    behind content, never reducing readability.
+    the anchor piece or an owned wardrobe piece in the stylist.
+  - HAIRLINE FIELD (`.cvlines`): hand-placed horizontal AND vertical
+    contrast lines behind the content (owner order, Aug 13 — diagonals
+    were tried the same day and swapped for verticals; nothing in the
+    field takes an angle, and images still never rotate) — a few thick
+    (3–6px), most 1px; a few visible (0.12–0.30 opacity), most barely
+    there (0.04–0.10). Deterministic (no render-time random),
+    pointer-events none, always behind content, never reducing
+    readability.
   - MAGAZINE MARGINALIA: small side text everywhere a magazine would
     carry it — gutter verticals, Warp-style credit stacks (micro label
     over value: `.cclbl`/`.ccval`), ledger folios, a bottom colophon.
