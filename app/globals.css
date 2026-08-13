@@ -467,8 +467,13 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .otfdom { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--grey); }
 .otfconf { margin-left: auto; font-size: 26px; font-weight: 900; letter-spacing: -0.04em; color: var(--red); line-height: 1; }
 .otfconf i { font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--grey); margin-left: 5px; text-transform: uppercase; }
-.otfrow { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
-.otfitem { flex: 0 0 132px; display: block; }
+/* top padding gives the thick highlight frame room inside the scroll
+   container (overflow-x would clip anything past the content box) */
+.otfrow { display: flex; gap: 12px; overflow-x: auto; padding: 18px 0 6px; }
+.otfitem { flex: 0 0 132px; display: block; position: relative; }
+/* the stylist's thick floating frame — marks the anchor piece and owned
+   wardrobe pieces only (true highlights; owner order, Aug 13) */
+.otfitem .tdrfs { left: 8px; top: -12px; width: 152px; height: 128px; border-width: 7px; opacity: 0.88; z-index: 2; }
 .otfitem img { width: 132px; height: 168px; object-fit: cover; display: block; transition: transform 0.4s ease; }
 .otfitem:hover img { transform: scale(1.04); }
 .otfttl { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; line-height: 1.3; margin-top: 6px; }
@@ -1108,12 +1113,35 @@ img { filter: saturate(var(--ed-img-sat, 0.92)); }
 /* form controls never fall back to UA defaults (white boxes on dark) */
 input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
 
-/* ---- FRONT COVER (owner refinement round, Aug 12): a true magazine
-   cover — bold floating masthead, off-grid rotated hero with type
-   crossing the image, floating hotlist, wire, look film-strips, and a
-   text-only subsystem index. Bubbles deliberately absent: content sits
-   on the page ground; hairlines are the exception. All .cv* classes are
-   cover-only; shared classes get overridden only under .cvr scope. ---- */
+/* ---- FRONT COVER (owner refinement round, Aug 12; densified Aug 13):
+   a true magazine cover — bold floating masthead, off-grid straight hero
+   with type crossing the image, a contact-sheet film strip (Rag & Bone),
+   thick floating highlight frames on the look strips (State 3.0), a
+   field of non-uniform contrast hairlines, Warp-sleeve credit stacks,
+   and magazine marginalia whose every value is real state. Bubbles
+   deliberately absent: content sits on the page ground. All .cv* classes
+   are cover-only; shared classes get overridden only under .cvr scope. */
+.cvr { position: relative; }
+/* content children stack above the hairline field by DOM order */
+.cvr > * { position: relative; }
+
+/* the hairline field — horizontal + diagonal contrast lines; a few
+   thick, most thin; a few visible, most barely there (owner order,
+   Aug 13). Lines may take angles; images never do (rotation ban). */
+.cvlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.cvlines i { position: absolute; display: block; height: 0; border-top: 1px solid var(--ink); }
+.cvln-h1 { top: 9%; left: -3%; width: 55%; opacity: 0.30; }
+.cvln-h2 { top: 21%; left: 30%; width: 68%; opacity: 0.07; }
+.cvln-h3 { top: 38%; left: -2%; width: 40%; border-top-width: 4px; opacity: 0.10; }
+.cvln-h4 { top: 55%; left: 48%; width: 54%; opacity: 0.05; }
+.cvln-h5 { top: 71%; left: -4%; width: 82%; opacity: 0.12; }
+.cvln-h6 { top: 88%; left: 22%; width: 30%; border-top-width: 6px; opacity: 0.22; }
+.cvln-d1 { top: 14%; left: 52%; width: 60%; transform: rotate(-17deg); transform-origin: left; opacity: 0.16; }
+.cvln-d2 { top: 33%; left: -6%; width: 48%; transform: rotate(11deg); transform-origin: left; opacity: 0.05; }
+.cvln-d3 { top: 47%; left: 30%; width: 75%; border-top-width: 3px; transform: rotate(-28deg); transform-origin: left; opacity: 0.06; }
+.cvln-d4 { top: 66%; left: 10%; width: 65%; transform: rotate(21deg); transform-origin: left; opacity: 0.04; }
+.cvln-d5 { top: 83%; left: 46%; width: 58%; transform: rotate(-9deg); transform-origin: left; opacity: 0.14; }
+
 .cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
 .cvmastblock { display: grid; }
 .cvmastline { font-family: var(--mich); font-size: var(--ed-fs-covermast, clamp(44px, 7.5vw, 96px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase; }
@@ -1121,11 +1149,27 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvyear { display: flex; gap: 0.14em; }
 .cvyear i { font-style: normal; color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; transform: translateY(0.06em); }
 .cvmeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
+.cvledger { display: block; margin-top: 6px; font-size: 7.5px; letter-spacing: 0.18em; opacity: 0.85; }
 
 /* hero — the pick floats off-grid: straight image (rotation is banned,
    owner order Aug 12), one offset hairline frame behind it (never
-   hugging), type crossing the image's right edge */
-.cvhero { position: relative; display: block; margin: 18px 0 46px; }
+   hugging), type crossing the image's right edge; a contact-sheet film
+   strip of the feed's next picks rides the right edge (Rag & Bone) */
+.cvherorow { display: grid; grid-template-columns: 1fr 190px; gap: 28px; margin: 18px 0 46px; align-items: start; }
+.cvhero { position: relative; display: block; }
+/* two-up contact sheet (Rag & Bone) — sized to sit beside the hero,
+   never stretching the row */
+.cvfilm { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 8px; align-content: start; padding-top: 42px; }
+.cvfilmlbl { grid-column: 1 / -1; font-size: 8px; letter-spacing: 0.26em; color: var(--grey); }
+.cvfilm a { display: grid; gap: 3px; }
+.cvfilm img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+.cvfilm b { font-size: 7.5px; letter-spacing: 0.14em; font-weight: 400; }
+
+/* Warp-sleeve credit stacks — micro labels floating over real values */
+.cclbl { display: block; font-size: 7.5px; letter-spacing: 0.24em; color: var(--grey); margin-top: 7px; }
+.ccval { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: var(--ink); }
+.cvcred { position: absolute; top: 20px; left: calc(11% + min(44%, 420px) + 20px); max-width: 170px; }
+.cvcred .cclbl:first-child { margin-top: 0; }
 .cvhero::before { content: ""; position: absolute; left: calc(11% + 22px); top: 26px; width: min(44%, 420px); aspect-ratio: 4 / 5; border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); pointer-events: none; }
 .cvvert { position: absolute; left: calc(11% - 24px); top: 6px; writing-mode: vertical-rl; font-size: 8.5px; letter-spacing: 0.3em; color: var(--grey); }
 .cvheroimg { position: relative; width: min(44%, 420px); margin-left: 11%; aspect-ratio: 4 / 5; overflow: hidden; }
@@ -1134,7 +1178,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.10) 3px 4px),
     radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.12), transparent 60%); }
 .cvherotext { position: absolute; left: calc(11% + min(44%, 420px) - 90px); bottom: 8%; display: grid; gap: 6px; max-width: 46ch; }
-.cvherobrand { font-family: var(--mich); font-size: clamp(24px, 3.6vw, 46px); font-weight: 700; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; text-shadow: 0 0 18px var(--bg); }
+.cvherobrand { font-family: var(--mich); font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; letter-spacing: 0.02em; line-height: 0.98; text-transform: uppercase; text-shadow: 0 0 18px var(--bg); }
 .cvherottl { font-size: 13px; letter-spacing: 0.04em; text-shadow: 0 0 12px var(--bg); }
 .cvheroline { font-family: var(--osd); font-size: 14px; color: var(--ink); letter-spacing: 0.08em; text-shadow: 0 0 12px var(--bg), 0 0 5px var(--bg); }
 .cvhero.cvempty::before { display: none; }
@@ -1143,8 +1187,15 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvlink { font-size: 10px; letter-spacing: 0.16em; }
 .cvmore { display: inline-block; margin-top: 14px; }
 
-/* bands: hotlist + looks, then wire + dispatches — no boxes, staggered */
-.cvband, .cvband2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; margin: 0 0 40px; }
+/* bands: hotlist + looks, then wire + dispatches — no boxes, staggered
+   baselines (Aug 13: columns deliberately do NOT align) */
+.cvband, .cvband2 { display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; margin: 0 0 40px; align-items: start; }
+.cvlooks { position: relative; margin-top: 26px; }
+.cvstories { position: relative; margin-top: 40px; }
+
+/* vertical gutter marginalia — small side text, real state only */
+.cvside { position: absolute; left: -26px; top: 8px; writing-mode: vertical-rl; font-size: 8px; letter-spacing: 0.3em; color: var(--grey); opacity: 0.8; white-space: nowrap; }
+.cvsider { left: auto; right: -24px; }
 .cvkick { font-family: var(--mich); font-size: 10px; letter-spacing: 0.2em; margin-bottom: 4px; }
 .cvnote { font-size: 10px; color: var(--grey); margin-bottom: 12px; }
 .cvhotrow { display: flex; align-items: baseline; gap: 14px; padding: 7px 0; }
@@ -1153,14 +1204,27 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
 .cvhotstat { margin-left: auto; font-family: var(--osd); font-size: 12px; color: var(--grey); text-shadow: none; letter-spacing: 0.1em; flex: none; }
-/* outfit strips stay uniform and organized (owner order, Aug 12) */
-.cvlook { display: block; margin: 6px 0 18px; }
-.cvlookstrip { display: flex; gap: 6px; padding: 6px 0 4px; }
+/* outfit strips stay uniform and organized (owner order, Aug 12) —
+   but the lead piece of each strip carries a THICK floating frame that
+   also captures empty space (owner order, Aug 13; State 3.0 reference:
+   heavy white rectangles floating over the composition, framing a
+   highlight plus some air; the second strip gets the overlapping pair) */
+.cvlook { display: block; margin: 6px 0 30px; }
+.cvlookstrip { display: flex; gap: 6px; padding: 26px 0 4px; position: relative; }
 .cvlookstrip img { width: 84px; height: 106px; object-fit: cover; }
-.cvlookline { font-size: 10.5px; letter-spacing: 0.1em; color: var(--grey); margin-top: 8px; }
-.cvlook:hover .cvlookline { color: var(--sig); text-shadow: var(--glow); }
+.tdrf { position: absolute; pointer-events: none; border: 9px solid var(--ink); }
+.tdrfa { left: -14px; top: 2px; width: 148px; height: 150px; opacity: 0.92; }
+.tdrfb { left: 168px; top: 6px; width: 210px; height: 100px; border-width: 7px; opacity: 0.8; }
+.tdrfb2 { left: 84px; top: 52px; width: 140px; height: 96px; border-width: 5px; opacity: 0.55; }
+.cvcredit { margin-top: 10px; }
+.cvcredit .ccval { font-weight: 400; font-size: 10px; color: var(--grey); }
+.cvlook:hover .cvcredit .ccval { color: var(--sig); text-shadow: var(--glow); }
 
-/* the wire — floating transmissions, no boxes, no counters */
+/* the wire — floating transmissions, no boxes, no counters; a
+   non-uniform heavy-bar pair opens the section (Rag & Bone rules) */
+.cvwire { position: relative; padding-top: 16px; }
+.cvwire::before { content: ""; position: absolute; top: 0; left: 0; width: 34%; border-top: 5px solid var(--ink); opacity: 0.85; }
+.cvwire::after { content: ""; position: absolute; top: 9px; left: 0; width: 88%; border-top: 1px solid var(--ink); opacity: 0.12; }
 .cvcompose { display: flex; gap: 12px; margin: 10px 0 18px; }
 .cvcomposebox { flex: 1; }
 .cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font: inherit; font-size: 13px; resize: vertical; outline: none; }
@@ -1169,6 +1233,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvpost { margin: 0 0 16px; }
 .cvpost:nth-of-type(even) { margin-left: 30px; }
 .cvposttext { margin: 0 0 3px; font-size: 14px; line-height: 1.45; max-width: 52ch; }
+/* the newest transmission runs pull-quote scale — a real post, loud */
+.cvpost.cvlead .cvposttext { font-family: var(--mich); font-size: 19px; line-height: 1.35; letter-spacing: 0.02em; max-width: 30ch; }
 .cvposthandle { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
 
 /* dispatches — floating cover lines */
@@ -1185,8 +1251,12 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvindex a span { font-size: 9px; color: var(--grey); text-shadow: none; }
 .cvindex a:hover b { color: var(--sig); text-shadow: var(--glow); }
 
+/* colophon — magazine fine print; every value is a live counter */
+.cvcolo { margin-top: 26px; font-size: 7.5px; letter-spacing: 0.22em; color: var(--grey); opacity: 0.8; line-height: 2.1; }
+
 @media (max-width: 980px) {
   .cvband, .cvband2 { grid-template-columns: 1fr; gap: 30px; }
+  .cvherorow { grid-template-columns: 1fr; gap: 20px; }
   .cvheroimg { width: 78%; margin-left: 6%; }
   .cvhero::before { left: calc(6% + 18px); width: 78%; top: 18px; }
   .cvvert { left: 0; }
@@ -1194,6 +1264,12 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
      text with the image, it's that simple") */
   .cvherotext { left: calc(6% + 18px); right: 4%; bottom: 6%; max-width: none; }
   .cvhotrow:nth-of-type(even), .cvpost:nth-of-type(even), .cvstory:nth-of-type(even) { margin-left: 0; }
+  /* the film strip lies down as a contact-sheet row */
+  .cvfilm { grid-template-columns: repeat(6, 1fr); gap: 8px; padding-top: 0; }
+  .cvfilmlbl { grid-column: 1 / -1; }
+  .cvcred, .cvside { display: none; }
+  .cvlooks, .cvstories { margin-top: 0; }
+  .cvpost.cvlead .cvposttext { font-size: 16px; }
 }
 
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
@@ -1652,7 +1728,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .roomreport, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode, .elttl,
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .fmode, .elttl,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);

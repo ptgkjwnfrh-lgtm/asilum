@@ -44,6 +44,33 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   placement — overlaps, off-grid collage, film-strip thumbnail columns,
   type crossing images. NO rotated/slanted images (owner ban, Aug 12);
   outfit strips may be uniform and organized.
+- Aug 13 round 3 (owner pictures: State 3.0 stills, Warp/Red Snapper
+  track-credit sleeve, LTJ Bukem Progression Sessions ad, Rag & Bone
+  again — "this is supposed to feel like a magazine"):
+  - THICK FLOATING FRAMES (`.tdrf` + variants): heavy rectangles
+    (5–9px, `--ink`) floating over an outfit grouping to frame a
+    HIGHLIGHT piece plus some empty air; they may overlap each other
+    (State 3.0's double frame) and overlap neighbouring pieces. A frame
+    marks a TRUE highlight only — the strip's lead piece on the cover,
+    the anchor piece or an owned wardrobe piece in the stylist. Frames
+    and hairlines may take angles; images still never rotate.
+  - HAIRLINE FIELD (`.cvlines`): hand-placed horizontal AND diagonal
+    contrast lines behind the content — a few thick (3–6px), most 1px;
+    a few visible (0.12–0.30 opacity), most barely there (0.04–0.10).
+    Deterministic (no render-time random), pointer-events none, always
+    behind content, never reducing readability.
+  - MAGAZINE MARGINALIA: small side text everywhere a magazine would
+    carry it — gutter verticals, Warp-style credit stacks (micro label
+    over value: `.cclbl`/`.ccval`), ledger folios, a bottom colophon.
+    EVERY value printed is real state (system ledger counters, item
+    ids, feed ranks, source labels) — marginalia is never lorem, never
+    invented.
+  - DENSITY OVER UNIFORMITY: the front cover is FULL — contact-sheet
+    film strip beside the hero (next real feed picks), staggered column
+    baselines that deliberately do not align, one pull-quote-scale
+    transmission on the wire, non-uniform heavy-bar pairs opening
+    sections. Follow floating text (no borders, no bubbles) harder,
+    not less.
 - Clickable words are painted the logo gradient's teal (--sig) with a glow
   and a slight horizontal motion blur — never black/ink (owner: "it's
   ugly"). Red-law elements (buy/home/reset) keep red with the same
