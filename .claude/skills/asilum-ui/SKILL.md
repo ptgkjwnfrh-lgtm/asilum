@@ -11,7 +11,11 @@ interaction). Non-negotiables when touching UI:
 1. Seven destinations only (owner amendment July 25): FRONT COVER,
    CATALOG, EDITORIAL, PASSPORT, DISCOVER, PROFILE, SETTINGS. A new
    feature must live inside one — the list changes only by owner decree.
-2. Red is the only accent voice. No second accent color, ever.
+2. Red is the only ALERT/IDENTITY accent — activity, alerts, selection,
+   ASTERISK. Clickable words are painted the system teal (--sig) with
+   glow + horizontal smear (owner order, Aug 12; one grouped rule at the
+   end of globals.css) — that is the interaction voice, not a second
+   accent. No further accent colors, ever.
 3. Colors ONLY through tokens (--ink/--paper/--line/--grey/--faint/
    --red + OS tokens). A literal hex in a component is a defect.
 4. Both themes (phosphor dark / ice light) AND both interfaces

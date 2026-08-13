@@ -41,8 +41,9 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   Lang ad archive): BOLD FLOATING TEXT — oversized stacked headline blocks
   sitting directly on the page ground; GREATLY limit bubbles — content
   floats, borders are the exception not the default; UNORTHODOX image
-  placement — slight rotations, overlaps, off-grid collage, film-strip
-  thumbnail columns, type crossing images.
+  placement — overlaps, off-grid collage, film-strip thumbnail columns,
+  type crossing images. NO rotated/slanted images (owner ban, Aug 12);
+  outfit strips may be uniform and organized.
 - Clickable words are painted the logo gradient's teal (--sig) with a glow
   and a slight horizontal motion blur — never black/ink (owner: "it's
   ugly"). Red-law elements (buy/home/reset) keep red with the same
@@ -74,6 +75,14 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   personality editor) / SIZING / ACCOUNT (sign-in, connections, follows,
   people search; /profile#access opens it). No boxed cards — the red
   offset-shadow measure card is gone.
+- SETTINGS is the rack (owner order, Aug 12: old music-making software):
+  numbered hardware modules — 01 APPEARANCE / 02 ASTERISK / 03 IDENTITY /
+  04 DATA / 05 LEGAL — heavy top rule + hairline channel rows, engraved
+  Michroma labels, OSD module numbers, decorative screws, and LEDs that
+  reflect ONLY real state (guidance, observation). ASTERISK's controls
+  (guidance toggle, observation, model reset, dashboard + control-room
+  links) live on module 02; identity still has one home on PROFILE and
+  module 03 just points there.
 - Feed cards are Grailed-cut: square floating images (no border, no card
   box, no hover bubble; radius 0 unless the owner tunes --ed-img-rad),
   tile aspects vary per item over the shared 8-ratio table in

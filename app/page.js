@@ -97,6 +97,7 @@ export default function Home() {
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
   const [composer, setComposer] = useState("");
   const [wire, setWire] = useState(null);          // POST sub-page: server+local posts
+  const [wireLive, setWireLive] = useState(true);  // false = server unreachable
   const [cravingOpen, setCravingOpen] = useState(false);
   const promptRef = useRef("");
   const boardParamRef = useRef("");
@@ -144,7 +145,10 @@ export default function Home() {
     }, { threshold: 0.55 });
     document.querySelectorAll(".card[data-id]").forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, [items]);
+    // `view` is a dependency because switching CATALOG→POST→CATALOG remounts
+    // every card node without changing `items` — the observer must re-attach
+    // to the new nodes or dwell/examination reporting silently dies.
+  }, [items, view]);
 
   function dwellMsFor(id) {
     const rec = dwellRef.current.vis.get(id);
@@ -297,7 +301,9 @@ export default function Home() {
     }, { rootMargin: "700px" });
     obs.observe(sentinelRef.current);
     return () => obs.disconnect();
-  }, [loadMore]);
+    // `view` re-binds the observer to the REMOUNTED sentinel node after a
+    // CATALOG→POST→CATALOG round trip — else infinite scroll dies.
+  }, [loadMore, view]);
 
   // ---- Boot: identity, search hand-off, shared links, first-visit connect ----
   useEffect(() => {
@@ -396,9 +402,12 @@ export default function Home() {
   // ---- POST sub-page: the wire ----
   // fetchWire (lib/social.js) reads GET /api/editorial for real and merges
   // this device's own instant-render copies. No engagement counters: there
-  // is no like/comment/repost machinery, so none is drawn.
+  // is no like/comment/repost machinery, so none is drawn. live:false means
+  // the server was unreachable — say so, never claim the wire is empty.
   async function loadWire() {
-    setWire(await fetchWire());
+    const w = await fetchWire();
+    setWire(w.posts);
+    setWireLive(w.live);
   }
 
   function switchView(next) {
@@ -411,13 +420,24 @@ export default function Home() {
     const info = getProfileInfo();
     addPost(composer.trim(), info);
     // Real editorial_posts record too — localStorage stays the instant-render
-    // path, the database is the durable one.
+    // path, the database is the durable one. The server's verdict decides the
+    // notice: a held-for-review post is SAVED but not visible to anyone else,
+    // and telling the author otherwise would be a lie.
     postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: composer.trim() })
-      .then(() => loadWire())
-      .catch(() => {});
+      .then(async (res) => {
+        const d = await res.json().catch(() => null);
+        if (d && d.held) {
+          setNotice(d.note || "your post is saved and paused for a human review");
+        } else {
+          setNotice("posted — it's live here, on THE COMMUNITY FLOOR of EDITORIAL, and on your profile");
+        }
+        loadWire();
+      })
+      .catch(() => {
+        setNotice("saved on this device — the shared wire could not be reached, so others cannot see it yet");
+      });
     setComposer("");
     loadWire();
-    setNotice("posted — it's live here, on EDITORIAL's community tab, and on your profile");
   }
 
   async function connect(platform) {
@@ -744,7 +764,13 @@ export default function Home() {
           </div>
 
           {wire === null && <div className="empty">pulling the wire…</div>}
-          {wire && wire.length === 0 && (
+          {wire && !wireLive && (
+            <div className="empty">
+              the shared wire could not be reached — showing this device&apos;s
+              posts only.
+            </div>
+          )}
+          {wire && wireLive && wire.length === 0 && (
             <div className="empty">no transmissions yet — yours opens the wire.</div>
           )}
           {(wire || []).map((p) => (
