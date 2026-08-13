@@ -35,7 +35,7 @@ const NAV = [
     match: (p) => p.startsWith("/cover") },
   { href: "/", icon: "✦", label: "CATALOG", meta: "YOUR EDIT // CURATED",
     match: (p) => p === "/" },
-  { href: "/hotlist", icon: "✎", label: "EDITORIAL", meta: "LIVING MAGAZINE",
+  { href: "/hotlist", icon: "✎", label: "THE WIRE", meta: "POSTS + THE HOTLIST",
     match: (p) => p.startsWith("/hotlist") },
   { href: "/board", icon: "✚", label: "PASSPORT", meta: "IDENT // MOODBOARD",
     match: (p) => p.startsWith("/board") || p.startsWith("/stats") || p.startsWith("/asterisk") || p.startsWith("/upload"),

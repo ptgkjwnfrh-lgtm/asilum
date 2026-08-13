@@ -23,7 +23,7 @@ import { Avatar } from "../components/UserBits.jsx";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
-  { href: "/hotlist", label: "EDITORIAL", meta: "the living magazine" },
+  { href: "/hotlist", label: "THE WIRE", meta: "posts + the hotlist" },
   { href: "/board", label: "PASSPORT", meta: "train the brain" },
   { href: "/discover", label: "DISCOVER", meta: "the open index" },
   { href: "/profile", label: "PROFILE", meta: "your public record" },
@@ -45,7 +45,6 @@ export default function CoverPage() {
   const [posts, setPosts] = useState(null);
   const [postsLive, setPostsLive] = useState(true);
   const [wireNote, setWireNote] = useState("");
-  const [hot, setHot] = useState(null);
   const [sys, setSys] = useState(null);
   const [text, setText] = useState("");
   const [stamp, setStamp] = useState("");
@@ -76,22 +75,14 @@ export default function CoverPage() {
       .then((r) => r.json())
       .then((d) => setFeed(((d && d.items) || []).slice(0, 9)))
       .catch(() => {});
+    // The ledger folio still reads the system stats; the hotlist preview
+    // no longer does — the hotlist is TEN BOOTHS for verified independent
+    // brands (owner overhaul, Aug 13), and with no commerce pipeline yet
+    // every booth honestly reads OPEN.
     authorizedFetch("/api/stats")
       .then((r) => r.json())
-      .then((s) => {
-        setSys(s);
-        // A slot fills only when a real person moved (owner order,
-        // Aug 13): impression-only entries stay vacant, no stand-in.
-        const moved = (s.topItems || []).filter((t) => (t.engagers ?? 0) > 0);
-        setHot({
-          live: moved.length > 0,
-          rows: moved.slice(0, 5).map((t) => ({
-            id: t.id, title: t.title, brand: t.brand,
-            stat: (t.engagers ?? 0) + (t.engagers === 1 ? " PERSON" : " PEOPLE"),
-          })),
-        });
-      })
-      .catch(() => setHot({ live: false, rows: [] }));
+      .then((s) => setSys(s))
+      .catch(() => {});
     authorizedFetch("/api/outfits?user=" + encodeURIComponent(user) + "&n=2")
       .then((r) => r.json())
       .then((d) => setLooks((d.outfits || []).slice(0, 2)))
@@ -202,26 +193,21 @@ export default function CoverPage() {
         <section className="cvhot" aria-label="hotlist preview">
           <div className="cvkick">THE HOTLIST</div>
           <div className="cvnote">
-            {hot === null
-              ? "counting…"
-              : hot.live
-                ? "ranked live by what everyone is favoriting, bagging, and sharing."
-                : "held for designer accounts — the ranking fills as real people favorite, bag, and share. nothing stands in."}
+            ten booths, held for verified independent brands — a business
+            account is a passport account that verified itself and connected
+            its Shopify and its own site. nothing stands in.
           </div>
-          {(hot?.rows || []).map((r, i) => (
-            <a className="cvhotrow" key={r.id} href={"/?item=" + encodeURIComponent(r.id)}>
-              <span className="cvhotnum" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
-              <span className="cvhotttl">
-                {r.title}
-                <i>{r.brand}</i>
+          {[1, 2, 3].map((n) => (
+            <div className="cvhotrow" key={n}>
+              <span className="cvhotnum" aria-hidden="true">{String(n).padStart(2, "0")}</span>
+              <span className="cvboothttl">
+                BOOTH OPEN
+                <i>held for a verified independent brand</i>
               </span>
-              <span className="cvhotstat">{r.stat}</span>
-            </a>
+              <span className="cvhotstat">OPEN</span>
+            </div>
           ))}
-          {hot && hot.rows.length === 0 && (
-            <div className="pempty">the slots are open — no one has moved yet.</div>
-          )}
-          <a className="cvlink cvmore" href="/hotlist">THE FULL HOTLIST →</a>
+          <a className="cvlink cvmore" href="/hotlist">ALL TEN BOOTHS — THE WIRE →</a>
         </section>
 
         <section className="cvlooks" aria-label="tonight's looks">
@@ -308,7 +294,7 @@ export default function CoverPage() {
           <span className="cvside cvsider" aria-hidden="true">
             {sys && sys.alphaEvents != null ? `${sys.alphaEvents} EVENTS ON THE RECORD` : "THE RECORD IS LISTENING"}
           </span>
-          <div className="cvkick">EDITORIAL DISPATCHES</div>
+          <div className="cvkick">EXTERNAL DISPATCHES</div>
           {STORIES.slice(0, 3).map((st) => (
             <a className="cvstory" key={st.title} href={st.url} target="_blank" rel="noreferrer">
               <span className="cvpub">{st.pub.toUpperCase()}</span>
@@ -316,7 +302,7 @@ export default function CoverPage() {
               <span className="cvstorysum">{st.summary}</span>
             </a>
           ))}
-          <a className="cvlink cvmore" href="/hotlist">THE FULL EDITORIAL →</a>
+          <a className="cvlink cvmore" href="/hotlist">THE FULL WIRE →</a>
         </section>
       </div>
 
