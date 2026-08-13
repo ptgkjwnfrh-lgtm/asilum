@@ -1233,10 +1233,10 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvcomposebox { flex: 1; }
 /* the composer reads a touch louder (owner order, Aug 13): bigger
    entry type, a stronger underline, and POST carries the teal
-   clickable smear — but only once there is something to post */
+   clickable smear — but only once there is something to post
+   (.postbtn:disabled, by the grouped rule) */
 .cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .cvr .cvcomposebox textarea:focus { border-bottom-color: var(--sig); }
-.cvr .cvpostbtn:disabled { color: var(--grey); text-shadow: none; }
 .cvcomposerow { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
 .cvpost { margin: 0 0 16px; }
 .cvpost:nth-of-type(even) { margin-left: 30px; }
@@ -1736,7 +1736,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .roomreport, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .cvpostbtn, .fmode, .elttl,
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);
@@ -1759,6 +1759,9 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
     4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
     var(--glow-r);
 }
+/* a disabled POST never advertises a click — the smear ignites only
+   when there is something to post (both wire composers) */
+.postbtn:disabled { color: var(--grey); text-shadow: none; }
 
 /* ---- HEADER COMPRESSION (must stay LAST — these override OS-layer base
    rules by cascade order; the row never paints over its neighbours) ---- */

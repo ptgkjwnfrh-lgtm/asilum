@@ -745,7 +745,7 @@ export default function Home() {
             <Avatar name={getProfileInfo().name} />
             <div className="cright">
               <textarea
-                rows={2}
+                rows={3}
                 maxLength={400}
                 placeholder="what are you wearing?"
                 value={composer}
@@ -758,7 +758,7 @@ export default function Home() {
                   <button title="tag a piece — soon" onClick={() => setNotice("piece-tagging is on the cutting table")}>#</button>
                 </span>
                 <span className="ccount">{composer.length}/400</span>
-                <button className="btn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
+                <button className="btn postbtn" disabled={!composer.trim()} onClick={publishPost}>POST</button>
               </div>
             </div>
           </div>

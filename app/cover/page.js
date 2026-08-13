@@ -286,7 +286,7 @@ export default function CoverPage() {
               />
               <div className="cvcomposerow">
                 <span className="ccount">{text.length}/400</span>
-                <button className="btn cvpostbtn" onClick={post} disabled={!text.trim()}>POST</button>
+                <button className="btn postbtn" onClick={post} disabled={!text.trim()}>POST</button>
               </div>
             </div>
           </div>
