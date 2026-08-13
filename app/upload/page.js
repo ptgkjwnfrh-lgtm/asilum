@@ -6,9 +6,10 @@
 // on-device and every batch trains through the honest palette-v0
 // pipeline. Favorites (celebrities / cities / movies / singers), favorite
 // designers (real brand-dominant-tag training, same path as DISCOVER
-// follows), and lean-toward styles feed the same brain. Floating plug-in
-// pills (Pinterest / Spotify / Apple Music / Letterboxd) are honest
-// coming-soon controls — no fake OAuth, ever.
+// follows), and lean-toward styles feed the same brain. (The floating
+// plug-in pills — Pinterest / Spotify / Apple Music / Letterboxd — live on
+// /board's STAMP THE PASSPORT row now; still honest coming-soon, no fake
+// OAuth, ever.)
 //
 // Honesty per mapping: singers hit the curated music map (descriptors →
 // lexicon) and say what Asterisk read; unknown names are RECORDED to the
@@ -249,6 +250,7 @@ export default function UploadPage() {
       <div className="gxblob gxb2" aria-hidden="true" />
 
       <header className="gxhero">
+        <div className="locline"><a href="/board">← PASSPORT</a><span>/ TEACH ASTERISK</span></div>
         <h1 className="headline"><span className="red">*</span>UPLOAD</h1>
         <p className="deck">pin the vibe, name your people, follow your designers — asterisk answers on the right.</p>
       </header>

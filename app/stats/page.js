@@ -1,10 +1,9 @@
 "use client";
 
 // app/stats/page.js
-// Brain health dashboard: the living brain visualization (your taste as a
-// rotating word-sphere — white pulses when it learns, red when it forgets),
+// Brain health dashboard: the ASTERISK hologram entity at reading size,
 // interaction volume by action, graph/board/user counts, and the
-// most-engaged pieces.
+// most-engaged pieces. Rides under PASSPORT.
 
 import { useEffect, useState } from "react";
 import AsteriskDock from "../components/AsteriskDock.jsx";
@@ -45,6 +44,7 @@ export default function StatsPage() {
 
   return (
     <div className="wrap">
+      <div className="locline"><a href="/board">← PASSPORT</a><span>/ BRAIN DASHBOARD</span></div>
       <h1 className="headline"><span className="red">*</span>STATS</h1>
       <p className="deck">what the brain has learned so far.</p>
       {mix ? <p className="areadnote"><b className="red">*</b> {mix.line}</p> : null}
@@ -53,7 +53,7 @@ export default function StatsPage() {
       {viz && (
         <>
           <h3 className="statshead">your brain — drag to rotate</h3>
-          <div style={{ border: "1px solid var(--line)", marginBottom: 10 }}>
+          <div style={{ marginBottom: 10 }}>
             <AsteriskDock size={220} className="os-dock statsdock" />
           </div>
         </>

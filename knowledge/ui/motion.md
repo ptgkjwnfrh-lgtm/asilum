@@ -8,6 +8,12 @@ Nothing is static; nothing is frantic. Motion communicates system activity.
   Hub), scanline roll bar, haze drift (40–60s cycles).
 - Mechanical, not springy CSS: steps() for state changes; transitions
   0.12–0.28s.
+- The passport→upload build carries an ever-so-slight motion blur
+  (0.7px on the map wrapper, owner order Aug 12) during the growth
+  window only — roadBuilder removes it 220ms before landing so the
+  final frame stays pixel-identical to /upload. Do not raise it.
+- Wayfinding locator: every secondary page opens with a .locline
+  ("← OWNER-DESTINATION / PAGE NAME") — users must never get lost.
 - Clickable words carry a slight horizontal motion-blur + glow overtop,
   painted the logo gradient's teal (--sig), never black (owner rule,
   Aug 12) — the site-wide "this word is clickable" signal, written once

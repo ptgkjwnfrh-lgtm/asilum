@@ -53,6 +53,7 @@ export default function OrdersPage() {
 
   return (
     <div className="wrap">
+      <div className="locline"><a href="/profile">← PROFILE</a><span>/ ORDERS &amp; TICKETS</span></div>
       <h1 className="headline"><span className="red">*</span>ORDERS & TICKETS</h1>
       <p className="deck">
         purchase tickets are handled with the original marketplace — they
@@ -67,7 +68,7 @@ export default function OrdersPage() {
         <div className="empty">no purchase tickets yet — hit BUY on any piece to open one.</div>
       )}
       {tickets && tickets.map((t, i) => (
-        <div className="hlrow" key={"t" + t.id}>
+        <div className="hlrow static" key={"t" + t.id}>
           <div className="hlnum">{String(i + 1).padStart(2, "0")}</div>
           <div className="hlinfo">
             <a href={"/?item=" + encodeURIComponent(t.productId)}><div className="hlttl">ticket #{t.id} — {t.productId}</div></a>
