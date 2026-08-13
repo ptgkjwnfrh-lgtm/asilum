@@ -20,7 +20,7 @@ import {
 } from "../lib/client.js";
 import {
   addPost, getProfileInfo, observationOn, followedBrands,
-  setFollowBrand, listPosts, timeAgo,
+  setFollowBrand, fetchWire, timeAgo,
 } from "../lib/social.js";
 import { Avatar, WhoToFollowList } from "./components/UserBits.jsx";
 import TicketFlow from "./components/TicketFlow.jsx";
@@ -394,38 +394,11 @@ export default function Home() {
   }
 
   // ---- POST sub-page: the wire ----
-  // The first real reader of GET /api/editorial: everyone's visible posts
-  // (server-moderated, bylines are server truth) merged with this device's
-  // own posts — a local copy renders instantly and covers the held-for-review
-  // case; exact-text duplicates defer to the server record. No engagement
-  // counters: there is no like/comment/repost machinery, so none is drawn.
+  // fetchWire (lib/social.js) reads GET /api/editorial for real and merges
+  // this device's own instant-render copies. No engagement counters: there
+  // is no like/comment/repost machinery, so none is drawn.
   async function loadWire() {
-    const mine = listPosts().filter((p) => p.mine);
-    try {
-      const d = await fetch("/api/editorial?kind=user&limit=60").then((r) => r.json());
-      const server = (d.posts || [])
-        .map((p) => ({
-          id: "srv-" + p.id,
-          name: p.authorHandle || "reader",
-          handle: p.authorHandle || "reader",
-          at: p.createdAt || 0,
-          text: (p.body || p.title || "").trim(),
-          mine: false,
-        }))
-        .filter((p) => p.text);
-      const serverTexts = new Set(server.map((p) => p.text));
-      // The server copy wins the dedupe (its byline is server truth), but a
-      // matching local record still proves authorship — keep the "you" chip.
-      const mineTexts = new Set(mine.map((p) => (p.text || "").trim()));
-      for (const p of server) if (mineTexts.has(p.text)) p.mine = true;
-      const merged = [
-        ...server,
-        ...mine.filter((p) => !serverTexts.has((p.text || "").trim())),
-      ].sort((a, b) => b.at - a.at);
-      setWire(merged);
-    } catch {
-      setWire(mine);
-    }
+    setWire(await fetchWire());
   }
 
   function switchView(next) {
