@@ -102,6 +102,12 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   absent), 5 EXTERNAL DISPATCHES quietest (grey title-only links out —
   deliberately excluded from the teal clickable rule; the ladder wins).
   The old three tabs, the fake like-button, and postStats zeros are gone.
+  The ladder's descent is carried by TYPE SCALE (owner order, Aug 13):
+  rung 1 keeps the masthead, rungs 2–5 step down (.elh2 21px → .elh5
+  9.5px grey). The page carries the magazine furniture at zero height
+  cost — hairline field pinned to the first stretch, live folio, gutter
+  verticals (slots filled / transmissions on the floor), and a colophon
+  of live counters.
 - PROFILE is standard social format (owner order, Aug 12: Grailed ×
   Twitter × MySpace, legibility first): banner → overlapping avatar →
   name/handle/bio → MEMBER SINCE (same once-stamped device date the

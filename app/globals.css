@@ -617,7 +617,14 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .elad em { font-style: italic; font-size: 11px; color: var(--faint); }
 .elad .adstar { font-size: 26px; }
 .elfloor { margin-bottom: 44px; max-width: 760px; }
-.elhouse .cvkick, .elads .cvkick, .elfloor .cvkick, .elext .cvkick { margin-bottom: 10px; }
+/* the graded ladder (owner order, Aug 13): descending visibility is
+   carried by TYPE SCALE, not just content — the masthead is rung 1,
+   then each rung's header steps down until the outside world whispers */
+.elh { font-family: var(--mich); text-transform: uppercase; margin-bottom: 10px; }
+.elh2 { font-size: 21px; letter-spacing: 0.08em; }
+.elh3 { font-size: 15px; letter-spacing: 0.12em; }
+.elh4 { font-size: 12px; letter-spacing: 0.16em; }
+.elh5 { font-size: 9.5px; letter-spacing: 0.24em; color: var(--grey); }
 .elfloornote { font-size: 10px; color: var(--faint); letter-spacing: 0.06em; margin-top: 14px; }
 .elext { padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); }
 .elextrow { display: flex; align-items: baseline; gap: 10px; padding: 3px 0; }
@@ -1305,6 +1312,19 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvlines .ctln-v1 { left: 23%; top: 96px; height: 130px; opacity: 0.16; }
 .cvlines .ctln-v2 { left: 97.5%; top: 260px; height: 520px; opacity: 0.12; }
 .cvlines .ctln-v3 { left: 1.5%; top: 420px; height: 640px; border-left-width: 4px; opacity: 0.06; }
+
+/* EDITORIAL's field + gutters (owner order, Aug 13) — same zero-height
+   magazine furniture, ladder-specific placements; 2 thick of 7 */
+.elside { top: 300px; left: -26px; }
+.elsider { top: 1150px; }
+.cvlines .elln-h1 { top: 90px; left: 40%; width: 62%; opacity: 0.22; }
+.cvlines .elln-h2 { top: 340px; left: -3%; width: 44%; border-top-width: 4px; opacity: 0.08; }
+.cvlines .elln-h3 { top: 780px; left: 25%; width: 70%; opacity: 0.05; }
+.cvlines .elln-h4 { top: 1240px; left: -2%; width: 58%; opacity: 0.11; }
+.cvlines .elln-v1, .cvlines .elln-v2, .cvlines .elln-v3 { height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
+.cvlines .elln-v1 { left: 96.5%; top: 60px; height: 420px; opacity: 0.15; }
+.cvlines .elln-v2 { left: 2%; top: 520px; height: 560px; border-left-width: 3px; opacity: 0.06; }
+.cvlines .elln-v3 { left: 55%; top: 940px; height: 380px; opacity: 0.04; }
 
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
    Aug 12 (owner order: more Grailed — square-cut floating images, no card
