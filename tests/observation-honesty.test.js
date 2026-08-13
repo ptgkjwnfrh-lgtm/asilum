@@ -91,15 +91,20 @@ test("O2 the observation toggle actually gates the passive-signal senders", () =
 });
 
 test("O3 placeholder aesthetics are never rendered as observations", () => {
-  const code = stripComments(readFileSync(path.join(ROOT, "app", "page.js"), "utf8"));
-  const start = code.indexOf("function ObservationTracker");
-  assert.ok(start > 0, "ObservationTracker must be findable");
-  const body = code.slice(start, start + 2500);
-
-  // It used to seed useState with three real aesthetic names and render them
-  // through the same line as measured data, so a cold user was told they had
-  // been observed about tastes they had never expressed.
-  assert.ok(!/useState\(\[\s*["'][A-Z]/.test(body),
-    "ObservationTracker must not seed itself with hardcoded aesthetic names — " +
-    "a placeholder rendered as a finding is a fabricated observation");
+  // The LIVE OBSERVATION cube left the home page on Aug 12 (owner order:
+  // the excess header modules are gone) — with no tracker anywhere, the
+  // fabricated-observation surface cannot exist, which satisfies this law
+  // outright. The guard still bites if a tracker ever returns, wherever
+  // it lands: it used to seed useState with three real aesthetic names and
+  // render them through the same line as measured data, so a cold user was
+  // told they had been observed about tastes they had never expressed.
+  for (const file of sourceFiles()) {
+    const code = stripComments(readFileSync(file, "utf8"));
+    const start = code.indexOf("function ObservationTracker");
+    if (start < 0) continue;
+    const body = code.slice(start, start + 2500);
+    assert.ok(!/useState\(\[\s*["'][A-Z]/.test(body),
+      `${path.relative(ROOT, file)}: ObservationTracker must not seed itself with hardcoded ` +
+      "aesthetic names — a placeholder rendered as a finding is a fabricated observation");
+  }
 });
