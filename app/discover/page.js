@@ -5,7 +5,7 @@
 // exploration through the user's Passport, but the user can pause that layer.
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { getUid, postJSON, authorizedFetch, thumbFor, hashStr, bagAdd, brainEnabled } from "../../lib/client.js";
+import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
 import { followedBrands, setFollowBrand } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
@@ -14,7 +14,6 @@ import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/Pr
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
-const ASPECTS = ["3 / 4", "1 / 1", "4 / 5", "2 / 3", "3 / 4", "5 / 6"];
 const PAGE = 48;
 
 export default function DiscoverPage() {
@@ -467,7 +466,7 @@ export default function DiscoverPage() {
             style={{ cursor: "pointer" }}
             onClick={() => { window.location.href = "/?item=" + encodeURIComponent(it.id); }}
           >
-            <div className="imgwrap" style={{ aspectRatio: ASPECTS[hashStr(it.id) % ASPECTS.length] }}>
+            <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
               <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
             </div>
             <div className="body">

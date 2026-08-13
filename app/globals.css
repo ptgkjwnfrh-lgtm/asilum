@@ -254,10 +254,6 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .empty { font-family: var(--serif); font-style: italic; color: var(--grey); padding: 50px 0; text-align: center; }
 .sentinel { height: 1px; }
 
-.cravingbox { border: 1px solid var(--line); margin: 18px 0 12px; padding: 14px; }
-.cravinghead { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
-.cravinghead .psub { margin: 0 0 5px; color: var(--red); }
-.cravinghead .deck { margin-bottom: 10px; }
 .cravinggrid { display: grid; grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(120px, 0.7fr)) auto; gap: 8px; }
 .cravinggrid input, .cravinggrid select {
   width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--paper);
@@ -284,10 +280,10 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 
 .grid { columns: var(--ed-grid-cols, 4) var(--ed-grid-colw, 240px); column-gap: var(--ed-grid-gap, 20px); }
 .card {
-  break-inside: avoid; margin: 0 0 var(--ed-card-gap, 26px); background: var(--paper);
+  break-inside: avoid; margin: 0 0 var(--ed-card-gap, 26px); background: none;
   display: block;
 }
-.card .imgwrap { overflow: hidden; border: 1px solid var(--line); cursor: pointer; }
+.card .imgwrap { overflow: hidden; cursor: pointer; }
 .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
 .card .imgwrap:hover img { transform: scale(var(--ed-zoom, 1.045)); }
 .card.reach .imgwrap { border: 2px solid var(--red); }
@@ -309,18 +305,25 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .cardacts button:hover { color: var(--red); }
 .cardacts button.on { color: var(--red); }
 
-/* community posts smooshed into the masonry */
-.post {
-  break-inside: avoid; margin: 0 0 var(--ed-card-gap, 26px); border: 1px solid var(--line);
-  padding: 20px 16px 14px; position: relative; overflow: hidden;
-}
-.post::before {
-  content: "*"; position: absolute; top: -14px; right: 2px;
-  font-size: 64px; font-weight: 900; color: var(--red); opacity: 0.16;
-}
-.post .quote { font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.4; }
-.post .handle { margin-top: 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--red); }
-.post .ctx { font-size: 10px; color: var(--grey); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+/* catalog mode row + collapsed craving (owner order, Aug 12: straight to
+   the clothes — one floating line of modes, craving folds away) */
+.fmodes { display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap; margin: 2px 0 12px; }
+.fmode { background: none; border: none; cursor: pointer; padding: 0;
+  font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.18em; }
+.fmode.cur { color: var(--red); text-shadow: var(--glow-r); }
+.fmode.cur::after { content: " *"; }
+.fmodes .txtbtn { margin-left: auto; }
+.cravingline { margin: 0 0 14px; }
+.cravnote { font-size: 10px; color: var(--grey); margin: 0 0 8px; }
+
+/* the wire (POST sub-page) — floating transmissions, no boxes, no counters */
+.fwire { max-width: 760px; }
+.fpost { margin: 0 0 18px; }
+.fpost:nth-of-type(even) { margin-left: 26px; }
+.fposttext { margin: 0 0 3px; font-size: 14.5px; line-height: 1.5; max-width: 56ch; }
+.fposthandle { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
+.fposthandle .cmine { margin-left: 6px; font-style: normal; }
+.fwho { margin-top: 34px; max-width: 460px; }
 
 /* ---- Overlays: connect + item detail ---- */
 
@@ -484,16 +487,10 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .tab.cur::after { content: " *"; }
 
 
-/* ---- Home modules band ---- */
-.homeband { display: flex; gap: 14px; margin: 0 0 16px; flex-wrap: wrap; }
-.module { flex: 1; min-width: 240px; border: 1px solid var(--line); padding: 12px 14px; }
-.modhead { font-size: 11.5px; font-weight: 900; letter-spacing: 0.14em; border-bottom: 1px solid var(--line); padding-bottom: 7px; margin-bottom: 9px; }
+/* (The home modules band — cubes, observation lines, the slide — left with
+   the Aug 12 catalog strip-down; .modmore survives for UserBits pagers.) */
 .modmore { background: none; border: none; cursor: pointer; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--grey); padding: 6px 0 0; }
 .modmore:hover { color: var(--red); }
-.obsline { font-size: 13px; font-weight: 600; line-height: 1.5; }
-.obsline b { color: var(--red); }
-.obsline.dim { color: var(--grey); font-family: var(--serif); font-style: italic; }
-.obsnote { font-size: 10px; color: var(--faint); margin-top: 8px; letter-spacing: 0.04em; }
 
 /* ---- User atoms ---- */
 .uavatar {
@@ -676,34 +673,6 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .measurestatus { color: var(--grey); font: italic 13px var(--serif); }
 @media (max-width: 900px) { .measuregrid { grid-template-columns: repeat(2, minmax(120px, 1fr)); } .accountgrid { grid-template-columns: 1fr; } }
 
-/* ---- Collapsed cubes: header bar, body pops out on hover/click ---- */
-.module.col { padding: 0; position: relative; min-width: 200px; }
-.module.col .colhead {
-  display: flex; justify-content: space-between; align-items: center; width: 100%;
-  background: none; border: none; cursor: pointer; padding: 12px 14px;
-  margin: 0; border-bottom: none; text-align: left;
-}
-.module.col .colhead i { font-style: normal; color: var(--red); font-size: 13px; }
-.module.col .modbody {
-  display: none; position: absolute; top: calc(100% + 1px); left: -1px; right: -1px;
-  background: var(--paper); border: 1px solid var(--line); border-top: none;
-  padding: 12px 14px; z-index: 35; max-height: 340px; overflow-y: auto;
-}
-.module.col:hover .modbody, .module.col.open .modbody { display: block; }
-.module.col:hover .colhead, .module.col.open .colhead { color: var(--red); }
-.obsline.past { color: var(--grey); }
-.obsline.past .pulse { background: var(--faint); animation: none; }
-
-/* ---- The slide ---- */
-.slidelook, .slidestory, .slidereach {
-  display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700;
-  background: none; border: none; cursor: pointer; padding: 0; text-align: left;
-}
-.slidelook:hover, .slidestory:hover, .slidereach:hover { color: var(--red); }
-.slidethumbs { display: flex; gap: 3px; flex: none; }
-.slidethumbs img, .slidereach img { width: 34px; height: 44px; object-fit: cover; border: 1px solid var(--line); }
-.slidestory b { color: var(--red); }
-
 /* ---- Twitter-style composer ---- */
 .composer2 { display: flex; gap: 12px; border: 1px solid var(--line); padding: 14px; margin: 0 0 14px; }
 .composer2 .cright { flex: 1; min-width: 0; }
@@ -718,20 +687,8 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .ccount { margin-left: auto; font-size: 10px; color: var(--faint); letter-spacing: 0.08em; }
 .composer2 .btn { padding: 8px 16px; }
 
-/* ---- Morse bridge ticker (green dot = · , red dash = —) ---- */
-.morse {
-  display: flex; align-items: center; gap: 6px; min-height: 26px; width: 100%;
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  padding: 5px 8px; overflow: hidden; flex-wrap: nowrap;
-}
-.mstar { color: var(--red); font-weight: 900; font-size: 17px; line-height: 1; flex: none; }
-.mdash { width: 18px; height: 3px; background: var(--ink); flex: none; }
-.mgap { width: 10px; flex: none; }
-.mcursor { width: 2px; height: 12px; background: var(--ink); animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-
 @media (prefers-reduced-motion: reduce) {
-  .mq, .pulse, .mcursor { animation: none; }
+  .mq, .pulse { animation: none; }
 }
 
 /* ---- search autocomplete (discover + shell) — hairline dropdown, red left star ---- */
@@ -1122,7 +1079,7 @@ img { filter: saturate(var(--ed-img-sat, 0.92)); }
 [data-model="02"] .snav .nic { display: none; }
 [data-model="02"] .snav.cur { background: linear-gradient(180deg, color-mix(in srgb, var(--sig) 24%, transparent), color-mix(in srgb, var(--sig) 5%, transparent)); box-shadow: var(--glow); }
 [data-model="02"] .snav.cur::before { display: none; }
-[data-model="02"] .card, [data-model="02"] .autonote { border-radius: 18px; }
+[data-model="02"] .autonote { border-radius: 18px; }
 
 /* form controls never fall back to UA defaults (white boxes on dark) */
 input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
@@ -1214,15 +1171,15 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   .cvhotrow:nth-of-type(even), .cvpost:nth-of-type(even), .cvstory:nth-of-type(even) { margin-left: 0; }
 }
 
-/* ---- Catalog cards: mock chrome (scanline + lens + inspect) ---- */
-.imgwrap { position: relative; border: 1px solid var(--line); border-radius: var(--ed-img-rad, 10px); overflow: hidden; }
+/* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
+   Aug 12 (owner order: more Grailed — square-cut floating images, no card
+   border, no hover box; the red reach frame and INSPECT badge stay) ---- */
+.imgwrap { position: relative; border-radius: var(--ed-img-rad, 0px); overflow: hidden; }
 .imgwrap::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.09) 3px 4px),
     radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
 .card:hover .imgwrap::before { content: "◉ INSPECT →"; position: absolute; right: 7px; bottom: 7px; z-index: 2;
   font-size: 8.5px; letter-spacing: 0.2em; color: var(--red); text-shadow: var(--glow-r); }
-.card { border: 1px solid transparent; border-radius: var(--ed-card-rad, 12px); padding: 6px; transition: border-color 0.15s, background 0.15s; }
-.card:hover { border-color: var(--line); background: var(--bg3); }
 
 /* ---- Passport: bearer photo + analysis bus + conviction glow ---- */
 .ppbody { display: flex; gap: 26px; padding: 16px 22px; align-items: center;
@@ -1643,7 +1600,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .roomreport, .readlink, .shit, .mqlink, .tab,
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b {
+.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .fmode {
   color: var(--sig);
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
