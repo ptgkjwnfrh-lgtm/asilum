@@ -20,6 +20,14 @@ import { thumbFor } from "../../lib/client.js";
 import { STORIES, fetchWire, timeAgo } from "../../lib/social.js";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
+// The editorial's hairline field (magazine treatment, owner order
+// Aug 13): pinned to the page's first stretch, hand-placed and
+// deterministic — print texture behind the ladder.
+const EL_HAIRLINES = [
+  "elln-h1", "elln-h2", "elln-h3", "elln-h4",
+  "elln-v1", "elln-v2", "elln-v3",
+];
+
 export default function EditorialPage() {
   const fit = useFitBrain();
   const [rows, setRows] = useState(null);
@@ -28,8 +36,12 @@ export default function EditorialPage() {
   const [postsLive, setPostsLive] = useState(true);
   const [house, setHouse] = useState(null);
   const [houseLive, setHouseLive] = useState(true);
+  const [stamp, setStamp] = useState("");
 
   useEffect(() => {
+    setStamp(new Date().toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric",
+    }).toUpperCase());
     fetchWire("user")
       .then((w) => { setPosts(w.posts); setPostsLive(w.live); })
       .catch(() => { setPosts([]); setPostsLive(false); });
@@ -55,8 +67,29 @@ export default function EditorialPage() {
   }, []);
 
   return (
-    <div className="wrap elr">
-      <h1 className="headline"><span className="red">*</span>EDITORIAL</h1>
+    <div className="wrap elr ctr">
+      <div className="cvlines ellines" aria-hidden="true">
+        {EL_HAIRLINES.map((c) => <i key={c} className={c} />)}
+      </div>
+      {rows !== null && (
+        <span className="cvside elside" aria-hidden="true">
+          {rows.length} OF 10 SLOTS FILLED
+        </span>
+      )}
+      {posts !== null && (
+        <span className="cvside cvsider elsider" aria-hidden="true">
+          {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"} ON THE FLOOR
+        </span>
+      )}
+      <header className="cthead">
+        <h1 className="headline"><span className="red">*</span>EDITORIAL</h1>
+        {stamp && (
+          <div className="ctmeta">
+            LIVE EDITION · {stamp}
+            {rows !== null && <span>{rows.length}/10 HOTLIST SLOTS FILLED</span>}
+          </div>
+        )}
+      </header>
       <p className="deck">the magazine layer — the hotlist first, then the house, the floor, and the outside world.</p>
 
       {/* ---- 1. THE HOTLIST — loudest ---- */}
@@ -87,7 +120,7 @@ export default function EditorialPage() {
 
       {/* ---- 2. ASILUM MAGAZINE — the house's own dispatches ---- */}
       <section className="elhouse" aria-label="asilum magazine">
-        <div className="cvkick">ASILUM MAGAZINE</div>
+        <div className="elh elh2">ASILUM MAGAZINE</div>
         {house === null && <div className="empty">opening the house pages…</div>}
         {house && !houseLive && (
           <p className="elhousenote">the house pages could not be reached — try again in a moment.</p>
@@ -114,7 +147,7 @@ export default function EditorialPage() {
 
       {/* ---- 3. AD SPACE — open placements, always labeled ---- */}
       <section className="elads" aria-label="ad space">
-        <div className="cvkick">AD SPACE</div>
+        <div className="elh elh3">AD SPACE</div>
         <div className="eladrow">
           <div className="elad">
             <span className="adstar" aria-hidden="true">*</span>
@@ -131,7 +164,7 @@ export default function EditorialPage() {
 
       {/* ---- 4. THE COMMUNITY FLOOR ---- */}
       <section className="elfloor" aria-label="the community floor">
-        <div className="cvkick">THE COMMUNITY FLOOR</div>
+        <div className="elh elh4">THE COMMUNITY FLOOR</div>
         {posts === null && <div className="empty">pulling the wire…</div>}
         {posts && !postsLive && (
           <div className="empty">
@@ -158,7 +191,7 @@ export default function EditorialPage() {
 
       {/* ---- 5. EXTERNAL DISPATCHES — quietest ---- */}
       <section className="elext" aria-label="external dispatches">
-        <div className="cvkick">EXTERNAL DISPATCHES</div>
+        <div className="elh elh5">EXTERNAL DISPATCHES</div>
         {STORIES.map((s) => (
           <a className="elextrow" key={s.title} href={s.url} target="_blank" rel="noopener noreferrer">
             <span className="elextpub">{s.pub.toUpperCase()}</span>
@@ -167,6 +200,13 @@ export default function EditorialPage() {
         ))}
         <p className="elextnote">dispatches link out — the stories live with the publications.</p>
       </section>
+
+      <footer className="cvcolo" aria-label="colophon">
+        *ASILUM EDITORIAL · {stamp}
+        {rows !== null && <> · {rows.length}/10 HOTLIST SLOTS FILLED</>}
+        {posts !== null && <> · {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"} ON THE FLOOR</>}
+        {" "}· {STORIES.length} EXTERNAL DISPATCHES · EVERY VALUE ON THIS PAGE IS REAL STATE
+      </footer>
     </div>
   );
 }
