@@ -44,6 +44,35 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   placement — overlaps, off-grid collage, film-strip thumbnail columns,
   type crossing images. NO rotated/slanted images (owner ban, Aug 12);
   outfit strips may be uniform and organized.
+- Aug 13 round 3 (owner pictures: State 3.0 stills, Warp/Red Snapper
+  track-credit sleeve, LTJ Bukem Progression Sessions ad, Rag & Bone
+  again — "this is supposed to feel like a magazine"):
+  - THICK FLOATING FRAMES (`.tdrf` + variants): heavy rectangles
+    (5–9px, `--ink`) floating over an outfit grouping to frame a
+    HIGHLIGHT piece plus some empty air; they may overlap each other
+    (State 3.0's double frame) and overlap neighbouring pieces. A frame
+    marks a TRUE highlight only — the strip's lead piece on the cover,
+    the anchor piece or an owned wardrobe piece in the stylist.
+  - HAIRLINE FIELD (`.cvlines`): hand-placed horizontal AND vertical
+    contrast lines behind the content (owner order, Aug 13 — diagonals
+    were tried the same day and swapped for verticals; nothing in the
+    field takes an angle, and images still never rotate) — a few thick
+    (3–6px), most 1px; a few visible (0.12–0.30 opacity), most barely
+    there (0.04–0.10). Deterministic (no render-time random),
+    pointer-events none, always behind content, never reducing
+    readability.
+  - MAGAZINE MARGINALIA: small side text everywhere a magazine would
+    carry it — gutter verticals, Warp-style credit stacks (micro label
+    over value: `.cclbl`/`.ccval`), ledger folios, a bottom colophon.
+    EVERY value printed is real state (system ledger counters, item
+    ids, feed ranks, source labels) — marginalia is never lorem, never
+    invented.
+  - DENSITY OVER UNIFORMITY: the front cover is FULL — contact-sheet
+    film strip beside the hero (next real feed picks), staggered column
+    baselines that deliberately do not align, one pull-quote-scale
+    transmission on the wire, non-uniform heavy-bar pairs opening
+    sections. Follow floating text (no borders, no bubbles) harder,
+    not less.
 - Clickable words are painted the logo gradient's teal (--sig) with a glow
   and a slight horizontal motion blur — never black/ink (owner: "it's
   ugly"). Red-law elements (buy/home/reset) keep red with the same
@@ -58,7 +87,10 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   are gone from the page.
 - EDITORIAL (/hotlist) is one page, a descending visibility ladder (owner
   order, Aug 12): 1 THE HOTLIST loudest (big ghost numerals, teal titles,
-  red person-counts), 2 ASILUM MAGAZINE (house dispatches from
+  red person-counts; the slots are held for DESIGNER ACCOUNTS and stay
+  VACANT until real people move — owner order Aug 13, the caller's feed
+  never stands in; rows sit in clean vertical placement, never
+  staggered — on the cover preview too), 2 ASILUM MAGAZINE (house dispatches from
   editorial_posts kind=asilum; honest empty state; submissions still
   coming-soon), 3 AD SPACE (dashed = honestly open, "sponsored placements
   are always disclosed", never a fake advertiser), 4 THE COMMUNITY FLOOR

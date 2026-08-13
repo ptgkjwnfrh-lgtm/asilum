@@ -212,12 +212,19 @@ export default function StylistPage() {
                     <span className="otfconf">{o.conf}<i>match</i></span>
                   </div>
                   <div className="otfrow">
-                    {o.items.map((it) => (
+                    {o.items.map((it, itIdx) => {
+                      // The thick floating frame (owner order, Aug 13) marks
+                      // TRUE highlights only: the piece a look was styled
+                      // around (the engine puts the anchor first) and pieces
+                      // the bearer already owns.
+                      const hl = it.owned || (g.genre === "ANCHORED" && itIdx === 0);
+                      return (
                       <a
-                        className="otfitem"
+                        className={"otfitem" + (hl ? " otfhl" : "")}
                         key={it.id}
                         href={it.owned ? "/profile" : "/?item=" + encodeURIComponent(it.id)}
                       >
+                        {hl && <i className="tdrf tdrfs" aria-hidden="true" />}
                         <img src={it.img || thumbFor(it)} alt={it.title} />
                         <span className="otfttl">{it.title}</span>
                         <span className="otfprice">
@@ -226,7 +233,8 @@ export default function StylistPage() {
                         <ColorEvidenceLine item={it} />
                         <ProductFitLine item={it} fit={fit} />
                       </a>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="lookstats">
                     <span>TOTAL <b>USD {Math.round(o.total || 0)}</b></span>
