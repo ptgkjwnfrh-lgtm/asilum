@@ -1323,9 +1323,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wmodes { display: flex; gap: 18px; margin-bottom: 14px; align-items: center; }
 .wcompose { display: flex; gap: 12px; }
 .wcright { flex: 1; min-width: 0; }
-.wcright .wcap { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
-.wcright textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
-.wcright .wcap:focus, .wcright textarea:focus { border-bottom-color: var(--sig); }
+.wcright .wcap, .wedit .wcap { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
+.wcright textarea, .wedit textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
+.wcright .wcap:focus, .wcright textarea:focus, .wedit .wcap:focus, .wedit textarea:focus { border-bottom-color: var(--sig); }
 .wsoonpanel { font-size: 12.5px; color: var(--grey); max-width: 60ch; line-height: 1.7; padding: 6px 0 2px; }
 .wsoonpanel b { color: var(--ink); letter-spacing: 0.08em; }
 .wsoonpanel em { font-style: normal; color: var(--red); letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; }
@@ -1338,6 +1338,21 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wpost { margin-bottom: 22px; }
 .wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
 .wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
+/* transmission lifecycle (owner directive, Aug 14): author-only wire
+   furniture. EDIT/DELETE are tiny clickable words (teal rule); the armed
+   DELETE swaps the WHOLE signal to red — never red text in a teal blur.
+   The edited stamp is quiet grey: an honesty label, not a control. */
+.wedited { margin-left: 6px; font-style: normal; font-size: 10px; color: var(--grey); letter-spacing: 0.06em; }
+.wctls { display: inline-flex; gap: 14px; margin-left: 12px; vertical-align: baseline; }
+.wctl { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--mich); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
+.wctl.warn {
+  color: var(--red);
+  text-shadow:
+    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    var(--glow-r);
+}
+.wedit { display: grid; gap: 6px; margin-bottom: 6px; }
 .fwho { margin: 8px 0 46px; max-width: 560px; }
 /* the booths — ten open slots on dashed hairlines (honestly open) */
 .booth { display: flex; align-items: center; gap: 18px; padding: 9px 0; border-bottom: 1px dashed color-mix(in srgb, var(--ink) 12%, transparent); }
@@ -1848,7 +1863,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
-.whandle, .wperma, .wfocusback, .bizapply,
+.whandle, .wperma, .wfocusback, .bizapply, .wctl,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);

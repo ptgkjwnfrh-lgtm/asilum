@@ -23,8 +23,10 @@
 // ASILUM MAGAZINE → AD SPACE → EXTERNAL DISPATCHES.
 
 import { useEffect, useState } from "react";
-import { getUid, postJSON } from "../../lib/client.js";
-import { STORIES, fetchWire, fetchPost, addPost, timeAgo, getProfileInfo } from "../../lib/social.js";
+import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
+import {
+  STORIES, fetchWire, fetchPost, addPost, editPost, deletePost, timeAgo, getProfileInfo,
+} from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
@@ -44,6 +46,9 @@ function PostByline({ p }) {
       {p.serverId != null
         ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
         : timeAgo(p.at)}
+      {/* the edited stamp is server truth — a touched transmission says
+          so; an untouched one carries no label (honesty, Aug 14) */}
+      {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
     </span>
   );
 }
@@ -72,6 +77,14 @@ export default function TheWirePage() {
   const [focus, setFocus] = useState(undefined);
   // The booth roster — verified business accounts, server truth.
   const [booths, setBooths] = useState(null);
+  // Which floor posts are the caller's own — SERVER truth (?mine=1, the
+  // verified identity), not the local text-match chip: controls that
+  // could 404 on a stranger's post must never render on one.
+  const [mineIds, setMineIds] = useState(null);
+  const [editing, setEditing] = useState(null);   // serverId under edit
+  const [editText, setEditText] = useState("");
+  const [editCaption, setEditCaption] = useState("");
+  const [confirmDel, setConfirmDel] = useState(null); // serverId armed to delete
 
   function loadWire() {
     fetchWire("user")
@@ -79,11 +92,52 @@ export default function TheWirePage() {
       .catch(() => { setPosts([]); setPostsLive(false); });
   }
 
+  function loadMine() {
+    authorizedFetch("/api/editorial?mine=1&limit=120&user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setMineIds(new Set((d.posts || []).map((p) => String(p.id)))); })
+      .catch(() => {});
+  }
+
+  function beginEdit(p) {
+    setEditing(p.serverId);
+    setEditText(p.text);
+    setEditCaption(p.title || "");
+    setConfirmDel(null);
+  }
+
+  function saveEdit() {
+    const p = (posts || []).find((x) => x.serverId === editing);
+    const t = editText.trim();
+    if (!p || !t) return;
+    editPost(p, t, editCaption.trim()).then((r) => {
+      setWireNote(!r.ok
+        ? (r.error || "the edit could not reach the wire")
+        : r.held ? (r.note || "your edit is saved and paused for a human review") : "");
+      setEditing(null);
+      loadWire();
+      loadMine();
+    });
+  }
+
+  function doDelete(p) {
+    deletePost(p).then((r) => {
+      setWireNote(r.ok ? "" : (r.error || "the delete could not reach the wire"));
+      setConfirmDel(null);
+      loadWire();
+      loadMine();
+      // if the deleted transmission was pinned by permalink, it is now
+      // honestly gone — say so rather than keep showing it.
+      if (focus && focus.serverId === p.serverId) setFocus(false);
+    });
+  }
+
   useEffect(() => {
     setStamp(new Date().toLocaleDateString("en-US", {
       year: "numeric", month: "long", day: "numeric",
     }).toUpperCase());
     loadWire();
+    loadMine();
     fetchWire("asilum")
       .then((w) => { setHouse(w.posts); setHouseLive(w.live); })
       .catch(() => { setHouse([]); setHouseLive(false); });
@@ -115,6 +169,7 @@ export default function TheWirePage() {
         const d = await res.json().catch(() => null);
         setWireNote(d && d.held ? (d.note || "your transmission is saved and paused for a human review") : "");
         loadWire();
+        loadMine();
       })
       .catch(() => setWireNote("saved on this device — the shared wire could not be reached"));
     loadWire();
@@ -248,13 +303,51 @@ export default function TheWirePage() {
         {posts && postsLive && posts.length === 0 && (
           <div className="empty">no transmissions yet — yours opens the wire.</div>
         )}
-        {(posts || []).map((p) => (
-          <div className="fpost wpost" key={p.id}>
-            {p.title ? <div className="wposthead">{p.title}</div> : null}
-            <p className="fposttext">{p.text}</p>
-            <PostByline p={p} />
-          </div>
-        ))}
+        {(posts || []).map((p) => {
+          const own = p.serverId != null && mineIds !== null && mineIds.has(String(p.serverId));
+          const inEdit = own && editing === p.serverId;
+          return (
+            <div className="fpost wpost" key={p.id}>
+              {inEdit ? (
+                <div className="wedit">
+                  <input
+                    className="wcap"
+                    type="text"
+                    maxLength={200}
+                    placeholder="caption — becomes the transmission's header"
+                    value={editCaption}
+                    onChange={(e) => setEditCaption(e.target.value)}
+                  />
+                  <textarea
+                    rows={4}
+                    maxLength={5000}
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                  />
+                  <div className="cvcomposerow">
+                    <span className="ccount">{editText.length}/5000</span>
+                    <button className="wctl" onClick={() => setEditing(null)}>CANCEL</button>
+                    <button className="btn postbtn" onClick={saveEdit} disabled={!editText.trim()}>SAVE</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {p.title ? <div className="wposthead">{p.title}</div> : null}
+                  <p className="fposttext">{p.text}</p>
+                </>
+              )}
+              <PostByline p={p} />
+              {own && !inEdit && (
+                <span className="wctls">
+                  <button className="wctl" onClick={() => beginEdit(p)}>EDIT</button>
+                  {confirmDel === p.serverId
+                    ? <button className="wctl warn" onClick={() => doDelete(p)}>SURE? DELETE</button>
+                    : <button className="wctl" onClick={() => setConfirmDel(p.serverId)}>DELETE</button>}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </section>
 
       <section className="fwho" aria-label="who to follow">

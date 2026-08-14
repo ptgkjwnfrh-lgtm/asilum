@@ -130,6 +130,26 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     posts (?mine=1, filtered by author_id server-side, never exposed)
     merged with device copies the server doesn't show yet — labeled
     "pending or held", never dressed as published.
+  - THE TRANSMISSION LIFECYCLE (owner directive, Aug 14 — backlog 1 of
+    HANDOVER-2026-08-14): the author — and only the author, verified
+    server-side and bound in the WHERE clause — may EDIT or DELETE
+    their transmission from the floor. The controls are tiny wire
+    furniture (.wctl, in the teal rule) shown only on posts the
+    ?mine=1 server truth claims — never on the local text-match
+    heuristic, which stays what it was: the "you" chip. DELETE is a
+    two-tap: the armed state reads SURE? DELETE and swaps the whole
+    signal to red (.wctl.warn — never red text in a teal blur). EDIT
+    opens the composer's own fields inline (.wedit, prefilled; the
+    fields ARE the transmission — saving writes exactly what they
+    hold, an emptied caption clears the caption). An edited
+    transmission carries "· edited <age>" (.wedited, quiet grey — an
+    honesty label, not a control) on every surface that prints a
+    byline: floor, permalink focus, profile POSTS, /u/[handle].
+    Deletion is SOFT server-side (moderation_status='deleted', the row
+    survives as record) and the permalink answers HTTP 404 with the
+    honest absent message from that moment. Edits re-run the same
+    sanitize + screen as fresh posts — a flagged edit parks the
+    transmission under review and says so in the same words.
   - Page order: masthead + live folio → composer → the floor (every
     post, caption headers on transmissions, no fabricated counters) →
     WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
