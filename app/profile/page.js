@@ -256,6 +256,11 @@ function ProfileAccess() {
   // Password auth (owner order, Aug 13): create-account mode carries a
   // verify field and the little eye that opens.
   const [mode, setMode] = useState("signin"); // signin | create
+  // Password recovery (owner directive, Aug 14 — backlog 7): true once
+  // Supabase reports this page was opened from a reset link, which is the
+  // only moment updateUser({password}) is allowed to stand in for knowing
+  // the old one.
+  const [recovering, setRecovering] = useState(false);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -273,9 +278,25 @@ function ProfileAccess() {
     let subscription = null;
     getSupabase().then((sb) => {
       if (!active || !sb) return;
-      subscription = sb.auth.onAuthStateChange((_event, session) => {
-        if (active) setAuthUser(session?.user || null);
+      subscription = sb.auth.onAuthStateChange((event, session) => {
+        if (!active) return;
+        setAuthUser(session?.user || null);
+        // PASSWORD_RECOVERY fires when the client consumes a reset link's
+        // token. ?reset=1 alone is NOT enough to trust — anyone can type
+        // it — so the query string only explains the wait; the event is
+        // what opens the form.
+        if (event === "PASSWORD_RECOVERY") setRecovering(true);
       })?.data?.subscription || null;
+      // The event can fire before this listener attaches (the token is
+      // consumed during client construction). If the URL says we came from
+      // a reset and a session exists, honor it.
+      try {
+        if (new URLSearchParams(window.location.search).get("reset") === "1") {
+          sb.auth.getSession().then(({ data }) => {
+            if (active && data?.session) setRecovering(true);
+          });
+        }
+      } catch {}
     });
     return () => {
       active = false;
@@ -323,6 +344,66 @@ function ProfileAccess() {
       if (!busy) setPassword("");
       setConfirm("");
     } catch { publishNotice("authentication is not configured — check the Supabase keys"); }
+    setBusy(false);
+  }
+
+  // Ask for a reset link. The answer is the SAME whether or not the
+  // address holds an account — confirming it would make this an
+  // account-enumeration oracle, which is exactly what sign-up already
+  // takes care not to be.
+  //
+  // DEPLOYMENT REQUIREMENT (owner action, once): the redirectTo below must
+  // appear in the project's redirect URL allow list —
+  // Supabase dashboard → Authentication → URL Configuration → Redirect
+  // URLs. Add "https://www.asilummagazine.com/profile" (and any preview
+  // origin that needs it). Supabase silently refuses to redirect anywhere
+  // not on that list, which looks like a broken reset link rather than a
+  // configuration gap. The "Reset password" email template there is
+  // enabled by default and needs no edit.
+  async function sendReset() {
+    const address = email.trim();
+    if (busy) return;
+    if (!address) { publishNotice("enter your email first"); return; }
+    setBusy(true);
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.resetPasswordForEmail(address, {
+        redirectTo: window.location.origin + "/profile?reset=1",
+      });
+      publishNotice(error
+        ? "could not send the reset — " + error.message
+        : "if that address holds an account, a reset link is on its way");
+    } catch { publishNotice("could not reach the account service — check the Supabase keys"); }
+    setBusy(false);
+  }
+
+  // Complete the reset. Reachable only while `recovering` is true, i.e.
+  // Supabase confirmed the recovery token was consumed on this client.
+  async function setNewPassword() {
+    if (busy) return;
+    if (password.length < 8) { publishNotice("password must be at least 8 characters"); return; }
+    if (password !== confirm) { publishNotice("the two passwords do not match"); return; }
+    setBusy(true);
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.updateUser({ password });
+      if (error) {
+        // The server's own words — its password policy is the authority,
+        // and paraphrasing it would leave people guessing what to fix.
+        publishNotice("could not set the password — " + error.message);
+      } else {
+        setRecovering(false);
+        setPassword("");
+        setConfirm("");
+        publishNotice("password changed — you are signed in on this device");
+        // Drop ?reset=1 so a refresh does not look like a fresh recovery.
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("reset");
+          window.history.replaceState({}, "", url.toString());
+        } catch {}
+      }
+    } catch { publishNotice("could not reach the account service — check the Supabase keys"); }
     setBusy(false);
   }
 
@@ -375,7 +456,38 @@ function ProfileAccess() {
       <div className="accountgrid">
         <div>
           <div className="psub">SIGN IN</div>
-          {authConfigured() ? authUser ? (
+          {authConfigured() ? recovering ? (
+            // Arrived from a reset link. This is the ONE moment a new
+            // password may be set without proving the old one, so the
+            // screen exists only while Supabase says the recovery token
+            // was genuinely consumed.
+            <>
+              <div className="acctline">
+                reset link opened{authUser?.email ? " for " + authUser.email : ""} — set a new password now.
+              </div>
+              <label className="accountemail">new password
+                <span className="pwwrap">
+                  <input type={showPw ? "text" : "password"} value={password}
+                    placeholder="at least 8 characters"
+                    autoComplete="new-password"
+                    onChange={(event) => setPassword(event.target.value)}
+                    onKeyDown={(event) => { if (event.key === "Enter") setNewPassword(); }} />
+                  <button type="button" className="pweye" aria-label={showPw ? "hide password" : "show password"}
+                    onClick={() => setShowPw((v) => !v)}>{showPw ? "◉" : "◡"}</button>
+                </span>
+              </label>
+              <label className="accountemail">verify your password
+                <input type={showPw ? "text" : "password"} value={confirm}
+                  placeholder="the same password again"
+                  autoComplete="new-password"
+                  onChange={(event) => setConfirm(event.target.value)}
+                  onKeyDown={(event) => { if (event.key === "Enter") setNewPassword(); }} />
+              </label>
+              <button className="btn" disabled={busy} onClick={setNewPassword}>
+                {busy ? "WORKING…" : "SET NEW PASSWORD"}
+              </button>
+            </>
+          ) : authUser ? (
             <>
               <div className="acctline">{authUser.email || authUser.id} — signed in</div>
               <button className="btn ghost" onClick={signOut}>SIGN OUT</button>
@@ -413,6 +525,12 @@ function ProfileAccess() {
               <button className="btn ghost" disabled={busy} onClick={sendMagicLink} title="passwordless — a link lands in your inbox">
                 MAGIC LINK INSTEAD
               </button>
+              {mode === "signin" && (
+                <button className="btn ghost" disabled={busy} onClick={sendReset}
+                  title="we email a link that lets you set a new password">
+                  FORGOT PASSWORD
+                </button>
+              )}
             </>
           ) : <div className="acctline">Sign-in requires Supabase public keys in the deployment environment.</div>}
           {notice ? <div className="acctline accountnotice">{notice}</div> : null}
