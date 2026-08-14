@@ -1353,6 +1353,21 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
     var(--glow-r);
 }
 .wedit { display: grid; gap: 6px; margin-bottom: 6px; }
+/* wire engagement (owner directive, Aug 14): likes + saves. The count is
+   PEOPLE, not clicks, and renders only when the ledger has answered — a
+   transmission nobody has touched shows the word alone, never a printed 0.
+   Engaged state is the red signal (the house's "this is yours" voice, as
+   on favourites); the resting state rides the teal clickable rule. */
+.wengage { display: inline-flex; gap: 14px; margin-left: 12px; vertical-align: baseline; }
+.weng { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--mich); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
+.weng b { margin-left: 5px; font-weight: 800; }
+.weng.on {
+  color: var(--red);
+  text-shadow:
+    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
+    var(--glow-r);
+}
 .fwho { margin: 8px 0 46px; max-width: 560px; }
 /* the booths — ten open slots on dashed hairlines (honestly open) */
 .booth { display: flex; align-items: center; gap: 18px; padding: 9px 0; border-bottom: 1px dashed color-mix(in srgb, var(--ink) 12%, transparent); }
@@ -1863,7 +1878,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
-.whandle, .wperma, .wfocusback, .bizapply, .wctl,
+.whandle, .wperma, .wfocusback, .bizapply, .wctl, .weng,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);

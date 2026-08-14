@@ -150,6 +150,23 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     honest absent message from that moment. Edits re-run the same
     sanitize + screen as fresh posts — a flagged edit parks the
     transmission under review and says so in the same words.
+  - WIRE ENGAGEMENT — LIKES + SAVES (owner directive, Aug 14 — backlog 2
+    of HANDOVER-2026-08-14): two counters per transmission, and both
+    count PEOPLE, not events. The ledger's key is (post, person, kind),
+    so pressing LIKE in a loop or from ten tabs moves the counter once;
+    only another human moves it again (the v22/v23 anti-manipulation
+    law). Counts are computed on read from that ledger — there is no
+    denormalized counter that could drift from its evidence, which is
+    the fabricated number the constitution forbids. A transmission
+    nobody has touched prints NO number at all (the word LIKE alone,
+    never "LIKE 0"), and an unreachable server shows no counts rather
+    than zeros. Resting state rides the teal clickable rule (.weng);
+    the engaged state is the full red signal, the house's "this is
+    yours" voice. Buttons are their own class — .wact belongs to the
+    WARDROBE tab and must not be borrowed. Engagement is refused on any
+    transmission the wire will not show (retired, held, absent), with
+    the same 404 the lifecycle verbs answer — it never reveals whether
+    a hidden transmission exists.
   - Page order: masthead + live folio → composer → the floor (every
     post, caption headers on transmissions, no fabricated counters) →
     WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
