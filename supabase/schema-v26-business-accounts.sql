@@ -55,3 +55,7 @@ BEGIN
     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE business_accounts TO asilum_app;
   END IF;
 END $$;
+
+INSERT INTO app_schema_migrations (version,name)
+  VALUES (26, 'business-accounts')
+  ON CONFLICT (version) DO NOTHING;
