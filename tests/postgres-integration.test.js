@@ -510,6 +510,29 @@ test("Postgres wire engagement: one person counts once, and identity moves whole
     null, "engagement cannot land on a transmission the wire will not show");
 });
 
+test("Postgres refuses a non-numeric ticket id instead of raising 22P02", { skip: !databaseUrl }, async () => {
+  // The mem/Postgres divergence confirmed by the Aug 14 verification pass:
+  // `ticketId` was validated as a STRING only, so "abc" reached
+  // `SELECT … WHERE id=$1` against a BIGSERIAL column. Postgres raises
+  // 22P02, the route has no try/catch there, and the caller got a 500 —
+  // while mem returned a clean 400 the whole time. This test belongs HERE
+  // and not in the mem suite: in mem the bad id misses either way, so the
+  // assertion cannot fail and would prove nothing.
+  process.env.DATABASE_URL = databaseUrl;
+  const { normalizeWardrobeAdd } = await import("../lib/wardrobe/index.js");
+  const user = `u-${randomUUID()}`;
+
+  for (const bad of ["abc", "12; DROP TABLE items", "9999999999999999999999"]) {
+    const result = await normalizeWardrobeAdd(user, { source: "ticket", ticketId: bad });
+    assert.equal(result.ok, false, `refused: ${bad}`);
+    assert.equal(result.error, "ticket not found", "the same words mem has always used");
+  }
+  // A well-shaped id that does not exist still resolves cleanly, so the
+  // guard narrowed the SHAPE and not the behaviour.
+  const missing = await normalizeWardrobeAdd(user, { source: "ticket", ticketId: "999999999" });
+  assert.equal(missing.error, "ticket not found");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
