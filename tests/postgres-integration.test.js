@@ -359,6 +359,157 @@ test("Postgres assembles the §6 export with the same shape as mem", { skip: !da
   assert.deepEqual(out.retained, purged.retained);
 });
 
+// WHY THESE EXIST (audit resume, Aug 14 — law 4 of HANDOVER-2026-08-08:
+// "mem and Postgres are one system with two implementations, and mem is the
+// one being exercised"). The v27 lifecycle verbs and the v28 engagement
+// ledger shipped with mem-mode unit tests, and every hand-walk of them ran
+// on the mem preview — so their SQL had never once executed against
+// Postgres. A parse error, a wrong conflict target, or a predicate that
+// behaves differently in SQL than in the mem filter would have shipped
+// green. These run the real statements against a real database.
+// They live ABOVE the board/ticket test on purpose: that test ends the
+// default pool in its cleanup (see the note at the top of this file).
+test("Postgres transmission lifecycle: author-bound edit and soft delete", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const production = await import("../lib/db/production.js");
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const author = `u-${randomUUID()}`;
+  const stranger = `u-${randomUUID()}`;
+  const handle = `pgwire-${randomUUID().slice(0, 8)}`;
+
+  // Clean up exactly what this test created, and nothing else.
+  t.after(async () => {
+    await pool.query("DELETE FROM editorial_posts WHERE author_id=ANY($1::text[])", [[author, stranger]]);
+  });
+
+  const post = await production.createEditorialPost({
+    authorId: author, authorHandle: handle, kind: "user", moderationStatus: "visible",
+    title: "PG FIRST CUT", body: "the first account", excerpt: "the first account",
+  });
+  const before = (await production.listEditorialPosts({ id: post.id }))[0];
+  assert.equal(before.editedAt, null, "an untouched transmission carries no edit stamp");
+
+  // A stranger's edit must not match the WHERE clause.
+  assert.equal(
+    await production.updateEditorialPost({
+      id: post.id, authorId: stranger, body: "hijacked", excerpt: "hijacked",
+    }),
+    null, "not the author → the same answer as a missing post");
+  assert.equal((await production.listEditorialPosts({ id: post.id }))[0].body, "the first account");
+
+  const edited = await production.updateEditorialPost({
+    id: post.id, authorId: author, title: "PG SECOND CUT",
+    body: "the corrected account", excerpt: "the corrected account",
+    tags: ["archival"],
+  });
+  assert.ok(edited, "the author's edit lands");
+  assert.ok(edited.editedAt, "edited_at is stamped by the database (now())");
+  const read = (await production.listEditorialPosts({ id: post.id }))[0];
+  assert.equal(read.body, "the corrected account");
+  assert.deepEqual(read.tags, ["archival"], "jsonb tags round-trip through the UPDATE");
+
+  // COALESCE($7::jsonb, tags): omitting tags must leave the stored ones alone.
+  await production.updateEditorialPost({
+    id: post.id, authorId: author, body: "same words", excerpt: "same words",
+  });
+  assert.deepEqual((await production.listEditorialPosts({ id: post.id }))[0].tags, ["archival"],
+    "an edit that passes no tags does not wipe them");
+
+  assert.equal(await production.deleteEditorialPost({ id: post.id, authorId: stranger }), false,
+    "a stranger cannot retire someone else's transmission");
+  assert.equal(await production.deleteEditorialPost({ id: post.id, authorId: author }), true);
+  assert.equal((await production.listEditorialPosts({ id: post.id })).length, 0,
+    "the permalink read is dead on the Postgres path too");
+  assert.equal(await production.deleteEditorialPost({ id: post.id, authorId: author }), false,
+    "a second delete finds nothing to retire");
+  assert.equal(
+    await production.updateEditorialPost({ id: post.id, authorId: author, body: "zombie", excerpt: "zombie" }),
+    null, "a deleted transmission cannot be edited back to life");
+
+  // The row SURVIVES as record — soft delete, not erasure.
+  const { rows } = await pool.query(
+    "SELECT moderation_status FROM editorial_posts WHERE id=$1", [post.id]);
+  assert.equal(rows[0]?.moderation_status, "deleted", "the row is retained, marked deleted");
+});
+
+test("Postgres wire engagement: one person counts once, and identity moves whole", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const production = await import("../lib/db/production.js");
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const author = `u-${randomUUID()}`;
+  const alice = `u-${randomUUID()}`;
+  const bob = `u-${randomUUID()}`;
+  const device = `u-${randomUUID()}`;
+  const account = `sb-${randomUUID()}`;
+  const handle = `pgeng-${randomUUID().slice(0, 8)}`;
+  let postId = null;
+
+  t.after(async () => {
+    if (postId != null) await pool.query("DELETE FROM transmission_engagements WHERE post_id=$1", [postId]);
+    await pool.query("DELETE FROM editorial_posts WHERE author_id=$1", [author]);
+    await pool.query(
+      "DELETE FROM identity_adoptions WHERE from_user_id=ANY($1::text[]) OR to_user_id=ANY($1::text[])",
+      [[device, account]]);
+    for (const uid of [alice, bob, device, account]) {
+      await production.purgePersonalizationData(uid).catch(() => {});
+    }
+  });
+
+  const post = await production.createEditorialPost({
+    authorId: author, authorHandle: handle, kind: "user", moderationStatus: "visible",
+    body: "count me once", excerpt: "count me once",
+  });
+  postId = post.id;
+
+  // Repetition buys nothing — the primary key is the dedupe.
+  for (let i = 0; i < 5; i++) {
+    await production.setTransmissionEngagement({ postId, userId: alice, kind: "like", on: true });
+  }
+  let counts = (await production.engagementFor([postId], alice))[String(postId)];
+  assert.equal(counts.likes, 1, "five presses, one person");
+  assert.equal(counts.youLike, true, "bool_or reports this viewer's own state");
+
+  // Only another human moves it.
+  await production.setTransmissionEngagement({ postId, userId: bob, kind: "like", on: true });
+  assert.equal((await production.engagementFor([postId]))[String(postId)].likes, 2);
+  // An anonymous read gets true counts and no personal state (the
+  // $2::text IS NULL branch of the aggregate).
+  const anon = (await production.engagementFor([postId], null))[String(postId)];
+  assert.equal(anon.likes, 2);
+  assert.equal(anon.youLike, false);
+
+  // Withdrawal.
+  await production.setTransmissionEngagement({ postId, userId: bob, kind: "like", on: false });
+  assert.equal((await production.engagementFor([postId]))[String(postId)].likes, 1);
+
+  // The same person, before and after signing in, is ONE vote.
+  await production.setTransmissionEngagement({ postId, userId: device, kind: "like", on: true });
+  await production.setTransmissionEngagement({ postId, userId: account, kind: "like", on: true });
+  assert.equal((await production.engagementFor([postId]))[String(postId)].likes, 3,
+    "before adoption they look like two people");
+  await production.adoptAccountData(device, account);
+  const merged = (await production.engagementFor([postId], account))[String(postId)];
+  assert.equal(merged.likes, 2, "the collision collapses — one human, one vote");
+  assert.equal(merged.youLike, true, "and it belongs to the account");
+  const stranded = await pool.query(
+    "SELECT count(*)::int n FROM transmission_engagements WHERE post_id=$1 AND identity_hash=$2",
+    [postId, db.identityHash(device)]);
+  assert.equal(stranded.rows[0].n, 0, "no engagement left stranded under the device hash");
+
+  // Erasure removes this person from everyone's counters.
+  await production.purgePersonalizationData(alice);
+  assert.equal((await production.engagementFor([postId]))[String(postId)].likes, 1,
+    "the purge reaches the identity_hash ledger");
+
+  // A retired transmission refuses engagement (the INSERT…SELECT gate).
+  await production.deleteEditorialPost({ id: postId, authorId: author });
+  assert.equal(
+    await production.setTransmissionEngagement({ postId, userId: bob, kind: "save", on: true }),
+    null, "engagement cannot land on a transmission the wire will not show");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
