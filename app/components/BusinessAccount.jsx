@@ -1,0 +1,166 @@
+"use client";
+
+// app/components/BusinessAccount.jsx — the passport → business panel
+// (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown
+// is the server's truth: PASSPORT (the default every account holds),
+// UNDER REVIEW (a human is looking), BUSINESS (verified), or REJECTED
+// (with the reviewer's note, and the road back). The Shopify connection
+// today is reviewed evidence — the OAuth token exchange arrives with
+// the commerce pipeline and is labeled as such.
+
+import { useEffect, useState } from "react";
+import { getUid, authorizedFetch, postJSON } from "../../lib/client.js";
+import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../lib/business.js";
+
+const LAW = "a passport account becomes a BUSINESS account by verifying " +
+  "itself: your brand, your Shopify storefront, and your own website, " +
+  "reviewed by a human. only business accounts get a chance at one of " +
+  "THE WIRE's ten booths.";
+
+export default function BusinessAccountPanel() {
+  const [state, setState] = useState(null);   // server truth
+  const [brandName, setBrandName] = useState("");
+  const [shopifyDomain, setShopifyDomain] = useState("");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [statement, setStatement] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  function load() {
+    authorizedFetch("/api/business?user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        setState(d || { status: "passport", account: false });
+        if (d && d.brandName) {
+          setBrandName(d.brandName);
+          setShopifyDomain(d.shopifyDomain || "");
+          setWebsiteUrl(d.websiteUrl || "");
+          setStatement(d.statement || "");
+        }
+      })
+      .catch(() => setState({ status: "passport", account: false, unreachable: true }));
+  }
+
+  useEffect(() => {
+    load();
+    window.addEventListener("asilum:identity", load);
+    return () => window.removeEventListener("asilum:identity", load);
+  }, []);
+
+  function submit() {
+    setNote("");
+    if (!validBrandName(brandName)) { setNote("brand name must be 2–80 characters"); return; }
+    if (!normalizeShopifyDomain(shopifyDomain)) { setNote("shopify domain must look like your-shop.myshopify.com"); return; }
+    if (!/^https:\/\//i.test(websiteUrl.trim())) { setNote("website must be a public https url"); return; }
+    setBusy(true);
+    postJSON("/api/business", {
+      user: getUid(), brandName: brandName.trim(),
+      shopifyDomain: shopifyDomain.trim(), websiteUrl: websiteUrl.trim(),
+      statement: statement.trim() || undefined,
+    })
+      .then(async (res) => {
+        const d = await res.json().catch(() => null);
+        if (!res.ok) { setNote((d && (d.error || d.note)) || "the application could not be saved"); return; }
+        setNote(d.note || "submitted for review");
+        setState(d);
+      })
+      .catch(() => setNote("the server could not be reached — nothing was submitted"))
+      .finally(() => setBusy(false));
+  }
+
+  if (state === null) return <div className="empty">reading your account…</div>;
+
+  const badge =
+    state.status === "business" ? "BUSINESS ACCOUNT" :
+    state.status === "under_review" ? "PASSPORT — APPLICATION UNDER REVIEW" :
+    state.status === "rejected" ? "PASSPORT — APPLICATION REJECTED" :
+    "PASSPORT ACCOUNT";
+
+  return (
+    <section className="bizpanel" aria-label="account type">
+      <h3 className="statshead">ACCOUNT TYPE</h3>
+      <div className={"biztype" + (state.status === "business" ? " bizverified" : "")}>{badge}</div>
+      <p className="bizlaw">{LAW}</p>
+
+      {state.unreachable && (
+        <p className="pempty">the server could not be reached — your true account state is unknown right now.</p>
+      )}
+
+      {!state.account && !state.unreachable && (
+        <p className="pempty">
+          the upgrade rides on a signed-in account — sign in above, then
+          apply here.
+        </p>
+      )}
+
+      {state.account && state.status === "business" && (
+        <div className="bizfields">
+          <span className="cclbl">BRAND</span>
+          <span className="ccval">{state.brandName}</span>
+          <span className="cclbl">SHOPIFY STOREFRONT</span>
+          <span className="ccval">{state.shopifyDomain}</span>
+          <span className="cclbl">WEBSITE</span>
+          <span className="ccval">{state.websiteUrl}</span>
+          <p className="pempty">
+            verified {state.decidedAt ? new Date(state.decidedAt).toLocaleDateString() : ""} —
+            your booth chance is live on THE WIRE. the deeper Shopify
+            connection (inventory, tokens) arrives with the commerce
+            pipeline.
+          </p>
+        </div>
+      )}
+
+      {state.account && state.status === "under_review" && (
+        <div className="bizfields">
+          <span className="cclbl">BRAND</span>
+          <span className="ccval">{state.brandName}</span>
+          <span className="cclbl">SHOPIFY STOREFRONT</span>
+          <span className="ccval">{state.shopifyDomain}</span>
+          <span className="cclbl">WEBSITE</span>
+          <span className="ccval">{state.websiteUrl}</span>
+          <p className="pempty">
+            a human reviews every application — your account stays a
+            passport until the review lands. you can update the fields
+            below and resubmit while you wait.
+          </p>
+        </div>
+      )}
+
+      {state.account && state.status === "rejected" && (
+        <p className="bizreject">
+          the review said no{state.reviewNote ? ": “" + state.reviewNote + "”" : ""} —
+          fix what it names and apply again below.
+        </p>
+      )}
+
+      {state.account && state.status !== "business" && (
+        <div className="bizform">
+          <input
+            type="text" maxLength={80} placeholder="brand name"
+            value={brandName} onChange={(e) => setBrandName(e.target.value)}
+          />
+          <input
+            type="text" maxLength={120} placeholder="your-shop.myshopify.com"
+            value={shopifyDomain} onChange={(e) => setShopifyDomain(e.target.value)}
+          />
+          <input
+            type="url" maxLength={300} placeholder="https://your-own-site.com"
+            value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)}
+          />
+          <textarea
+            rows={3} maxLength={STATEMENT_MAX}
+            placeholder="who you are — the human reviewing this reads it"
+            value={statement} onChange={(e) => setStatement(e.target.value)}
+          />
+          <div className="bizrow">
+            <button className="btn" onClick={submit} disabled={busy}>
+              {busy ? "SUBMITTING…" : state.status === "rejected" ? "APPLY AGAIN" : state.status === "under_review" ? "UPDATE APPLICATION" : "SUBMIT FOR REVIEW"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {note && <p className="pempty">{note}</p>}
+    </section>
+  );
+}
