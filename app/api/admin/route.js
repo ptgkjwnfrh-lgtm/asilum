@@ -5,8 +5,10 @@
 // Auth: ADMIN_TOKEN env var; requests send "Authorization: Bearer <token>".
 // Unset token = admin disabled entirely (503, honest error).
 //
-// GET  ?area=overview|tags|mappings|sync-logs|search-logs|tickets|adapters
+// GET  ?area=overview|tags|mappings|sync-logs|search-logs|tickets|adapters|business
 // POST { action, ... }:
+//   business.approve { accountId, note? }   — raise passport → business
+//   business.reject  { accountId, note }    — note required; applicant reads it
 //   tag.add    { productId, tag, tagType?, confidence? }
 //   tag.delete { id }
 //   tag.merge  { from, to }
@@ -21,6 +23,7 @@ import {
   getProductTags, addProductTags, deleteProductTag, mergeProductTags,
   listSearchMappings, upsertSearchMapping, deleteSearchMapping,
   listSyncLogs,
+  listBusinessApplications, listVerifiedBusinesses, decideBusinessApplication,
 } from "../../../lib/db/production.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
 import { bearerToken, secureTokenEqual } from "../../../lib/security/request.js";
@@ -55,6 +58,13 @@ export async function GET(req) {
 
   try {
     if (area === "adapters") return NextResponse.json({ adapters: adapterStatuses() });
+    if (area === "business") {
+      // The booth review desk: pending applications + the current roster.
+      return NextResponse.json({
+        applications: await listBusinessApplications({ status: "under_review", limit: 100 }),
+        verified: await listVerifiedBusinesses(50),
+      });
+    }
     if (area === "mappings") return NextResponse.json({ mappings: await listSearchMappings() });
     if (area === "sync-logs") return NextResponse.json({ logs: await listSyncLogs() });
     if (area === "tags") {
@@ -120,6 +130,25 @@ export async function POST(req) {
           [body.productId, status]
         );
         return NextResponse.json({ moderated: r.rowCount });
+      }
+      case "business.approve":
+      case "business.reject": {
+        // The human decision the whole upgrade waits on. Attribution is
+        // the server-configured operator, never caller JSON; the linked
+        // verification case enforces evidence + CAS underneath.
+        const accountId = String(body.accountId || "").trim();
+        if (!accountId) return NextResponse.json({ error: "accountId required" }, { status: 400 });
+        const approve = body.action === "business.approve";
+        const note = body.note ? String(body.note).slice(0, 500) : null;
+        if (!approve && !note) {
+          return NextResponse.json({ error: "a rejection carries a note — the applicant reads it" }, { status: 400 });
+        }
+        try {
+          const row = await decideBusinessApplication({ accountId, approve, note, actor: adminActor() });
+          return NextResponse.json({ account: row });
+        } catch (error) {
+          return NextResponse.json({ error: String(error?.message || "decision failed") }, { status: 409 });
+        }
       }
       case "sync.run": {
         const { syncProducts } = await import("../../../lib/ingest/adapters/sync.js");

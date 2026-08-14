@@ -52,6 +52,7 @@ export default function CoverPage() {
 
   const pick = feed[0] || null;
   const film = feed.slice(1, 7);
+  const [booths, setBooths] = useState(null);
 
   function loadCoverWire() {
     fetchWire()
@@ -83,6 +84,10 @@ export default function CoverPage() {
       .then((r) => r.json())
       .then((s) => setSys(s))
       .catch(() => {});
+    fetch("/api/business?booths=1")
+      .then((r) => r.json())
+      .then((d) => setBooths(Array.isArray(d.booths) ? d.booths : []))
+      .catch(() => setBooths([]));
     authorizedFetch("/api/outfits?user=" + encodeURIComponent(user) + "&n=2")
       .then((r) => r.json())
       .then((d) => setLooks((d.outfits || []).slice(0, 2)))
@@ -197,16 +202,19 @@ export default function CoverPage() {
             account is a passport account that verified itself and connected
             its Shopify and its own site. nothing stands in.
           </div>
-          {[1, 2, 3].map((n) => (
-            <div className="cvhotrow" key={n}>
-              <span className="cvhotnum" aria-hidden="true">{String(n).padStart(2, "0")}</span>
-              <span className="cvboothttl">
-                BOOTH OPEN
-                <i>held for a verified independent brand</i>
-              </span>
-              <span className="cvhotstat">OPEN</span>
-            </div>
-          ))}
+          {[1, 2, 3].map((n) => {
+            const holder = booths ? booths[n - 1] : null;
+            return (
+              <div className="cvhotrow" key={n}>
+                <span className="cvhotnum" aria-hidden="true">{String(n).padStart(2, "0")}</span>
+                <span className="cvboothttl">
+                  {holder ? holder.brandName : "BOOTH OPEN"}
+                  <i>{holder ? "verified independent brand" : "held for a verified independent brand"}</i>
+                </span>
+                <span className="cvhotstat">{holder ? "HELD" : "OPEN"}</span>
+              </div>
+            );
+          })}
           <a className="cvlink cvmore" href="/hotlist">ALL TEN BOOTHS — THE WIRE →</a>
         </section>
 

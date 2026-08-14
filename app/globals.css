@@ -1345,6 +1345,23 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .boothbody b { display: block; font-family: var(--mich); font-size: 12px; letter-spacing: 0.14em; font-weight: 400; }
 .boothbody span { font-size: 10px; color: var(--grey); letter-spacing: 0.08em; }
 .boothtag { margin-left: auto; font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); flex: none; }
+/* booth holders' site links are EXTERNAL — quietest voice, outside the
+   teal rule like the external dispatches (the ladder wins) */
+.boothsite { color: var(--grey); }
+.boothsite:hover { color: var(--ink); }
+
+/* ---- the passport → business panel (PROFILE → ACCOUNT) ---- */
+.bizpanel { margin-top: 30px; max-width: 560px; }
+.biztype { font-family: var(--mich); font-size: 13px; letter-spacing: 0.14em; margin: 2px 0 6px; }
+.biztype.bizverified { color: var(--sig); text-shadow: var(--glow); }
+.bizlaw { font-size: 11px; color: var(--grey); line-height: 1.7; max-width: 56ch; margin: 0 0 12px; }
+.bizfields { margin: 6px 0 10px; }
+.bizfields .cclbl:first-child { margin-top: 0; }
+.bizreject { font-size: 12px; color: var(--red); text-shadow: var(--glow-r); max-width: 56ch; }
+.bizform { display: grid; gap: 10px; margin-top: 10px; }
+.bizform input, .bizform textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 7px 2px; font: inherit; font-size: 13px; outline: none; }
+.bizform input:focus, .bizform textarea:focus { border-bottom-color: var(--sig); }
+.bizrow { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
 
 /* EDITORIAL's field + gutters (owner order, Aug 13) — same zero-height
    magazine furniture, ladder-specific placements; 2 thick of 7 */
@@ -1816,7 +1833,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
-.whandle, .wperma, .wfocusback,
+.whandle, .wperma, .wfocusback, .bizapply,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);

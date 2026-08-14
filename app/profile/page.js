@@ -23,6 +23,7 @@ import {
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
 import {
@@ -211,6 +212,7 @@ export default function ProfilePage() {
       {tab === "account" && (
         <>
           <ProfileAccess />
+          <BusinessAccountPanel />
           <h3 className="statshead">FIND PEOPLE</h3>
           <div style={{ maxWidth: 420 }}>
             <UserSearch placeholder="search users to follow…" />

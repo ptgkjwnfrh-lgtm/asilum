@@ -70,6 +70,8 @@ export default function TheWirePage() {
   // ?post=<id> pins one transmission above the wire. undefined = no
   // permalink requested; null = looking it up; false = honestly absent.
   const [focus, setFocus] = useState(undefined);
+  // The booth roster — verified business accounts, server truth.
+  const [booths, setBooths] = useState(null);
 
   function loadWire() {
     fetchWire("user")
@@ -91,6 +93,10 @@ export default function TheWirePage() {
       setFocus(null);
       fetchPost(pid).then((p) => setFocus(p || false));
     }
+    fetch("/api/business?booths=1")
+      .then((r) => r.json())
+      .then((d) => setBooths(Array.isArray(d.booths) ? d.booths.slice(0, 10) : []))
+      .catch(() => setBooths([]));
   }, []);
 
   function publish() {
@@ -127,7 +133,11 @@ export default function TheWirePage() {
         </span>
       )}
       <span className="cvside cvsider elsider" aria-hidden="true">
-        10 BOOTHS · ALL OPEN
+        {booths === null
+          ? "10 BOOTHS"
+          : booths.length === 0
+            ? "10 BOOTHS · ALL OPEN"
+            : `10 BOOTHS · ${booths.length} HELD · ${10 - booths.length} OPEN`}
       </span>
 
       <header className="cthead">
@@ -136,7 +146,10 @@ export default function TheWirePage() {
           <div className="ctmeta">
             LIVE EDITION · {stamp}
             {posts !== null && (
-              <span>{posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"} · 10 BOOTHS OPEN</span>
+              <span>
+                {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"}
+                {booths !== null && ` · ${10 - booths.length} OF 10 BOOTHS OPEN`}
+              </span>
             )}
           </div>
         )}
@@ -259,21 +272,37 @@ export default function TheWirePage() {
           Shopify, and connecting its personal website — only business
           accounts get a chance at a booth. nothing stands in.
         </p>
-        {BOOTHS.map((n) => (
-          <div className="booth" key={n}>
-            <div className="elnum" aria-hidden="true">{String(n).padStart(2, "0")}</div>
-            <div className="boothbody">
-              <b>BOOTH OPEN</b>
-              <span>held for a verified independent brand</span>
+        {BOOTHS.map((n) => {
+          const holder = booths ? booths[n - 1] : null;
+          return (
+            <div className="booth" key={n}>
+              <div className="elnum" aria-hidden="true">{String(n).padStart(2, "0")}</div>
+              {holder ? (
+                <div className="boothbody">
+                  <b>{holder.brandName}</b>
+                  <span>
+                    verified independent brand ·{" "}
+                    <a className="boothsite" href={holder.websiteUrl} target="_blank" rel="noopener noreferrer">
+                      their site ↗
+                    </a>
+                  </span>
+                </div>
+              ) : (
+                <div className="boothbody">
+                  <b>BOOTH OPEN</b>
+                  <span>held for a verified independent brand</span>
+                </div>
+              )}
+              <span className="boothtag">{holder ? "VERIFIED BUSINESS" : "BUSINESS ACCOUNTS ONLY"}</span>
             </div>
-            <span className="boothtag">BUSINESS ACCOUNTS ONLY</span>
-          </div>
-        ))}
+          );
+        })}
         <div className="elsubmit">
           <span className="adstar" aria-hidden="true">*</span>
           <span>
-            RAISE YOUR PASSPORT TO BUSINESS — verification + Shopify + website
-            connection require the commerce pipeline. <em>coming soon</em>
+            RAISE YOUR PASSPORT TO BUSINESS — verify your brand, your Shopify
+            storefront, and your own site; a human reviews every application.{" "}
+            <a className="bizapply" href="/profile#access">APPLY ON YOUR ACCOUNT →</a>
           </span>
         </div>
       </section>
@@ -337,7 +366,8 @@ export default function TheWirePage() {
       <footer className="cvcolo" aria-label="colophon">
         *ASILUM — THE WIRE · {stamp}
         {posts !== null && <> · {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"}</>}
-        {" "}· 10 BOOTHS OPEN · {STORIES.length} EXTERNAL DISPATCHES · EVERY
+        {booths !== null && <> · {booths.length} OF 10 BOOTHS HELD</>}
+        {" "}· {STORIES.length} EXTERNAL DISPATCHES · EVERY
         VALUE ON THIS PAGE IS REAL STATE
       </footer>
     </div>

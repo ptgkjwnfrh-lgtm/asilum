@@ -101,10 +101,24 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     SLOTS held for independent Shopify-based brands. A PASSPORT account
     becomes a BUSINESS account by verifying itself, connecting its
     Shopify, and connecting its personal website; ONLY business
-    accounts get a chance at a booth. Until the commerce pipeline
-    exists every booth honestly reads OPEN — nothing stands in, and
-    the cover preview mirrors the same vacancy. The old
-    engagement-ranking rows are retired from this surface.
+    accounts get a chance at a booth. The old engagement-ranking rows
+    are retired from this surface.
+  - THE UPGRADE PROCESS (built Aug 13, same day): live end to end. A
+    signed-in account applies on PROFILE → ACCOUNT (brand name +
+    your-shop.myshopify.com + https website + statement); the
+    submission opens a REAL brand_cases verification case (Feature G
+    machinery — enforced status machine, https evidence, append-only
+    events, no machine path to business) and a HUMAN decides it via
+    the admin desk (area=business, business.approve / business.reject
+    — a rejection carries a note the applicant reads). Account state
+    lives in business_accounts (schema v26); booths fill in
+    verification order (first verified, first booth), holders show
+    brand + external site link (quiet voice, outside the teal rule),
+    open slots stay honestly OPEN, and every count (folio, gutter,
+    colophon, cover mirror) is the live roster. The Shopify OAuth
+    token exchange is the ONE part still gated on the commerce
+    pipeline's keys — today the storefront domain is reviewed
+    evidence, and every surface says so.
   - THE IDENTITY CHAIN (owner order, Aug 13): every byline is a link —
     your own to /profile, anyone else's to /u/[handle]; a server post's
     timestamp is its permalink (/hotlist?post=<id> pins the single
