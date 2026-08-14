@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 import {
   STORIES, fetchWire, fetchPost, addPost, editPost, deletePost, timeAgo, getProfileInfo,
+  fetchEngagement, toggleEngagement,
 } from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 
@@ -85,11 +86,32 @@ export default function TheWirePage() {
   const [editText, setEditText] = useState("");
   const [editCaption, setEditCaption] = useState("");
   const [confirmDel, setConfirmDel] = useState(null); // serverId armed to delete
+  // Real engagement counts, keyed by server id. {} = not read yet or the
+  // server could not be reached — the floor then shows NO counts rather
+  // than zeros it cannot stand behind.
+  const [engagement, setEngagement] = useState({});
 
   function loadWire() {
     fetchWire("user")
-      .then((w) => { setPosts(w.posts); setPostsLive(w.live); })
+      .then((w) => {
+        setPosts(w.posts);
+        setPostsLive(w.live);
+        const ids = w.posts.map((p) => p.serverId).filter((v) => v != null);
+        if (ids.length) fetchEngagement(ids).then((e) => setEngagement((prev) => ({ ...prev, ...e })));
+      })
       .catch(() => { setPosts([]); setPostsLive(false); });
+  }
+
+  // One person's like/save. The server's counts replace ours — we never
+  // increment a number locally, because the counter is people, not clicks,
+  // and only the ledger knows whether this person was already counted.
+  function engage(p, kind) {
+    const now = engagement[String(p.serverId)];
+    const on = !(kind === "like" ? now?.youLike : now?.youSave);
+    toggleEngagement(p.serverId, kind, on).then((r) => {
+      if (r.ok) setEngagement((prev) => ({ ...prev, [String(p.serverId)]: r.counts }));
+      else setWireNote(r.error || "the wire could not be reached");
+    });
   }
 
   function loadMine() {
@@ -343,6 +365,31 @@ export default function TheWirePage() {
                   {confirmDel === p.serverId
                     ? <button className="wctl warn" onClick={() => doDelete(p)}>SURE? DELETE</button>
                     : <button className="wctl" onClick={() => setConfirmDel(p.serverId)}>DELETE</button>}
+                </span>
+              )}
+              {/* Real counters or none. A count renders only once the ledger
+                  has answered for this transmission; a number nobody has
+                  earned yet stays silent rather than printing 0. */}
+              {p.serverId != null && engagement[String(p.serverId)] && (
+                <span className="wengage">
+                  <button
+                    className={"weng" + (engagement[String(p.serverId)].youLike ? " on" : "")}
+                    onClick={() => engage(p, "like")}
+                  >
+                    LIKE
+                    {engagement[String(p.serverId)].likes > 0 && (
+                      <b>{engagement[String(p.serverId)].likes}</b>
+                    )}
+                  </button>
+                  <button
+                    className={"weng" + (engagement[String(p.serverId)].youSave ? " on" : "")}
+                    onClick={() => engage(p, "save")}
+                  >
+                    SAVE
+                    {engagement[String(p.serverId)].saves > 0 && (
+                      <b>{engagement[String(p.serverId)].saves}</b>
+                    )}
+                  </button>
                 </span>
               )}
             </div>
