@@ -3,13 +3,17 @@
 // Not a heavy magazine backend: title/excerpt/image/link/tags/author, able to
 // reference designers and products so editorial can feed discovery.
 //
-// GET  ?kind=user|asilum|article&limit= → visible posts, newest first
-// POST { user, handle, text, title?, imageUrl?, externalUrl?, tags?, designerRefs?, productRefs? }
+// GET    ?kind=user|asilum|article&limit= → visible posts, newest first
+//        (?id= is the permalink read — a miss answers 404, honestly)
+// POST   { user, handle, text, title?, imageUrl?, externalUrl?, tags?, designerRefs?, productRefs? }
+// PATCH  { user, id, text, title? } — author-verified edit, stamps edited_at
+// DELETE ?id=&user= — author-verified soft delete (the permalink dies with it)
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 import {
-  createEditorialPost, createModerationTask, getProfileRoom, listEditorialPosts,
+  createEditorialPost, createModerationTask, deleteEditorialPost, getProfileRoom,
+  listEditorialPosts, updateEditorialPost,
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { sanitizeStatement, screenStatement } from "../../../lib/profile/rooms.js";
@@ -71,6 +75,12 @@ export async function GET(req) {
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
     const posts = (await listEditorialPosts({ kind, limit, handle, id, authorId })).map(({ authorId: _a, ...post }) => post);
+    // The permalink read answers 404 when the transmission is not on the
+    // wire — deleted, held for review, or never published. A dead link
+    // that pretends to be a page would be a lie (owner directive, Aug 14).
+    if (id != null && posts.length === 0) {
+      return NextResponse.json({ posts: [] }, { status: 404 });
+    }
     return NextResponse.json({ posts });
   } catch {
     return NextResponse.json({ posts: [] });
@@ -125,5 +135,74 @@ export async function POST(req) {
     });
   } catch {
     return NextResponse.json({ error: "post failed" }, { status: 500 });
+  }
+}
+
+// The lifecycle verbs (owner directive, HANDOVER-2026-08-14 backlog 1).
+// Both resolve the caller from proof, then let the database's WHERE
+// author_id clause be the whole authorization story: a stranger's post and
+// a missing post answer the same 404, so the API never confirms whose a
+// transmission is. Edits pass the SAME sanitize + screen as a fresh post —
+// a flagged edit parks the transmission under review instead of publishing
+// it, and the author is told so in the same words POST uses.
+
+export async function PATCH(req) {
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const rawId = String(body.id ?? "");
+  if (!/^\d{1,18}$/.test(rawId)) return NextResponse.json({ error: "bad post id" }, { status: 400 });
+  let text;
+  try {
+    text = sanitizeStatement(String(body.text || "").trim().slice(0, POST_MAX), POST_MAX);
+  } catch {
+    return NextResponse.json({ error: "text could not be sanitized" }, { status: 400 });
+  }
+  if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });
+  // Edits share the posting quota — rewriting the wire is writing to it.
+  const quota = await consumeRateLimit({ scope: "editorial", subject: user, limit: 60, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  try {
+    const flagged = screenStatement(text);
+    const post = await updateEditorialPost({
+      id: rawId, authorId: user,
+      title: body.title ? String(body.title).slice(0, 200) : null,
+      body: text, excerpt: text.slice(0, 200),
+      moderationStatus: flagged.length ? "under_review" : "visible",
+    });
+    if (!post) return NextResponse.json({ error: "transmission not found" }, { status: 404 });
+    if (flagged.length) {
+      await createModerationTask({
+        kind: "editorial-content", subjectType: "editorial_post", subjectId: String(post.id),
+        payload: { flags: flagged, excerpt: text.slice(0, 160), edit: true }, priority: "high",
+      });
+    }
+    return NextResponse.json({
+      id: post.id, editedAt: post.editedAt ?? null,
+      ...(flagged.length
+        ? { held: true, note: "your edit is saved and paused for a human review" }
+        : {}),
+    });
+  } catch {
+    return NextResponse.json({ error: "edit failed" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  const { searchParams } = new URL(req.url);
+  const user = await resolveRequestUser(req, String(searchParams.get("user") || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const rawId = String(searchParams.get("id") || "");
+  if (!/^\d{1,18}$/.test(rawId)) return NextResponse.json({ error: "bad post id" }, { status: 400 });
+  const quota = await consumeRateLimit({ scope: "editorial", subject: user, limit: 60, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  try {
+    const gone = await deleteEditorialPost({ id: rawId, authorId: user });
+    if (!gone) return NextResponse.json({ error: "transmission not found" }, { status: 404 });
+    return NextResponse.json({ ok: true, id: rawId });
+  } catch {
+    return NextResponse.json({ error: "delete failed" }, { status: 500 });
   }
 }

@@ -34,6 +34,7 @@ function WirePosts({ posts, live }) {
           <span className="fposthandle">
             {p.handle} ·{" "}
             <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+            {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
           </span>
         </div>
       ))}

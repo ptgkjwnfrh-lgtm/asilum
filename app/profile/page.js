@@ -199,6 +199,7 @@ export default function ProfilePage() {
                 {p.serverId != null
                   ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
                   : <>{timeAgo(p.at)} · saved on this device — pending or held</>}
+                {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
               </span>
             </div>
           ))}
