@@ -49,10 +49,28 @@ export async function GET(req) {
   }
   const kind = requestedKind;
   const limit = Math.max(1, Math.min(120, parseInt(searchParams.get("limit"), 10) || 60));
+  // The identity chain (owner order, Aug 13): ?handle= reads a poster's
+  // visible posts, ?id= reads one post (the permalink), ?mine=1 reads the
+  // verified caller's own visible posts — filtered by author_id on the
+  // server, which the response still never exposes. Visibility rules are
+  // the same on every path.
+  const handle = (searchParams.get("handle") || "").trim().slice(0, 80) || null;
+  const rawId = searchParams.get("id");
+  let id = null;
+  if (rawId != null && rawId !== "") {
+    if (!/^\d{1,18}$/.test(rawId)) return NextResponse.json({ error: "bad post id" }, { status: 400 });
+    id = rawId;
+  }
+  let authorId = null;
+  if (searchParams.get("mine") === "1") {
+    const user = await resolveRequestUser(req, String(searchParams.get("user") || "")).catch(() => null);
+    if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+    authorId = user;
+  }
   const quota = await consumeRateLimit({ scope: "editorial-read", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
-    const posts = (await listEditorialPosts({ kind, limit })).map(({ authorId, ...post }) => post);
+    const posts = (await listEditorialPosts({ kind, limit, handle, id, authorId })).map(({ authorId: _a, ...post }) => post);
     return NextResponse.json({ posts });
   } catch {
     return NextResponse.json({ posts: [] });

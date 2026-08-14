@@ -24,8 +24,29 @@
 
 import { useEffect, useState } from "react";
 import { getUid, postJSON } from "../../lib/client.js";
-import { STORIES, fetchWire, addPost, timeAgo, getProfileInfo } from "../../lib/social.js";
+import { STORIES, fetchWire, fetchPost, addPost, timeAgo, getProfileInfo } from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
+
+// The identity chain (owner order, Aug 13): every byline is a link —
+// your own to /profile, anyone else's to their /u/[handle] page — and a
+// server post's timestamp is its permalink (?post=<id> pins it here).
+// Device-only copies (just posted, or held) have no server id yet, so
+// their timestamps stay plain — a permalink that only works for its
+// author would be a lie.
+function PostByline({ p }) {
+  return (
+    <span className="fposthandle">
+      {p.mine
+        ? <a className="whandle" href="/profile">{p.handle}</a>
+        : <a className="whandle" href={"/u/" + encodeURIComponent(p.handle)}>{p.handle}</a>}
+      {p.mine ? <i className="cmine">you</i> : null}
+      {" · "}
+      {p.serverId != null
+        ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+        : timeAgo(p.at)}
+    </span>
+  );
+}
 
 // The wire's hairline field (magazine treatment, Aug 13): pinned to the
 // page's first stretch, hand-placed and deterministic.
@@ -46,6 +67,9 @@ export default function TheWirePage() {
   const [caption, setCaption] = useState("");
   const [text, setText] = useState("");
   const [wireNote, setWireNote] = useState("");
+  // ?post=<id> pins one transmission above the wire. undefined = no
+  // permalink requested; null = looking it up; false = honestly absent.
+  const [focus, setFocus] = useState(undefined);
 
   function loadWire() {
     fetchWire("user")
@@ -61,6 +85,12 @@ export default function TheWirePage() {
     fetchWire("asilum")
       .then((w) => { setHouse(w.posts); setHouseLive(w.live); })
       .catch(() => { setHouse([]); setHouseLive(false); });
+    const sp = new URLSearchParams(window.location.search);
+    const pid = sp.get("post");
+    if (pid && /^\d{1,18}$/.test(pid)) {
+      setFocus(null);
+      fetchPost(pid).then((p) => setFocus(p || false));
+    }
   }, []);
 
   function publish() {
@@ -115,6 +145,27 @@ export default function TheWirePage() {
         every post lives here — transmissions, and in time images and video.
         under the floor, the hotlist&apos;s ten booths.
       </p>
+
+      {/* ---- Permalink focus: ?post=<id> pins one transmission ---- */}
+      {focus !== undefined && (
+        <section className="wfocus" aria-label="pinned transmission">
+          <a className="wfocusback" href="/hotlist">← BACK TO THE FULL WIRE</a>
+          {focus === null && <div className="empty">pulling the transmission…</div>}
+          {focus === false && (
+            <div className="empty">
+              this transmission is not on the wire — it may be held for
+              review, or it may be gone.
+            </div>
+          )}
+          {focus && (
+            <div className="fpost wpost wfocuspost">
+              {focus.title ? <div className="wposthead">{focus.title}</div> : null}
+              <p className="fposttext">{focus.text}</p>
+              <PostByline p={focus} />
+            </div>
+          )}
+        </section>
+      )}
 
       {/* ---- THE COMPOSER — three ways of posting (owner law, Aug 13) ---- */}
       <section className="wcomposer" aria-label="post to the wire">
@@ -188,9 +239,7 @@ export default function TheWirePage() {
           <div className="fpost wpost" key={p.id}>
             {p.title ? <div className="wposthead">{p.title}</div> : null}
             <p className="fposttext">{p.text}</p>
-            <span className="fposthandle">
-              {p.handle}{p.mine ? <i className="cmine">you</i> : null} · {timeAgo(p.at)}
-            </span>
+            <PostByline p={p} />
           </div>
         ))}
       </section>

@@ -1,15 +1,45 @@
 "use client";
 
-// app/u/[handle]/page.js — another user's account page.
-// Banner, avatar, identity, follow button, their posts, and pieces in their
-// aesthetic. Users are placeholder accounts until real ones exist.
+// app/u/[handle]/page.js — a poster's public page (the identity chain,
+// owner order Aug 13: every wire byline lands somewhere REAL).
+// Resolution order, all server truth:
+//   1. A published ROOM at this handle → the room, with the poster's
+//      visible transmissions beneath it.
+//   2. No room but visible transmissions exist → an honest reader page:
+//      their posts, plus "this reader hasn't published a room."
+//   3. Neither → NOT FOUND.
+// The "@"-prefixed MOCK_USERS demo layer keeps its old view (demo
+// surfaces only reach it when demo social is enabled); claimed handles
+// never start with "@".
 
 import { use, useEffect, useState } from "react";
 import { thumbFor, hashStr, aspectFor } from "../../../lib/client.js";
-import { MOCK_USERS, listPosts, postStats, timeAgo } from "../../../lib/social.js";
+import { MOCK_USERS, listPosts, postStats, timeAgo, fetchPostsByHandle } from "../../../lib/social.js";
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
 import { PublicRoom } from "../../components/ProfileRoom.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
+
+// The poster's transmissions, wire-cut: caption headers, permalinked
+// timestamps (server posts always have server ids here).
+function WirePosts({ posts, live }) {
+  return (
+    <>
+      {!live && (
+        <div className="empty">the wire could not be reached — their transmissions are unavailable right now.</div>
+      )}
+      {posts.map((p) => (
+        <div className="fpost wpost" key={p.id}>
+          {p.title ? <div className="wposthead">{p.title}</div> : null}
+          <p className="fposttext">{p.text}</p>
+          <span className="fposthandle">
+            {p.handle} ·{" "}
+            <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+          </span>
+        </div>
+      ))}
+    </>
+  );
+}
 
 export default function UserPage({ params }) {
   const fit = useFitBrain();
@@ -19,9 +49,7 @@ export default function UserPage({ params }) {
   const user = MOCK_USERS.find((u) => u.handle === handle);
   const [pieces, setPieces] = useState([]);
   const [posts, setPosts] = useState([]);
-  // Real claimed rooms (Feature E) take precedence over the demo layer.
-  // Claimed handles never start with "@", mock handles always do — the
-  // fetch is skipped where it cannot match.
+  const [wire, setWire] = useState(null);       // { posts, live } for real handles
   const [room, setRoom] = useState(null);
   const [roomChecked, setRoomChecked] = useState(!handle || handle.startsWith("@"));
 
@@ -33,6 +61,9 @@ export default function UserPage({ params }) {
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => { if (!stale) { setRoom(d?.room || null); setRoomChecked(true); } })
         .catch(() => { if (!stale) setRoomChecked(true); });
+      fetchPostsByHandle(handle)
+        .then((w) => { if (!stale) setWire(w); })
+        .catch(() => { if (!stale) setWire({ posts: [], live: false }); });
     }
     if (user) {
       fetch("/api/discover?tag=" + encodeURIComponent(user.tags[0]) + "&limit=8")
@@ -46,11 +77,37 @@ export default function UserPage({ params }) {
   if (room) {
     return (
       <div className="wrap">
+        <div className="locline"><a href="/hotlist">← THE WIRE</a><span>/ {handle}</span></div>
         <PublicRoom room={room} handle={handle} />
+        <h3 className="statshead">ON THE WIRE</h3>
+        {wire === null && <div className="empty">pulling their transmissions…</div>}
+        {wire && wire.live && wire.posts.length === 0 && (
+          <div className="empty">no transmissions yet.</div>
+        )}
+        {wire && <WirePosts posts={wire.posts} live={wire.live} />}
       </div>
     );
   }
   if (!roomChecked) return <div className="wrap"><div className="empty">…</div></div>;
+
+  // No published room — but a real poster still gets a real page.
+  if (!user && !handle.startsWith("@")) {
+    if (wire === null) return <div className="wrap"><div className="empty">…</div></div>;
+    if (wire.posts.length > 0 || !wire.live) {
+      return (
+        <div className="wrap">
+          <div className="locline"><a href="/hotlist">← THE WIRE</a><span>/ {handle}</span></div>
+          <h1 className="headline"><span className="red">*</span>{handle}</h1>
+          <p className="deck">
+            this reader hasn&apos;t published a room — only their wire record
+            speaks for them.
+          </p>
+          <h3 className="statshead">ON THE WIRE</h3>
+          <WirePosts posts={wire.posts} live={wire.live} />
+        </div>
+      );
+    }
+  }
 
   if (!user) {
     return (

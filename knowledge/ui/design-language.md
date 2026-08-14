@@ -105,6 +105,17 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     exists every booth honestly reads OPEN — nothing stands in, and
     the cover preview mirrors the same vacancy. The old
     engagement-ranking rows are retired from this surface.
+  - THE IDENTITY CHAIN (owner order, Aug 13): every byline is a link —
+    your own to /profile, anyone else's to /u/[handle]; a server post's
+    timestamp is its permalink (/hotlist?post=<id> pins the single
+    transmission with a back link; device-only copies get no permalink
+    until the server holds them). /u/[handle] resolves on server truth:
+    published ROOM → the room + their transmissions; no room but posts →
+    an honest reader page ("hasn't published a room"); neither → NOT
+    FOUND. The profile's POSTS tab reads the identity's durable server
+    posts (?mine=1, filtered by author_id server-side, never exposed)
+    merged with device copies the server doesn't show yet — labeled
+    "pending or held", never dressed as published.
   - Page order: masthead + live folio → composer → the floor (every
     post, caption headers on transmissions, no fabricated counters) →
     WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
