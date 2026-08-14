@@ -23,6 +23,7 @@ import {
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
@@ -193,7 +194,7 @@ export default function ProfilePage() {
           {posts.map((p) => (
             <div className="fpost wpost" key={p.id}>
               {p.title ? <div className="wposthead">{p.title}</div> : null}
-              <p className="fposttext">{p.text}</p>
+              <TransmissionText text={p.text} />
               <span className="fposthandle">
                 {p.handle} ·{" "}
                 {p.serverId != null

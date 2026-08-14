@@ -1358,6 +1358,11 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    transmission nobody has touched shows the word alone, never a printed 0.
    Engaged state is the red signal (the house's "this is yours" voice, as
    on favourites); the resting state rides the teal clickable rule. */
+/* hashtags + mentions inside a transmission (owner directive, Aug 14).
+   They are clickable words in running text, so they take the teal rule
+   and nothing else — no chips, no boxes, no weight change. The text
+   around them must stay the author's own voice. */
+.wtag, .wmention { text-decoration: none; }
 .wengage { display: inline-flex; gap: 14px; margin-left: 12px; vertical-align: baseline; }
 .weng { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--mich); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
 .weng b { margin-left: 5px; font-weight: 800; }
@@ -1878,7 +1883,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
-.whandle, .wperma, .wfocusback, .bizapply, .wctl, .weng,
+.whandle, .wperma, .wfocusback, .bizapply, .wctl, .weng, .wtag, .wmention,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);

@@ -29,6 +29,7 @@ import {
   fetchEngagement, toggleEngagement,
 } from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
+import TransmissionText from "../components/TransmissionText.jsx";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
 // your own to /profile, anyone else's to their /u/[handle] page — and a
@@ -250,7 +251,7 @@ export default function TheWirePage() {
           {focus && (
             <div className="fpost wpost wfocuspost">
               {focus.title ? <div className="wposthead">{focus.title}</div> : null}
-              <p className="fposttext">{focus.text}</p>
+              <TransmissionText text={focus.text} />
               <PostByline p={focus} />
             </div>
           )}
@@ -355,7 +356,7 @@ export default function TheWirePage() {
               ) : (
                 <>
                   {p.title ? <div className="wposthead">{p.title}</div> : null}
-                  <p className="fposttext">{p.text}</p>
+                  <TransmissionText text={p.text} />
                 </>
               )}
               <PostByline p={p} />

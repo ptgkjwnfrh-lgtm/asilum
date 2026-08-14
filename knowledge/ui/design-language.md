@@ -167,6 +167,29 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     transmission the wire will not show (retired, held, absent), with
     the same 404 the lifecycle verbs answer — it never reveals whether
     a hidden transmission exists.
+  - HASHTAGS + @MENTIONS (owner directive, Aug 14 — backlog 3 of
+    HANDOVER-2026-08-14): every surface that prints a transmission
+    renders it through ONE component (TransmissionText), so a tag
+    behaves the same on the floor, the permalink, the cover wire, the
+    profile's POSTS tab and /u/[handle]. Parsing happens AFTER the
+    sanitizer (never before — the sanitizer rewrites the string, so
+    offsets taken from raw text land in the wrong places) and only
+    SPLITS it: concatenating the rendered segments reproduces the
+    stored text exactly, because a renderer that drops a character is
+    rewriting someone's transmission. #tag hands off to search
+    (/discover?q=, lowercased) and keeps the author's capitalization on
+    screen; @mention lands on /u/<handle>, which answers NOT FOUND
+    honestly when nobody holds it. A ref must sit at a word boundary
+    (C#, emails and url anchors are never refs) and a mention is linked
+    only if the handle COULD exist — RESERVED_HANDLES stay plain text,
+    since linking one promises a page that can never load. Refs are
+    clickable words in running text: the teal rule and nothing else —
+    no chips, no boxes, no weight change. Extracted hashtags are stored
+    on the row (tags jsonb) and RE-extracted on edit, so a deleted tag
+    really leaves; mentions are not stored, because nothing reads them
+    yet. NOTE: the handle vocabulary lives in lib/profile/handles.js —
+    rooms.js reaches the database, so a client import of it ships `pg`
+    to the browser and fails the build.
   - Page order: masthead + live folio → composer → the floor (every
     post, caption headers on transmissions, no fabricated counters) →
     WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house

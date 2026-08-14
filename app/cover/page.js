@@ -20,6 +20,7 @@ import {
   STORIES, fetchWire, addPost, timeAgo, getProfileInfo, sourceFor,
 } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
+import TransmissionText from "../components/TransmissionText.jsx";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
@@ -281,7 +282,7 @@ export default function CoverPage() {
           {wireNote && <div className="pempty">{wireNote}</div>}
           {(posts || []).slice(0, 4).map((p, i) => (
             <div className={"cvpost" + (i === 0 ? " cvlead" : "")} key={p.id}>
-              <p className="cvposttext">{p.text}</p>
+              <TransmissionText text={p.text} className="cvposttext" />
               <span className="cvposthandle">
                 {/* bylines are links (owner order, Aug 13): yours home,
                     others to their page; server timestamps permalink */}
