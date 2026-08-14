@@ -161,6 +161,29 @@ export default function AccountSignup() {
     setBusy(false);
   }
 
+  // Forgotten password (owner directive, Aug 14 — backlog 7). The reply is
+  // deliberately the SAME whether or not that address holds an account:
+  // Supabase does not confirm it here, and neither do we. Anything else
+  // turns this box into an account-enumeration oracle.
+  async function sendReset() {
+    const address = validate(false);
+    if (!address || busy) return;
+    setBusy(true);
+    setNote("");
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.resetPasswordForEmail(address, {
+        redirectTo: window.location.origin + "/profile?reset=1",
+      });
+      setNote(error
+        ? "could not send the reset — " + error.message
+        : "if that address holds an account, a reset link is on its way — open it and you can set a new password");
+    } catch {
+      setNote("could not reach the account service — try again");
+    }
+    setBusy(false);
+  }
+
   async function sendMagicLink() {
     const address = validate(false);
     if (!address || busy) return;
@@ -273,6 +296,13 @@ export default function AccountSignup() {
               <button className="btn ghost" disabled={busy} onClick={sendMagicLink}>
                 EMAIL ME A MAGIC LINK
               </button>
+              {/* only offered where it makes sense — there is nothing to
+                  reset while opening a new account */}
+              {creating ? null : (
+                <button className="btn ghost" disabled={busy} onClick={sendReset}>
+                  FORGOT PASSWORD
+                </button>
+              )}
             </div>
 
             {note ? <div className="acctline accountnotice signupnote">{note}</div> : null}
