@@ -190,6 +190,24 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
     yet. NOTE: the handle vocabulary lives in lib/profile/handles.js —
     rooms.js reaches the database, so a client import of it ships `pg`
     to the browser and fails the build.
+- THE DESK (/admin — owner directive, Aug 14, backlog 4 of
+  HANDOVER-2026-08-14) is the operator surface for /api/admin, which had
+  been complete for weeks with no way to reach it (a business
+  application could only be decided with curl). It wears the SETTINGS
+  RACK's own vocabulary — .rkmod/.rkhead/.rkrow/.rkled, numbered
+  modules, engraved labels — reused rather than reinvented; only the
+  panel switcher (.desknav) and the wider inputs are new. Four panels:
+  01 BOOTH APPLICATIONS (approve/reject; a rejection cannot be sent
+  without the note the applicant reads), 02 MODERATION QUEUE (resolve /
+  dismiss, recorded under the server-configured operator name), 03 BRAND
+  CASES (read-only — the ledger moves through its own enforced
+  transitions), 04 SUBSTRATE (row counts + every gated source naming the
+  exact env vars it waits on). GATE: ADMIN_TOKEN is pasted at the desk
+  and held in sessionStorage ONLY — never localStorage, never a cookie,
+  never the URL; it dies with the tab and LOCK DESK clears it now. The
+  permission model is unchanged: the server decides every request, a bad
+  token relocks the desk, and an unset ADMIN_TOKEN leaves it dark and
+  says so. /admin is disallowed in robots.js (keep that list in step).
   - Page order: masthead + live folio → composer → the floor (every
     post, caption headers on transmissions, no fabricated counters) →
     WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
