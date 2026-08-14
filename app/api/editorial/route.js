@@ -17,6 +17,7 @@ import {
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { sanitizeStatement, screenStatement } from "../../../lib/profile/rooms.js";
+import { extractRefs } from "../../../lib/wire/refs.js";
 import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
@@ -28,6 +29,20 @@ import { requestSubject } from "../../../lib/security/request.js";
 // arrive with the media pipeline — this route stays text-only until
 // storage exists, honestly.
 const POST_MAX = 5000;
+
+// Caller-supplied tags + hashtags parsed out of the transmission, deduped
+// and capped. Both are lowercased so "#Archival" and "#archival" are the
+// same tag on the row and hand off to the same search.
+function mergeTags(supplied, extracted) {
+  const out = [];
+  const push = (raw) => {
+    const tag = String(raw ?? "").trim().toLowerCase().slice(0, 60);
+    if (tag && !out.includes(tag) && out.length < 12) out.push(tag);
+  };
+  if (Array.isArray(supplied)) supplied.slice(0, 12).forEach(push);
+  extracted.forEach(push);
+  return out;
+}
 
 // The byline is server truth, never caller input: a published room handle
 // when the account has one, otherwise a stable per-identity reader tag.
@@ -117,7 +132,14 @@ export async function POST(req) {
       excerpt: text.slice(0, 200),
       imageUrl: safeImageUrl(body.imageUrl),
       externalUrl: safeExternalUrl(body.externalUrl),
-      tags: Array.isArray(body.tags) ? body.tags.slice(0, 12).map((v) => String(v).slice(0, 60)) : [],
+      // Hashtags are extracted from the SANITIZED text (owner directive,
+      // Aug 14: parse after the sanitizer, never before) and stored on the
+      // row. A caller-supplied tags array still rides along — the two are
+      // merged, deduped, and capped. Mentions are not stored: they render
+      // as links from the text itself, and no consumer (notifications)
+      // exists yet, so keeping a list of who someone talked about would be
+      // collecting data nothing reads.
+      tags: mergeTags(body.tags, extractRefs(text).hashtags),
       designerRefs: Array.isArray(body.designerRefs) ? body.designerRefs.slice(0, 12).map((v) => String(v).slice(0, 160)) : [],
       productRefs: Array.isArray(body.productRefs) ? body.productRefs.slice(0, 24).map((v) => String(v).slice(0, 80)) : [],
     });
@@ -170,6 +192,10 @@ export async function PATCH(req) {
       id: rawId, authorId: user,
       title: body.title ? String(body.title).slice(0, 200) : null,
       body: text, excerpt: text.slice(0, 200),
+      // Re-extracted from the edited text: a tag the author removed must
+      // stop being on the row, or the transmission would keep answering a
+      // search for words it no longer contains.
+      tags: mergeTags(body.tags, extractRefs(text).hashtags),
       moderationStatus: flagged.length ? "under_review" : "visible",
     });
     if (!post) return NextResponse.json({ error: "transmission not found" }, { status: 404 });

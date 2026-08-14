@@ -16,6 +16,7 @@ import { use, useEffect, useState } from "react";
 import { thumbFor, hashStr, aspectFor } from "../../../lib/client.js";
 import { MOCK_USERS, listPosts, postStats, timeAgo, fetchPostsByHandle } from "../../../lib/social.js";
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
+import TransmissionText from "../../components/TransmissionText.jsx";
 import { PublicRoom } from "../../components/ProfileRoom.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
 
@@ -30,7 +31,7 @@ function WirePosts({ posts, live }) {
       {posts.map((p) => (
         <div className="fpost wpost" key={p.id}>
           {p.title ? <div className="wposthead">{p.title}</div> : null}
-          <p className="fposttext">{p.text}</p>
+          <TransmissionText text={p.text} />
           <span className="fposthandle">
             {p.handle} ·{" "}
             <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
