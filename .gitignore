@@ -145,3 +145,9 @@ vite.config.ts.timestamp-*
 # Integrated brain-upgrade snapshot — already ported into the app (stylist, memory,
 # ebay adapter, BrainViz, lexicon); keep locally if you like, not in the repo.
 asilum-brain-repo.zip
+
+# Database dumps — never commit a backup (real data, real identities).
+# See docs/BACKUP-AND-RESTORE.md; keep these off the laptop, not in git.
+backups/
+*.dump
+*.manifest.json
