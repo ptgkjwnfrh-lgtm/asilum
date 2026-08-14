@@ -118,11 +118,26 @@ export default function UploadPage() {
     canvas.height = Math.max(1, Math.round(bmp.height * Math.min(1, scale)));
     const ctx = canvas.getContext("2d");
     ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    const pxW = Math.min(48, canvas.width);
-    const px = ctx.getImageData(0, 0, pxW, Math.min(48, canvas.height)).data;
     const url = canvas.toDataURL("image/jpeg", 0.72);
+
+    // WHAT WAS WRONG (audit resume, Aug 14). The palette was read as
+    // getImageData(0, 0, 48, 48) from THIS ~340px canvas — the top-left
+    // 48×48 corner, not a downsample. On a 1600×1200 photo that is about
+    // 2.7% of the image, always the same corner: a black coat on a white
+    // backdrop trained the brain on the backdrop, and /upload then told
+    // the user "palette v0 saw white". A crop is not a sample.
+    // /board's pixelsFrom() always did this correctly — it sizes the
+    // canvas to 48×48 FIRST so drawImage scales the whole image into it.
+    // Same shape here, on its own canvas so the thumbnail keeps its size.
+    const S = 48;
+    const pcan = document.createElement("canvas");
+    pcan.width = S; pcan.height = S;
+    const pctx = pcan.getContext("2d");
+    pctx.drawImage(bmp, 0, 0, S, S);
+    const px = pctx.getImageData(0, 0, S, S).data;
+
     if (bmp.close) bmp.close();
-    return { url, px, pxW };
+    return { url, px, pxW: S };
   }
   async function ingestFiles(fileList) {
     const files = [...(fileList || [])].filter((f) => /^image\//.test(f.type || ""));
