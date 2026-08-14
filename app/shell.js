@@ -388,8 +388,10 @@ export default function Shell({ children }) {
               BAG ({bag.length})
             </button>
             {authUser ? (
-              <a className="tbtn" href="/profile#access" title={authUser.email || authUser.id}>
-                ACCOUNT
+              // Signed in: the corner button becomes the profile circle
+              // (owner order, Aug 13) — initial from the account email.
+              <a className="tbtn tbav" href="/profile" title={authUser.email || authUser.id} aria-label="your profile — signed in">
+                <span className="tbavatar">{String(authUser.email || "•").slice(0, 1).toUpperCase()}</span>
               </a>
             ) : (
               <button
