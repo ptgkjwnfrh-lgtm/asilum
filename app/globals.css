@@ -1867,6 +1867,23 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .rkdesc { grid-column: 1; font-size: 11px; color: var(--grey); max-width: 62ch; line-height: 1.55; }
 .rkctl { grid-row: 1 / 3; grid-column: 2; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .rkmono { font-family: var(--osd); font-size: 12.5px; color: var(--grey); letter-spacing: 0.05em; word-break: break-all; }
+
+/* ---- THE DESK (operator surface, Aug 14) — the settings rack's own
+   vocabulary, reused rather than reinvented: numbered modules, engraved
+   labels, real LEDs. Only the panel switcher and the wider inputs are
+   new here. ---- */
+.desknav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 22px; }
+.deskout { margin-left: auto; }
+.deskrow { align-items: start; }
+.deskdim { font-style: normal; color: var(--grey); font-weight: 400; }
+.adminkey { min-width: 280px; }
+.decknote { min-width: 220px; }
+.adminkey, .decknote {
+  background: transparent; border: none; border-bottom: 1px solid var(--line);
+  border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px;
+  letter-spacing: 0.04em; outline: none;
+}
+.adminkey:focus, .decknote:focus { border-bottom-color: var(--sig); }
 @media (max-width: 700px) {
   .rkrow { grid-template-columns: 1fr; }
   .rkctl { grid-row: auto; grid-column: 1; justify-content: flex-start; margin-top: 6px; }

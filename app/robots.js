@@ -12,6 +12,7 @@ export default function robots() {
         allow: "/",
         disallow: [
           "/api/",
+          "/admin",
           "/orders",
           "/profile",
           "/settings",
