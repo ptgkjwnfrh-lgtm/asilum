@@ -251,6 +251,12 @@ function ProfileAccess() {
   const [email, setEmail] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  // Password auth (owner order, Aug 13): create-account mode carries a
+  // verify field and the little eye that opens.
+  const [mode, setMode] = useState("signin"); // signin | create
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [connecting, setConnecting] = useState("");
   const [connectNotice, setConnectNotice] = useState("");
   const [people, setPeople] = useState(() => followedUsers());
@@ -288,6 +294,33 @@ function ProfileAccess() {
       });
       publishNotice(error ? "could not send the link — " + error.message : "magic link sent — check your inbox");
     } catch { publishNotice("could not send the link — check the Supabase keys"); }
+    setBusy(false);
+  }
+
+  async function passwordAuth() {
+    const address = email.trim();
+    if (busy) return;
+    if (!address) { publishNotice("enter your email first"); return; }
+    if (password.length < 8) { publishNotice("password must be at least 8 characters"); return; }
+    if (mode === "create" && password !== confirm) { publishNotice("the two passwords do not match"); return; }
+    setBusy(true);
+    try {
+      const sb = await getSupabase();
+      if (mode === "create") {
+        const { data, error } = await sb.auth.signUp({
+          email: address, password,
+          options: { emailRedirectTo: window.location.origin + "/profile" },
+        });
+        if (error) publishNotice("could not create the account — " + error.message);
+        else if (data?.user && !data.session) publishNotice("account created — confirm it from your inbox, then sign in");
+        else publishNotice("account created — you are signed in");
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email: address, password });
+        publishNotice(error ? "could not sign in — " + error.message : "signed in");
+      }
+      if (!busy) setPassword("");
+      setConfirm("");
+    } catch { publishNotice("authentication is not configured — check the Supabase keys"); }
     setBusy(false);
   }
 
@@ -347,12 +380,37 @@ function ProfileAccess() {
             </>
           ) : (
             <>
-              <label className="accountemail">email — magic link
+              <div className="authmodes">
+                <button className={"txtbtn" + (mode === "signin" ? " cur" : "")} onClick={() => setMode("signin")}>SIGN IN</button>
+                <button className={"txtbtn" + (mode === "create" ? " cur" : "")} onClick={() => setMode("create")}>CREATE ACCOUNT</button>
+              </div>
+              <label className="accountemail">email
                 <input type="email" value={email} placeholder="you@example.com"
-                  onChange={(event) => setEmail(event.target.value)}
-                  onKeyDown={(event) => { if (event.key === "Enter") sendMagicLink(); }} />
+                  onChange={(event) => setEmail(event.target.value)} />
               </label>
-              <button className="btn" disabled={busy} onClick={sendMagicLink}>{busy ? "SENDING…" : "SEND LINK"}</button>
+              <label className="accountemail">password
+                <span className="pwwrap">
+                  <input type={showPw ? "text" : "password"} value={password}
+                    placeholder={mode === "create" ? "at least 8 characters" : "your password"}
+                    onChange={(event) => setPassword(event.target.value)}
+                    onKeyDown={(event) => { if (event.key === "Enter") passwordAuth(); }} />
+                  <button type="button" className="pweye" aria-label={showPw ? "hide password" : "show password"}
+                    onClick={() => setShowPw((v) => !v)}>{showPw ? "◉" : "◡"}</button>
+                </span>
+              </label>
+              {mode === "create" && (
+                <label className="accountemail">verify your password
+                  <input type={showPw ? "text" : "password"} value={confirm} placeholder="the same password again"
+                    onChange={(event) => setConfirm(event.target.value)}
+                    onKeyDown={(event) => { if (event.key === "Enter") passwordAuth(); }} />
+                </label>
+              )}
+              <button className="btn" disabled={busy} onClick={passwordAuth}>
+                {busy ? "WORKING…" : mode === "create" ? "CREATE ACCOUNT" : "SIGN IN"}
+              </button>
+              <button className="btn ghost" disabled={busy} onClick={sendMagicLink} title="passwordless — a link lands in your inbox">
+                MAGIC LINK INSTEAD
+              </button>
             </>
           ) : <div className="acctline">Sign-in requires Supabase public keys in the deployment environment.</div>}
           {notice ? <div className="acctline accountnotice">{notice}</div> : null}

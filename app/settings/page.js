@@ -12,6 +12,50 @@ import { useEffect, useState } from "react";
 import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
+import { authConfigured, getSupabase } from "../../lib/supabase.js";
+
+// The rack's sign-in/log-out row (owner order, Aug 13): module 03 shows
+// the account's true state — a SIGN IN road when signed out, LOG OUT
+// when signed in. The full form still lives on PROFILE (one home).
+function SettingsAuthRow() {
+  const [authUser, setAuthUser] = useState(null);
+  const [note, setNote] = useState("");
+  useEffect(() => {
+    let active = true; let subscription = null;
+    getSupabase().then((sb) => {
+      if (!active || !sb) return;
+      subscription = sb.auth.onAuthStateChange((_e, session) => {
+        if (active) setAuthUser(session?.user || null);
+      })?.data?.subscription || null;
+    });
+    return () => { active = false; subscription?.unsubscribe(); };
+  }, []);
+  async function logOut() {
+    try {
+      const sb = await getSupabase();
+      const { error } = await sb.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      setNote("logged out — this device is a passport again");
+    } catch { setNote("could not log out — try again"); }
+  }
+  if (!authConfigured()) return null;
+  return (
+    <div className="rkrow">
+      <div className="rkname">{authUser ? "Signed in" : "Sign in"}</div>
+      <div className="rkctl">
+        {authUser
+          ? <button className="fitbtn" onClick={logOut}>LOG OUT</button>
+          : <a className="fitbtn" href="/profile#access">SIGN IN →</a>}
+      </div>
+      <div className="rkdesc">
+        {authUser
+          ? (authUser.email || authUser.id) + " — your account rides this device."
+          : note || "create an account or sign in — the form lives on PROFILE → ACCOUNT."}
+        {authUser && note ? " " + note : ""}
+      </div>
+    </div>
+  );
+}
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 
 export default function SettingsPage() {
@@ -169,8 +213,9 @@ export default function SettingsPage() {
         <div className="rkrow">
           <div className="rkname">Account, connections &amp; follows</div>
           <div className="rkctl"><a className="fitbtn" href="/profile#access">OPEN ON PROFILE →</a></div>
-          <div className="rkdesc">sign in with a magic link, connect sources, and manage who you follow — identity has one home, on PROFILE.</div>
+          <div className="rkdesc">sign in, connect sources, and manage who you follow — identity has one home, on PROFILE.</div>
         </div>
+        <SettingsAuthRow />
       </section>
 
       <section className="rkmod" aria-label="data">

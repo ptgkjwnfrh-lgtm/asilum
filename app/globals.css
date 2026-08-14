@@ -1363,6 +1363,21 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .bizform input:focus, .bizform textarea:focus { border-bottom-color: var(--sig); }
 .bizrow { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
 
+/* ---- password auth (owner order, Aug 13): mode toggle, the little
+   eye that opens, and the corner avatar circle once signed in ---- */
+.authmodes { display: flex; gap: 16px; margin: 2px 0 10px; }
+.authmodes .txtbtn.cur { color: var(--red); text-shadow: var(--glow-r); }
+.pwwrap { position: relative; display: block; }
+.pwwrap input { width: 100%; padding-right: 34px; }
+.pweye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: 13px; line-height: 1;
+  color: var(--grey); padding: 4px 6px; }
+.pweye:hover { color: var(--sig); text-shadow: var(--glow); }
+.tbav { padding: 6px 8px; }
+.tbavatar { display: inline-grid; place-items: center; width: 26px; height: 26px;
+  border-radius: 50%; border: 1px solid var(--sig); color: var(--sig);
+  text-shadow: var(--glow); font-family: var(--mich); font-size: 12px; }
+
 /* EDITORIAL's field + gutters (owner order, Aug 13) — same zero-height
    magazine furniture, ladder-specific placements; 2 thick of 7 */
 .elside { top: 300px; left: -26px; }
