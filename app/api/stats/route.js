@@ -5,6 +5,7 @@
 
 import { NextResponse } from "next/server";
 import { getStats, countEvents, getItem } from "../../../lib/db/index.js";
+import { analytics } from "../../../lib/analytics.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { publicProduct } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -21,6 +22,12 @@ export async function GET(req) {
   // cookie rides along on same-origin fetches) but not by bare scrapers.
   if (!verifiedRequestSubject(req)) {
     return NextResponse.json({ error: "identity required" }, { status: 401 });
+  }
+  // ?analytics=1 is the dashboards read (owner directive, Aug 14): the
+  // house's own operating numbers, kept OFF the default payload so the
+  // page's first paint costs exactly what it did before.
+  if (new URL(req.url).searchParams.get("analytics") === "1") {
+    return NextResponse.json(await analytics().catch(() => ({ available: false, persistent: null })));
   }
   const stats = await getStats();
   // Additive: canonical Alpha-Brain event count (the /stats page ignores

@@ -15,6 +15,10 @@ export default function StatsPage() {
   const [statsError, setStatsError] = useState(null);
   const [viz, setViz] = useState(null);
   const [mix, setMix] = useState(null); // (r16) bridge mix, plain words
+  // The house's operating dashboards (owner directive, Aug 14). null =
+  // still reading; available:false = the database is required and this
+  // deploy has none, which the page says rather than drawing zeros.
+  const [ops, setOps] = useState(null);
 
   useEffect(() => {
     // WHAT WAS WRONG (Aug 8, codebase audit). This never checked r.ok, so an
@@ -40,6 +44,12 @@ export default function StatsPage() {
       .then((r) => r.json())
       .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
       .catch(() => {});
+    // Same r.ok discipline as the read above — an error body stored as
+    // data is what took this page down once.
+    fetch("/api/stats?analytics=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setOps(d || { available: false }))
+      .catch(() => setOps({ available: false }));
   }, []);
 
   return (
@@ -103,6 +113,100 @@ export default function StatsPage() {
               {stats.topItems.length === 0 && <tr><td colSpan={5}>none yet</td></tr>}
             </tbody>
           </table>
+        </>
+      )}
+
+      {/* ---- THE HOUSE'S OWN NUMBERS (owner directive, Aug 14) ----
+          Read-only, real counters. Every figure names the window it was
+          measured over, and anything not measurable prints "—" rather
+          than a zero that would read as a fact. ---- */}
+      <hr className="rule" />
+      <h3 className="statshead">the house — operating numbers</h3>
+      {ops === null && <div className="empty">reading the ledgers…</div>}
+      {ops && !ops.available && (
+        <div className="empty">
+          these dashboards read the database directly. this deploy is running
+          on memory, so there is nothing honest to count yet.
+        </div>
+      )}
+      {ops && ops.available && (
+        <>
+          <h4 className="opshead">RETURNING IDENTITIES · by week</h4>
+          <p className="opsnote">
+            an identity active in a week who was also active the week before.
+            identities, not people — one person can hold a device identity and
+            an account, and this counts both.
+          </p>
+          <table className="stats">
+            <thead><tr><th>week</th><th>active</th><th>returning</th><th>rate</th></tr></thead>
+            <tbody>
+              {(ops.retention || []).map((w) => (
+                <tr key={w.weeksAgo}>
+                  <td>{w.weeksAgo === 0 ? "this week" : w.weeksAgo + " weeks ago"}</td>
+                  <td>{w.active}</td>
+                  <td>{w.returning == null ? "—" : w.returning}</td>
+                  <td>
+                    {w.returning == null || w.active === 0
+                      ? "—"
+                      : Math.round((w.returning / w.active) * 100) + "%"}
+                  </td>
+                </tr>
+              ))}
+              {(ops.retention || []).length === 0 && <tr><td colSpan={4}>no activity recorded yet</td></tr>}
+            </tbody>
+          </table>
+
+          <h4 className="opshead">THE WIRE · last {ops.wire?.days ?? 14} days</h4>
+          <div className="splitbar">
+            <span className="chip">visible transmissions <b>{ops.wire?.visible ?? "—"}</b></span>
+            <span className="chip">posters this week <b>{ops.wire?.postersThisWeek ?? "—"}</b></span>
+            <span className="chip">held for review <b>{ops.wire?.held ?? "—"}</b></span>
+            <span className="chip">retired by authors <b>{ops.wire?.retired ?? "—"}</b></span>
+          </div>
+          <table className="stats">
+            <thead><tr><th>day</th><th>transmissions</th></tr></thead>
+            <tbody>
+              {(ops.wire?.daily || []).map((d) => (
+                <tr key={d.daysAgo}>
+                  <td>{d.daysAgo === 0 ? "today" : d.daysAgo === 1 ? "yesterday" : d.daysAgo + " days ago"}</td>
+                  <td>{d.posts}</td>
+                </tr>
+              ))}
+              {(ops.wire?.daily || []).length === 0 && <tr><td colSpan={2}>the wire has been quiet</td></tr>}
+            </tbody>
+          </table>
+
+          <h4 className="opshead">SEARCH HEALTH · last {ops.search?.days ?? 7} days</h4>
+          <p className="opsnote">
+            the zero-result rate is the one number that says whether the
+            catalog answers what people actually ask for.
+          </p>
+          <div className="splitbar">
+            <span className="chip">searches <b>{ops.search?.searches ?? "—"}</b></span>
+            <span className="chip">searchers <b>{ops.search?.searchers ?? "—"}</b></span>
+            <span className="chip">
+              found nothing{" "}
+              <b>{ops.search?.emptyRate == null ? "—" : Math.round(ops.search.emptyRate * 100) + "%"}</b>
+            </span>
+          </div>
+          {(ops.search?.topMisses || []).length > 0 && (
+            <table className="stats">
+              <thead><tr><th>asked for, found nothing</th><th>times</th></tr></thead>
+              <tbody>
+                {ops.search.topMisses.map((m) => (
+                  <tr key={m.query}><td>{m.query}</td><td>{m.count}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          <h4 className="opshead">BOOTH FUNNEL</h4>
+          <div className="splitbar">
+            <span className="chip">under review <b>{ops.booths?.underReview ?? "—"}</b></span>
+            <span className="chip">verified <b>{ops.booths?.verified ?? "—"}</b></span>
+            <span className="chip">rejected <b>{ops.booths?.rejected ?? "—"}</b></span>
+            <span className="chip">booths open <b>{ops.booths?.boothsOpen ?? "—"}</b> / 10</span>
+          </div>
         </>
       )}
     </div>
