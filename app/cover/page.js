@@ -275,7 +275,16 @@ export default function CoverPage() {
             <div className={"cvpost" + (i === 0 ? " cvlead" : "")} key={p.id}>
               <p className="cvposttext">{p.text}</p>
               <span className="cvposthandle">
-                {p.handle}{p.mine ? <i className="cmine">you</i> : null} · {timeAgo(p.at)}
+                {/* bylines are links (owner order, Aug 13): yours home,
+                    others to their page; server timestamps permalink */}
+                {p.mine
+                  ? <a className="whandle" href="/profile">{p.handle}</a>
+                  : <a className="whandle" href={"/u/" + encodeURIComponent(p.handle)}>{p.handle}</a>}
+                {p.mine ? <i className="cmine">you</i> : null}
+                {" · "}
+                {p.serverId != null
+                  ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+                  : timeAgo(p.at)}
               </span>
             </div>
           ))}

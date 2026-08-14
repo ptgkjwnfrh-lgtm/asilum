@@ -18,6 +18,7 @@ import {
 } from "../../lib/brain/measurements.js";
 import {
   getProfileInfo, saveProfileInfo, listPosts, timeAgo,
+  mapServerPost, matchesLocalPost,
   followedUsers, followedBrands, setFollowBrand, setFollowUser, sourceFor,
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
@@ -40,7 +41,27 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setInfo(getProfileInfo());
-    setPosts(listPosts().filter((p) => p.mine));
+    // POSTS reads the durable record (owner order, Aug 13): this
+    // identity's visible transmissions from the server, merged with
+    // device copies the server doesn't show yet (just posted, or held
+    // for review) — those stay visible to their author, labeled. The
+    // local list renders instantly; the server read upgrades it.
+    const localMine = listPosts().filter((p) => p.mine);
+    setPosts(localMine);
+    authorizedFetch("/api/editorial?mine=1&limit=120&user=" + encodeURIComponent(getUid() || ""))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d) return;
+        const server = (d.posts || []).map(mapServerPost).filter((p) => p.text)
+          .map((p) => ({ ...p, mine: true }));
+        setPosts([
+          ...server,
+          ...localMine
+            .filter((m) => !server.some((s) => matchesLocalPost(m, s)))
+            .map((m) => ({ ...m, localOnly: true })),
+        ].sort((a, b) => b.at - a.at));
+      })
+      .catch(() => {});
     // MEMBER SINCE: same once-stamped device-real date the passport uses.
     try {
       let s = window.localStorage.getItem("asilum-member-since");
@@ -166,12 +187,18 @@ export default function ProfilePage() {
       {tab === "posts" && (
         <>
           {posts.length === 0 && (
-            <div className="empty">no posts yet — the composer lives on THE FEED&apos;s POST page.</div>
+            <div className="empty">no transmissions yet — the composer lives on THE WIRE.</div>
           )}
           {posts.map((p) => (
-            <div className="fpost" key={p.id}>
+            <div className="fpost wpost" key={p.id}>
+              {p.title ? <div className="wposthead">{p.title}</div> : null}
               <p className="fposttext">{p.text}</p>
-              <span className="fposthandle">{p.handle} · {timeAgo(p.at)}</span>
+              <span className="fposthandle">
+                {p.handle} ·{" "}
+                {p.serverId != null
+                  ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+                  : <>{timeAgo(p.at)} · saved on this device — pending or held</>}
+              </span>
             </div>
           ))}
         </>

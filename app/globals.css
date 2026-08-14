@@ -1330,6 +1330,11 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wsoonpanel b { color: var(--ink); letter-spacing: 0.08em; }
 .wsoonpanel em { font-style: normal; color: var(--red); letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; }
 .wfloor { margin-top: 8px; }
+/* permalink focus — one transmission pinned above the wire */
+.wfocus { margin: 4px 0 30px; }
+.wfocusback { display: inline-block; font-size: 10px; letter-spacing: 0.16em; margin-bottom: 12px; }
+.wfocuspost .wposthead { font-size: 19px; }
+.wfocuspost .fposttext { font-size: 15px; }
 .wpost { margin-bottom: 22px; }
 .wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
 .wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
@@ -1811,6 +1816,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
 .chip.clickable, .apill, .achip,
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
+.whandle, .wperma, .wfocusback,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);
