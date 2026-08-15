@@ -38,6 +38,24 @@ export default function AsteriskDock({
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 
+    // (audit #18) These three token reads used to happen INSIDE draw(), so
+    // every frame forced three style flushes — 180 a second per dock, and
+    // /stats and /upload mount a second one. The values only move when the
+    // theme or the interface model changes, both of which are attributes on
+    // documentElement, so read them once and let a MutationObserver say when
+    // they are stale. Colors still come from tokens; nothing is hardcoded.
+    let SIG, RED, OSD;
+    const readTokens = () => {
+      SIG = css("--sig");
+      RED = css("--red");
+      OSD = css("--osd") || "monospace";
+    };
+    readTokens();
+    const themeWatch = new MutationObserver(() => { readTokens(); if (rm) draw(); });
+    themeWatch.observe(document.documentElement, {
+      attributes: true, attributeFilter: ["data-theme", "data-model", "class"],
+    });
+
     // ---- 3D line field: latitude rings + meridians as ASCII lines,
     // each point carrying its tangent so the glyph matches the line ----
     const shell = [];
@@ -84,6 +102,7 @@ export default function AsteriskDock({
     let hover = 0;
     let raf = 0;
     let t = 0;
+    let paused = false;
 
     const rot = (p, sy, cy2, sp, cp) => {
       const x1 = p.x * cy2 + p.z * sy;
@@ -99,9 +118,6 @@ export default function AsteriskDock({
       const cx = W / 2;
       const cyM = H / 2;
       const R = W * 0.3;
-      const SIG = css("--sig");
-      const RED = css("--red");
-      const OSD = css("--osd") || "monospace";
       x.clearRect(0, 0, W, H);
 
       // hologram flutter: the whole projection breathes in brightness
@@ -203,6 +219,8 @@ export default function AsteriskDock({
     };
 
     const frame = () => {
+      raf = 0;
+      if (paused) return;
       t += 0.014;
       if (!dragging) {
         yaw += vyaw;
@@ -244,9 +262,27 @@ export default function AsteriskDock({
     cv.addEventListener("pointerenter", enter);
     cv.addEventListener("pointerleave", leave);
 
+    // (audit #18) The loop was mounted unconditionally in the shell and ran on
+    // every route with no check of whether anything could see it. Scrolled out
+    // of view, it kept drawing at 60fps. (Backgrounded TABS are already the
+    // browser's job — it stops firing rAF — so this covers the case the
+    // platform does not.) Resuming keeps `t` where it stopped, so the entity
+    // picks up its drift rather than jumping.
+    const observer = typeof IntersectionObserver === "function"
+      ? new IntersectionObserver((entries) => {
+        const onScreen = entries.some((entry) => entry.isIntersecting);
+        paused = !onScreen;
+        if (!rm && onScreen && !raf) raf = requestAnimationFrame(frame);
+      }, { threshold: 0 })
+      : null;
+    observer?.observe(cv);
+
     if (rm) draw();
     else frame();
     return () => {
+      paused = true;
+      observer?.disconnect();
+      themeWatch.disconnect();
       cancelAnimationFrame(raf);
       cv.removeEventListener("pointerdown", down);
       cv.removeEventListener("pointermove", move);
