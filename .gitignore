@@ -151,3 +151,6 @@ asilum-brain-repo.zip
 backups/
 *.dump
 *.manifest.json
+
+# Local plugin scratch — never part of the app.
+.impeccable/
