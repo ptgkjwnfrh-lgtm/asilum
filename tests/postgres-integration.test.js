@@ -593,6 +593,37 @@ test("Postgres resolves a batch of products in ONE query, not one per id",
   assert.equal(withGhost.size, 3, "a missing id resolves to nothing, not to a guess");
 });
 
+test("Postgres serves the profiles recency scan from an index",
+  { skip: !databaseUrl }, async () => {
+  // Audit #12. listProfiles runs ORDER BY updated_at DESC LIMIT 500 on every
+  // similarUsers call and no migration had ever indexed that column, so
+  // Postgres sorted the whole table to return 500 rows. Measured on live
+  // before schema-v29: Seq Scan over 4,132 rows + top-N heapsort, 362ms of
+  // execution. After: Index Scan, 4.0ms.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+
+  const { rows: index } = await pool.query(
+    `SELECT indexname FROM pg_indexes
+     WHERE tablename = 'profiles' AND indexname = 'profiles_updated_at_desc'`);
+  assert.equal(index.length, 1, "schema-v29 must be applied");
+
+  // Whether the PLANNER picks it is a function of table size, and on a fresh
+  // CI database a sequential scan of a handful of rows is genuinely cheaper —
+  // asserting the plan unconditionally would be a test of the environment, not
+  // the code (the mistake the batch-resolution test above already made once).
+  const { rows: [{ n }] } = await pool.query("SELECT count(*)::int n FROM profiles");
+  if (n < 1000) return;
+
+  const plan = (await pool.query(
+    "EXPLAIN SELECT user_id, vec FROM profiles ORDER BY updated_at DESC LIMIT 500"
+  )).rows.map((row) => row["QUERY PLAN"]).join("\n");
+  assert.match(plan, /Index Scan using profiles_updated_at_desc/,
+    `at ${n} rows the planner should use the index:\n${plan}`);
+  assert.ok(!/Seq Scan on profiles/.test(plan), "the whole-table sort must be gone");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
