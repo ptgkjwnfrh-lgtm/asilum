@@ -80,6 +80,17 @@ export default function StatsPage() {
             <span className="chip">interactions <b>{stats.interactions}</b></span>
             <span className="chip">boards <b>{stats.boards}</b></span>
             <span className="chip">graph edges <b>{stats.edges}</b></span>
+            {/* An edge count is not a working graph. The Aug-15 audit found
+                every live edge at contributors = 0, so gamma answered every
+                anchor with nothing while this bar said "2632" and read as
+                health. Report what the ACTIVE rule can actually use. */}
+            {stats.gamma && (
+              <span className="chip">
+                gamma usable{" "}
+                <b>{stats.gamma.usable} / {stats.gamma.total}</b>
+                {" · "}{stats.gamma.rule}
+              </span>
+            )}
             <span className="chip">
               storage <b>{stats.persistent ? "postgres" : "memory (resets on restart)"}</b>
             </span>
