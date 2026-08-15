@@ -534,7 +534,7 @@ test("Postgres refuses a non-numeric ticket id instead of raising 22P02", { skip
 });
 
 test("Postgres resolves a batch of products in ONE query, not one per id",
-  { skip: !databaseUrl }, async () => {
+  { skip: !databaseUrl }, async (t) => {
   // Audit #10. resolveProducts awaited resolveProduct per id, so a 60-id
   // /api/interaction request became 60 primary-key queries — against the
   // shipped max:5 pool that is 12 sequential round-trip waves, each holding
@@ -545,19 +545,26 @@ test("Postgres resolves a batch of products in ONE query, not one per id",
   // a mem assertion cannot tell the batched implementation from the fanned-out
   // one and would prove nothing. The defect is Postgres-only; so is its guard.
   //
-  // Read-only: it SELECTs ids that already exist and writes nothing.
+  // The test seeds its OWN inventory and removes it again. The first draft read
+  // whatever rows happened to be in `items`, which passed against the seeded
+  // production database and failed on CI, where the table is empty after a
+  // fresh migration — a test that measures the environment rather than the
+  // code. Its own rows make it say the same thing everywhere.
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
   const { resolveProducts } = await import("../lib/products.js");
+  const { CATALOG } = await import("../lib/ingest/catalog.js");
   const pool = await db.getPool();
 
-  const sample = await pool.query(
-    `SELECT id FROM items
-     WHERE COALESCE(moderation_status,'visible')='visible'
-       AND is_available IS DISTINCT FROM false
-     ORDER BY id LIMIT 25`);
-  const ids = sample.rows.map((row) => row.id);
-  assert.ok(ids.length >= 10, "need real inventory for this to mean anything");
+  const suffix = randomUUID();
+  const seeded = CATALOG.slice(0, 25).map((item, n) => ({
+    ...item, id: `res-batch-${suffix}-${n}`,
+  }));
+  const ids = seeded.map((item) => item.id);
+  t.after(async () => {
+    await pool.query("DELETE FROM items WHERE id = ANY($1::text[])", [ids]);
+  });
+  await db.upsertItems(seeded);
 
   const original = pool.query.bind(pool);
   const statements = [];
