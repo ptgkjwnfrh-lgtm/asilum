@@ -1,0 +1,53 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-08-12T19:37:43.121Z",
+        "reason": "owner-shipped wordmark identity: phosphor gradient logo from merged July 26 OS redesign (PRs 91-96), pre-existing design not introduced this change"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-08-12T20:06:28.805Z",
+        "reason": "owner-approved shipped design: red-law notice accent (L251, red = alert voice per design law) and the hairline field's vertical lines (L1391, owner-ordered Aug 13) are border-left by construction, not card tabs"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "app/globals.css"
+        ],
+        "createdAt": "2026-08-12T20:06:28.842Z",
+        "reason": "owner decree: the OS backdrop grid is the design identity (Aug 12 law; owner re-tuned it Aug 13: bigger cells, fainter lines)"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "/Users/noemosallowed/Downloads/*ASILUM website prototype [july6]/app/globals.css"
+        ],
+        "createdAt": "2026-08-13T15:03:49.816Z",
+        "reason": "user confirmed: hairline-field lines (.ctln-v3/.cvln-v3) are the owner's Aug 13 order — 'some thick' vertical contrast lines in the magazine field, not card accents; red left-tab alerts are house law (design-language.md)"
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "/Users/noemosallowed/Downloads/*ASILUM website prototype [july6]/app/globals.css"
+        ],
+        "createdAt": "2026-08-13T15:03:49.853Z",
+        "reason": "user confirmed: the OS backdrop grid is owner-dictated product law (Fashion Intelligence OS surface, design-language.md) and the owner re-tuned it today — 'way bigger and lower the opacity'"
+      }
+    ]
+  }
+}

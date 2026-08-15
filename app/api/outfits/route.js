@@ -15,13 +15,15 @@ import { buildSlate } from "../../../lib/brain/stylist.js";
 import { TAGS } from "../../../lib/brain/tags.js";
 import { getProfile, mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { getDiscoverablePool, publicProduct, resolveProducts } from "../../../lib/products.js";
+import {
+  applyRecommendationExclusions, getDiscoverablePool, publicProduct, resolveProducts,
+} from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { scoreProductTrendRelevance } from "../../../lib/ai/trendKnowledge.js";
 import { generateStylistOutfits } from "../../../lib/ai/stylistReasoningEngine.js";
 import {
-  getMemoryPreferences, getUserMeasurements, getWardrobeItem,
+  getMemoryPreferences, getUserMeasurements, getUserRecommendationExclusions, getWardrobeItem,
 } from "../../../lib/db/production.js";
 import { wardrobeAnchor, wardrobeEnabled } from "../../../lib/wardrobe/index.js";
 import { measurementProfileForBrain, normalizeMeasurementProfile } from "../../../lib/brain/measurements.js";
@@ -113,7 +115,20 @@ async function generate(req, input, { persistSeen = true } = {}) {
   const guidanceEnabled =
     (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
 
-  const pool = await getDiscoverablePool();
+  const fullPool = await getDiscoverablePool();
+  // A correction is a promise, not a hint (audit #8). The 25 base looks were
+  // built from the UNFILTERED pool while the AI-edit group filtered correctly,
+  // so a brand the user corrected away was suppressed and re-served in the same
+  // response — and vanished from the feed while returning here. Failing closed
+  // matches /api/feed: serving unfiltered because the read failed is precisely
+  // the breach being fixed.
+  let exclusions;
+  try {
+    exclusions = await getUserRecommendationExclusions(userId);
+  } catch {
+    return NextResponse.json({ error: "correction state unavailable" }, { status: 503 });
+  }
+  const pool = applyRecommendationExclusions(fullPool, exclusions);
 
   const profile = migrateProfile(guidanceEnabled
     ? await getProfile(userId).catch(() => ({}))
@@ -134,7 +149,10 @@ async function generate(req, input, { persistSeen = true } = {}) {
     anchor = wardrobeAnchor(owned);
     if (!anchor) return NextResponse.json({ error: "wardrobe piece not found" }, { status: 404 });
   } else if (anchorId) {
-    anchor = pool.find((it) => it.id === anchorId) || null;
+    // An anchor is an EXPLICIT request to style one specific piece, not a
+    // recommendation, so it resolves against the unfiltered pool. Dropping it
+    // here would silently answer a different question than the one asked.
+    anchor = fullPool.find((it) => it.id === anchorId) || null;
   }
 
   const savedMeasurements = await getUserMeasurements(userId).catch(() => null);

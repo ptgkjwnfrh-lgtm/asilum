@@ -29,7 +29,9 @@ import { crossUserCandidates } from "../../../lib/taste-graph/index.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { cravingVector, hasCravingContext, parseCravingContext } from "../../../lib/craving/index.js";
-import { getDiscoverablePool, getPopularitySnapshot, publicProduct } from "../../../lib/products.js";
+import {
+  applyRecommendationExclusions, getDiscoverablePool, getPopularitySnapshot, publicProduct,
+} from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -90,11 +92,7 @@ export async function GET(req) {
   } catch {
     return NextResponse.json({ error: "correction state unavailable" }, { status: 503 });
   }
-  const excludedBrands = new Set(exclusions.brands);
-  const excludedProducts = new Set(exclusions.productIds);
-  pool = pool.filter((item) =>
-    !excludedProducts.has(item.id) &&
-    !(item.brand && excludedBrands.has(item.brand.trim().toLowerCase())));
+  pool = applyRecommendationExclusions(pool, exclusions);
 
   // Hard filters run BEFORE ranking so taste ordering applies within them.
   const category = (searchParams.get("category") || "").slice(0, 80);
