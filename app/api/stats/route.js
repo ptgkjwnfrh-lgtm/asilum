@@ -4,7 +4,7 @@
 // /stats dashboard so algorithm changes can be judged against real behavior.
 
 import { NextResponse } from "next/server";
-import { getStats, countEvents, getItem } from "../../../lib/db/index.js";
+import { getStatsSnapshot, countEvents, getItems } from "../../../lib/db/index.js";
 import { analytics } from "../../../lib/analytics.js";
 import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { publicProduct } from "../../../lib/products.js";
@@ -29,12 +29,20 @@ export async function GET(req) {
   if (new URL(req.url).searchParams.get("analytics") === "1") {
     return NextResponse.json(await analytics().catch(() => ({ available: false, persistent: null })));
   }
-  const stats = await getStats();
+  // (audit #20) The four aggregates behind this answer the same question for
+  // every visitor; the snapshot serves them from one read per 15s.
+  const stats = await getStatsSnapshot();
   // Additive: canonical Alpha-Brain event count (the /stats page ignores
   // unknown fields; this makes the event pipeline observable).
-  stats.alphaEvents = await countEvents().catch(() => null);
-  stats.topItems = await Promise.all(stats.topItems.map(async (t) => {
-    const it = await getItem(t.id).catch(() => null) || BY_ID.get(t.id);
+  // The top-ten hydration was ten separate primary-key queries; it is the same
+  // fan-out audit #10 removed from resolveProducts, so it uses the same batch.
+  const [alphaEvents, hydrated] = await Promise.all([
+    countEvents().catch(() => null),
+    getItems(stats.topItems.map((t) => t.id)).catch(() => new Map()),
+  ]);
+  stats.alphaEvents = alphaEvents;
+  stats.topItems = stats.topItems.map((t) => {
+    const it = hydrated.get(t.id) || BY_ID.get(t.id);
     return {
       ...t,
       title: it ? it.title : t.id,
@@ -45,6 +53,6 @@ export async function GET(req) {
       rate: t.viewers > 0 ? +(t.engagers / t.viewers).toFixed(3) : null,
       eventRatio: t.engagers > 0 ? +(t.eng / t.engagers).toFixed(1) : null,
     };
-  }));
+  });
   return NextResponse.json(stats);
 }
