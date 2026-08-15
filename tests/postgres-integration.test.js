@@ -533,6 +533,59 @@ test("Postgres refuses a non-numeric ticket id instead of raising 22P02", { skip
   assert.equal(missing.error, "ticket not found");
 });
 
+test("Postgres resolves a batch of products in ONE query, not one per id",
+  { skip: !databaseUrl }, async () => {
+  // Audit #10. resolveProducts awaited resolveProduct per id, so a 60-id
+  // /api/interaction request became 60 primary-key queries — against the
+  // shipped max:5 pool that is 12 sequential round-trip waves, each holding
+  // every connection while it waited.
+  //
+  // This test belongs HERE and nowhere else, for the same reason the ticket-id
+  // test above does: in mem, resolveProducts is a Map hit per id either way, so
+  // a mem assertion cannot tell the batched implementation from the fanned-out
+  // one and would prove nothing. The defect is Postgres-only; so is its guard.
+  //
+  // Read-only: it SELECTs ids that already exist and writes nothing.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const { resolveProducts } = await import("../lib/products.js");
+  const pool = await db.getPool();
+
+  const sample = await pool.query(
+    `SELECT id FROM items
+     WHERE COALESCE(moderation_status,'visible')='visible'
+       AND is_available IS DISTINCT FROM false
+     ORDER BY id LIMIT 25`);
+  const ids = sample.rows.map((row) => row.id);
+  assert.ok(ids.length >= 10, "need real inventory for this to mean anything");
+
+  const original = pool.query.bind(pool);
+  const statements = [];
+  pool.query = (...args) => {
+    statements.push(typeof args[0] === "string" ? args[0] : args[0]?.text || "");
+    return original(...args);
+  };
+  let resolved;
+  try {
+    resolved = await resolveProducts(ids);
+  } finally {
+    pool.query = original;
+  }
+
+  assert.equal(statements.length, 1,
+    `one round trip for ${ids.length} ids, not ${statements.length}`);
+  assert.match(statements[0], /= ANY\(/, "and it must be the batched form");
+  assert.equal(resolved.size, ids.length, "every existing id still resolves");
+  for (const id of ids) {
+    assert.equal(resolved.get(id).id, id, "keyed by the id that was asked for");
+  }
+
+  // An id that does not exist is simply absent — no throw, no synthetic
+  // stand-in, because live inventory exists.
+  const withGhost = await resolveProducts([...ids.slice(0, 3), `ghost-${randomUUID()}`]);
+  assert.equal(withGhost.size, 3, "a missing id resolves to nothing, not to a guess");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
