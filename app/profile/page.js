@@ -92,6 +92,52 @@ export default function ProfilePage() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
+  // ---- Landing from a password-reset link (found live, Aug 14) ----
+  // This LIVES HERE, in the page that owns `tab`, and reads nothing but the
+  // URL. Two things went wrong when it lived in ProfileAccess instead:
+  //   1. ProfileAccess only mounts once the ACCOUNT tab is already open —
+  //      the very thing this needs to cause — so it could never run first.
+  //   2. `setTab` is not in scope there, so the call threw a ReferenceError
+  //      that a bare `catch {}` swallowed, silently killing the notice and
+  //      the URL cleanup that followed it. A catch that hides a typo is not
+  //      error handling.
+  // Both the set-a-new-password form and the notice live under ACCOUNT
+  // while the page opens on POSTS, so arriving from a reset link — working
+  // or expired — must open that tab or the reader sees nothing at all.
+  useEffect(() => {
+    let hash;
+    try {
+      hash = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
+    } catch { return; }
+    const code = hash.get("error_code");
+    const failed = !!(code || hash.get("error"));
+    const cameFromReset = new URLSearchParams(window.location.search).get("reset") === "1";
+    if (!cameFromReset && !failed) return;
+
+    setTab("account");
+    if (failed) {
+      // Supabase redirects here even when it REFUSES the link, with the
+      // reason in the fragment (#error=access_denied&error_code=...).
+      // Saying nothing is the worst answer available: the reader cannot
+      // tell a dead link from a broken site. The notice rides the same
+      // localStorage + event channel the ACCOUNT tab already reads, so it
+      // is waiting there when that tab mounts.
+      const described = (hash.get("error_description") || "").replace(/\+/g, " ");
+      const message = code === "otp_expired"
+        ? "that reset link has expired or was already used — links last about an hour. ask for a new one below."
+        : described || "that link could not be used — ask for a new one below.";
+      try {
+        window.localStorage.setItem("asilum-auth-notice", message);
+        window.dispatchEvent(new CustomEvent("asilum:auth-notice", { detail: message }));
+        // Strip it so a refresh does not re-accuse a link already explained.
+        const url = new URL(window.location.href);
+        url.hash = "";
+        url.searchParams.delete("reset");
+        window.history.replaceState({}, "", url.toString());
+      } catch {}
+    }
+  }, []);
+
   function save(k, v) {
     setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
   }
@@ -275,6 +321,7 @@ function ProfileAccess() {
     const followHandler = () => setPeople(followedUsers());
     window.addEventListener("asilum:auth-notice", noticeHandler);
     window.addEventListener("asilum:follow", followHandler);
+
     let subscription = null;
     getSupabase().then((sb) => {
       if (!active || !sb) return;
