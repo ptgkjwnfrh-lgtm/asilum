@@ -7,7 +7,7 @@
 
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
-import { buildFeed, coldStart, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
+import { buildFeed, promptVector, overlayVector, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
 import { examinedImpressionsEnabled } from "../../../lib/brain/attribution.js";
 import { popularityDedupEnabled } from "../../../lib/brain/popularity.js";
 import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
@@ -74,7 +74,22 @@ export async function GET(req) {
     novelty: searchParams.get("novelty"),
   });
   const cravingActive = hasCravingContext(craving);
-  const contextVec = cravingActive ? cravingVector(craving) : null;
+  // (audit #9) ?q= is the search hand-off, and the client promises "Asterisk is
+  // routing this edit toward X without rewriting your Passport". It did the
+  // inverse of that promise on both sides: a user WITH taste had q read,
+  // clamped and then never used — no routing happened at all — while a COLD
+  // user had it seeded through coldStart into the profile that gets persisted
+  // below, which is precisely the Passport rewrite the notice disclaims.
+  //
+  // A prompt is now what the client says it is: an ephemeral overlay on this
+  // one serve, exactly like a craving, read by the ranker and stored by
+  // nothing. /api/train remains the only path that persists a prompt, and it
+  // does so on the user's explicit action.
+  const promptVec = q ? promptVector(q) : null;
+  const contextVec = overlayVector(
+    cravingActive ? cravingVector(craving) : null,
+    promptVec
+  );
 
   // Item pool: DB items if available, else the seed catalog.
   let pool = await getDiscoverablePool();
@@ -126,7 +141,10 @@ export async function GET(req) {
   // carries signal.
   const hasSignal = (vec) => Object.values(vec || {}).some((v) => Math.abs(Number(v)) > 1e-9);
   const hasProfile = hasSignal(profile.long) || hasSignal(profile.session);
-  if (guidanceEnabled && !hasProfile && q) profile = coldStart(q).profile;
+  // A cold user's prompt used to be seeded into `profile` here, and `profile`
+  // is what the persistence block below writes. It now rides contextVec
+  // instead, where buildFeed gives it the whole taste vector when there is no
+  // stable taste to blend with — the same ranking, without the write.
   const profileBeforeCorrections = profile;
   profile = guidanceEnabled
     ? applyCorrectionSignalsToBrainProfile(profile, correctionSummary)
@@ -255,6 +273,11 @@ export async function GET(req) {
     guidanceEnabled,
     boardSeeded: !!boardVec,
     craving: cravingActive ? craving : null,
+    // Honest report of the prompt's influence, in the same shape as
+    // boardSeeded: whether ?q= actually steered this serve. It answers "did
+    // the routing the notice promised really happen" without the client
+    // having to infer it from its own URL.
+    promptApplied: !!(promptVec && Object.keys(promptVec).length),
     split,
     // (r16) honest influence: whether tuning shaped THIS page's blend
     // (safety modes suppress it even when computed), and the tuned weights.
