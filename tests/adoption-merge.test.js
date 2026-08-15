@@ -76,8 +76,12 @@ test("#16 ring caps match the canonical writers (recent 20, follows 10)", async 
   await seed(account, { long: {}, session: {}, _meta: { recent: many(18, "a"), follows: many(8, "ba") } });
   await adoptAccountData(device, account);
   const merged = await getProfile(account);
-  assert.ok(merged._meta.recent.length <= 20, `recent capped at 20, got ${merged._meta.recent.length}`);
-  assert.ok(merged._meta.follows.length <= 10, `follows capped at 10, got ${merged._meta.follows.length}`);
+  // EQUALITY, not an upper bound. 18+18 recent and 8+8 follows both overflow
+  // their caps, so the caps must BITE — and `<= 20` / `<= 10` also passed for
+  // an adoption that dropped every ring entirely, which is the failure this
+  // test exists to notice.
+  assert.equal(merged._meta.recent.length, 20, "recent fills exactly to its cap");
+  assert.equal(merged._meta.follows.length, 10, "follows fills exactly to its cap");
   await purgePersonalizationData(device).catch(() => {});
   await purgePersonalizationData(account).catch(() => {});
 });
@@ -87,9 +91,19 @@ test("#16 profiles with no bridge counters adopt cleanly (no fabricated keys bre
   await seed(device, { long: { GORP: 0.5 }, session: {}, _meta: { recent: ["syn-1"] } });
   await seed(account, {});
   const res = await adoptAccountData(device, account);
-  assert.ok(res.movedProfile || res.movedRecords >= 0, "adoption completed");
+  // `res.movedProfile || res.movedRecords >= 0` was a tautology: a count is
+  // always >= 0, so it held for a COMPLETE no-op adoption. Assert the thing
+  // the test is named for instead.
+  assert.equal(res.movedProfile, true, "the device profile actually moved");
   const merged = await getProfile(account);
-  assert.ok(merged.long, "merged profile is well-formed");
+  // `assert.ok(merged.long)` passed on `{}`, which is exactly the outcome that
+  // would mean the taste was lost. Check the taste ARRIVED...
+  assert.equal(merged.long.GORP, 0.5, "the device's taste survived adoption");
+  assert.deepEqual(merged._meta.recent, ["syn-1"], "and so did its recent ring");
+  // ...and that adopting a profile with no bridge counters did not invent any,
+  // which is what "no fabricated keys break reads" means.
+  assert.deepEqual(merged._meta.bridgeStats ?? {}, {},
+    "no bridgeStats keys fabricated for a profile that never had them");
   await purgePersonalizationData(device).catch(() => {});
   await purgePersonalizationData(account).catch(() => {});
 });

@@ -16,14 +16,44 @@ const run = promisify(execFile);
 // The substantive guard is unchanged: applied state must equal committed
 // files, which still catches an out-of-band apply and a migration that forgot
 // its app_schema_migrations row.
-function committedSchemaVersion() {
+// `[-.]` rather than `-`: schema-v2.sql has no hyphen after its digit, so the
+// old pattern silently skipped it. It never changed the max, which is exactly
+// why nobody noticed.
+function committedMigrations() {
   const dir = path.join(process.cwd(), "supabase");
-  const versions = fs.readdirSync(dir)
-    .map((f) => /^schema-v(\d+)-/.exec(f))
-    .filter(Boolean)
-    .map((m) => Number(m[1]));
+  return fs.readdirSync(dir)
+    .map((file) => ({ file, match: /^schema-v(\d+)[-.]/.exec(file) }))
+    .filter((entry) => entry.match)
+    .map((entry) => ({ version: Number(entry.match[1]), file: entry.file }))
+    .sort((a, b) => a.version - b.version);
+}
+
+function committedSchemaVersion() {
+  const versions = committedMigrations().map((m) => m.version);
   return versions.length ? Math.max(...versions) : 0;
 }
+
+// Migrations that do NOT write their own app_schema_migrations row, so the
+// ledger legitimately has no entry for them. Everything here is historical:
+// the ledger habit started at v7. They are listed one by one rather than as a
+// range so that adding a NEW silent migration fails the guard below.
+//
+// v16 is claimed by TWO files. schema-v16-discover-rails.sql records version
+// 16; schema-v16-embeddings.sql records nothing, so the `embeddings` table it
+// creates is invisible to the ledger. Both are applied on live today, so there
+// is no drift — but a fresh environment that skipped the embeddings file would
+// look perfectly healthy. Renumbering it is the owner's call (flagged in
+// docs/audit-verified-2026-08-14.md), so it is allowed for here rather than
+// silently fixed.
+const LEDGER_SILENT = new Map([
+  [1, "schema-v1-brain.sql"],
+  [2, "schema-v2.sql"],
+  [3, "schema-v3-ai.sql"],
+  [4, "schema-v4-asterisk.sql"],
+  [5, "schema-v5-corrections.sql"],
+  [6, "schema-v6-hardening.sql"],
+]);
+const DUPLICATE_VERSIONS = new Map([[16, ["schema-v16-discover-rails.sql", "schema-v16-embeddings.sql"]]]);
 
 const databaseUrl = process.env.TEST_DATABASE_URL || "";
 
@@ -591,6 +621,47 @@ test("Postgres resolves a batch of products in ONE query, not one per id",
   // stand-in, because live inventory exists.
   const withGhost = await resolveProducts([...ids.slice(0, 3), `ghost-${randomUUID()}`]);
   assert.equal(withGhost.size, 3, "a missing id resolves to nothing, not to a guess");
+});
+
+// No database needed: this one is about the FILES.
+test("no two migrations claim the same version number", () => {
+  const byVersion = new Map();
+  for (const { version, file } of committedMigrations()) {
+    if (!byVersion.has(version)) byVersion.set(version, []);
+    byVersion.get(version).push(file);
+  }
+  const collisions = [...byVersion.entries()]
+    .filter(([, files]) => files.length > 1)
+    .filter(([version, files]) =>
+      // A known collision is allowed only if it is EXACTLY the known one.
+      JSON.stringify(files.sort()) !== JSON.stringify((DUPLICATE_VERSIONS.get(version) || []).sort()));
+  assert.deepEqual(collisions, [],
+    "two files sharing a version means one of them can be skipped invisibly");
+});
+
+test("every committed migration is accounted for in the ledger",
+  { skip: !databaseUrl }, async () => {
+  // The guard used to compare only max(version), which cannot see a HOLE.
+  // Measured on live before this test existed: the ledger held 7..29 and the
+  // check was green, because max was 29 either way. A migration that forgets
+  // its row, or one skipped during a partial manual apply, was undetectable
+  // unless it happened to be the highest-numbered file.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const { rows } = await pool.query("SELECT version FROM app_schema_migrations");
+  const applied = new Set(rows.map((row) => Number(row.version)));
+
+  const missing = committedMigrations()
+    .map((m) => m.version)
+    .filter((v) => !applied.has(v) && !LEDGER_SILENT.has(v));
+  assert.deepEqual([...new Set(missing)], [],
+    "a committed migration with no ledger row — either it never ran, or it forgot to record");
+
+  const unexpected = [...applied].filter(
+    (v) => !committedMigrations().some((m) => m.version === v));
+  assert.deepEqual(unexpected, [],
+    "the ledger claims a version no committed file provides — an out-of-band apply");
 });
 
 test("Postgres serves the profiles recency scan from an index",
