@@ -97,6 +97,26 @@ contributors = 0. Inferring contributors from w would fabricate history, and
 because the attack inflates w, any such inference would assign the highest
 trust to the most-likely-poisoned edges.
 
+**BACKFILLED 2026-08-15 (owner decision).** That left gamma INERT on
+production: the audit found all 2,632 live edges at contributors = 0, so
+edgeStrength returned 0 and getEdges answered every anchor with nothing, while
+/stats reported "graph edges 2632" and read as health. Only 1 favourite had
+landed since v22, so organic corroboration was never going to arrive.
+
+`scripts/backfill-edge-contributors.mjs` rebuilt the ledger from `user_events`
+— the same evidence the live path writes from — NOT from w, so the objection
+above still stands and is not contradicted. It replays positive actions at the
+live weights (bag 2 / share 1.5 / save 1 / favorite 1), pairs each positive
+with the identity's CO_ENGAGE_SPAN most recent distinct prior positives,
+validates BOTH endpoints against the catalog, bounds each pair at CONTRIB_CAP,
+and touches only pairs that ALREADY exist — it cannot invent an edge.
+
+Result: 2,331 of 2,632 edges corroborated from 10,656 ledger rows; 301 edges
+the event log cannot corroborate stay honestly at 0. The recompute healed the
+weights as designed — max w fell from 449.5 to 12.0. Gamma went from 0/30 to
+30/30 anchors returning neighbours, contributing 18 of 60 feed slots, WITH
+corroboration still enabled. `BRAIN_EDGE_CORROBORATION` was never touched.
+
 `BRAIN_EDGE_CORROBORATION=0` restores the legacy summed-weight rule with no
 deploy. Battery: scripts/measure-graph-corroboration.mjs (6 declared criteria,
 one declared amendment) — the forged item sits at rank 37 of the victim's
