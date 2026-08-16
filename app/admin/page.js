@@ -24,6 +24,10 @@ const TOKEN_KEY = "asilum-admin-token";
 // API splits reads between GET ?area= and POST { action } (history, not
 // design), so the panel says which it uses and the fetchers below stay
 // dumb.
+// A panel may carry a `filter`: one server-side argument the operator can
+// change. The value is merged into the read body, so the FILTER IS APPLIED BY
+// THE SERVER, never by hiding rows the desk already fetched. A desk that
+// filters client-side would lie about how much is in the queue.
 const PANELS = [
   { id: "business", n: "01", title: "BOOTH APPLICATIONS", read: { area: "business" },
     note: "a passport asking to become a business. approve raises it and opens a booth; a rejection carries a note the applicant reads." },
@@ -33,6 +37,26 @@ const PANELS = [
     note: "the append-only verification ledger behind every business decision. read-only here — cases move through their own enforced transitions." },
   { id: "overview", n: "04", title: "SUBSTRATE", read: { area: "overview" },
     note: "row counts straight from the database. persistent:false means this deploy is running on memory, not Postgres." },
+
+  // ---- ASTERISK OPERATIONS -------------------------------------------------
+  // The backend for all four has been complete since Day 10-15 with no way to
+  // reach it — the same gap THE DESK was built to close for /api/admin, one
+  // layer in. Nothing new is added to the API here; this is a client for it.
+  { id: "facts", n: "05", title: "LEARNED FACTS", read: { action: "asterisk.facts", limit: 100 },
+    filter: { key: "status", label: "STATUS",
+      options: ["", "discovered", "pending_verification", "machine_reviewed", "human_reviewed", "approved", "rejected", "superseded", "archived"] },
+    note: "the staged research ledger (ASTERISK-AI §9). a fact climbs discovered → pending → machine → human → approved, and the SERVER enforces the ladder — the desk offers every rung and reports refusals in the server's own words. approval needs at least one source and names you." },
+  { id: "reconciliations", n: "06", title: "TAG RECONCILIATIONS", read: { action: "asterisk.reconciliations", limit: 50 },
+    filter: { key: "reviewRequired", label: "REVIEW", options: ["", "true", "false"] },
+    note: "one row per audit pass: agreement score, and every conflict with BOTH values kept. a conflict never overwrites a base tag (§7) — high-impact ones open a moderation task instead, which is panel 02." },
+  { id: "unknown", n: "07", title: "UNKNOWN QUERIES", read: { action: "asterisk.unknown.list", limit: 50 },
+    // These are the statuses updateUnknownQueryStatus actually writes —
+    // "promoted" is NOT one of them; promotion writes `research_created`.
+    filter: { key: "status", label: "STATUS", options: ["observed", "research_created", "resolved", "dismissed", "all"] },
+    note: "what people asked that asterisk could not answer. this is the demand signal for research — promoting one says it is worth investigating, not that an answer exists." },
+  { id: "ontology", n: "08", title: "ONTOLOGY", read: { action: "asterisk.ontology", limit: 500 },
+    filter: { key: "tagType", label: "TYPE", options: ["", "aesthetic", "category", "material", "silhouette", "color", "era", "mood"] },
+    note: "the canonical tag space, seeded from the LIVE vocabularies so it extends rather than forks (§6). SYNC is idempotent and additive — merges and deprecations are versioned rows, never silent renames." },
 ];
 
 export default function AdminDeskPage() {
@@ -45,6 +69,10 @@ export default function AdminDeskPage() {
   // Rejections require a note (the API enforces it — the applicant reads
   // it), so the desk keeps one draft per application.
   const [notes, setNotes] = useState({});
+  // One filter value per panel, and one pending fact-transition target per
+  // fact row. Both are operator intent, never server state.
+  const [filters, setFilters] = useState({});
+  const [factMove, setFactMove] = useState({});
 
   useEffect(() => {
     try { setToken(window.sessionStorage.getItem(TOKEN_KEY) || ""); } catch {}
@@ -59,7 +87,18 @@ export default function AdminDeskPage() {
 
   const load = useCallback(async () => {
     if (!token) return;
-    const spec = PANELS.find((p) => p.id === panel).read;
+    const current = PANELS.find((p) => p.id === panel);
+    let spec = current.read;
+    // The filter travels to the server as part of the read. An empty string
+    // means "no constraint" and is omitted rather than sent as "", because ""
+    // and absent are different arguments to the API.
+    if (current.filter) {
+      const raw = filters[panel] ?? current.filter.options[0];
+      if (raw !== "") {
+        const value = raw === "true" ? true : raw === "false" ? false : raw;
+        spec = { ...spec, [current.filter.key]: value };
+      }
+    }
     setData(null);
     try {
       const res = spec.area
@@ -81,7 +120,7 @@ export default function AdminDeskPage() {
       setNote("the desk could not reach the server");
       setData(false);
     }
-  }, [token, panel, call]);
+  }, [token, panel, call, filters]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -170,6 +209,31 @@ export default function AdminDeskPage() {
 
       <section className="rkmod" aria-label={current.title}>
         <div className="rkhead"><b>{current.n}</b> {current.title} <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+
+        {current.filter && (
+          <div className="rkrow">
+            <div className="rkname">{current.filter.label}</div>
+            <div className="rkctl">
+              <select
+                className="wcap"
+                aria-label={current.filter.label.toLowerCase() + " filter"}
+                value={filters[panel] ?? current.filter.options[0]}
+                onChange={(e) => setFilters({ ...filters, [panel]: e.target.value })}
+              >
+                {current.filter.options.map((o) => (
+                  <option key={o || "any"} value={o}>{o === "" ? "ANY" : o}</option>
+                ))}
+              </select>
+              {panel === "ontology" && (
+                <button className="fitbtn" disabled={busy !== ""}
+                  onClick={() => act({ action: "asterisk.ontology.sync" }, "sync")}>
+                  SYNC
+                </button>
+              )}
+            </div>
+            <div className="rkdesc">the server applies this — the desk never hides rows it already fetched.</div>
+          </div>
+        )}
 
         {data === null && <div className="empty">reading…</div>}
         {data === false && <div className="empty">this panel could not be read.</div>}
@@ -311,6 +375,189 @@ export default function AdminDeskPage() {
                 <div className="rkdesc">{a.enabled ? "live" : "needs: " + a.needs}</div>
               </div>
             ))}
+          </>
+        )}
+
+        {/* ---- 05 LEARNED FACTS ---- */}
+        {panel === "facts" && data && (
+          <>
+            {(data.facts || []).length === 0 && (
+              <div className="empty">no facts at that stage — the ledger is honestly empty here.</div>
+            )}
+            {(data.facts || []).map((f) => {
+              const sources = f.sourceUrls || [];
+              // Approval is refused server-side without a source. Saying so on
+              // the row is kinder than letting the operator find out by
+              // clicking, and it is the SAME rule, not a second one.
+              const sourceless = sources.length === 0;
+              return (
+                <div className="rkrow deskrow" key={f.id}>
+                  <div className="rkname">
+                    <span className={"rkled" + (f.verificationStatus === "approved" ? " on" : "")} aria-hidden="true" />
+                    {f.entityType}:{f.entityId} <em className="deskdim">#{f.id}</em>
+                  </div>
+                  <div className="rkctl">
+                    <span className="rkmono">{f.verificationStatus}</span>
+                    <select
+                      className="wcap"
+                      aria-label={"next status for fact " + f.id}
+                      value={factMove[f.id] || ""}
+                      onChange={(e) => setFactMove({ ...factMove, [f.id]: e.target.value })}
+                    >
+                      <option value="">move to…</option>
+                      {["pending_verification", "machine_reviewed", "human_reviewed", "approved", "rejected", "superseded", "archived"]
+                        .map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <button
+                      className="fitbtn"
+                      disabled={busy !== "" || !factMove[f.id]}
+                      onClick={() => act({ action: "asterisk.fact.review", id: f.id, status: factMove[f.id] }, String(f.id))}
+                    >
+                      REVIEW
+                    </button>
+                  </div>
+                  <div className="rkdesc">
+                    {f.claim ? <>“{String(f.claim).slice(0, 140)}” · </> : null}
+                    {f.claimType ? <>{f.claimType} · </> : null}
+                    reliability {typeof f.reliabilityScore === "number" ? f.reliabilityScore.toFixed(2) : "—"}
+                    {f.reviewedBy ? <> · reviewed by {f.reviewedBy}</> : null}
+                    {sourceless
+                      ? <> · <b>no source — approval will be refused, and reliability stays 0</b></>
+                      : <> · {sources.slice(0, 3).map((u, i) => (
+                          <span key={u}>
+                            {i > 0 ? " · " : " "}
+                            <a className="wperma" href={u} target="_blank" rel="noopener noreferrer">source {i + 1} ↗</a>
+                          </span>
+                        ))}{sources.length > 3 ? ` +${sources.length - 3}` : ""}</>}
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+
+        {/* ---- 06 TAG RECONCILIATIONS ---- */}
+        {panel === "reconciliations" && data && (
+          <>
+            {(data.reconciliations || []).length === 0 && (
+              <div className="empty">no audit passes recorded — run one from asterisk.audit against a product id.</div>
+            )}
+            {(data.reconciliations || []).map((r) => {
+              const conflicts = r.conflicts || [];
+              return (
+                <div className="rkrow deskrow" key={r.id}>
+                  <div className="rkname">
+                    <span className={"rkled" + (conflicts.length ? " on" : "")} aria-hidden="true" />
+                    {r.productId} <em className="deskdim">#{r.id}</em>
+                  </div>
+                  <div className="rkctl rkmono">
+                    {typeof r.agreementScore === "number" ? Math.round(r.agreementScore * 100) + "% AGREE" : "—"}
+                    {r.reviewRequired ? " · REVIEW" : ""}
+                  </div>
+                  <div className="rkdesc">
+                    {conflicts.length === 0
+                      ? "no conflicts — the AI pass agreed with the base tags."
+                      : conflicts.map((c, i) => (
+                          <span key={c.field + i}>
+                            {i > 0 ? " · " : ""}
+                            {/* `base` is an ARRAY (a product can carry several
+                                values for one field); `ai` is a single value.
+                                Both are printed — §7 keeps both, and the desk
+                                must not collapse them into one answer. */}
+                            <b>{c.field}</b>: base “{(Array.isArray(c.base) ? c.base : [c.base]).join(", ") || "—"}”
+                            {" vs ai “"}{String(c.ai ?? "—")}”
+                            {c.aiStatus ? ` (${c.aiStatus}` : ""}
+                            {typeof c.aiConfidence === "number" ? `${c.aiStatus ? " " : " ("}${c.aiConfidence.toFixed(2)}` : ""}
+                            {c.aiStatus || typeof c.aiConfidence === "number" ? ")" : ""}
+                          </span>
+                        ))}
+                    {(r.missingBaseFields || []).length ? <> · missing base: {r.missingBaseFields.join(", ")}</> : null}
+                    {r.resolution ? <> · resolved “{r.resolution}”{r.resolvedBy ? ` by ${r.resolvedBy}` : ""}</> : null}
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+
+        {/* ---- 07 UNKNOWN QUERIES ---- */}
+        {panel === "unknown" && data && (
+          <>
+            {(data.unknownQueries || []).length === 0 && (
+              <div className="empty">nothing unanswered at that stage.</div>
+            )}
+            {(data.unknownQueries || []).map((q) => (
+              <div className="rkrow deskrow" key={q.id}>
+                <div className="rkname">
+                  <span className={"rkled" + (q.status === "observed" ? " on" : "")} aria-hidden="true" />
+                  “{q.normalizedQuery}” <em className="deskdim">#{q.id}</em>
+                </div>
+                <div className="rkctl">
+                  <span className="rkmono">
+                    {q.status}
+                    {typeof q.distinctIdentities === "number" ? ` ·${q.distinctIdentities} people` : ""}
+                  </span>
+                  {/* PROMOTE is only legal from `observed` and only above the
+                      distinct-identity threshold; the server enforces both and
+                      says so. Offered unconditionally so a refusal is visible
+                      rather than a button that silently is not there. */}
+                  <button className="fitbtn" disabled={busy !== ""}
+                    onClick={() => act({ action: "asterisk.unknown.promote", id: q.id }, String(q.id))}>
+                    PROMOTE
+                  </button>
+                  <button className="fitbtn" disabled={busy !== ""}
+                    onClick={() => act({ action: "asterisk.unknown.resolve", id: q.id }, String(q.id))}>
+                    RESOLVE
+                  </button>
+                  <button className="fitbtn" disabled={busy !== ""}
+                    onClick={() => act({ action: "asterisk.unknown.dismiss", id: q.id }, String(q.id))}>
+                    DISMISS
+                  </button>
+                </div>
+                <div className="rkdesc">
+                  asked {q.demandCount ?? "—"}× by {q.distinctIdentities ?? "—"} identities
+                  {q.lastMethod ? <> · last method {q.lastMethod}</> : null}
+                  {q.researchEligible === false ? <> · below the research threshold</> : null}
+                  {q.reviewedBy ? <> · reviewed by {q.reviewedBy}</> : null}
+                  {q.researchFactId ? <> · fact {q.researchFactId}</> : null}
+                  {" · "}promoting only marks it worth researching — it grants no trust and writes no knowledge.
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* ---- 08 ONTOLOGY ---- */}
+        {panel === "ontology" && data && (
+          <>
+            {(data.tags || []).length === 0 && (
+              <div className="empty">the ontology is empty — SYNC seeds it from the live vocabularies.</div>
+            )}
+            {(data.tags || []).length > 0 && (
+              <div className="rkrow">
+                <div className="rkname">CANONICAL TAGS</div>
+                <div className="rkctl rkmono">{(data.tags || []).length}</div>
+                <div className="rkdesc">
+                  {(data.tags || []).filter((t) => (t.aliases || []).length).length} carry aliases ·
+                  {" "}{(data.tags || []).filter((t) => t.parentId).length} have a parent
+                </div>
+              </div>
+            )}
+            {(data.tags || []).slice(0, 200).map((t) => (
+              <div className="rkrow" key={t.id}>
+                <div className="rkname">{t.id}</div>
+                <div className="rkctl rkmono">{t.tagType || "—"}{typeof t.version === "number" ? ` · v${t.version}` : ""}</div>
+                <div className="rkdesc">
+                  {t.label}
+                  {t.parentId ? <> · parent {t.parentId}</> : null}
+                  {(t.aliases || []).length ? <> · aliases: {(t.aliases || []).slice(0, 6).join(", ")}{(t.aliases || []).length > 6 ? " …" : ""}</> : null}
+                  {t.description ? <> · {t.description}</> : null}
+                </div>
+              </div>
+            ))}
+            {(data.tags || []).length > 200 && (
+              <div className="rkdesc">showing the first 200 of {(data.tags || []).length} — narrow with TYPE.</div>
+            )}
           </>
         )}
       </section>
