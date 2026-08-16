@@ -1,0 +1,143 @@
+// tests/helpers/route.js — invoke an App Router route handler for real.
+//
+// WHY THIS EXISTS. Before it, no test in this repo ever called an API route.
+// Six test files reached routes by reading their SOURCE AS TEXT and asserting
+// with regexes (docs/audit-test-coverage-2026-08-16). That style fails in the
+// direction of passing when it should fail — HANDOVER-2026-08-15 records a
+// guard whose `[\s\S]*?` matched an unrelated `neighbors:` fifteen lines away
+// and stayed green with the fix reverted. A handler that is actually invoked
+// cannot do that: a 401 that should be a 200 is a 401.
+//
+// WHAT IT DOES. Builds a real NextRequest, calls the exported handler, and
+// reads the real Response. Handlers are plain async functions, so nothing is
+// mocked: identity, rate limits, JSON parsing and the db layer all run.
+//
+// WHAT IT DELIBERATELY DOES NOT DO — do not read a passing test as more than
+// this covers:
+//   * No Next.js routing. The handler under test is chosen by the import in
+//     the test file, so a route registered at the wrong path still passes.
+//   * No middleware, no `export const dynamic`, no cache semantics.
+//   * No network. `sb-` identities need a real Supabase bearer, so account
+//     identity is exercised only at the REJECTION boundary (see below); the
+//     device-cookie path is exercised fully.
+//   * mem backend unless DATABASE_URL is set, like the rest of the suite.
+//
+// IDENTITY. `signedDeviceValue` signs with DEVICE_COOKIE_SECRET, falling back
+// outside production to a per-process random secret — stable within one test
+// run, which is all a test needs. `newDevice()` therefore mints a cookie the
+// real `verifiedDevice()` accepts, with no secret pinned in the repo.
+//
+// RATE LIMITS ARE REAL, and several routes quota tightly (privacy-delete is
+// 2/hour). Quotas key on the SUBJECT, so give each test its own device via
+// `newDevice()` and tests cannot poison each other. Tests that share a subject
+// on purpose must say so.
+
+import { register } from "node:module";
+import { pathToFileURL, fileURLToPath } from "node:url";
+import path from "node:path";
+import { NextRequest } from "next/server.js";
+import { newDeviceId, signedDeviceValue, DEVICE_COOKIE } from "../../lib/identity.js";
+
+const ORIGIN = "http://localhost:3000";
+// fileURLToPath, never `.pathname` — this repo's directory name contains
+// spaces, so `.pathname` hands back a percent-encoded string that pathToFileURL
+// then encodes a second time (%20 -> %2520) and the import fails.
+const REPO_ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
+
+// Route files import bare `next/server`, which Next 16 ships no exports map
+// for — plain node cannot resolve it. See helpers/next-resolve.mjs. The hook
+// must be registered BEFORE the route module is imported, and static imports
+// in a test file are all resolved before any module body runs, so routes have
+// to be loaded through loadRoute() rather than imported at the top.
+let hookRegistered = false;
+export async function loadRoute(repoRelativePath) {
+  if (!hookRegistered) {
+    register("./next-resolve.mjs", import.meta.url);
+    hookRegistered = true;
+  }
+  return import(pathToFileURL(path.join(REPO_ROOT, repoRelativePath)).href);
+}
+
+// A fresh signed device identity: the uid a route will resolve, plus the
+// cookie jar that proves it. Fresh per call, so quotas never collide.
+export function newDevice(uid = newDeviceId()) {
+  const value = signedDeviceValue(uid);
+  if (!value) throw new Error("signedDeviceValue returned null — DEVICE_COOKIE_SECRET unusable");
+  return { uid, cookies: { [DEVICE_COOKIE]: value } };
+}
+
+// A cookie whose signature is wrong for its uid — the forgery case.
+export function forgedDevice(uid = newDeviceId()) {
+  return { uid, cookies: { [DEVICE_COOKIE]: `${uid}.${"0".repeat(64)}` } };
+}
+
+function buildUrl(path, query) {
+  const url = new URL(path.startsWith("http") ? path : ORIGIN + path);
+  for (const [k, v] of Object.entries(query || {})) {
+    if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
+  }
+  return url.toString();
+}
+
+/**
+ * Call an App Router handler.
+ *
+ * @param handler the exported GET/POST/PATCH/DELETE function
+ * @param opts.path      route path, default "/"
+ * @param opts.method    defaults to GET, or POST when a json body is given
+ * @param opts.query     object → query string
+ * @param opts.json      object → JSON body + the content-type readJsonRequest requires
+ * @param opts.rawBody   string body, used verbatim (for malformed-JSON cases)
+ * @param opts.cookies   object, or the `cookies` from newDevice()
+ * @param opts.headers   extra headers
+ * @param opts.bearer    convenience for Authorization: Bearer <value>
+ * @param opts.context   second handler argument, e.g. { params: { id } }
+ * @returns { status, body, text, headers, response }
+ *          `body` is parsed JSON when the response is JSON, otherwise null.
+ */
+export async function callRoute(handler, {
+  path = "/", method, query, json, rawBody, cookies, headers = {}, bearer, context,
+} = {}) {
+  if (typeof handler !== "function") {
+    throw new TypeError("callRoute: handler is not a function — check the route exports this verb");
+  }
+  const hasBody = json !== undefined || rawBody !== undefined;
+  const verb = (method || (hasBody ? "POST" : "GET")).toUpperCase();
+
+  const requestHeaders = new Headers();
+  for (const [k, v] of Object.entries(headers)) requestHeaders.set(k, String(v));
+  if (bearer) requestHeaders.set("authorization", `Bearer ${bearer}`);
+  if (cookies && Object.keys(cookies).length) {
+    requestHeaders.set("cookie",
+      Object.entries(cookies).map(([k, v]) => `${k}=${v}`).join("; "));
+  }
+
+  let body;
+  if (json !== undefined) {
+    body = JSON.stringify(json);
+    if (!requestHeaders.has("content-type")) requestHeaders.set("content-type", "application/json");
+  } else if (rawBody !== undefined) {
+    body = rawBody;
+  }
+
+  // GET/HEAD cannot carry a body; surface that as a test bug, not a crash.
+  if (body !== undefined && (verb === "GET" || verb === "HEAD")) {
+    throw new TypeError(`callRoute: ${verb} cannot carry a body — pass method: "POST" or use query`);
+  }
+
+  const request = new NextRequest(buildUrl(path, query), {
+    method: verb, headers: requestHeaders, ...(body === undefined ? {} : { body }),
+  });
+
+  const response = await handler(request, context);
+  if (!response || typeof response.status !== "number") {
+    throw new TypeError("callRoute: handler did not return a Response");
+  }
+
+  const text = await response.text();
+  let parsed = null;
+  if ((response.headers.get("content-type") || "").includes("json")) {
+    try { parsed = JSON.parse(text); } catch { parsed = null; }
+  }
+  return { status: response.status, body: parsed, text, headers: response.headers, response };
+}
