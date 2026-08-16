@@ -45,7 +45,7 @@
 // the end of the after arm (before-state = both uids absent, verified).
 // (Aug 8) That used to say "MUST be deleted" while the cleanup step was a
 // console.log asking a human — against the KEYED database, so each run left
-// two synthetic Passports where listProfiles(500) and the taste-graph
+// two synthetic Passports where listTasteVectors(500) and the taste-graph
 // neighbour scan could read them. A note is not a cleanup step.
 //
 // AMENDMENT HISTORY (declared, chronological):
@@ -208,7 +208,7 @@ if (ARM === "after") {
   // and the cleanup step was this console.log — a message asking a human to
   // remember. This script runs against the KEYED database, so every run of the
   // after arm left two synthetic Passports in production, where they are
-  // visible to listProfiles(500) and therefore to the taste-graph neighbour
+  // visible to listTasteVectors(500) and therefore to the taste-graph neighbour
   // scan: a measurement probe silently becoming other people's recommendation
   // input. (Checked at the time of the fix: production had 0 stranded rows, so
   // the arm had not been run against it or someone cleaned up by hand.)

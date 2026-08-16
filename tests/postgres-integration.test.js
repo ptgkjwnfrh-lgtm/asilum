@@ -695,6 +695,70 @@ test("Postgres serves the profiles recency scan from an index",
   assert.ok(!/Seq Scan on profiles/.test(plan), "the whole-table sort must be gone");
 });
 
+test("Postgres listTasteVectors sends the long vector and nothing else",
+  { skip: !databaseUrl }, async (t) => {
+  // Audit #12 RESIDUAL. The v29 index killed the 362ms sort but the payload
+  // stayed: `SELECT user_id, vec` moved the whole profile blob to compute a
+  // cosine over the long-term vector alone. On live that measured 1,408,369 B
+  // per call, 84% of it `_meta` (the `seen` array alone was 726 kB) — a field
+  // cross-user similarity never reads. Narrowed, the same scan moves 164,606 B.
+  //
+  // Seeds its own rows: reading ambient `profiles` would test the environment,
+  // and this suite already learned that the hard way once.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const ids = {
+    modern: `u-tv-modern-${suffix}`,
+    legacy: `u-tv-legacy-${suffix}`,
+    nulled: `u-tv-null-${suffix}`,
+    empty: `u-tv-empty-${suffix}`,
+  };
+  t.after(async () => {
+    await pool.query("DELETE FROM profiles WHERE user_id = ANY($1)", [Object.values(ids)]);
+  });
+
+  // Modern two-timescale shape, with the fat `_meta` that motivated the change.
+  await pool.query(
+    "INSERT INTO profiles (user_id, vec, updated_at) VALUES ($1, $2::jsonb, now())",
+    [ids.modern, JSON.stringify({
+      long: { minimal: 3, tailoring: 2 },
+      session: { neon: 9 },
+      _meta: { seen: Array.from({ length: 400 }, (_, i) => `item-${i}`) },
+    })]);
+  // Legacy flat profile predating the long/session split — the `|| vec` path.
+  await pool.query(
+    "INSERT INTO profiles (user_id, vec, updated_at) VALUES ($1, $2::jsonb, now())",
+    [ids.legacy, JSON.stringify({ archival: 5 })]);
+  // JSON null long must fall through to the whole vec, exactly as `||` did.
+  await pool.query(
+    "INSERT INTO profiles (user_id, vec, updated_at) VALUES ($1, $2::jsonb, now())",
+    [ids.nulled, JSON.stringify({ long: null, workwear: 4 })]);
+  // An empty object must NOT fall through — `{}` is truthy in the old JS.
+  await pool.query(
+    "INSERT INTO profiles (user_id, vec, updated_at) VALUES ($1, $2::jsonb, now())",
+    [ids.empty, JSON.stringify({ long: {}, session: { loud: 1 } })]);
+
+  const rows = await db.listTasteVectors(1000);
+  const byId = new Map(rows.map((r) => [r.userId, r]));
+
+  const modern = byId.get(ids.modern);
+  assert.ok(modern, "the seeded modern profile must be in the scan");
+  assert.deepEqual(modern.long, { minimal: 3, tailoring: 2 }, "long vector preserved");
+  assert.equal(modern.vec, undefined, "the whole-profile field must be gone from the contract");
+  const serialized = JSON.stringify(modern);
+  assert.ok(!serialized.includes("_meta"), "_meta must never cross the wire");
+  assert.ok(!serialized.includes("neon"), "session must never cross the wire");
+
+  assert.deepEqual(byId.get(ids.legacy).long, { archival: 5 },
+    "a legacy flat profile still resolves to itself");
+  assert.deepEqual(byId.get(ids.nulled).long, { long: null, workwear: 4 },
+    "a JSON-null long falls through to the whole vec, as `vec?.long || vec` did");
+  assert.deepEqual(byId.get(ids.empty).long, {},
+    "an empty long stays empty — `{}` is truthy, so it must not fall through");
+});
+
 test("Postgres enforces board, ticket, and adoption integrity", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
