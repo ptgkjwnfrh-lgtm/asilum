@@ -137,3 +137,34 @@ wrapper around a client child.
 **Recommendation:** option (a). It is the smallest change that respects rule 8,
 tidies the URL, and closes the link-preview gap — and it keeps `noindex` honest
 while the catalog is synthetic.
+
+### Built — option (a), on the owner's ruling
+
+`/piece/<id>` (`app/piece/[id]/page.js`) is a **server** component, which is the
+whole point: it can export `generateMetadata`, and `/?item=<id>` never could.
+
+- **Per-piece preview.** `/piece/syn-0911` serves
+  `<title>Y/Project — slip dress · *ASILUM</title>`, a matching `og:title` and
+  `og:url`, and a self-referential canonical.
+- **The demo warning travels with the card.** The description reads
+  *"dresses · 2020s. A synthetic sample record — not real inventory, not for
+  sale."* A preview is a claim made to someone who has not seen the page, so it
+  carries the same warning the catalog shows in its banner.
+- **`noindex`, and NOT robots-disallowed.** Deliberate, and the two are different
+  jobs: `noindex` keeps a synthetic product out of search results, while leaving
+  the path crawlable is what lets a scraper fetch the page and read the card. A
+  disallow would break the exact preview the route was built to fix.
+- **Rule 8 intact.** The page renders a name, the honest description and a link —
+  nothing else. It hands off to `/?item=<id>` and the modal opens there as
+  always. `tests/piece-url.test.js` fails if `price`, `Favorite`, `Bag`,
+  `related` or a thumbnail ever appear on it.
+- **No link rot.** `shareItem()` now emits `/piece/<id>`, and the old
+  `/?item=<id>` handler stays exactly as it was, so links already shared keep
+  working.
+- **A no-JavaScript reader still gets something true:** the piece's name, the
+  demo note, and a real link into the catalog.
+
+Verified running: the crawler view by reading the served tags, and the human path
+by loading `/piece/syn-0911` and watching it land on `/?item=syn-0911` with the
+dialog open on the right piece. The hand-off uses `router.replace`, so Back from
+the catalog does not bounce forward again.
