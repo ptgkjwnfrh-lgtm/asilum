@@ -60,14 +60,46 @@ result carries no banner explaining itself.
 `WebSite` or `Organization` JSON-LD would be honest and is a reasonable future
 addition. **`Product` stays out until the catalog is real inventory.**
 
-### og:image — absent, not forgotten
+### og:image — shipped 17 August, and it is generated
 
-There is no image asset in `public/`. Declaring `og:image` pointing at a file
-that does not exist renders a broken preview, and inventing a placeholder to
-satisfy a checklist is the same failure in miniature. `twitter:card` is
-`summary` rather than `summary_large_image` for the same reason: a large-image
-card with no image is worse than a small one. **Upgrade both the day a real
-cover image ships.**
+Held back until there was something real to serve: a card declaring an image it
+cannot serve renders broken, and inventing a placeholder to satisfy a checklist
+is the same failure in miniature. Both halves moved together, as this section
+always said they had to — `app/opengraph-image.js` draws a 1200×630 card and
+`twitter:card` is now `summary_large_image`.
+
+**Generated, not committed.** A PNG in `public/` is a second copy of the design
+language that nothing keeps in step, and this palette moved twice in two days for
+contrast (#216 `--sig`, #218/#219 `--red` and `--p2`) — a committed binary would
+have kept the old colours silently. The route draws from the token values in
+`app/globals.css`, and `tests/opengraph-image.test.js` **reads that stylesheet**
+and fails if the two drift. Same discipline as `tests/theme-contrast.test.js`.
+
+**What it says.** The phosphor palette, the red asterisk left of the wordmark,
+and the same sentence the catalog banner shows a reader: *the taste engine is
+real — the clothes are not*, over *A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS*.
+A shared link is seen by people who have not reached the page yet, so the card
+carries the disclosure rather than leaving it behind the click. A test forbids
+"shop now", "in stock" and the rest.
+
+**Type, honestly.** The brand faces (Share Tech Mono, Michroma) ship as WOFF2 and
+Satori reads TTF/OTF/WOFF only. Converting them needs tooling this machine does
+not have, so the card uses the generator's built-in face and leans on what
+survives a font swap: palette, the asterisk, the rules, wide tracking. It does
+not pretend to be the site's typeface. A `fontFamily` and a `fontWeight` were
+written, seen to do nothing in the render, and **removed** — a test keeps them
+out, because a declaration that does nothing describes a card that does not
+exist. If the fonts are ever converted to TTF, pass them via `fonts`.
+
+**Verified as an artifact, not just as source:** served from a running server it
+returns `content-type: image/png`, a valid PNG signature, and 1200×630 read out
+of the IHDR chunk. Next emits `og:image`, `:type`, `:width`, `:height` and `:alt`
+absolutely, through `metadataBase`.
+
+**Per-route cards are deliberately not built.** One card for the site is honest;
+twelve near-identical ones are churn. `/piece/<id>` is the only route with a real
+case for its own card, and it is `noindex` demo inventory — see §"Built —
+option (a)".
 
 ## Open, and not decided here
 

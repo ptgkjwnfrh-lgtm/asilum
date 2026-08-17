@@ -117,19 +117,35 @@ test("no Product JSON-LD anywhere while the catalog is synthetic", () => {
   }
 });
 
-test("no metadata promises an image the repo does not have", () => {
+test("no metadata promises an image the repo cannot serve", () => {
   // A card that declares an image it cannot serve renders as broken, and
   // inventing a placeholder to satisfy a checklist is the same failure smaller.
+  // The rule is a PAIRING, and since 17 August it is pinned in BOTH directions:
+  // a large card requires a source, and a source requires a large card.
+  //
+  // Rewritten from a version whose only real branch asserted `card: "summary"`.
+  // It also used `openGraph:[\s\S]*?images:` — an unbounded reach of exactly the
+  // shape already recorded as a trap in this repo (a guard that matched an
+  // unrelated token fifteen lines away and stayed green under revert).
   const layout = read("app/layout.js");
-  const declaresImage = /openGraph:[\s\S]*?images:/.test(layout);
-  if (declaresImage) {
-    assert.ok(existsSync(ROOT + "public/og.png") || existsSync(ROOT + "public/og.jpg"),
-      "og:image is declared, so the asset must exist in public/");
+
+  // Three ways an image can legitimately exist. The generated metadata route is
+  // the one in use; the static files stay valid answers.
+  const hasSource =
+    existsSync(ROOT + "app/opengraph-image.js") ||
+    existsSync(ROOT + "public/og.png") ||
+    existsSync(ROOT + "public/og.jpg");
+
+  const large = /card:\s*"summary_large_image"/.test(layout);
+  const small = /card:\s*"summary"/.test(layout);
+  assert.ok(large || small, "the layout must declare a twitter card of some size");
+
+  if (large) {
+    assert.ok(hasSource,
+      "summary_large_image with no image source renders a broken preview");
   } else {
-    // The honest state today: no image, and a `summary` card rather than a
-    // large-image one it could not fill.
-    assert.match(layout, /card:\s*"summary"/,
-      "with no OG image, the card must be `summary`, not `summary_large_image`");
+    assert.ok(!hasSource,
+      "an image source exists — the card should be summary_large_image, not summary");
   }
 });
 

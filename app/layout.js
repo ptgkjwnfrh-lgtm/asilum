@@ -34,10 +34,13 @@ export const metadata = {
     type: "website",
     locale: "en_US",
   },
-  // `summary`, not `summary_large_image`: there is no OG image asset in
-  // public/, and declaring a card size we cannot fill would render a broken
-  // preview. Upgrade this the day a real image ships.
-  twitter: { card: "summary", title: "*ASILUM — fashion intelligence OS" },
+  // `summary_large_image` since 17 August, and ONLY because the image now
+  // exists: app/opengraph-image.js generates a real 1200x630 card, verified
+  // served as image/png at those exact dimensions. This was held at `summary`
+  // while there was nothing to fill it — a large card with no image is worse
+  // than a small one. The two move together, and tests/seo.test.js pins the
+  // pairing in both directions so neither can ship without the other.
+  twitter: { card: "summary_large_image", title: "*ASILUM — fashion intelligence OS" },
 };
 
 // Theme + interface mode are applied before first paint so a returning
