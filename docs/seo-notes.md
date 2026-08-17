@@ -71,13 +71,70 @@ cover image ships.**
 
 ## Open, and not decided here
 
-- **Apex vs. www is still an owner ruling** (register of pending rulings, #7).
-  Everything in this repo — `sitemap.js`, `robots.js`, and now every canonical —
-  uses `https://www.asilummagazine.com`. Supabase's Site URL uses the apex.
-  Nothing is broken, but **canonicals are exactly where this inconsistency would
-  start costing ranking**, so it is worth settling.
+- **Apex vs. www — the code half is SETTLED (17 August); one owner step is left.**
+  See §"One canonical host" below.
 - **Stable product URLs — investigated 17 August. It is an owner decision, and
   smaller than it sounds.** Details below.
+
+---
+
+## One canonical host — ruling 7, 17 August
+
+**The apex was serving a complete, indexable copy of the site.** `A @ ->
+76.76.21.21` points `asilummagazine.com` at the same Vercel project, and only
+`asilum.vercel.app` was redirected. So two hosts served every page, and every
+canonical on both named `www`. Google honours a canonical, so nothing was
+*broken* — but the redirect rule's own comment already claimed "One canonical
+host", and that claim was true of the alias and quietly false of the apex.
+
+**What changed.**
+
+1. **`lib/site.js` is the only place the origin appears.** It was hardcoded in
+   nine: `app/layout.js` twice, four segment layouts, `sitemap.js`, `robots.js`,
+   `piece/[id]/page.js`. That is why this ruling was expensive to settle — a
+   nine-file sweep in which one missed file *is* an inconsistent canonical. It is
+   one constant now, overridable with `SITE_ORIGIN` for a fork or staging domain.
+2. **The apex redirects to `www`**, permanently, by the same mechanism already
+   proven on the alias. Preview deployments are deliberately untouched.
+
+**The emitted output is byte-identical** — `robots.txt`, `sitemap.xml` and the
+`/cover` canonical and `og:url` were compared before and after.
+
+### Verified by request, not by reading the docs
+
+A `has` host value is matched **exactly**. That mattered enough to test against a
+running server with `Host` headers, because a suffix match would send `www` to
+`www` forever and take the site down:
+
+| `Host:` | Result |
+|---|---|
+| `asilummagazine.com` | `308 → https://www.asilummagazine.com/discover?q=coat` — **query preserved** |
+| `www.asilummagazine.com` | `200` — no loop |
+| `asilum.vercel.app` | `308 →` www |
+| `asilum-git-fix-x.vercel.app` | `200` — previews stay reachable |
+| `notasilummagazine.com` | `200` — no suffix matching either |
+
+`tests/canonical-host.test.js` holds all of it, and the self-redirect filter is
+its own test: deleting that filter reddens three assertions.
+
+### Auth is safe, and slightly better
+
+Password reset uses `redirectTo: window.location.origin + "/profile?reset=1"`, so
+once a visitor lands on `www` the origin they send **is** `www` — the flow gets
+*more* consistent, not less. An older link naming the apex still works: the 308
+preserves path and query (measured above), and the token exchange happens on
+`supabase.co`, not here. Both origins remain allow-listed in Supabase.
+
+### The one owner step left
+
+**Supabase → Authentication → URL Configuration → Site URL is still the apex**
+(`https://asilummagazine.com`). It is a dashboard field — an agent cannot change
+it — and it is what `{{ .SiteURL }}` resolves to in every auth email. Set it to
+`https://www.asilummagazine.com` and ruling 7 is closed.
+
+If instead ASILUM should *be* the apex, do not edit nine files: change
+`SITE_ORIGIN` in `lib/site.js`. The redirect list inverts itself — `www` starts
+handing traffic to the apex — and a test proves that flip rather than assuming it.
 
 ---
 

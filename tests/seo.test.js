@@ -16,6 +16,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const read = (p) => readFileSync(ROOT + p, "utf8");
@@ -30,7 +31,15 @@ test("the root layout can resolve a canonical at all", () => {
   const layout = read("app/layout.js");
   // Without metadataBase every relative canonical and og:url resolves relative,
   // which is worthless to a crawler.
-  assert.match(layout, /metadataBase:\s*new URL\("https:\/\/www\.asilummagazine\.com"\)/);
+  //
+  // This asserted the literal `new URL("https://www.asilummagazine.com")` until
+  // 17 August, when the origin moved into lib/site.js (ruling 7's code half) —
+  // and it went red, which is how a load-bearing test behaves. It now checks the
+  // wiring here and the RESOLVED value there, which is strictly stronger: the
+  // old form would have passed a lib/site.js whose default was the wrong host.
+  assert.match(layout, /metadataBase:\s*new URL\(SITE_ORIGIN\)/);
+  assert.match(layout, /from "\.\.\/lib\/site\.js"/);
+  assert.equal(SITE_ORIGIN, "https://www.asilummagazine.com");
   // A title template, so routes stop sharing one title.
   assert.match(layout, /template:\s*"%s · \*ASILUM"/);
   assert.match(layout, /alternates:\s*\{\s*canonical:\s*"\/"/);
@@ -63,8 +72,11 @@ test("every public destination carries a canonical and a social card", () => {
     const src = read(`app/${route}/layout.js`);
     assert.match(src, new RegExp(`canonical:\\s*"/${route}"`), `${route} has a canonical`);
     assert.match(src, /openGraph:\s*\{/, `${route} has an OpenGraph block`);
-    assert.match(src, new RegExp(`url:\\s*"https://www\\.asilummagazine\\.com/${route}"`),
-      `${route} og:url is absolute`);
+    // Absolute, and absolute through the ONE origin — see lib/site.js. The
+    // resolved value is asserted too, so this cannot pass on a wrong default.
+    assert.match(src, new RegExp(`url:\\s*siteUrl\\("/${route}"\\)`),
+      `${route} og:url resolves through lib/site.js`);
+    assert.equal(siteUrl(`/${route}`), `https://www.asilummagazine.com/${route}`);
     assert.match(src, /siteName:\s*"\*ASILUM"/);
   }
 });
