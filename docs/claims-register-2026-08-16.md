@@ -35,7 +35,7 @@ response-time promise — it is marked **unverified** rather than assumed true.
 | 10 | Forms with real labels | **was FALSE — fixed** |
 | 11 | Explicit confirmation for destructive actions | **true** |
 | 12 | Works with VoiceOver, NVDA, JAWS | **unverified** |
-| 13 | Browser zoom to 200% | **unverified** |
+| 13 | Browser zoom to 200% | **true — measured** |
 | 14 | Response within five business days | **not verifiable from code** |
 
 ---
@@ -136,10 +136,59 @@ is the same problem in a quieter form.
 - **12. VoiceOver / NVDA / JAWS.** No assistive-technology pass has ever been
   run. The static tests in this repo check *structure*; they cannot tell you
   what a screen reader says. This is the largest remaining gap.
-- **13. Zoom to 200%.** Untested. WCAG 1.4.4 is the criterion, and it is the one
-  the sub-12px type question actually bears on.
+- ~~**13. Zoom to 200%.**~~ **Now measured and true.** See below.
 - **14. Five business days.** A process commitment, unverifiable from code.
   Left to the owner.
+
+---
+
+## Claim 13, measured: 200% zoom passes
+
+**Method.** 200% browser zoom halves the CSS viewport, so a 1280px window
+becomes 640 CSS px. Each route was loaded at a 640px viewport and the document
+measured for horizontal overflow — `documentElement.scrollWidth` against
+`clientWidth`. A horizontal scrollbar is the failure condition for WCAG 1.4.4.
+
+| route | viewport | document scrollWidth | horizontal scrollbar |
+|---|---|---|---|
+| `/` | 640 | 640 | no |
+| `/discover` | 640 | 640 | no |
+| `/hotlist` | 640 | 640 | no |
+| `/cover` | 640 | 640 | no |
+
+**Claim 13 is true.** The elements that do extend past 640 — `.mq` (the ticker)
+and `.snav` (the destination row) — are intentionally scrolling containers, and
+neither extends the document.
+
+### Open finding: `/cover` overflows at viewports below ~392px
+
+Not part of claim 13, and **not a WCAG 1.4.4 failure** — but it is a WCAG 1.4.10
+(Reflow) question, and 1.4.10 is Level AA, so it falls inside the stated
+"WCAG 2.1 AA" target.
+
+At a **320px** viewport `/cover` reports a document `scrollWidth` of **392px**;
+at **375px** it still reports **392px**, a 17px overflow. Every other route
+tested reflows cleanly to 320. Content is visibly clipped at the right edge.
+
+**One cause was found and fixed.** `.cvband` used `grid-template-columns: 1fr`,
+and a bare `1fr` is `minmax(auto, 1fr)` — the column cannot shrink below its
+content's min-content width. That floor was 354px, so `.cvhot` rendered 354px
+wide inside a 292px parent. It is now `minmax(0, 1fr)`, the pattern already used
+by `.roomgrid`, scoped to the existing `@media (max-width: 980px)` block and
+therefore identical at every width where the content fits. Measured after:
+`.cvhot` is 292px.
+
+**A second cause remains and is NOT attributed.** After that fix the document is
+still 392px, with **zero in-flow elements exceeding their parent**. Ruled out:
+`.cvband` (fixed), `.adrawer` (whose `left: 12px + width: 380px` sums to exactly
+392, but which is not in the DOM on this route — the match is coincidence), and
+the fixed-position `.os-frame` / `.tophead` / `.os-crt`, which are 392 *because*
+their containing block is 392 and are therefore symptoms rather than causes.
+
+This is left open deliberately rather than guessed at. **Do not record `/cover`
+as passing or failing 1.4.10 until the residual 392px floor is identified** —
+the measurement cannot currently separate a real defect from emulated
+layout-viewport behaviour at that width.
 
 ---
 
@@ -156,8 +205,8 @@ is a design decision, not an accessibility fix.
 
 ## Standing instruction
 
-**Do not revise `app/accessibility/page.js` until claims 5, 12 and 13 are either
-verified or narrowed.** The page is closer to true than it was — the two false
+**Do not revise `app/accessibility/page.js` until claims 5 and 12 are either
+verified or narrowed.** Claim 13 is now measured and true. The page is closer to true than it was — the two false
 claims are now true — but "full keyboard operability" and the named screen
 readers are still asserted without evidence. Fixing the statement means either
 doing the work or softening the wording; it does not mean editing the page to
