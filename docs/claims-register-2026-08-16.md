@@ -27,7 +27,7 @@ response-time promise — it is marked **unverified** rather than assumed true.
 | 2 | Accessibility checks are in the release gates | **true** |
 | 3 | Semantic structure: headings and landmarks | **true** |
 | 4 | Skip-to-content link | **true** |
-| 5 | Full keyboard operability of navigation and controls | **operability verified; focus order not** |
+| 5 | Full keyboard operability of navigation and controls | **verified — modal focus was FALSE, fixed** |
 | 6 | Visible focus | **was FALSE — fixed** |
 | 7 | Text alternatives on imagery, including generated placeholders | **true** |
 | 8 | High-contrast palette in both themes | **true** (one stale literal fixed) |
@@ -128,8 +128,10 @@ and the register's token test now enforces it for every focus rule.
 These are **not** claimed to be false. They are claimed without evidence, which
 is the same problem in a quieter form.
 
-- **5. "Full keyboard operability."** The *operability* half is now verified and
-  guarded; the *focus order* half is not. See below.
+- **5. "Full keyboard operability."** Operability, focus order and the modal's
+  focus behaviour are now all verified and guarded. See below. What remains
+  unchecked is only the subjective half — whether the order *reads* sensibly to
+  a person, which is part of the screen-reader pass in claim 12.
 - **12. VoiceOver / NVDA / JAWS.** No assistive-technology pass has ever been
   run. The static tests in this repo check *structure*; they cannot tell you
   what a screen reader says. This is the largest remaining gap.
@@ -219,6 +221,46 @@ link.
 *order* (WCAG 2.4.3) and keyboard *traps* (2.1.2) need a real tab-through by a
 person. A static sweep proves every control can be reached; it cannot prove they
 are reached in a sensible order, or that focus can always get back out.
+
+---
+
+## Claim 5, second half: focus order and the modal
+
+**Focus order (WCAG 2.4.3) is sound by construction.** Tab order follows DOM
+order unless something overrides it, and nothing here does: there is **no
+positive `tabIndex` anywhere** in `app/` (the single `tabIndex` use is `{0}`,
+which is correct), and **zero `order:` declarations** in `globals.css`, so flex
+and grid never reorder content away from its source order. The two `reverse`
+matches are animation directions, not flex directions.
+
+**The modal was the real defect, and `aria-modal` was lying.** The item detail
+declared `aria-modal="true"` — which tells assistive technology everything
+behind it is inert — while, verified with a **real click and real Tab presses**:
+
+- focus stayed on the trigger **behind** the layer when the dialog opened;
+- **200 focusable elements behind it remained tabbable**;
+- nothing was `inert`.
+
+So a keyboard user opened a piece, kept focus in the catalog, and could tab
+through a page they could no longer see — while a screen-reader user was told
+the opposite. The code's own comment claimed "the page behind it was inert",
+which is precisely what was untrue.
+
+**Fixed** with `useFocusTrap` in `app/components/dismiss.js`, the module that
+already owns the dismissal contract. Focus moves in on open, Tab cycles inside,
+and focus is **restored to whatever opened the dialog** on close — the half
+people forget, without which closing a dialog drops the user at the top of the
+document. Escape still closes it, so this is not a trap the user cannot leave
+(that would be WCAG 2.1.2).
+
+**Verified end to end with real input, not simulated events:** click a card
+title → focus lands on "close item detail"; **35 Tab presses → focus never
+leaves the dialog**; Escape → dialog closes and focus returns to the exact card
+title that opened it.
+
+`tests/a11y-modal-focus.test.js` guards the **pairing**: nothing may declare
+`aria-modal` without being wired to the trap. Focus behaviour cannot be asserted
+from source, but that pairing is the thing that actually regressed.
 
 ---
 
