@@ -39,6 +39,7 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState([]);
   const [bagHistory, setBagHistory] = useState([]);
   const [boardFollows, setBoardFollows] = useState(0);
+  const [brandFollows, setBrandFollows] = useState(0);
   const [since, setSince] = useState("");
 
   useEffect(() => {
@@ -81,6 +82,18 @@ export default function ProfilePage() {
       .then((r) => r.json())
       .then((d) => setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0))
       .catch(() => {});
+  }, []);
+
+  // BRANDS in the header counts FOLLOWED brands (metric-definition audit,
+  // Aug 17 — it used to count distinct brands in bag history). Held in state
+  // and refreshed on "asilum:follow" so the header agrees with the BRANDS tab
+  // the moment a chip is toggled there; a render-time read would have gone
+  // stale, because the tab keeps its own local copy.
+  useEffect(() => {
+    const read = () => setBrandFollows(followedBrands().length);
+    read();
+    window.addEventListener("asilum:follow", read);
+    return () => window.removeEventListener("asilum:follow", read);
   }, []);
 
   // The shell's ACCOUNT link lands on /profile#access — open that tab, on
@@ -169,9 +182,14 @@ export default function ProfilePage() {
 
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
+  // Brands seen in bag history. These are the BRANDS tab's *candidates* to
+  // follow — they are not brands this reader follows, and the header counter no
+  // longer reports them as such (metric-definition audit, Aug 17): with an
+  // empty bag and five followed brands the header read "0 BRANDS" while the tab
+  // listed five under FOLLOWING, and brand follows were counted in neither
+  // FOLLOWING (readers + boards) nor BRANDS.
   const brands = [...new Set(bagHistory.map((o) => o.brand).filter(Boolean))];
   const followingCount = followedUsers().length + boardFollows;
-  const followers = 0;
 
   return (
     <div className="wrap">
@@ -212,11 +230,17 @@ export default function ProfilePage() {
             </>
           )}
           {since && <div className="pmeta">MEMBER SINCE {since}</div>}
+          {/* FOLLOWERS prints "—", not 0 (metric-definition audit, Aug 17).
+              There is no follower state anywhere in lib/ or app/api — the word
+              does not appear in either — so a literal 0 was a measurement of a
+              thing nobody measures, and it read as "nobody follows you". This
+              is the /stats rule applied here: anything not measurable prints
+              "—" rather than a zero that would read as a fact. */}
           <div className="pcounts">
             <span><b>{posts.length}</b> POSTS</span>
             <span><b>{followingCount}</b> FOLLOWING</span>
-            <span><b>{brands.length}</b> BRANDS</span>
-            <span><b>{followers}</b> FOLLOWERS</span>
+            <span><b>{brandFollows}</b> BRANDS</span>
+            <span><b title="ASILUM does not track followers yet">—</b> FOLLOWERS</span>
           </div>
         </div>
         <button className="btn ghost" onClick={() => setEditing((e) => !e)}>

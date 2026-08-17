@@ -21,6 +21,7 @@ import {
 } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
+import { systemLedger } from "./ledger.js";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
@@ -81,9 +82,29 @@ export default function CoverPage() {
     // no longer does — the hotlist is TEN BOOTHS for verified independent
     // brands (owner overhaul, Aug 13), and with no commerce pipeline yet
     // every booth honestly reads OPEN.
-    authorizedFetch("/api/stats")
-      .then((r) => r.json())
-      .then((s) => setSys(s))
+    //
+    // WHAT WAS WRONG (Aug 17, metric-definition audit). This never checked
+    // r.ok — the same defect the /stats page had fixed on Aug 8 — and it went
+    // live-visible the moment /api/stats became STAFF-ONLY (Aug 16, P0-1). A
+    // visitor's device cookie now earns 401 `{error}`, which is a TRUTHY body,
+    // so `sys` was set to the error and the folio interpolated it:
+    //   SYSTEM LEDGER — undefined INTERACTIONS · undefined READERS ·
+    //   undefined BOARDS · undefined GRAPH EDGES
+    // in the masthead AND the colophon, one line above "EVERY VALUE ON THIS
+    // PAGE IS REAL STATE". Worse than the undefineds: `sys.persistent` was
+    // undefined too, so the STATE marginalia printed "MEMORY MODE" on a
+    // deployment running Postgres — a false claim about the system itself.
+    // Browser-confirmed before the fix, both readings.
+    //
+    // The house numbers are staff data now, so this reads the SAME
+    // sessionStorage slot THE DESK and /stats use rather than inventing a
+    // second credential. No token, or a refused one, means the folio and the
+    // STATE marginalia are NOT DRAWN — the cover prints what it can read.
+    let staffToken = "";
+    try { staffToken = window.sessionStorage.getItem("asilum-admin-token") || ""; } catch {}
+    fetch("/api/stats", staffToken ? { headers: { Authorization: "Bearer " + staffToken } } : undefined)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((s) => { if (s) setSys(s); })
       .catch(() => {});
     fetch("/api/business?booths=1")
       .then((r) => r.json())
@@ -113,9 +134,10 @@ export default function CoverPage() {
     setText("");
   }
 
-  const ledger = sys
-    ? `${sys.interactions} INTERACTIONS · ${sys.users} READERS · ${sys.boards} BOARDS · ${sys.edges} GRAPH EDGES`
-    : "";
+  // Built field by field from values that ARE numbers, not by interpolating
+  // whatever arrived. The r.ok check above is the fix; ledger.js is the guard
+  // that outlives it, and it is a module so a test can hold it.
+  const ledger = systemLedger(sys);
 
   return (
     <div className="wrap cvr">
@@ -223,9 +245,16 @@ export default function CoverPage() {
         </section>
 
         <section className="cvlooks" aria-label="tonight's looks">
-          <span className="cvside" aria-hidden="true">
-            STATE — {sys ? (sys.persistent ? "PERSISTENT LEDGER" : "MEMORY MODE") : "READING"}
-          </span>
+          {/* Only drawn when the ledger was actually read. "READING" was a
+              placeholder for a request still in flight, and it outlived the
+              request — a refused read left it saying READING forever, and an
+              error body made it say MEMORY MODE. Marginalia is absolutely
+              positioned, so omitting it costs no layout. */}
+          {sys && (
+            <span className="cvside" aria-hidden="true">
+              STATE — {sys.persistent ? "PERSISTENT LEDGER" : "MEMORY MODE"}
+            </span>
+          )}
           <div className="cvkick">TONIGHT&apos;S LOOKS — STYLED BY ASTERISK</div>
           {looks.map((lk, i) => (
             <a className="cvlook" key={i} href="/stylist">

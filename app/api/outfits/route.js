@@ -77,7 +77,14 @@ function modelLook(outfit) {
     : 85;
   return {
     items: outfit.items || [], conf,
-    curated: conf, tasteStat: conf,
+    // NOT `curated: conf, tasteStat: conf` (metric-definition audit, Aug 17).
+    // Those two are REAL percentages when a look comes from buildSlate —
+    // curated is mean pairwise coherence, tasteStat is mean taste similarity —
+    // and copying `conf` into both made the AI TREND EDIT group print CURATED,
+    // TASTE and MATCH as three differently-labelled identical numbers. The
+    // model returns one score and no decomposition, so these are null and the
+    // client omits them. A missing stat is honest; a duplicated one is not.
+    curated: null, tasteStat: null,
     total: (outfit.items || []).reduce((sum, item) => sum + (Number(item.price) || 0), 0),
     dominantTag: (outfit.matchedTags?.[0] || "AI EDIT").toUpperCase(),
     fitNotes: outfit.warnings || [],

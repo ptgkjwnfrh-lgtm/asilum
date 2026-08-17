@@ -245,12 +245,22 @@ export default function StylistPage() {
                       );
                     })}
                   </div>
+                  {/* CURATED and TASTE are genuine percentages (mean coherence
+                      and mean taste similarity, both 0–1 × 100) and keep the %.
+                      MATCH does not: `conf` is a calibrated 75–99 DISPLAY of
+                      relative rank, which lib/brain/stylist.js documents as
+                      "not a literal purchase probability" and asks the UI to
+                      keep honest — so the % is gone and the scale is stated.
+                      It also matched the .otfconf chip above, which never had
+                      one; the same number now reads the same way twice.
+                      A null stat is OMITTED, not printed as "null%": the AI
+                      TREND EDIT group has no coherence/taste decomposition. */}
                   <div className="lookstats">
                     <span>TOTAL <b>USD {Math.round(o.total || 0)}</b></span>
-                    <span>CURATED <b>{o.curated}%</b></span>
-                    <span>TASTE <b>{o.tasteStat}%</b></span>
+                    {Number.isFinite(o.curated) ? <span>CURATED <b>{o.curated}%</b></span> : null}
+                    {Number.isFinite(o.tasteStat) ? <span>TASTE <b>{o.tasteStat}%</b></span> : null}
                     <span><b>{nSources}</b> {nSources === 1 ? "SOURCE" : "SOURCES"}</span>
-                    <span>MATCH <b className="red">{o.conf}%</b></span>
+                    <span>MATCH <b className="red">{o.conf}</b> <i className="lsscale">of 99</i></span>
                   </div>
                   {o.fitNotes && o.fitNotes.length ? (
                     <div className="otffit">{o.fitNotes.join(" · ")}</div>
