@@ -175,6 +175,10 @@ export default function ProfilePage() {
 
   return (
     <div className="wrap">
+      {/* PROFILE had no page heading of any kind. The person's name is the
+          honest h1 for their own profile; it falls back to the destination
+          name before the profile has loaded one. */}
+      <h1 className="a11yhead">{info.name ? `${info.name} — Profile` : "Profile"}</h1>
       <div
         className="pbanner"
         style={info.bannerImg ? { backgroundImage: `url(${info.bannerImg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}

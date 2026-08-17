@@ -463,6 +463,11 @@ export default function DiscoverPage() {
         <div className="empty">nothing matches — loosen a filter.</div>
       )}
 
+      {/* The whole card was one clickable div — reachable by mouse only, and it
+          wrapped the Favorite/Bag/Buy buttons, so a nested control inside a
+          link-shaped region. The title is now the single real control and
+          carries the accessible name; the image and card keep their pointer
+          affordance. (launch audit, Aug 16) */}
       <div className="grid">
         {items.map((it) => (
           <div
@@ -471,12 +476,18 @@ export default function DiscoverPage() {
             style={{ cursor: "pointer" }}
             onClick={() => { window.location.href = "/?item=" + encodeURIComponent(it.id); }}
           >
-            <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
-              <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
+            <div className="imgwrap" aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+              <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
             </div>
             <div className="body">
               <div className="brand2">{it.brand}</div>
-              <div className="ttl">{it.title}</div>
+              <a
+                className="ttl"
+                href={"/?item=" + encodeURIComponent(it.id)}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {it.title}
+              </a>
               <div className="meta">
                 {it.category ? <span className="cat">{it.category}</span> : null}
                 {/* A demo record carries the demo flag instead of a source

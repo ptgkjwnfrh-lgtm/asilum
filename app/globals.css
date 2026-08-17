@@ -392,7 +392,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .mimg { flex: 0 0 46%; border-right: 1px solid var(--line); }
 .mimg img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 400px; }
 .mbody { flex: 1; padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; }
-.mbody .ttl { font-size: var(--ed-fs-modalttl, 17px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
+.mbody .ttl { margin: 0; font-size: var(--ed-fs-modalttl, 17px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
 .brand2 { font-size: 13px; font-weight: 800; color: var(--grey); }
 .pricerow { display: flex; align-items: baseline; gap: 10px; }
 .price { font-size: 14px; font-weight: 800; }
@@ -966,6 +966,36 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
    for accommodations. */
 
 /* Skip-to-content: invisible until keyboard focus lands on it. */
+/* A heading for assistive technology where the visual masthead is built from
+   styled spans rather than a heading element (launch audit, Aug 16: /cover and
+   /profile had no semantic page heading at all). Clip rather than
+   display:none — hidden content is not announced, and the point is to be
+   announced. The visual design is untouched, which is also why this is a
+   separate element rather than a restyled h1. */
+.a11yhead {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* The card title is a real control now (button on CATALOG, link on DISCOVER),
+   so it needs the type it had as a div back, plus a focus ring — the audit
+   counted focus rules that removed the outline and leaned on a border colour,
+   which a keyboard user cannot follow. */
+.card .ttl {
+  display: block; width: 100%;
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; text-align: left; text-decoration: none;
+}
+.card .ttl:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
 .skiplink {
   position: absolute;
   left: -9999px;
