@@ -10,6 +10,8 @@
 // and the API are not search material — they render per-identity state and
 // belong to the reader, not the index. Keep this list in step with
 // app/sitemap.js when pages are added.
+import { siteUrl } from "../lib/site.js";
+
 export default function robots() {
   return {
     rules: [
@@ -29,6 +31,6 @@ export default function robots() {
         ],
       },
     ],
-    sitemap: "https://www.asilummagazine.com/sitemap.xml",
+    sitemap: siteUrl("/sitemap.xml"),
   };
 }

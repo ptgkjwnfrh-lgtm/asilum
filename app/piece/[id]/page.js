@@ -22,8 +22,9 @@
 import { getItem } from "../../../lib/db/index.js";
 import { isDemoItem } from "../../../lib/social.js";
 import PieceHandoff from "./handoff.js";
+import { SITE_ORIGIN } from "../../../lib/site.js";
 
-const BASE = "https://www.asilummagazine.com";
+const BASE = SITE_ORIGIN;
 
 // One shared read, so generateMetadata and the page body cannot disagree about
 // what this piece is.

@@ -4,7 +4,9 @@
 // crawlable but are not enumerated here — they enter the index through
 // links, not a directory. lastModified is deliberately omitted: a build
 // date would claim freshness the content may not have.
-const BASE = "https://www.asilummagazine.com";
+import { SITE_ORIGIN } from "../lib/site.js";
+
+const BASE = SITE_ORIGIN;
 
 export default function sitemap() {
   return [

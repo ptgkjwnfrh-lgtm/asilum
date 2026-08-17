@@ -3,6 +3,7 @@
 
 import "./globals.css";
 import Shell from "./shell.js";
+import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 
 // Site-level metadata. `metadataBase` makes every relative canonical and
 // og:url below resolve; without it Next emits them relative and they are
@@ -16,7 +17,7 @@ import Shell from "./shell.js";
 //
 // Deliberately absent: og:image and Product JSON-LD. See docs/seo-notes.md.
 export const metadata = {
-  metadataBase: new URL("https://www.asilummagazine.com"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "*ASILUM — fashion intelligence OS",
     template: "%s · *ASILUM",
@@ -28,7 +29,7 @@ export const metadata = {
     title: "*ASILUM — fashion intelligence OS",
     description:
       "A learning moodboard engine that reads your taste across six bridges. The catalog is a demo archive of synthetic sample records.",
-    url: "https://www.asilummagazine.com/",
+    url: siteUrl("/"),
     siteName: "*ASILUM",
     type: "website",
     locale: "en_US",

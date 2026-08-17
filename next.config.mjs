@@ -1,3 +1,5 @@
+import { REDIRECT_HOSTS, SITE_ORIGIN } from "./lib/site.js";
+
 const isProduction = process.env.NODE_ENV === "production";
 
 const contentSecurityPolicy = [
@@ -35,20 +37,31 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
-  // One canonical host. The production alias asilum.vercel.app serves the
-  // identical site and is fully indexable — now that Google crawls us it
-  // could index the wrong domain. Preview deployments (asilum-git-*, per-PR
-  // URLs) are NOT matched: Vercel already noindexes them and they must stay
-  // reachable for review.
+  // One canonical host. Every duplicate host that serves this project hands its
+  // traffic to SITE_HOST; the list and the never-redirect-to-yourself filter live
+  // in lib/site.js. Preview deployments (asilum-git-*, per-PR URLs) are NOT
+  // matched: Vercel already noindexes them and they must stay reachable.
+  //
+  // THE APEX WAS ADDED 17 AUGUST (ruling 7's code half). `A @ -> 76.76.21.21`
+  // points the apex at this same project, so `asilummagazine.com` was serving a
+  // complete, indexable copy of the site whose every canonical named `www` — the
+  // stated principle above was true of the vercel.app alias and quietly false of
+  // the apex. Safe for auth: reset links use `redirectTo:
+  // window.location.origin + "/profile?reset=1"`, so once a visitor lands on
+  // www the origin they send IS www, and a 308 preserves path and query for any
+  // older link that still names the apex. The token exchange happens on
+  // supabase.co, not here.
+  //
+  // A `has` host value is matched EXACTLY — verified by request, not assumed,
+  // because a substring match would make www redirect to itself and take the
+  // site down. See tests/canonical-host.test.js.
   async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "asilum.vercel.app" }],
-        destination: "https://www.asilummagazine.com/:path*",
-        permanent: true,
-      },
-    ];
+    return REDIRECT_HOSTS.map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host", value: host }],
+      destination: `${SITE_ORIGIN}/:path*`,
+      permanent: true,
+    }));
   },
 };
 
