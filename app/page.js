@@ -514,7 +514,11 @@ export default function Home() {
   }
 
   async function shareItem(item) {
-    const url = window.location.origin + "/?item=" + encodeURIComponent(item.id);
+    // /piece/<id>, not /?item=<id>: the stable path carries the piece's OWN
+    // link preview (app/piece/[id]/page.js). The old query-parameter form still
+    // works — links already shared must not rot — but a new share should be the
+    // one that previews correctly.
+    const url = window.location.origin + "/piece/" + encodeURIComponent(item.id);
     try { await navigator.clipboard.writeText(url); setNotice("item link copied — it carries its taste graph"); } catch {}
     postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) }).catch(() => {});
   }
