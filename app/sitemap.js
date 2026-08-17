@@ -9,6 +9,7 @@ const BASE = "https://www.asilummagazine.com";
 export default function sitemap() {
   return [
     { url: BASE + "/", changeFrequency: "daily", priority: 1 },
+    { url: BASE + "/cover", changeFrequency: "daily", priority: 0.9 },
     { url: BASE + "/discover", changeFrequency: "daily", priority: 0.9 },
     { url: BASE + "/hotlist", changeFrequency: "daily", priority: 0.8 },
     { url: BASE + "/stylist", changeFrequency: "weekly", priority: 0.7 },

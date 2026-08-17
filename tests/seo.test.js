@@ -1,0 +1,129 @@
+// tests/seo.test.js — what the site tells a crawler must match what it tells a reader.
+//
+// The catalog is a demo: every piece is a synthetic sample record, not real
+// inventory (owner ruling, #212), and the page says so in a red-bordered banner.
+// Search metadata is the same promise made to a machine, so it is held to the
+// same standard. See docs/seo-notes.md for the reasoning; these tests are that
+// document made executable.
+//
+// The sharpest rule here is a NEGATIVE one: no Product JSON-LD. Structured
+// product data is what puts a price and an availability into a search result and
+// into Google Shopping. Every product on this site is fabricated, so emitting it
+// would push invented prices into a shopping index — and unlike a labelled page,
+// a rich result carries no banner explaining itself.
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const read = (p) => readFileSync(ROOT + p, "utf8");
+
+// Routes whose pages render per-identity state. These must be noindex AND
+// disallowed — the two mechanisms do different jobs (see the notes).
+const PERSONAL = ["board", "profile", "settings", "orders", "asterisk", "upload", "stats", "admin"];
+// Public destinations that carry a social card.
+const PUBLIC = ["cover", "discover", "hotlist", "stylist"];
+
+test("the root layout can resolve a canonical at all", () => {
+  const layout = read("app/layout.js");
+  // Without metadataBase every relative canonical and og:url resolves relative,
+  // which is worthless to a crawler.
+  assert.match(layout, /metadataBase:\s*new URL\("https:\/\/www\.asilummagazine\.com"\)/);
+  // A title template, so routes stop sharing one title.
+  assert.match(layout, /template:\s*"%s · \*ASILUM"/);
+  assert.match(layout, /alternates:\s*\{\s*canonical:\s*"\/"/);
+});
+
+test("every personal surface is noindex and self-canonical", () => {
+  for (const route of PERSONAL) {
+    const p = `app/${route}/layout.js`;
+    assert.ok(existsSync(ROOT + p), `${route} has a segment layout carrying metadata`);
+    const src = read(p);
+    assert.match(src, /robots:\s*\{\s*index:\s*false,\s*follow:\s*false\s*\}/, `${route} is noindex`);
+    // Self-referential: inheriting the root's "/" would tell a crawler the
+    // content really lives at the homepage while also saying do not index it.
+    assert.match(src, new RegExp(`canonical:\\s*"/${route}"`), `${route} canonicalises to itself`);
+  }
+});
+
+test("robots.txt and the noindex set do not disagree", () => {
+  // These drifted once already: /upload was noindex in metadata but missing
+  // from the disallow list, so a crawler was free to fetch it.
+  const robots = read("app/robots.js");
+  for (const route of PERSONAL) {
+    assert.match(robots, new RegExp(`"/${route}"`),
+      `/${route} is noindex in metadata, so robots.txt must disallow it too`);
+  }
+});
+
+test("every public destination carries a canonical and a social card", () => {
+  for (const route of PUBLIC) {
+    const src = read(`app/${route}/layout.js`);
+    assert.match(src, new RegExp(`canonical:\\s*"/${route}"`), `${route} has a canonical`);
+    assert.match(src, /openGraph:\s*\{/, `${route} has an OpenGraph block`);
+    assert.match(src, new RegExp(`url:\\s*"https://www\\.asilummagazine\\.com/${route}"`),
+      `${route} og:url is absolute`);
+    assert.match(src, /siteName:\s*"\*ASILUM"/);
+  }
+});
+
+test("the sitemap lists the public destinations and no personal one", () => {
+  const sitemap = read("app/sitemap.js");
+  for (const route of PUBLIC) {
+    assert.match(sitemap, new RegExp(`"/${route}"`), `/${route} is in the sitemap`);
+  }
+  for (const route of PERSONAL) {
+    assert.doesNotMatch(sitemap, new RegExp(`BASE \\+ "/${route}"`),
+      `/${route} is personal and must not be advertised`);
+  }
+});
+
+// ------------------------------------------------- the rule that matters most
+
+test("no Product JSON-LD anywhere while the catalog is synthetic", () => {
+  const files = [];
+  (function walk(d) {
+    for (const entry of readdirSync(d)) {
+      if (entry === "node_modules" || entry === ".next" || entry === ".git") continue;
+      const p = d + "/" + entry;
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.jsx?$/.test(entry)) files.push(p);
+    }
+  })(ROOT + "app");
+
+  for (const file of files) {
+    const src = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    if (!/application\/ld\+json/.test(src)) continue;
+    // Any structured data at all is fine — Organization and WebSite are honest.
+    // Product, Offer and AggregateRating are not, because the products are not real.
+    for (const forbidden of ['"@type": "Product"', '"@type":"Product"', '"@type": "Offer"', '"@type":"Offer"', "AggregateRating"]) {
+      assert.equal(src.includes(forbidden), false,
+        `${file.slice(ROOT.length)} emits ${forbidden} — the catalog is synthetic sample data`);
+    }
+  }
+});
+
+test("no metadata promises an image the repo does not have", () => {
+  // A card that declares an image it cannot serve renders as broken, and
+  // inventing a placeholder to satisfy a checklist is the same failure smaller.
+  const layout = read("app/layout.js");
+  const declaresImage = /openGraph:[\s\S]*?images:/.test(layout);
+  if (declaresImage) {
+    assert.ok(existsSync(ROOT + "public/og.png") || existsSync(ROOT + "public/og.jpg"),
+      "og:image is declared, so the asset must exist in public/");
+  } else {
+    // The honest state today: no image, and a `summary` card rather than a
+    // large-image one it could not fill.
+    assert.match(layout, /card:\s*"summary"/,
+      "with no OG image, the card must be `summary`, not `summary_large_image`");
+  }
+});
+
+test("the public descriptions say the catalog is synthetic", () => {
+  // The banner on the page and the sentence in a search result must agree.
+  assert.match(read("app/layout.js"), /synthetic sample records/);
+  assert.match(read("app/discover/layout.js"), /synthetic sample records/);
+  assert.match(read("app/stylist/layout.js"), /synthetic sample records/);
+});
