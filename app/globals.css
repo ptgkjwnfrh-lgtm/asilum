@@ -188,6 +188,7 @@ button { font-family: var(--helv); }
 }
 
 
+.search:focus { border-bottom-color: var(--sig); }
 .panel {
   position: fixed; z-index: 60; width: 330px; max-height: 70vh; overflow-y: auto;
   background: var(--paper); border: 1px solid var(--line); padding: 16px;
@@ -291,6 +292,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   flex: 1; min-width: 220px; border: 1px solid var(--line); background: var(--paper);
   padding: 11px 13px; font-size: 14px; outline: none; font-family: var(--helv);
 }
+.controls input[type='text']:focus { border-color: var(--sig); }
 .filters { display: flex; gap: 10px; margin: 10px 0 4px; flex-wrap: wrap; align-items: center; }
 .filters select, .filters input {
   border: 1px solid var(--line); background: var(--paper); color: var(--ink);
@@ -580,6 +582,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   width: 100%; border: 1px solid var(--line); padding: 8px 10px; font-size: 13px;
   outline: none; font-family: var(--helv); background: var(--paper);
 }
+.usearch input:focus { border-color: var(--sig); }
 .usearchhits { margin-top: 4px; }
 
 /* ---- Multi-search dropdown ---- */
@@ -772,6 +775,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
   width: 100%; border: none; resize: none; outline: none;
   font-family: var(--helv); font-size: 16px; font-weight: 500; background: transparent;
 }
+.composer2 textarea:focus { outline: 2px solid var(--sig); outline-offset: 2px; }
 .cbar { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
 .cicons { display: flex; gap: 10px; }
 .cicons button { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--grey); padding: 0; }
@@ -1036,7 +1040,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .skiplink:focus {
   left: 8px;
   top: 8px;
-  outline: 2px solid #e5342b;
+  outline: 2px solid var(--red);
 }
 
 /* Motion stops for anyone whose system asks for reduced motion — the
