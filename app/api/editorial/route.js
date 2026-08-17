@@ -108,6 +108,26 @@ export async function POST(req) {
   const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  // POSTING REQUIRES A SIGNED-IN ACCOUNT (launch-readiness audit, Aug 16).
+  // A device cookie proves a browser, not a person, and browsers are free:
+  // before this, any signed-out visitor could publish to the wire and a
+  // disposable identity could do it repeatedly. That is an anonymous abuse
+  // surface with no moderation, reporting, or takedown behind it.
+  //
+  // Deliberately checked BEFORE the body is sanitized or any quota is spent,
+  // so a caller who cannot post learns that first and cannot use the endpoint
+  // to probe the sanitizer. 403, not 401 — the caller's identity is real and
+  // proven; it is simply not the KIND of identity that may publish.
+  //
+  // Reading, engaging and editing are untouched. This is not the pending
+  // "designers only vs everyone posts" ruling — that decides WHICH accounts
+  // may post. This only establishes that an account is required at all.
+  if (!accountIdFromIdentity(user)) {
+    return NextResponse.json({
+      error: "posting to the wire requires a signed-in account",
+      note: "sign in on PROFILE — a device on its own cannot publish",
+    }, { status: 403 });
+  }
   let text;
   try {
     text = sanitizeStatement(String(body.text || "").trim().slice(0, POST_MAX), POST_MAX);

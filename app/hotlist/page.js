@@ -181,23 +181,34 @@ export default function TheWirePage() {
     if (!t) return;
     const cap = caption.trim();
     const info = getProfileInfo();
-    addPost(t, info, cap);
-    // The server's verdict decides the note — a held-for-review post is
-    // saved but invisible to others, and saying "live" would be a lie.
+    // The device copy is written only AFTER the server accepts.
+    //
+    // It used to be written first, for instant render, and the handler below
+    // only ever asked whether the post was HELD — so any refusal set the note
+    // to "" and left the copy in place. Once posting began requiring a
+    // signed-in account (Aug-16 audit), that turned into the worst possible
+    // outcome: a signed-out visitor saw their transmission appear on their own
+    // wire, with no error, having published nothing. The honesty contract says
+    // a refusal must look like a refusal.
     postJSON("/api/editorial", {
       user: getUid(), handle: info.handle || info.name,
       text: t, title: cap || undefined,
     })
       .then(async (res) => {
         const d = await res.json().catch(() => null);
+        if (!res.ok) {
+          // The server's own words — it knows why better than this page does.
+          setWireNote((d && (d.error || d.note)) || "the wire did not accept that transmission");
+          return;
+        }
+        addPost(t, info, cap);
         setWireNote(d && d.held ? (d.note || "your transmission is saved and paused for a human review") : "");
+        setText("");
+        setCaption("");
         loadWire();
         loadMine();
       })
-      .catch(() => setWireNote("saved on this device — the shared wire could not be reached"));
-    loadWire();
-    setText("");
-    setCaption("");
+      .catch(() => setWireNote("the shared wire could not be reached — nothing was published"));
   }
 
   return (

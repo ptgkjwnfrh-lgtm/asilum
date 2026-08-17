@@ -19,34 +19,55 @@ export default function StatsPage() {
   // still reading; available:false = the database is required and this
   // deploy has none, which the page says rather than drawing zeros.
   const [ops, setOps] = useState(null);
+  // Whether this tab holds the staff token. false = the house numbers are not
+  // read at all, rather than requested and refused.
+  const [staffed, setStaffed] = useState(false);
 
   useEffect(() => {
+    // The house's own numbers are STAFF-ONLY as of the Aug-16 audit: a signed
+    // device cookie is proof of a browser, not of staff, so /api/stats now
+    // wants ADMIN_TOKEN. The token is read from the same sessionStorage slot
+    // THE DESK uses — unlock the desk once and this page reads too. It is
+    // never stored on the device and never put in the URL.
+    let token = "";
+    try { token = window.sessionStorage.getItem("asilum-admin-token") || ""; } catch {}
+    setStaffed(!!token);
+
+    // The visitor's OWN brain state is not staff data and stays open — it is
+    // read from /api/profile, which binds to their identity.
+    authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
+      .then((r) => r.json())
+      .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
+      .catch(() => {});
+
+    if (!token) {
+      setStatsError(null);
+      setOps(null);
+      return;
+    }
+    const auth = { headers: { Authorization: "Bearer " + token } };
+
     // WHAT WAS WRONG (Aug 8, codebase audit). This never checked r.ok, so an
     // ERROR BODY was stored as `stats`. The render below treats any truthy
     // `stats` as the dashboard and reaches `Object.entries(stats.actions)` —
     // undefined on an error body — which THROWS and takes the whole page down.
-    // /api/stats really does return 401 "identity required" and 429, and the
-    // 401 is reachable from the identity bug fixed alongside this in
-    // lib/client.js: no device cookie, so no identity, so 401, so a crash.
-    fetch("/api/stats")
+    fetch("/api/stats", auth)
       .then(async (r) => {
         if (!r.ok) {
           setStatsError(r.status === 401
-            ? "sign of life needed — this dashboard reads your own identity, and none was issued"
-            : `stats unavailable (${r.status})`);
+            ? "that token is not the one the server holds"
+            : r.status === 503
+              ? "ADMIN_TOKEN is unset on this deploy — the dashboard stays dark, honestly"
+              : `stats unavailable (${r.status})`);
           return null;
         }
         return r.json();
       })
       .then((d) => { if (d) setStats(d); })
       .catch(() => setStatsError("stats unavailable — the request did not complete"));
-    authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
-      .then((r) => r.json())
-      .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
-      .catch(() => {});
     // Same r.ok discipline as the read above — an error body stored as
     // data is what took this page down once.
-    fetch("/api/stats?analytics=1")
+    fetch("/api/stats?analytics=1", auth)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setOps(d || { available: false }))
       .catch(() => setOps({ available: false }));
@@ -69,7 +90,12 @@ export default function StatsPage() {
         </>
       )}
 
-      {statsError ? (
+      {!staffed ? (
+        <div className="empty">
+          the house numbers are staff-only. unlock <a href="/admin">THE DESK</a> in
+          this tab and reload — your own taste state above needs no token.
+        </div>
+      ) : statsError ? (
         <div className="empty">{statsError}</div>
       ) : !stats ? (
         <div className="empty">loading…</div>
@@ -133,7 +159,8 @@ export default function StatsPage() {
           than a zero that would read as a fact. ---- */}
       <hr className="rule" />
       <h3 className="statshead">the house — operating numbers</h3>
-      {ops === null && <div className="empty">reading the ledgers…</div>}
+      {!staffed && <div className="empty">operating dashboards are staff-only.</div>}
+      {staffed && ops === null && <div className="empty">reading the ledgers…</div>}
       {ops && !ops.available && (
         <div className="empty">
           these dashboards read the database directly. this deploy is running

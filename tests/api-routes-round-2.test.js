@@ -242,41 +242,45 @@ test("/api/editorial GET rejects an unknown kind and a malformed id", async () =
   assert.match(id.body.error, /bad post id/i);
 });
 
-test("/api/editorial POST requires identity and non-empty text", async () => {
+test("/api/editorial POST requires identity, then a signed-in account", async () => {
   const anon = await callRoute(editorial.POST, {
     path: "/api/editorial", json: { user: "u-whoever", text: "hello" },
   });
-  assert.equal(anon.status, 401);
+  assert.equal(anon.status, 401, "no proof at all is still 401");
 
+  // A device cookie is real, proven identity — and still not allowed to
+  // publish. 403 rather than 401 says exactly that.
   const me = newDevice();
-  const empty = await callRoute(editorial.POST, {
-    path: "/api/editorial", cookies: me.cookies, json: { user: me.uid, text: "   " },
+  const device = await callRoute(editorial.POST, {
+    path: "/api/editorial", cookies: me.cookies, json: { user: me.uid, text: "a transmission" },
   });
-  assert.equal(empty.status, 400);
-  assert.match(empty.body.error, /text required/i);
+  assert.equal(device.status, 403);
+  assert.match(device.body.error, /requires a signed-in account/i);
 });
 
-test("the editorial byline is server truth — a caller cannot spoof a handle", async () => {
-  // deriveAuthorHandle() ignores caller input entirely: 'Spoofing "ASILUM" or
-  // another member's handle is what this closes.' Stated in the route, enforced
-  // nowhere else until now.
+test("the wire's account gate is checked before the text is ever parsed", async () => {
+  // Ordering is a security property, not a style choice: if sanitization ran
+  // first, a caller who cannot post could still use the endpoint to probe what
+  // the sanitizer accepts, one 400-vs-403 at a time.
   const me = newDevice();
-  const created = await callRoute(editorial.POST, {
-    path: "/api/editorial", cookies: me.cookies,
-    json: { user: me.uid, handle: "ASILUM", authorHandle: "ASILUM", text: "a transmission" },
-  });
-  assert.equal(created.status, 200);
-
-  const read = await callRoute(editorial.GET, {
-    path: "/api/editorial", query: { id: String(created.body.id) },
-  });
-  assert.equal(read.status, 200, "the post is readable by permalink");
-  const post = read.body.posts[0];
-  assert.ok(post, "the permalink returns the post");
-  assert.notEqual(post.authorHandle, "ASILUM", "the claimed handle must never become the byline");
-  assert.match(post.authorHandle, /^reader-[0-9a-f]{6}$/,
-    "an account-less identity gets a stable derived reader tag, not what it asked for");
+  for (const text of ["   ", "", "x".repeat(6000), "<script>alert(1)</script>"]) {
+    const res = await callRoute(editorial.POST, {
+      path: "/api/editorial", cookies: me.cookies, json: { user: me.uid, text },
+    });
+    assert.equal(res.status, 403,
+      `text=${JSON.stringify(text).slice(0, 24)} must be refused by the gate, not judged by the sanitizer`);
+  }
 });
+
+// NOTE — THE BYLINE RULE LOST ITS TEST, AND THAT IS THE HONEST RECORD.
+// `deriveAuthorHandle()` ignores caller input so nobody can post as "ASILUM"
+// or as another member. That was tested here by posting with a device identity
+// and asserting the byline came back as `reader-<hash>`. Requiring a signed-in
+// account to post (the Aug-16 audit's anonymous-abuse P0) makes that path
+// unreachable: the harness cannot mint an `sb-` identity, which needs a real
+// Supabase bearer. The rule is still enforced in the route; it is simply no
+// longer covered here, and it belongs in an account-backed test rather than
+// being faked. Recorded rather than quietly dropped.
 
 test("/api/editorial permalink 404s honestly for a post that does not exist", async () => {
   const res = await callRoute(editorial.GET, { path: "/api/editorial", query: { id: "999999999999999" } });
