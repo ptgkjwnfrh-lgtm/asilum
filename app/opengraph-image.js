@@ -21,21 +21,32 @@
 // have not reached the page yet, so the card carries the same sentence. A social
 // card is the one piece of metadata a person actually looks at.
 //
-// TYPE, honestly: the brand faces (Share Tech Mono, Michroma) ship as WOFF2 and
-// Satori cannot read WOFF2 — it takes TTF/OTF/WOFF only. Converting them needs
-// tooling this machine does not have, so the card uses the generator's built-in
-// face and leans on the things that ARE the identity and survive a font swap:
-// the phosphor palette, the red asterisk left of the word, the hairline rules,
-// and wide letter tracking. It does NOT pretend to be the site's typeface.
-// If the fonts are ever converted to TTF, pass them here via `fonts`.
+// TYPE — THE REAL BRAND FACES, and the card follows the site's own hierarchy.
+// Satori reads TTF/OTF/WOFF but NOT WOFF2, and public/fonts only shipped WOFF2,
+// so the first version of this card used the generator's built-in face. It does
+// not any more: Michroma and Share Tech Mono are both SIL OFL, and Google ships
+// them as TTF, so the TTFs sit beside the WOFF2s with their licences
+// (public/fonts/OFL-*.txt). The WOFF2s stay — they are what the browser loads.
 //
-// Two declarations are deliberately ABSENT because they do nothing here and were
-// removed after looking at the render: `fontFamily: "monospace"` (the built-in
-// face is the only one loaded, so the family is ignored) and `fontWeight: 700`
-// (it ships one weight). Leaving them in would have described a card that does
-// not exist. `letterSpacing` is what actually carries the editorial voice.
+// The hierarchy is read off app/globals.css, not invented:
+//   Michroma        .headline / .wordmark / .snav / .mq   -> the wordmark + kicker
+//   STM (Share Tech Mono)  --helv, the body voice          -> both bottom lines
+// `.headline` is Michroma at weight 400 with letter-spacing 0.1em, which is why
+// the wordmark below is 400 and tracked, not bolded — Michroma HAS one weight,
+// and asking for 700 would have Satori synthesise something the site never
+// shows. tests/opengraph-image.test.js asserts the family/letter-spacing pairing
+// against globals.css so the card cannot drift from the page.
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
+
+// Read at module scope: /opengraph-image prerenders as a STATIC route (it shows
+// as ○ in the build output), so this happens at build time on the build machine
+// and there is no serverless file-tracing question to get wrong.
+const FONT_DIR = join(process.cwd(), "public", "fonts");
+const MICHROMA = readFileSync(join(FONT_DIR, "michroma.ttf"));
+const STM = readFileSync(join(FONT_DIR, "sharetech.ttf"));
 
 export const alt =
   "*ASILUM — fashion intelligence OS. The taste engine is real; the clothes are not.";
@@ -64,6 +75,7 @@ export default function OpengraphImage() {
           justifyContent: "space-between",
           background: BG,
           padding: "64px 72px",
+          fontFamily: "STM",
         }}
       >
         {/* Top rule + kicker — the magazine furniture, not decoration. */}
@@ -73,8 +85,9 @@ export default function OpengraphImage() {
             style={{
               display: "flex",
               marginTop: 26,
-              fontSize: 26,
-              letterSpacing: 14,
+              fontFamily: "Michroma",
+              fontSize: 24,
+              letterSpacing: 10,
               color: GREY,
             }}
           >
@@ -85,14 +98,15 @@ export default function OpengraphImage() {
         {/* The wordmark. The asterisk sits LEFT of the word and is --red: that
             placement is the identity (every headline on the site does it). */}
         <div style={{ display: "flex", alignItems: "flex-start" }}>
-          <div style={{ display: "flex", fontSize: 150, color: RED, lineHeight: 1 }}>*</div>
+          <div style={{ display: "flex", fontFamily: "Michroma", fontSize: 116, color: RED, lineHeight: 1 }}>*</div>
           <div
             style={{
               display: "flex",
-              fontSize: 150,
+              fontFamily: "Michroma",
+              fontSize: 116,
               color: INK,
               lineHeight: 1,
-              letterSpacing: 6,
+              letterSpacing: 12,
             }}
           >
             ASILUM
@@ -127,6 +141,12 @@ export default function OpengraphImage() {
         </div>
       </div>
     ),
-    size
+    {
+      ...size,
+      fonts: [
+        { name: "Michroma", data: MICHROMA, style: "normal", weight: 400 },
+        { name: "STM", data: STM, style: "normal", weight: 400 },
+      ],
+    }
   );
 }
