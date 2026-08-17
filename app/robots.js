@@ -19,6 +19,7 @@ export default function robots() {
           "/board",
           "/asterisk",
           "/stats",
+          "/upload",
         ],
       },
     ],
