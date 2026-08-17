@@ -41,7 +41,8 @@ test("every colour on the card is the live token value", () => {
   const tokens = rootTokens();
   const src = card();
   // name in the card -> token in globals.css
-  const pairs = [["BG", "bg"], ["INK", "ink"], ["RED", "red"], ["SIG", "sig"], ["GREY", "grey"]];
+  const pairs = [["BG", "bg"], ["INK", "ink"], ["RED", "red"], ["SIG", "sig"],
+                 ["GREY", "grey"], ["FAINT", "faint"]];
   for (const [constant, token] of pairs) {
     const declared = src.match(new RegExp(`const ${constant} = "([^"]+)";`));
     assert.ok(declared, `the card must declare ${constant}`);
@@ -60,15 +61,29 @@ test("the card declares the size a large summary card needs", () => {
 
 test("the card carries the same honesty the catalog page does", () => {
   const src = card();
-  // A shared link reaches people who have not seen the page's DEMO banner. If
-  // this ever has to go, docs/seo-notes.md has to change in the same commit.
-  assert.match(src, /the taste engine is real — the clothes are not/);
+  // A shared link reaches people who have not seen the page's DEMO banner, so
+  // the disclosure rides on the card. The owner's comp REPLACED the longer
+  // "taste engine is real" line with the DISCOVERY/COMMERCE/COMMUNITY strip but
+  // kept this one — so this is the line that is load-bearing, and if it ever has
+  // to go, docs/seo-notes.md changes in the same commit.
   assert.match(src, /A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS/);
   // And it must not claim inventory. `real` appears in the honest sentence, so
   // the check is for the specific promises, not for a bare word.
   for (const claim of ["shop now", "buy now", "in stock", "free shipping"]) {
     assert.ok(!src.toLowerCase().includes(claim), `the card must not promise "${claim}"`);
   }
+});
+
+test("the strip is spelled correctly, whatever the comp said", () => {
+  const src = card();
+  // Comments stripped: the header quotes the misspelling in order to explain
+  // why it is not shipped, and a bare search would trip on that explanation.
+  const code = src.split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join("\n");
+  // The owner's reference comp reads "COMMERECE". A misspelling baked into every
+  // link preview is not a design decision, so the card ships the correct word —
+  // and this test is here so nobody "restores" it to match the comp later.
+  assert.match(code, /DISCOVERY · COMMERCE · COMMUNITY/);
+  assert.ok(!/COMMERECE/i.test(code), "the comp's typo must not ship");
 });
 
 test("the card and the twitter card size ship together", () => {
@@ -85,7 +100,7 @@ test("the card loads the real brand faces, as files Satori can actually read", (
   // the generator's built-in face for exactly that reason; the TTFs now sit
   // beside the WOFF2s. A `fontFamily` here is only meaningful if the file it
   // names is passed in, so both halves are asserted together.
-  for (const file of ["michroma.ttf", "sharetech.ttf"]) {
+  for (const file of ["michroma.ttf", "sharetech.ttf", "vt323.ttf"]) {
     assert.ok(existsSync(ROOT + "public/fonts/" + file), `public/fonts/${file} must exist`);
     assert.match(code, new RegExp(`readFileSync\\(join\\(FONT_DIR, "${file}"\\)\\)`));
   }
@@ -94,6 +109,7 @@ test("the card loads the real brand faces, as files Satori can actually read", (
   // Both faces reach ImageResponse, not just one.
   assert.match(code, /name: "Michroma", data: MICHROMA/);
   assert.match(code, /name: "STM", data: STM/);
+  assert.match(code, /name: "VT323", data: VT323/);
 
   // Michroma ships ONE weight. Asking for 700 makes Satori synthesise a face the
   // site never shows — `.headline` is weight 400 and leans on tracking instead.
@@ -103,12 +119,12 @@ test("the card loads the real brand faces, as files Satori can actually read", (
 test("the fonts are real TrueType files, not renamed WOFF2", () => {
   // A copy that silently kept the .woff2 bytes under a .ttf name would fail at
   // build with an opaque Satori error. The sfnt version is four bytes.
-  for (const file of ["michroma.ttf", "sharetech.ttf"]) {
+  for (const file of ["michroma.ttf", "sharetech.ttf", "vt323.ttf"]) {
     const head = readFileSync(ROOT + "public/fonts/" + file).subarray(0, 4);
     assert.equal(head.toString("hex"), "00010000", `${file} must be TrueType-flavoured sfnt`);
   }
   // Both are SIL OFL and redistributed here, so the licences ship with them.
-  for (const lic of ["OFL-michroma.txt", "OFL-sharetechmono.txt"]) {
+  for (const lic of ["OFL-michroma.txt", "OFL-sharetechmono.txt", "OFL-vt323.txt"]) {
     const text = read("public/fonts/" + lic);
     assert.match(text, /SIL OPEN FONT LICENSE/i, `${lic} must be the OFL text`);
   }
@@ -130,7 +146,15 @@ test("the card's type hierarchy is the site's, read off globals.css", () => {
   assert.match(css, /\.headline \{ font-family: var\(--mich\)/);
 
   // Wordmark and kicker in Michroma; the page-body voice carries the rest.
+  assert.match(css, /--osd:\s*"OSD"/, "--osd is the MAGAZINE-line face");
+  assert.match(css, /@font-face \{ font-family: "OSD"/);
+  // .wordmark em is the site's own treatment of the word MAGAZINE — OSD/VT323,
+  // heavily tracked. The card's "magazine.com" follows it rather than importing
+  // the plain grotesque the comp used.
+  assert.match(css, /\.wordmark em \{ display: block; font-family: var\(--osd\)/);
+
   const michromaUses = [...src.matchAll(/fontFamily: "Michroma"/g)].length;
-  assert.equal(michromaUses, 3, "the asterisk, the wordmark and the kicker");
+  assert.equal(michromaUses, 4, "the kicker, the asterisk, the wordmark, the strip");
+  assert.match(src, /fontFamily: "VT323"/, "magazine.com is set in the MAGAZINE face");
   assert.match(src, /fontFamily: "STM"/, "the container sets the body voice");
 });

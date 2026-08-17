@@ -522,7 +522,7 @@ export default function TheWirePage() {
       </section>
 
       <footer className="cvcolo" aria-label="colophon">
-        *ASILUM — THE WIRE · {stamp}
+        *ASILUM MAGAZINE — THE WIRE · {stamp}
         {posts !== null && <> · {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"}</>}
         {booths !== null && <> · {booths.length} OF 10 BOOTHS HELD</>}
         {" "}· {READING_ROOM.length} MASTHEADS IN THE READING ROOM

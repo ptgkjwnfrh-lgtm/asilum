@@ -5,7 +5,7 @@
 // announcement. Update the version line with every substantive change.
 
 export const metadata = {
-  title: "*ASILUM — privacy policy",
+  title: "*ASILUM magazine — privacy policy",
   description: "What ASiLUM magazine collects, why, and the controls you hold.",
 };
 

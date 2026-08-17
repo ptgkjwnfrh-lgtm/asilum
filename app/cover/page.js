@@ -370,7 +370,7 @@ export default function CoverPage() {
       </nav>
 
       <footer className="cvcolo" aria-label="colophon">
-        *ASILUM LIVE EDITION · {stamp}
+        *ASILUM MAGAZINE LIVE EDITION · {stamp}
         {ledger && <> · SYSTEM LEDGER {ledger}</>}
         {" "}· EVERY VALUE ON THIS PAGE IS REAL STATE — NOTHING IS STAGED
       </footer>

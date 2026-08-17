@@ -15,22 +15,24 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 // inventory the site does not have. "The taste engine is real; the clothes are
 // not" is the same claim the catalog makes to a reader's face.
 //
-// Deliberately absent: og:image and Product JSON-LD. See docs/seo-notes.md.
+// Product JSON-LD is deliberately absent (the catalog is synthetic). og:image
+// is NOT absent any more — app/opengraph-image.js generates it. See
+// docs/seo-notes.md.
 export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: "*ASILUM — fashion intelligence OS",
-    template: "%s · *ASILUM",
+    default: "*ASILUM magazine — fashion intelligence OS",
+    template: "%s · *ASILUM magazine",
   },
   description:
     "A learning moodboard engine that reads your taste across six bridges. The catalog is a demo archive of synthetic sample records — the taste engine is real; the clothes are not.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "*ASILUM — fashion intelligence OS",
+    title: "*ASILUM magazine — fashion intelligence OS",
     description:
       "A learning moodboard engine that reads your taste across six bridges. The catalog is a demo archive of synthetic sample records.",
     url: siteUrl("/"),
-    siteName: "*ASILUM",
+    siteName: "*ASILUM magazine",
     type: "website",
     locale: "en_US",
   },
@@ -40,7 +42,7 @@ export const metadata = {
   // while there was nothing to fill it — a large card with no image is worse
   // than a small one. The two move together, and tests/seo.test.js pins the
   // pairing in both directions so neither can ship without the other.
-  twitter: { card: "summary_large_image", title: "*ASILUM — fashion intelligence OS" },
+  twitter: { card: "summary_large_image", title: "*ASILUM magazine — fashion intelligence OS" },
 };
 
 // Theme + interface mode are applied before first paint so a returning

@@ -4,7 +4,7 @@
 // than papered over. Version 1.0 — drafted 2026-07-19.
 
 export const metadata = {
-  title: "*ASILUM — accessibility",
+  title: "*ASILUM magazine — accessibility",
   description: "ASiLUM magazine's accessibility commitment, measures, and contact.",
 };
 
