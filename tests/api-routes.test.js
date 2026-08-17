@@ -100,6 +100,47 @@ test("/api/admin POST is gated by the same token as GET", async () => {
   });
 });
 
+// ---------------------------------------------------------------- /api/stats
+
+test("/api/stats is staff-only — a device cookie is not enough", async () => {
+  // The Aug-16 launch-readiness audit's P0: this route required only
+  // `verifiedRequestSubject`, i.e. the signed device cookie the site hands
+  // every visitor on first load. House-wide counts, retention, search, wire and
+  // booth metrics, and top-item records carrying the synthetic seed source,
+  // were therefore public to anyone who loaded the site once.
+  const stats = await loadRoute("app/api/stats/route.js");
+  const device = newDevice();
+
+  await withAdminToken(GOOD_TOKEN, async () => {
+    const withCookie = await callRoute(stats.GET, { path: "/api/stats", cookies: device.cookies });
+    assert.equal(withCookie.status, 401,
+      "a valid device cookie must NOT read the house numbers — this is the regression to hold");
+
+    const analytics = await callRoute(stats.GET, {
+      path: "/api/stats", query: { analytics: "1" }, cookies: device.cookies,
+    });
+    assert.equal(analytics.status, 401, "the ?analytics=1 mode is gated too, not just the default");
+
+    const wrong = await callRoute(stats.GET, { path: "/api/stats", bearer: GOOD_TOKEN + "x" });
+    assert.equal(wrong.status, 401, "a near-miss token is refused");
+
+    const staff = await callRoute(stats.GET, { path: "/api/stats", bearer: GOOD_TOKEN });
+    assert.equal(staff.status, 200, "staff still get the dashboard, or the 401s prove nothing");
+    assert.ok(staff.body && typeof staff.body === "object", "and it is a real payload");
+  });
+});
+
+test("/api/stats is off, not open, when ADMIN_TOKEN is unset", async () => {
+  const stats = await loadRoute("app/api/stats/route.js");
+  const device = newDevice();
+  await withAdminToken(undefined, async () => {
+    const res = await callRoute(stats.GET, { path: "/api/stats", cookies: device.cookies });
+    assert.equal(res.status, 503,
+      "an unconfigured deploy must go dark rather than fall back to letting visitors read");
+    assert.match(res.body.error, /stats disabled/i);
+  });
+});
+
 // -------------------------------------------------------------- /api/privacy
 
 test("/api/privacy GET requires proof of identity", async () => {
