@@ -82,14 +82,28 @@ A shared link is seen by people who have not reached the page yet, so the card
 carries the disclosure rather than leaving it behind the click. A test forbids
 "shop now", "in stock" and the rest.
 
-**Type, honestly.** The brand faces (Share Tech Mono, Michroma) ship as WOFF2 and
-Satori reads TTF/OTF/WOFF only. Converting them needs tooling this machine does
-not have, so the card uses the generator's built-in face and leans on what
-survives a font swap: palette, the asterisk, the rules, wide tracking. It does
-not pretend to be the site's typeface. A `fontFamily` and a `fontWeight` were
-written, seen to do nothing in the render, and **removed** — a test keeps them
-out, because a declaration that does nothing describes a card that does not
-exist. If the fonts are ever converted to TTF, pass them via `fonts`.
+**Type — the real brand faces.** Satori reads TTF/OTF/WOFF but **not WOFF2**, and
+`public/fonts` shipped only WOFF2, so the first version of this card used the
+generator's built-in face. It does not any more. Michroma and Share Tech Mono are
+both **SIL OFL**, and Google publishes them as TTF, so the TTFs now sit beside
+the WOFF2s (`michroma.ttf`, `sharetech.ttf`) with their licence texts
+(`OFL-michroma.txt`, `OFL-sharetechmono.txt`). The WOFF2s stay — they are what
+the browser loads; the TTFs exist for the build.
+
+The hierarchy is **read off `globals.css`, not invented**:
+
+| Card element | Face | Follows |
+|---|---|---|
+| `*ASILUM` wordmark, kicker | Michroma | `--mich` — `.headline`, `.wordmark`, `.snav`, `.mq` |
+| both bottom lines | Share Tech Mono | `--helv` — the body voice |
+
+`.headline` is Michroma at **weight 400 with tracking**, so the wordmark is too.
+Michroma ships one weight; asking for 700 would make Satori synthesise a face the
+site never shows, and a test forbids `fontWeight` for that reason. Another test
+reads `--mich` and `--helv` out of the stylesheet, so repointing a token without
+touching the card fails the build's test run rather than silently shipping a card
+in the wrong typeface. And because a `.woff2` renamed to `.ttf` would fail at
+build with an opaque Satori error, a test checks the four-byte sfnt signature.
 
 **Verified as an artifact, not just as source:** served from a running server it
 returns `content-type: image/png`, a valid PNG signature, and 1200×630 read out

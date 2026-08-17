@@ -77,13 +77,60 @@ test("the card and the twitter card size ship together", () => {
   assert.match(read("app/layout.js"), /card:\s*"summary_large_image"/);
 });
 
-test("the card does not claim a typeface it cannot load", () => {
+test("the card loads the real brand faces, as files Satori can actually read", () => {
   const src = card();
-  // Satori reads TTF/OTF/WOFF; the brand faces are WOFF2, so no font is passed
-  // and a fontFamily/fontWeight declaration would be inert — describing a card
-  // that does not render. Both were removed after looking at the output.
   const code = src.split("\n").filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l)).join("\n");
-  assert.ok(!/fontFamily/.test(code), "fontFamily is ignored — no font is loaded");
-  assert.ok(!/fontWeight/.test(code), "the built-in face ships one weight");
-  assert.ok(!/\.woff2/.test(code), "Satori cannot read WOFF2");
+
+  // Satori reads TTF/OTF/WOFF and NOT WOFF2. The first version of this card used
+  // the generator's built-in face for exactly that reason; the TTFs now sit
+  // beside the WOFF2s. A `fontFamily` here is only meaningful if the file it
+  // names is passed in, so both halves are asserted together.
+  for (const file of ["michroma.ttf", "sharetech.ttf"]) {
+    assert.ok(existsSync(ROOT + "public/fonts/" + file), `public/fonts/${file} must exist`);
+    assert.match(code, new RegExp(`readFileSync\\(join\\(FONT_DIR, "${file}"\\)\\)`));
+  }
+  assert.ok(!/\.woff2/.test(code), "Satori cannot read WOFF2 — pass the TTF");
+
+  // Both faces reach ImageResponse, not just one.
+  assert.match(code, /name: "Michroma", data: MICHROMA/);
+  assert.match(code, /name: "STM", data: STM/);
+
+  // Michroma ships ONE weight. Asking for 700 makes Satori synthesise a face the
+  // site never shows — `.headline` is weight 400 and leans on tracking instead.
+  assert.ok(!/fontWeight/.test(code), "the brand faces ship one weight each");
+});
+
+test("the fonts are real TrueType files, not renamed WOFF2", () => {
+  // A copy that silently kept the .woff2 bytes under a .ttf name would fail at
+  // build with an opaque Satori error. The sfnt version is four bytes.
+  for (const file of ["michroma.ttf", "sharetech.ttf"]) {
+    const head = readFileSync(ROOT + "public/fonts/" + file).subarray(0, 4);
+    assert.equal(head.toString("hex"), "00010000", `${file} must be TrueType-flavoured sfnt`);
+  }
+  // Both are SIL OFL and redistributed here, so the licences ship with them.
+  for (const lic of ["OFL-michroma.txt", "OFL-sharetechmono.txt"]) {
+    const text = read("public/fonts/" + lic);
+    assert.match(text, /SIL OPEN FONT LICENSE/i, `${lic} must be the OFL text`);
+  }
+});
+
+test("the card's type hierarchy is the site's, read off globals.css", () => {
+  const src = card();
+  const css = read("app/globals.css");
+
+  // The stylesheet's own mapping. If a token is ever repointed, these fail and
+  // the card gets looked at rather than quietly diverging from the page.
+  assert.match(css, /--mich:\s*"Michroma"/, "--mich is the wordmark/headline face");
+  assert.match(css, /--helv:\s*"STM"/, "--helv is the body face");
+  assert.match(css, /@font-face \{ font-family: "Michroma"/);
+  assert.match(css, /@font-face \{ font-family: "STM"/);
+
+  // .headline is Michroma at weight 400 with tracking — the card's wordmark
+  // follows it rather than inventing a treatment.
+  assert.match(css, /\.headline \{ font-family: var\(--mich\)/);
+
+  // Wordmark and kicker in Michroma; the page-body voice carries the rest.
+  const michromaUses = [...src.matchAll(/fontFamily: "Michroma"/g)].length;
+  assert.equal(michromaUses, 3, "the asterisk, the wordmark and the kicker");
+  assert.match(src, /fontFamily: "STM"/, "the container sets the body voice");
 });
