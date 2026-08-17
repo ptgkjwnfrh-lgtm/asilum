@@ -11,7 +11,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
-import { useEscape } from "./components/dismiss.js";
+import { useEscape, useFocusTrap } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
@@ -95,7 +95,11 @@ export default function Home() {
   const [modal, setModal] = useState(null);
   const [modalRel, setModalRel] = useState([]);
   // One dismissal contract (synergy phase 1): Escape closes the open surface.
+  const itemDialogRef = useRef(null);
   useEscape(() => setModal(null), !!modal);
+  // aria-modal="true" below is a promise that the page behind is inert.
+  // This is what keeps it.
+  useFocusTrap(itemDialogRef, !!modal);
   useEscape(() => { markOnboarded(); setConnectOpen(false); }, connectOpen);
   const [ticketItem, setTicketItem] = useState(null);
   const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
@@ -781,10 +785,14 @@ export default function Home() {
               was right. aria-labelledby points at the piece's own title, which
               is the honest name for this dialog. */}
           <div
+            ref={itemDialogRef}
             className="modal"
             role="dialog"
             aria-modal="true"
             aria-labelledby="item-detail-title"
+            // -1 so the trap can land focus on the dialog itself if it ever
+            // contains nothing focusable; it stays out of the tab sequence.
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
           >
             <button className="mclose" aria-label="close item detail" onClick={() => setModal(null)}>×</button>

@@ -18,6 +18,62 @@ export function useEscape(onClose, active = true) {
   }, [active, onClose]);
 }
 
+// A dialog that declares `aria-modal="true"` is telling assistive technology
+// that everything behind it is inert. That has to be MADE true — the attribute
+// does not do it. Without a trap, a keyboard user who opens the item detail
+// keeps focus on the trigger BEHIND the layer, tabs into the page behind it,
+// and can operate a catalog they cannot see.
+//
+// So: move focus in on open, cycle Tab inside, and put focus back where it came
+// from on close. Escape still closes (useEscape) — this does not add a trap a
+// user cannot leave, which would be WCAG 2.1.2.
+const FOCUSABLE = [
+  "a[href]", "button:not([disabled])", "input:not([disabled])",
+  "select:not([disabled])", "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(", ");
+
+export function useFocusTrap(surfaceRef, active = true) {
+  useEffect(() => {
+    if (!active) return undefined;
+    const surface = surfaceRef.current;
+    if (!surface) return undefined;
+
+    // Where focus came from, so it can be given back. Restoring focus is the
+    // half people forget: without it, closing a dialog drops the user at the
+    // top of the document and they lose their place entirely.
+    const origin = document.activeElement;
+    const inside = () =>
+      [...surface.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+
+    (inside()[0] || surface).focus();
+
+    const onKey = (event) => {
+      if (event.key !== "Tab") return;
+      const items = inside();
+      if (!items.length) { event.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!surface.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    // Capture phase: the surface's own handlers must not swallow Tab first.
+    document.addEventListener("keydown", onKey, true);
+    return () => {
+      document.removeEventListener("keydown", onKey, true);
+      if (origin && origin.isConnected && typeof origin.focus === "function") origin.focus();
+    };
+  }, [active, surfaceRef]);
+}
+
 export function useClickAway(surfaceRef, onClose, { active = true, excludeRef = null } = {}) {
   useEffect(() => {
     if (!active) return undefined;
