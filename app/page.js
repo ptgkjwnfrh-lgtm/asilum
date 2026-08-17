@@ -18,7 +18,7 @@ import {
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
 } from "../lib/client.js";
 import {
-  observationOn, followedBrands, setFollowBrand,
+  observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
@@ -551,6 +551,17 @@ export default function Home() {
           </div>
         )}
       </header>
+      {/* DEMO MODE banner (owner ruling, Aug 16). Deliberately in normal flow
+          directly under the masthead rather than inside `.cthead`, which is a
+          laid-out row — dropped in there it fought the headline for the same
+          space. A per-card DEMO flag tells you about one record; only a
+          page-level statement tells you the whole shelf is sample data. */}
+      <p className="demobanner" role="note">
+        <b>DEMO CATALOG.</b> every piece here is synthetic sample data with
+        placeholder imagery — not real inventory, not for sale, and no prices,
+        sizes or availability shown are real. taste learning is genuine; the
+        clothes are not.
+      </p>
       <p className="deck">
         {guideOn
           ? "Asterisk routed this edit through your Passport — six bridges, three zones, no reruns."
@@ -706,7 +717,10 @@ export default function Home() {
 
           {tab === "new" && (
             <>
-              <p className="deck">just in from the affiliated sites — freshest first.</p>
+              {/* "just in from the affiliated sites" claimed a live feed from
+                  partners that does not exist. Newest-first is true; where the
+                  records come from is not. */}
+              <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
                 <div className="grid">
@@ -809,11 +823,22 @@ export default function Home() {
               ) : null}
               <div className="pricerow">
                 {modal.price ? <span className="price">{modal.currency || "USD"} {modal.price}</span> : null}
-                <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}
-                  onClick={() => setTicketItem(modal)}>request purchase</button>
-                {safeExternalUrl(modal.url) ? (
-                  <a className="buy" href={safeExternalUrl(modal.url)} target="_blank" rel="noopener noreferrer">view source ↗</a>
-                ) : null}
+                {/* DEMO MODE: no purchase control on a record the server will
+                    refuse anyway (tickets/route.js answers 409 for seed
+                    inventory). Offering it and failing on click is how the
+                    launch audit found this. The price stays visible because it
+                    is part of the sample record, but the row says what it is. */}
+                {isDemoItem(modal) ? (
+                  <span className="demoflag">{DEMO_NOTE}</span>
+                ) : (
+                  <>
+                    <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}
+                      onClick={() => setTicketItem(modal)}>request purchase</button>
+                    {safeExternalUrl(modal.url) ? (
+                      <a className="buy" href={safeExternalUrl(modal.url)} target="_blank" rel="noopener noreferrer">view source ↗</a>
+                    ) : null}
+                  </>
+                )}
               </div>
               {reasonFor(modal) ? <div className="why">{reasonFor(modal)}</div> : null}
               <AsteriskWhy item={modal} onNotice={setNotice} />
@@ -887,7 +912,11 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
       </div>
       <div className="body">
         <div className="ttl" onClick={onOpen}>{it.title}</div>
-        {it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
+        {/* A demo record says so, and says nothing else about provenance: no
+            source, no "just in". Both would be claims it cannot support. */}
+        {isDemoItem(it)
+          ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
+          : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
         {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
         <ColorEvidenceLine item={it} />
         {fitLine ? <div className="fitline">{fitLine}</div> : null}

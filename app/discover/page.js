@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
-import { followedBrands, setFollowBrand } from "../../lib/social.js";
+import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
@@ -274,6 +274,11 @@ export default function DiscoverPage() {
   return (
     <div className="wrap">
       <h1 className="headline"><span className="red">*</span>DISCOVER</h1>
+      <p className="demobanner" role="note">
+        <b>DEMO ARCHIVE.</b> synthetic sample records with placeholder imagery —
+        nothing here is real inventory or for sale. the search is real; the
+        clothes are not.
+      </p>
       <p className="deck">
         explore the full archive. {guideOn
           ? "Asterisk is using your Passport to route every search toward your style."
@@ -474,7 +479,11 @@ export default function DiscoverPage() {
               <div className="ttl">{it.title}</div>
               <div className="meta">
                 {it.category ? <span className="cat">{it.category}</span> : null}
-                <span className="srclabel">{it.src}</span>
+                {/* A demo record carries the demo flag instead of a source
+                    label — it has no source to name. */}
+                {isDemoItem(it)
+                  ? <span className="srclabel demoflag">{DEMO_LABEL}</span>
+                  : <span className="srclabel">{it.src}</span>}
               </div>
               <div className="tags">
                 {Object.keys(it.tags || {}).slice(0, 3).map((t) => (
@@ -491,7 +500,12 @@ export default function DiscoverPage() {
                 <button className={baggedIds.has(it.id) ? "on" : ""} onClick={() => bag(it)}>
                   {baggedIds.has(it.id) ? "In bag ✓" : "Add to bag"}
                 </button>
-                <button className="buybtn" onClick={() => setTicketItem(it)}>Buy</button>
+                {/* DEMO MODE: no Buy on a record /api/tickets answers 409 for.
+                    Favorite and bag stay — they are taste signals about a
+                    sample, which is exactly what a demo catalog is for. */}
+                {!isDemoItem(it) && (
+                  <button className="buybtn" onClick={() => setTicketItem(it)}>Buy</button>
+                )}
               </div>
             </div>
           </div>

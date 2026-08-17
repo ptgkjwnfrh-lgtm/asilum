@@ -150,6 +150,15 @@ export default function StylistPage() {
     <div className="wrap">
       <div className="locline"><a href="/discover">← DISCOVER</a><span>/ THE STYLIST</span></div>
       <h1 className="headline"><span className="red">*</span>THE STYLIST</h1>
+      {/* The stylist cuts its looks from the same synthetic catalog, so it
+          carries the same disclosure. It has no Buy control to strip — bagging
+          a look is a taste signal, which is exactly what a demo catalog is
+          for — but the pieces in every look are sample records. */}
+      <p className="demobanner" role="note">
+        <b>DEMO CATALOG.</b> these looks are cut from synthetic sample records
+        with placeholder imagery — the styling logic is real, the garments are
+        not, and none of them can be bought.
+      </p>
       <p className="deck">
         whole looks cut across sources. {guideOn
           ? "Asterisk is styling through your Passport,"
