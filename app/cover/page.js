@@ -17,7 +17,7 @@
 import { useEffect, useState } from "react";
 import { getUid, postJSON, authorizedFetch, thumbFor } from "../../lib/client.js";
 import {
-  STORIES, fetchWire, addPost, timeAgo, getProfileInfo, sourceFor,
+  READING_ROOM, fetchWire, addPost, timeAgo, getProfileInfo, sourceFor,
 } from "../../lib/social.js";
 import { Avatar } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
@@ -308,16 +308,20 @@ export default function CoverPage() {
           )}
         </section>
 
-        <section className="cvstories" aria-label="editorial dispatches">
+        {/* Was EXTERNAL DISPATCHES, printing invented headlines under real
+            mastheads. A reading list now — the publication and what it covers,
+            in ASILUM's words, linking to their front page. */}
+        <section className="cvstories" aria-label="the reading room">
           <span className="cvside cvsider" aria-hidden="true">
             {sys && sys.alphaEvents != null ? `${sys.alphaEvents} EVENTS ON THE RECORD` : "THE RECORD IS LISTENING"}
           </span>
-          <div className="cvkick">EXTERNAL DISPATCHES</div>
-          {STORIES.slice(0, 3).map((st) => (
-            <a className="cvstory" key={st.title} href={st.url} target="_blank" rel="noreferrer">
+          <div className="cvkick">THE READING ROOM</div>
+          {READING_ROOM.slice(0, 3).map((st) => (
+            <a className="cvstory" key={st.pub} href={st.url} target="_blank" rel="noreferrer">
               <span className="cvpub">{st.pub.toUpperCase()}</span>
-              <span className="cvstoryttl">{st.title} ↗</span>
-              <span className="cvstorysum">{st.summary}</span>
+              {/* The beat line carries the ↗ where the invented headline used
+                  to sit; there is no second line, because there is no story. */}
+              <span className="cvstoryttl">{st.beat} ↗</span>
             </a>
           ))}
           <a className="cvlink cvmore" href="/hotlist">THE FULL WIRE →</a>

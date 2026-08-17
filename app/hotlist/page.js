@@ -25,7 +25,7 @@
 import { useEffect, useState } from "react";
 import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 import {
-  STORIES, fetchWire, fetchPost, addPost, editPost, deletePost, timeAgo, getProfileInfo,
+  READING_ROOM, fetchWire, fetchPost, addPost, editPost, deletePost, timeAgo, getProfileInfo,
   fetchEngagement, toggleEngagement,
 } from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
@@ -503,24 +503,29 @@ export default function TheWirePage() {
         </div>
       </section>
 
-      {/* ---- EXTERNAL DISPATCHES — quietest ---- */}
-      <section className="elext" aria-label="external dispatches">
-        <div className="elh elh5">EXTERNAL DISPATCHES</div>
-        {STORIES.map((s) => (
-          <a className="elextrow" key={s.title} href={s.url} target="_blank" rel="noopener noreferrer">
+      {/* ---- THE READING ROOM — quietest ----
+           Was EXTERNAL DISPATCHES, printing headlines ASILUM invented under
+           real mastheads. It is a reading list now: the publication, what it
+           actually covers, and a link to its front page. */}
+      <section className="elext" aria-label="the reading room">
+        <div className="elh elh5">THE READING ROOM</div>
+        {READING_ROOM.map((s) => (
+          <a className="elextrow" key={s.pub} href={s.url} target="_blank" rel="noopener noreferrer">
             <span className="elextpub">{s.pub.toUpperCase()}</span>
-            <span className="elextttl">{s.title} ↗</span>
+            <span className="elextttl">{s.beat} ↗</span>
           </a>
         ))}
-        <p className="elextnote">dispatches link out — the stories live with the publications.</p>
+        <p className="elextnote">
+          mastheads ASILUM reads. the lines are ours, describing their beat — not
+          their headlines. each link goes to their front page.
+        </p>
       </section>
 
       <footer className="cvcolo" aria-label="colophon">
         *ASILUM — THE WIRE · {stamp}
         {posts !== null && <> · {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"}</>}
         {booths !== null && <> · {booths.length} OF 10 BOOTHS HELD</>}
-        {" "}· {STORIES.length} EXTERNAL DISPATCHES · EVERY
-        VALUE ON THIS PAGE IS REAL STATE
+        {" "}· {READING_ROOM.length} MASTHEADS IN THE READING ROOM
       </footer>
     </div>
   );
