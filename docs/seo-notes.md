@@ -19,7 +19,7 @@ crawler must not be told anything the page would not tell a person.**
 
 - **`metadataBase`** on the root layout. Without it every relative canonical and
   `og:url` resolves relative and is worthless to a crawler.
-- **A title template** — `%s · *ASILUM`. Before this, 13 of 17 routes inherited
+- **A title template** — `%s · *ASILUM magazine`. Before this, 13 of 17 routes inherited
   the root title, so every page in a search result read
   "*ASILUM — fashion intelligence OS" with no way to tell them apart.
 - **Canonicals on every route.** Public routes point at themselves; so do the
@@ -60,13 +60,14 @@ result carries no banner explaining itself.
 `WebSite` or `Organization` JSON-LD would be honest and is a reasonable future
 addition. **`Product` stays out until the catalog is real inventory.**
 
-### og:image — shipped 17 August, and it is generated
+### og:image — shipped 17 August, rebuilt to the owner's comp
 
 Held back until there was something real to serve: a card declaring an image it
 cannot serve renders broken, and inventing a placeholder to satisfy a checklist
-is the same failure in miniature. Both halves moved together, as this section
-always said they had to — `app/opengraph-image.js` draws a 1200×630 card and
-`twitter:card` is now `summary_large_image`.
+is the same failure in miniature. Both halves moved together —
+`app/opengraph-image.js` draws a 1200×630 card and `twitter:card` is
+`summary_large_image` — and the card was then **rebuilt against the owner's
+reference comp** the same day.
 
 **Generated, not committed.** A PNG in `public/` is a second copy of the design
 language that nothing keeps in step, and this palette moved twice in two days for
@@ -75,40 +76,64 @@ have kept the old colours silently. The route draws from the token values in
 `app/globals.css`, and `tests/opengraph-image.test.js` **reads that stylesheet**
 and fails if the two drift. Same discipline as `tests/theme-contrast.test.js`.
 
-**What it says.** The phosphor palette, the red asterisk left of the wordmark,
-and the same sentence the catalog banner shows a reader: *the taste engine is
-real — the clothes are not*, over *A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS*.
-A shared link is seen by people who have not reached the page yet, so the card
-carries the disclosure rather than leaving it behind the click. A test forbids
-"shop now", "in stock" and the rest.
+**What the comp asked for, and what shipped:** the terminal grid, the phosphor
+bloom bottom-left, the red block and rule, `PERSONALIZED FASHION TERMINAL` over a
+chrome `*ASILUM` with a glowing red asterisk, a glowing green `magazine.com`, the
+three-word strip, and the demo line — which the owner kept from the first version.
+
+**Two deliberate departures, both worth stating:**
+
+1. **The comp reads "COMMERECE".** A misspelling baked into every link preview is
+   not a design decision. It ships as `COMMERCE`, and a test forbids the typo so
+   nobody "restores" it to match the comp later.
+2. **The comp's chrome is silver-blue and its `magazine.com` is a plain
+   grotesque.** Neither exists in this palette or this type stack, and
+   `asilum-ui` rules 2 and 3 are explicit — no further accent colours, ever, and
+   colours only through tokens. So the chrome is banded from `--ink` and `--grey`
+   (the metallic read, in the phosphor palette) and `magazine.com` is set in
+   OSD/VT323, which is exactly what `.wordmark em` already uses for the word
+   MAGAZINE on every page. The comp's *intent*, in the house's own materials.
 
 **Type — the real brand faces.** Satori reads TTF/OTF/WOFF but **not WOFF2**, and
-`public/fonts` shipped only WOFF2, so the first version of this card used the
-generator's built-in face. It does not any more. Michroma and Share Tech Mono are
-both **SIL OFL**, and Google publishes them as TTF, so the TTFs now sit beside
-the WOFF2s (`michroma.ttf`, `sharetech.ttf`) with their licence texts
-(`OFL-michroma.txt`, `OFL-sharetechmono.txt`). The WOFF2s stay — they are what
-the browser loads; the TTFs exist for the build.
-
-The hierarchy is **read off `globals.css`, not invented**:
+`public/fonts` shipped only WOFF2, so the first version used the generator's
+built-in face. All three faces are **SIL OFL** and Google publishes them as TTF,
+so the TTFs now sit beside the WOFF2s with their licence texts. The WOFF2s stay —
+they are what the browser loads; the TTFs exist for the build.
 
 | Card element | Face | Follows |
 |---|---|---|
-| `*ASILUM` wordmark, kicker | Michroma | `--mich` — `.headline`, `.wordmark`, `.snav`, `.mq` |
-| both bottom lines | Share Tech Mono | `--helv` — the body voice |
+| kicker, `*ASILUM` wordmark, strip | Michroma | `--mich` — `.headline`, `.wordmark`, `.snav`, `.mq` |
+| `magazine.com` | VT323 | `--osd` — `.wordmark em`, the MAGAZINE line |
+| the demo line | Share Tech Mono | `--helv` — the body voice |
 
-`.headline` is Michroma at **weight 400 with tracking**, so the wordmark is too.
-Michroma ships one weight; asking for 700 would make Satori synthesise a face the
-site never shows, and a test forbids `fontWeight` for that reason. Another test
-reads `--mich` and `--helv` out of the stylesheet, so repointing a token without
-touching the card fails the build's test run rather than silently shipping a card
-in the wrong typeface. And because a `.woff2` renamed to `.ttf` would fail at
-build with an opaque Satori error, a test checks the four-byte sfnt signature.
+Each face ships **one weight**, so there is no `fontWeight` anywhere: asking for
+700 makes Satori synthesise a face the site never shows. A test reads `--mich`,
+`--helv` and `--osd` out of the stylesheet, so repointing a token without touching
+the card goes red. Another checks the four-byte sfnt signature, because a `.woff2`
+renamed `.ttf` fails at build with an opaque Satori error.
+
+**What Satori would not paint, learned by looking.** An SVG data-URI tile for the
+grid and a `radial-gradient` for the bloom both produced **byte-identical PNGs**
+when their values were changed — which is what a not-rendered element looks like.
+Both are primitives now: the grid is positioned hairlines, the bloom is a blurred
+`box-shadow`. The emitter for a bloom must be **tiny**, because a box-shadow
+paints outside its element and the first version's 380×300 boxes printed two dark
+discs where their own bodies sat.
 
 **Verified as an artifact, not just as source:** served from a running server it
-returns `content-type: image/png`, a valid PNG signature, and 1200×630 read out
-of the IHDR chunk. Next emits `og:image`, `:type`, `:width`, `:height` and `:alt`
+returns `content-type: image/png`, a valid PNG signature, and 1200×630 read out of
+the IHDR chunk. Next emits `og:image`, `:type`, `:width`, `:height` and `:alt`
 absolutely, through `metadataBase`.
+
+### The name is "*ASILUM magazine"
+
+Owner directive, 17 August: **the word magazine is never dropped.** It was being
+dropped in fourteen metadata strings — the title template, every segment layout's
+title and `siteName`, the piece page, the og and twitter titles — while the shell
+wordmark had it right the whole time. That is exactly why it survived: the name
+looked correct on every page and was wrong in every browser tab, every search
+result and every shared link. `tests/brand-name.test.js` is the rule, executable,
+and it applies to any new page without anyone remembering it.
 
 **Per-route cards are deliberately not built.** One card for the site is honest;
 twelve near-identical ones are churn. `/piece/<id>` is the only route with a real
@@ -247,7 +272,7 @@ while the catalog is synthetic.
 whole point: it can export `generateMetadata`, and `/?item=<id>` never could.
 
 - **Per-piece preview.** `/piece/syn-0911` serves
-  `<title>Y/Project — slip dress · *ASILUM</title>`, a matching `og:title` and
+  `<title>Y/Project — slip dress · *ASILUM magazine</title>`, a matching `og:title` and
   `og:url`, and a self-referential canonical.
 - **The demo warning travels with the card.** The description reads
   *"dresses · 2020s. A synthetic sample record — not real inventory, not for

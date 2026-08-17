@@ -5,7 +5,7 @@
 // (governing-law venue is a flagged counsel decision).
 
 export const metadata = {
-  title: "*ASILUM — terms of service",
+  title: "*ASILUM magazine — terms of service",
   description: "The agreement for using ASiLUM magazine.",
 };
 
