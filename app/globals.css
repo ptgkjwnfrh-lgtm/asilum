@@ -203,6 +203,41 @@ button { font-family: var(--helv); }
 }
 .headline .red { color: var(--red); }
 .deck { font-family: var(--serif); font-style: italic; font-size: 16px; font-weight: 500; color: var(--grey); margin: 0 0 16px; }
+
+/* DEMO MODE (owner ruling, Aug 16). The catalog is synthetic sample data and
+   must never read as real inventory. Built from tokens only, so it inverts
+   correctly in the light theme with no second rule. Sized at 14px because the
+   launch audit flagged sub-12px type — a disclosure nobody can read is not a
+   disclosure. --red carries the house's own "this matters" weight. */
+.demobanner {
+  font-family: var(--helv); font-size: 14px; line-height: 1.5;
+  color: var(--ink); border: 1px solid var(--red);
+  padding: 10px 13px; margin: 0 0 16px; max-width: 62ch;
+}
+/* THE TEXT IS --ink, NOT --red, AND THAT IS DELIBERATE. Measured in the light
+   theme, --red on the page background is 3.92:1 — under the 4.5:1 AA needs for
+   14px bold, which is not "large text" (that starts at 18.66px bold). The card
+   flag measured worse, 3.56:1 at 12px. A disclosure that fails contrast is the
+   one place it cannot be excused: its entire job is to be read, and the audit
+   this answers flagged contrast in the same breath as the demo data.
+   --red still carries the signal, through the border and the rule below.
+   --ink measures 14.30:1. */
+.demobanner b { letter-spacing: 0.06em; border-bottom: 2px solid var(--red); }
+/* The per-record flag: legible first. Uppercase does the marking; 13px clears
+   the sub-12px type the audit counted 28 instances of. */
+/* `.card .fitline` (0,2,0) and `.srclabel` both set --grey and 12px later in
+   this file, so a bare `.demoflag` lost to them and measured 3.56:1 — the
+   failure this rule exists to prevent, hiding behind a passing banner. Matched
+   at equal-or-higher specificity instead of moved, so the demo flag cannot be
+   quietly re-greyed by whichever context it is dropped into next. */
+.demoflag,
+.card .fitline.demoflag,
+.srclabel.demoflag {
+  color: var(--ink); letter-spacing: 0.05em; font-size: 13px; opacity: 0.95;
+}
+.demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
+  font-weight: 900; border-bottom: 2px solid var(--red);
+}
 .rule { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 
 .btn {
