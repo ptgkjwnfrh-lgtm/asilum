@@ -714,7 +714,7 @@ function BrandsTab({ bagBrands }) {
       ) : (
         <div className="tagfilter">
           {followed.map((b) => (
-            <span className="chip clickable cur" key={b} onClick={() => toggle(b)}>{b} ×</span>
+            <button type="button" className="chip clickable cur" key={b} onClick={() => toggle(b)}>{b} ×</button>
           ))}
         </div>
       )}
@@ -724,7 +724,7 @@ function BrandsTab({ bagBrands }) {
       ) : (
         <div className="tagfilter">
           {candidates.map((b) => (
-            <span className="chip clickable" key={b} onClick={() => toggle(b)}>+ {b}</span>
+            <button type="button" className="chip clickable" key={b} onClick={() => toggle(b)}>+ {b}</button>
           ))}
         </div>
       )}

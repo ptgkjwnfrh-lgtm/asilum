@@ -27,7 +27,7 @@ response-time promise — it is marked **unverified** rather than assumed true.
 | 2 | Accessibility checks are in the release gates | **true** |
 | 3 | Semantic structure: headings and landmarks | **true** |
 | 4 | Skip-to-content link | **true** |
-| 5 | Full keyboard operability of navigation and controls | **partly — unverified** |
+| 5 | Full keyboard operability of navigation and controls | **operability verified; focus order not** |
 | 6 | Visible focus | **was FALSE — fixed** |
 | 7 | Text alternatives on imagery, including generated placeholders | **true** |
 | 8 | High-contrast palette in both themes | **true** (one stale literal fixed) |
@@ -128,11 +128,8 @@ and the register's token test now enforces it for every focus rule.
 These are **not** claimed to be false. They are claimed without evidence, which
 is the same problem in a quieter form.
 
-- **5. "Full keyboard operability of navigation and controls."** #214 made card
-  titles real controls and the item detail a proper dialog, so the specific
-  failures found have been fixed. But "full" is a claim about every control on
-  every route, and no exhaustive keyboard pass has been done. **Either narrow
-  the wording or do the pass.**
+- **5. "Full keyboard operability."** The *operability* half is now verified and
+  guarded; the *focus order* half is not. See below.
 - **12. VoiceOver / NVDA / JAWS.** No assistive-technology pass has ever been
   run. The static tests in this repo check *structure*; they cannot tell you
   what a screen reader says. This is the largest remaining gap.
@@ -192,6 +189,39 @@ layout-viewport behaviour at that width.
 
 ---
 
+## Claim 5, part done: operability verified, focus order not
+
+**What was checked.** Every `onClick` on a non-native element across `app/` —
+an exhaustive static sweep, not a spot check. A `<span onClick>` takes no focus,
+fires on no key, and announces as text, so it is unusable from a keyboard.
+
+**Six were genuine failures, and all six are fixed:**
+
+| control | was | now |
+|---|---|---|
+| designer chip, item detail | `<span onClick>` → `window.location.href` | `<a href>` |
+| brand line, item detail | `<div onClick>` → `window.location.href` | `<a href>` |
+| brand filter chips, `/profile` (×2) | `<span onClick>` | `<button type="button">` |
+| chip remove "×", `/upload` (×3) | `<i onClick>`, **no name at all** | named `<button>` |
+
+The two that navigate became **links, not buttons** — that is what gives
+keyboard, middle-click and open-in-new-tab for free.
+
+**Four shapes are legitimate and were not "fixed":** an overlay scrim that
+dismisses (there is always a real `.mclose` and Escape), a wrapper that only
+calls `stopPropagation`, an `aria-hidden` element whose sibling does the work,
+and a card wrapper duplicating a real link it contains. `tests/a11y-keyboard.test.js`
+recognises each by what it *is*, and **asserts the last two rather than trusting
+them** — the scrim must ship a close control, the card must really hold a title
+link.
+
+**Still unverified, and why the claim is not marked simply "true":** focus
+*order* (WCAG 2.4.3) and keyboard *traps* (2.1.2) need a real tab-through by a
+person. A static sweep proves every control can be reached; it cannot prove they
+are reached in a sensible order, or that focus can always get back out.
+
+---
+
 ## Not a defect: the sub-12px type count
 
 169 of 302 `font-size` declarations in `globals.css` are under 12px. The audit
@@ -205,8 +235,9 @@ is a design decision, not an accessibility fix.
 
 ## Standing instruction
 
-**Do not revise `app/accessibility/page.js` until claims 5 and 12 are either
-verified or narrowed.** Claim 13 is now measured and true. The page is closer to true than it was — the two false
+**Do not revise `app/accessibility/page.js` until claim 12 is verified or
+narrowed, and claim 5's focus-order half is checked by a person.** Claim 13 is
+measured and true; claim 5's operability half is verified and guarded. The page is closer to true than it was — the two false
 claims are now true — but "full keyboard operability" and the named screen
 readers are still asserted without evidence. Fixing the statement means either
 doing the work or softening the wording; it does not mean editing the page to
