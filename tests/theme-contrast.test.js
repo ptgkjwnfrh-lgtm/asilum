@@ -73,10 +73,29 @@ test("body text passes in both themes", () => {
   }
 });
 
-// NOTE — what is deliberately NOT asserted here.
-// --red measures 3.92:1 on the light background and --p2 3.15:1. Both are real,
-// both predate this change, and neither is the interaction voice: --red is the
-// ALERT/IDENTITY accent and --p2 is used for graphic elements (strokes,
-// gradients, one dock label). Repainting them is a separate design decision, and
-// asserting a threshold they do not meet would just ship a red suite. They are
-// recorded in the handover instead.
+test("the alert/identity accent is readable in both themes", () => {
+  // --red is not decoration: alerts, selection, the ASTERISK mark, 126 uses.
+  // It measured 3.92:1 on the light background before being darkened.
+  for (const block of [":root", '[data-theme="light"]']) {
+    const ratio = contrast(token(block, "red"), token(block, "bg"));
+    assert.ok(ratio >= AA, `${block}: --red on --bg is ${ratio.toFixed(2)}:1, needs ${AA}`);
+  }
+});
+
+test("white text on a red fill is readable", () => {
+  // ::selection and the filled buttons put --paper on --red. Darkening --red
+  // for the text case must not be paid for here — it improves both.
+  for (const block of [":root", '[data-theme="light"]']) {
+    const ratio = contrast(token(block, "paper"), token(block, "red"));
+    assert.ok(ratio >= AA, `${block}: --paper on --red is ${ratio.toFixed(2)}:1, needs ${AA}`);
+  }
+});
+
+test("the secondary graphic accent is readable where it renders as text", () => {
+  // --p2 is mostly strokes and gradients, but `.os-dock .t b` is text, so it
+  // is held to the text threshold rather than the 3:1 non-text one.
+  for (const block of [":root", '[data-theme="light"]']) {
+    const ratio = contrast(token(block, "p2"), token(block, "bg"));
+    assert.ok(ratio >= AA, `${block}: --p2 on --bg is ${ratio.toFixed(2)}:1, needs ${AA}`);
+  }
+});
