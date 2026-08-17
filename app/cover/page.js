@@ -269,7 +269,7 @@ export default function CoverPage() {
           <div className="cvcompose">
             <Avatar name={getProfileInfo().name} />
             <div className="cvcomposebox">
-              <textarea
+              <textarea aria-label="your transmission"
                 rows={3}
                 maxLength={400}
                 placeholder="today's uniform, tonight's find…"

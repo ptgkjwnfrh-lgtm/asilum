@@ -115,7 +115,7 @@ export function RoomEditor() {
         <div>
           <div className="psub">HANDLE</div>
           <div className="roomrow">
-            <input className="pedit small" value={handleDraft} placeholder="your-handle"
+            <input aria-label="your handle" className="pedit small" value={handleDraft} placeholder="your-handle"
               onChange={(e) => setHandleDraft(e.target.value)} />
             <button className="fitbtn" disabled={busy || !handleDraft || handleDraft === room?.handle}
               onClick={() => apply({ op: "room.set", handle: handleDraft })}>CLAIM</button>
@@ -140,7 +140,7 @@ export function RoomEditor() {
 
         <div>
           <div className="psub">STATEMENT — {statement.length}/{view.statementMax}</div>
-          <textarea className="pedit small roomstatement" rows={5} value={statement}
+          <textarea aria-label="room bio" className="pedit small roomstatement" rows={5} value={statement}
             placeholder="plain words only — links and contact details send the room to review"
             onChange={(e) => setStatement(e.target.value)} />
           <button className="fitbtn" disabled={busy}
@@ -159,7 +159,7 @@ export function RoomEditor() {
             ))}
           </div>
           <div className="roomrow">
-            <input className="pedit small" list="room-anthem-choices" value={anthemDraft}
+            <input aria-label="add an anthem from the culture catalog" className="pedit small" list="room-anthem-choices" value={anthemDraft}
               placeholder="add from the culture catalog…"
               onChange={(e) => setAnthemDraft(e.target.value)} />
             <datalist id="room-anthem-choices">

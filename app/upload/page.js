@@ -288,7 +288,7 @@ export default function UploadPage() {
               <b>{busy ? "reading the pixels…" : "drop pieces, fit pics, anything with the vibe"}</b>
               <em>palette v0 reads the colors; filename words teach too. pins stay on this device.</em>
             </div>
-            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { ingestFiles(e.target.files); e.target.value = ""; }} />
+            <input aria-label="upload images to the moodboard" ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { ingestFiles(e.target.files); e.target.value = ""; }} />
             {tiles.length > 0 && (
               <div className="gxwall">
                 {tiles.map((t) => (
@@ -432,6 +432,7 @@ function FavInput({ label, placeholder, onAdd }) {
       <div className="gxrow" style={{ margin: 0 }}>
         <input
           className="gxin"
+          aria-label={label}
           placeholder={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}

@@ -287,7 +287,7 @@ export default function TheWirePage() {
           <div className="wcompose">
             <Avatar name={getProfileInfo().name} />
             <div className="wcright">
-              <input
+              <input aria-label="caption"
                 className="wcap"
                 type="text"
                 maxLength={200}
@@ -295,7 +295,7 @@ export default function TheWirePage() {
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
               />
-              <textarea
+              <textarea aria-label="the transmission"
                 rows={4}
                 maxLength={5000}
                 placeholder="the transmission — today's uniform, tonight's find, the whole account of it…"
@@ -344,7 +344,7 @@ export default function TheWirePage() {
             <div className="fpost wpost" key={p.id}>
               {inEdit ? (
                 <div className="wedit">
-                  <input
+                  <input aria-label="edit the caption"
                     className="wcap"
                     type="text"
                     maxLength={200}
@@ -352,7 +352,7 @@ export default function TheWirePage() {
                     value={editCaption}
                     onChange={(e) => setEditCaption(e.target.value)}
                   />
-                  <textarea
+                  <textarea aria-label="edit the transmission"
                     rows={4}
                     maxLength={5000}
                     value={editText}

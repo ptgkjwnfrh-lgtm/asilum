@@ -200,9 +200,9 @@ export default function ProfilePage() {
         <div className="pident">
           {editing ? (
             <>
-              <input className="pedit" value={info.name} onChange={(e) => save("name", e.target.value)} />
-              <input className="pedit small" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
-              <textarea className="pedit small" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
+              <input className="pedit" aria-label="display name" value={info.name} onChange={(e) => save("name", e.target.value)} />
+              <input className="pedit small" aria-label="handle" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
+              <textarea className="pedit small" aria-label="bio" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
             </>
           ) : (
             <>

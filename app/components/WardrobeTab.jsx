@@ -161,23 +161,23 @@ export function WardrobeTab() {
         erased independently or with the piece.
       </div>
       <form className="wadd" onSubmit={addManual}>
-        <input
+        <input aria-label="the piece"
           placeholder="the piece — e.g. black double-rider leather jacket"
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           maxLength={200}
         />
-        <input
+        <input aria-label="brand (optional)"
           placeholder="brand (optional)"
           value={form.brand}
           onChange={(e) => setForm({ ...form, brand: e.target.value })}
           maxLength={120}
           style={{ maxWidth: 160 }}
         />
-        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+        <select aria-label="category" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
           {CATEGORIES.map((c) => <option key={c} value={c}>{c || "category?"}</option>)}
         </select>
-        <input
+        <input aria-label="size"
           placeholder="size"
           value={form.sizeLabel}
           onChange={(e) => setForm({ ...form, sizeLabel: e.target.value })}
@@ -218,7 +218,7 @@ export function WardrobeTab() {
           <a className="amemgo" href={`/stylist?anchor=wardrobe:${piece.id}`}>STYLE IT</a>
           {uploads.available ? (
             <>
-              <input
+              <input aria-label="upload a photo of this piece"
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}

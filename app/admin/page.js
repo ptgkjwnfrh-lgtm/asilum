@@ -162,7 +162,7 @@ export default function AdminDeskPage() {
           <div className="rkrow">
             <div className="rkname">ADMIN TOKEN</div>
             <div className="rkctl">
-              <input
+              <input aria-label="admin token"
                 className="wcap adminkey"
                 type="password"
                 autoComplete="off"
@@ -248,7 +248,7 @@ export default function AdminDeskPage() {
               <div className="rkrow deskrow" key={a.accountId}>
                 <div className="rkname">{a.brandName}</div>
                 <div className="rkctl">
-                  <input
+                  <input aria-label="note for this applicant"
                     className="wcap decknote"
                     type="text"
                     maxLength={500}

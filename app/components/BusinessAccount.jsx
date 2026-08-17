@@ -135,19 +135,19 @@ export default function BusinessAccountPanel() {
 
       {state.account && state.status !== "business" && (
         <div className="bizform">
-          <input
+          <input aria-label="brand name"
             type="text" maxLength={80} placeholder="brand name"
             value={brandName} onChange={(e) => setBrandName(e.target.value)}
           />
-          <input
+          <input aria-label="shopify domain"
             type="text" maxLength={120} placeholder="your-shop.myshopify.com"
             value={shopifyDomain} onChange={(e) => setShopifyDomain(e.target.value)}
           />
-          <input
+          <input aria-label="your website"
             type="url" maxLength={300} placeholder="https://your-own-site.com"
             value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)}
           />
-          <textarea
+          <textarea aria-label="who you are — read by the reviewer"
             rows={3} maxLength={STATEMENT_MAX}
             placeholder="who you are — the human reviewing this reads it"
             value={statement} onChange={(e) => setStatement(e.target.value)}

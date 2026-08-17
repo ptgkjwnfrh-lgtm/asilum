@@ -597,7 +597,7 @@ export default function Home() {
             <section className="cravingline" aria-label="current craving">
               <p className="cravnote">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
               <div className="cravinggrid">
-                <input
+                <input aria-label="what you are looking for"
                   type="text"
                   maxLength={240}
                   placeholder="dark dinner look, clean but strange, airport armor…"
@@ -605,20 +605,20 @@ export default function Home() {
                   onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
                   onKeyDown={(e) => e.key === "Enter" && applyCraving()}
                 />
-                <select value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
+                <select aria-label="occasion" value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
                   <option value="">any occasion</option>
                   <option value="everyday">everyday</option><option value="work">work</option>
                   <option value="date">date</option><option value="night">night</option>
                   <option value="event">event</option><option value="travel">travel</option>
                   <option value="outdoors">outdoors</option>
                 </select>
-                <select value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
+                <select aria-label="mood" value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
                   <option value="">any mood</option>
                   <option value="quiet">quiet</option><option value="sharp">sharp</option>
                   <option value="romantic">romantic</option><option value="experimental">experimental</option>
                   <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
                 </select>
-                <select value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
+                <select aria-label="novelty" value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
                   <option value="safe">safe bet</option><option value="discovery">discovery</option>
                   <option value="wildcard">wildcard</option>
                 </select>
@@ -628,14 +628,14 @@ export default function Home() {
           )}
 
           <div className="filters">
-            <select
+            <select aria-label="filter by category"
               value={filters.category}
               onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
             >
               <option value="">all categories</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
-            <input
+            <input aria-label="maximum price"
               type="number"
               placeholder="max price"
               value={filters.maxPrice}
