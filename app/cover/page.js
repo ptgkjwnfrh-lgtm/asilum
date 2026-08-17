@@ -124,6 +124,9 @@ export default function CoverPage() {
       </div>
 
       <header className="cvmast" aria-label="front cover masthead">
+        {/* The masthead is styled spans, so the route had no semantic heading.
+            Visually unchanged; announced properly. */}
+        <h1 className="a11yhead">Front Cover</h1>
         <div className="cvmastblock">
           <span className="cvmastline"><b className="red">*</b>FRONT</span>
           <span className="cvmastline">COVER</span>

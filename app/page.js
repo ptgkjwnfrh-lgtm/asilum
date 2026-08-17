@@ -774,17 +774,29 @@ export default function Home() {
       {/* ---- Item detail: ALL the depth lives here ---- */}
       {modal && (
         <div className="overlay" onClick={() => setModal(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <button className="mclose" onClick={() => setModal(null)}>×</button>
-            <div className="mimg">
+          {/* A real dialog (launch audit, Aug 16): it announced as a plain div,
+              so assistive tech had no way to know a layer had opened, what it
+              was called, or that the page behind it was inert. `×` alone is not
+              an accessible name either. Escape already closed it — that part
+              was right. aria-labelledby points at the piece's own title, which
+              is the honest name for this dialog. */}
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="item-detail-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="mclose" aria-label="close item detail" onClick={() => setModal(null)}>×</button>
+            <div className="mimg" aria-hidden="true">
               <img
                 src={modal.img || thumbFor(modal)}
-                alt={modal.alt || modal.title}
+                alt=""
                 style={{ aspectRatio: aspectFor(modal.id) }}
               />
             </div>
             <div className="mbody">
-              <div className="ttl">{modal.title}</div>
+              <h2 className="ttl" id="item-detail-title">{modal.title}</h2>
               <div
                 className="brand2"
                 style={{ cursor: "pointer" }}
@@ -907,11 +919,18 @@ export default function Home() {
 function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
   return (
     <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-      <div className="imgwrap" onClick={onOpen} style={{ aspectRatio: aspectFor(it.id) }}>
-        <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
+      {/* ONE ACCESSIBLE NAME PER CARD (launch audit, Aug 16). The image and the
+          title were both bare divs with onClick — the detail opened for a
+          mouse and was unreachable from a keyboard, while the accessibility
+          page claimed "full keyboard operability of navigation and controls".
+          The title is now the real control; the image is presentational and
+          keeps its pointer affordance, so a screen reader announces the piece
+          once rather than twice. */}
+      <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+        <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>
       <div className="body">
-        <div className="ttl" onClick={onOpen}>{it.title}</div>
+        <button type="button" className="ttl" onClick={onOpen}>{it.title}</button>
         {/* A demo record says so, and says nothing else about provenance: no
             source, no "just in". Both would be claims it cannot support. */}
         {isDemoItem(it)
