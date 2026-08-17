@@ -269,7 +269,7 @@ export default function DesignConsole() {
             {editedCount ? <><b>{editedCount}</b> HAND EDIT{editedCount === 1 ? "" : "S"} LIVE</> : "SHIPPED DESIGN — NO EDITS"}
           </div>
           <div className="dcfootrow">
-            <input
+            <input aria-label="preset name"
               type="text"
               placeholder="preset name…"
               value={presetName}
@@ -294,7 +294,7 @@ export default function DesignConsole() {
           </div>
           {importOpen && (
             <>
-              <textarea
+              <textarea aria-label="paste preset JSON"
                 rows={4}
                 placeholder='paste preset JSON — {"overrides":{…}}'
                 value={importText}

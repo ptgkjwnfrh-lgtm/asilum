@@ -307,7 +307,7 @@ export default function DiscoverPage() {
 
       <div className="filters">
         <div className="sugwrap">
-          <input
+          <input aria-label="search a piece, feeling, place, film or era"
             type="text"
             placeholder="search a piece, feeling, place, film, era…"
             value={q}
@@ -341,11 +341,11 @@ export default function DiscoverPage() {
               : `FOLLOW ${matchedBrand}`}
           </button>
         )}
-        <select value={source} onChange={(e) => setSource(e.target.value)}>
+        <select aria-label="filter by source" value={source} onChange={(e) => setSource(e.target.value)}>
           <option value="">all sources</option>
           {sources.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)}>
+        <select aria-label="sort order" value={sort} onChange={(e) => setSort(e.target.value)}>
           <option value="">default order</option>
           <option value="new">newest</option>
           <option value="price-asc">price ↑</option>

@@ -65,6 +65,7 @@ export function UserSearch({ placeholder = "search users…" }) {
       <input
         type="text"
         value={q}
+        aria-label={placeholder || "search people"}
         placeholder={placeholder}
         onChange={(e) => setQ(e.target.value)}
       />

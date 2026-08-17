@@ -318,7 +318,7 @@ export default function BoardPage() {
                   : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
               </button>
             </div>
-            <input ref={photoRef} type="file" accept="image/*" hidden onChange={onPassportPhoto} />
+            <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
             <dl className="ppid">
               <div><dt>TYPE<em>/ Type</em></dt><dd>P</dd></div>
               <div><dt>CODE<em>/ Code</em></dt><dd>ASM</dd></div>
@@ -353,6 +353,7 @@ export default function BoardPage() {
           <div className="controls">
             <input
               type="text"
+              aria-label="teach asterisk — words, moods, colours, places, brands"
               placeholder="words, moods, colors, cities, fabrics, music, brands — berlin, leather, quiet, rick owens, goretex…"
               value={trainText}
               onChange={(e) => setTrainText(e.target.value)}
@@ -363,7 +364,7 @@ export default function BoardPage() {
             <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>
               UPLOAD IMAGES
             </button>
-            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onUpload} />
+            <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
           </div>
           <p className="deck" style={{ marginTop: 4 }}>clothing or anything that&apos;s your vibe.</p>
           <div className="gxplugs" aria-label="future imports">
@@ -393,6 +394,7 @@ export default function BoardPage() {
           ))}
           <input
             type="text"
+            aria-label="new board name"
             placeholder="new board name…"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
@@ -410,6 +412,7 @@ export default function BoardPage() {
               <input
                 type="text"
                 key={view.id}
+                aria-label="rename this board"
                 defaultValue={view.name}
                 onBlur={(e) => rename(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && e.target.blur()}

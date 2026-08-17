@@ -366,7 +366,7 @@ export default function Shell({ children }) {
           <div className="topright">
             {searchOpen ? (
               <>
-                <input
+                <input aria-label="ask for a piece, feeling, place, film or era"
                   autoFocus
                   className="search"
                   placeholder="ask for a piece, feeling, place, film, era…"

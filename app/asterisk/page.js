@@ -135,7 +135,7 @@ export default function AsteriskPage() {
                 type <em>DELETE PERSONALIZATION</em> to erase everything above (purchase tickets and
                 de-identified statistics remain)
                 <span className="amemerase">
-                  <input
+                  <input aria-label="type DELETE PERSONALIZATION to confirm"
                     className="amemconfirm"
                     value={confirmText}
                     onChange={(e) => setConfirmText(e.target.value)}
