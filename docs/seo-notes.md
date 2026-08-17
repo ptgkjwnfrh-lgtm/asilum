@@ -76,7 +76,64 @@ cover image ships.**
   uses `https://www.asilummagazine.com`. Supabase's Site URL uses the apex.
   Nothing is broken, but **canonicals are exactly where this inconsistency would
   start costing ranking**, so it is worth settling.
-- **Stable product URLs remain deferred.** Items open at `/?item=<id>` — a query
-  parameter on the catalog, not a route — so there is no product URL to
-  canonicalise. That is also *why* the JSON-LD question stays theoretical: there
-  is no per-product page to attach it to.
+- **Stable product URLs — investigated 17 August. It is an owner decision, and
+  smaller than it sounds.** Details below.
+
+---
+
+## Stable product URLs: what is actually true (17 August)
+
+The audit lists this as outstanding. Investigated, and it needs a ruling rather
+than an implementation, for three reasons.
+
+### 1. The share URL already works — verified, not assumed
+
+`shareItem()` copies `/?item=<id>`, and that link **does** restore the piece:
+loading `/?item=syn-0911` cold opens the item dialog on *Y/Project — slip dress*
+and posts the notice "showing pieces connected to a shared item". The handler
+lives at `app/page.js:324`. So sharing is not broken, and the URL is stable in
+the sense that matters to a person: it survives being pasted.
+
+What the audit wants is a **path** (`/piece/<id>`) rather than a query parameter.
+
+### 2. The SEO argument for a path is currently inverted
+
+A path-based product URL exists to be **canonicalised and indexed**. Every
+product here is synthetic, and this document already refuses to court indexing
+for sample data. **Building indexable product pages for fabricated products
+would undo the decision above.** Any such route has to ship `noindex` while the
+catalog is a demo — at which point the SEO benefit is nil and the remaining
+benefit is a tidier URL.
+
+The argument turns around the day the catalog holds real inventory. Not before.
+
+### 3. It collides with an owner decree
+
+`asilum-ui` rule 8: **"item depth belongs to the item modal (owner decree)."** A
+per-product *page* is item depth living somewhere else. Two shapes respect the
+decree, and picking between them is the owner's call:
+
+- **(a) Deep link only.** `/piece/<id>` server-renders nothing but metadata and
+  hands off to the catalog with the modal open. Depth stays in the modal, the URL
+  gets tidier, and a shared link can finally carry the piece's own preview.
+- **(b) A real page.** `/piece/<id>` renders the depth itself. Cleaner for
+  crawlers and for a future real catalog — and a direct contradiction of rule 8
+  until the owner amends it.
+
+### The one genuine gap, and why it is not a quick fix
+
+**A shared piece link previews as the generic site card.** Paste
+`/?item=syn-0911` into any social surface and the preview reads
+"*ASILUM — fashion intelligence OS" with `og:url` pointing at the homepage —
+not the piece. That is a real shortcoming of a share button whose notice claims
+the link "carries its taste graph".
+
+Fixing it needs per-request metadata, and **`app/page.js` is a client component**
+(`"use client"` on line 1), so it cannot export `generateMetadata`, and a segment
+layout never receives `searchParams`. So this is not a metadata addition — it
+requires either option (a) above or converting the catalog to a server component
+wrapper around a client child.
+
+**Recommendation:** option (a). It is the smallest change that respects rule 8,
+tidies the URL, and closes the link-preview gap — and it keeps `noindex` honest
+while the catalog is synthetic.
