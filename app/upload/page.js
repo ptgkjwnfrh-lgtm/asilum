@@ -318,7 +318,7 @@ export default function UploadPage() {
             {designers.length > 0 && (
               <div className="gxchips" style={{ marginBottom: 14 }}>
                 {designers.map((b) => (
-                  <span className="gxchip on" key={b}>{b} <i onClick={() => removeDesigner(b)}>×</i></span>
+                  <span className="gxchip on" key={b}>{b} <button type="button" className="gxchipx" aria-label={"remove " + b} onClick={() => removeDesigner(b)}>×</button></span>
                 ))}
               </div>
             )}
@@ -326,7 +326,7 @@ export default function UploadPage() {
             {favs.styles.length > 0 && (
               <div className="gxchips" style={{ marginBottom: 14 }}>
                 {favs.styles.map((s) => (
-                  <span className="gxchip on" key={s}>{s} <i onClick={() => removeFav("styles", s)}>×</i></span>
+                  <span className="gxchip on" key={s}>{s} <button type="button" className="gxchipx" aria-label={"remove " + s} onClick={() => removeFav("styles", s)}>×</button></span>
                 ))}
               </div>
             )}
@@ -415,7 +415,7 @@ function FavField({ kind, label, placeholder, favs, onAdd, onRemove }) {
       {(favs[kind] || []).length > 0 && (
         <div className="gxchips">
           {favs[kind].map((n) => (
-            <span className="gxchip on" key={n}>{n} <i onClick={() => onRemove(kind, n)}>×</i></span>
+            <span className="gxchip on" key={n}>{n} <button type="button" className="gxchipx" aria-label={"remove " + n} onClick={() => onRemove(kind, n)}>×</button></span>
           ))}
         </div>
       )}

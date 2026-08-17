@@ -797,14 +797,13 @@ export default function Home() {
             </div>
             <div className="mbody">
               <h2 className="ttl" id="item-detail-title">{modal.title}</h2>
-              <div
+              <a
                 className="brand2"
-                style={{ cursor: "pointer" }}
+                href={"/discover?q=" + encodeURIComponent(modal.brand)}
                 title={"see " + modal.brand + " on DISCOVER"}
-                onClick={() => { window.location.href = "/discover?q=" + encodeURIComponent(modal.brand); }}
               >
                 {modal.brand}
-              </div>
+              </a>
               <div className="meta">
                 {modal.category ? <span className="cat">{modal.category}</span> : null}
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
@@ -821,15 +820,14 @@ export default function Home() {
               {modal.designers && modal.designers.length ? (
                 <div className="designers">
                   {modal.designers.map((d) => (
-                    <span
+                    <a
                       className="dz"
                       key={d}
-                      style={{ cursor: "pointer" }}
+                      href={"/discover?q=" + encodeURIComponent(d)}
                       title={"see " + d + " on DISCOVER"}
-                      onClick={() => { window.location.href = "/discover?q=" + encodeURIComponent(d); }}
                     >
                       {d}
-                    </span>
+                    </a>
                   ))}
                 </div>
               ) : null}
