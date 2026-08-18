@@ -48,8 +48,20 @@ CREATE INDEX IF NOT EXISTS order_events_order_idx ON order_events (order_id, id)
 ALTER TABLE orders       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_events ENABLE ROW LEVEL SECURITY;
 
-REVOKE ALL ON orders       FROM PUBLIC, anon, authenticated;
-REVOKE ALL ON order_events FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON orders       FROM PUBLIC;
+REVOKE ALL ON order_events FROM PUBLIC;
+
+-- anon/authenticated exist on Supabase, not on plain CI Postgres — guard.
+DO $$
+DECLARE role_name TEXT;
+BEGIN
+  FOREACH role_name IN ARRAY ARRAY['anon','authenticated'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = role_name) THEN
+      EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE orders FROM %I', role_name);
+      EXECUTE format('REVOKE ALL PRIVILEGES ON TABLE order_events FROM %I', role_name);
+    END IF;
+  END LOOP;
+END $$;
 
 DO $$
 BEGIN
