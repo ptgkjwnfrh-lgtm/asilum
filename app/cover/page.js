@@ -116,12 +116,12 @@ export default function CoverPage() {
         .catch(() => {});
     }
     fetch("/api/business?booths=1")
-      .then((r) => r.json())
-      .then((d) => setBooths(Array.isArray(d.booths) ? d.booths : []))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBooths(Array.isArray(d.booths) ? d.booths : []); })
       .catch(() => setBooths([]));
     authorizedFetch("/api/outfits?user=" + encodeURIComponent(user) + "&n=2")
-      .then((r) => r.json())
-      .then((d) => setLooks((d.outfits || []).slice(0, 2)))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setLooks((d.outfits || []).slice(0, 2)); })
       .catch(() => {});
   }, []);
 
@@ -134,7 +134,15 @@ export default function CoverPage() {
     // saved but invisible to others, and saying "live" would be a lie.
     postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: t })
       .then(async (res) => {
-        const d = await res.json().catch(() => null);
+        // Only the server's own verdict may set this note. A non-ok body parses
+        // fine and has no `held`, so reading it would render a refusal as
+        // "posted, nothing held" — the case this whole guard exists for.
+        //
+        // KNOWN GAP, deliberately not invented here: `addPost` above already
+        // wrote the post locally, so a refusal still leaves it on screen with
+        // no note. Telling the reader their post did not save needs copy that
+        // is the owner's to choose, not a guard's to improvise.
+        const d = res.ok ? await res.json().catch(() => null) : null;
         setWireNote(d && d.held ? (d.note || "your post is saved and paused for a human review") : "");
         loadCoverWire();
       })

@@ -36,8 +36,8 @@ export default function StatsPage() {
     // The visitor's OWN brain state is not staff data and stays open — it is
     // read from /api/profile, which binds to their identity.
     authorizedFetch("/api/profile?user=" + encodeURIComponent(getUid() || "guest"))
-      .then((r) => r.json())
-      .then((d) => { setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (!d) return; setViz(vizState(d.profile)); setMix(d.bridgeMix || null); })
       .catch(() => {});
 
     if (!token) {

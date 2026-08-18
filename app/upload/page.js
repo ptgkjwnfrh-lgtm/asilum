@@ -88,8 +88,8 @@ export default function UploadPage() {
 
   function loadViz(user = uid || getUid()) {
     authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
-      .then((r) => r.json())
-      .then((d) => setViz({ state: vizState(d.profile), profile: d.profile }))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setViz({ state: vizState(d.profile), profile: d.profile }); })
       .catch(() => {});
   }
   function convictions() {

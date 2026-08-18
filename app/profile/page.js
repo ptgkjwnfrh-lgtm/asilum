@@ -77,10 +77,11 @@ export default function ProfilePage() {
     } catch {}
     const user = getUid() || "guest";
     authorizedFetch("/api/orders?user=" + encodeURIComponent(user))
-      .then((r) => r.json()).then((d) => setBagHistory(d.bagHistory || [])).catch(() => {});
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBagHistory(d.bagHistory || []); }).catch(() => {});
     authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
-      .then((r) => r.json())
-      .then((d) => setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBoardFollows(((d.profile || {})._meta || {}).follows?.length || 0); })
       .catch(() => {});
   }, []);
 

@@ -171,8 +171,8 @@ export default function TheWirePage() {
       fetchPost(pid).then((p) => setFocus(p || false));
     }
     fetch("/api/business?booths=1")
-      .then((r) => r.json())
-      .then((d) => setBooths(Array.isArray(d.booths) ? d.booths.slice(0, 10) : []))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBooths(Array.isArray(d.booths) ? d.booths.slice(0, 10) : []); })
       .catch(() => setBooths([]));
   }, []);
 
