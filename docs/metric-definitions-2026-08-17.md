@@ -33,9 +33,9 @@ of scope.
 | M1 | SYSTEM LEDGER — interactions / readers / boards / graph edges | `/cover` | **was FALSE — printed `undefined` ×4 — fixed** |
 | M2 | `STATE — MEMORY MODE / PERSISTENT LEDGER` | `/cover` | **was FALSE — always said MEMORY MODE — fixed** |
 | M3 | `MATCH n%` | `/stylist` | **was MISLABELLED — not a percentage — fixed** |
-| M4 | `MATCH` floor of 75 | `/stylist`, `/api/outfits` | **true but INERT — owner ruling 8** |
+| M4 | `MATCH` floor of 75 | `/stylist`, `/api/outfits` | **was INERT — ruling 8 answered, floor is now real** |
 | M5 | `CURATED n%` / `TASTE n%` on model looks | `/stylist` | **was FALSE — both were copies of MATCH — fixed** |
-| M6 | conf range in the engine's own doc comment | `lib/brain/stylist.js` | **was STALE (said 58–99, is 75–99) — fixed** |
+| M6 | conf range in the engine's own doc comment | `lib/brain/stylist.js` | **was STALE (said 58–99) — fixed, now 0–99 after ruling 8** |
 | M7 | `n BRANDS` | `/profile` | **was MISLABELLED — counted bag brands — fixed** |
 | M8 | `n FOLLOWERS` | `/profile` | **NOT MEASURED — now prints `—`** |
 | M9 | `n POSTS` / `n FOLLOWING` | `/profile` | **true — definitions recorded below** |
@@ -134,46 +134,66 @@ Now: `MATCH 94 of 99`. The chip and the stat row read the same way.
 |---|---|
 | `CURATED n%` | mean pairwise coherence of the chosen pieces — tag affinity, era proximity, price-tier sanity |
 | `TASTE n%` | mean similarity of the chosen pieces to the blended taste vector, floored at 0 |
-| `MATCH n of 99` | calibrated display of relative rank: `75 + raw*24 + min(events,400)/100`, clamped to 99, where `raw = coherence*0.55 + taste*0.45`. Sharpens as the profile accumulates interactions. **Not a probability of anything** |
+| `MATCH n of 99` | the look's composite quality: `round(min(99, raw * 99))` where `raw = coherence*0.55 + max(taste,0)*0.45`. Below 75 the look is rejected, not shown (ruling 8, §M4). **Not a probability of anything** |
 
 ---
 
-## M4 — the match floor of 75 never rejects a look → OWNER RULING 8
+## M4 — the match floor of 75 never rejected a look → RULING 8, ANSWERED
 
-`/api/outfits` documents *"match floor 75"* and enforces it twice
-(`filter(look => look.conf >= MATCH_FLOOR)` in quick mode, `if (look.conf <
-MATCH_FLOOR) continue` in full generation). **Neither check can ever fire.**
+**The finding.** `/api/outfits` documented a *"match floor 75"* and enforced it
+twice, and **neither check could ever fire.** `raw` is non-negative by
+construction, so `75 + raw*24` was already ≥ 75 before `Math.max(75, …)` saw it.
+Every look shipped, the worst possible one still displayed 75, and a 24-point
+band carried the whole signal.
 
-`raw` is non-negative by construction — `cohAvg` is a mean of non-negative
-coherences and the taste term is floored at 0 — so `75 + raw*24 + …` is already
-≥ 75 before `Math.max(75, …)` sees it. `conf` is structurally in [75, 99].
+**The ruling: option (b).** `conf` is now the composite scaled straight onto
+0–99, with no lower clamp, so a bad look *can* land under the floor and
+`/api/outfits` drops it.
 
-Consequences, both measured:
+### Measured before changing the mapping
 
-- **Every look ships.** The floor filters nothing.
-- **The worst possible look still displays 75.** Assembled against a taste
-  vector that wants the opposite of every piece in the pool, `conf` is 75 while
-  `tasteStat` is honestly 0. A 24-point band carries the entire signal, and its
-  bottom is labelled with a number that reads like a passing grade.
+The calibration was chosen from the distribution, not by eye — picking a curve by
+eye is how the floor went inert in the first place. Across **9,000 generated
+looks** over cold, warm and rich profiles, the composite runs:
 
-**This is a product decision, not a defect to quietly repair.** Widening the
-display range would start rejecting looks and would change what the number
-means to anyone who has been reading it. It is recorded, tested (the test
-asserts the ≥ 75 floor *holds*, so it goes red if the mapping moves without this
-document moving), and left exactly as it ships.
+| p01 | p05 | p10 | p25 | median | p90 | max |
+|---|---|---|---|---|---|---|
+| 0.625 | 0.667 | 0.708 | 0.750 | 0.792 | 0.833 | 0.917 |
 
-**Ruling 8, for the owner:** should `MATCH` keep its 75–99 presentation band, or
-should it span the real range so the floor becomes a real gate? Options as I see
-them: **(a)** leave it, and rely on `TASTE`/`CURATED` to carry the honest detail
-— cheapest, and the caption `of 99` now at least names the scale; **(b)** map
-`raw` to 0–99 and let the existing floor start rejecting looks — makes the
-documented rule real, and will visibly reduce how many looks a cold profile
-sees; **(c)** stop printing a composite altogether and show only `CURATED` and
-`TASTE`, which are already honest percentages. My recommendation is **(b)**:
-the floor is already written down as a product rule in two places, and (b) is
-the only option that makes those two places true.
+So `raw × 99` puts the 75 floor at roughly the **27th percentile** — it rejects
+the weakest quarter rather than everything or nothing.
 
----
+### Measured after
+
+A full generation promises 25 looks (5 genres × 5, from 10 candidates each):
+
+| profile | looks shown | rejected by the floor | MATCH shown | empty generations |
+|---|---|---|---|---|
+| cold | 21.2 / 25 | 19% | 75–86 (median 82) | 0 / 40 |
+| warm | 25.0 / 25 | 1% | 77–90 (median 84) | 0 / 40 |
+| rich | 18.9 / 25 | 49% | 75–86 (median 79) | 0 / 40 |
+
+**The page never empties**, and MATCH now spans a real range instead of the
+93–96 everything used to score.
+
+### Two things that came with it
+
+**The activity bonus is gone.** `conf` used to gain up to +4 from
+`min(events, 400) / 100`. With a real floor that term lets a weak look buy its
+way past the gate on how much the reader has browsed — a fact about the person,
+not about the look. Conflating the two is the exact defect this register exists
+to catch.
+
+**The model path was fixed to match.** `modelLook` clamped AI looks with
+`Math.max(75, …)` and the AI group skipped the floor filter entirely, so ruling 8
+would have been real on the engine path and decoration on the other. Both paths
+now obey one rule, and an unrated model look scores 0 rather than a
+comfortably-passing 85.
+
+**Side effect worth knowing:** `rankTrendAware` sorts on `conf + trendScore*6`.
+When conf spanned four points, the trend term dominated the ordering; now that it
+spans thirty, quality leads and trend nudges. That is the better behaviour, but
+it *is* a ranking change.
 
 ## M5 — three labels, one number
 
@@ -309,7 +329,8 @@ That third rule is the one M8 borrowed and M1 breached.
 
 ## What to do next with this document
 
-1. **Ruling 8 (M4)** is the only open decision here.
+1. ~~**Ruling 8 (M4)**~~ — **answered 17 August**, option (b). No open decisions
+   remain in this register.
 2. `tests/metric-definitions.test.js` is this register made executable — 14
    tests, each verified to go red under a revert of the thing it pins. If one
    fails, a definition moved and this file must move with it.

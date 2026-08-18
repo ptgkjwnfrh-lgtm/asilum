@@ -155,29 +155,49 @@ test("conf, curated and tasteStat are three different quantities", () => {
     "if these are ever equal the /stylist stat row is printing one number three times");
 });
 
-test("conf is a 75–99 display value and CANNOT report a bad look (owner ruling 8)", () => {
-  // This test records the truth rather than a fix. `raw` is non-negative by
-  // construction, so the clamp's floor is unreachable and the "match floor 75"
-  // enforced in /api/outfits never rejects anything. A look assembled against a
-  // taste vector that WANTS THE OPPOSITE of every piece in the pool still ships
-  // at >= 75. Changing that is a product decision, not a cleanup — if this test
-  // fails, the mapping moved and docs/metric-definitions-2026-08-17.md §M3
-  // plus the /stylist scale caption must move with it.
+test("a bad look scores BELOW the floor and is rejected (owner ruling 8, answered)", () => {
+  // This test used to assert the OPPOSITE: that conf could never drop under 75,
+  // because `Math.max(75, …)` clamped it there and the product's "match floor
+  // 75" could not fire. The owner ruled to make the floor real, so the assertion
+  // inverts. If it ever goes green in its old form again, the floor is
+  // decoration once more.
   const hostile = { MINIMAL: -1, TAILORED: -1 };
   const [worst] = buildSlate(pool(), hostile, 1, {});
   assert.ok(worst, "even a hostile taste vector produces a look");
-  assert.ok(worst.conf >= 75, `the worst possible look still displays ${worst.conf}`);
-  assert.ok(worst.conf <= 99);
-  // And the honest half of the same fact: the decomposition DOES fall, which is
-  // why CURATED/TASTE keep their percent signs and MATCH lost its.
+  assert.ok(worst.conf < 75,
+    `a look built against the opposite of the taste vector must fall under the floor, got ${worst.conf}`);
   assert.equal(worst.tasteStat, 0, "taste similarity reports the truth: zero");
+
+  // And a good one still clears it, so the gate is a gate and not a wall.
+  const [good] = buildSlate(pool(), { MINIMAL: 1, TAILORED: 0.6 }, 1, {});
+  assert.ok(good.conf >= 75, `a well-matched look must ship, got ${good.conf}`);
+  assert.ok(good.conf <= 99);
+});
+
+test("conf is the composite on 0-99, with no activity bonus", () => {
+  // The mapping is linear in the composite and nothing else. It used to gain up
+  // to +4 from `min(events, 400) / 100`, which let a weak look buy its way past
+  // the floor on how much the reader had browsed — a fact about the person, not
+  // about the look.
+  const taste = { MINIMAL: 1 };
+  const [a] = buildSlate(pool(), taste, 1, {});
+  const [b] = buildSlate(pool(), taste, 1, { events: 400 });
+  assert.equal(a.conf, b.conf, "browsing history must not move the match score");
+
+  // conf == round(composite x 99), recomputed from the parts the look reports.
+  const composite = (a.curated / 100) * 0.55 + Math.max(a.tasteStat / 100, 0) * 0.45;
+  assert.equal(a.conf, Math.round(Math.min(99, composite * 99)),
+    "conf must be the published blend of curated and taste, scaled to 99");
 });
 
 test("the engine's own doc comment names the range it actually produces", () => {
   const src = read("lib/brain/stylist.js");
   // It said 58–99 for long enough that the floor had moved underneath it.
-  assert.ok(/relative score \(75–99/.test(src), "the comment must name the real range");
+  // The header used to say 58–99 while the clamp produced 75–99; it now
+  // describes a 0–99 composite, which is what the code actually computes.
+  assert.match(src, /composite quality on a 0–99 scale/);
   assert.ok(!/relative score \(58–99/.test(src));
+  assert.ok(!/Math\.max\(75,/.test(src), "no lower clamp may resurrect the inert floor");
 });
 
 // ---------------------------------------------------------------- the profile
