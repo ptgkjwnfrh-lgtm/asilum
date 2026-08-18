@@ -75,8 +75,8 @@ export default function BoardPage() {
     } catch {}
     // B-count on the machine zone: real purchase tickets raised in the app.
     authorizedFetch("/api/tickets?user=" + encodeURIComponent(getUid() || ""))
-      .then((r) => r.json())
-      .then((d) => setTicketCount(Array.isArray(d.tickets) ? d.tickets.length : 0))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setTicketCount(Array.isArray(d.tickets) ? d.tickets.length : 0); })
       .catch(() => {});
   }, []);
 
@@ -87,8 +87,10 @@ export default function BoardPage() {
     const id = sp.get("id");
     if (id) {
       authorizedFetch("/api/boards?id=" + encodeURIComponent(id) + "&viewer=" + encodeURIComponent(user))
-        .then((r) => r.json())
+        .then((r) => (r.ok ? r.json() : null))
         .then((d) => {
+          // A 401 body parses fine and would read as "no such board".
+          if (!d) { loadMine(user); return; }
           if (d.board && !d.owned) { setShared(d.board); return; }
           loadMine(user, d.board ? d.board.id : null);
         })
@@ -100,8 +102,12 @@ export default function BoardPage() {
 
   function loadMine(user, focusId = null) {
     authorizedFetch("/api/boards?user=" + encodeURIComponent(user))
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
+        // Without this, a 401 empties the rack and reads as "you have no
+        // boards" — which is a different sentence from "we could not tell
+        // who you are", and the only one the reader would ever see.
+        if (!d) return;
         const bs = d.boards || [];
         setBoards(bs);
         setActiveId(focusId || (bs[0] && bs[0].id) || null);
@@ -116,6 +122,7 @@ export default function BoardPage() {
     const res = await sendJSON("DELETE", "/api/boards", {
       user: uid, boardId: active.id, itemId,
     });
+    if (!res.ok) return;
     const d = await res.json();
     if (d.board) setBoards((prev) => prev.map((b) => (b.id === d.board.id ? d.board : b)));
   }
@@ -125,6 +132,7 @@ export default function BoardPage() {
     const res = await sendJSON("PATCH", "/api/boards", {
       user: uid, boardId: active.id, name: name.trim(),
     });
+    if (!res.ok) return;
     const d = await res.json();
     if (d.board) setBoards((prev) => prev.map((b) => (b.id === d.board.id ? d.board : b)));
   }
@@ -132,6 +140,7 @@ export default function BoardPage() {
   async function createNew() {
     const name = newName.trim() || "moodboard";
     const res = await postJSON("/api/boards", { user: uid, name });
+    if (!res.ok) return;
     const d = await res.json();
     if (d.board) {
       setBoards((prev) => [...prev, d.board]);
@@ -151,8 +160,8 @@ export default function BoardPage() {
   // ---- The training station ----
   function loadViz(user = uid || getUid()) {
     authorizedFetch("/api/profile?user=" + encodeURIComponent(user))
-      .then((r) => r.json())
-      .then((d) => setViz({ state: vizState(d.profile), profile: d.profile }))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setViz({ state: vizState(d.profile), profile: d.profile }); })
       .catch(() => {});
   }
   useEffect(() => { if (uid) loadViz(uid); }, [uid]); // eslint-disable-line react-hooks/exhaustive-deps

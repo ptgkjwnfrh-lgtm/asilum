@@ -396,10 +396,11 @@ export default function Home() {
         }
         // pieces from followed moodboards
         const prof = await authorizedFetch("/api/profile?user=" + encodeURIComponent(uidRef.current))
-          .then((r) => r.json());
-        const follows = (prof.profile && prof.profile._meta && prof.profile._meta.follows) || [];
+          .then((r) => (r.ok ? r.json() : null));
+        const follows = (prof?.profile && prof.profile._meta && prof.profile._meta.follows) || [];
         const boards = await Promise.all(
-          follows.map((id) => fetch("/api/boards?id=" + encodeURIComponent(id)).then((r) => r.json()).catch(() => null))
+          follows.map((id) => fetch("/api/boards?id=" + encodeURIComponent(id))
+            .then((r) => (r.ok ? r.json() : null)).catch(() => null))
         );
         for (const b of boards) {
           for (const it of (b && b.board && b.board.items) || []) {

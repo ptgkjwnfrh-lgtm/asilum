@@ -19,12 +19,12 @@ export default function OrdersPage() {
   useEffect(() => {
     const user = encodeURIComponent(getUid() || "guest");
     authorizedFetch("/api/orders?user=" + user)
-      .then((r) => r.json())
-      .then((d) => setBagHistory(d.bagHistory || []))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setBagHistory(d.bagHistory || []); })
       .catch(() => setBagHistory([]));
     authorizedFetch("/api/tickets?user=" + user)
-      .then((r) => r.json())
-      .then((d) => setTickets(d.tickets || []))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setTickets(d.tickets || []); })
       .catch(() => setTickets([]));
   }, []);
 
