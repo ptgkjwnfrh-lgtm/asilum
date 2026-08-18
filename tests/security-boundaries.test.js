@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readJsonRequest } from "../lib/security/json.js";
 import { readJsonResponse } from "../lib/security/http.js";
 import { publicProduct } from "../lib/products.js";
-import { safeExternalUrl } from "../lib/url.js";
+import { isPublicHostname, safeExternalUrl } from "../lib/url.js";
 import { normalizeEbayItem } from "../lib/ingest/ebay.js";
 import { ebayAdapter } from "../lib/ingest/adapters/ebayAdapter.js";
 
@@ -69,6 +69,41 @@ test("external links cannot target local networks or nonstandard ports", () => {
   assert.equal(safeExternalUrl("https://merchant.example:8443/item"), null);
   assert.equal(safeExternalUrl("https://merchant.example/item"), "https://merchant.example/item");
   assert.equal(safeExternalUrl("https://[2606:4700:4700::1111]/item"), "https://[2606:4700:4700::1111]/item");
+});
+
+test("isPublicHostname is safe on a RAW host, not only a parsed one", () => {
+  // Every call site passes `url.hostname`, which the WHATWG parser has already
+  // folded to a canonical form — so the guard's rejections leaned on work done
+  // by its callers rather than by itself. Called directly with the spellings a
+  // parser would have collapsed, it answered PUBLIC for four kinds of loopback:
+  // decimal, octal, hex and expanded IPv6. No caller was vulnerable; the next
+  // one to write `isPublicHostname(req.body.host)` would have been, silently,
+  // because the name promises a property the raw path did not deliver.
+  for (const host of [
+    "2130706433",             // 127.0.0.1 as a decimal integer
+    "0177.0.0.1",             // ...as octal
+    "0x7f000001",             // ...as hex
+    "127.1",                  // ...in short form
+    "0:0:0:0:0:0:0:1",        // ::1, written out
+    "0:0:0:0:0:ffff:7f00:1",  // 127.0.0.1 IPv4-mapped, written out
+    "0:0:0:0:0:ffff:a00:1",   // 10.0.0.1 IPv4-mapped, written out
+  ]) {
+    assert.equal(isPublicHostname(host), false, `${host} is loopback or private`);
+  }
+
+  // Canonicalisation must be idempotent, or hardening the raw path would have
+  // quietly narrowed the three real call sites instead.
+  for (const host of [
+    "merchant.example", "sub.domain.co.uk", "xn--80ak6aa92e.com",
+    "8.8.8.8", "[2606:4700:4700::1111]", "2606:4700:4700::1111",
+  ]) {
+    assert.equal(isPublicHostname(host), true, `${host} is a public destination`);
+  }
+
+  // Not a hostname at all fails closed rather than throwing.
+  for (const junk of ["", null, undefined, "   ", "http://x", "a b", ":::"]) {
+    assert.equal(isPublicHostname(junk), false, JSON.stringify(junk));
+  }
 });
 
 test("public product payloads allowlist fields and nested metadata", () => {
