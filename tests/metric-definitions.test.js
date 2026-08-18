@@ -68,6 +68,12 @@ test("the cover checks r.ok before it believes /api/stats", () => {
   // The .then that consumes the stats response, on one line, bound to it.
   const consume = src.split("\n").find((l) => /\.then\(\(r\) =>[^\n]*r\.ok \? r\.json\(\)/.test(l));
   assert.ok(consume, "the stats read must gate r.json() on r.ok");
+  // And it must not ask at all without a token. Measured on production: the
+  // unconditional version earned a 401 on every single visit to the landing
+  // page — handled, but a wasted round trip and a console error for a question
+  // whose answer was already known.
+  assert.match(src, /if \(staffToken\) \{\s*\n\s*fetch\("\/api\/stats"/,
+    "the stats read must be gated on holding a staff token");
   // And it must not go back to the unguarded shape anywhere in the file.
   assert.ok(!/authorizedFetch\("\/api\/stats"\)/.test(src),
     "the stats read must not use the identity-only fetch that earns 401");
