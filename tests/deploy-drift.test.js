@@ -49,8 +49,26 @@ test("it only counts a deployment that actually succeeded", () => {
 test("a docs-only gap does not cry wolf", () => {
   // If this fires on every docs merge it gets muted, and then it is worth
   // nothing on the day it matters.
-  assert.match(SCRIPT, /!f\.startsWith\("docs\/"\) && !f\.startsWith\("tests\/"\)/);
-  assert.match(SCRIPT, /docs\/tests only — nothing a user sees/);
+  // Everything a Vercel deploy cannot carry. `supabase/` migrations are applied
+  // to Postgres by hand and `scripts/` is operator tooling — neither is in the
+  // bundle, so drift in them is not drift a reader can experience. Staging
+  // schema-v30 was the first time this check cried wolf.
+  for (const dir of ["docs/", "tests/", "supabase/", "scripts/"]) {
+    assert.ok(SCRIPT.includes(`"${dir}"`), `${dir} must be excluded from user-facing drift`);
+  }
+  assert.match(SCRIPT, /NOT_SHIPPED\.some\(/);
+
+  // The dangerous direction. Widening the exclusion list is how this check gets
+  // quietly switched off: adding "app/" would make every user-facing change
+  // invisible and every run green. The first version of this test asserted only
+  // that the four safe directories were PRESENT, which that mutation survives.
+  const list = /const NOT_SHIPPED = \[([^\]]*)\]/.exec(SCRIPT);
+  assert.ok(list, "NOT_SHIPPED must be a literal list this test can read");
+  const excluded = [...list[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]).sort();
+  assert.deepEqual(excluded, ["docs/", "scripts/", "supabase/", "tests/"],
+    "nothing may be added to the not-shipped list without changing this test — " +
+    "excluding app/ or lib/ would make the check green forever");
+  assert.match(SCRIPT, /docs\/tests\/migrations only — nothing a user sees/);
 });
 
 test("the failure message names the merges and the files a user cannot see", () => {
