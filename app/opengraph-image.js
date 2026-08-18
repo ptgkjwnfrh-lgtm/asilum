@@ -6,7 +6,7 @@
 //   red block and rule across the top   -> kept, --red
 //   kicker over the wordmark            -> "PERSONALIZED FASHION TERMINAL"
 //   chrome *ASILUM, glowing red asterisk-> gradient clipped to text, --red glow
-//   green glowing "magazine.com"        -> --sig in VT323, tracked, glowing
+//   green glowing "magazine.com"        -> --sig in STM, tracked, glowing
 //   three-word strip                    -> DISCOVERY · COMMERCE · COMMUNITY
 //   the demo line                       -> kept verbatim
 //
@@ -18,9 +18,10 @@
 //      asilum-ui rule 2/3 is explicit: no further accent colours, ever, and
 //      colours only through tokens. So the chrome is built from --ink and
 //      --grey — the same metallic banding read in the phosphor palette — and
-//      "magazine.com" is set in OSD/VT323, which is what `.wordmark em` already
-//      uses for the word MAGAZINE on every page. The comp's INTENT is matched
-//      with the house's own materials rather than importing new ones.
+//      "magazine.com" is set in STM, the main font. It was VT323 for one day —
+//      the site's old OSD face — until the owner retired that face entirely
+//      ("get rid of the digi cam font"). The comp's INTENT is matched with the
+//      house's own materials rather than importing new ones.
 //
 // THE NAME IS "*ASILUM magazine" AND THE WORD magazine IS NEVER DROPPED (owner
 // directive, 17 August). It was being dropped in fourteen metadata strings —
@@ -34,12 +35,12 @@
 // app/globals.css and fails if the card and the stylesheet disagree.
 //
 // TYPE: Satori reads TTF/OTF/WOFF but NOT WOFF2, and public/fonts shipped only
-// WOFF2. All three faces are SIL OFL and Google publishes TTFs, so the TTFs sit
+// WOFF2. Both faces are SIL OFL and Google publishes TTFs, so the TTFs sit
 // beside the WOFF2s with their licences. The WOFF2s stay — the browser loads
 // those. Hierarchy is read off globals.css, not invented:
 //   Michroma  --mich  .headline/.wordmark/.snav/.mq  -> kicker, wordmark, strip
-//   VT323     --osd   .wordmark em (the MAGAZINE line) -> "magazine.com"
-//   STM       --helv  the body voice                 -> the demo line
+//   STM       --helv  the body voice, and now the ONLY other face
+//                      -> "magazine.com" and the demo line
 // No fontWeight anywhere: each face ships ONE weight, and asking for 700 makes
 // Satori synthesise something the site never shows.
 
@@ -53,7 +54,6 @@ import { ImageResponse } from "next/og";
 const FONT_DIR = join(process.cwd(), "public", "fonts");
 const MICHROMA = readFileSync(join(FONT_DIR, "michroma.ttf"));
 const STM = readFileSync(join(FONT_DIR, "sharetech.ttf"));
-const VT323 = readFileSync(join(FONT_DIR, "vt323.ttf"));
 
 export const alt =
   "*ASILUM magazine — personalized fashion terminal. A demo archive of synthetic sample records.";
@@ -188,12 +188,14 @@ export default function OpengraphImage() {
                 ASILUM
               </div>
             </div>
-            {/* magazine.com — never dropped. VT323 is what .wordmark em uses for
-                the MAGAZINE line, tracked the same way, in --sig with the glow. */}
+            {/* magazine.com — never dropped (owner directive). In STM, the main
+                font: the site's OSD/VT323 face was retired site-wide on 17 Aug
+                ("get rid of the digi cam font"), so the card follows. --sig with
+                the glow, tracked like the .wordmark em line it stands in for. */}
             <div
               style={{
                 display: "flex", justifyContent: "flex-end", width: 830, marginTop: -14,
-                fontFamily: "VT323", fontSize: 74, letterSpacing: 3, color: SIG,
+                fontFamily: "STM", fontSize: 62, letterSpacing: 2, color: SIG,
                 textShadow: `0 0 22px rgba(70,255,150,0.75), 0 0 52px rgba(70,255,150,0.35)`,
               }}
             >
@@ -219,7 +221,6 @@ export default function OpengraphImage() {
       fonts: [
         { name: "Michroma", data: MICHROMA, style: "normal", weight: 400 },
         { name: "STM", data: STM, style: "normal", weight: 400 },
-        { name: "VT323", data: VT323, style: "normal", weight: 400 },
       ],
     }
   );
