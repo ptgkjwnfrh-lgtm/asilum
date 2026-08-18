@@ -53,3 +53,31 @@ gains a "semantic match" recall channel and the backfill script works.
 
 Until each key lands, its surface stays an honest 503/coming-soon — that is
 the contract, not a bug.
+
+## 5. Stripe (real-money checkout — risk campaign phase L2)
+
+State 18 Aug 2026: sandbox "ASILUM magazine" exists (test mode); the engine is
+built and verified end to end in test mode. `STRIPE_SECRET_KEY` (sk_test_) in
+`.env.local` locally. Business verification in the Stripe dashboard is the
+owner gate to LIVE keys — do not start it from a session.
+
+Launch sequence (owner + agent, in order):
+1. Owner completes "Verify your business" in the Stripe dashboard (live keys
+   appear only after this).
+2. Owner reveals + copies the LIVE secret key; it moves dashboard → clipboard
+   → Vercel env var (`STRIPE_SECRET_KEY`), never through a transcript. While
+   revealed on screen, do not screenshot.
+3. Dashboard → Webhooks → add endpoint
+   `https://www.asilummagazine.com/api/stripe/webhook`, events
+   `checkout.session.completed` + `checkout.session.expired`; its signing
+   secret becomes `STRIPE_WEBHOOK_SECRET` in Vercel the same way.
+4. `supabase/schema-v31-orders.sql` must be applied before the first real
+   order (orders + append-only order_events).
+5. Until phase L1 lands real inventory, every checkout refuses with 409 by
+   construction — the honesty gate (`refusalReason` in lib/orders.js) only
+   passes items with a live source URL, non-seed source, `available` status
+   and a real price. No flag exists to bypass it; keep it that way.
+
+PCI posture: SAQ-A — Stripe-hosted checkout page, card data never touches
+ASILUM servers or this repo. The delegated-card architecture is permanently
+refused (risk campaign §3).
