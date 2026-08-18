@@ -14,7 +14,8 @@
     "trends:check": "node scripts/check-trend-freshness.mjs",
     "research:compile": "node scripts/compile-culture-research.mjs",
     "start": "next start",
-    "deploy:check": "node scripts/check-deploy-drift.mjs"
+    "deploy:check": "node scripts/check-deploy-drift.mjs",
+    "triggers:check": "node scripts/check-deferred-triggers.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.5",
