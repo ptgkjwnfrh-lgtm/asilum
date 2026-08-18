@@ -4,7 +4,6 @@
 
 @font-face { font-family: "Michroma"; src: url("/fonts/michroma.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "STM"; src: url("/fonts/sharetech.woff2") format("woff2"); font-display: swap; }
-@font-face { font-family: "OSD"; src: url("/fonts/vt323.woff2") format("woff2"); font-display: swap; }
 
 :root {
   /* legacy magazine tokens, remapped onto the OS — every old rule still works */
@@ -26,7 +25,6 @@
   --bg2: rgba(15, 23, 27, 0.85);
   --bg3: rgba(9, 15, 18, 0.92);
   --mich: "Michroma", var(--helv);
-  --osd: "OSD", var(--helv);
   --sig: #46ff96;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
@@ -134,7 +132,7 @@ button { font-family: var(--helv); }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 6px rgba(70, 255, 150, 0.25)); }
 .wordmark i { font-style: normal; -webkit-text-fill-color: var(--red); text-shadow: var(--glow-r); }
-.wordmark em { display: block; font-family: var(--osd); font-style: normal; font-weight: 400; font-size: 14px; letter-spacing: 0.56em; margin-top: 2px; -webkit-text-fill-color: var(--grey); }
+.wordmark em { display: block; font-family: var(--helv); font-style: normal; font-weight: 400; font-size: 14px; letter-spacing: 0.56em; margin-top: 2px; -webkit-text-fill-color: var(--grey); }
 .wordmark small { display: block; font-family: var(--helv); font-size: 8px; letter-spacing: 0.26em; margin-top: 5px; -webkit-text-fill-color: var(--faint); }
 
 /* destination row — the seven buttons ride directly under the ticker */
@@ -384,7 +382,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .fpost { margin: 0 0 18px; }
 .fpost:nth-of-type(even) { margin-left: 26px; }
 .fposttext { margin: 0 0 3px; font-size: 14.5px; line-height: 1.5; max-width: 56ch; }
-.fposthandle { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
+.fposthandle { font-family: var(--helv); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
 .fposthandle .cmine { margin-left: 6px; font-style: normal; }
 .fwho { margin-top: 34px; max-width: 460px; }
 
@@ -676,18 +674,18 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 /* clean vertical placement — the hotlist never staggers (owner order,
    Aug 13) */
 .elrow { display: flex; align-items: center; gap: 18px; padding: 10px 0; }
-.elnum { font-family: var(--osd); font-size: clamp(34px, 4.5vw, 56px); line-height: 1; color: color-mix(in srgb, var(--ink) 22%, transparent); text-shadow: none; flex: none; width: 1.5em; }
+.elnum { font-family: var(--helv); font-size: clamp(34px, 4.5vw, 56px); line-height: 1; color: color-mix(in srgb, var(--ink) 22%, transparent); text-shadow: none; flex: none; width: 1.5em; }
 .elthumb { width: 84px; height: 106px; object-fit: cover; flex: none; }
 .elinfo { flex: 1; min-width: 0; }
 .elttl { font-family: var(--mich); font-size: clamp(15px, 2vw, 22px); letter-spacing: 0.04em; line-height: 1.2; }
 .elbrand { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; margin-top: 2px; }
-.elstat { font-family: var(--osd); font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.08em; flex: none; text-align: right; }
+.elstat { font-family: var(--helv); font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.08em; flex: none; text-align: right; }
 .elhouse { margin-bottom: 44px; }
 .elhousenote { font-size: 12.5px; color: var(--grey); max-width: 56ch; margin: 8px 0 14px; }
 .elpiece { margin: 0 0 18px; }
 .elpiecettl { font-family: var(--mich); font-size: 16px; letter-spacing: 0.04em; }
 .elpiecesum { font-size: 12px; color: var(--grey); max-width: 60ch; margin: 4px 0; }
-.elpiecedate { font-family: var(--osd); font-size: 12px; color: var(--faint); }
+.elpiecedate { font-family: var(--helv); font-size: 12px; color: var(--faint); }
 .elsubmit { display: flex; align-items: center; gap: 10px; font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); margin-top: 8px; }
 .elsubmit .adstar { font-size: 20px; }
 .elsubmit em { font-style: normal; color: var(--red); }
@@ -765,7 +763,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 /* profile tab sections float on the page ground (owner order, Aug 12:
    standard social format, no boxed cards) */
 .pfsec { padding: 6px 0 10px; }
-.pmeta { font-family: var(--osd); font-size: 12.5px; color: var(--grey); letter-spacing: 0.1em; margin-top: 5px; }
+.pmeta { font-family: var(--helv); font-size: 12.5px; color: var(--grey); letter-spacing: 0.1em; margin-top: 5px; }
 .accountgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 12px; }
 .accountgrid > div { border-top: 1px solid var(--line); padding-top: 12px; }
 .accountemail { display: block; font-size: 10px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
@@ -1155,7 +1153,7 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 .os-status .st:last-child { margin-left: auto; border-right: none; border-left: 1px solid var(--line); }
 .os-rec { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); animation: osblink 1.2s steps(2) infinite; }
 .os-rec.off { background: var(--faint); box-shadow: none; animation: none; }
-.os-clock { font-family: var(--osd); font-size: var(--ed-fs-clock, 14px); color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
+.os-clock { font-family: var(--helv); font-size: var(--ed-fs-clock, 14px); color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
 
 /* ASTERISK dock — the engine's living form */
 .os-dock { border-top: 1px solid var(--line); padding: 8px 2px 4px; display: flex; gap: 10px; align-items: center; }
@@ -1305,7 +1303,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvherotext { position: absolute; left: calc(11% + min(44%, 420px) - 90px); bottom: 8%; display: grid; gap: 6px; max-width: 46ch; }
 .cvherobrand { font-family: var(--mich); font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; letter-spacing: 0.02em; line-height: 0.98; text-transform: uppercase; text-shadow: 0 0 18px var(--bg); }
 .cvherottl { font-size: 13px; letter-spacing: 0.04em; text-shadow: 0 0 12px var(--bg); }
-.cvheroline { font-family: var(--osd); font-size: 14px; color: var(--ink); letter-spacing: 0.08em; text-shadow: 0 0 12px var(--bg), 0 0 5px var(--bg); }
+.cvheroline { font-family: var(--helv); font-size: 14px; color: var(--ink); letter-spacing: 0.08em; text-shadow: 0 0 12px var(--bg), 0 0 5px var(--bg); }
 .cvhero.cvempty::before { display: none; }
 .cvhero.cvempty { min-height: 0; }
 .cvhero.cvempty .pempty { margin-left: 11%; }
@@ -1326,13 +1324,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* clean vertical placement — the hotlist never staggers (owner order,
    Aug 13) */
 .cvhotrow { display: flex; align-items: baseline; gap: 14px; padding: 7px 0; }
-.cvhotnum { font-family: var(--osd); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
+.cvhotnum { font-family: var(--helv); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
 .cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
 /* booth preview rows are NOT links — same cut as cvhotttl, no teal */
 .cvboothttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvboothttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
-.cvhotstat { margin-left: auto; font-family: var(--osd); font-size: 12px; color: var(--grey); text-shadow: none; letter-spacing: 0.1em; flex: none; }
+.cvhotstat { margin-left: auto; font-family: var(--helv); font-size: 12px; color: var(--grey); text-shadow: none; letter-spacing: 0.1em; flex: none; }
 /* outfit strips stay uniform and organized (owner order, Aug 12) —
    but the lead piece of each strip carries a THICK floating frame that
    also captures empty space (owner order, Aug 13; State 3.0 reference:
@@ -1368,7 +1366,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvposttext { margin: 0 0 3px; font-size: 14px; line-height: 1.45; max-width: 52ch; }
 /* the newest transmission runs pull-quote scale — a real post, loud */
 .cvpost.cvlead .cvposttext { font-family: var(--mich); font-size: 19px; line-height: 1.35; letter-spacing: 0.02em; max-width: 30ch; }
-.cvposthandle { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
+.cvposthandle { font-family: var(--helv); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
 
 /* dispatches — floating cover lines */
 .cvstory { display: block; margin: 0 0 16px; }
@@ -1580,7 +1578,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 [data-theme="light"] .ppsec { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23177a8a' stroke-width='1' opacity='0.3'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
 .ppsec::after { content: ""; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent, rgba(150, 90, 255, 0.14) 30%, rgba(60, 220, 140, 0.12) 55%, rgba(70, 150, 255, 0.12) 75%, transparent); }
-.ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--osd); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
+.ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--helv); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
 .ppid { display: grid; grid-template-columns: 0.9fr 0.9fr 1.6fr; gap: 9px 20px;
   margin: 0; padding: 12px 16px; flex: 1; align-content: center; }
 .ppid .sp2 { grid-column: span 2; }
@@ -1588,8 +1586,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppid dt { font-size: 9px; letter-spacing: 0.16em; color: var(--grey); }
 .ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
 .ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
-.ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--osd);
-  font-size: 18px; letter-spacing: 0.54em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
+/* The machine zone was 18px/0.54em when it was set in the LCD face. STM is a
+   wider mono, so the same string measured 1043px inside a 978px box and the
+   tail of the MRZ — which encodes the real account number — was being CLIPPED
+   by the overflow:hidden below. Sized down until it fits with room, measured
+   rather than eyeballed. Lose characters here and the document is lying. */
+.ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--helv);
+  font-size: 17px; letter-spacing: 0.46em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
 
@@ -1608,7 +1611,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .pbanner span { text-shadow: var(--glow-r); }
 .phead2 { padding: 14px 4px; }
 .pcounts { gap: 26px; }
-.pcounts b { font-family: var(--osd); font-size: 17px; font-weight: 400; color: var(--sig); text-shadow: var(--glow); margin-right: 5px; }
+.pcounts b { font-family: var(--helv); font-size: 17px; font-weight: 400; color: var(--sig); text-shadow: var(--glow); margin-right: 5px; }
 
 @media (prefers-reduced-motion: reduce) {
   .os-roll, .os-blob, .mq { animation: none !important; }
@@ -1650,13 +1653,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .dcgrouphead:hover, .dcgroup.open .dcgrouphead { color: var(--sig); text-shadow: var(--glow); }
 .dcgrouphead i { font-style: normal; margin-left: auto; color: var(--faint); }
 .dcgroup.open .dcgrouphead i { color: var(--sig); }
-.dccount { font-family: var(--osd); font-size: 12px; color: var(--red); text-shadow: var(--glow-r); }
+.dccount { font-family: var(--helv); font-size: 12px; color: var(--red); text-shadow: var(--glow-r); }
 .dcrows { padding: 2px 12px 10px; display: grid; gap: 7px; }
 .dcrow { display: grid; grid-template-columns: 108px 1fr 46px 14px; gap: 7px; align-items: center; }
 .dcrow label { font-size: 9px; letter-spacing: 0.08em; color: var(--grey); text-transform: uppercase; line-height: 1.25; }
 .dcrow.set label { color: var(--ink); }
 .dcrow input[type="range"] { width: 100%; accent-color: var(--red); background: transparent; margin: 0; }
-.dcval { font-family: var(--osd); font-size: 12px; color: var(--sig); text-shadow: var(--glow); text-align: right; white-space: nowrap; }
+.dcval { font-family: var(--helv); font-size: 12px; color: var(--sig); text-shadow: var(--glow); text-align: right; white-space: nowrap; }
 .dcrow.set .dcval { color: var(--red); text-shadow: var(--glow-r); }
 .dcundo { background: none; border: none; padding: 0; cursor: pointer; color: var(--grey); font-size: 11px; line-height: 1; visibility: hidden; }
 .dcrow.set .dcundo { visibility: visible; }
@@ -1678,14 +1681,14 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .dcpreset b { font-weight: 400; color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dcmsg { font-size: 9px; color: var(--grey); letter-spacing: 0.08em; }
 .dcmsg.err { color: var(--red); }
-.dcstatus { font-family: var(--osd); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
+.dcstatus { font-family: var(--helv); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
 .dcstatus b { color: var(--red); font-weight: 400; text-shadow: var(--glow-r); }
 /* inspect mode: the page under the crosshair */
 html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .dchl { position: fixed; z-index: 89; pointer-events: none; border: 1px dashed var(--red);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--red) 40%, transparent), 0 0 14px color-mix(in srgb, var(--red) 45%, transparent);
   border-radius: 4px; }
-.dchl em { position: absolute; left: 0; top: -16px; font-style: normal; font-family: var(--osd);
+.dchl em { position: absolute; left: 0; top: -16px; font-style: normal; font-family: var(--helv);
   font-size: 12px; color: var(--red); text-shadow: var(--glow-r); background: var(--bg3);
   padding: 0 6px; border-radius: 4px; white-space: nowrap; }
 @media (max-width: 760px) {
@@ -1728,7 +1731,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pvrd-second { stroke: var(--sig); stroke-width: 0.9; opacity: 0.8; }
 .pvrd-major { stroke: var(--sig); stroke-width: 1.4; opacity: 0.95; }
 .pvroads-hot { filter: drop-shadow(0 0 4px var(--sig)) drop-shadow(0 0 12px var(--sig)); }
-.pvstars text { fill: var(--red); font-family: var(--osd); font-size: 15px; }
+.pvstars text { fill: var(--red); font-family: var(--helv); font-size: 15px; }
 .pvstars-hot { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 13px var(--red)); }
 .pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
 .pv-s { stroke: var(--sig); opacity: 0.55; }
@@ -1743,10 +1746,10 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pposm { position: absolute; right: 14px; bottom: 8px; font-size: 6.5px;
   letter-spacing: 0.18em; color: var(--faint); }
 /* Place de l'Étoile hologram — streets as glowing hairlines */
-.pvparislbl { fill: var(--grey); font-family: var(--osd); font-size: 10px;
+.pvparislbl { fill: var(--grey); font-family: var(--helv); font-size: 10px;
   letter-spacing: 0.14em; opacity: 0.85; }
 .pvistar path { stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; fill: none; opacity: 0.9; }
-.ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--osd);
+.ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--helv);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
 /* nation line — where a passport names its country */
 .ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px;
@@ -1877,7 +1880,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxread { display: grid; gap: 9px; }
 .gxconv { display: grid; grid-template-columns: 110px 1fr 34px; gap: 12px; align-items: center; }
 .gxconv span { font-size: 11px; letter-spacing: 0.08em; }
-.gxconv b { font-family: var(--osd); font-size: 15px; font-weight: 400; color: var(--sig);
+.gxconv b { font-family: var(--helv); font-size: 15px; font-weight: 400; color: var(--sig);
   text-shadow: var(--glow); text-align: right; }
 .gxbar { height: 7px; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
 .gxbar i { display: block; height: 100%; border-radius: 999px;
@@ -1967,7 +1970,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* ---- wayfinding locator (owner rule: users must never get lost) — every
    secondary page names the destination that owns it and offers the way
    back, in one mono line above the headline ---- */
-.locline { display: flex; align-items: baseline; gap: 8px; font-family: var(--osd); font-size: 13px; letter-spacing: 0.1em; margin: 0 0 4px; }
+.locline { display: flex; align-items: baseline; gap: 8px; font-family: var(--helv); font-size: 13px; letter-spacing: 0.1em; margin: 0 0 4px; }
 .locline span { color: var(--faint); }
 
 /* ever-so-slight motion blur on the passport→upload build (owner order,
@@ -1982,7 +1985,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .rkmod { margin: 0 0 30px; border-top: 2px solid color-mix(in srgb, var(--ink) 32%, transparent); }
 .rkhead { display: flex; align-items: center; gap: 12px; padding: 9px 2px 10px;
   font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.24em; }
-.rkhead b { font-family: var(--osd); font-size: 15px; font-weight: 400; color: var(--red); text-shadow: var(--glow-r); }
+.rkhead b { font-family: var(--helv); font-size: 15px; font-weight: 400; color: var(--red); text-shadow: var(--glow-r); }
 .rkscrew { margin-left: auto; font-size: 9px; letter-spacing: 0.3em; color: color-mix(in srgb, var(--ink) 28%, transparent); text-shadow: none; }
 .rkrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 26px; align-items: center;
   padding: 11px 2px; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
@@ -1991,7 +1994,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .rkled.on { background: var(--sig); border-color: var(--sig); box-shadow: var(--glow); }
 .rkdesc { grid-column: 1; font-size: 11px; color: var(--grey); max-width: 62ch; line-height: 1.55; }
 .rkctl { grid-row: 1 / 3; grid-column: 2; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-.rkmono { font-family: var(--osd); font-size: 12.5px; color: var(--grey); letter-spacing: 0.05em; word-break: break-all; }
+.rkmono { font-family: var(--helv); font-size: 12.5px; color: var(--grey); letter-spacing: 0.05em; word-break: break-all; }
 
 /* the house's operating dashboards on /stats (Aug 14): section labels in
    the instrument voice, and a quiet line under each saying exactly what
