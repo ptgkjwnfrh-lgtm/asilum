@@ -50,9 +50,15 @@ test("the app is a personalized fashion terminal, and nothing calls it the old n
   const offenders = appFiles().filter((f) => /fashion intelligence/i.test(codeOnly(read(f))));
   assert.deepEqual(offenders, [], "these still use the retired product name");
 
-  // Positive: the name a reader actually meets, in the two places that carry it.
+  // Positive: the descriptor a reader meets in prose and metadata.
   assert.match(read("app/layout.js"), /personalized fashion terminal/);
-  assert.match(read("app/shell.js"), /"PERSONALIZED FASHION TERMINAL"\.split\(" "\)/);
+  // The wordmark LOCKUP is shortened to "FASHION TERMINAL" (owner order, 17 Aug)
+  // — a lockup is not a sentence, and the three-word version could not be spaced
+  // cleanly inside the ASILUM width. The prose descriptor above is unchanged.
+  assert.match(read("app/shell.js"), /"FASHION TERMINAL"\.split\(""\)/);
+  // Split per CHARACTER: per-word gave two huge gaps and tight words.
+  assert.ok(!/"FASHION TERMINAL"\.split\(" "\)/.test(read("app/shell.js")),
+    "the lockup must spread per glyph, not per word");
 });
 
 test("no public mention of the learning bridges", () => {
