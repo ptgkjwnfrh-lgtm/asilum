@@ -292,7 +292,7 @@ export default function BoardPage() {
       <p className="deck">
         {shared
           ? "someone's taste passport. follow it and its route joins your own."
-          : "your moodboard is your Passport: every save, word, and image teaches Asterisk where to take you."}
+          : "your moodboard is your Passport: every save, word, and image teaches the Asterisk system where to take you."}
       </p>
       <hr className="rule" />
 
@@ -329,7 +329,7 @@ export default function BoardPage() {
               <div><dt>SEX<em>/ Sexe</em></dt><dd>X</dd></div>
               <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
               <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
-              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — FASHION INTELLIGENCE OS</dd></div>
+              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>THE ASTERISK SYSTEM</dd></div>
               <div><dt>BOARDS</dt><dd>{boards.length}</dd></div>
               <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>

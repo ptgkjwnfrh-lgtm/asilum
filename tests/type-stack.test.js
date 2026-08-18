@@ -36,7 +36,11 @@ test("the type stack is exactly two faces", () => {
 });
 
 test("the digi-cam face is gone, by name and by file", () => {
-  const css = read("app/globals.css");
+  // Comments may name it — one explains why the passport MRZ was resized when
+  // the face changed, and that history is worth more than the purity of a
+  // grep. Rules may not.
+  const css = read("app/globals.css")
+    .replace(/\/\*[\s\S]*?\*\//g, "");
   assert.ok(!/--osd\b/.test(css), "the --osd token must not exist");
   assert.ok(!/"OSD"/.test(css), "the OSD family must not be declared");
   assert.ok(!/vt323/i.test(css), "no rule may reference the retired face");

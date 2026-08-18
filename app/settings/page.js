@@ -167,7 +167,7 @@ export default function SettingsPage() {
           <div className="rkname"><span className={"rkled" + (guide ? " on" : "")} aria-hidden="true" />Guidance</div>
           <div className="rkctl"><AsteriskGuidanceToggle className="fitbtn" /></div>
           <div className="rkdesc">
-            when guidance is on, Asterisk orders your feed, search, and looks
+            when guidance is on, the Asterisk system orders your feed, search, and looks
             through your Passport. paused = general results; your taste record
             is untouched either way.
           </div>
@@ -199,7 +199,7 @@ export default function SettingsPage() {
             <a className="fitbtn" href="/stats">BRAIN DASHBOARD →</a>
             <a className="fitbtn" href="/asterisk">CONTROL ROOM →</a>
           </div>
-          <div className="rkdesc">the dashboard shows the engine's health; the control room reads back everything Asterisk remembers, with erase controls.</div>
+          <div className="rkdesc">the dashboard shows the engine's health; the control room reads back everything the Asterisk system remembers, with erase controls.</div>
         </div>
       </section>
 
@@ -261,7 +261,7 @@ export default function SettingsPage() {
         </p>
         <p className="legal">
           automated systems: ASILUM&apos;s recommendations and cultural readings are
-          produced by Asterisk, an automated system built on deterministic
+          produced by the Asterisk system, an automated system built on deterministic
           taste arithmetic and a human-curated, source-cited culture catalog.
           no generative AI model currently produces content in this product;
           if that changes, the surface it appears on will say so. guidance can

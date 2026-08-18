@@ -255,7 +255,7 @@ export default function CoverPage() {
               STATE — {sys.persistent ? "PERSISTENT LEDGER" : "MEMORY MODE"}
             </span>
           )}
-          <div className="cvkick">TONIGHT&apos;S LOOKS — STYLED BY ASTERISK</div>
+          <div className="cvkick">TONIGHT&apos;S LOOKS — STYLED BY THE ASTERISK SYSTEM</div>
           {looks.map((lk, i) => (
             <a className="cvlook" key={i} href="/stylist">
               <div className="cvlookstrip">

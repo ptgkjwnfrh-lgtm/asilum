@@ -6,12 +6,12 @@ import { siteUrl } from "../../lib/site.js";
 export const metadata = {
   title: "FRONT COVER",
   description:
-    "The live edition — today's cover of the fashion intelligence OS.",
+    "The live edition — today's cover of the personalized fashion terminal.",
   alternates: { canonical: "/cover" },
   openGraph: {
     title: "FRONT COVER · *ASILUM magazine",
     description:
-      "The live edition — today's cover of the fashion intelligence OS.",
+      "The live edition — today's cover of the personalized fashion terminal.",
     url: siteUrl("/cover"),
     siteName: "*ASILUM magazine",
     type: "website",

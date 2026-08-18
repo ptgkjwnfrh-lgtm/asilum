@@ -71,7 +71,7 @@ export default function PassportSecurity({ topTag, topWeight }) {
 
       {/* microprint band above the machine zone, like security print */}
       <div className="ppmicro" aria-hidden="true">
-        {("*ASILUM MAGAZINE · FASHION INTELLIGENCE OS · ").repeat(24)}
+        {("*ASILUM MAGAZINE · PERSONALIZED FASHION TERMINAL · ").repeat(24)}
       </div>
     </>
   );

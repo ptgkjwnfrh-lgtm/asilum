@@ -333,7 +333,7 @@ export default function Home() {
     const boot = async () => {
       if (q) {
         promptRef.current = q;
-        setNotice(`Asterisk is routing this edit toward “${q}” without rewriting your Passport`);
+        setNotice(`The Asterisk system is routing this edit toward “${q}” without rewriting your Passport`);
       }
       await loadFeed(user);
       if (sharedItem) {
@@ -572,8 +572,8 @@ export default function Home() {
       </p>
       <p className="deck">
         {guideOn
-          ? "Asterisk routed this edit through your Passport — six bridges, three zones, no reruns."
-          : "Asterisk is paused — this is a general edit. Your Passport is still waiting when you return."}
+          ? "The Asterisk system routed this edit through your Passport — no reruns."
+          : "The Asterisk system is paused — this is a general edit. Your Passport is still waiting when you return."}
       </p>
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}

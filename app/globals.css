@@ -32,6 +32,18 @@
   --glow-r: 0 0 7px rgba(255, 56, 56, 0.55), 0 0 20px rgba(255, 56, 56, 0.2);
   --glow-p: 0 0 7px rgba(176, 136, 255, 0.45);
   --glow-ink: 0 0 5px rgba(212, 255, 232, 0.28);
+  /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
+     line ONLY — ASILUM above it is left exactly as it shipped. Purely
+     horizontal: the blur radius grows while the vertical offset stays 0, so the
+     light pulls sideways out of the letters instead of haloing them. No hard
+     offset copy — the first version had one and read as a misprint rather than
+     a glow. Static, so no reduced-motion escape hatch is owed. */
+  --mag-glow:
+    0 0 5px rgba(70, 255, 150, 0.30),
+    11px 0 16px rgba(70, 255, 150, 0.26),
+    -11px 0 16px rgba(70, 255, 150, 0.26),
+    28px 0 34px rgba(70, 255, 150, 0.13),
+    -28px 0 34px rgba(70, 255, 150, 0.13);
   --grid-ln: rgba(120, 255, 190, 0.012);
   --scan: rgba(2, 8, 6, 0.11);
   --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.08), transparent 68%);
@@ -78,6 +90,14 @@
   --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
   --glow-p: 0 0 6px rgba(40, 109, 164, 0.28);
   --glow-ink: 0 0 4px rgba(12, 38, 46, 0.12);
+  /* Ice keeps the geometry and drops the luminance — a glow that reads as light
+     on phosphor reads as a printing fault on paper. */
+  --mag-glow:
+    0 0 4px rgba(11, 117, 132, 0.20),
+    9px 0 13px rgba(11, 117, 132, 0.16),
+    -9px 0 13px rgba(11, 117, 132, 0.16),
+    22px 0 28px rgba(11, 117, 132, 0.08),
+    -22px 0 28px rgba(11, 117, 132, 0.08);
   --grid-ln: rgba(23, 110, 125, 0.015);
   --scan: rgba(120, 160, 170, 0.05);
   --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 255, 255, 0.75), transparent 70%);
@@ -132,8 +152,31 @@ button { font-family: var(--helv); }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 6px rgba(70, 255, 150, 0.25)); }
 .wordmark i { font-style: normal; -webkit-text-fill-color: var(--red); text-shadow: var(--glow-r); }
-.wordmark em { display: block; font-family: var(--helv); font-style: normal; font-weight: 400; font-size: 14px; letter-spacing: 0.56em; margin-top: 2px; -webkit-text-fill-color: var(--grey); }
-.wordmark small { display: block; font-family: var(--helv); font-size: 8px; letter-spacing: 0.26em; margin-top: 5px; -webkit-text-fill-color: var(--faint); }
+/* MAGAZINE is set flush to the width of ASILUM above it, not tracked by hand.
+   `letter-spacing: 0.56em` only matched at ONE font-size, and it stopped
+   matching the moment the face changed (VT323 -> STM) or the mobile size did.
+   space-between puts the first and last letters exactly on the box edges, and
+   the box is sized by ASILUM — so the two lines agree at every breakpoint and
+   at any --ed-fs-wordmark the design console dials in. letter-spacing must stay
+   0 here or the trailing space pushes the last letter off the edge. */
+/* THE BOX IS SIZED BY "ASILUM" AND NOTHING ELSE. `width: 0` keeps these two out
+   of the wordmark's shrink-to-fit measurement — before it, "FASHION
+   INTELLIGENCE OS" was the widest child at 147px and MAGAZINE justified to the
+   TAGLINE's width, overshooting ASILUM by 22px on the right. `min-width: 100%`
+   then stretches both back across whatever ASILUM measured. */
+.wordmark em, .wordmark small { width: 0; min-width: 100%; }
+.wordmark em { display: flex; justify-content: space-between; font-family: var(--helv); font-style: normal;
+  font-weight: 400; font-size: 10px; letter-spacing: 0; margin-top: 3px; -webkit-text-fill-color: var(--grey);
+  text-shadow: var(--mag-glow); }
+/* Spread by WORD rather than by letter — three words across the same width, so
+   the spaces do the work and the tagline stays readable at 8px. */
+/* 7px with NO tracking, because the three words have to fit inside ASILUM's
+   width with slack left over for space-between to distribute. At 8px/0.08em the
+   27 letters measured ~134px against a 125px box, so the gaps collapsed and it
+   rendered as PERSONALIZEDFASHIONTERMINAL. 27 x (7 x 0.540) = 102px leaves ~23px
+   across two gaps. Recompute this if the wordmark size or the tagline changes. */
+.wordmark small { display: flex; justify-content: space-between; font-family: var(--helv); font-size: 7px;
+  letter-spacing: 0; margin-top: 5px; -webkit-text-fill-color: var(--faint); text-shadow: none; }
 
 /* destination row — the seven buttons ride directly under the ticker */
 .topnav {
@@ -1116,7 +1159,7 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 
 
 /* ================================================================
-   OS LAYER — Fashion Intelligence OS chrome (redesign/os-shell).
+   OS LAYER — personalized-fashion-terminal chrome (redesign/os-shell).
    Atmosphere, status bar, ASTERISK dock, surface polish.
    ================================================================ */
 
@@ -2083,7 +2126,17 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 @media (max-width: 760px) {
   :root { --mq-h: 54px; --nav-h: 40px; }
   .thbar { gap: 8px; padding: 0 10px; }
-  .wordmark em, .wordmark small { display: none; }
+  /* MAGAZINE STAYS. The name is "*ASILUM magazine" and the word is never
+     dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
+     so the corner logo read a bare "*ASILUM" on every phone and every narrow
+     window while the desktop header was correct. That is the same failure as
+     the fourteen metadata strings: right where it was looked at, wrong where it
+     was not. It is sized down to fit the 54px mobile bar instead of hidden.
+     `small` (the PERSONALIZED FASHION TERMINAL line) is a tagline, not the
+     name, and still goes — that is what buys the room. */
+  .wordmark { font-size: var(--ed-fs-wordmark-mobile, 15px); }
+  .wordmark em { font-size: 7.5px; margin-top: 2px; }
+  .wordmark small { display: none; }
   .topright { gap: 0; }
   .tbtn { font-size: 9.5px; padding: 8px 4px; gap: 4px; letter-spacing: 0.06em; }
   .tbtn svg { width: 14px; height: 14px; }

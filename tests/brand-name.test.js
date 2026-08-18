@@ -55,7 +55,9 @@ test("the metadata a browser tab and a search result actually show", () => {
   // Positive assertions: the guard above would also pass if these strings were
   // simply deleted.
   const layout = read("app/layout.js");
-  assert.match(layout, /default: "\*ASILUM magazine — fashion intelligence OS"/);
+  // "fashion intelligence OS" was retired 17 Aug — the app is a PERSONALIZED
+  // FASHION TERMINAL and nothing else. tests/copy-law.test.js owns that rule.
+  assert.match(layout, /default: "\*ASILUM magazine — personalized fashion terminal"/);
   assert.match(layout, /template: "%s · \*ASILUM magazine"/);
   assert.match(layout, /siteName: "\*ASILUM magazine"/);
 
