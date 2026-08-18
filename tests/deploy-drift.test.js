@@ -60,6 +60,17 @@ test("the failure message names the merges and the files a user cannot see", () 
   assert.match(SCRIPT, /redeploy main from the Vercel dashboard/);
   // and it names the specific silent mode that actually happened
   assert.match(SCRIPT, /previews succeed while/);
+
+  // It must say WAIT before it says redeploy. The original message sent the
+  // reader straight to the dashboard on a diagnosis that was never
+  // demonstrated — production caught up unattended five times across 17 August
+  // with nobody touching a setting. Asserted on ORDER, because the retraction
+  // is worth nothing if a later edit leaves both sentences in the wrong one.
+  assert.match(SCRIPT, /WAIT ONE MERGE/);
+  assert.ok(
+    SCRIPT.indexOf("WAIT ONE MERGE") < SCRIPT.indexOf("Only if it is STILL behind"),
+    "the message must tell the reader to wait before it tells them to redeploy",
+  );
 });
 
 test("the parked workflow can answer 'how far behind' and waits for the deploy", () => {
