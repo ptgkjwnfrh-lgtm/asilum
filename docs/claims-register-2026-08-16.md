@@ -320,3 +320,49 @@ claim 6. It was the measurement: Chrome only matches `:focus-visible` when focus
 arrives by keyboard, and a scripted `.focus()` after mouse activity does not
 qualify. Driving a real `Tab` keypress showed the ring was there all along.
 **A focus-ring audit done with `.focus()` will report every control as unstyled.**
+
+---
+
+## The verification was itself verified — 17 August
+
+*Amended in place. Everything above records what was checked; nothing recorded
+whether the checks could FAIL. That is not a pedantic distinction here: this
+session found three tests that could not fail and read as correct (trap 22), and
+a detector whose own guard pattern matched the data it was protecting against
+(trap 32). A claim defended by a test that cannot fail is an unverified claim
+with extra confidence attached.*
+
+So each claim's test was run against a deliberate breakage of the thing it
+guards. **Seven mutations, seven caught:**
+
+| claim | test | mutation introduced | |
+|---|---|---|---|
+| 6 visible focus | `a11y-focus-visible` | focus indicator changed to a literal colour | caught |
+| 6 visible focus | `a11y-focus-visible` | new rule with `outline: none` and no focus style | caught |
+| 8 contrast | `theme-contrast` | light theme `--sig` → `#f2f2f2` | caught |
+| 10 form labels | `a11y-form-labels` | an `<input>` with no accessible name | caught |
+| 10 form labels | `a11y-form-labels` | an `<input>` named only by its placeholder | caught |
+| 5 keyboard | `a11y-keyboard` | a real `<button>` turned into a clickable `<div>` | caught |
+| 5 modal focus | `a11y-modal-focus` | `useFocusTrap` unwired from the item dialog | caught |
+
+**Claims 5, 6, 8 and 10 are defended by tests that demonstrably fail when the
+property breaks.** That is a stronger statement than "the tests pass", and it is
+the one this register should have been making.
+
+### Three mutations "survived" and every one was my own error
+
+Recorded because the failure mode is seductive — a survivor reads as a weak test
+and invites a rewrite of something that was never broken:
+
+- Removing an `outline:` declaration from a `:focus-visible` rule. The test's
+  rule is *"no rule removes the focus outline without defining a focus style"*;
+  deleting a declaration does not create an `outline: none`, so nothing was
+  violated.
+- Repointing `--ink`. `theme-contrast` reads `--sig`, `--bg` and `--paper` under
+  an explicit `[data-theme]` scope; `--ink` is not one of its pairs.
+- Stripping `aria-label` from a `<button>` whose text content is `×`. The button
+  still had an accessible name — a poor one, but the test asserts presence.
+
+**A survived mutation is a claim about the test AND about the mutation. Check the
+second before believing the first.** Claim 12 remains unverified and still needs
+a person at a screen reader; nothing here changes that.
