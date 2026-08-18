@@ -329,3 +329,9 @@ session heard-log, RECENTLY FORGOTTEN, and the two-step Reset Brain
   followed brand or reader still wins the ticker.
 
 `tests/copy-law.test.js` enforces all four.
+
+**Verified against the rendered HTML, not just the source (17 Aug).** All fifteen
+destinations were fetched from a running server and their markup checked: every
+one returns 200, and not one contains the word "bridges", the phrase "fashion
+intelligence", or a bare `Asterisk <verb>`. The unit test reads source files; this
+checked what a reader is actually served, which is the claim that matters.
