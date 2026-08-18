@@ -696,9 +696,10 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 /* ---- Stylist stats ---- */
 .lookstats { display: flex; flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 9px; font-size: 10px; letter-spacing: 0.08em; color: var(--grey); }
 .lookstats b { color: var(--ink); font-size: 12px; }
-/* The MATCH scale, printed because `conf` is a 75–99 display value and not a
-   percentage (metric-definition audit, Aug 17). Same grey and tracking as the
-   labels it sits between — a caption, not a fifth stat. */
+/* The MATCH scale, printed because `conf` is a 0–99 composite and not a
+   percentage (metric-definition audit, Aug 17; range widened by ruling 8 the
+   same day). Same grey and tracking as the labels it sits between — a caption,
+   not a fifth stat. */
 .lookstats .lsscale { font-style: normal; letter-spacing: 0.08em; opacity: 0.75; }
 .lookstats b.red, .ticketline b.red, b.red { color: var(--red); }
 

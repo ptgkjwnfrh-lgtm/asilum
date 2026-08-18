@@ -71,10 +71,17 @@ function rankTrendAware(looks) {
 }
 
 function modelLook(outfit) {
+  // 0–99, NOT 75–99. The old lower clamp manufactured a passing score: an AI
+  // look could not fall under the match floor however poorly the model rated it,
+  // and the AI group skipped the floor filter as well — so ruling 8's fix would
+  // have been real on the engine path and decoration on this one. One rule for
+  // every look. The `?? 0` default replaces a bare 85: inventing a
+  // comfortably-passing score for a look the model declined to rate is the same
+  // failure in miniature.
   const raw = Number(outfit.matchScore);
   const conf = Number.isFinite(raw)
-    ? Math.max(75, Math.min(99, Math.round(raw <= 1 ? raw * 100 : raw)))
-    : 85;
+    ? Math.max(0, Math.min(99, Math.round(raw <= 1 ? raw * 100 : raw)))
+    : 0;
   return {
     items: outfit.items || [], conf,
     // NOT `curated: conf, tasteStat: conf` (metric-definition audit, Aug 17).
@@ -167,14 +174,10 @@ async function generate(req, input, { persistSeen = true } = {}) {
   const fitProfile = savedFit && (savedFit.usualSize || Object.keys(savedFit.measurements).length)
     ? savedFit : fitProfileFromBody(input.fit);
 
-  const events =
-    ((profile._meta && profile._meta.seen) || []).length +
-    ((profile._meta && profile._meta.activity) || []).length;
-
   // ---- quick mode (anchored slate) ----
   if (!full) {
     const n = Math.min(5, Math.max(1, Number.parseInt(input.n, 10) || 3));
-    const outfits = rankTrendAware(buildSlate(pool, taste, n + 3, { anchor, fitProfile, events }))
+    const outfits = rankTrendAware(buildSlate(pool, taste, n + 3, { anchor, fitProfile }))
       .filter((look) => look.conf >= MATCH_FLOOR).slice(0, n);
     return NextResponse.json({
       userId, anchor: anchor ? anchor.id : null,
@@ -202,7 +205,7 @@ async function generate(req, input, { persistSeen = true } = {}) {
       const t = TAGS[Math.floor(Math.random() * TAGS.length)];
       biased[t] = Math.max(-1, Math.min(1, (biased[t] || 0) + (Math.random() - 0.5) * 0.16));
     }
-    const built = rankTrendAware(buildSlate(pool, biased, LOOKS_PER_GENRE + 5, { fitProfile, events }));
+    const built = rankTrendAware(buildSlate(pool, biased, LOOKS_PER_GENRE + 5, { fitProfile }));
     const looks = [];
     for (const look of built) {
       if (look.conf < MATCH_FLOOR) continue;
@@ -238,7 +241,8 @@ async function generate(req, input, { persistSeen = true } = {}) {
     });
     ai = { requested: true, source: model.source || "unavailable" };
     if (model.ok && model.source === "model") {
-      const looks = model.outfits.map(modelLook).filter((look) => look.items.length >= 3);
+      const looks = model.outfits.map(modelLook)
+        .filter((look) => look.items.length >= 3 && look.conf >= MATCH_FLOOR);
       if (looks.length) groups.unshift({ genre: "AI TREND EDIT", looks });
     }
   }

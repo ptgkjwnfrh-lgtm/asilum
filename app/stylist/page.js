@@ -2,7 +2,8 @@
 
 // app/stylist/page.js — THE STYLIST.
 // Full generations: 5 base genres × 5 looks = 25 LOOKs, cut across sources,
-// match floor 75%, with a 30-day repeat memory (a look you've seen has a 10%
+// match floor 75 (of 99 — not a percentage), with a 30-day repeat memory
+// (a look you've seen has a 10%
 // chance of coming back). Each LOOK: pieces with source labels + prices,
 // total, curated/taste stats, source count, match %, PASS / SAVE OUTFIT /
 // BAG ALL / SET YOUR SIZE / REGENERATE.
@@ -247,10 +248,11 @@ export default function StylistPage() {
                   </div>
                   {/* CURATED and TASTE are genuine percentages (mean coherence
                       and mean taste similarity, both 0–1 × 100) and keep the %.
-                      MATCH does not: `conf` is a calibrated 75–99 DISPLAY of
-                      relative rank, which lib/brain/stylist.js documents as
-                      "not a literal purchase probability" and asks the UI to
-                      keep honest — so the % is gone and the scale is stated.
+                      MATCH does not: `conf` is the look's composite quality on
+                      a 0–99 scale, which lib/brain/stylist.js documents as "not
+                      a probability of anything" — so the % is gone and the scale
+                      is stated. Anything under 75 never reaches this page: the
+                      match floor is a real gate since ruling 8.
                       It also matched the .otfconf chip above, which never had
                       one; the same number now reads the same way twice.
                       A null stat is OMITTED, not printed as "null%": the AI
