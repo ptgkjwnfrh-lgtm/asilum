@@ -284,3 +284,39 @@ claims are now true — but "full keyboard operability" and the named screen
 readers are still asserted without evidence. Fixing the statement means either
 doing the work or softening the wording; it does not mean editing the page to
 match what we wish were true.
+
+
+---
+
+## Re-checked 17 August, after the day's UI round
+
+The wordmark was rebuilt (justified sub-lines, an `aria-label`, `aria-hidden`
+spans), the VT323 face was retired across 25 rules, and the passport machine zone
+was resized. Three claims could plausibly have moved. **All three hold**, measured
+rather than assumed:
+
+| Claim | Result |
+|---|---|
+| 5 — keyboard operability | the wordmark link is reachable by Tab and activates as before |
+| 6 — visible focus | **present** — `outline: auto 1px` on real keyboard focus |
+| 13 — 200% zoom | ASILUM 125px → 250px, both sub-lines still flush at both ends, no sideways scroll |
+
+**The accessible name improved.** The link used to announce its concatenated text
+nodes — "\*ASILUMMAGAZINEFASHION INTELLIGENCE OS". Splitting the sub-lines into
+per-glyph spans would have made that worse, so the anchor now carries an explicit
+`aria-label` ("\*ASILUM magazine — back to the catalog") and the decorative spans
+are `aria-hidden`. One name, in one place, whatever the lockup does visually.
+
+**The new 7–8px type does not change §"Not a defect: the sub-12px type count".**
+No WCAG criterion mandates a minimum size, the relevant one is 1.4.4 (claim 13,
+verified above), and both sub-lines are `aria-hidden` — they are a visual lockup,
+not text anyone has to read to use the page.
+
+### A measurement trap worth keeping
+
+**`element.focus()` from script does not match `:focus-visible`.** The first pass
+here reported `outline: none` on the wordmark and looked like a regression of
+claim 6. It was the measurement: Chrome only matches `:focus-visible` when focus
+arrives by keyboard, and a scripted `.focus()` after mouse activity does not
+qualify. Driving a real `Tab` keypress showed the ring was there all along.
+**A focus-ring audit done with `.focus()` will report every control as unstyled.**
