@@ -15,7 +15,8 @@
     "research:compile": "node scripts/compile-culture-research.mjs",
     "start": "next start",
     "deploy:check": "node scripts/check-deploy-drift.mjs",
-    "triggers:check": "node scripts/check-deferred-triggers.mjs"
+    "triggers:check": "node scripts/check-deferred-triggers.mjs",
+    "floor:check": "node scripts/measure-match-floor.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.5",
