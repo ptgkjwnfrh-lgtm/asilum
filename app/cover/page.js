@@ -100,12 +100,21 @@ export default function CoverPage() {
     // sessionStorage slot THE DESK and /stats use rather than inventing a
     // second credential. No token, or a refused one, means the folio and the
     // STATE marginalia are NOT DRAWN — the cover prints what it can read.
+    // ONLY ASK IF WE MAY. Verified against production: this fetch was firing on
+    // every visit to the landing page and earning a guaranteed 401, because
+    // /api/stats is staff-only and a visitor has no token to send. The page
+    // handled the refusal correctly — but it still spent a round trip on a
+    // question with a known answer, and logged a console error doing it, which
+    // is exactly the kind of ghost a future debugging session chases.
+    // No token, no request. The folio is staff-only either way.
     let staffToken = "";
     try { staffToken = window.sessionStorage.getItem("asilum-admin-token") || ""; } catch {}
-    fetch("/api/stats", staffToken ? { headers: { Authorization: "Bearer " + staffToken } } : undefined)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((s) => { if (s) setSys(s); })
-      .catch(() => {});
+    if (staffToken) {
+      fetch("/api/stats", { headers: { Authorization: "Bearer " + staffToken } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((s) => { if (s) setSys(s); })
+        .catch(() => {});
+    }
     fetch("/api/business?booths=1")
       .then((r) => r.json())
       .then((d) => setBooths(Array.isArray(d.booths) ? d.booths : []))
