@@ -311,3 +311,21 @@ app/components/AsteriskDock.jsx, extracted from the shell; upload cycles
 LISTENING/LEARNING/…) above the BrainViz word-sphere, the live conviction readback, the
 session heard-log, RECENTLY FORGOTTEN, and the two-step Reset Brain
 (full-amnesia) control — all relocated from /board. All signals are real training; nothing simulated.
+
+
+## Copy law (17 August, owner directives)
+
+- **The app is a PERSONALIZED FASHION TERMINAL.** "Fashion intelligence OS" is
+  retired everywhere a reader can see it.
+- **The engine is "The Asterisk system"** in prose. Chrome labels that name the
+  destination or the control — the `/asterisk` route, "ASTERISK GUIDING",
+  "ASTERISK CONTROL ROOM", the compact toggle — keep the bare word on purpose.
+- **No public mention of the learning bridges.** Six of them run the ranking and
+  `lib/brain` names them freely; nothing a reader sees may. They had reached the
+  site description, the feed's routing line, the top ticker and a status chip.
+- **The ticker, with nothing followed**, carries three house lines: "ARE YOU
+  SEEKING A S I L U M", "DISCOVERY - COMMERCE - COMMUNITY", "DISCOVER FROM
+  ARCHIVES ACROSS THE WORLD". The spacing in "A S I L U M" is deliberate. A
+  followed brand or reader still wins the ticker.
+
+`tests/copy-law.test.js` enforces all four.

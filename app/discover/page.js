@@ -281,8 +281,8 @@ export default function DiscoverPage() {
       </p>
       <p className="deck">
         explore the full archive. {guideOn
-          ? "Asterisk is using your Passport to route every search toward your style."
-          : "Asterisk guidance is paused, so results stay general."}
+          ? "The Asterisk system is using your Passport to route every search toward your style."
+          : "The Asterisk system is paused, so results stay general."}
         {" "}{total ? total + " pieces" : "counting"} across the racks.
       </p>
       <div className={"searchguide " + (guideOn ? "on" : "off")}>

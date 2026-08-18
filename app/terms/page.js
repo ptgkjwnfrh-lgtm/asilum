@@ -69,7 +69,7 @@ export default function TermsPage() {
         necessary — suspension.
       </p>
 
-      <h2 className="statshead">ASTERISK IS AN AUTOMATED SYSTEM</h2>
+      <h2 className="statshead">THE ASTERISK SYSTEM IS AUTOMATED</h2>
       <p className="legal">
         recommendations, readings, and stylist output are produced by an
         automated system built on deterministic taste arithmetic and a

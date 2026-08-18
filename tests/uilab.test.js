@@ -60,7 +60,9 @@ function withBrowser(storage, fn) {
 
 test("the control registry is internally consistent", () => {
   assert.equal(GROUPS.length, 5);
-  assert.equal(ALL_CONTROLS.length, 53);
+  // 53 -> 54 on 17 Aug: --ed-fs-wordmark-mobile. This count is pinned on
+  // purpose — a control added without a decision changes this line first.
+  assert.equal(ALL_CONTROLS.length, 54);
 
   const keys = ALL_CONTROLS.map((c) => c.key);
   // A duplicated key is the copy-paste failure this file invites: ALLOWED_KEYS

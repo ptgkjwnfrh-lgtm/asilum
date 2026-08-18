@@ -341,7 +341,7 @@ export default function UploadPage() {
         <aside className="gxside">
           <section className="gxcard gxasterisk">
             <AsteriskDock size={200} words={DOCK_WORDS} className="os-dock gxdock" />
-            <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT ASTERISK HOLDS</div>
+            <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT THE ASTERISK SYSTEM HOLDS</div>
             {convictions().length === 0 ? (
               <em className="gxfoot">nothing yet — the record starts with your first pin.</em>
             ) : (

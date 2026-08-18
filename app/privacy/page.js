@@ -41,7 +41,7 @@ export default function PrivacyPage() {
       </p>
       <p className="legal">
         <strong>taste signals.</strong>{" "}saves, favorites, skips, searches,
-        viewing time, corrections you give Asterisk, and moodboard training
+        viewing time, corrections you give the Asterisk system, and moodboard training
         words. these build the taste profile that ranks your feed. you can
         inspect every class of this data in the{" "}
         <a href="/asterisk">Asterisk control room</a>.
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
         <strong>see it:</strong>{" "}the <a href="/asterisk">Asterisk control
         room</a> shows what the system holds and lets you export it as JSON.{" "}
         <strong>correct it:</strong>{" "}every recommendation carries correction
-        controls that retrain or exclude. <strong>pause it:</strong>{" "}Asterisk
+        controls that retrain or exclude. <strong>pause it:</strong>{" "}the Asterisk system
         guidance can be switched off; hard filters still apply and your data
         sits unused. <strong>delete it:</strong>{" "}
         <a href="/settings">Settings</a> holds a typed-confirmation delete

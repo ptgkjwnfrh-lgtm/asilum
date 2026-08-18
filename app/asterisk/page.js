@@ -84,10 +84,10 @@ export default function AsteriskPage() {
       {!err && !memory && <div className="pempty">reading…</div>}
 
       <div className="amemsec">
-        <div className="amemhead"><b className="red">*</b> WHAT ASTERISK IS</div>
+        <div className="amemhead"><b className="red">*</b> WHAT THE ASTERISK SYSTEM IS</div>
         <div className="amembody">
           <p className="adisclose full">
-            Asterisk is ASILUM&apos;s automated recommendation and interpretation
+            The Asterisk system is ASILUM magazine&apos;s automated recommendation and interpretation
             system. The taste engine ranks pieces with deterministic arithmetic
             over your own signals — favorites, saves, skips, dwell — never a
             black-box model. Cultural readings come from a human-curated,

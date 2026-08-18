@@ -208,7 +208,7 @@ export function MemorySections({ memory, setHidden, full = false }) {
         <Row label="SIGNALS">{inf.signalCount} on record</Row>
         {full && inf.tasteSummary && <div className="amemnote">{inf.tasteSummary}</div>}
       </Section>
-      <Section id="global" title="WHAT ASTERISK LEARNED">
+      <Section id="global" title="WHAT THE ASTERISK SYSTEM LEARNED">
         <Row label="NEW KNOWLEDGE">
           {gl.recentlyLearned.length
             ? gl.recentlyLearned.map((f, i) => (
@@ -294,7 +294,7 @@ export function AsteriskDrawer() {
           <div className="phead">ASTERISK — YOUR TRAVEL AGENT</div>
           <div className="aguideintro">
             Your Passport teaches Asterisk the route. Search sets the destination;
-            Asterisk orders the racks so the trip still feels like you.
+            The Asterisk system orders the racks so the trip still feels like you.
           </div>
           <div className={"aguideswitch " + (guidanceOn ? "on" : "off")}>
             <div>
@@ -330,7 +330,7 @@ export function AsteriskDrawer() {
             OPEN PASSPORT READ & CONTROLS →
           </a>
           <div className="adisclose">
-            ✳ Asterisk is an automated recommendation &amp; interpretation system.
+            ✳ The Asterisk system is an automated recommendation &amp; interpretation system.
             Readings are human-curated and cited; no generative AI is active.
             <a href="/asterisk"> WHAT ASTERISK IS</a>
           </div>

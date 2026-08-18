@@ -50,9 +50,17 @@ const NAV = [
     match: (p) => p.startsWith("/settings") || p.startsWith("/privacy") || p.startsWith("/terms") || p.startsWith("/accessibility") },
 ];
 
-const TICKER =
-  "*ASILUM MAGAZINE — THE TASTE ENGINE IS LIVE — SIX BRIDGES, ONE FEED — " +
-  "HOTLIST UPDATED CONTINUOUSLY — WEAR THE ARCHIVE — SKIPS TEACH TOO — ";
+// What the ticker carries when the account follows nothing yet (owner order,
+// 17 Aug). It used to advertise the machinery — "THE TASTE ENGINE IS LIVE —
+// SIX BRIDGES, ONE FEED" — which is both a product claim and a public mention
+// of the learning bridges. These are the house lines instead. The spacing in
+// "A S I L U M" is the owner's and is deliberate; do not close it up.
+const TICKER_PLACEHOLDERS = [
+  "ARE YOU SEEKING A S I L U M",
+  "DISCOVERY - COMMERCE - COMMUNITY",
+  "DISCOVER FROM ARCHIVES ACROSS THE WORLD",
+];
+const TICKER = TICKER_PLACEHOLDERS.join(" — ") + " — ";
 
 export default function Shell({ children }) {
   const fit = useFitBrain();
@@ -354,8 +362,21 @@ export default function Shell({ children }) {
 
       <header className="tophead">
         <div className="thbar">
-          <a className="wordmark" href="/" title="back to the catalog">
-            <i>*</i>ASILUM<em>MAGAZINE</em><small>FASHION INTELLIGENCE OS</small>
+          {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
+              order, 17 Aug) — one letter per span, spread by flex, so the line
+              is flush at both ends at EVERY size instead of guessing at a
+              letter-spacing that only lands at one font-size. See .wordmark em.
+              aria-label pins the accessible name so splitting the word cannot
+              make a screen reader spell it out. */}
+          <a className="wordmark" href="/" title="back to the catalog"
+             aria-label="*ASILUM magazine — back to the catalog">
+            <i>*</i>ASILUM
+            <em aria-hidden="true">
+              {"MAGAZINE".split("").map((ch, i) => <span key={i}>{ch}</span>)}
+            </em>
+            <small aria-hidden="true">
+              {"PERSONALIZED FASHION TERMINAL".split(" ").map((word, i) => <span key={i}>{word}</span>)}
+            </small>
           </a>
           <div className="marquee">
             <div className="mq">
@@ -585,7 +606,6 @@ function OsStatus({ bagCount, guideOn, pathname }) {
       </div>
       <div className="st">ROUTE <b>{pathname}</b></div>
       <div className="st">BAG <b>{bagCount}</b></div>
-      <div className="st">BRAIN <b>6 BRIDGES</b></div>
       <div className="st"><span className="os-clock" suppressHydrationWarning>{now}</span></div>
     </footer>
   );

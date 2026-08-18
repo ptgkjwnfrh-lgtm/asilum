@@ -21,16 +21,16 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: "*ASILUM magazine — fashion intelligence OS",
+    default: "*ASILUM magazine — personalized fashion terminal",
     template: "%s · *ASILUM magazine",
   },
   description:
-    "A learning moodboard engine that reads your taste across six bridges. The catalog is a demo archive of synthetic sample records — the taste engine is real; the clothes are not.",
+    "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records — the learning is real; the clothes are not.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "*ASILUM magazine — fashion intelligence OS",
+    title: "*ASILUM magazine — personalized fashion terminal",
     description:
-      "A learning moodboard engine that reads your taste across six bridges. The catalog is a demo archive of synthetic sample records.",
+      "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records.",
     url: siteUrl("/"),
     siteName: "*ASILUM magazine",
     type: "website",
@@ -42,7 +42,7 @@ export const metadata = {
   // while there was nothing to fill it — a large card with no image is worse
   // than a small one. The two move together, and tests/seo.test.js pins the
   // pairing in both directions so neither can ship without the other.
-  twitter: { card: "summary_large_image", title: "*ASILUM magazine — fashion intelligence OS" },
+  twitter: { card: "summary_large_image", title: "*ASILUM magazine — personalized fashion terminal" },
 };
 
 // Theme + interface mode are applied before first paint so a returning

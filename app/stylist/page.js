@@ -161,8 +161,8 @@ export default function StylistPage() {
       </p>
       <p className="deck">
         whole looks cut across sources. {guideOn
-          ? "Asterisk is styling through your Passport,"
-          : "Asterisk guidance is paused, so this is a general edit,"}
+          ? "The Asterisk system is styling through your Passport,"
+          : "The Asterisk system is paused, so this is a general edit,"}
         {" "}fit-gated when your size is set.
         {anchorId ? " styled around the piece you picked." : ""}
       </p>
@@ -279,7 +279,7 @@ export default function StylistPage() {
       ))}
 
       <p className="deck" style={{ marginTop: 22 }}>
-        match is a relative ranking signal that sharpens while Asterisk
+        match is a relative ranking signal that sharpens while the Asterisk system
         guidance is active. A look you were already shown has a one-in-ten
         chance of returning inside thirty days.
       </p>
