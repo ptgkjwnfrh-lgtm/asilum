@@ -89,11 +89,22 @@ let changed = [];
 try {
   changed = git("diff", "--name-only", `${live.sha}..${tip}`).split("\n").filter(Boolean);
 } catch { changed = []; }
-const userFacing = changed.filter((f) => !f.startsWith("docs/") && !f.startsWith("tests/"));
+// What a Vercel deploy can actually put in front of a reader. `supabase/` is
+// migrations, applied to Postgres by hand via apply-schema.mjs — deploying the
+// app never applies one, so calling a staged migration "a file a user cannot
+// see yet" is not merely noisy, it is false. `scripts/` is operator tooling and
+// is not in the bundle either; both were confirmed absent from the build output
+// and unimported by anything under app/ or lib/.
+//
+// This matters more than the tidiness: a check that fires on changes a deploy
+// could never carry is a check that gets muted, and then it is worth nothing on
+// the day it matters. Adding v30 was the first time it cried wolf.
+const NOT_SHIPPED = ["docs/", "tests/", "supabase/", "scripts/"];
+const userFacing = changed.filter((f) => !NOT_SHIPPED.some((d) => f.startsWith(d)));
 
 if (!userFacing.length) {
   console.log(
-    `production is ${range.length} merge(s) behind ${BRANCH}, but the gap is docs/tests only — nothing a user sees.`,
+    `production is ${range.length} merge(s) behind ${BRANCH}, but the gap is docs/tests/migrations only — nothing a user sees.`,
   );
   console.log(`  production: ${live.sha.slice(0, 7)}   ${BRANCH}: ${tip.slice(0, 7)}`);
   process.exit(0);
