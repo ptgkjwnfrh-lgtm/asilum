@@ -16,9 +16,14 @@
 //   mapping.delete { searchPhrase }
 //   product.moderate { productId, status: visible|hidden|flagged }
 //   sync.run   { query?, limit? }
+//   inventory.upsert { sourceName, items: [...] } — real-inventory intake
+//     (L1); every item must pass the checkout honesty gate or the whole
+//     batch refuses 409 with per-index reasons. docs/DESIGNER-INTAKE.md.
 
 import { NextResponse } from "next/server";
-import { getPool } from "../../../lib/db/index.js";
+import { getPool, upsertItems } from "../../../lib/db/index.js";
+import { validateIntakeBatch } from "../../../lib/ingest/intake.js";
+import { typedTagsFrom } from "../../../lib/ingest/adapters/normalize.js";
 import {
   getProductTags, addProductTags, deleteProductTag, mergeProductTags,
   listSearchMappings, upsertSearchMapping, deleteSearchMapping,
@@ -106,6 +111,25 @@ export async function POST(req) {
 
   try {
     switch (body.action) {
+      case "inventory.upsert": {
+        // Real-inventory intake (risk campaign L1). The checkout engine's own
+        // honesty gate validates every item BEFORE anything is written — one
+        // bad item refuses the whole batch with per-index reasons, so the
+        // catalog can never drift half-real. docs/DESIGNER-INTAKE.md is the
+        // operator runbook.
+        const { ok, problems, normalized } = validateIntakeBatch(body.items, body.sourceName);
+        if (!ok) {
+          return NextResponse.json({ error: "intake refused — nothing written", problems }, { status: 409 });
+        }
+        await upsertItems(normalized);
+        for (const p of normalized) {
+          await addProductTags(p.id, typedTagsFrom(p));
+        }
+        return NextResponse.json({
+          upserted: normalized.length,
+          items: normalized.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
+        });
+      }
       case "tag.add":
         return NextResponse.json({
           added: await addProductTags(body.productId, [{ tag: body.tag, tagType: body.tagType, confidence: body.confidence, source: "admin" }]),
