@@ -190,10 +190,28 @@ would have been real on the engine path and decoration on the other. Both paths
 now obey one rule, and an unrated model look scores 0 rather than a
 comfortably-passing 85.
 
-**Side effect worth knowing:** `rankTrendAware` sorts on `conf + trendScore*6`.
-When conf spanned four points, the trend term dominated the ordering; now that it
-spans thirty, quality leads and trend nudges. That is the better behaviour, but
-it *is* a ranking change.
+**Side effect, flagged and then measured.** `rankTrendAware` sorts on
+`conf + trendScore*6`. When conf spanned four points the trend term dominated the
+ordering; widening conf to thirty points could plausibly have gone the other way
+and left trend unable to move anything — in which case `trendAwareLook` would be
+dead weight still printing "current styling context" on looks. Checked over 300
+generations rather than assumed:
+
+| | |
+|---|---|
+| looks carrying a trend | 1,093 of 2,535 (**43%**) |
+| `trendScore` when present | 0.43–0.49, so **up to 2.9 points** after the ×6 |
+| trend changed the ORDER | 278 / 300 generations (**93%**) |
+| trend changed WHICH FIVE ship | 144 / 300 generations (**48%**) |
+
+So the term is alive and consequential. What changed is its *proportion*: among
+looks that survive the floor, conf spans about eleven points, so a ≤2.9-point
+nudge reorders within a quality band instead of overriding it. Before ruling 8,
+survivors spanned roughly three points and the nudge was as large as the entire
+quality signal.
+
+**Do not "rebalance" the ×6 on a hunch** — it is currently doing what it should,
+and this table is the baseline to compare against.
 
 ## M5 — three labels, one number
 
