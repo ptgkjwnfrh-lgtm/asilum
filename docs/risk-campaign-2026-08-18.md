@@ -79,6 +79,15 @@ This is new build work and it is **owner-gated**: checkout sits on the
 constitution's "do NOT build yet" list, and unbuilding that requires the
 owner's word, not an agent's initiative.
 
+*Status 18 Aug: the owner unlocked this ("stripe is setup, go forth") and the
+ENGINE is built and test-mode-verified — schema-v31 (orders + append-only
+order_events), lib/payments/stripe.js (fetch client, no SDK), lib/orders.js
+(honesty gate + reconcile-on-read), /api/checkout + /api/stripe/webhook,
+`scripts/verify-stripe-e2e.mjs`. Demo items refuse 409 by construction, so
+nothing user-facing changes until L1 lands real inventory. Launch runbook:
+SETUP-KEYS.md §5. Still open here: refund policy copy on /terms (counsel),
+UI wiring (owner-directed round), live keys (owner business verification).*
+
 **Phase L3 — Measure.**
 Extend `docs/metric-definitions-2026-08-17.md` with the commerce four:
 visitor→purchase conversion, repeat rate, contribution margin per order,
