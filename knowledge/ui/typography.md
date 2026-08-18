@@ -32,10 +32,14 @@ labels get letter-spacing ≥ 0.12em.
 Three lines, and **all three are exactly the width of the ASILUM run**:
 
 ```
-*ASILUM                      Michroma, --ed-fs-wordmark (19px / 15px mobile)
-M A G A Z I N E              STM 10px, flex space-between, --mag-glow
-PERSONALIZED FASHION TERMINAL  STM 7px, flex space-between, three words
+*ASILUM              Michroma, --ed-fs-wordmark (19px / 15px mobile)
+M A G A Z I N E      STM 10px, flex space-between, --mag-glow
+FASHION TERMINAL     STM 8px, flex space-between, hidden below 760px
 ```
+
+The lockup says **FASHION TERMINAL**, not "personalized fashion terminal" — a
+lockup is not a sentence, and three words could not be spaced cleanly inside the
+ASILUM width. The prose descriptor in metadata is still the full phrase.
 
 **Justified, not tracked.** Each sub-line is one span per letter (or per word for
 the tagline) spread with `justify-content: space-between`, so the first and last
@@ -48,11 +52,17 @@ min-width: 100%`, keeping them out of the parent's shrink-to-fit measurement.
 Before that, "FASHION INTELLIGENCE OS" was the widest child at 147px and MAGAZINE
 justified to the *tagline's* width, overshooting ASILUM by 22px.
 
+**Spread per GLYPH, not per word.** Three words with `space-between` gives two
+enormous gaps and tightly-set words. Every character gets a span — the space
+included, as an NBSP so it does not collapse — and the gaps come out even, while
+the space still carries its own width plus a gap either side so the two words
+stay two words. 16 slots x (8px x 0.540) = 69px in a 125px box: ~3.7px per gap,
+an 11.8px word gap.
+
 **Watch the slack when the tagline changes.** `space-between` needs free space to
-distribute; at 8px the 27 letters of PERSONALIZED FASHION TERMINAL measured ~134px
-against a 125px box and the words collapsed into each other. 7px with no tracking
-leaves ~23px across two gaps. Recompute if either the wordmark size or the tagline
-text changes.
+distribute; the earlier three-word version measured ~134px against a 125px box at
+8px and collapsed into PERSONALIZEDFASHIONTERMINAL. Recompute if either the
+wordmark size or the tagline text changes.
 
 **MAGAZINE never hides.** It was `display: none` below 760px, so the corner logo
 read a bare "*ASILUM" on every phone. It is sized down now, not hidden; the

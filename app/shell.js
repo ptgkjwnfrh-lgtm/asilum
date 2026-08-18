@@ -374,8 +374,16 @@ export default function Shell({ children }) {
             <em aria-hidden="true">
               {"MAGAZINE".split("").map((ch, i) => <span key={i}>{ch}</span>)}
             </em>
+            {/* Split per CHARACTER, not per word. With three words and
+                space-between you get two enormous gaps and tightly-set words —
+                which is exactly what looked wrong. Spread every glyph instead
+                and the letter gaps come out even, while the space character
+                still carries its own width plus a gap either side, so the two
+                words stay two words. NBSP because a plain space collapses. */}
             <small aria-hidden="true">
-              {"PERSONALIZED FASHION TERMINAL".split(" ").map((word, i) => <span key={i}>{word}</span>)}
+              {"FASHION TERMINAL".split("").map((ch, i) => (
+                <span key={i}>{ch === " " ? "\u00A0" : ch}</span>
+              ))}
             </small>
           </a>
           <div className="marquee">

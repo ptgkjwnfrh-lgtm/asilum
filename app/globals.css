@@ -170,12 +170,12 @@ button { font-family: var(--helv); }
   text-shadow: var(--mag-glow); }
 /* Spread by WORD rather than by letter — three words across the same width, so
    the spaces do the work and the tagline stays readable at 8px. */
-/* 7px with NO tracking, because the three words have to fit inside ASILUM's
-   width with slack left over for space-between to distribute. At 8px/0.08em the
-   27 letters measured ~134px against a 125px box, so the gaps collapsed and it
-   rendered as PERSONALIZEDFASHIONTERMINAL. 27 x (7 x 0.540) = 102px leaves ~23px
-   across two gaps. Recompute this if the wordmark size or the tagline changes. */
-.wordmark small { display: flex; justify-content: space-between; font-family: var(--helv); font-size: 7px;
+/* 8px, no tracking. "FASHION TERMINAL" is 16 glyph slots including the space:
+   16 x (8 x 0.540) = 69px inside a 125px box, leaving ~56px spread evenly over
+   15 gaps (~3.7px each, about 0.46em). The word gap is the space glyph plus a
+   gap either side, so it reads as two words without a hole in the middle.
+   Recompute if the wordmark size or the tagline text changes. */
+.wordmark small { display: flex; justify-content: space-between; font-family: var(--helv); font-size: 8px;
   letter-spacing: 0; margin-top: 5px; -webkit-text-fill-color: var(--faint); text-shadow: none; }
 
 /* destination row — the seven buttons ride directly under the ticker */
