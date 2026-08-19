@@ -12,6 +12,10 @@
 //   VIDEO (pipeline pending): one video capped at 3:00, caption
 //     allowed — same pipeline, same honesty.
 //
+// Booths link to their pieces when the desk has linked an inventory
+// namespace (18 Aug) — the commerce pipeline is real now; a booth with
+// no linked inventory still reads honestly as presence only.
+//
 // The hotlist law (owner order, Aug 13): the hotlist is TEN BOOTH
 // SLOTS held for independent Shopify-based brands. A passport account
 // becomes a BUSINESS account by verifying itself, connecting its
@@ -437,6 +441,14 @@ export default function TheWirePage() {
                     <a className="boothsite" href={holder.websiteUrl} target="_blank" rel="noopener noreferrer">
                       their site ↗
                     </a>
+                    {holder.sourceName && (
+                      <>
+                        {" · "}
+                        <a className="boothsite" href={"/discover?q=" + encodeURIComponent(holder.brandName)}>
+                          their pieces →
+                        </a>
+                      </>
+                    )}
                   </span>
                 </div>
               ) : (
