@@ -30,6 +30,20 @@ live("checkout session round-trip against Stripe test mode", async () => {
   assert.equal(again.metadata.order_id, "ord_live_test");
 });
 
+live("refund round-trip: a directly-confirmed test payment refunds in full", async () => {
+  const { stripeRequest, createRefund } = await import("../lib/payments/stripe.js");
+  // pm_card_visa confirms instantly in test mode — no browser needed.
+  const intent = await stripeRequest("POST", "/payment_intents", {
+    amount: 500, currency: "usd", payment_method: "pm_card_visa",
+    confirm: true, automatic_payment_methods: { enabled: true, allow_redirects: "never" },
+  });
+  assert.equal(intent.status, "succeeded");
+  const refund = await createRefund(intent.id);
+  assert.ok(refund.id.startsWith("re_"));
+  assert.equal(refund.status, "succeeded");
+  assert.equal(refund.amount, 500);
+});
+
 live("a bad request surfaces Stripe's own error, typed", async () => {
   const { stripeRequest, StripeApiError } = await import("../lib/payments/stripe.js");
   await assert.rejects(

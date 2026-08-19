@@ -355,3 +355,24 @@ That third rule is the one M8 borrowed and M1 breached.
 3. When a new number ships, add a row. The failure mode is not a wrong
    calculation; it is a label nobody re-read after the thing underneath it
    changed.
+
+---
+
+## Appendix (18 Aug) — the commerce four, DEFINED BEFORE MEASURED
+
+Phase L3 of the risk campaign measures the loop with exactly four numbers.
+They are defined here, before any exists, so the first dashboard cannot
+invent them ad hoc (this register's founding rule: a metric label is a
+claim). All four are **not measured yet** — nothing prints them; when they
+ship they follow the `—`-not-zero rule until real data exists.
+
+| # | Figure | Definition | Source of truth |
+|---|--------|------------|-----------------|
+| C1 | visitor→purchase conversion | distinct identities with ≥1 `orders.status='paid'` in window ÷ distinct identities with ≥1 feed/discover impression in window | `orders` + impressions ledger |
+| C2 | repeat rate | identities with ≥2 paid orders ÷ identities with ≥1 paid order (all-time until volume justifies a window) | `orders` |
+| C3 | contribution margin per order | (15% commission − Stripe fees − refund cost share) per paid order, in the order's currency; NEGATIVE numbers print as negative | `orders` + Stripe balance transactions (fees are Stripe's word, never estimated) |
+| C4 | support minutes per order | operator-logged minutes ÷ paid orders in window; **manual log, honestly labeled as such** until a support tool exists | operator log (does not exist yet) |
+
+Rules inherited from this register: windows named on the surface, `—` until
+measured, and the expression that produces each figure cited next to it the
+day it ships.

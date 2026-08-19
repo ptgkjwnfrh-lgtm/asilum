@@ -5,7 +5,8 @@
 // Auth: ADMIN_TOKEN env var; requests send "Authorization: Bearer <token>".
 // Unset token = admin disabled entirely (503, honest error).
 //
-// GET  ?area=overview|tags|mappings|sync-logs|search-logs|tickets|adapters|business
+// GET  ?area=overview|tags|mappings|sync-logs|search-logs|tickets|adapters|business|orders
+//   orders — the order ledger with event trails (operator read)
 // POST { action, ... }:
 //   business.approve { accountId, note? }   — raise passport → business
 //   business.reject  { accountId, note }    — note required; applicant reads it
@@ -19,6 +20,8 @@
 //   inventory.upsert { sourceName, items: [...] } — real-inventory intake
 //     (L1); every item must pass the checkout honesty gate or the whole
 //     batch refuses 409 with per-index reasons. docs/DESIGNER-INTAKE.md.
+//   order.refund { orderId } — full refund of a PAID order (mechanism only;
+//     the published policy decides when). Actor lands on the ledger.
 //   business.domain-check { accountId } — read-only evidence collector:
 //     is the account's verify token served by its claimed domains?
 //   business.link-source { accountId, sourceName } — verified business ↔
@@ -36,6 +39,8 @@ import { validateIntakeBatch, validSourceName } from "../../../lib/ingest/intake
 import { typedTagsFrom } from "../../../lib/ingest/adapters/normalize.js";
 import { checkDomainProof } from "../../../lib/brands/verify.js";
 import { importShopifyInventory } from "../../../lib/brands/shopify.js";
+import { refundOrder } from "../../../lib/orders.js";
+import { listRecentOrders, listOrderEvents } from "../../../lib/db/orders.js";
 import {
   getProductTags, addProductTags, deleteProductTag, mergeProductTags,
   listSearchMappings, upsertSearchMapping, deleteSearchMapping,
@@ -78,6 +83,22 @@ export async function GET(req) {
 
   try {
     if (area === "adapters") return NextResponse.json({ adapters: adapterStatuses() });
+    if (area === "orders") {
+      // The order ledger, operator's read: recent orders with their full
+      // event trails. The notify mail says "the ledger is the authority" —
+      // this is where the operator reads it without psql.
+      const orders = await listRecentOrders(50);
+      const withEvents = [];
+      for (const order of orders) {
+        withEvents.push({
+          ...order,
+          events: (await listOrderEvents(order.id, 20)).map((e) => ({
+            type: e.type, source: e.source, created_at: e.created_at || null,
+          })),
+        });
+      }
+      return NextResponse.json({ orders: withEvents });
+    }
     if (area === "business") {
       // The booth review desk: pending applications + the current roster.
       // nameCollisions computed LIVE per application (a stale flag from
@@ -133,6 +154,15 @@ export async function POST(req) {
 
   try {
     switch (body.action) {
+      case "order.refund": {
+        // Full refund of a paid order — mechanism only, the published policy
+        // and the operator decide WHEN. Actor lands on the ledger event.
+        const result = await refundOrder(String(body.orderId || ""), { actor: adminActor() });
+        if (result.status !== 200) {
+          return NextResponse.json({ error: result.error }, { status: result.status });
+        }
+        return NextResponse.json({ refunded: result.order.id, refund: result.refund, status: result.order.status });
+      }
       case "business.domain-check": {
         // Evidence COLLECTOR for the verification case — reports whether the
         // account's token is served by its claimed domains. Read-only: the

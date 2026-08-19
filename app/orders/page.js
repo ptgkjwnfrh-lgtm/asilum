@@ -124,7 +124,9 @@ export default function OrdersPage() {
               {(o.currency || "usd").toUpperCase()} {(o.amount_cents / 100).toFixed(2)}
               {" · "}
               {o.status === "paid" ? "PAID — the designer ships it"
-                : o.status === "awaiting_payment" ? "AWAITING PAYMENT — the session is open"
+                : o.status === "awaiting_payment" ? (
+                  <>AWAITING PAYMENT{o.resume_url ? <> — <a className="boothsite" href={o.resume_url}>resume payment ↗</a></> : " — the session is open"}</>
+                )
                 : o.status === "expired" ? "EXPIRED — the session lapsed unpaid; nothing was charged"
                 : o.status === "failed" ? "FAILED — nothing was charged"
                 : o.status === "refunded" ? "REFUNDED"
