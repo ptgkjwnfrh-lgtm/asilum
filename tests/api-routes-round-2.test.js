@@ -129,8 +129,13 @@ test("/api/business booth roster is public and leaks no account ids", async (t) 
 
   const seeded = res.body.booths.find((b) => b.brandName === "Booth Test Brand");
   assert.ok(seeded, "the seeded brand appears on the public roster");
-  assert.deepEqual(Object.keys(seeded).sort(), ["brandName", "verifiedAt", "websiteUrl"],
-    "a booth exposes its storefront and nothing else — no accountId, no uid");
+  // sourceName joined the public shape 18 Aug (business↔inventory link): it
+  // is the brand's inventory NAMESPACE, already public in every item id —
+  // never an account identifier. The law this pins is unchanged: no
+  // accountId, no uid, nothing that names the person behind the booth.
+  assert.deepEqual(Object.keys(seeded).sort(), ["brandName", "sourceName", "verifiedAt", "websiteUrl"],
+    "a booth exposes its storefront and its inventory namespace — no accountId, no uid");
+  assert.equal(seeded.sourceName, null, "unlinked business shows null, not undefined");
   assert.ok(!JSON.stringify(res.body).includes(accountId),
     "the account id behind a booth must not appear anywhere in the public payload");
 });

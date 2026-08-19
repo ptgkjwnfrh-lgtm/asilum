@@ -68,6 +68,17 @@ curl -s -X POST https://www.asilummagazine.com/api/admin \
    `POST /api/checkout {itemId}` returns a Stripe URL instead of the 409.
 3. The piece participates in search/discover (tags landed).
 
+## The Shopify fast path (preferred when the designer has a store)
+
+Manual intake above is for designers without a Shopify store. When they have
+one, use the business-account flow instead — apply → domain-check → approve →
+`business.link-source` → `inventory.import-shopify {accountId, currency}` —
+which pulls their public `products.json` through the SAME gate (skips
+reported loudly; sold-out variants land as skips). Full steps:
+`designer-program/ONBOARDING.md` §4. Re-running the import refreshes
+availability and prices from their store — that is also the interim
+availability-sync answer.
+
 ## Standing rules
 
 - **Availability is the designer's truth.** `sold` means tell us the same
