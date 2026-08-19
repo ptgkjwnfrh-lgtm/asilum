@@ -4,9 +4,13 @@
 // (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown
 // is the server's truth: PASSPORT (the default every account holds),
 // UNDER REVIEW (a human is looking), BUSINESS (verified), or REJECTED
-// (with the reviewer's note, and the road back). The Shopify connection
-// today is reviewed evidence — the OAuth token exchange arrives with
-// the commerce pipeline and is labeled as such.
+// (with the reviewer's note, and the road back). Verification carries a
+// domain-proof token (18 Aug): placing it on the claimed site is the
+// anti-impersonation evidence a human reviewer checks — the machine
+// never verifies on its own. A verified business links an inventory
+// namespace and imports from its own Shopify storefront through the
+// checkout honesty gate; full OAuth store control stays a later,
+// partner-app step and nothing here pretends otherwise.
 
 import { useEffect, useState } from "react";
 import { getUid, authorizedFetch, postJSON } from "../../lib/client.js";
@@ -101,12 +105,25 @@ export default function BusinessAccountPanel() {
           <span className="ccval">{state.shopifyDomain}</span>
           <span className="cclbl">WEBSITE</span>
           <span className="ccval">{state.websiteUrl}</span>
-          <p className="pempty">
-            verified {state.decidedAt ? new Date(state.decidedAt).toLocaleDateString() : ""} —
-            your booth chance is live on THE WIRE. the deeper Shopify
-            connection (inventory, tokens) arrives with the commerce
-            pipeline.
-          </p>
+          {state.sourceName ? (
+            <>
+              <span className="cclbl">INVENTORY</span>
+              <span className="ccval">LINKED — {state.sourceName}</span>
+              <p className="pempty">
+                verified {state.decidedAt ? new Date(state.decidedAt).toLocaleDateString() : ""} —
+                your booth chance is live on THE WIRE, and your pieces enter
+                the catalog under your own name. imports from your Shopify
+                storefront pass the same honesty gate as everything else.
+              </p>
+            </>
+          ) : (
+            <p className="pempty">
+              verified {state.decidedAt ? new Date(state.decidedAt).toLocaleDateString() : ""} —
+              your booth chance is live on THE WIRE. the desk links your
+              inventory next: your pieces import from your Shopify
+              storefront and sell under your own name.
+            </p>
+          )}
         </div>
       )}
 
@@ -123,6 +140,19 @@ export default function BusinessAccountPanel() {
             passport until the review lands. you can update the fields
             below and resubmit while you wait.
           </p>
+          {state.verifyToken && (
+            <>
+              <span className="cclbl">PROVE YOUR DOMAIN</span>
+              <span className="ccval">{state.verifyToken}</span>
+              <p className="pempty">
+                speeds the review: put this token on the site you claimed —
+                either a meta tag named asilum-verify in your page head, or
+                served plain at /.well-known/asilum-verify.txt. the reviewer
+                checks for it; control of the domain is what separates a
+                brand from an impersonator.
+              </p>
+            </>
+          )}
         </div>
       )}
 
