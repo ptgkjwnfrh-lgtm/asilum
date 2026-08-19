@@ -8,7 +8,9 @@ ones here, so the two can never disagree.
 
 ## Prerequisites
 
-- The designer has said yes and the deal terms exist (rulings D1/D2).
+- The designer has said yes to the ruled terms (D1 domestic designer-ships,
+  D2 15% — ruled 18 Aug 2026; the offer lives in
+  `designer-program/OFFER.md`, the flow in `designer-program/ONBOARDING.md`).
 - Their pieces have live product pages (the `source_product_url` of each item
   must be a real, public URL — loopback/private hosts are refused).
 - `ADMIN_TOKEN` (the operator holds it; never in code).

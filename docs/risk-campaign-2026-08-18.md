@@ -235,11 +235,17 @@ about fifteen minutes total:
 Existing register: OWNER-DECISIONS.md #1 (launch regions), #2 (age), #3 (DMs)
 stand as written. New rulings this campaign needs:
 
-- **D1 — v1 commerce scope.** Recommendation: domestic designer-ships only;
-  proxy purchasing cut (§3). This single ruling dispositions ~35 items.
-- **D2 — fee model.** Recommendation: 15% commission + payment fees passed
-  through, $5 booth kept only if the owner values it as a commitment signal;
-  recalibrate against L3's support-minutes-per-order. (F41/F42, I31–I33.)
+- **D1 — v1 commerce scope. ✅ RULED 18 AUG 2026: APPROVED as recommended.**
+  Domestic designer-ships only (US + Canada corridor); cross-border proxy
+  purchasing is CUT from v1; delegated card data is refused permanently.
+  The ~35 items in §3/§10 marked CUT are now ruled, not proposed.
+- **D2 — fee model. ✅ RULED 18 AUG 2026: 15% commission.** Applied as: 15%
+  of the item price on completed sales, payment processing borne by ASILUM
+  out of that margin, no listing or booth fees in v1 (the $5 booth was not
+  affirmed in the ruling — flagged, owner can reinstate). Recalibrate against
+  L3's measured support-minutes-per-order. The number's canonical home is
+  `docs/designer-program/OFFER.md`; when payout code exists, it moves to one
+  constant with a test (the #271 copied-constants law).
 - **D3 — unbuild order for the constitution's "do NOT build yet" list.**
   Checkout must move off that list for L2 to exist. Recommendation: unlock
   checkout only, leave payouts/tax automation manual for the first ten orders.
