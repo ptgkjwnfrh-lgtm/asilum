@@ -16,7 +16,7 @@
 import { NextResponse } from "next/server";
 import {
   getBusinessAccount, submitBusinessApplication, listVerifiedBusinesses,
-  createModerationTask,
+  createModerationTask, findBrandNameCollisions,
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../../lib/business.js";
@@ -114,11 +114,19 @@ export async function POST(req) {
 
   try {
     const row = await submitBusinessApplication({ accountId, brandName, websiteUrl, shopifyDomain, statement });
+    // Duplicate-brand screen (18 Aug): collisions are computed and attached
+    // for the REVIEWER only. The applicant is deliberately told nothing —
+    // "name taken" would leak who applied and teach an impersonator to probe.
+    const collisions = await findBrandNameCollisions(brandName, accountId).catch(() => []);
     // The review queue is real: every application files a task a human
     // works through. Approval is a named decision, never a machine's.
     await createModerationTask({
       kind: "business-verification", subjectType: "business_account", subjectId: accountId,
-      payload: { brandName, websiteUrl, shopifyDomain, caseId: row.caseId }, priority: "high",
+      payload: {
+        brandName, websiteUrl, shopifyDomain, caseId: row.caseId,
+        nameCollisions: collisions.map((c) => ({ brandName: c.brandName, status: c.status, match: c.match })),
+      },
+      priority: "high",
     }).catch(() => {});
     return NextResponse.json({
       ...publicView(row),

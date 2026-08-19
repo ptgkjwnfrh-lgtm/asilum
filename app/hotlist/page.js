@@ -83,6 +83,13 @@ export default function TheWirePage() {
   const [focus, setFocus] = useState(undefined);
   // The booth roster — verified business accounts, server truth.
   const [booths, setBooths] = useState(null);
+  // Impersonation report form (18 Aug) — server enforces the signed-in
+  // requirement; refusals render as the server's own words.
+  const [reportBrand, setReportBrand] = useState("");
+  const [reportReal, setReportReal] = useState("");
+  const [reportFake, setReportFake] = useState("");
+  const [reportMsg, setReportMsg] = useState("");
+  const [reportBusy, setReportBusy] = useState(false);
   // Which floor posts are the caller's own — SERVER truth (?mine=1, the
   // verified identity), not the local text-match chip: controls that
   // could 404 on a stranger's post must never render on one.
@@ -95,6 +102,22 @@ export default function TheWirePage() {
   // server could not be reached — the floor then shows NO counts rather
   // than zeros it cannot stand behind.
   const [engagement, setEngagement] = useState({});
+
+  function fileImpersonationReport() {
+    setReportBusy(true); setReportMsg("");
+    postJSON("/api/impersonation", {
+      user: getUid(), brandName: reportBrand.trim(),
+      realWorkUrl: reportReal.trim(), fakeUrl: reportFake.trim() || undefined,
+    })
+      .then(async (res) => {
+        const d = await res.json().catch(() => null);
+        if (!res.ok) { setReportMsg((d && (d.error || d.note)) || "the report could not be filed"); return; }
+        setReportMsg(`filed — case ${d.case}. ${d.note}`);
+        setReportBrand(""); setReportReal(""); setReportFake("");
+      })
+      .catch(() => setReportMsg("the server could not be reached — nothing was filed"))
+      .finally(() => setReportBusy(false));
+  }
 
   function loadWire() {
     fetchWire("user")
@@ -468,6 +491,37 @@ export default function TheWirePage() {
             storefront, and your own site; a human reviews every application.{" "}
             <a className="bizapply" href="/profile#access">APPLY ON YOUR ACCOUNT →</a>
           </span>
+        </div>
+
+        {/* Impersonation reports (18 Aug): the public door to the case
+            machinery. Signed-in only — the server enforces it and the
+            refusal is shown honestly; a report is a named accusation. */}
+        <div className="elh elh4">REPORT AN IMPERSONATION</div>
+        <p className="elnote">
+          see a brand being copied on the terminal? file it — the case ledger
+          records every step and a named human adjudicates. false reports are
+          themselves on the ledger.
+        </p>
+        <div className="bizform">
+          <input aria-label="the brand being impersonated"
+            type="text" maxLength={80} placeholder="the brand being impersonated"
+            value={reportBrand} onChange={(e) => setReportBrand(e.target.value)}
+          />
+          <input aria-label="link to the real work"
+            type="url" maxLength={300} placeholder="https:// link to the REAL work"
+            value={reportReal} onChange={(e) => setReportReal(e.target.value)}
+          />
+          <input aria-label="link to the fake (optional)"
+            type="url" maxLength={300} placeholder="https:// link to the fake (optional)"
+            value={reportFake} onChange={(e) => setReportFake(e.target.value)}
+          />
+          <div className="bizrow">
+            <button className="btn" disabled={reportBusy || !reportBrand.trim() || !reportReal.trim()}
+              onClick={fileImpersonationReport}>
+              {reportBusy ? "FILING…" : "FILE REPORT"}
+            </button>
+          </div>
+          {reportMsg && <p className="pempty">{reportMsg}</p>}
         </div>
       </section>
 
