@@ -23,9 +23,12 @@
 //     is the account's verify token served by its claimed domains?
 //   business.link-source { accountId, sourceName } — verified business ↔
 //     inventory namespace, unique, one time each.
-//   inventory.import-shopify { accountId, currency? } — consented bulk
-//     import from the business's own store; gate-passing items land,
-//     failures are reported loudly (partial, unlike inventory.upsert).
+//   inventory.import-shopify { accountId, currency?, allowImageCollisions? }
+//     — consented bulk import from the business's own store; gate-passing
+//     items land, failures are reported loudly (partial, unlike
+//     inventory.upsert). Both inventory doors run the stolen-image screen:
+//     cross-source photo collisions refuse/skip until the operator judges
+//     them (allowImageCollisions:true) or opens an impersonation case.
 
 import { NextResponse } from "next/server";
 import { getPool, upsertItems } from "../../../lib/db/index.js";
@@ -38,8 +41,10 @@ import {
   listSearchMappings, upsertSearchMapping, deleteSearchMapping,
   listSyncLogs,
   listBusinessApplications, listVerifiedBusinesses, decideBusinessApplication,
-  getBusinessAccount, setBusinessSourceName,
+  getBusinessAccount, setBusinessSourceName, findBrandNameCollisions,
 } from "../../../lib/db/production.js";
+import { screenItemImages, saveImageFingerprint } from "../../../lib/db/imageFingerprints.js";
+import { fingerprintImageUrl } from "../../../lib/images/fingerprint.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
 import { bearerToken, secureTokenEqual } from "../../../lib/security/request.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -75,8 +80,15 @@ export async function GET(req) {
     if (area === "adapters") return NextResponse.json({ adapters: adapterStatuses() });
     if (area === "business") {
       // The booth review desk: pending applications + the current roster.
+      // nameCollisions computed LIVE per application (a stale flag from
+      // submit time would miss applications that arrived after it).
+      const applications = await listBusinessApplications({ status: "under_review", limit: 100 });
+      for (const application of applications) {
+        application.nameCollisions = await findBrandNameCollisions(
+          application.brandName, application.accountId).catch(() => []);
+      }
       return NextResponse.json({
-        applications: await listBusinessApplications({ status: "under_review", limit: 100 }),
+        applications,
         verified: await listVerifiedBusinesses(50),
       });
     }
@@ -170,16 +182,37 @@ export async function POST(req) {
           currency,
         });
         if (result.error) return NextResponse.json({ error: result.error }, { status: 502 });
-        if (result.imported.length) {
-          await upsertItems(result.imported);
-          for (const p of result.imported) {
+        // Stolen-image screen: cross-source collisions move the item to the
+        // skip list (import's partial-with-loud-report law) unless overridden.
+        const screen = await screenItemImages(result.imported, {
+          excludeSource: account.sourceName, fingerprint: fingerprintImageUrl,
+        });
+        const collided = new Set(
+          body.allowImageCollisions === true ? [] : screen.collisions.map((c) => c.itemId));
+        const landing = result.imported.filter((p) => !collided.has(p.id));
+        for (const c of screen.collisions) {
+          if (collided.has(c.itemId)) {
+            result.skipped.push({
+              handle: c.itemId, title: c.title,
+              reason: `image matches ${c.against[0].sourceName}'s ${c.against[0].itemId} (distance ${c.against[0].distance}) — judge it, then override or open an impersonation case`,
+            });
+          }
+        }
+        if (landing.length) {
+          await upsertItems(landing);
+          for (const p of landing) {
             await addProductTags(p.id, typedTagsFrom(p));
+            const fp = screen.fingerprints.get(p.id);
+            if (fp) await saveImageFingerprint({ itemId: p.id, sourceName: p.source_name, imageUrl: fp.imageUrl, dhash: fp.dhash });
           }
         }
         return NextResponse.json({
-          imported: result.imported.length,
+          imported: landing.length,
           skipped: result.skipped,
-          items: result.imported.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
+          fingerprinted: screen.fingerprints.size,
+          unfingerprinted: screen.unfingerprinted,
+          imageCollisionsOverridden: body.allowImageCollisions === true ? screen.collisions : undefined,
+          items: landing.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
         });
       }
       case "inventory.upsert": {
@@ -192,12 +225,30 @@ export async function POST(req) {
         if (!ok) {
           return NextResponse.json({ error: "intake refused — nothing written", problems }, { status: 409 });
         }
+        // Stolen-image screen (18 Aug): cross-source photo collisions refuse
+        // the batch (intake's atomic law) unless the operator explicitly
+        // overrides after judging them. Unfingerprintable images are
+        // reported, never fatal.
+        const screen = await screenItemImages(normalized, {
+          excludeSource: normalized[0].source_name, fingerprint: fingerprintImageUrl,
+        });
+        if (screen.collisions.length && body.allowImageCollisions !== true) {
+          return NextResponse.json({
+            error: "intake refused — image collisions with another source; judge them, then resend with allowImageCollisions:true or open an impersonation case",
+            imageCollisions: screen.collisions,
+          }, { status: 409 });
+        }
         await upsertItems(normalized);
         for (const p of normalized) {
           await addProductTags(p.id, typedTagsFrom(p));
+          const fp = screen.fingerprints.get(p.id);
+          if (fp) await saveImageFingerprint({ itemId: p.id, sourceName: p.source_name, imageUrl: fp.imageUrl, dhash: fp.dhash });
         }
         return NextResponse.json({
           upserted: normalized.length,
+          fingerprinted: screen.fingerprints.size,
+          unfingerprinted: screen.unfingerprinted,
+          imageCollisionsOverridden: body.allowImageCollisions === true ? screen.collisions : undefined,
           items: normalized.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
         });
       }
