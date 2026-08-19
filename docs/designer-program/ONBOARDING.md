@@ -37,11 +37,29 @@ pass pending), ../DESIGNER-INTAKE.md (the intake call itself).
 - [ ] Verify: `/piece/<id>` renders each piece; a checkout session opens
       (`POST /api/checkout` returns a Stripe URL, not the demo 409).
 
-### 4. Presence (owner call, per current product law)
-- [ ] Business account: if the designer wants a booth/hotlist presence,
-      they create an account and apply; approve via `/admin`
-      (`business.approve`). Booth presence is optional for selling —
-      items sell by taste routing regardless.
+### 4. Business account, verification, and the Shopify fast path
+The business account is the designer's home when they want one (booth,
+inventory link, store import). Selling still works without it — items sell
+by taste routing regardless — but the fast path for a Shopify designer is:
+
+- [ ] Designer signs in and applies (brand name, `their-shop.myshopify.com`,
+      their website) — this opens a REAL verification case (v18 machinery).
+- [ ] **Anti-impersonation proof:** they place their verify token — shown to
+      them on their business panel — as
+      `<meta name="asilum-verify" content="TOKEN">` on their site (or
+      `/.well-known/asilum-verify.txt`). Run `business.domain-check
+      {accountId}` from the admin desk; attach the report as evidence when
+      deciding. **A named human still decides — there is no machine path to
+      verified.**
+- [ ] Approve: `business.approve {accountId, note}`.
+- [ ] Link inventory: `business.link-source {accountId, sourceName}` — the
+      slug becomes theirs exclusively.
+- [ ] **Import their store:** `inventory.import-shopify {accountId,
+      currency}` pulls their public `products.json`, runs every piece
+      through the checkout honesty gate, lands what passes, and reports
+      what didn't (sold-out variants land as skips, by design). Set
+      `currency` explicitly — Shopify's payload doesn't carry it.
+- [ ] Verify per §3 (piece pages render, checkout opens on one of theirs).
 
 ### 5. First order drill (once per cohort, strongly recommended)
 - [ ] Owner places ONE real low-value order end to end in live mode:

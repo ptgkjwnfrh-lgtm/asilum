@@ -19,16 +19,26 @@
 //   inventory.upsert { sourceName, items: [...] } — real-inventory intake
 //     (L1); every item must pass the checkout honesty gate or the whole
 //     batch refuses 409 with per-index reasons. docs/DESIGNER-INTAKE.md.
+//   business.domain-check { accountId } — read-only evidence collector:
+//     is the account's verify token served by its claimed domains?
+//   business.link-source { accountId, sourceName } — verified business ↔
+//     inventory namespace, unique, one time each.
+//   inventory.import-shopify { accountId, currency? } — consented bulk
+//     import from the business's own store; gate-passing items land,
+//     failures are reported loudly (partial, unlike inventory.upsert).
 
 import { NextResponse } from "next/server";
 import { getPool, upsertItems } from "../../../lib/db/index.js";
-import { validateIntakeBatch } from "../../../lib/ingest/intake.js";
+import { validateIntakeBatch, validSourceName } from "../../../lib/ingest/intake.js";
 import { typedTagsFrom } from "../../../lib/ingest/adapters/normalize.js";
+import { checkDomainProof } from "../../../lib/brands/verify.js";
+import { importShopifyInventory } from "../../../lib/brands/shopify.js";
 import {
   getProductTags, addProductTags, deleteProductTag, mergeProductTags,
   listSearchMappings, upsertSearchMapping, deleteSearchMapping,
   listSyncLogs,
   listBusinessApplications, listVerifiedBusinesses, decideBusinessApplication,
+  getBusinessAccount, setBusinessSourceName,
 } from "../../../lib/db/production.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
 import { bearerToken, secureTokenEqual } from "../../../lib/security/request.js";
@@ -111,6 +121,67 @@ export async function POST(req) {
 
   try {
     switch (body.action) {
+      case "business.domain-check": {
+        // Evidence COLLECTOR for the verification case — reports whether the
+        // account's token is served by its claimed domains. Read-only: the
+        // named human attaches this when deciding; no machine path to
+        // verified (v18 law).
+        const account = await getBusinessAccount(String(body.accountId || ""));
+        if (!account) return NextResponse.json({ error: "no application for that account" }, { status: 404 });
+        const report = await checkDomainProof({
+          websiteUrl: account.websiteUrl,
+          shopifyDomain: account.shopifyDomain,
+          accountId: account.accountId,
+        });
+        return NextResponse.json({
+          ...report,
+          note: report.found
+            ? "attach this as evidence on the decide step — a named human still makes the call"
+            : "token not found — the applicant places it (meta tag or /.well-known/asilum-verify.txt), then re-run",
+        });
+      }
+      case "business.link-source": {
+        const named = validSourceName(body.sourceName);
+        if (!named.ok) return NextResponse.json({ error: named.reason }, { status: 400 });
+        try {
+          const row = await setBusinessSourceName(String(body.accountId || ""), named.source);
+          return NextResponse.json({ linked: { accountId: row.accountId, brandName: row.brandName, sourceName: row.sourceName } });
+        } catch (err) {
+          const msg = err && err.message ? err.message : "link failed";
+          const status = /another business/.test(msg) ? 409 : /verified business|no business/.test(msg) ? 409 : 500;
+          return NextResponse.json({ error: msg }, { status });
+        }
+      }
+      case "inventory.import-shopify": {
+        // Consented bulk import from the business's own store. Partial with a
+        // LOUD skip report (contrast: inventory.upsert is atomic on purpose).
+        const account = await getBusinessAccount(String(body.accountId || ""));
+        if (!account) return NextResponse.json({ error: "no application for that account" }, { status: 404 });
+        if (account.status !== "business") {
+          return NextResponse.json({ error: "only a verified business imports inventory" }, { status: 409 });
+        }
+        if (!account.sourceName) {
+          return NextResponse.json({ error: "link a source name first (business.link-source)" }, { status: 409 });
+        }
+        const currency = /^[A-Za-z]{3}$/.test(String(body.currency || "")) ? String(body.currency).toUpperCase() : "USD";
+        const result = await importShopifyInventory({
+          shopifyDomain: account.shopifyDomain,
+          sourceName: account.sourceName,
+          currency,
+        });
+        if (result.error) return NextResponse.json({ error: result.error }, { status: 502 });
+        if (result.imported.length) {
+          await upsertItems(result.imported);
+          for (const p of result.imported) {
+            await addProductTags(p.id, typedTagsFrom(p));
+          }
+        }
+        return NextResponse.json({
+          imported: result.imported.length,
+          skipped: result.skipped,
+          items: result.imported.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
+        });
+      }
       case "inventory.upsert": {
         // Real-inventory intake (risk campaign L1). The checkout engine's own
         // honesty gate validates every item BEFORE anything is written — one

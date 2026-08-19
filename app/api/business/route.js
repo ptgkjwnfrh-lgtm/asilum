@@ -20,6 +20,7 @@ import {
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../../lib/business.js";
+import { domainToken } from "../../../lib/brands/verify.js";
 import { sanitizeStatement } from "../../../lib/profile/rooms.js";
 import { safeExternalUrl } from "../../../lib/url.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -34,6 +35,7 @@ function publicView(row) {
     shopifyDomain: row.shopifyDomain,
     statement: row.statement,
     reviewNote: row.reviewNote,
+    sourceName: row.sourceName || null,
     submittedAt: row.submittedAt,
     decidedAt: row.decidedAt,
   };
@@ -51,6 +53,9 @@ export async function GET(req) {
     return NextResponse.json({
       booths: verified.map((b) => ({
         brandName: b.brandName, websiteUrl: b.websiteUrl, verifiedAt: b.decidedAt,
+        // The inventory namespace, when linked — a booth's pieces are
+        // discoverable through it. A slug, never an account id.
+        sourceName: b.sourceName || null,
       })),
       open: Math.max(0, 10 - verified.length),
       total: 10,
@@ -66,8 +71,12 @@ export async function GET(req) {
     return NextResponse.json({ status: "passport", account: false });
   }
   const row = await getBusinessAccount(accountId).catch(() => null);
-  if (!row) return NextResponse.json({ status: "passport", account: true });
-  return NextResponse.json({ ...publicView(row), account: true });
+  // The domain-proof token rides on the account, application or not, so an
+  // applicant can place it BEFORE submitting. Proof is placement on the
+  // claimed domain — the token itself is not a secret (lib/brands/verify.js).
+  const verifyToken = domainToken(accountId);
+  if (!row) return NextResponse.json({ status: "passport", account: true, verifyToken });
+  return NextResponse.json({ ...publicView(row), account: true, verifyToken });
 }
 
 export async function POST(req) {
