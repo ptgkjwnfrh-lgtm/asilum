@@ -13,9 +13,10 @@
       "runtimeArgs": [
         "-u", "DATABASE_URL", "-u", "DATABASE_ADMIN_URL",
         "ADMIN_TOKEN=memmode-verify-throwaway-token-1",
-        "npx", "next", "start", "-p", "3459"
+        "SITE_ORIGIN=http://localhost:3461",
+        "npx", "next", "start", "-p", "3461"
       ],
-      "port": 3459
+      "port": 3461
     }
   ]
 }

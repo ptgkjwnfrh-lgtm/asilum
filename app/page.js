@@ -514,6 +514,19 @@ export default function Home() {
     } catch (e) { console.error(e); }
   }
 
+  // Real checkout (18 Aug): renders ONLY where the server stamped
+  // purchasable:true — the gate's verdict, never re-derived client-side.
+  // The redirect goes to Stripe's hosted page; refusals show the server's
+  // own words.
+  async function startPurchase(item) {
+    setNotice("opening checkout…");
+    const res = await postJSON("/api/checkout", { user: getUid(), itemId: item.id }).catch(() => null);
+    if (!res) { setNotice("the server could not be reached — nothing was started"); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.url) { setNotice(d.error || "checkout could not be opened"); return; }
+    window.location.href = d.url;
+  }
+
   async function shareItem(item) {
     // /piece/<id>, not /?item=<id>: the stable path carries the piece's OWN
     // link preview (app/piece/[id]/page.js). The old query-parameter form still
@@ -877,6 +890,9 @@ export default function Home() {
                 ))}
               </div>
               <div className="actions">
+                {modal.purchasable && (
+                  <button className="buybtn" onClick={() => startPurchase(modal)}>Buy ↗</button>
+                )}
                 <button onClick={() => react(modal, "favorite")}>Favorite</button>
                 <button className={baggedIds.has(modal.id) ? "on" : ""} onClick={() => addToBag(modal)}>
                   {baggedIds.has(modal.id) ? "In bag ✓" : "Add to bag"}
