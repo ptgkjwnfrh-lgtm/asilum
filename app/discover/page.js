@@ -26,6 +26,18 @@ export default function DiscoverPage() {
   const [sort, setSort] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [buyNote, setBuyNote] = useState("");
+
+  // Real checkout (18 Aug): only reachable from a server-stamped
+  // purchasable item; refusals render the server's own words.
+  async function startPurchase(item) {
+    setBuyNote("opening checkout…");
+    const res = await postJSON("/api/checkout", { user: getUid(), itemId: item.id }).catch(() => null);
+    if (!res) { setBuyNote("the server could not be reached — nothing was started"); return; }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.url) { setBuyNote(d.error || "checkout could not be opened"); return; }
+    window.location.href = d.url;
+  }
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [favedIds, setFavedIds] = useState(() => new Set());
   const [searched, setSearched] = useState("");
@@ -468,6 +480,7 @@ export default function DiscoverPage() {
           link-shaped region. The title is now the single real control and
           carries the accessible name; the image and card keep their pointer
           affordance. (launch audit, Aug 16) */}
+      {buyNote && <p className="pempty" role="status">{buyNote}</p>}
       <div className="grid">
         {items.map((it) => (
           <div
@@ -511,12 +524,17 @@ export default function DiscoverPage() {
                 <button className={baggedIds.has(it.id) ? "on" : ""} onClick={() => bag(it)}>
                   {baggedIds.has(it.id) ? "In bag ✓" : "Add to bag"}
                 </button>
-                {/* DEMO MODE: no Buy on a record /api/tickets answers 409 for.
+                {/* DEMO MODE: no Buy on a record the gates answer 409 for.
                     Favorite and bag stay — they are taste signals about a
-                    sample, which is exactly what a demo catalog is for. */}
-                {!isDemoItem(it) && (
+                    sample, which is exactly what a demo catalog is for.
+                    purchasable (server-stamped, 18 Aug) → REAL Stripe
+                    checkout; live-sourced but not purchasable → the ticket
+                    assistant, as before. */}
+                {it.purchasable ? (
+                  <button className="buybtn" onClick={() => startPurchase(it)}>Buy ↗</button>
+                ) : !isDemoItem(it) ? (
                   <button className="buybtn" onClick={() => setTicketItem(it)}>Buy</button>
-                )}
+                ) : null}
               </div>
             </div>
           </div>

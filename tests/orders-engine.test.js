@@ -12,7 +12,9 @@ delete process.env.DATABASE_URL;
 const { refusalReason, startCheckout, applyStripeWebhook } = await import("../lib/orders.js");
 const {
   createOrderWithEvent, attachOrderSession, applyOrderEvent, getOrder, listOrderEvents,
+  listOrdersForUser,
 } = await import("../lib/db/orders.js");
+const { publicProduct } = await import("../lib/products.js");
 
 const REAL_ITEM = {
   id: "test-real-item",
@@ -75,6 +77,26 @@ test("paid never downgrades: a late expiry is recorded, status unmoved", async (
   await applyOrderEvent({ orderId: order.id, type: "paid", source: "webhook", stripeEventId: "evt_paid_3", newStatus: "paid" });
   await applyOrderEvent({ orderId: order.id, type: "expired", source: "reconcile", newStatus: "expired" });
   assert.equal((await getOrder(order.id)).status, "paid");
+});
+
+test("publicProduct stamps the gate's verdict — demo false, real true — and no client re-derives it", () => {
+  const demo = publicProduct({ id: "syn-1", title: "demo", price: 10, source_name: "seed", url: "https://x.example/p" });
+  assert.equal(demo.purchasable, false);
+  const real = publicProduct({ ...REAL_ITEM });
+  assert.equal(real.purchasable, true);
+  const sold = publicProduct({ ...REAL_ITEM, availability_status: "sold" });
+  assert.equal(sold.purchasable, false);
+});
+
+test("listOrdersForUser: newest first, own orders only, capped", async () => {
+  const a = await createOrderWithEvent({ user: "u-list", itemId: "test-real-item", amountCents: 100, currency: "usd" });
+  const b = await createOrderWithEvent({ user: "u-list", itemId: "test-real-item", amountCents: 200, currency: "usd" });
+  await createOrderWithEvent({ user: "u-other", itemId: "test-real-item", amountCents: 300, currency: "usd" });
+  const mine = await listOrdersForUser("u-list");
+  assert.equal(mine.length, 2);
+  assert.ok(mine.every((o) => o.user_id === "u-list"));
+  assert.deepEqual(mine.map((o) => o.id), [b.id, a.id], "newest first");
+  assert.deepEqual(await listOrdersForUser(""), []);
 });
 
 test("webhook: completed settles by session id, unknown types are untouched, orphans are named", async () => {

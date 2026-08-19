@@ -4,6 +4,10 @@
 //                           honesty gate as the ticket flow).
 // GET  ?order=<id>        → the caller's own order, reconciled against Stripe
 //                           on read when it is still awaiting payment.
+// GET  ?session=<cs_…>    → the same, looked up by checkout session (the
+//                           success URL carries the session id).
+// GET  ?mine=1            → the caller's orders, newest first, titles joined,
+//                           awaiting ones reconciled (bounded).
 //
 // Card data never touches this server: the session URL points at
 // checkout.stripe.com. Unkeyed deploys answer 503, honestly idle.
@@ -13,6 +17,8 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { startCheckout, reconcileOrder, getOrder } from "../../../lib/orders.js";
+import { getOrderBySession, listOrdersForUser } from "../../../lib/db/orders.js";
+import { getItems } from "../../../lib/db/index.js";
 
 export const dynamic = "force-dynamic";
 
@@ -49,13 +55,48 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+
+  // ?mine=1 — the caller's own orders, newest first. Orders still awaiting
+  // payment are reconciled on read (bounded: the newest five) so the page
+  // never shows "awaiting" for a session Stripe already settled.
+  if (searchParams.get("mine") === "1") {
+    const orders = await listOrdersForUser(user, 20);
+    let reconciled = 0;
+    for (let i = 0; i < orders.length; i++) {
+      if (orders[i].status === "awaiting_payment" && reconciled < 5) {
+        reconciled += 1;
+        orders[i] = (await reconcileOrder(orders[i])) || orders[i];
+      }
+    }
+    const titles = await titlesFor(orders.map((o) => o.item_id));
+    return NextResponse.json({
+      orders: orders.map((o) => ({ ...publicOrder(o), title: titles.get(o.item_id) || null })),
+    });
+  }
+
+  // ?session=cs_… — the checkout-return lookup (the success URL carries the
+  // session id, never an order id). Ownership-checked like ?order=.
+  const sessionId = String(searchParams.get("session") || "").slice(0, 120);
   const orderId = String(searchParams.get("order") || "").slice(0, 80);
-  if (!orderId) return NextResponse.json({ error: "order required" }, { status: 400 });
-  const order = await getOrder(orderId);
+  if (!orderId && !sessionId) return NextResponse.json({ error: "order or session required" }, { status: 400 });
+  const order = orderId ? await getOrder(orderId) : await getOrderBySession(sessionId);
   // Wrong-owner reads 404, not 403: order ids should not be probeable.
   if (!order || order.user_id !== user) {
     return NextResponse.json({ error: "order not found" }, { status: 404 });
   }
   const fresh = await reconcileOrder(order);
-  return NextResponse.json({ order: publicOrder(fresh || order) });
+  const titles = await titlesFor([order.item_id]);
+  return NextResponse.json({
+    order: { ...publicOrder(fresh || order), title: titles.get(order.item_id) || null },
+  });
+}
+
+async function titlesFor(itemIds) {
+  const titles = new Map();
+  try {
+    // getItems returns a Map keyed by id — iterate values, not entries.
+    const items = await getItems([...new Set(itemIds.filter(Boolean))]);
+    for (const item of items.values()) titles.set(item.id, item.title || null);
+  } catch { /* titles are decoration — the order stands without them */ }
+  return titles;
 }

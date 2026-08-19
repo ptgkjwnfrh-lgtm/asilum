@@ -15,6 +15,18 @@ export default function OrdersPage() {
   const [bagHistory, setBagHistory] = useState(null);
   const [tickets, setTickets] = useState(null);
   const [notice, setNotice] = useState("");
+  // Real orders (18 Aug): the checkout engine's ledger, server truth.
+  // null = still reading; [] = honestly none; false = server unreachable
+  // (an unreachable server must never render as "no orders").
+  const [orders, setOrders] = useState(null);
+
+  function loadOrders() {
+    const user = encodeURIComponent(getUid() || "guest");
+    authorizedFetch("/api/checkout?mine=1&user=" + user)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setOrders(d && Array.isArray(d.orders) ? d.orders : false))
+      .catch(() => setOrders(false));
+  }
 
   useEffect(() => {
     const user = encodeURIComponent(getUid() || "guest");
@@ -26,6 +38,37 @@ export default function OrdersPage() {
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (d) setTickets(d.tickets || []); })
       .catch(() => setTickets([]));
+    loadOrders();
+
+    // Checkout return (the success/cancel URLs from the Stripe session).
+    // Parse, announce honestly, then strip the params — a reload must not
+    // re-announce a stale outcome (the reset-flow lesson, Aug 15).
+    const params = new URLSearchParams(window.location.search);
+    const outcome = params.get("checkout");
+    if (outcome === "cancelled") {
+      setNotice("checkout cancelled — nothing was charged.");
+    } else if (outcome === "success") {
+      const sessionId = params.get("session_id") || "";
+      setNotice("payment received — confirming with the ledger…");
+      authorizedFetch("/api/checkout?session=" + encodeURIComponent(sessionId) + "&user=" + encodeURIComponent(getUid() || ""))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d && d.order && d.order.status === "paid") {
+            setNotice(`PAID — order ${d.order.id.slice(0, 12)}… (${d.order.title || d.order.item_id}). the designer ships it; this page holds the ledger's truth.`);
+          } else if (d && d.order) {
+            setNotice(`order ${d.order.id.slice(0, 12)}… is ${d.order.status} — the ledger settles as the payment lands; check back in a moment.`);
+          } else {
+            setNotice("payment returned, but the order could not be read — the ledger is the truth; try a reload.");
+          }
+          loadOrders();
+        })
+        .catch(() => setNotice("payment returned, but the server could not be reached — try a reload."));
+    }
+    if (outcome) {
+      params.delete("checkout"); params.delete("session_id");
+      const rest = params.toString();
+      window.history.replaceState(null, "", window.location.pathname + (rest ? "?" + rest : ""));
+    }
   }, []);
 
   async function addToWardrobe(ticket) {
@@ -61,6 +104,38 @@ export default function OrdersPage() {
       </p>
       <hr className="rule" />
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
+
+      <h3 className="statshead">YOUR ORDERS</h3>
+      {orders === null && <div className="empty">reading the order ledger…</div>}
+      {orders === false && (
+        <div className="empty">the ledger could not be reached — your true order state is unknown right now.</div>
+      )}
+      {Array.isArray(orders) && orders.length === 0 && (
+        <div className="empty">no orders yet — BUY on a designer&apos;s piece opens one. the ledger holds the truth.</div>
+      )}
+      {Array.isArray(orders) && orders.map((o, i) => (
+        <div className="hlrow static" key={"o" + o.id}>
+          <div className="hlnum">{String(i + 1).padStart(2, "0")}</div>
+          <div className="hlinfo">
+            <a href={"/?item=" + encodeURIComponent(o.item_id)}>
+              <div className="hlttl">{o.title || o.item_id}</div>
+            </a>
+            <div className="hlbrand">
+              {(o.currency || "usd").toUpperCase()} {(o.amount_cents / 100).toFixed(2)}
+              {" · "}
+              {o.status === "paid" ? "PAID — the designer ships it"
+                : o.status === "awaiting_payment" ? "AWAITING PAYMENT — the session is open"
+                : o.status === "expired" ? "EXPIRED — the session lapsed unpaid; nothing was charged"
+                : o.status === "failed" ? "FAILED — nothing was charged"
+                : o.status === "refunded" ? "REFUNDED"
+                : o.status}
+              {" · "}
+              {o.created_at ? new Date(o.created_at).toLocaleDateString() : ""}
+              {" · "}order {String(o.id).slice(0, 12)}…
+            </div>
+          </div>
+        </div>
+      ))}
 
       <h3 className="statshead">PURCHASE TICKETS</h3>
       {!tickets && <div className="empty">pulling tickets…</div>}
