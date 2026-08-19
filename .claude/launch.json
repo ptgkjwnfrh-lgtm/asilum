@@ -6,6 +6,16 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["next", "start", "-p", "3458"],
       "port": 3458
+    },
+    {
+      "name": "asilum-memmode-verify",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "-u", "DATABASE_URL", "-u", "DATABASE_ADMIN_URL",
+        "ADMIN_TOKEN=memmode-verify-throwaway-token-1",
+        "npx", "next", "start", "-p", "3459"
+      ],
+      "port": 3459
     }
   ]
 }
