@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 delete process.env.STRIPE_SECRET_KEY;
 delete process.env.DATABASE_URL;
 
-const { refusalReason, startCheckout, applyStripeWebhook } = await import("../lib/orders.js");
+const { refusalReason, startCheckout, applyStripeWebhook, refundOrder } = await import("../lib/orders.js");
 const {
   createOrderWithEvent, attachOrderSession, applyOrderEvent, getOrder, listOrderEvents,
   listOrdersForUser,
@@ -77,6 +77,20 @@ test("paid never downgrades: a late expiry is recorded, status unmoved", async (
   await applyOrderEvent({ orderId: order.id, type: "paid", source: "webhook", stripeEventId: "evt_paid_3", newStatus: "paid" });
   await applyOrderEvent({ orderId: order.id, type: "expired", source: "reconcile", newStatus: "expired" });
   assert.equal((await getOrder(order.id)).status, "paid");
+});
+
+test("refundOrder guards: unkeyed 503; unknown 404; only PAID refunds", async () => {
+  assert.equal((await refundOrder("ord_whatever")).status, 503, "unkeyed engine refuses first");
+  process.env.STRIPE_SECRET_KEY = "sk_test_guardcheck";
+  try {
+    assert.equal((await refundOrder("ord_nope")).status, 404);
+    const order = await createOrderWithEvent({ user: "u-r", itemId: "test-real-item", amountCents: 100, currency: "usd" });
+    const refusal = await refundOrder(order.id);
+    assert.equal(refusal.status, 409);
+    assert.match(refusal.error, /only a paid order refunds/);
+  } finally {
+    delete process.env.STRIPE_SECRET_KEY;
+  }
 });
 
 test("publicProduct stamps the gate's verdict — demo false, real true — and no client re-derives it", () => {

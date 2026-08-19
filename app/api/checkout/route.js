@@ -23,7 +23,7 @@ import { getItems } from "../../../lib/db/index.js";
 export const dynamic = "force-dynamic";
 
 function publicOrder(order) {
-  return {
+  const out = {
     id: order.id,
     item_id: order.item_id,
     status: order.status,
@@ -31,6 +31,10 @@ function publicOrder(order) {
     currency: order.currency,
     created_at: order.created_at,
   };
+  // Present only while the session is still open at Stripe (reconcile read
+  // it seconds ago) — the reader finishes paying instead of re-buying.
+  if (order._resumeUrl) out.resume_url = order._resumeUrl;
+  return out;
 }
 
 export async function POST(req) {
