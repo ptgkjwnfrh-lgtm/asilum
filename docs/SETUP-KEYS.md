@@ -69,8 +69,15 @@ Launch sequence (owner + agent, in order):
    revealed on screen, do not screenshot.
 3. Dashboard → Webhooks → add endpoint
    `https://www.asilummagazine.com/api/stripe/webhook`, events
-   `checkout.session.completed` + `checkout.session.expired`; its signing
-   secret becomes `STRIPE_WEBHOOK_SECRET` in Vercel the same way.
+   `checkout.session.completed` + `checkout.session.expired` +
+   `payment_intent.succeeded` + `payment_intent.payment_failed` (the last
+   two settle the §6 ticket-fee lane); its signing secret becomes
+   `STRIPE_WEBHOOK_SECRET` in Vercel the same way.
+3b. The PUBLISHABLE key (safe to be public — it ships in the client
+   bundle): `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — pk_test_ into
+   `.env.local` for sandbox work, pk_live_ into Vercel at launch. Without
+   it the checkout housing's card entry says so and stays idle (saved-card
+   one-click and every server path work regardless).
 4. `supabase/schema-v31-orders.sql` must be applied before the first real
    order (orders + append-only order_events).
 5. Until phase L1 lands real inventory, every checkout refuses with 409 by

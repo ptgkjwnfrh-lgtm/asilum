@@ -25,11 +25,16 @@ export const dynamic = "force-dynamic";
 function publicOrder(order) {
   const out = {
     id: order.id,
+    kind: order.kind || "sale",
     item_id: order.item_id,
     status: order.status,
     amount_cents: order.amount_cents,
     fee_cents: order.fee_cents || 0,
-    total_cents: (order.amount_cents || 0) + (order.fee_cents || 0),
+    // What the buyer actually paid ASILUM: a sale charges piece + fee; a
+    // ticket fee charges the fee ALONE (the piece is paid at the source).
+    total_cents: (order.kind === "ticket_fee")
+      ? (order.fee_cents || 0)
+      : (order.amount_cents || 0) + (order.fee_cents || 0),
     currency: order.currency,
     created_at: order.created_at,
   };

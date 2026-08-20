@@ -44,8 +44,14 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
       never through a transcript, no screenshots while revealed).
 - [ ] **Owner** Dashboard → Webhooks → endpoint
       `https://www.asilummagazine.com/api/stripe/webhook`
-      (`checkout.session.completed`, `checkout.session.expired`) →
+      (`checkout.session.completed`, `checkout.session.expired`,
+      `payment_intent.succeeded`, `payment_intent.payment_failed` — the
+      PI pair settles the ticket-fee lane) →
       its `whsec_` → Vercel as `STRIPE_WEBHOOK_SECRET`.
+- [ ] **Owner** `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: pk_test_ →
+      `.env.local` now (unlocks card entry in the housing for sandbox
+      E2E), pk_live_ → Vercel at launch. Public by design; without it
+      card entry says so and stays idle.
 - [ ] **Owner** New SendGrid key (Mail Send ONLY) + `ORDER_NOTIFY_EMAIL`
       → Vercel. Until then paid orders settle silently (ledger holds).
 - [x] Schema current on prod (v33, probed) — **done 18 Aug**.

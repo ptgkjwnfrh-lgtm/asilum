@@ -2151,3 +2151,38 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .marquee { display: none; }
 }
 .gxasterisk .resetlink { margin-top: 14px; align-self: start; }
+
+/* ---- THE CHECKOUT HOUSING (owner order 20 Aug 2026) — the §6 room.
+   The piece never leaves the screen; the fee is ASILUM's only charge;
+   colors ride tokens only. */
+.chk { max-width: 980px; }
+.chkgrid { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 28px; align-items: start; }
+.chkpiece { border: 1px solid var(--line); padding: 14px; position: sticky; top: 84px; background: var(--paper); }
+.chkimg { border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; background: var(--paper); }
+.chkimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.chkmono { font-size: 64px; color: var(--red); line-height: 1; }
+.chkbrand { font-size: 11px; letter-spacing: .12em; color: var(--grey); }
+.chkttl { font-weight: 700; font-size: 18px; margin: 2px 0 10px; text-transform: uppercase; }
+.chkline { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding: 6px 0; font-size: 12px; letter-spacing: .06em; }
+.chkline span { color: var(--grey); }
+.chktotal { border-top: 2px solid var(--ink); font-size: 13px; }
+.chkpay { border: 1px solid var(--line); padding: 16px; background: var(--paper); }
+.chkhead { font-size: 11px; letter-spacing: .14em; font-weight: 700; margin-bottom: 8px; }
+.chkform { display: grid; gap: 8px; margin: 10px 0; }
+.chkform label { display: grid; gap: 3px; font-size: 10px; letter-spacing: .1em; color: var(--grey); }
+.chkform input { border: 1px solid var(--line); background: var(--paper); color: var(--ink); padding: 8px 9px; font: inherit; }
+.chkform input:focus { outline: 1px solid var(--sig); }
+.chkonfile { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 8px 0; font-size: 12px; }
+.chkconsent { display: flex; gap: 9px; align-items: flex-start; margin: 12px 0 6px; font-size: 11.5px; line-height: 1.45; }
+.chkconsent input { margin-top: 2px; accent-color: var(--red); }
+.chkfine { font-size: 10px; padding: 3px 8px; }
+.chkcard { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
+.chkpaybtn { width: 100%; margin-top: 12px; font-weight: 700; }
+.chkdone .chkstamp { border: 2px solid var(--ink); display: inline-block; padding: 8px 12px; font-weight: 700; letter-spacing: .1em; margin-bottom: 10px; }
+.chkgo { display: inline-block; margin: 8px 0; }
+@media (max-width: 760px) {
+  .chkgrid { grid-template-columns: 1fr; }
+  .chkpiece { position: static; }
+  /* the piece stays visible without burying the money below the fold */
+  .chkimg { max-height: 38vh; }
+}

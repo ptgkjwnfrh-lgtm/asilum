@@ -4,7 +4,11 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
+  // js.stripe.com is the ONE external script: Stripe's Payment Element in
+  // the checkout housing (card fields render in Stripe-hosted iframes —
+  // SAQ-A; card data never touches this origin).
+  `script-src 'self' 'unsafe-inline' https://js.stripe.com${isProduction ? "" : " 'unsafe-eval'"}`,
+  "frame-src 'self' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",

@@ -122,8 +122,10 @@ export default function OrdersPage() {
             </a>
             <div className="hlbrand">
               {(o.currency || "usd").toUpperCase()} {((o.total_cents ?? o.amount_cents) / 100).toFixed(2)}
+              {o.kind === "ticket_fee" ? " (founders fee)" : ""}
               {" · "}
-              {o.status === "paid" ? "PAID — the designer ships it"
+              {o.status === "paid" && o.kind === "ticket_fee" ? "FEE PAID — ticket open; the piece is bought at the source"
+                : o.status === "paid" ? "PAID — the designer ships it"
                 : o.status === "awaiting_payment" ? (
                   <>AWAITING PAYMENT{o.resume_url ? <> — <a className="boothsite" href={o.resume_url}>resume payment ↗</a></> : " — the session is open"}</>
                 )
