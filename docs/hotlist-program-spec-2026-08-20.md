@@ -75,7 +75,7 @@ specified here and await the owner's build-order approval.
 
 ## 4. Build pieces
 
-### P1 — Founders fee at checkout (ships now)
+### P1 — Founders fee at checkout (✅ SHIPPED — PR #303, 20 Aug 2026)
 - `startCheckout` computes `feeCents`; the Stripe session carries **two
   line items**: the piece at list price + "Founders fee (1%)".
 - Ledger: `orders.fee_cents` (schema v34, append migration, default 0).

@@ -65,8 +65,10 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
 
 ## GATE 4 — designers (the real work)
 
-- [ ] **Agent** Founders fee (1%) live in checkout BEFORE the first real
-      piece can sell (`hotlist-program-spec-2026-08-20.md` P1).
+- [x] **Agent** Founders fee (1%) live in checkout BEFORE the first real
+      piece can sell (`hotlist-program-spec-2026-08-20.md` P1) —
+      **shipped #303, 20 Aug**: Stripe line item + `fee_cents` ledger
+      (schema v34 on prod), browser-proven \$100 piece → \$101.00 total.
 - [ ] **Owner** First five outreach sends — [PERSONAL LINE] each, one at a
       time, log who/when. (Letter parked at OUTREACH-LETTER.md.)
 - [ ] **Owner + Agent** Per yes: ONBOARDING.md §§1–4 (apply → domain token →
