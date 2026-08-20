@@ -301,6 +301,12 @@ export default function CheckoutHousing() {
                   <div className="chkcard">
                     <div className="chkhead">CARD — ENTERED ONCE, KEPT BY STRIPE</div>
                     <div id="chk-payment-element" />
+                    <p className="pempty">
+                      your card is kept by Stripe, our payment processor, so
+                      the next fee is one press — ASILUM stores only a
+                      reference and the last four digits. remove it any time
+                      in <a href="/settings">SETTINGS</a>.
+                    </p>
                   </div>
                 )}
 

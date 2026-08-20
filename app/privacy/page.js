@@ -15,8 +15,9 @@ export default function PrivacyPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>PRIVACY POLICY</h1>
       <p className="deck">
-        what we collect, why, and the controls you hold. version 1.0 —
-        effective july 19, 2026 (under legal review).
+        what we collect, why, and the controls you hold. version 1.1 —
+        effective august 20, 2026 (adds purchase info and payment
+        processing; under legal review).
       </p>
 
       <h2 className="statshead">WHO WE ARE</h2>
@@ -62,6 +63,15 @@ export default function PrivacyPage() {
         disclaimer shown at the time.
       </p>
       <p className="legal">
+        <strong>purchase info.</strong>{" "}if you pay a founders fee, the name
+        and address you enter once are stored in a purchase-info vault kept
+        apart from the catalog and your taste record, used only to open
+        checkout without retyping. your card goes to stripe, our payment
+        processor — we store a reference and the last four digits for
+        display, never a card number. order records (what was charged, when,
+        and its outcome) live in an append-only ledger.
+      </p>
+      <p className="legal">
         <strong>technical records.</strong>{" "}rate-limit counters (stored as
         hashes, not identities), search queries for relevance improvement, and
         the security logs our hosting providers keep to run the site.
@@ -82,9 +92,11 @@ export default function PrivacyPage() {
       <h2 className="statshead">WHO PROCESSES DATA FOR US</h2>
       <p className="legal">
         supabase (database, authentication, and private file storage; hosted
-        in canada) and vercel (site hosting, delivery, and security
-        filtering). both act under our instructions to run the service — no
-        other recipients.
+        in canada), vercel (site hosting, delivery, and security filtering),
+        and stripe (payment processing for the founders fee — card entry
+        happens in stripe&apos;s own fields, and saved payment methods live
+        with stripe, never with us). all act under our instructions to run
+        the service — no other recipients.
       </p>
 
       <h2 className="statshead">COOKIES</h2>
@@ -104,19 +116,23 @@ export default function PrivacyPage() {
         guidance can be switched off; hard filters still apply and your data
         sits unused. <strong>delete it:</strong>{" "}
         <a href="/settings">Settings</a> holds a typed-confirmation delete
-        that removes personalization data, and wardrobe photos erase on
-        demand, storage object first. deleting your data is not conditioned
-        on anything.
+        that removes personalization data — and the purchase-info vault with
+        it — and wardrobe photos erase on demand, storage object first.
+        settings → PURCHASE INFO also edits or erases your stored purchase
+        details and removes the saved-card reference on their own. deleting
+        your data is not conditioned on anything.
       </p>
 
       <h2 className="statshead">RETENTION</h2>
       <p className="legal">
         taste and content data persist while your profile is active and go
-        when you delete them. security and search records are kept for
-        limited operational periods; the exact schedule is under final review
-        and this policy will state it when fixed. we never keep deleted
-        wardrobe photos — erasure is verified against the storage bucket
-        before the request succeeds.
+        when you delete them. purchase-info details stay until you erase
+        them; order and ticket ledgers are retained as transaction records.
+        security and search records are kept for limited operational
+        periods; the exact schedule is under final review and this policy
+        will state it when fixed. we never keep deleted wardrobe photos —
+        erasure is verified against the storage bucket before the request
+        succeeds.
       </p>
 
       <h2 className="statshead">CHANGES</h2>

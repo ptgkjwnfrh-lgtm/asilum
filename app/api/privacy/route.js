@@ -1,6 +1,9 @@
-// DELETE /api/privacy — erase user-linked personalization data. Purchase
-// tickets/consent records, the auth account, and deidentified aggregate item
-// statistics are intentionally retained and named in the response.
+// DELETE /api/privacy — erase user-linked personalization data AND the
+// buyer vault (name/address/saved-card references — the right to be
+// forgotten spans every store). Purchase tickets/consent records, the
+// order ledger (transaction records), the auth account, and deidentified
+// aggregate item statistics are intentionally retained and named in the
+// response.
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser, verifiedDevice } from "../../../lib/identity.js";
@@ -8,6 +11,7 @@ import {
   purgePersonalizationData, exportPersonalizationData, withUserOperationLock,
 } from "../../../lib/db/production.js";
 import { deleteUserPhotos } from "../../../lib/wardrobe/photos.js";
+import { deleteBuyerProfile } from "../../../lib/vault.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -81,7 +85,17 @@ export async function DELETE(req) {
     }
     try {
       const result = await purgePersonalizationData(user, { queryTarget });
-      return NextResponse.json({ deleted: true, ...result });
+      // The buyer vault goes with the personalization — an erased person
+      // leaves no name, address, or card reference behind. Loud on failure,
+      // same as everything else in this handler.
+      try {
+        await deleteBuyerProfile(user);
+      } catch {
+        return NextResponse.json({
+          error: "personalization was purged, but the purchase-info vault could not be erased — retry",
+        }, { status: 502 });
+      }
+      return NextResponse.json({ deleted: true, buyerVaultErased: true, ...result });
     } catch {
       return NextResponse.json({
         error: "photo objects were erased, but database personalization could not be fully purged",
