@@ -121,7 +121,7 @@ export default function OrdersPage() {
               <div className="hlttl">{o.title || o.item_id}</div>
             </a>
             <div className="hlbrand">
-              {(o.currency || "usd").toUpperCase()} {(o.amount_cents / 100).toFixed(2)}
+              {(o.currency || "usd").toUpperCase()} {((o.total_cents ?? o.amount_cents) / 100).toFixed(2)}
               {" · "}
               {o.status === "paid" ? "PAID — the designer ships it"
                 : o.status === "awaiting_payment" ? (

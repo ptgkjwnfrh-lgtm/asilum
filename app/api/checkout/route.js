@@ -28,6 +28,8 @@ function publicOrder(order) {
     item_id: order.item_id,
     status: order.status,
     amount_cents: order.amount_cents,
+    fee_cents: order.fee_cents || 0,
+    total_cents: (order.amount_cents || 0) + (order.fee_cents || 0),
     currency: order.currency,
     created_at: order.created_at,
   };
