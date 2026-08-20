@@ -8,7 +8,7 @@
 // one obvious home.
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid, brainEnabled,
   authorizedFetch, SIGN_OUT_NOTICE,
@@ -65,6 +65,7 @@ const TICKER = TICKER_PLACEHOLDERS.join(" — ") + " — ";
 export default function Shell({ children }) {
   const fit = useFitBrain();
   const pathname = usePathname();
+  const router = useRouter();
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [bagHow, setBagHow] = useState(false);
@@ -82,6 +83,33 @@ export default function Shell({ children }) {
   const deviceIdentityRef = useRef(null);
 
   useEffect(() => {
+    // Landing law (owner order, 19 Aug): on DESKTOP the terminal opens on
+    // the FRONT COVER — the magazine leads; mobile opens straight to the
+    // rack (CATALOG). This lives in the SHELL because the shell mounts
+    // exactly once per hard entry and persists across soft navs (the page
+    // mounts in a later Suspense commit, so a page-level check loses the
+    // race to this stamp — measured, not assumed). Only a true entry
+    // landing on "/" redirects: the sessionStorage stamp survives
+    // refreshes mid-visit, in-app CATALOG clicks never re-run this effect,
+    // and deep links (?item=, ?board=, any query) never bounce.
+    // replace(), not push — back must leave the site, not loop.
+    try {
+      const entered = window.sessionStorage.getItem("asilum-entered");
+      window.sessionStorage.setItem("asilum-entered", "1");
+      if (!entered && pathname === "/" && !window.location.search) {
+        // innerWidth reads 0 while a restoring/backgrounded tab has no
+        // layout yet (measured here, not assumed) — a zero must defer the
+        // desktop/mobile call, never decide it. Bounded frames; if layout
+        // never reports, mobile's answer (stay on the rack) is the safe one.
+        let frames = 0;
+        const decide = () => {
+          const width = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+          if (!width && frames++ < 60) { window.requestAnimationFrame(decide); return; }
+          if (width > 760) router.replace("/cover");
+        };
+        decide();
+      }
+    } catch {}
     // Clear the stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}

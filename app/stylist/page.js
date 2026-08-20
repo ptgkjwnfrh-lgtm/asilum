@@ -204,7 +204,11 @@ export default function StylistPage() {
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
       {loading && <div className="empty">cutting twenty-five looks…</div>}
       {!loading && visibleGroups.every((g) => g.looks.length === 0) && groups && (
-        <div className="empty">you passed on everything — REGENERATE for a fresh cut.</div>
+        <div className="empty">
+          {passed.size > 0
+            ? "you passed on everything — REGENERATE for a fresh cut."
+            : "the catalog is too small to cut looks from right now — the racks refill as designers land."}
+        </div>
       )}
 
       {!loading && visibleGroups.map((g) => (
