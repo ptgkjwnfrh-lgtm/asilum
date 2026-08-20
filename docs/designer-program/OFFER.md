@@ -23,8 +23,7 @@ terminal.** Founding designers are the point, not an afterthought.
 - **You keep 100% of your price on every base sale.** ASILUM adds a 1%
   "founders fee" to the buyer's total at checkout — the buyer pays it,
   never you. It is non-negotiable and applies to every piece sold
-  (minimum 31¢; charged standalone it floors at 50¢, the processor's own
-  minimum). Payment processing comes out of our side, not yours.
+  (minimum 50¢). Payment processing comes out of our side, not yours.
 - **No listing fees, no membership fees, no charge to join.**
 - **The hotlist booth is optional — and it is the paid program.** When you
   want placement: **$150/month booth rent** (the hotlist runs in monthly

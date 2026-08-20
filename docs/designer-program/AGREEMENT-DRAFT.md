@@ -16,11 +16,11 @@ merchant-of-record question in the refund draft — the answer must be the
 same in both documents.]
 
 ## Commercial terms
-1. Founders fee: ASILUM adds a service fee of 1% of the item sale price to
-   the buyer's checkout total on every completed order. The fee is paid by
-   the buyer, is never deducted from Designer, and applies to every sale
-   without exception. [Counsel: buyer-paid checkout fee — see open
-   question E.]
+1. Founders fee: ASILUM adds a service fee of 1% of the item sale price
+   (minimum US$0.50) to the buyer's checkout total on every completed
+   order. The fee is paid by the buyer, is never deducted from Designer,
+   and applies to every sale without exception. [Counsel: buyer-paid
+   checkout fee — see open question E.]
 2. Base sales: Designer receives 100% of the item sale price; no
    commission and no listing, membership, or per-item fees. Shipping
    charged to the buyer (if any) passes through to Designer
@@ -102,3 +102,8 @@ F. Booth rent (§3a): auto-renewal/recurring-fee disclosure requirements
    changes; mid-cycle termination treatment.
 G. Attribution (§3b): audit/dispute clause — what Designer may inspect
    when contesting an attributed commission.
+H. Buyer-side credentials-on-file: the checkout saves the buyer's card by
+   default (Stripe-held; disclosed at entry and removable in Settings) so
+   returning purchases are one press. Confirm this disclosure meets
+   card-network credential-on-file consent standards and any regional
+   explicit-consent requirement in the launch jurisdictions.

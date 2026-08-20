@@ -15,8 +15,9 @@ export default function TermsPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>TERMS OF SERVICE</h1>
       <p className="deck">
-        the agreement for using ASiLUM magazine. version 1.0 — effective
-        july 19, 2026 (under legal review).
+        the agreement for using ASiLUM magazine. version 1.1 — effective
+        august 20, 2026 (adds the founders fee and purchase-info storage;
+        under legal review).
       </p>
 
       <h2 className="statshead">THE SERVICE</h2>
@@ -41,13 +42,41 @@ export default function TermsPage() {
       <h2 className="statshead">SHOPPING HAPPENS ELSEWHERE</h2>
       <p className="legal">
         ASiLUM is a discovery and routing service, not a store. product
-        listings name their source, and checkout happens on the source
-        merchant&apos;s own site under that merchant&apos;s terms. ASiLUM is
-        not the seller, takes no payment, and is not a party to your purchase.
-        listings can go stale between our checks; price, availability, and
-        condition are the merchant&apos;s to confirm. purchase tickets are a
-        tracking convenience under the disclaimer shown when you create one —
-        they are not an order, escrow, or guarantee.
+        listings name their source, and the purchase of a piece — its price,
+        shipping, and tax — happens on the source merchant&apos;s own site
+        under that merchant&apos;s terms. ASiLUM is not the seller of listed
+        pieces and is not a party to that purchase. listings can go stale
+        between our checks; price, availability, and condition are the
+        merchant&apos;s to confirm. purchase tickets open under the
+        disclaimer shown when you create one — they are not an order,
+        escrow, or guarantee of the merchant&apos;s sale.
+      </p>
+
+      <h2 className="statshead">THE FOUNDERS FEE</h2>
+      <p className="legal">
+        opening a purchase ticket carries ASiLUM&apos;s founders fee: 1% of
+        the listed piece price, with a $0.50 minimum, charged by ASiLUM as
+        its own transaction — your card statement will show two lines, ASiLUM
+        (the fee) and the merchant (the piece). the fee and the total are
+        itemized on the checkout screen before you pay, and nothing is
+        charged without your consent to the ticket disclaimer. the fee buys
+        the ticket: the verified source link, an availability check when it
+        opens, and our support channel — it is not a payment for the piece.
+        if the listed piece turns out to be unavailable when you follow
+        through, contact support and the fee is refunded.
+      </p>
+
+      <h2 className="statshead">PURCHASE INFO, STORED ONCE</h2>
+      <p className="legal">
+        if you buy, the name and address you enter are stored once, in a
+        purchase-info vault kept apart from the catalog and your taste
+        record, so checkout never asks twice. your card is held by our
+        payment processor, Stripe — ASiLUM keeps only a reference and the
+        last four digits, never a card number. you can edit these details,
+        remove the saved card, or erase everything in{" "}
+        <a href="/settings">Settings → PURCHASE INFO</a>; the privacy
+        delete erases the vault as well. order and ticket ledgers are
+        retained as transaction records.
       </p>
 
       <h2 className="statshead">YOUR CONTENT</h2>

@@ -141,12 +141,11 @@ P3 manual at the first booth.
 maybe two separate transactions… two transactions on the user's bank
 statement with one purchase") **with these additions, all shipped:**
 
-- **Fee floor:** pieces at $31 or under pay 31¢ (`FOUNDERS_FEE_FLOOR_CENTS`).
-  **Processor physics, learned against the live API:** Stripe refuses a
-  standalone charge under 50¢ (`amount_too_small`) — so the STANDALONE
-  ticket-fee charge floors at 50¢ (`STRIPE_MINIMUM_CHARGE_CENTS`); the 31¢
-  floor still rules wherever the fee rides a larger charge (direct sales).
-  ⚑ FLAGGED, not silently bent — the owner may re-rule the number.
+- **Fee floor — RE-RULED to 50¢ FLAT (owner, same night):** the earlier
+  31¢/50¢ split is retired. `FOUNDERS_FEE_FLOOR_CENTS = 50` everywhere —
+  one number, which also clears Stripe's standalone minimum by
+  construction (the 50¢ `amount_too_small` physics, trap 27a, is WHY the
+  number is 50; the processor-minimum overlay stays in code as a guard).
 - **The checkout housing** (`/checkout?item=…`): one ASILUM-styled room —
   the piece's image and price stay on screen the whole time; the fee split
   is spelled out ("two lines on your statement"); consent (the ticket

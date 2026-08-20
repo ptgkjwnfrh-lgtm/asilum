@@ -15,6 +15,8 @@ const ALLOWED = new Set([
   "lib/orders.js",                  // the first-purchase path: §6 settle + card save
   "app/api/ticket-fee/route.js",    // the first-purchase identity intake
   "app/api/purchase-info/route.js", // SETTINGS — the only editor afterwards
+  "app/api/privacy/route.js",       // erasure ONLY — the right to be forgotten
+                                    // spans every store (deleteBuyerProfile)
 ]);
 
 function walk(dir, out = []) {
