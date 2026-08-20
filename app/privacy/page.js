@@ -15,9 +15,9 @@ export default function PrivacyPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>PRIVACY POLICY</h1>
       <p className="deck">
-        what we collect, why, and the controls you hold. version 1.1 —
-        effective august 20, 2026 (adds purchase info and payment
-        processing; under legal review).
+        what we collect, why, and the controls you hold. version 1.2 —
+        effective august 20, 2026 (adds purchase info, payment processing,
+        and the first-visit observation question; under legal review).
       </p>
 
       <h2 className="statshead">WHO WE ARE</h2>
@@ -43,7 +43,10 @@ export default function PrivacyPage() {
       <p className="legal">
         <strong>taste signals.</strong>{" "}saves, favorites, skips, searches,
         viewing time, corrections you give the Asterisk system, and moodboard training
-        words. these build the taste profile that ranks your feed. you can
+        words. these build the taste profile that ranks your feed — and none
+        of it is collected until you answer the first-visit observation
+        question: an unanswered device is unobserved, and choosing GENERAL
+        limits learning to explicit actions only. you can
         inspect every class of this data in the{" "}
         <a href="/asterisk">Asterisk control room</a>.
       </p>

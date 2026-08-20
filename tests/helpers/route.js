@@ -63,7 +63,10 @@ export async function loadRoute(repoRelativePath) {
 export function newDevice(uid = newDeviceId()) {
   const value = signedDeviceValue(uid);
   if (!value) throw new Error("signedDeviceValue returned null — DEVICE_COOKIE_SECRET unusable");
-  return { uid, cookies: { [DEVICE_COOKIE]: value } };
+  // An ANSWERED device (D4): contract tests exercise route behavior for a
+  // consenting user; the consent gate's own tests override or omit this
+  // cookie to model the unanswered/general states.
+  return { uid, cookies: { [DEVICE_COOKIE]: value, "asilum-consent": "observe" } };
 }
 
 // A cookie whose signature is wrong for its uid — the forgery case.

@@ -7,13 +7,16 @@ starts only after the reader answers a consent moment on first visit.
 EU-safety and F65 optics; counsel still confirms per OWNER-DECISIONS #1's
 region ruling.)
 
-**Status: SPEC awaiting the owner's approval.** Per the 20 Aug handover:
-agent specs it, owner approves, then it ships — and UI ships only in an
-owner-directed round. **Interim posture until it ships:** today's
-default-on with the Settings toggle + `/terms` disclosure (option (a),
-disclosed) stands — acceptable while strangers are not yet invited; this
-build lands **before doors open** (now a Gate 6 precondition on the
-launch checklist).
+**Status: ✅ BUILT (owner order "build p2-p4 and the consent moment",
+20 Aug 2026, same night).** Shipped exactly to this spec's behavior
+contract: server-enforced UNANSWERED = UNOBSERVED (interaction /
+impressions / feed serve-memory / train / moodboard all gated through
+`lib/consent.js`), GENERAL ≡ the settings pause's long-standing split
+(explicit acts teach, passive dwell does not), the shell-mounted moment
+(`app/components/ConsentMoment.jsx` — answered, never dismissed,
+focus-trapped, reduced-motion aware), Settings-toggle continuity both
+directions, terms + privacy v1.2 sentences. The draft copy shipped as
+written — **the owner's voice pass on it stands open.**
 
 ---
 

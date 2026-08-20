@@ -2186,3 +2186,16 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   /* the piece stays visible without burying the money below the fold */
   .chkimg { max-height: 38vh; }
 }
+
+/* ---- D4 consent moment — answered, never dismissed; tokens only. */
+.consent-veil { position: fixed; inset: 0; z-index: 160; display: flex; align-items: center; justify-content: center; padding: 16px; background: color-mix(in srgb, var(--paper) 72%, transparent); backdrop-filter: blur(2px); }
+.consent-moment { border: 2px solid var(--ink); background: var(--paper); max-width: 430px; width: 100%; padding: 18px 20px; box-shadow: 0 0 0 1px var(--line); }
+.consent-title { font-weight: 700; letter-spacing: .16em; font-size: 13px; margin-bottom: 8px; }
+.consent-body { font-size: 12.5px; line-height: 1.55; margin: 0 0 12px; }
+.consent-actions { display: flex; gap: 10px; }
+.consent-actions .btn { flex: 1; font-weight: 700; }
+.consent-fine { font-size: 10px; color: var(--grey); margin: 10px 0 0; line-height: 1.5; }
+@media (prefers-reduced-motion: no-preference) {
+  .consent-moment { animation: consent-in .18s ease-out; }
+  @keyframes consent-in { from { transform: translateY(6px); opacity: 0; } }
+}

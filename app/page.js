@@ -219,7 +219,13 @@ export default function Home() {
         d.sent.add(id);
       }
       if (events.length) {
-        postJSON("/api/interaction", { user, events }).catch(() => {});
+        // D4 courtesy gate: passive dwell rides only under OBSERVE — the
+        // server refuses it anyway; this just saves the wire.
+        let consent = null;
+        try { consent = window.localStorage.getItem("asilum-consent"); } catch {}
+        if (consent === "observe") {
+          postJSON("/api/interaction", { user, events }).catch(() => {});
+        }
       }
       // (r19) one examination report per serve, sent once the page has
       // settled. A lost beacon is harmless: the server falls back to served

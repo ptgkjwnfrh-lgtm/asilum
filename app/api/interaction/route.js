@@ -15,6 +15,7 @@ import {
 } from "../../../lib/db/index.js";
 import { eventFromInteraction } from "../../../lib/events/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { resolveProducts, withReportedBridge, isSponsoredContent } from "../../../lib/products.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
@@ -48,11 +49,30 @@ export async function POST(req) {
       { status: 400 }
     );
   }
-  const products = await resolveProducts(events.map((e) => e.item.id));
-  if (products.size !== new Set(events.map((e) => e.item.id)).size) {
+  // D4 (ruled 20 Aug 2026): UNANSWERED = UNOBSERVED — nothing persists.
+  // GENERAL keeps the settings pause's long-standing promise: explicit acts
+  // teach, passive dwell does not. Responses say so instead of pretending.
+  const consent = consentState(req);
+  if (!observationAllowed(consent, "explicit")) {
+    return NextResponse.json({
+      observed: false,
+      reason: "the first-visit question is unanswered — the terminal does not watch",
+    });
+  }
+  const observedEvents = consent === "observe"
+    ? events
+    : events.filter((e) => e.action !== "dwell");
+  if (!observedEvents.length) {
+    return NextResponse.json({
+      observed: false,
+      reason: "passive observation is off — explicit actions still teach",
+    });
+  }
+  const products = await resolveProducts(observedEvents.map((e) => e.item.id));
+  if (products.size !== new Set(observedEvents.map((e) => e.item.id)).size) {
     return NextResponse.json({ error: "unknown product" }, { status: 400 });
   }
-  const valid = events.map((event) => ({
+  const valid = observedEvents.map((event) => ({
     // Server inventory decides every product field; withReportedBridge only
     // re-attaches the client's whitelisted attribution so r16 tuning can see
     // which bridge earned the interaction (see lib/products.js).

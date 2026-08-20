@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 import { buildFeed, promptVector, overlayVector, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
 import { examinedImpressionsEnabled } from "../../../lib/brain/attribution.js";
 import { popularityDedupEnabled } from "../../../lib/brain/popularity.js";
+import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
 import { baseSplit } from "../../../lib/brain/bridges.js";
 import { listEvents } from "../../../lib/db/index.js";
@@ -64,6 +65,10 @@ export async function GET(req) {
   const guidanceEnabled = anonymous
     ? false
     : (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
+  // D4 (ruled 20 Aug 2026): serve-side memory — seen rotation, served
+  // bridges, popularity fallback — is passive observation. Without OBSERVE
+  // the feed still serves, it just remembers nothing.
+  const observing = observationAllowed(consentState(req), "passive");
   const epsilonParam = searchParams.get("epsilon") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
@@ -238,10 +243,10 @@ export async function GET(req) {
     // known and one person counts once. BRAIN_POPULARITY_DEDUP=0 restores
     // this write together with the raw-count scoring, as one behaviour.
     const writes = [];
-    if (!popularityDedupEnabled()) {
+    if (!popularityDedupEnabled() && observing) {
       writes.push(bumpPopularity(ids.map((id) => ({ id, imp: 1 }))));
     }
-    if (guidanceEnabled) {
+    if (guidanceEnabled && observing) {
       writes.push(mutateProfile(userId, (current) => {
         const base = current && Object.keys(current).length ? current : profileBeforeCorrections;
         const { profile: decayed } = applyTimeDecay(base);

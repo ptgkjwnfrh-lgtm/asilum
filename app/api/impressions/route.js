@@ -17,6 +17,7 @@ import { applyExaminationReport } from "../../../lib/brain/index.js";
 import { examinedBridgeCounts, examinedImpressionsEnabled, MAX_EXAMINED_PER_SERVE } from "../../../lib/brain/attribution.js";
 import { mutateProfile, getProfile, bumpPopularity } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -28,6 +29,10 @@ export async function POST(req) {
   const body = parsed.body;
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  // D4: examined-slot reporting is passive observation — it needs OBSERVE.
+  if (!observationAllowed(consentState(req), "passive")) {
+    return NextResponse.json({ observed: false });
+  }
   if (!examinedImpressionsEnabled()) {
     return NextResponse.json({ userId, applied: 0, disabled: true });
   }
