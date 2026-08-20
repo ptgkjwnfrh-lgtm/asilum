@@ -36,11 +36,15 @@ test("the allowance matrix: unanswered = unobserved; general = explicit only", (
   assert.equal(observationAllowed("observe", "explicit"), true);
 });
 
-test("the moment's copy keeps the law's promise and the copy law", () => {
+test("the moment's copy keeps the law's promise, the owner's voice, and the copy law", () => {
   const src = readFileSync(new URL("../app/components/ConsentMoment.jsx", import.meta.url), "utf8");
   assert.match(src, /the Asterisk system\s+does not watch/,
     "the promise line — unanswered means unobserved — is the moment's own words");
   assert.match(src, /THE ASTERISK SYSTEM/, "the engine's public name, per copy law");
+  assert.match(src, /WILL NEVER/, "the owner's no-sell promise, verbatim emphasis");
+  assert.match(src, /STAMPS/, "the owner's *STAMPS coinage rides the moment");
+  assert.match(src, /Seek ASILUM or disappear into the\s+catalog/,
+    "the owner's seek line, their words exactly");
   assert.doesNotMatch(src, /alpha|beta|gamma|delta|epsilon bridge/i,
     "no public mention of the learning bridges");
 });

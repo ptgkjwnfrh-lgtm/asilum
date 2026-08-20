@@ -69,11 +69,32 @@ export default function ConsentMoment() {
         <div className="consent-title" id="consent-title">
           <span className="red">*</span>THE ASTERISK SYSTEM
         </div>
-        <p className="consent-body" id="consent-body">
-          this terminal learns by observing — what you linger on, what you
-          save, what you skip. it builds a Passport for this device. nothing
-          is sold to anyone. watch, or browse general?
-        </p>
+        <div className="consent-body" id="consent-body">
+          {/* The owner's voice pass, 20 Aug 2026 — their words, the house's
+              lowercase prose, their emphasis kept exactly. */}
+          <p>
+            this terminal learns quietly in the background. what you linger
+            on. what you save. what you skip. what you buy. along with the{" "}
+            <b><span className="red">*</span>STAMPS</b> you choose to upload
+            to your <b><span className="red">*</span>PASSPORT</b>. it
+            observes for one reason: to make your shopping &amp; discovery
+            experience feel more like yours every time you return.
+          </p>
+          <p>
+            <span className="red">*</span>ASILUM magazine <b>WILL NEVER</b>{" "}
+            sell your information. once you have a{" "}
+            <b><span className="red">*</span>PASSPORT</b>, your style, taste
+            and content stay protected.
+          </p>
+          <p className="consent-seek">
+            <span className="red">*</span>Seek ASILUM or disappear into the
+            catalog.
+          </p>
+          <p className="consent-close">
+            Your <span className="red">*</span>PASSPORT. Your taste. Your
+            choice. ;)
+          </p>
+        </div>
         <div className="consent-actions">
           <button ref={firstRef} className="btn" disabled={busy} onClick={() => answer("observe")}>
             OBSERVE ME ✓

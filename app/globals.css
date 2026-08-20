@@ -2199,3 +2199,9 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .consent-moment { animation: consent-in .18s ease-out; }
   @keyframes consent-in { from { transform: translateY(6px); opacity: 0; } }
 }
+
+/* consent moment — the owner's voice pass (20 Aug): paragraph rhythm +
+   the seek line and the closer carry their own weight. */
+.consent-body p { margin: 0 0 10px; }
+.consent-seek { font-weight: 700; letter-spacing: .08em; }
+.consent-close { color: var(--grey); letter-spacing: .04em; }
