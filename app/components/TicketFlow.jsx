@@ -7,9 +7,11 @@
 
 import { useEffect, useState } from "react";
 import { getUid, postJSON, sendJSON } from "../../lib/client.js";
+import { useOverlayDismiss } from "./dismiss.js";
 
 export default function TicketFlow({ item, onClose }) {
   const [state, setState] = useState("creating"); // creating|consent|done|unavailable|error
+  const dismissOverlay = useOverlayDismiss(onClose); // mounts when open — AT ghost-click guarded
   const [ticket, setTicket] = useState(null);
   const [disclaimer, setDisclaimer] = useState(null);
   const [checked, setChecked] = useState(false);
@@ -55,7 +57,7 @@ export default function TicketFlow({ item, onClose }) {
   const price = ticket?.currentPriceChecked ?? ticket?.itemPriceAtRequest ?? item.price;
 
   return (
-    <div className="overlay" onClick={onClose}>
+    <div className="overlay" onClick={dismissOverlay}>
       <div className="modal" style={{ maxWidth: 520, display: "block" }} onClick={(e) => e.stopPropagation()}>
         <button className="mclose" onClick={onClose}>×</button>
         <div className="mbody" style={{ padding: "22px 20px" }}>

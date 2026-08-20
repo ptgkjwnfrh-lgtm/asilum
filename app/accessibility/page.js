@@ -53,8 +53,9 @@ export default function AccessibilityPage() {
       <h2 className="statshead">COMPATIBILITY</h2>
       <p className="legal">
         the site is built to work with current versions of chrome, firefox,
-        safari, and edge, and with platform screen readers (voiceover, nvda,
-        jaws) and browser zoom up to 200%.
+        safari, and edge, and browser zoom up to 200%. voiceover is tested by
+        a person; nvda and jaws are built for but not yet hand-verified —
+        tell us if anything reads wrong there.
       </p>
 
       <h2 className="statshead">FEEDBACK</h2>

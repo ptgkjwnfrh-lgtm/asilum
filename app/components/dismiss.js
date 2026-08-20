@@ -5,7 +5,27 @@
 // float without an overlay (bag, Asterisk drawer) also close on a click
 // outside — excluding their own toggle button, so the toggle still toggles.
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+
+// Overlay click-away, hardened for assistive tech (found by ear, 20 Aug,
+// during the claim-12 VoiceOver pass): AT activation can fire a DUPLICATED
+// click at the trigger's screen position, and once the overlay is up that
+// ghost click lands on it — instantly dismissing what just opened. Two
+// guards: the click must land on the overlay ITSELF (not a child, so inner
+// surfaces no longer need their own stopPropagation to survive), and not
+// within the overlay's first 400ms of life. `active` is the overlay's open
+// condition — the birth clock resets each time it opens.
+export function useOverlayDismiss(onClose, active = true) {
+  const bornRef = useRef(0);
+  useEffect(() => {
+    if (active) bornRef.current = Date.now();
+  }, [active]);
+  return (event) => {
+    if (event.target !== event.currentTarget) return;
+    if (Date.now() - bornRef.current < 400) return;
+    onClose();
+  };
+}
 
 export function useEscape(onClose, active = true) {
   useEffect(() => {

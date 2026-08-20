@@ -16,6 +16,7 @@
 // page via the "asilum:signup-open" event.
 
 import { useEffect, useRef, useState } from "react";
+import { useOverlayDismiss } from "./dismiss.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 const SEEN_KEY = "asilum-signup-seen";
@@ -33,6 +34,7 @@ function markSeen() {
 
 export default function AccountSignup() {
   const [open, setOpen] = useState(false);
+  const dismissOverlay = useOverlayDismiss(dismiss, open); // AT ghost-click guarded
   const [mode, setMode] = useState("create"); // create | signin
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -208,7 +210,7 @@ export default function AccountSignup() {
   const creating = mode === "create";
 
   return (
-    <div className="overlay" onClick={dismiss}>
+    <div className="overlay" onClick={dismissOverlay}>
       <div className="sheet signupsheet" onClick={(event) => event.stopPropagation()}>
         <button className="mclose" onClick={dismiss} aria-label="close sign-up">×</button>
 

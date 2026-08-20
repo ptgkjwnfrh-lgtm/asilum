@@ -26,7 +26,7 @@ import { setFollowBrand, followedBrands } from "../../lib/social.js";
 import AsteriskDock from "../components/AsteriskDock.jsx";
 import ParisMap, { useParisRoads } from "../components/ParisMap.jsx";
 import Notice from "../components/Notice.jsx";
-import { useEscape } from "../components/dismiss.js";
+import { useEscape, useOverlayDismiss } from "../components/dismiss.js";
 
 const DOCK_WORDS = ["LISTENING", "LEARNING", "READING", "WEIGHING", "REMEMBERING"];
 const BOARD_KEY = "asilum-upload-board";
@@ -64,6 +64,7 @@ export default function UploadPage() {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetChecked, setResetChecked] = useState(false);
   useEscape(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
+  const dismissResetSheet = useOverlayDismiss(() => { setResetOpen(false); setResetChecked(false); }, resetOpen);
 
   async function resetBrain() {
     await postJSON("/api/reset", { user: uid }).catch(() => {});
@@ -379,7 +380,7 @@ export default function UploadPage() {
       </div>
 
       {resetOpen && (
-        <div className="overlay" onClick={() => { setResetOpen(false); setResetChecked(false); }}>
+        <div className="overlay" onClick={dismissResetSheet}>
           <div className="sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 460 }}>
             <button className="mclose" aria-label="close" onClick={() => { setResetOpen(false); setResetChecked(false); }}>×</button>
             <h2>Full amnesia<span style={{ color: "var(--red)" }}>.</span></h2>
