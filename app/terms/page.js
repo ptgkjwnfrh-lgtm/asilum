@@ -15,9 +15,9 @@ export default function TermsPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>TERMS OF SERVICE</h1>
       <p className="deck">
-        the agreement for using ASiLUM magazine. version 1.1 — effective
-        august 20, 2026 (adds the founders fee and purchase-info storage;
-        under legal review).
+        the agreement for using ASiLUM magazine. version 1.2 — effective
+        august 20, 2026 (adds the founders fee, purchase-info storage, and
+        the first-visit observation question; under legal review).
       </p>
 
       <h2 className="statshead">THE SERVICE</h2>
@@ -105,7 +105,9 @@ export default function TermsPage() {
         human-curated, source-cited culture catalog. it explains itself and
         accepts corrections, but it can be wrong, and its output is editorial
         guidance — not professional, commercial, or authentication advice.
-        you can pause or erase personalization at any time from{" "}
+        on your first visit the terminal asks whether to observe — an
+        unanswered question means an unobserved device, enforced
+        server-side. you can pause or erase personalization at any time from{" "}
         <a href="/settings">Settings</a> and the{" "}
         <a href="/asterisk">Asterisk control room</a>.
       </p>

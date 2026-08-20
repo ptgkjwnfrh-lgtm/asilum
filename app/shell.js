@@ -20,6 +20,7 @@ import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
+import ConsentMoment from "./components/ConsentMoment.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
 import AsteriskDock from "./components/AsteriskDock.jsx";
@@ -611,6 +612,8 @@ export default function Shell({ children }) {
       )}
 
       <main id="main" className="main">{children}</main>
+
+      <ConsentMoment />
 
       <OsStatus bagCount={bag.length} guideOn={guideOn} pathname={pathname || "/"} />
       <div className="os-crt" aria-hidden="true"><div className="os-roll" /></div>

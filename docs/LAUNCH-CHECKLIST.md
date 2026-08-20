@@ -93,9 +93,10 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
 
 ## GATE 6 — doors open
 
-- [ ] **Owner + Agent** D4 consent moment live BEFORE announce (ruled
-      20 Aug: spec approval → owner-directed UI round →
-      `d4-consent-spec-2026-08-20.md` build checklist).
+- [x] **Owner + Agent** D4 consent moment live BEFORE announce — **built
+      20 Aug on the owner's order** (server-enforced unanswered =
+      unobserved; `d4-consent-spec-2026-08-20.md` is the record). Voice
+      pass on the moment's draft copy rides the Gate 3 owner pass.
 - [ ] **Owner** Announce (however small — founding is the story).
 - [ ] **Agent** Watch `?area=orders` + deploy/floor/trigger checks;
       C1–C4 dashboards ship once real data exists (defined in the metric

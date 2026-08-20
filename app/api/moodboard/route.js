@@ -20,6 +20,7 @@ import {
 } from "../../../lib/db/production.js";
 import { paletteFromSwatches } from "../../../lib/vision/palette.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { EVENTS, buildEvent } from "../../../lib/events/index.js";
 import { analyzeMoodBoardItem } from "../../../lib/ai/moodBoardAnalyzer.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
@@ -42,6 +43,14 @@ export async function POST(req) {
   const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  // D4: uploads train deliberately — an EXPLICIT act; unanswered stays
+  // fully unobserved.
+  if (!observationAllowed(consentState(req), "explicit")) {
+    return NextResponse.json({
+      observed: false,
+      reason: "the first-visit question is unanswered — the terminal does not learn yet",
+    });
+  }
   const quota = await consumeRateLimit({ scope: "moodboard", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const kind = body.kind === "upload" ? "upload" : "text";

@@ -177,7 +177,16 @@ export default function SettingsPage() {
           <div className="rkctl">
             <button
               className={"fitbtn" + (observe ? " active" : "")}
-              onClick={() => { setObservation(!observe); setObserve(!observe); setNotice(!observe ? "observation on — the brain is watching what you linger on" : "observation off — the brain only learns from explicit actions"); }}
+              onClick={() => {
+                const next = !observe;
+                setObservation(next);
+                setObserve(next);
+                // D4 continuity: the toggle IS the consent control after the
+                // first visit — both directions, server-recorded.
+                postJSON("/api/consent", { user: getUid(), choice: next ? "observe" : "general" }).catch(() => {});
+                try { window.localStorage.setItem("asilum-consent", next ? "observe" : "general"); } catch {}
+                setNotice(next ? "observation on — the brain is watching what you linger on" : "observation off — the brain only learns from explicit actions");
+              }}
             >
               {observe ? "ON" : "OFF"}
             </button>

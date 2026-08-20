@@ -10,6 +10,7 @@ import { NextResponse } from "next/server";
 import { coldStart, migrateProfile } from "../../../lib/brain/index.js";
 import { mutateProfile } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
@@ -21,6 +22,14 @@ export async function POST(req) {
   const body = parsed.body;
   const userId = await resolveRequestUser(req, body.user || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  // D4: training is an EXPLICIT act — it teaches under GENERAL, but an
+  // unanswered device stays fully unobserved.
+  if (!observationAllowed(consentState(req), "explicit")) {
+    return NextResponse.json({
+      observed: false,
+      reason: "the first-visit question is unanswered — the terminal does not learn yet",
+    });
+  }
   const prompt = typeof body.prompt === "string" ? body.prompt.trim().slice(0, 400) : "";
 
   if (!prompt) {
