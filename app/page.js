@@ -11,7 +11,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
-import { useEscape, useFocusTrap } from "./components/dismiss.js";
+import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
@@ -97,6 +97,8 @@ export default function Home() {
   // One dismissal contract (synergy phase 1): Escape closes the open surface.
   const itemDialogRef = useRef(null);
   useEscape(() => setModal(null), !!modal);
+  const dismissItemModal = useOverlayDismiss(() => setModal(null), !!modal);
+  const dismissConnectSheet = useOverlayDismiss(useMoodboardInstead, connectOpen);
   // aria-modal="true" below is a promise that the page behind is inert.
   // This is what keeps it.
   useFocusTrap(itemDialogRef, !!modal);
@@ -765,7 +767,7 @@ export default function Home() {
 
       {/* ---- First visit: buyer-history scan (always escapable) ---- */}
       {connectOpen && (
-        <div className="overlay" onClick={useMoodboardInstead}>
+        <div className="overlay" onClick={dismissConnectSheet}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <button className="mclose" onClick={useMoodboardInstead}>×</button>
             <h2>Your taste, pre-loaded<span style={{ color: "var(--red)" }}>.</span></h2>
@@ -795,7 +797,7 @@ export default function Home() {
 
       {/* ---- Item detail: ALL the depth lives here ---- */}
       {modal && (
-        <div className="overlay" onClick={() => setModal(null)}>
+        <div className="overlay" onClick={dismissItemModal}>
           {/* A real dialog (launch audit, Aug 16): it announced as a plain div,
               so assistive tech had no way to know a layer had opened, what it
               was called, or that the page behind it was inert. `×` alone is not

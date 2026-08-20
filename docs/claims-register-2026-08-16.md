@@ -34,7 +34,7 @@ response-time promise — it is marked **unverified** rather than assumed true.
 | 9 | Motion respects reduce-motion; marquees and tickers stop | **true** |
 | 10 | Forms with real labels | **was FALSE — fixed** |
 | 11 | Explicit confirmation for destructive actions | **true** |
-| 12 | Works with VoiceOver, NVDA, JAWS | **unverified** |
+| 12 | Works with VoiceOver, NVDA, JAWS | **VoiceOver: verified by the owner, 20 Aug 2026** (cover, discover, item modal — announcements sounded right). NVDA/JAWS remain untested (no Windows machine). The pass ALSO surfaced a real interaction bug — AT ghost-click instantly dismissed overlays — fixed same day in `useOverlayDismiss` (dismiss.js), all five modals. |
 | 13 | Browser zoom to 200% | **true — measured** |
 | 14 | Response within five business days | **not verifiable from code** |
 
@@ -132,9 +132,17 @@ is the same problem in a quieter form.
   focus behaviour are now all verified and guarded. See below. What remains
   unchecked is only the subjective half — whether the order *reads* sensibly to
   a person, which is part of the screen-reader pass in claim 12.
-- **12. VoiceOver / NVDA / JAWS.** No assistive-technology pass has ever been
-  run. The static tests in this repo check *structure*; they cannot tell you
-  what a screen reader says. This is the largest remaining gap.
+- **12. VoiceOver / NVDA / JAWS.** **VoiceOver pass run by the owner, 20 Aug
+  2026** — /cover, /discover, and the item modal all announced sensibly. The
+  pass did exactly what a human pass is for: it caught a bug no static test
+  could — assistive-tech activation fires a DUPLICATED click at the trigger's
+  screen position, and the ghost click landed on the overlay behind the
+  just-opened modal, instantly dismissing it. Fixed the same day:
+  `useOverlayDismiss` (components/dismiss.js) guards every overlay (target
+  must be the overlay itself + a 400ms birth window), applied to all five
+  modals, mechanically verified both ways. NVDA/JAWS still untested — needs
+  a Windows machine; the claim's wording on /accessibility should name
+  VoiceOver only until then.
 - ~~**13. Zoom to 200%.**~~ **Now measured and true.** See below.
 - **14. Five business days.** A process commitment, unverifiable from code.
   Left to the owner.
