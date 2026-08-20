@@ -26,7 +26,7 @@ against the real paid session, chain proofs) — cited, not re-run.
 | SETTINGS `/settings` | PASS | 9 | Observation section, legal line, DESIGN CONSOLE present. Partnered-account statuses not conclusively probed (selector, not evidence of a defect). |
 | ORDERS `/orders` | PASS | 10 | YOUR ORDERS ledger deck with four honest states, resume-payment ↗ into the SAME session, return banners with param-strip. The paid loop and the banner were browser-proven same day. |
 | `/piece/<id>` | PASS | 9 | Renders the real item; safe read surface. |
-| `/u/<handle>` | PASS | 7 | Renders, but MOCK_USERS-backed — coherent in voice yet synthetic people on a platform whose law is "no fake": fine while private, **needs a launch decision** (label, gate, or remove) before strangers browse. |
+| `/u/<handle>` | PASS | 10 | **CORRECTED (same day):** the original 7 was this audit's own misread. `DEMO_SOCIAL_ENABLED` is false in every production build (`lib/social.js:70`), so MOCK_USERS is an empty array there: `/u/vera` renders the honest NOT-FOUND/identity-chain state (re-verified live: no mock content), and WHO TO FOLLOW prints "load-test profiles are hidden." No launch decision needed — the gate has existed since the identity-chain order (Aug 13). |
 | `/terms` | PASS | 8 | Longest page, tickets/wardrobe/demo covered; refund section pending counsel (checklist Gate 3) — known, not a defect. |
 | `/accessibility` | PASS | 9 | Claims page stands; claim 12 (human screen reader) still open. |
 | `/stats` | PASS | 8 | Page 200; APIs correctly identity-gated. Not deep-probed this sweep. |
@@ -39,6 +39,34 @@ against the real paid session, chain proofs) — cited, not re-run.
 **Sweep hygiene:** zero server errors across the whole run; three console
 resource statuses total (one the by-design wire 403; a 404 and a 400
 unattributed — non-fatal, re-attribute if they recur).
+
+## Amendment — the owner's UI round (same day, #298)
+
+The owner granted UI edit freedom to close the gaps, plus one landing law.
+Shipped and live-verified:
+
+- **Landing law:** on DESKTOP the terminal opens on the FRONT COVER — the
+  magazine leads; on MOBILE (≤760px) it opens straight to the CATALOG.
+  Lives in the shell (mounts once per true entry; the page loses a
+  Suspense-commit race — measured). In-app CATALOG clicks never bounce,
+  deep links (`?item=`, any query) never bounce, refresh mid-visit never
+  bounces (session stamp), and a zero-width layout (restoring/background
+  tab) DEFERS the call frame-by-frame rather than deciding — mobile's
+  answer is the safe default. All four behaviors verified live.
+- **Wire composer** (9 → 10): anonymous readers now see, at the composer
+  itself, "transmissions ride on a signed-in account — reading is open,
+  posting is named · sign in on your passport →". Verified both themes,
+  375px.
+- **Stylist empty state** (8 → 10 coherence): first-load-zero now says
+  "the catalog is too small to cut looks from right now — the racks refill
+  as designers land"; "you passed on everything" is reserved for actual
+  passes (the page already tracked them). Verified live on a small pool.
+- **`/u/<handle>`** (7 → 10): no change needed — the score corrected above.
+- Reclassified, no change warranted: DISCOVER's −1 was a mem-store
+  artifact (production reads the DB); PROFILE's −1 is the harness's
+  sb-session limit, not the product; `/terms` and `/upload` sit at their
+  designed gates (refund copy = Gate 3; vision = keys) — coherent AT
+  those gates.
 
 ## Verdict
 

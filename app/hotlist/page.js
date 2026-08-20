@@ -90,6 +90,15 @@ export default function TheWirePage() {
   const [reportFake, setReportFake] = useState("");
   const [reportMsg, setReportMsg] = useState("");
   const [reportBusy, setReportBusy] = useState(false);
+  // Posting is NAMED (sb-only, the Aug 13 law) — an anonymous reader gets
+  // the hint AT the composer, before typing, not a refusal after.
+  const [anonPoster, setAnonPoster] = useState(false);
+  useEffect(() => {
+    const check = () => setAnonPoster(!(getUid() || "").startsWith("sb-"));
+    check();
+    window.addEventListener("asilum:identity", check);
+    return () => window.removeEventListener("asilum:identity", check);
+  }, []);
   // Which floor posts are the caller's own — SERVER truth (?mine=1, the
   // verified identity), not the local text-match chip: controls that
   // could 404 on a stranger's post must never render on one.
@@ -309,6 +318,13 @@ export default function TheWirePage() {
             VIDEO ≤3:00
           </button>
         </div>
+        {anonPoster && (
+          <p className="pempty">
+            transmissions ride on a signed-in account — reading is open,
+            posting is named.{" "}
+            <a className="bizapply" href="/profile#access">sign in on your passport →</a>
+          </p>
+        )}
 
         {mode === "transmission" && (
           <div className="wcompose">
