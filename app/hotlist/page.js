@@ -83,6 +83,9 @@ export default function TheWirePage() {
   const [focus, setFocus] = useState(undefined);
   // The booth roster — verified business accounts, server truth.
   const [booths, setBooths] = useState(null);
+  // P4 — paid placements matched to THIS passport (empty for cold taste,
+  // empty when no booth pays; labeled PAID PLACEMENT whenever shown).
+  const [paidBooths, setPaidBooths] = useState([]);
   // Impersonation report form (18 Aug) — server enforces the signed-in
   // requirement; refusals render as the server's own words.
   const [reportBrand, setReportBrand] = useState("");
@@ -206,11 +209,23 @@ export default function TheWirePage() {
       setFocus(null);
       fetchPost(pid).then((p) => setFocus(p || false));
     }
-    fetch("/api/business?booths=1")
+    authorizedFetch("/api/business?booths=1&user=" + encodeURIComponent(getUid() || ""))
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d) setBooths(Array.isArray(d.booths) ? d.booths.slice(0, 10) : []); })
+      .then((d) => {
+        if (!d) return;
+        setBooths(Array.isArray(d.booths) ? d.booths.slice(0, 10) : []);
+        setPaidBooths(Array.isArray(d.paidBooths) ? d.paidBooths : []);
+      })
       .catch(() => setBooths([]));
   }, []);
+
+  // P2 — the attribution channel's client half: a click-through on a booth
+  // is recorded before the reader leaves. Fire-and-forget; the server
+  // refuses unknown booths and the ledger stays honest either way.
+  function noteBoothVisit(sourceName) {
+    if (!sourceName) return;
+    postJSON("/api/booth-visit", { user: getUid(), sourceName }).catch(() => {});
+  }
 
   function publish() {
     const t = text.trim();
@@ -467,6 +482,44 @@ export default function TheWirePage() {
           Shopify, and connecting its personal website — only business
           accounts get a chance at a booth. nothing stands in.
         </p>
+        {paidBooths.length > 0 && (
+          <div className="paidrail" aria-label="paid placements">
+            <p className="elnote">
+              PAID PLACEMENT — these booths pay for the spot, and they reach
+              you only because your Passport already points at their work.
+              taste gates the door; rent never buys the wrong audience.
+            </p>
+            {paidBooths.map((b) => (
+              <div className="booth" key={"paid-" + b.sourceName}>
+                <div className="elnum" aria-hidden="true">★</div>
+                <div className="boothbody">
+                  <b>{b.brandName}</b>
+                  <span>
+                    matched to your Passport ·{" "}
+                    <a
+                      className="boothsite"
+                      href={b.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => noteBoothVisit(b.sourceName)}
+                    >
+                      their site ↗
+                    </a>
+                    {" · "}
+                    <a
+                      className="boothsite"
+                      href={"/discover?q=" + encodeURIComponent(b.brandName)}
+                      onClick={() => noteBoothVisit(b.sourceName)}
+                    >
+                      their pieces →
+                    </a>
+                  </span>
+                </div>
+                <span className="boothtag">PAID PLACEMENT</span>
+              </div>
+            ))}
+          </div>
+        )}
         {BOOTHS.map((n) => {
           const holder = booths ? booths[n - 1] : null;
           return (
@@ -477,13 +530,23 @@ export default function TheWirePage() {
                   <b>{holder.brandName}</b>
                   <span>
                     verified independent brand ·{" "}
-                    <a className="boothsite" href={holder.websiteUrl} target="_blank" rel="noopener noreferrer">
+                    <a
+                      className="boothsite"
+                      href={holder.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => noteBoothVisit(holder.sourceName)}
+                    >
                       their site ↗
                     </a>
                     {holder.sourceName && (
                       <>
                         {" · "}
-                        <a className="boothsite" href={"/discover?q=" + encodeURIComponent(holder.brandName)}>
+                        <a
+                          className="boothsite"
+                          href={"/discover?q=" + encodeURIComponent(holder.brandName)}
+                          onClick={() => noteBoothVisit(holder.sourceName)}
+                        >
                           their pieces →
                         </a>
                       </>
