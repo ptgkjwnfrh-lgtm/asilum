@@ -23,6 +23,9 @@ pass pending), ../DESIGNER-INTAKE.md (the intake call itself).
 - [ ] Collect: brand name, payout details, contact, ship-from region.
 - [ ] Choose their `sourceName` slug (a-z0-9-, e.g. `atelier-example`) —
       permanent, it namespaces their item ids.
+- [ ] If they opt into the hotlist booth: record the opt-in + issue the
+      first month's rent invoice ($150 — manual for the first cohort;
+      ../hotlist-program-spec-2026-08-20.md P3).
 
 ### 2. The pieces (owner + designer)
 - [ ] 3–10 pieces to start; for each, the intake template fields
@@ -38,8 +41,9 @@ pass pending), ../DESIGNER-INTAKE.md (the intake call itself).
       (`POST /api/checkout` returns a Stripe URL, not the demo 409).
 
 ### 4. Business account, verification, and the Shopify fast path
-The business account is the designer's home when they want one (booth,
-inventory link, store import). Selling still works without it — items sell
+The business account is the designer's home when they want one (the
+hotlist booth — the paid program, see OFFER.md — inventory link, store
+import). Selling still works without it — items sell
 by taste routing regardless — but the fast path for a Shopify designer is:
 
 - [ ] Designer signs in and applies (brand name, `their-shop.myshopify.com`,

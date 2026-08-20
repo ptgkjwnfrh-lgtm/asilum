@@ -370,7 +370,7 @@ ship they follow the `—`-not-zero rule until real data exists.
 |---|--------|------------|-----------------|
 | C1 | visitor→purchase conversion | distinct identities with ≥1 `orders.status='paid'` in window ÷ distinct identities with ≥1 feed/discover impression in window | `orders` + impressions ledger |
 | C2 | repeat rate | identities with ≥2 paid orders ÷ identities with ≥1 paid order (all-time until volume justifies a window) | `orders` |
-| C3 | contribution margin per order | (15% commission − Stripe fees − refund cost share) per paid order, in the order's currency; NEGATIVE numbers print as negative | `orders` + Stripe balance transactions (fees are Stripe's word, never estimated) |
+| C3 | contribution margin per order | (ASILUM revenue on the order − Stripe fees − refund cost share) per paid order, in the order's currency, where revenue = the 1% founders fee + 15% of item price IF hotlist-attributed (economics ruling 20 Aug 2026; booth rent is NOT allocated per order — it reports as its own monthly line); NEGATIVE numbers print as negative, and base-sale orders are EXPECTED negative at current processing costs (recorded flag, `hotlist-program-spec-2026-08-20.md` §2) | `orders` (incl. `fee_cents`) + Stripe balance transactions (fees are Stripe's word, never estimated) |
 | C4 | support minutes per order | operator-logged minutes ÷ paid orders in window; **manual log, honestly labeled as such** until a support tool exists | operator log (does not exist yet) |
 
 Rules inherited from this register: windows named on the surface, `—` until

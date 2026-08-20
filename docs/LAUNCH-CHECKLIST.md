@@ -5,24 +5,27 @@ Sources of truth it consolidates: HANDOVER-2026-08-18 (owner queue),
 designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
 **Owner** = only you can do it. **Agent** = say the word and it runs.
 
-## GATE 0 — today, no dependencies (~20 minutes total)
+## GATE 0 — ✅ CLOSED 20 Aug 2026 (all eight, owner driving)
 
-- [ ] **Owner** Supabase Site URL → `https://www.asilummagazine.com`
-      (Authentication → URL Configuration → Save). Closes ruling 7.
-- [ ] **Owner** Roll the sandbox Stripe test key (Developers → API keys) —
-      the screenshot burn; then click-to-copy the new one → `.env.local`.
-- [ ] **Owner** Log into Vercel → project `asilum-vq9p` → Settings →
-      Domains. Nothing attached? Disconnect it — halves build spend.
-- [ ] **Owner** `/admin` STEP 1 — eyeball the panels (row counts: 16 Aug
-      handover; panel 07 = 2 rows is correct).
-- [ ] **Owner** Claim 12 — five minutes of VoiceOver on /cover, /discover,
-      the item modal. The last soft accessibility claim.
-- [ ] **Owner** gh token `workflow` scope, or hand-commit
-      `docs/deploy-drift-workflow.yml.txt` → `.github/workflows/`.
-- [ ] **Owner ruling** The $5 booth fee: affirm or stays dead (materials
-      currently say "no fees").
-- [ ] **Owner ruling** D4 — observation default (recommendation: first-visit
-      consent moment). Sets the privacy posture BEFORE strangers arrive.
+- [x] **Owner** Supabase Site URL → `https://www.asilummagazine.com` —
+      saved + DOM-verified. Ruling 7 fully closed.
+- [x] **Owner** Stripe sandbox key ROTATED + proven (3 keyed tests pass on
+      the new key; old key dead).
+- [x] **Owner** `asilum-vq9p` DELETED (held zero domains) — build spend
+      halved; plain merge ritual restored the same hour (#300).
+- [x] **Owner** `/admin` STEP 1 — token re-minted (old was
+      Vercel-Sensitive, trap 20), all four panels verified.
+- [x] **Owner** Claim 12 — VoiceOver pass by ear; caught + fixed the AT
+      ghost-click bug (#300).
+- [x] **Owner** Deploy-drift workflow ACTIVE via web commit (`c40e1ff`).
+- [x] **Owner ruling** Booth fee: the $5 fee stays dead — economics
+      re-ruled 20 Aug: 1% buyer-paid founders fee on every sale, no base
+      commission, hotlist booth = optional paid program ($150/mo + 15%
+      attributed-only, taste-gated). Ruling record + build spec:
+      `hotlist-program-spec-2026-08-20.md`; designer docs rewritten.
+- [x] **Owner ruling** D4 = (b) first-visit consent moment. Spec awaiting
+      owner approval: `d4-consent-spec-2026-08-20.md`; ships in an
+      owner-directed UI round, live before doors open (see Gate 6).
 
 ## GATE 1 — Supabase, hard deadline **5 Sep**
 
@@ -57,10 +60,13 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
 - [ ] **Owner + Agent** Refund policy onto `/terms` (owner directs the UI
       round; the draft is written).
 - [ ] **Owner** Voice pass on `designer-program/OFFER.md` and
-      `OUTREACH-LETTER.md` (terms are binding; the words are yours).
+      `OUTREACH-LETTER.md` (terms are binding — re-ruled 20 Aug to the
+      founders-fee model; the words are yours).
 
 ## GATE 4 — designers (the real work)
 
+- [ ] **Agent** Founders fee (1%) live in checkout BEFORE the first real
+      piece can sell (`hotlist-program-spec-2026-08-20.md` P1).
 - [ ] **Owner** First five outreach sends — [PERSONAL LINE] each, one at a
       time, log who/when. (Letter parked at OUTREACH-LETTER.md.)
 - [ ] **Owner + Agent** Per yes: ONBOARDING.md §§1–4 (apply → domain token →
@@ -79,6 +85,9 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
 
 ## GATE 6 — doors open
 
+- [ ] **Owner + Agent** D4 consent moment live BEFORE announce (ruled
+      20 Aug: spec approval → owner-directed UI round →
+      `d4-consent-spec-2026-08-20.md` build checklist).
 - [ ] **Owner** Announce (however small — founding is the story).
 - [ ] **Agent** Watch `?area=orders` + deploy/floor/trigger checks;
       C1–C4 dashboards ship once real data exists (defined in the metric
