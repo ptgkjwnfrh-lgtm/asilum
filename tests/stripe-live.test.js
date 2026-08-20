@@ -17,14 +17,14 @@ live("checkout session round-trip against Stripe test mode", async () => {
     itemId: "live-test-item",
     title: "ASILUM client round-trip check",
     amountCents: 100,
-    feeCents: 1,
+    feeCents: 31,
     currency: "usd",
     origin: "https://www.asilummagazine.com",
     user: "u-live-test",
   });
   assert.ok(session.id.startsWith("cs_test_"), "session id shape");
   assert.match(session.url, /^https:\/\/checkout\.stripe\.com\//);
-  assert.equal(session.amount_total, 101, "item + the 1% founders-fee line item");
+  assert.equal(session.amount_total, 131, "item + the floored founders-fee line item");
   assert.equal(session.payment_status, "unpaid");
   const again = await retrieveCheckoutSession(session.id);
   assert.equal(again.id, session.id);
@@ -43,6 +43,24 @@ live("refund round-trip: a directly-confirmed test payment refunds in full", asy
   assert.ok(refund.id.startsWith("re_"));
   assert.equal(refund.status, "succeeded");
   assert.equal(refund.amount, 500);
+});
+
+live("ticket-fee intent: the 50¢ standalone floor charges, confirms, and refunds", async () => {
+  const { createPaymentIntent, confirmPaymentIntent, createRefund, StripeApiError } = await import("../lib/payments/stripe.js");
+  // The reason the standalone floor is 50 and not the ruled 31: Stripe's own
+  // minimum. Keep the proof that 31¢ alone is refused.
+  await assert.rejects(
+    () => createPaymentIntent({ amountCents: 31, currency: "usd", metadata: { kind: "ticket_fee_check" } }),
+    (err) => err instanceof StripeApiError && err.code === "amount_too_small"
+  );
+  const intent = await createPaymentIntent({ amountCents: 50, currency: "usd", metadata: { kind: "ticket_fee_check" } });
+  assert.equal(intent.amount, 50);
+  const confirmed = await confirmPaymentIntent(intent.id, { paymentMethod: "pm_card_visa", offSession: false });
+  assert.equal(confirmed.status, "succeeded");
+  assert.equal(confirmed.amount_received, 50);
+  const refund = await createRefund(confirmed.id);
+  assert.equal(refund.status, "succeeded");
+  assert.equal(refund.amount, 50);
 });
 
 live("a bad request surfaces Stripe's own error, typed", async () => {

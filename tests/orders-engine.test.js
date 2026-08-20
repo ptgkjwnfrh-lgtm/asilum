@@ -10,12 +10,12 @@ delete process.env.STRIPE_SECRET_KEY;
 delete process.env.DATABASE_URL;
 
 const {
-  refusalReason, startCheckout, applyStripeWebhook, refundOrder,
-  foundersFeeCents, FOUNDERS_FEE_RATE,
+  refusalReason, startCheckout, startTicketFee, applyStripeWebhook, refundOrder,
+  foundersFeeCents, FOUNDERS_FEE_RATE, FOUNDERS_FEE_FLOOR_CENTS, getTicketByFeeOrder,
 } = await import("../lib/orders.js");
 const {
-  createOrderWithEvent, attachOrderSession, applyOrderEvent, getOrder, listOrderEvents,
-  listOrdersForUser,
+  createOrderWithEvent, attachOrderSession, attachOrderPaymentIntent, applyOrderEvent, getOrder,
+  listOrderEvents, listOrdersForUser,
 } = await import("../lib/db/orders.js");
 const { publicProduct } = await import("../lib/products.js");
 
@@ -116,13 +116,75 @@ test("listOrdersForUser: newest first, own orders only, capped", async () => {
   assert.deepEqual(await listOrdersForUser(""), []);
 });
 
-test("founders fee: 1% of item price, cent-rounded (ruled 20 Aug 2026)", () => {
+test("founders fee: 1% with the 31¢ floor (rulings, 20 Aug 2026)", () => {
   assert.equal(FOUNDERS_FEE_RATE, 0.01);
+  assert.equal(FOUNDERS_FEE_FLOOR_CENTS, 31);
   assert.equal(foundersFeeCents(10000), 100); // the ruling's own example: $100 → $1
-  assert.equal(foundersFeeCents(4200), 42);
   assert.equal(foundersFeeCents(8050), 81);   // half-cent rounds up
-  assert.equal(foundersFeeCents(49), 0);      // sub-50¢ item: no fee, no fee line
-  assert.equal(foundersFeeCents(50), 1);
+  assert.equal(foundersFeeCents(3100), 31);   // $31 exactly — both rules agree
+  assert.equal(foundersFeeCents(3000), 31);   // $30 → the floor, never 30¢
+  assert.equal(foundersFeeCents(49), 31);     // a sub-dollar piece still pays 31¢
+  assert.equal(foundersFeeCents(5000), 50);   // above $31 the plain 1% rules
+});
+
+test("ticket fee (standalone charge): Stripe's 50¢ minimum overlays the floor", async () => {
+  const { ticketFeeCents, STRIPE_MINIMUM_CHARGE_CENTS } = await import("../lib/orders.js");
+  assert.equal(STRIPE_MINIMUM_CHARGE_CENTS, 50); // amount_too_small below this, learned live
+  assert.equal(ticketFeeCents(3000), 50);   // $30 piece: 31¢ ruled, 50¢ chargeable
+  assert.equal(ticketFeeCents(4999), 50);   // 1% still under the processor minimum
+  assert.equal(ticketFeeCents(5000), 50);   // $50 — the seam, both agree
+  assert.equal(ticketFeeCents(5100), 51);   // above it the plain 1% rules
+  assert.equal(ticketFeeCents(10000), 100); // the ruling's example unchanged
+});
+
+test("startTicketFee: unkeyed 503; keyed but unconsented 400", async () => {
+  assert.equal((await startTicketFee({ user: "u-t", itemId: "x", consent: true })).status, 503);
+  process.env.STRIPE_SECRET_KEY = "sk_test_ticketguard";
+  try {
+    const result = await startTicketFee({ user: "u-t", itemId: "x", consent: false });
+    assert.equal(result.status, 400);
+    assert.match(result.error, /disclaimer/);
+  } finally {
+    delete process.env.STRIPE_SECRET_KEY;
+  }
+});
+
+test("ticket-fee: the tamper gate holds, the exact amount settles, ONE ticket issues", async () => {
+  const order = await createOrderWithEvent({
+    user: "u-fee2", itemId: "test-real-item", amountCents: 4200, feeCents: 42, currency: "usd", kind: "ticket_fee",
+  });
+  assert.equal(order.kind, "ticket_fee");
+  await attachOrderPaymentIntent(order.id, "pi_tamper_1");
+
+  // Wrong amount: recorded loudly, nothing settles, no ticket exists.
+  const bad = await applyStripeWebhook({
+    id: "evt_fee_bad", type: "payment_intent.succeeded",
+    data: { object: { id: "pi_tamper_1", amount: 1, amount_received: 1, currency: "usd", metadata: { order_id: order.id } } },
+  });
+  assert.equal(bad.handled, true);
+  assert.match(String(bad.mismatch), /amount 1 != fee 42/);
+  assert.equal((await getOrder(order.id)).status, "awaiting_payment");
+  assert.ok((await listOrderEvents(order.id)).some((e) => e.type === "amount_mismatch"));
+  assert.equal(await getTicketByFeeOrder(order.id), null);
+
+  // The exact amount: settles paid, issues the ticket with consent stamped.
+  const good = await applyStripeWebhook({
+    id: "evt_fee_good", type: "payment_intent.succeeded",
+    data: { object: { id: "pi_tamper_1", amount: 42, amount_received: 42, currency: "usd", metadata: { order_id: order.id } } },
+  });
+  assert.equal(good.handled, true);
+  assert.equal(good.duplicate, false);
+  assert.equal((await getOrder(order.id)).status, "paid");
+  const ticket = await getTicketByFeeOrder(order.id);
+  assert.ok(ticket, "the paid fee issued its ticket");
+  assert.equal(ticket.status, "checkout_started");
+
+  // Redelivery: acknowledged, nothing new — still exactly one ticket.
+  const again = await applyStripeWebhook({
+    id: "evt_fee_good", type: "payment_intent.succeeded",
+    data: { object: { id: "pi_tamper_1", amount: 42, amount_received: 42, currency: "usd", metadata: { order_id: order.id } } },
+  });
+  assert.equal(again.duplicate, true);
 });
 
 test("ledger carries the fee: fee_cents snapshots at creation, defaults 0", async () => {
