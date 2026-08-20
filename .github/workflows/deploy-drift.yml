@@ -1,0 +1,61 @@
+# NOT ACTIVE YET ‚Äî paste this to .github/workflows/deploy-drift.yml
+#
+# It lives here as a snippet because the stored gh OAuth token has no `workflow`
+# scope, so a push that creates or edits .github/workflows/* is rejected by
+# GitHub outright:
+#
+#   ! [remote rejected] refusing to allow an OAuth App to create or update
+#     workflow `.github/workflows/deploy-drift.yml` without `workflow` scope
+#
+# The check itself is already live and runnable: `npm run deploy:check`
+# (scripts/check-deploy-drift.mjs). Only the automation is waiting.
+#
+# To activate, either commit this file to .github/workflows/ by hand, or
+# re-authorise the token with the `workflow` scope and let an agent do it.
+#
+# ---------------------------------------------------------------------------
+
+name: Deploy drift
+
+# "Merged" and "deployed" are not the same word, and on 17 August they came
+# apart for most of a day with no signal: first Vercel's daily build allowance
+# ran out, then production deployments stopped firing while PR previews kept
+# succeeding ‚Äî reporting nothing at all. The accessibility fixes existed and no
+# user had them.
+#
+# This runs after every push to main (once the deployment has had time to land)
+# and on a schedule, so the gap announces itself instead of being noticed by
+# accident.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The check compares main against the deployed sha, so it needs real
+          # history ‚Äî a shallow clone cannot answer "how far behind".
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      # A deployment takes a couple of minutes to report. Checking immediately
+      # would flag every push as drift.
+      - name: wait for the deployment to report
+        if: github.event_name == 'push'
+        run: sleep 240
+      - run: npm run deploy:check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
