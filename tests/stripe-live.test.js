@@ -17,13 +17,14 @@ live("checkout session round-trip against Stripe test mode", async () => {
     itemId: "live-test-item",
     title: "ASILUM client round-trip check",
     amountCents: 100,
+    feeCents: 1,
     currency: "usd",
     origin: "https://www.asilummagazine.com",
     user: "u-live-test",
   });
   assert.ok(session.id.startsWith("cs_test_"), "session id shape");
   assert.match(session.url, /^https:\/\/checkout\.stripe\.com\//);
-  assert.equal(session.amount_total, 100);
+  assert.equal(session.amount_total, 101, "item + the 1% founders-fee line item");
   assert.equal(session.payment_status, "unpaid");
   const again = await retrieveCheckoutSession(session.id);
   assert.equal(again.id, session.id);

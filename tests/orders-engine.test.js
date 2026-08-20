@@ -9,7 +9,10 @@ import assert from "node:assert/strict";
 delete process.env.STRIPE_SECRET_KEY;
 delete process.env.DATABASE_URL;
 
-const { refusalReason, startCheckout, applyStripeWebhook, refundOrder } = await import("../lib/orders.js");
+const {
+  refusalReason, startCheckout, applyStripeWebhook, refundOrder,
+  foundersFeeCents, FOUNDERS_FEE_RATE,
+} = await import("../lib/orders.js");
 const {
   createOrderWithEvent, attachOrderSession, applyOrderEvent, getOrder, listOrderEvents,
   listOrdersForUser,
@@ -111,6 +114,27 @@ test("listOrdersForUser: newest first, own orders only, capped", async () => {
   assert.ok(mine.every((o) => o.user_id === "u-list"));
   assert.deepEqual(mine.map((o) => o.id), [b.id, a.id], "newest first");
   assert.deepEqual(await listOrdersForUser(""), []);
+});
+
+test("founders fee: 1% of item price, cent-rounded (ruled 20 Aug 2026)", () => {
+  assert.equal(FOUNDERS_FEE_RATE, 0.01);
+  assert.equal(foundersFeeCents(10000), 100); // the ruling's own example: $100 → $1
+  assert.equal(foundersFeeCents(4200), 42);
+  assert.equal(foundersFeeCents(8050), 81);   // half-cent rounds up
+  assert.equal(foundersFeeCents(49), 0);      // sub-50¢ item: no fee, no fee line
+  assert.equal(foundersFeeCents(50), 1);
+});
+
+test("ledger carries the fee: fee_cents snapshots at creation, defaults 0", async () => {
+  const withFee = await createOrderWithEvent({
+    user: "u-fee", itemId: "test-real-item", amountCents: 10000, feeCents: 100, currency: "usd",
+  });
+  assert.equal(withFee.fee_cents, 100);
+  assert.equal(withFee.amount_cents, 10000, "amount_cents stays the item-price snapshot");
+  const without = await createOrderWithEvent({
+    user: "u-fee", itemId: "test-real-item", amountCents: 100, currency: "usd",
+  });
+  assert.equal(without.fee_cents, 0, "fee-less callers stay truthful at 0");
 });
 
 test("webhook: completed settles by session id, unknown types are untouched, orphans are named", async () => {
