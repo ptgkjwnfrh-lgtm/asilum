@@ -10,7 +10,7 @@
 
 import { useEffect, useState } from "react";
 import Notice from "../components/Notice.jsx";
-import { getUid, postJSON, sendJSON, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
+import { getUid, postJSON, sendJSON, authorizedFetch, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
@@ -276,6 +276,126 @@ export default function SettingsPage() {
           <a href="/accessibility">ACCESSIBILITY</a>
         </p>
       </section>
+
+      <PurchaseInfoRack />
     </div>
+  );
+}
+
+// Module 06 — PURCHASE INFO (owner ruling, 20 Aug 2026). The buyer vault's
+// ONE editing door: name and address typed once at first purchase live
+// here; the saved card shows brand + last4 only (Stripe holds the card —
+// ASILUM never saw a number). Every control is real: edit, remove the
+// card, or forget everything.
+function PurchaseInfoRack() {
+  const [profile, setProfile] = useState(null);
+  const [form, setForm] = useState(null); // null = display mode
+  const [note, setNote] = useState("");
+
+  async function refresh() {
+    const res = await authorizedFetch(`/api/purchase-info?user=${encodeURIComponent(getUid())}`).catch(() => null);
+    const d = res ? await res.json().catch(() => ({})) : {};
+    if (res && res.ok) setProfile(d.profile || null);
+  }
+  useEffect(() => { refresh(); }, []);
+
+  function beginEdit() {
+    setForm({
+      fullName: (profile && profile.full_name) || "",
+      addressLine1: (profile && profile.address_line1) || "",
+      addressLine2: (profile && profile.address_line2) || "",
+      city: (profile && profile.city) || "",
+      region: (profile && profile.region) || "",
+      postalCode: (profile && profile.postal_code) || "",
+      country: (profile && profile.country) || "",
+    });
+  }
+
+  async function save() {
+    const res = await sendJSON("PUT", "/api/purchase-info", { user: getUid(), profile: form }).catch(() => null);
+    const d = res ? await res.json().catch(() => ({})) : {};
+    if (!res || !res.ok) { setNote((d && d.error) || "could not save"); return; }
+    setProfile(d.profile || null);
+    setForm(null);
+    setNote("saved — used at your next checkout, typed never again");
+  }
+
+  async function dropCard() {
+    const res = await fetch(`/api/purchase-info?card=1&user=${encodeURIComponent(getUid())}`, { method: "DELETE" }).catch(() => null);
+    const d = res ? await res.json().catch(() => ({})) : {};
+    if (res && res.ok) { setProfile(d.profile || null); setNote("card reference removed — the next fee asks once"); }
+  }
+
+  async function forgetAll() {
+    const res = await fetch(`/api/purchase-info?user=${encodeURIComponent(getUid())}`, { method: "DELETE" }).catch(() => null);
+    if (res && res.ok) { setProfile(null); setForm(null); setNote("forgotten — first purchase will ask once again"); }
+  }
+
+  const F = (k, label, auto) => (
+    <label><span>{label}</span>
+      <input value={form[k]} autoComplete={auto}
+        onChange={(e) => setForm((f) => ({ ...f, [k]: e.target.value }))} />
+    </label>
+  );
+
+  return (
+    <section className="rkmod" aria-label="purchase info">
+      <div className="rkhead"><b>06</b> PURCHASE INFO <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+      <p className="legal">
+        stored once at your first purchase, in a separate vault apart from the
+        catalog and your taste record; used only to open checkout without
+        retyping. the card itself lives at Stripe — ASILUM keeps a reference
+        and the last four digits, never a number.
+      </p>
+      <Notice onDismiss={() => setNote("")}>{note}</Notice>
+      {!profile && !form && (
+        <p className="pempty">nothing stored yet — your first purchase asks once, then it lives here.</p>
+      )}
+      {profile && !form && (
+        <div className="chkonfile">
+          <span className="cclbl">NAME</span><span className="ccval">{profile.full_name || "—"}</span>
+          <span className="cclbl">ADDRESS</span>
+          <span className="ccval">
+            {[profile.address_line1, profile.address_line2, profile.city, profile.region, profile.postal_code, profile.country]
+              .filter(Boolean).join(", ") || "—"}
+          </span>
+          <span className="cclbl">CARD</span>
+          <span className="ccval">
+            {profile.has_saved_card
+              ? `${(profile.card_brand || "card").toUpperCase()} ···· ${profile.card_last4 || ""}`
+              : "none saved"}
+          </span>
+        </div>
+      )}
+      {form && (
+        <div className="chkform">
+          {F("fullName", "FULL NAME", "name")}
+          {F("addressLine1", "ADDRESS", "address-line1")}
+          {F("addressLine2", "ADDRESS 2 (optional)", "address-line2")}
+          {F("city", "CITY", "address-level2")}
+          {F("region", "REGION / STATE", "address-level1")}
+          {F("postalCode", "POSTAL CODE", "postal-code")}
+          {F("country", "COUNTRY", "country-name")}
+        </div>
+      )}
+      <div className="setrow">
+        {form ? (
+          <>
+            <button className="btn" onClick={save}>SAVE ✓</button>
+            <button className="btn ghost" onClick={() => setForm(null)}>CANCEL</button>
+          </>
+        ) : (
+          <>
+            <button className="btn" onClick={beginEdit}>{profile ? "EDIT" : "ADD DETAILS"}</button>
+            {profile && profile.has_saved_card && (
+              <button className="btn ghost" onClick={dropCard}>REMOVE CARD ✓</button>
+            )}
+            {profile && (
+              <button className="btn ghost" onClick={forgetAll}>FORGET EVERYTHING ✓</button>
+            )}
+          </>
+        )}
+      </div>
+    </section>
   );
 }

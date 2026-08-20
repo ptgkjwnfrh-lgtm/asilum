@@ -22,8 +22,9 @@ terminal.** Founding designers are the point, not an afterthought.
 
 - **You keep 100% of your price on every base sale.** ASILUM adds a 1%
   "founders fee" to the buyer's total at checkout — the buyer pays it,
-  never you. It is non-negotiable and applies to every piece sold.
-  Payment processing comes out of our side, not yours.
+  never you. It is non-negotiable and applies to every piece sold
+  (minimum 31¢; charged standalone it floors at 50¢, the processor's own
+  minimum). Payment processing comes out of our side, not yours.
 - **No listing fees, no membership fees, no charge to join.**
 - **The hotlist booth is optional — and it is the paid program.** When you
   want placement: **$150/month booth rent** (the hotlist runs in monthly
@@ -34,7 +35,11 @@ terminal.** Founding designers are the point, not an afterthought.
   buyer still pays $100 + the $1 founders fee (+ shipping and tax where
   applicable). Placement stays taste-gated: your booth reaches only
   readers whose Passport already points at work like yours — rent cannot
-  buy the wrong audience.
+  buy the wrong audience. And plainly, because it protects everyone in
+  the program: suspicious behaviour relating to the hotlist fee —
+  attribution tampering, fee circumvention, manufactured traffic — means
+  suspension and a permanent ban from the hotlist. A human reviews every
+  case; the ledger is the evidence.
 - **You make it, you ship it.** Orders reach you with the buyer's shipping
   details; you ship domestically (US + Canada) with tracking. ASILUM runs
   the catalog, checkout, and the support channel.

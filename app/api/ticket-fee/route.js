@@ -19,6 +19,7 @@ import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import {
   startTicketFee, confirmTicketFeeWithSavedCard, reconcileOrder, getOrder, getTicketByFeeOrder,
+  ticketFeeCents, refusalReason, FOUNDERS_FEE_RATE, ORDER_CURRENCY_DEFAULT,
 } from "../../../lib/orders.js";
 import { publicBuyerProfile, upsertBuyerIdentity, getBuyerProfile } from "../../../lib/vault.js";
 import { resolveProduct, publicProduct } from "../../../lib/products.js";
@@ -125,6 +126,33 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const user = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+
+  // ?item= — the QUOTE read: the housing's opening state. No order is
+  // created, nothing is charged; the demo gate still answers honestly.
+  const itemParam = String(searchParams.get("item") || "").slice(0, 80);
+  if (itemParam) {
+    const item = await resolveProduct(itemParam);
+    if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
+    const pub = publicProduct(item);
+    const amountCents = Math.round(Number(item.price) * 100);
+    const feeCents = ticketFeeCents(amountCents);
+    return NextResponse.json({
+      quote: {
+        item: {
+          id: pub.id, title: pub.title, brand: pub.brand || null,
+          price: pub.price, currency: pub.currency, img: pub.img || null,
+        },
+        amount_cents: amountCents,
+        fee_cents: feeCents,
+        floored: feeCents > Math.round(amountCents * FOUNDERS_FEE_RATE),
+        currency: String(item.currency || ORDER_CURRENCY_DEFAULT).toLowerCase(),
+        source_name: item.source_name || null,
+        refusal: refusalReason(item),
+      },
+      profile: await publicBuyerProfile(user),
+    });
+  }
+
   const orderId = String(searchParams.get("order") || "").slice(0, 80);
   if (!orderId) return NextResponse.json({ error: "order required" }, { status: 400 });
   const order = await getOrder(orderId);

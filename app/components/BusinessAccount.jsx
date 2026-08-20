@@ -14,6 +14,7 @@
 
 import { useEffect, useState } from "react";
 import { getUid, authorizedFetch, postJSON } from "../../lib/client.js";
+import Notice from "./Notice.jsx";
 import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../lib/business.js";
 
 const LAW = "a passport account becomes a BUSINESS account by verifying " +
@@ -124,6 +125,13 @@ export default function BusinessAccountPanel() {
               storefront and sell under your own name.
             </p>
           )}
+          <Notice tone="error" variant="banner">
+            HOTLIST FEE INTEGRITY — suspicious behaviour relating to the
+            hotlist fee (attribution tampering, fee circumvention,
+            manufactured traffic) results in account suspension and a
+            PERMANENT ban from the hotlist program. a named human reviews
+            every case; the ledger is the evidence.
+          </Notice>
         </div>
       )}
 

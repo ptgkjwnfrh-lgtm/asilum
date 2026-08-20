@@ -38,6 +38,12 @@ same in both documents.]
    c. Booth placement is taste-matched: the booth is shown only to
       readers whose taste profile matches Designer's product tags. No
       impression or placement volume is guaranteed.
+   d. Fee integrity: suspicious behaviour relating to the hotlist fee —
+      attribution tampering, fee circumvention, manufactured traffic —
+      results in account suspension and PERMANENT exclusion from the
+      hotlist program. Determinations are made by named-human review on
+      the order ledger's evidence. [Counsel: align cure/notice rights, if
+      any, with §14's termination terms.]
 4. Payouts: monthly, net of refunds issued that month, to Designer's named
    account — 100% of price on base orders, 85% on attributed orders. A
    statement accompanies every payout (order ids, amounts, attribution,

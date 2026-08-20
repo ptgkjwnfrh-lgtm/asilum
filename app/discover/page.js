@@ -30,13 +30,10 @@ export default function DiscoverPage() {
 
   // Real checkout (18 Aug): only reachable from a server-stamped
   // purchasable item; refusals render the server's own words.
-  async function startPurchase(item) {
-    setBuyNote("opening checkout…");
-    const res = await postJSON("/api/checkout", { user: getUid(), itemId: item.id }).catch(() => null);
-    if (!res) { setBuyNote("the server could not be reached — nothing was started"); return; }
-    const d = await res.json().catch(() => ({}));
-    if (!res.ok || !d.url) { setBuyNote(d.error || "checkout could not be opened"); return; }
-    window.location.href = d.url;
+  function startPurchase(item) {
+    // The housing (/checkout) is the ONE buyer flow — fee, ticket, source
+    // hand-off, with the piece on screen throughout (owner order, 20 Aug).
+    window.location.href = "/checkout?item=" + encodeURIComponent(item.id);
   }
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [favedIds, setFavedIds] = useState(() => new Set());

@@ -130,11 +130,49 @@ P3 manual at the first booth.
   recommendation) + rent-lapse behavior (unlist at cycle end).
 - Voice pass on every buyer/designer-facing word (unchanged law — the
   designer docs are rewritten but still parked).
-- Rule §6 below (fee collection on referral purchases).
+- ~~Rule §6 below (fee collection on referral purchases).~~ ✅ RULED and
+  built the same day (see §6).
 
 ---
 
-## 6. Fee collection on referral purchases (PROPOSED — awaiting the ruling)
+## 6. Fee collection on referral purchases (✅ RULED 20 AUG 2026 — BUILT SAME DAY)
+
+**The owner ruled the two-transaction model in** ("there has to be a way…
+maybe two separate transactions… two transactions on the user's bank
+statement with one purchase") **with these additions, all shipped:**
+
+- **Fee floor:** pieces at $31 or under pay 31¢ (`FOUNDERS_FEE_FLOOR_CENTS`).
+  **Processor physics, learned against the live API:** Stripe refuses a
+  standalone charge under 50¢ (`amount_too_small`) — so the STANDALONE
+  ticket-fee charge floors at 50¢ (`STRIPE_MINIMUM_CHARGE_CENTS`); the 31¢
+  floor still rules wherever the fee rides a larger charge (direct sales).
+  ⚑ FLAGGED, not silently bent — the owner may re-rule the number.
+- **The checkout housing** (`/checkout?item=…`): one ASILUM-styled room —
+  the piece's image and price stay on screen the whole time; the fee split
+  is spelled out ("two lines on your statement"); consent (the ticket
+  disclaimer) gates payment; Stripe's Payment Element renders the card
+  fields (their iframes — SAQ-A holds).
+- **Typed once:** name + address collected at FIRST purchase only, stored
+  in the buyer vault (`buyer_vault.buyer_profiles`, own schema, v35);
+  card saved at Stripe (customer + payment-method references only, brand
+  + last4 for display). Returning buyers pay with ONE press
+  (server-side off-session confirm — no card form at all). SETTINGS
+  module 06 (PURCHASE INFO) is the only editor; the two-door access law
+  is test-enforced (`tests/vault-access.test.js`).
+- **Money integrity ("heavy protection"):** amounts computed server-side
+  only; webhook signatures verified; the settle path asserts the
+  processor's amount, currency, and claimed order EQUAL the ledger —
+  any mismatch records `amount_mismatch` in the append-only ledger,
+  settles nothing, issues no ticket.
+- **The hotlist-fee integrity notice** (owner order): suspension +
+  PERMANENT hotlist ban for suspicious behaviour relating to the hotlist
+  fee — on the business panel (heavy red banner), in OFFER.md, and as
+  AGREEMENT-DRAFT §3d. Human-reviewed on the ledger's evidence,
+  flag-never-judge preserved.
+
+*The original proposal text below stands as the design record.*
+
+### The proposal as written (now history)
 
 **Context (owner follow-up, 20 Aug):** at launch the real purchase —
 payment, tax, shipping — completes on eBay or the business's own Shopify
