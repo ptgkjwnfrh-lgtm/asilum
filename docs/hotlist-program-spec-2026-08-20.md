@@ -130,3 +130,61 @@ P3 manual at the first booth.
   recommendation) + rent-lapse behavior (unlist at cycle end).
 - Voice pass on every buyer/designer-facing word (unchanged law — the
   designer docs are rewritten but still parked).
+- Rule §6 below (fee collection on referral purchases).
+
+---
+
+## 6. Fee collection on referral purchases (PROPOSED — awaiting the ruling)
+
+**Context (owner follow-up, 20 Aug):** at launch the real purchase —
+payment, tax, shipping — completes on eBay or the business's own Shopify
+store; ASILUM never touches it (the ticket lane, as always; D1 keeps proxy
+purchasing cut). ASILUM collects only the founders fee and the program
+money. The owner floated the mechanism: **two transactions per purchase**
+— a 1% charge from ASILUM plus the real purchase on the source, two lines
+on the buyer's statement. This section is the workable shape of that idea.
+
+**Sequencing is forced: fee-first.** Charging after the fact needs a saved
+card plus purchase detection ASILUM does not have — Shopify referrals are
+invisible unless the business reports them (agreement duty, statements),
+and EPN reporting lags and covers only eBay. So the flow is:
+
+1. BUY on a referral piece → Stripe checkout for the fee alone
+   ("Purchase ticket — 1% founders fee"; statement descriptor LOUD).
+2. The paid **purchase ticket** is the deliverable the fee buys: the
+   verified source link, an availability/price check at open, the piece's
+   provenance in the buyer's Passport, the support channel, follow-up.
+   The existing ticket machinery is this lane's object; the fee becomes
+   its price.
+3. Buyer completes the real purchase on eBay / the designer's Shopify.
+
+**Why the ticket framing (recommended):** the fee buys something real even
+when the buyer abandons the source checkout — no "paid for nothing"; a
+listing found dead at open **auto-refunds the fee** (availability sink
+already knows); and the no-faking register holds: a paid ticket promises
+ONLY what ASILUM can do — it never claims order confirmation from the
+source (we cannot see it; the business reports attributed sales, EPN
+reports eBay, later).
+
+**Engine reuse:** orders gain kind `ticket_fee` (charge = fee only),
+linked to `purchase_tickets` (schema v35 when ruled); `foundersFeeCents`,
+the ledger, and the refund path carry over unchanged. **Bag batching:**
+several referral pieces → ONE fee charge summing their 1%s (dilutes the
+fixed 30¢). The direct-checkout lane stays built and gated for any future
+storeless designer; nothing is removed.
+
+**Recorded flags (rule with eyes open):**
+
+| Fact | Numbers | Mitigation |
+|---|---|---|
+| Stripe's fixed cost eats small fees | $100 piece: net ≈ $0.67 of the $1.00 fee; breakeven ≈ a $31 piece — below it the fee loses money; the $80–600 band nets 60–92% | bag batching; optional fee floor (pure pricing — owner's call) |
+| Disputes cost more than fees | one $15 dispute ≈ 22 pieces' net fees | loud descriptor + plain checkout copy; dispute rate becomes a defined-before-measured metric before any scaling |
+| The toll is skippable | a buyer can search the piece title and buy at the source, fee-free | founding-scale honesty: the fee prices the terminal's value; measure ticket-open → fee-paid → reported-purchase (C6, defined before measured) |
+| ⚖ EPN terms | eBay Partner Network restricts some paid/incentivized-traffic models | verify terms BEFORE combining the customer fee with affiliate links on the same click; per-source fallback (eBay pieces: affiliate only OR fee only) |
+
+**Owner choices before build:** (a) ticket framing vs bare fee-toll —
+recommend ticket, it is the honest version; (b) bag batching on day one —
+recommend yes; (c) dead-listing auto-refund — recommend yes; (d) a fee
+floor for cheap pieces — no recommendation, pure pricing. Ruling §6 also
+re-scopes P1: the shipped in-checkout fee keeps applying to any direct
+ASILUM sale; referral pieces use the ticket fee instead.
