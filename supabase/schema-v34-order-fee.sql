@@ -6,8 +6,14 @@
 -- amount_cents + fee_cents. Existing rows default 0 truthfully — no fee was
 -- charged before this column existed.
 --
--- Rollback: ALTER TABLE orders DROP COLUMN fee_cents;
+-- Rollback:
+--   ALTER TABLE orders DROP COLUMN fee_cents;
+--   DELETE FROM app_schema_migrations WHERE version = 34;
 
 ALTER TABLE orders
   ADD COLUMN IF NOT EXISTS fee_cents INTEGER NOT NULL DEFAULT 0
   CHECK (fee_cents >= 0);
+
+INSERT INTO app_schema_migrations (version, name)
+  VALUES (34, 'order-fee')
+  ON CONFLICT (version) DO NOTHING;
