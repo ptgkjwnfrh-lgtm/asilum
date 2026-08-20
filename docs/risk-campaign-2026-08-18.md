@@ -159,7 +159,7 @@ screen reader.
 | F61 (third-party API shutoff) | **WATCH + design** | Current production has zero third-party AI/search/payment dependencies at runtime (readiness audit). Each future integration (Stripe, eBay) enters behind the existing adapter/flag pattern so a shutoff degrades honestly instead of breaking. |
 | F62 (merchants block scraping) | **CUT** | No scraping is built or planned for v1; supply arrives via consenting designers. If ingest adapters ever scrape, that's a new decision. |
 | F64 (prompt injection vs purchasing agent) | **CUT for v1, rule recorded** | No LLM purchasing agent exists. Standing rule for any future one: merchant-page content is data, never instructions — same boundary this repo's agents already operate under. |
-| F65 (default-on observation backlash) | **DECISION D4** | The observation toggle exists in Settings; anonymous feed impressions are the default-on part. Options in §8. `/terms` + DATA-INVENTORY.md already document practices; EU-AI-TRANSPARENCY.md routes the counsel questions. |
+| F65 (default-on observation backlash) | **DECISION D4 — RULED (b) 20 Aug** | The observation toggle exists in Settings; anonymous feed impressions are the default-on part. Options in §8. `/terms` + DATA-INVENTORY.md already document practices; EU-AI-TRANSPARENCY.md routes the counsel questions. |
 | F98 (viral overload) | **WATCH** | Free-tier ceilings are the honest current capacity (Supabase quota, Vercel builds, 30 emails/hour). Signal: sustained traffic > free-tier headroom. Posture: the §7 quota decisions before any launch push, not after. |
 | I69 (seller verification) | **LOOP L1** | Invite-only + designer contracts in the loop corridor; identity verification formalizes when supply opens beyond invites. |
 
@@ -246,6 +246,16 @@ stand as written. New rulings this campaign needs:
   L3's measured support-minutes-per-order. The number's canonical home is
   `docs/designer-program/OFFER.md`; when payout code exists, it moves to one
   constant with a test (the #271 copied-constants law).
+  **⟶ SUPERSEDED 20 AUG 2026 (owner ruling):** base sales carry NO
+  commission — the buyer pays a 1% "founders fee" on every piece sold
+  (non-negotiable; ASILUM still absorbs processing). The 15% survives only
+  inside the optional hotlist-booth program: $150/month rent + 15% of
+  hotlist-ATTRIBUTED completed sales, with a dedicated attribution channel
+  as a precondition of charging it, and booth placement taste-gated to
+  matching Passports. Ruling record, recorded flags (processing exceeds
+  the founders fee on base sales), and build spec:
+  `docs/hotlist-program-spec-2026-08-20.md`. Canonical terms home remains
+  `docs/designer-program/OFFER.md` (rewritten same day).
 - **D3 — unbuild order for the constitution's "do NOT build yet" list.**
   Checkout must move off that list for L2 to exist. Recommendation: unlock
   checkout only, leave payouts/tax automation manual for the first ten orders.
@@ -253,6 +263,11 @@ stand as written. New rulings this campaign needs:
   existing toggle + disclosure, (b) first-visit consent moment, (c) observe
   only after account creation. Recommendation: (b) for EU-safety and F65
   optics; counsel confirms per OWNER-DECISIONS #1's region choice.
+  **✅ RULED 20 AUG 2026: (b) first-visit consent moment.** Spec for the
+  owner's approval: `docs/d4-consent-spec-2026-08-20.md`; the build ships
+  in an owner-directed UI round after approval, live before doors open.
+  Interim: (a)'s disclosed default-on stands while strangers are not yet
+  invited.
 - **D5 — `/cover` wire-post refusal copy** — the one #268 gap; needs the
   owner's voice.
 - **D6 — investor timing.** The lists' own conclusion (I91–I100):
