@@ -47,7 +47,9 @@ import {
   listSyncLogs,
   listBusinessApplications, listVerifiedBusinesses, decideBusinessApplication,
   getBusinessAccount, setBusinessSourceName, findBrandNameCollisions,
+  setHotlistMembership, recordHotlistRent, hotlistProgramState,
 } from "../../../lib/db/production.js";
+import { HOTLIST_RENT_CENTS } from "../../../lib/hotlist.js";
 import { screenItemImages, saveImageFingerprint } from "../../../lib/db/imageFingerprints.js";
 import { fingerprintImageUrl } from "../../../lib/images/fingerprint.js";
 import { adapterStatuses } from "../../../lib/ingest/adapters/index.js";
@@ -306,6 +308,32 @@ export async function POST(req) {
           [body.productId, status]
         );
         return NextResponse.json({ moderated: r.rowCount });
+      }
+      case "hotlist.enroll": {
+        // P3 (manual first cohort): a verified business opts into the paid
+        // program. Rent is recorded separately; enrollment alone places
+        // nothing.
+        const state = await setHotlistMembership(String(body.accountId || ""), true);
+        return NextResponse.json({ program: state });
+      }
+      case "hotlist.unenroll": {
+        const state = await setHotlistMembership(String(body.accountId || ""), false);
+        return NextResponse.json({ program: state });
+      }
+      case "hotlist.rent-paid": {
+        // One manual invoice settled = one month of coverage, appended to
+        // the rent ledger; paid-through advances from max(today, current).
+        const state = await recordHotlistRent(String(body.accountId || ""), {
+          amountCents: HOTLIST_RENT_CENTS,
+          actor: adminActor(),
+          note: body.note ? String(body.note).slice(0, 400) : null,
+        });
+        return NextResponse.json({ program: state });
+      }
+      case "hotlist.state": {
+        const state = await hotlistProgramState(String(body.accountId || ""));
+        if (!state) return NextResponse.json({ error: "no business account" }, { status: 404 });
+        return NextResponse.json({ program: state });
       }
       case "business.approve":
       case "business.reject": {

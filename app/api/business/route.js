@@ -19,6 +19,7 @@ import {
   createModerationTask, findBrandNameCollisions,
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
+import { paidBoothsForViewer } from "../../../lib/hotlist.js";
 import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../../lib/business.js";
 import { domainToken } from "../../../lib/brands/verify.js";
 import { sanitizeStatement } from "../../../lib/profile/rooms.js";
@@ -50,7 +51,7 @@ export async function GET(req) {
     // The roster is public — a booth is a public storefront. Account
     // ids are not.
     const verified = await listVerifiedBusinesses(10).catch(() => []);
-    return NextResponse.json({
+    const payload = {
       booths: verified.map((b) => ({
         brandName: b.brandName, websiteUrl: b.websiteUrl, verifiedAt: b.decidedAt,
         // The inventory namespace, when linked — a booth's pieces are
@@ -59,7 +60,19 @@ export async function GET(req) {
       })),
       open: Math.max(0, 10 - verified.length),
       total: 10,
-    });
+    };
+    // P4 — paid placements, per viewer: enrolled + rent-current + linked
+    // booths whose taste clears the floor against THIS passport. Optional
+    // and additive: the roster stays public and identical without an
+    // identity; a cold passport matches nothing by design.
+    const claimed = String(searchParams.get("user") || "");
+    if (claimed) {
+      const viewer = await resolveRequestUser(req, claimed).catch(() => null);
+      if (viewer) {
+        payload.paidBooths = await paidBoothsForViewer(viewer).catch(() => []);
+      }
+    }
+    return NextResponse.json(payload);
   }
 
   const user = await resolveRequestUser(req, String(searchParams.get("user") || "")).catch(() => null);
