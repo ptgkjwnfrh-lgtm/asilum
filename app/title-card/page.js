@@ -43,7 +43,7 @@ export default function TitleCardPage() {
               <span className="tc-star">*</span>
               <span className="tc-wrap">
                 <span className="tc-streak">ASILUM</span>
-                <span className="tc-burst tc-burst-r">ASILUM</span>
+                <span className="tc-burst tc-burst-p">ASILUM</span>
                 <span className="tc-burst tc-burst-g">ASILUM</span>
                 <span className="tc-face">ASILUM</span>
               </span>
