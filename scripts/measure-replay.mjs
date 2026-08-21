@@ -152,6 +152,32 @@
 //     light green, so it does not get made in the same round that wants the
 //     pass. It needs its own declared criteria and its own run.
 
+//   5 (21 Aug) — THE REPLAY SIDE GETS THE NOISE FLOOR IT WAS ALWAYS OWED.
+//     Amendment 4's closing note named this and refused to make it in the same
+//     round that wanted the pass. This round wants nothing from this gate, so
+//     it is made here, with its criteria declared BEFORE the run:
+//
+//       (a) A pair is DECIDED only when BOTH estimators can resolve it:
+//           |live delta| > 2*sigma_live AND |adjusted delta| > 2*sigma_adj.
+//           sigma_adj is the resampled paired sigma over PER-SESSION adjusted
+//           scores — the same estimator, the same seed, the same 25 shuffles
+//           the live side already uses. Until now the live delta was tested
+//           against a floor and the replay delta's SIGN WAS TAKEN AT FACE
+//           VALUE, so a gap of 0.0031 between two policies sitting at 0.12238
+//           and 0.12545 counted as a confident verdict.
+//       (b) All decided pairs must still agree. Unchanged.
+//       (c) NEW — POWER. At least MIN_DECIDED of the 10 pairs must be decided,
+//           or the verdict is NOT CALIBRATED however well the survivors agree.
+//           A floor on both sides makes pairs undecided, and a gate that
+//           passes because it decided nothing has laundered the harm it exists
+//           to catch. This criterion is the whole reason (a) is safe to make.
+//       (d) Determinism and base-not-last, unchanged.
+//
+//     THE REPORTED SCORES DO NOT MOVE. live/replay/control/adjusted are still
+//     the pooled estimates they always were; the per-session decomposition is
+//     computed ONLY to estimate noise, so this amendment cannot flatter a
+//     policy — it can only decline to rank two of them.
+
 import { makeBots, simulatePopulation, replayEstimate, rankAgreement, WORLDS } from "../lib/brain/replay.js";
 import { resampledPairSigma, singleSplitNoise } from "../lib/brain/noise.js";
 import { baseSplit } from "../lib/brain/bridges.js";
@@ -167,6 +193,9 @@ const POLICIES = {
   "epsilon-heavy": { alpha: 10, beta: 5, gamma: 10, delta: 10, epsilon: 60, ad: 5 },
 };
 const BOTS = 120, PAGES = 6, SEED = 20260804;
+// (amendment 5c) the power floor: fewer decided pairs than this and the run
+// has not measured enough to be called calibrated.
+const MIN_DECIDED = 4;
 // (amendment 3) K permutations per arm. Each is a full replayEstimate pass, so
 // K trades runtime against control precision; 4 is enough to average out the
 // arbitrary bridge assignment while keeping the battery inside a few minutes.
@@ -225,6 +254,42 @@ function liveScores(bots, world) {
   return { live, perBot };
 }
 
+// A session carries evidence when at least one of its logged interactions is
+// one replayEstimate actually scores. The action list mirrors that function's
+// own branch and must be changed with it — it is duplicated here rather than
+// exported because the alternative was returning per-session detail from a
+// hot loop that every caller but this one throws away.
+function sessionHasEvidence(session) {
+  for (const page of session.log) {
+    for (const ix of page.interactions) {
+      if (ix.action === "bag" || ix.action === "favorite" || ix.action === "skip") return true;
+    }
+  }
+  return false;
+}
+
+// Per-session RAW advantage, decomposed one session at a time so a paired
+// sigma can be resampled from it. Only evidenced sessions take part — an
+// unevidenced one contributes a zero to both arms and would deflate the very
+// floor it is meant to inform.
+//
+// WHY RAW AND NOT ADJUSTED, which is what gets scored. The control enters the
+// reported number as ONE mean per policy, i.e. a constant, and subtracting a
+// constant from each side of a difference cannot change that difference's
+// variance: Var((X - c1) - (Y - c2)) = Var(X - Y). So the adjusted sigma and
+// the raw sigma are the same quantity, and computing it the adjusted way costs
+// a full permutation battery PER SESSION — five times the work of the whole
+// rest of the run, measured, for an identical answer. The first implementation
+// did exactly that and had not finished when it was killed.
+function perSessionAdvantage(sessions, policy) {
+  const out = [];
+  for (const session of sessions) {
+    if (!sessionHasEvidence(session)) continue;
+    out.push(replayEstimate([session], policy, { pool }));
+  }
+  return out;
+}
+
 function battery(world) {
   const bots = makeBots(BOTS, SEED);
   const { live, perBot } = liveScores(bots, world);
@@ -240,7 +305,9 @@ function battery(world) {
     control[name] = +(controls.reduce((s, x) => s + x, 0) / controls.length).toFixed(5);
     adjusted[name] = +(replay[name] - control[name]).toFixed(5);
   }
-  return { live, perBot, replay, control, adjusted };
+  const perAdj = {};
+  for (const [name, policy] of Object.entries(POLICIES)) perAdj[name] = perSessionAdvantage(sessions, policy);
+  return { live, perBot, replay, control, adjusted, perAdj };
 }
 
 function calibrate(world) {
@@ -261,7 +328,15 @@ function calibrate(world) {
     // printed whenever the two estimators disagree about a pair.
     const noise = resampledPairSigma(run1.perBot[a], run1.perBot[b], { seed: 26 });
     const oldNoise = Math.abs(singleSplitNoise(run1.perBot[a]) - singleSplitNoise(run1.perBot[b]));
-    const decidedNow = Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4;
+    // (amendment 5) the replay side must resolve the pair too.
+    const dAdjForFloor = run1.adjusted[a] - run1.adjusted[b];
+    const adjNoise = resampledPairSigma(run1.perAdj[a], run1.perAdj[b], { seed: 26 });
+    const replayResolves = Math.abs(dAdjForFloor) > 2 * adjNoise && Math.abs(dAdjForFloor) > 1e-4;
+    const liveResolves = Math.abs(dLive) > 2 * noise && Math.abs(dLive) > 1e-4;
+    const decidedNow = liveResolves && replayResolves;
+    if (liveResolves && !replayResolves) {
+      console.log(`  REPLAY CANNOT RESOLVE ${a} vs ${b}: adjusted Δ ${dAdjForFloor.toFixed(5)} inside 2σ ${(2 * adjNoise).toFixed(5)} — undecided, not scored`);
+    }
     const decidedBefore = Math.abs(dLive) > 2 * oldNoise && Math.abs(dLive) > 1e-4;
     if (decidedNow !== decidedBefore) {
       console.log(`  ESTIMATOR CHANGED ${a} vs ${b}: ${decidedBefore ? "decided" : "undecided"} -> ${decidedNow ? "decided" : "undecided"} (Δ ${dLive.toFixed(5)}, sigma ${noise.toFixed(5)} vs single-draw ${oldNoise.toFixed(5)})`);
@@ -290,8 +365,10 @@ function calibrate(world) {
   console.log(`  exploration-heavy (epsilon-heavy) sits at position ${liveRanking.indexOf("epsilon-heavy") + 1}/${liveRanking.length} (reported, per audit #10)`);
   console.log(`undecided pairs (reported, not scored): ${undecided.join(", ") || "none"}`);
   console.log(`blanket rank agreement (informational): raw ${rankAgreement(run1.live, run1.replay)} → adjusted ${rankAgreement(run1.live, run1.adjusted)}`);
-  const ok = decided > 0 && agreed === decided && deterministic && baseNotLast;
-  console.log(`VERDICT (${world.name}): decided pairs ${agreed}/${decided} agree (need all); deterministic ${deterministic}; base-not-last ${baseNotLast} → ${ok ? "CALIBRATED" : "NOT CALIBRATED"}`);
+  const hasPower = decided >= MIN_DECIDED;
+  const ok = hasPower && agreed === decided && deterministic && baseNotLast;
+  if (!hasPower) console.log(`  !! NO POWER — ${decided} of 10 pairs decided, ${MIN_DECIDED} required. A gate that decides nothing cannot be calibrated.`);
+  console.log(`VERDICT (${world.name}): decided pairs ${agreed}/${decided} agree (need all, min ${MIN_DECIDED} decided); deterministic ${deterministic}; base-not-last ${baseNotLast} → ${ok ? "CALIBRATED" : "NOT CALIBRATED"}`);
   return { ok, ranking: liveRanking };
 }
 
