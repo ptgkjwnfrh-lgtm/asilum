@@ -158,3 +158,16 @@ test("the public descriptions say the catalog is synthetic", () => {
   assert.match(read("app/discover/layout.js"), /synthetic sample records/);
   assert.match(read("app/stylist/layout.js"), /synthetic sample records/);
 });
+
+test("search verification tags are env-gated, never hardcoded", () => {
+  // Ownership proofs for Search Console / Bing Webmaster render ONLY when the
+  // owner sets the env var (seo-notes § getting indexed). A hardcoded token
+  // would claim ownership on every fork and preview of this repo.
+  const layout = read("app/layout.js");
+  assert.match(layout, /GOOGLE_SITE_VERIFICATION\s*\?/,
+    "the google tag renders only when the env var is set");
+  assert.match(layout, /BING_SITE_VERIFICATION\s*\?/,
+    "the bing tag renders only when the env var is set");
+  assert.match(layout, /msvalidate\.01/,
+    "bing's meta name is the one its tools verify");
+});
