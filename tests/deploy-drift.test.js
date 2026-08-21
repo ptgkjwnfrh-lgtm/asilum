@@ -91,6 +91,20 @@ test("the failure message names the merges and the files a user cannot see", () 
   );
 });
 
+test("the environment rename cannot silence the check (20 Aug: the vq9p deletion)", () => {
+  // Vercel's environment label is not stable: "Production – asilum" while two
+  // projects build the repo, plain "Production" once one does. Deleting vq9p
+  // renamed it mid-day and a check pinned to the old name read e72bed6 as live
+  // for eleven hours of false alarms — while production was in fact CURRENT.
+  // Both names must be queried, and the merged lists re-sorted so a stale
+  // environment's newest record cannot outrank the current environment's.
+  assert.ok(SCRIPT.includes('"Production,Production – asilum"'),
+    "both environment names ride the default list");
+  assert.match(SCRIPT, /for \(const environment of ENVIRONMENTS\)/);
+  assert.match(SCRIPT, /deployments\.sort\(/,
+    "merged lists must be re-sorted by created_at or the newest success is a lie");
+});
+
 test("the parked workflow can answer 'how far behind' and waits for the deploy", () => {
   // Asserted even though it is inert, so the snippet is correct on the day
   // someone activates it.

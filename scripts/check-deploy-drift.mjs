@@ -22,7 +22,15 @@
 import { execFileSync } from "node:child_process";
 
 const REPO = process.env.DRIFT_REPO || "ptgkjwnfrh-lgtm/asilum";
-const ENVIRONMENT = process.env.DRIFT_ENVIRONMENT || "Production – asilum";
+// Vercel's environment label is not stable: it reads "Production – asilum"
+// while several projects build the same repo (the vq9p double-builder era) and
+// reverts to plain "Production" once a single project remains — which is what
+// deleting vq9p on 20 Aug did, mid-day. Every record after 15:29Z rides the
+// plain name; a check pinned to the old one read e72bed6 as live forever after
+// the rename — eleven hours of false drift alarms. Both names are queried and
+// the newest SUCCESS across them wins.
+const ENVIRONMENTS = (process.env.DRIFT_ENVIRONMENT || "Production,Production – asilum")
+  .split(",").map((s) => s.trim()).filter(Boolean);
 const BRANCH = process.env.DRIFT_BRANCH || "main";
 
 const gh = (path) => {
@@ -39,14 +47,19 @@ function fail(lines) {
 
 const tip = git("rev-parse", BRANCH);
 
-let deployments;
+let deployments = [];
 try {
-  deployments = gh(`repos/${REPO}/deployments?environment=${encodeURIComponent(ENVIRONMENT)}&per_page=20`);
+  for (const environment of ENVIRONMENTS) {
+    deployments.push(...gh(`repos/${REPO}/deployments?environment=${encodeURIComponent(environment)}&per_page=20`));
+  }
+  // Merged lists must be re-sorted or a stale environment's newest record can
+  // outrank a newer record from the current one.
+  deployments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 } catch (error) {
   // A check that cannot read the API must say so rather than pass quietly — a
   // silent pass is exactly the failure mode this script was written about.
   fail([
-    `could not read deployments for ${REPO} (${ENVIRONMENT})`,
+    `could not read deployments for ${REPO} (${ENVIRONMENTS.join(" / ")})`,
     String(error.message || error).split("\n")[0],
   ]);
 }
@@ -63,13 +76,13 @@ for (const deployment of deployments) {
 
 if (!live) {
   fail([
-    `no SUCCESSFUL "${ENVIRONMENT}" deployment in the last ${deployments.length} records.`,
+    `no SUCCESSFUL deployment (${ENVIRONMENTS.join(" / ")}) in the last ${deployments.length} records.`,
     "production may never have shipped, or the git integration has stopped firing.",
   ]);
 }
 
 if (live.sha === tip) {
-  console.log(`production is current: ${ENVIRONMENT} at ${tip.slice(0, 7)} (= ${BRANCH})`);
+  console.log(`production is current: ${live.environment} at ${tip.slice(0, 7)} (= ${BRANCH})`);
   process.exit(0);
 }
 
