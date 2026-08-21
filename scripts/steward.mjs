@@ -30,6 +30,14 @@ const schemaVersions = schemaVersionsFrom(readdirSync(ROOT + "supabase"));
 const pool = await getPool();
 const query = pool ? (sql, params) => pool.query(sql, params) : null;
 
+// A scheduled run with no database would report a board of `unmeasurable` and
+// exit 2 every morning. That is the right answer and the wrong alarm — the
+// workflow guards on a repository variable so it SKIPS instead, and this line
+// makes the same point to whoever runs it by hand.
+if (!pool && !asJson) {
+  console.log("\n(no DATABASE_URL — every live check below is unmeasurable, which is not the same as healthy.)");
+}
+
 const report = await runSteward(
   { query, schemaVersions, now: new Date().toISOString() },
   { only: only && only.length ? only : null },
