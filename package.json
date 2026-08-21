@@ -16,7 +16,8 @@
     "start": "next start",
     "deploy:check": "node scripts/check-deploy-drift.mjs",
     "triggers:check": "node scripts/check-deferred-triggers.mjs",
-    "floor:check": "node scripts/measure-match-floor.mjs"
+    "floor:check": "node scripts/measure-match-floor.mjs",
+    "steward": "node scripts/steward.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.5",

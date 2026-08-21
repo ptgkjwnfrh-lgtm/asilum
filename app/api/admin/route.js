@@ -425,6 +425,25 @@ export async function POST(req) {
           entityType: body.entityType || null, entityId: body.entityId || null,
           status: body.status || null, limit: body.limit || 100 }) });
       }
+      // ---- the steward: one read-only pass over the live machine ----------
+      // No arguments, no writes, nothing destructive: it reports and the
+      // person at the desk decides. The runner never throws — a check that
+      // cannot run comes back as `unmeasurable`, which the desk shows as a
+      // finding rather than as silence. Migration FILES are not in this
+      // bundle, so schemaVersions is deliberately not passed and the ledger
+      // check says so in its own evidence.
+      case "steward.report": {
+        const [{ runSteward, exitCodeFor }, { getPool }] = await Promise.all([
+          import("../../../lib/steward/index.js"),
+          import("../../../lib/db/index.js"),
+        ]);
+        const pool = await getPool();
+        const report = await runSteward({
+          query: pool ? (sql, params) => pool.query(sql, params) : null,
+          now: new Date().toISOString(),
+        });
+        return NextResponse.json({ ...report, exitCode: exitCodeFor(report) });
+      }
       case "asterisk.corrections": {
         const { listUserCorrections } = await import("../../../lib/db/production.js");
         if (!body.user) return NextResponse.json({ error: "user required" }, { status: 400 });
