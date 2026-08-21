@@ -171,3 +171,12 @@ test("search verification tags are env-gated, never hardcoded", () => {
   assert.match(layout, /msvalidate\.01/,
     "bing's meta name is the one its tools verify");
 });
+
+test("the GSC ownership file stays served — Google warns it must never be removed", () => {
+  // public/google51f90316d9e929c9.html proves ownership of the
+  // https://www.asilummagazine.com property to the owner's Search Console
+  // account (asilum@…, verified 21 Aug 2026). Deleting it silently
+  // un-verifies the property and takes the sitemap + index reports with it.
+  const f = readFileSync(new URL("../public/google51f90316d9e929c9.html", import.meta.url), "utf8");
+  assert.equal(f, "google-site-verification: google51f90316d9e929c9.html");
+});
