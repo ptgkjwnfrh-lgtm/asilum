@@ -43,7 +43,7 @@ test("the moment's copy keeps the law's promise, the owner's voice, and the copy
   assert.match(src, /THE ASTERISK SYSTEM/, "the engine's public name, per copy law");
   assert.match(src, /WILL NEVER/, "the owner's no-sell promise, verbatim emphasis");
   assert.match(src, /STAMPS/, "the owner's *STAMPS coinage rides the moment");
-  assert.match(src, /Seek ASILUM or disappear into the\s+catalog/,
+  assert.match(src, /SEEK ASILUM or disappear into the\s+catalog/,
     "the owner's seek line, their words exactly");
   assert.doesNotMatch(src, /alpha|beta|gamma|delta|epsilon bridge/i,
     "no public mention of the learning bridges");

@@ -18,7 +18,7 @@ focus-trapped, reduced-motion aware), Settings-toggle continuity both
 directions, terms + privacy v1.2 sentences. **VOICE PASS DONE (owner,
 same night):** the moment carries the owner's words — "learns quietly in
 the background… what you buy… along with the *STAMPS you choose to
-upload to your *PASSPORT", the WILL-NEVER-sell promise, "*Seek ASILUM or
+upload to your *PASSPORT", the WILL-NEVER-sell promise, "*SEEK ASILUM or
 disappear into the catalog.", and the closer — set in the house's
 lowercase prose with the owner's emphasis kept exactly, pinned by
 tests/consent.test.js. Same order renamed the Passport's upload button
