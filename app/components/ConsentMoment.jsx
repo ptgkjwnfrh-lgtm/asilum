@@ -10,6 +10,7 @@
 // owner's voice pass stands open.
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { getUid, postJSON } from "../../lib/client.js";
 import { setObservation } from "../../lib/social.js";
 import { useFocusTrap } from "./dismiss.js";
@@ -19,19 +20,30 @@ export default function ConsentMoment() {
   const [busy, setBusy] = useState(false);
   const firstRef = useRef(null);
   const boxRef = useRef(null);
+  const settledRef = useRef(false); // answered (any session) — stop re-asking the server
+  const pathname = usePathname();
+  // The magazine's face stays clean (owner order, 20 Aug): the moment never
+  // covers the FRONT COVER. Desktop entry lands on /cover untouched; the
+  // first click into the CATALOG (or any other page) raises the question.
+  // Mobile lands on the catalog directly and sees it on open. Unanswered
+  // stays unobserved throughout — the cover writes nothing either way.
+  const onCover = (pathname || "").startsWith("/cover");
 
   useEffect(() => {
+    if (onCover || settledRef.current) return undefined;
     let dead = false;
-    // A beat after mount: the boot sweep lands first, then the question.
+    // A beat after arrival: the boot sweep lands first, then the question.
     const t = setTimeout(async () => {
       try {
         const res = await fetch("/api/consent", { cache: "no-store" });
         const d = await res.json().catch(() => ({}));
-        if (!dead && res.ok && d.state === null) setShow(true);
+        if (dead || !res.ok) return;
+        if (d.state === null) setShow(true);
+        else settledRef.current = true; // answered — never ask again this visit
       } catch { /* unanswered stays unobserved — nothing to force */ }
     }, 700);
     return () => { dead = true; clearTimeout(t); };
-  }, []);
+  }, [onCover]);
 
   // The house trap (components/dismiss.js): keeps Tab inside the dialog and
   // gives focus back on unmount — aria-modal's promise, made true.
@@ -49,13 +61,14 @@ export default function ConsentMoment() {
       if (!res.ok) throw new Error("refused");
       try { window.localStorage.setItem("asilum-consent", choice); } catch {}
       setObservation(choice === "observe");
+      settledRef.current = true;
       setShow(false);
     } catch {
       setBusy(false); // still unanswered, still unobserved; the moment stays
     }
   }
 
-  if (!show) return null;
+  if (!show || onCover) return null;
   return (
     <div className="consent-veil" role="presentation">
       <div
