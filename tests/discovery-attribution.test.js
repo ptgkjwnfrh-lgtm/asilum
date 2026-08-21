@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { discoveryPathwayLabel, assembleFeed } from "../lib/brain/bridges.js";
+import { buildNoveltyIndex } from "../lib/brain/popularity.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 
 // audit #24: the discovery-slot pathway label compared the UN-rotted cross-user
@@ -59,4 +60,39 @@ test("#24 the label change leaves the feed order byte-identical (determinism)", 
         `discovery slot ${it.id} labeled "${it._bridge}"`);
     }
   }
+});
+
+// ---- the ranking population (21 Aug) ---------------------------------------
+// assembleFeed declares that a percentile is a property of the POOL. The
+// popularity table is not the pool: it also counts wire transmissions and any
+// probe row ever written, none of which a feed can serve. This pins the
+// WIRING — buildNoveltyIndex's own unit tests cannot see whether assembleFeed
+// actually hands it the pool, and a mutation that dropped the argument passed
+// the entire suite before this test existed.
+
+test("assembleFeed ranks exposure over its pool, not over the counter table", () => {
+  const pool = CATALOG.slice(0, 12);
+  const counters = {};
+  for (const it of pool) counters[it.id] = { engagers: 0, viewers: 3 };
+  // One pool item is genuinely the least-seen piece in the room.
+  counters[pool[0].id] = { engagers: 0, viewers: 0 };
+
+  const clean = { popularity: counters, limit: 12 };
+  assembleFeed(pool, {}, clean);
+  const cleanNovelty = clean.noveltyIndex.get(0);
+
+  // Now the same world, plus foreign counters no pool can serve.
+  const polluted = { ...counters };
+  for (let i = 0; i < 40; i++) polluted[`txn-item-${i}`] = { engagers: 1, viewers: 0 };
+  const ctx = { popularity: polluted, limit: 12 };
+  assembleFeed(pool, {}, ctx);
+
+  assert.equal(ctx.noveltyIndex.get(0), cleanNovelty,
+    "40 transmissions must not change how novel the catalog's least-seen piece is");
+
+  // The mutation guard: those same rows DO move an unfiltered ranking, so the
+  // assertion above is about the filter and not about an inert input.
+  const unfiltered = buildNoveltyIndex(polluted);
+  assert.notEqual(unfiltered.get(0), cleanNovelty,
+    "if the foreign rows were inert, the wiring would be untestable");
 });

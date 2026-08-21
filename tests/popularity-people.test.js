@@ -106,3 +106,47 @@ test("the kill switch restores the old rule, including the vulnerability", async
       "legacy delta is farmable again");
   });
 });
+
+// ---- foreign counters (21 Aug) ---------------------------------------------
+// The popularity table counts more than the catalog: wire transmissions carry
+// `txn-…` rows, and any probe ever written stays. Those entities can never be
+// served by a feed, so they must not sit in the distribution that decides how
+// exposed a catalog piece is. Measured on production the day this landed: 53
+// foreign rows in 968 shifted the percentile of all 915 catalog items.
+
+test("foreign counters do not move the catalog's exposure percentiles", () => {
+  if (!popularityDedupEnabled()) return; // legacy path ranks on the raw curve
+  const catalog = { a: { viewers: 0 }, b: { viewers: 4 }, c: { viewers: 40 } };
+  const withForeign = { ...catalog };
+  // A wire transmission and a leftover probe — both real shapes, neither
+  // servable by any pool.
+  for (let i = 0; i < 20; i++) withForeign[`txn-item-${i}`] = { viewers: 0 };
+  withForeign["l1-alpha"] = { viewers: 0 };
+
+  const ids = Object.keys(catalog);
+  const clean = buildNoveltyIndex(catalog);
+  const filtered = buildNoveltyIndex(withForeign, ids);
+  for (const id of ids) {
+    const viewers = catalog[id].viewers;
+    assert.equal(filtered.get(viewers), clean.get(viewers),
+      `${id}: admitting only the pool's own rows must reproduce the clean ranking`);
+  }
+
+  // And the mutation that proves the assertion is about the filter: without
+  // it, the same foreign rows DO move the ranking.
+  const polluted = buildNoveltyIndex(withForeign);
+  assert.notEqual(polluted.get(catalog.b.viewers), clean.get(catalog.b.viewers),
+    "if foreign rows were harmless the filter would be untestable — and unnecessary");
+});
+
+test("the population filter admits evidence, it does not invent it", () => {
+  if (!popularityDedupEnabled()) return;
+  // A pool id with NO row must not enter the distribution as a zero: midrank
+  // ties would then place every never-seen item mid-pack instead of at the top
+  // of the novelty curve, weakening epsilon exactly where it is needed. The
+  // unrowed item still resolves through the absent-value path, at ~1.
+  const pop = { seen: { viewers: 30 } };
+  const idx = buildNoveltyIndex(pop, ["seen", "never-served-1", "never-served-2"]);
+  assert.equal(idx.get(0), 1, "an unseen item stays maximally novel");
+  assert.ok(idx.get(30) < 1, "a seen item is still ranked below it");
+});
