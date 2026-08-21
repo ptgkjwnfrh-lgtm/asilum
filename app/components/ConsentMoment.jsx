@@ -76,20 +76,24 @@ export default function ConsentMoment() {
   }
 
   if (!show || onCover) return null;
+  // DOM hooks carry HOUSE vocabulary only — never consent/cookie/banner
+  // tokens. Blockers' cosmetic filter lists and Safari's element-hiding
+  // hunt those words in class and id names, and a silently hidden question
+  // is the desktop bug all over again, beyond fail-open's reach.
   return (
-    <div className="consent-veil" role="presentation">
+    <div className="moment-veil" role="presentation">
       <div
-        className="consent-moment"
+        className="asterisk-moment"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="consent-title"
-        aria-describedby="consent-body"
+        aria-labelledby="moment-title"
+        aria-describedby="moment-body"
         ref={boxRef}
       >
-        <div className="consent-title" id="consent-title">
+        <div className="moment-title" id="moment-title">
           <span className="red">*</span>THE ASTERISK SYSTEM
         </div>
-        <div className="consent-body" id="consent-body">
+        <div className="moment-body" id="moment-body">
           {/* The owner's voice pass, 20 Aug 2026 — their words, the house's
               lowercase prose, their emphasis kept exactly. */}
           <p>
@@ -106,15 +110,15 @@ export default function ConsentMoment() {
             <b><span className="red">*</span>PASSPORT</b>, your style, taste
             and content stay protected.
           </p>
-          <p className="consent-seek">
+          <p className="moment-seek">
             seek <b><span className="red">*</span>ASILUM</b> or disappear into the catalog.
           </p>
-          <p className="consent-close">
+          <p className="moment-close">
             Your <span className="red">*</span>PASSPORT. Your taste. Your
             choice. ;)
           </p>
         </div>
-        <div className="consent-actions">
+        <div className="moment-actions">
           <button ref={firstRef} className="btn" disabled={busy} onClick={() => answer("observe")}>
             OBSERVE ME ✓
           </button>
@@ -122,7 +126,7 @@ export default function ConsentMoment() {
             GENERAL ONLY ✓
           </button>
         </div>
-        <p className="consent-fine">
+        <p className="moment-fine">
           change anytime in <a href="/settings">SETTINGS</a> · the fine print
           → <a href="/terms">TERMS</a>. until you answer, the Asterisk system
           does not watch.
