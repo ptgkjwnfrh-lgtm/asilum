@@ -87,8 +87,7 @@ export default function ConsentMoment() {
             and content stay protected.
           </p>
           <p className="consent-seek">
-            <span className="red">*</span>Seek ASILUM or disappear into the
-            catalog.
+            seek <b><span className="red">*</span>ASILUM</b> or disappear into the catalog.
           </p>
           <p className="consent-close">
             Your <span className="red">*</span>PASSPORT. Your taste. Your

@@ -18,12 +18,13 @@ focus-trapped, reduced-motion aware), Settings-toggle continuity both
 directions, terms + privacy v1.2 sentences. **VOICE PASS DONE (owner,
 same night):** the moment carries the owner's words — "learns quietly in
 the background… what you buy… along with the *STAMPS you choose to
-upload to your *PASSPORT", the WILL-NEVER-sell promise, "*Seek ASILUM or
-disappear into the catalog.", and the closer — set in the house's
+upload to your *PASSPORT", the WILL-NEVER-sell promise, "seek *ASILUM or
+disappear into the catalog." (owner refinement: the star rides the
+bolded ASILUM), and the closer — set in the house's
 lowercase prose with the owner's emphasis kept exactly, pinned by
 tests/consent.test.js. Same order renamed the Passport's upload button
-to "*STAMP YOUR PASSPORT" (the *STAMPS coinage joins STAMP-THE-PASSPORT
-canon).
+to "STAMP YOUR PASSPORT" (star-less by the owner's refinement; the
+*STAMPS coinage stays in the moment's copy).
 
 ---
 
