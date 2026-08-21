@@ -2187,21 +2187,27 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .chkimg { max-height: 38vh; }
 }
 
-/* ---- D4 consent moment — answered, never dismissed; tokens only. */
-.consent-veil { position: fixed; inset: 0; z-index: 160; display: flex; align-items: center; justify-content: center; padding: 16px; background: color-mix(in srgb, var(--paper) 72%, transparent); backdrop-filter: blur(2px); }
-.consent-moment { border: 2px solid var(--ink); background: var(--paper); max-width: 430px; width: 100%; padding: 18px 20px; box-shadow: 0 0 0 1px var(--line); }
-.consent-title { font-weight: 700; letter-spacing: .16em; font-size: 13px; margin-bottom: 8px; }
-.consent-body { font-size: 12.5px; line-height: 1.55; margin: 0 0 12px; }
-.consent-actions { display: flex; gap: 10px; }
-.consent-actions .btn { flex: 1; font-weight: 700; }
-.consent-fine { font-size: 10px; color: var(--grey); margin: 10px 0 0; line-height: 1.5; }
+/* ---- D4 consent moment — answered, never dismissed; tokens only.
+   Selector law: HOUSE vocabulary only, never consent/cookie/banner tokens —
+   blockers' cosmetic filters and Safari's element-hiding hunt those words,
+   and a hidden question is beyond fail-open's reach (pinned in
+   tests/consent.test.js). Longhand offsets + solid-paper background are the
+   older-WebKit fallbacks (pre-`inset`, pre-`color-mix` desktop Safari);
+   the color-mix line refines to the translucent veil where understood. */
+.moment-veil { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 160; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--paper); background: color-mix(in srgb, var(--paper) 72%, transparent); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+.asterisk-moment { border: 2px solid var(--ink); background: var(--paper); max-width: 430px; width: 100%; padding: 18px 20px; box-shadow: 0 0 0 1px var(--line); }
+.moment-title { font-weight: 700; letter-spacing: .16em; font-size: 13px; margin-bottom: 8px; }
+.moment-body { font-size: 12.5px; line-height: 1.55; margin: 0 0 12px; }
+.moment-actions { display: flex; gap: 10px; }
+.moment-actions .btn { flex: 1; font-weight: 700; }
+.moment-fine { font-size: 10px; color: var(--grey); margin: 10px 0 0; line-height: 1.5; }
 @media (prefers-reduced-motion: no-preference) {
-  .consent-moment { animation: consent-in .18s ease-out; }
-  @keyframes consent-in { from { transform: translateY(6px); opacity: 0; } }
+  .asterisk-moment { animation: moment-in .18s ease-out; }
+  @keyframes moment-in { from { transform: translateY(6px); opacity: 0; } }
 }
 
 /* consent moment — the owner's voice pass (20 Aug): paragraph rhythm +
    the seek line and the closer carry their own weight. */
-.consent-body p { margin: 0 0 10px; }
-.consent-seek { font-weight: 700; letter-spacing: .08em; }
-.consent-close { color: var(--grey); letter-spacing: .04em; }
+.moment-body p { margin: 0 0 10px; }
+.moment-seek { font-weight: 700; letter-spacing: .08em; }
+.moment-close { color: var(--grey); letter-spacing: .04em; }

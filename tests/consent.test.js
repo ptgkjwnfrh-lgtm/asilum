@@ -66,3 +66,19 @@ test("the moment FAILS OPEN: only a positively read answer keeps the question do
   assert.doesNotMatch(src, /if \(dead \|\| !res\.ok\) return/,
     "the silent-swallow guard must stay dead — a failed read may not suppress the question");
 });
+
+test("the moment's DOM hooks carry no blocker-bait vocabulary", () => {
+  // The second way the question dies silently: cosmetic filter lists and
+  // Safari's element-hiding hunt consent/cookie tokens in class and id
+  // names, and content blockers stay active in PRIVATE windows. A hidden
+  // question is the desktop bug all over again — beyond fail-open's reach,
+  // invisible to every log. House vocabulary only.
+  const src = readFileSync(new URL("../app/components/ConsentMoment.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /(className|id|aria-labelledby|aria-describedby)="[^"]*(consent|cookie|gdpr|banner|notice)/i,
+    "no consent/cookie/gdpr/banner/notice token may ride a DOM hook of the moment");
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.doesNotMatch(css, /\.consent-(veil|moment|title|body|actions|fine|seek|close)\b/,
+    "the old consent-* selectors must not resurface in the stylesheet");
+  assert.match(css, /\.moment-veil \{ position: fixed; top: 0; left: 0; right: 0; bottom: 0;/,
+    "longhand offsets are the pre-`inset` WebKit fallback — the veil must never depend on the shorthand alone");
+});
