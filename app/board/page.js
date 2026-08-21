@@ -371,7 +371,7 @@ export default function BoardPage() {
             <button className="btn" onClick={train}>ADD TO PASSPORT</button>
             <button className="btn ghost soon" onClick={connectPinterest}>CONNECT PINTEREST</button>
             <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>
-              <span className="red">*</span>STAMP YOUR PASSPORT
+              STAMP YOUR PASSPORT
             </button>
             <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
           </div>
