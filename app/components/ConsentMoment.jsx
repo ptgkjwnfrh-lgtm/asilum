@@ -2,9 +2,10 @@
 
 // app/components/ConsentMoment.jsx — D4's first-visit consent moment
 // (ruled 20 Aug 2026; spec docs/d4-consent-spec-2026-08-20.md). Shell-
-// mounted so it covers both landing laws and every deep link; renders only
-// while the device is UNANSWERED, and unanswered = unobserved is enforced
-// server-side, so ignoring it is safe by construction. A consent moment is
+// mounted so it covers both landing laws and every deep link; renders
+// while the device is UNANSWERED — or its state is UNKNOWABLE (fail-open,
+// 20 Aug) — and unanswered = unobserved is enforced server-side, so
+// ignoring it is safe by construction. A consent moment is
 // ANSWERED, never dismissed — no click-away, no Escape, deliberately not
 // one of useOverlayDismiss's overlays. Copy is the spec's draft; the
 // owner's voice pass stands open.
@@ -34,13 +35,19 @@ export default function ConsentMoment() {
     let dead = false;
     // A beat after arrival: the boot sweep lands first, then the question.
     const t = setTimeout(async () => {
+      // FAIL-OPEN (the 20 Aug desktop bug): only a positively read answer
+      // keeps the question down. A non-OK response (edge challenge, 500),
+      // a network error, or an un-JSON body is UNKNOWABLE state — ASK.
+      // Re-asking an answered device is harmless; never asking is the bug.
+      let answered = false;
       try {
         const res = await fetch("/api/consent", { cache: "no-store" });
-        const d = await res.json().catch(() => ({}));
-        if (dead || !res.ok) return;
-        if (d.state === null) setShow(true);
-        else settledRef.current = true; // answered — never ask again this visit
-      } catch { /* unanswered stays unobserved — nothing to force */ }
+        const d = res.ok ? await res.json().catch(() => ({})) : {};
+        answered = d.state === "observe" || d.state === "general";
+      } catch { /* unknowable — the question rises */ }
+      if (dead) return;
+      if (answered) settledRef.current = true; // answered — never ask again this visit
+      else setShow(true);
     }, 700);
     return () => { dead = true; clearTimeout(t); };
   }, [onCover]);

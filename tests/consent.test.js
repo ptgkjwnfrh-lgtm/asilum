@@ -52,3 +52,17 @@ test("the moment's copy keeps the law's promise, the owner's voice, and the copy
   assert.match(src, /!show \|\| onCover/,
     "the cover suppression is a render law, not just a fetch skip");
 });
+
+test("the moment FAILS OPEN: only a positively read answer keeps the question down", () => {
+  // The 20 Aug desktop bug: /api/consent answering non-OK (edge challenge,
+  // 500) — or 200 with an un-JSON challenge body — silently swallowed the
+  // question forever. The law now: unknowable state ASKS. Re-asking an
+  // answered device is harmless; never asking is the bug.
+  const src = readFileSync(new URL("../app/components/ConsentMoment.jsx", import.meta.url), "utf8");
+  assert.match(src, /d\.state === "observe" \|\| d\.state === "general"/,
+    "only the two real answers settle the device — junk and challenge bodies must not");
+  assert.match(src, /else setShow\(true\)/,
+    "anything short of a read answer raises the moment");
+  assert.doesNotMatch(src, /if \(dead \|\| !res\.ok\) return/,
+    "the silent-swallow guard must stay dead — a failed read may not suppress the question");
+});
