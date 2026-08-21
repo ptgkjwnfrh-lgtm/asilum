@@ -54,6 +54,8 @@ const PANELS = [
     // "promoted" is NOT one of them; promotion writes `research_created`.
     filter: { key: "status", label: "STATUS", options: ["observed", "research_created", "resolved", "dismissed", "all"] },
     note: "what people asked that asterisk could not answer. this is the demand signal for research — promoting one says it is worth investigating, not that an answer exists." },
+  { id: "steward", n: "09", title: "THE STEWARD", read: { action: "steward.report" },
+    note: "one read-only pass over the live machine, worst first. the steward never writes, never migrates, never deletes — every action here is yours to take. a check that could not run is shown as UNMEASURABLE and counts against the board: a dark light is not a green one." },
   { id: "ontology", n: "08", title: "ONTOLOGY", read: { action: "asterisk.ontology", limit: 500 },
     filter: { key: "tagType", label: "TYPE", options: ["", "aesthetic", "category", "material", "silhouette", "color", "era", "mood"] },
     note: "the canonical tag space, seeded from the LIVE vocabularies so it extends rather than forks (§6). SYNC is idempotent and additive — merges and deprecations are versioned rows, never silent renames." },
@@ -334,6 +336,42 @@ export default function AdminDeskPage() {
                 <div className="rkname">{c.brandName || c.subjectId}</div>
                 <div className="rkctl rkmono">{c.status}</div>
                 <div className="rkdesc">{c.kind} · {c.id}{c.decidedBy ? <> · decided by {c.decidedBy}</> : null}</div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* ---- 09 THE STEWARD ---- */}
+        {panel === "steward" && data && (
+          <>
+            <div className="rkrow">
+              <div className="rkname">
+                {/* The lamp is lit only when nothing wants a person. Blockers,
+                    warnings and unmeasurable checks all leave it dark. */}
+                <span className={"rkled" + (data.exitCode === 0 ? " on" : "")} aria-hidden="true" />
+                BOARD
+              </div>
+              <div className="rkctl rkmono">
+                {(data.summary?.blocker || 0)} BLOCKER · {(data.summary?.warn || 0)} WARN · {(data.summary?.unmeasurable || 0)} UNMEASURABLE
+              </div>
+              <div className="rkdesc">
+                {data.exitCode === 0
+                  ? "nothing on this board needs a person right now."
+                  : `${(data.attention || []).length} finding(s) want a person.`}
+                {data.ranAt ? ` read ${data.ranAt}.` : ""}
+              </div>
+            </div>
+            {(data.findings || []).map((f) => (
+              <div className="rkrow" key={f.id}>
+                <div className="rkname">
+                  <span className={"rkled" + (f.state === "ok" ? " on" : "")} aria-hidden="true" />
+                  {f.id}
+                </div>
+                <div className="rkctl rkmono">{f.state.toUpperCase()}</div>
+                <div className="rkdesc">
+                  {f.evidence}
+                  {f.action ? <><br />→ {f.action}</> : null}
+                </div>
               </div>
             ))}
           </>
