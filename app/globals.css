@@ -2293,14 +2293,16 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .tc-stage { position: relative; padding: clamp(26px, 6vh, 60px) 0 clamp(30px, 4vw, 44px); }
 .tc-word { margin: 0; position: relative; }
 .tc-mark { display: block; white-space: nowrap; font-family: var(--mich); font-size: clamp(40px, 13.2vw, 176px); line-height: 1; letter-spacing: 0.04em; }
-.tc-star { color: var(--red); text-shadow: var(--glow-r); vertical-align: top; margin-right: 0.05em; }
+/* the star rides slightly high — a mark added to ASILUM's corner, not a
+   letter on its baseline (owner tune, 21 Aug) */
+.tc-star { display: inline-block; color: var(--red); text-shadow: var(--glow-r); vertical-align: top; margin-right: 0.05em; transform: translateY(-0.07em); }
 .tc-wrap { position: relative; display: inline-block; }
 /* the face: the 404 numerals' metal pour, solid ink where clipping is
    unsupported */
-.tc-face { position: relative; z-index: 3; color: var(--ink); }
+.tc-face { position: relative; z-index: 3; color: var(--ink); text-shadow: 0 0.012em 0 rgba(5, 15, 18, 0.5), 0 0.024em 0.02em rgba(5, 15, 18, 0.26); }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .tc-face { background: linear-gradient(178deg, #f6ffff 6%, #c6dfe2 34%, #6f949c 49%, #e9fbfd 55%, #9dbfc6 74%, #55747c 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  [data-theme="light"] .tc-face { background: linear-gradient(178deg, #16333c 6%, #3d626e 34%, #7fa2ac 49%, #24444e 55%, #5d838f 74%, #10272e 96%); -webkit-background-clip: text; background-clip: text; }
+  .tc-face { background: linear-gradient(178deg, #ffffff 4%, #d3ecef 30%, #5c828b 47%, #f4ffff 51%, #a8c9d0 72%, #4c6b73 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  [data-theme="light"] .tc-face { background: linear-gradient(178deg, #0e2b33 4%, #3d626e 30%, #8aacb5 47%, #1d3d47 51%, #6a8f9a 72%, #0b2129 96%); -webkit-background-clip: text; background-clip: text; }
 }
 /* the moving shadow — the only element allowed to glitch */
 .tc-streak { position: absolute; top: 0; left: 0; color: var(--sig); filter: blur(16px); transform: scaleX(1.5); transform-origin: left center; opacity: 0.3; pointer-events: none; animation: e4-drift 8s ease-in-out infinite alternate; }
