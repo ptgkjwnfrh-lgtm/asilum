@@ -35,10 +35,12 @@ to "STAMP YOUR PASSPORT" (star-less by the owner's refinement; the
    profile mutation. The feed serves in the existing general-results mode
    (the brain-paused state that already exists) until the moment is
    answered.
-2. **Shell-mounted, once.** The moment rides the shell so it covers both
-   landing laws (desktop → `/cover`, mobile → CATALOG) and deep links. It
-   renders on the first eligible page view and never again after an
-   answer.
+2. **Shell-mounted, once — and NEVER over the front cover** (owner
+   refinement, 20 Aug: the magazine's face stays clean). Desktop entry
+   lands on `/cover` untouched; the first click into the CATALOG — or any
+   other page — raises the question. Mobile lands on the catalog directly
+   and sees it on open. Deep links to any non-cover page see it too. It
+   renders once and never again after an answer.
 3. **Two answers, both first-class.**
    - **OBSERVE** → observation on: the existing default machinery,
      unchanged.

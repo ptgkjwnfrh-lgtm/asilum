@@ -47,4 +47,8 @@ test("the moment's copy keeps the law's promise, the owner's voice, and the copy
     "the seek line: the star rides the bolded ASILUM (owner, 20 Aug)");
   assert.doesNotMatch(src, /alpha|beta|gamma|delta|epsilon bridge/i,
     "no public mention of the learning bridges");
+  assert.match(src, /startsWith\("\/cover"\)/,
+    "the magazine's face stays clean — the moment never covers the FRONT COVER (owner order)");
+  assert.match(src, /!show \|\| onCover/,
+    "the cover suppression is a render law, not just a fetch skip");
 });
