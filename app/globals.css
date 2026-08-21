@@ -2299,10 +2299,9 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .tc-wrap { position: relative; display: inline-block; }
 /* the face: the 404 numerals' metal pour, solid ink where clipping is
    unsupported */
-.tc-face { position: relative; z-index: 3; color: var(--ink); text-shadow: 0 0.012em 0 rgba(5, 15, 18, 0.5), 0 0.024em 0.02em rgba(5, 15, 18, 0.26); }
+.tc-face { position: relative; z-index: 3; color: var(--ink); }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .tc-face { background: linear-gradient(178deg, #ffffff 4%, #d3ecef 30%, #5c828b 47%, #f4ffff 51%, #a8c9d0 72%, #4c6b73 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  [data-theme="light"] .tc-face { background: linear-gradient(178deg, #0e2b33 4%, #3d626e 30%, #8aacb5 47%, #1d3d47 51%, #6a8f9a 72%, #0b2129 96%); -webkit-background-clip: text; background-clip: text; }
+  .tc-face { background: linear-gradient(178deg, var(--ink) 22%, var(--sig) 70%, var(--grey)); background: linear-gradient(178deg, color-mix(in oklab, var(--ink) 72%, #fff) 4%, var(--ink) 28%, color-mix(in oklab, var(--ink) 70%, var(--grey)) 47%, color-mix(in oklab, var(--ink) 55%, #fff) 51%, var(--sig) 72%, var(--grey) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(70, 255, 150, 0.22)); }
 }
 /* the moving shadow — the only element allowed to glitch */
 .tc-streak { position: absolute; top: 0; left: 0; color: var(--sig); filter: blur(16px); transform: scaleX(1.5); transform-origin: left center; opacity: 0.3; pointer-events: none; animation: e4-drift 8s ease-in-out infinite alternate; }
