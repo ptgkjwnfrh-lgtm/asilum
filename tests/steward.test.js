@@ -10,7 +10,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { runSteward, exitCodeFor, schemaVersionsFrom, CHECKS, ATTENTION } from "../lib/steward/index.js";
-import { rlsCoverage, orderProjection, foreignCounters, catalogIntegrity, worseOf } from "../lib/steward/checks.js";
+import {
+  rlsCoverage, orderProjection, foreignCounters, catalogIntegrity, worseOf,
+  searchAnswerRate, interpretationCoverage, brainLearning, unknownDemand,
+} from "../lib/steward/checks.js";
 
 /** A query stub: match on a fragment of the SQL, answer with rows. */
 function fakeQuery(routes) {
@@ -122,4 +125,50 @@ test("worseOf keeps the worse of two states", () => {
   assert.equal(worseOf("ok", "blocker"), "blocker");
   assert.equal(worseOf("warn", "note"), "warn");
   assert.equal(worseOf("unmeasurable", "ok"), "unmeasurable");
+});
+
+// ---- the model's own live quality ------------------------------------------
+
+test("a rate below the sample floor is unmeasurable, never healthy", async () => {
+  // The trap this closes: 0 zero-results out of 3 searches is 0%, which reads
+  // like a perfect score and means nothing at all.
+  const thin = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 3, zero: 0 }]]]) });
+  assert.equal(thin.state, "unmeasurable");
+  assert.match(thin.evidence, /under the 25 needed/);
+
+  const real = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 411, zero: 9 }]]]) });
+  assert.equal(real.state, "ok", "production's own 2.2% must not read as an alarm");
+
+  const broken = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 400, zero: 120 }]]]) });
+  assert.equal(broken.state, "warn", "30% unanswered is the cultural read having stopped working");
+  assert.match(broken.action, /SEARCH_CULTURE_FALLBACK/);
+});
+
+test("searches answered without being read break the explanation contract", async () => {
+  const bad = await interpretationCoverage.run({ query: fakeQuery([["search_logs", [{ total: 200, read: 120 }]]]) });
+  assert.equal(bad.state, "warn");
+  const good = await interpretationCoverage.run({ query: fakeQuery([["search_logs", [{ total: 411, read: 411 }]]]) });
+  assert.equal(good.state, "ok");
+});
+
+test("events arriving without profiles is a blocker, not a shrug", async () => {
+  // The outage that hides: an unpersonalized feed still looks like a feed.
+  const stopped = await brainLearning.run({ query: fakeQuery([["from profiles", [{ profiles: 12, actors: 4000 }]]]) });
+  assert.equal(stopped.state, "blocker");
+  assert.match(stopped.action, /still looks like a feed/);
+
+  const healthy = await brainLearning.run({ query: fakeQuery([["from profiles", [{ profiles: 4153, actors: 4073 }]]]) });
+  assert.equal(healthy.state, "ok");
+
+  // Nobody has acted yet: genuinely ok, and not a division by zero.
+  const empty = await brainLearning.run({ query: fakeQuery([["from profiles", [{ profiles: 0, actors: 0 }]]]) });
+  assert.equal(empty.state, "ok");
+});
+
+test("repeat demand for an unanswered question is the research signal", async () => {
+  const quiet = await unknownDemand.run({ query: fakeQuery([["unknown_queries", [{ demanded: 0, total: 3 }]]]) });
+  assert.equal(quiet.state, "ok");
+  const loud = await unknownDemand.run({ query: fakeQuery([["unknown_queries", [{ demanded: 6, total: 20 }]]]) });
+  assert.equal(loud.state, "warn");
+  assert.match(loud.evidence, /two or more people/);
 });
