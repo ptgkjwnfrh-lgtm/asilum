@@ -296,3 +296,61 @@ Verified running: the crawler view by reading the served tags, and the human pat
 by loading `/piece/syn-0911` and watching it land on `/?item=syn-0911` with the
 dialog open on the right piece. The hand-off uses `router.replace`, so Back from
 the catalog does not bounce forward again.
+---
+
+## Getting indexed (21 Aug 2026) — why the site is invisible on Google/Yahoo, and the three steps out
+
+**Diagnosis, proven from this session:** the app's SEO surface is complete and
+correct — a browser gets `/robots.txt` 200 (allow, canonical www sitemap
+pointer) and `/sitemap.xml` 200 (8 public URLs) — but **production answers
+HTTP 429 to every non-browser client**: `curl` presenting as Googlebot and as
+bingbot got 429 on robots.txt, sitemap.xml, and the homepage alike. That is
+the Vercel challenge ("checkpoint") that has been blocking `curl` since
+mid-August; it also blocks crawlers, and a crawler that cannot read
+robots.txt indexes nothing. Observed consequences: **Bing holds zero pages**
+(and Yahoo *is* Bing's index, so Yahoo finds nothing), **DuckDuckGo holds
+exactly one stale homepage snapshot** whose description still reads
+"…reads your taste across six bridges…" — pre-copy-law copy, so nothing has
+been recrawled since at least 16 Aug. Google was not reachable from the
+verification pane; the owner reports zero there too. The domain is also new
+and had never been submitted to either console — even without the wall,
+discovery would have been slow.
+
+**Step 1 — drop the wall (owner, Vercel dashboard, ~2 min). THE UNBLOCKER;
+nothing else matters until this is done.** Vercel → team `asilum-magazine` →
+project `asilum` → **Firewall** → turn **Attack Challenge Mode OFF**.
+Challenge mode challenges *all* traffic (Vercel's own docs warn it harms SEO
+and is meant only for active attacks). If bot defense is still wanted, use
+the **Bot Protection managed ruleset** instead — it exempts verified search
+engine bots. Re-test afterwards from any terminal:
+
+    curl -s -o /dev/null -w "%{http_code}\n" -A "Googlebot" https://www.asilummagazine.com/robots.txt
+
+expect `200` (it is `429` today).
+
+**Step 2 — Google Search Console (owner, ~5 min).**
+search.google.com/search-console → Add property → **URL prefix** →
+`https://www.asilummagazine.com` → choose the **HTML tag** method → copy the
+`content="…"` value → paste it into Vercel env as `GOOGLE_SITE_VERIFICATION`
+→ redeploy → back in Search Console press **Verify** (the tag renders from
+`app/layout.js`, env-gated). Then **Sitemaps** → submit `sitemap.xml`, and
+**URL Inspection** on `https://www.asilummagazine.com/` → **Request
+indexing**.
+
+**Step 3 — Bing Webmaster Tools, which also covers Yahoo and DuckDuckGo
+(owner, ~2 min).** www.bing.com/webmasters → sign in → **Import from Google
+Search Console** (one click, reuses step 2) — or the meta-tag method via the
+`BING_SITE_VERIFICATION` env var. Submit the sitemap there as well.
+
+**Expectations, honestly:** after the wall drops and the sitemaps are
+submitted, first Google results typically land in a few days for a fresh
+domain (Bing similar); "asilum magazine" as a query resolves once the
+homepage is indexed — the title and og tags already carry the name. The
+stale DuckDuckGo snippet (bridge-language description) heals itself on the
+first recrawl; no action needed.
+
+**Shipped alongside this note:** `/checkout` joined the robots disallow list
+*and* gained the noindex segment layout (it was born in #307 after the SEO
+round and had neither — a per-buyer payment surface is not search material);
+env-gated `verification` metadata in `app/layout.js`; both env names in
+`.env.example`.

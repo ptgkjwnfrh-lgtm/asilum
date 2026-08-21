@@ -43,6 +43,20 @@ export const metadata = {
   // than a small one. The two move together, and tests/seo.test.js pins the
   // pairing in both directions so neither can ship without the other.
   twitter: { card: "summary_large_image", title: "*ASILUM magazine — personalized fashion terminal" },
+  // Search-console ownership proofs, env-gated: each tag renders ONLY when the
+  // owner pastes the engine's code into Vercel env (SETUP-KEYS / seo-notes
+  // "getting indexed"). These are public ownership tokens, not secrets — but an
+  // absent env var must add nothing. Google Search Console → the "HTML tag"
+  // method; Bing Webmaster Tools (whose index also serves Yahoo and
+  // DuckDuckGo) → the meta-tag method.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : {}),
+    ...(process.env.BING_SITE_VERIFICATION
+      ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+      : {}),
+  },
 };
 
 // Theme + interface mode are applied before first paint so a returning

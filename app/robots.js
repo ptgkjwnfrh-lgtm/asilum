@@ -21,6 +21,7 @@ export default function robots() {
         disallow: [
           "/api/",
           "/admin",
+          "/checkout",
           "/orders",
           "/profile",
           "/settings",
