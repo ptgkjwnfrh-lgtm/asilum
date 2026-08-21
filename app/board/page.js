@@ -349,7 +349,7 @@ export default function BoardPage() {
             topWeight={convictions()[0]?.[1] || 0}
           />
           <button className="ppupload" onClick={warpToUpload}>
-            ⇪ UPLOAD TO MOODBOARD →
+            ⇪ STAMP YOUR PASSPORT →
           </button>
         </div>
       )}
@@ -371,7 +371,7 @@ export default function BoardPage() {
             <button className="btn" onClick={train}>ADD TO PASSPORT</button>
             <button className="btn ghost soon" onClick={connectPinterest}>CONNECT PINTEREST</button>
             <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>
-              STAMP YOUR PASSPORT
+              UPLOAD IMAGES
             </button>
             <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
           </div>
