@@ -2213,6 +2213,9 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .moment-close { color: var(--grey); letter-spacing: .04em; }
 
 /* ————— 404 PLATE (app/not-found.js, 21 Aug) ——————————————————————————
+   Also the house PLATE VOCABULARY: /title-card reuses e4-rule/cap/half/
+   sq/mrz/status/foot by owner order ("appear more like the 404 screen"),
+   so a change here restyles both plates on purpose.
    The dead-record page. Reference language, owner-supplied: the promo
    card (red rule + block, letterspaced phosphor caption, glossy streaked
    wordmark, translucent status band), a production-library sleeve (boxed
@@ -2277,76 +2280,53 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .e4-foot { margin-top: clamp(24px, 5vw, 40px); padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--helv); font-size: clamp(11px, 2.6vw, 15px); letter-spacing: 0.52em; color: var(--grey); text-align: center; white-space: nowrap; overflow: hidden; }
 
 /* ————— TITLE CARD (app/title-card/page.js, 21 Aug) ————————————————————
-   The promo-card composition with the wordmark cut into IBM-style
-   horizontal bars and glitching: two chromatic ghosts (house red +
-   phosphor) under a striped metal face, slice-displacement bursts on a
-   long calm cycle, a rolling interference band. The stripes are the
-   background-clip trick from the 404 numerals — a paper-colored
-   repeating gradient over the metal pour, both clipped to the glyphs —
-   with a solid-ink fallback where clipping is unsupported (the
-   old-WebKit rule). Bursts occupy ~0.6s of a 4.2s cycle over part of
-   the word only, far under the three-flashes-a-second line; reduced
-   motion stops every animation and keeps a static 1px fringe. */
-.tc-plate { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - var(--head-h) - var(--status-h)); min-height: calc(100dvh - var(--head-h) - var(--status-h)); padding: clamp(16px, 4vw, 48px) clamp(14px, 3.4vw, 40px); background-image: linear-gradient(var(--grid-ln) 1px, transparent 1px), linear-gradient(90deg, var(--grid-ln) 1px, transparent 1px), var(--backlight); background-size: 44px 44px, 44px 44px, cover; }
-.tc-frame { position: relative; width: min(1150px, 100%); padding: clamp(10px, 2vw, 22px) 0 6px; }
-/* crop marks — a plate proofed for print */
-.tc-frame::before, .tc-frame::after { content: ""; position: absolute; width: 18px; height: 18px; opacity: 0.5; }
-.tc-frame::before { top: -6px; left: -6px; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-.tc-frame::after { bottom: -6px; right: -6px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
-.tc-rule { height: 3px; background: var(--line); position: relative; }
-.tc-rule span { position: absolute; left: 0; top: -3px; width: clamp(96px, 18vw, 150px); height: 9px; background: var(--red); box-shadow: var(--glow-r); }
-.tc-cap { margin: 14px 0 0; font-family: var(--helv); font-size: clamp(10px, 1.6vw, 13px); letter-spacing: 0.55em; color: var(--sig); text-shadow: var(--glow); }
-.tc-word { margin: clamp(26px, 6vh, 60px) 0 0; }
-.tc-stack { position: relative; display: block; white-space: nowrap; font-family: var(--mich); font-size: clamp(40px, 13.2vw, 176px); line-height: 1; letter-spacing: 0.04em; }
-.tc-layer { display: block; }
-.tc-layer b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r); margin-right: 0.05em; }
-/* the face: metal pour with paper bars over it, both clipped to the glyphs */
+   Revised same day to the 404 plate's language (owner order): the card
+   reuses the plate vocabulary (e4-rule/cap/half/sq/mrz/status/foot) and
+   keeps tc- only for what is its own — the centering, the clean metal
+   wordmark, and the ONE glitching element: the drifting motion-blur
+   shadow behind it. The face never glitches. Bursts are ~0.6s of a 4.2s
+   cycle on a blurred part-height slice — far under the
+   three-flashes-a-second line; reduced motion stops the drift and the
+   bursts and keeps the still shadow. */
+.tc-plate { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - var(--head-h) - var(--status-h)); min-height: calc(100dvh - var(--head-h) - var(--status-h)); padding: clamp(16px, 4vw, 48px) clamp(14px, 3.4vw, 36px); }
+.tc-frame { position: relative; width: min(1080px, 100%); }
+.tc-stage { position: relative; padding: clamp(26px, 6vh, 60px) 0 clamp(30px, 4vw, 44px); }
+.tc-word { margin: 0; position: relative; }
+.tc-mark { display: block; white-space: nowrap; font-family: var(--mich); font-size: clamp(40px, 13.2vw, 176px); line-height: 1; letter-spacing: 0.04em; }
+.tc-star { color: var(--red); text-shadow: var(--glow-r); vertical-align: top; margin-right: 0.05em; }
+.tc-wrap { position: relative; display: inline-block; }
+/* the face: the 404 numerals' metal pour, solid ink where clipping is
+   unsupported */
 .tc-face { position: relative; z-index: 3; color: var(--ink); }
-.tc-r, .tc-g { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.tc-r { color: var(--red); transform: translateX(-0.014em); opacity: 0.6; animation: tc-slice-r 4.2s steps(1) infinite; }
-.tc-g { color: var(--sig); transform: translateX(0.014em); opacity: 0.6; animation: tc-slice-g 3.6s steps(1) infinite; }
-.tc-r b, .tc-g b { color: inherit; text-shadow: none; }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .tc-face { background-image: repeating-linear-gradient(180deg, transparent 0 0.062em, var(--bg) 0.062em 0.096em), linear-gradient(178deg, #f6ffff 6%, #c6dfe2 34%, #6f949c 49%, #e9fbfd 55%, #9dbfc6 74%, #55747c 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  [data-theme="light"] .tc-face { background-image: repeating-linear-gradient(180deg, transparent 0 0.062em, var(--bg) 0.062em 0.096em), linear-gradient(178deg, #16333c 6%, #3d626e 34%, #7fa2ac 49%, #24444e 55%, #5d838f 74%, #10272e 96%); }
-  /* the star rides the same bars but stays the house red: its own striped
-     red fill paints over the parent's metal, and the glow follows the bars
-     through drop-shadow (text-shadow would halo the whole silhouette) */
-  .tc-face b { background-image: repeating-linear-gradient(180deg, transparent 0 0.062em, var(--bg) 0.062em 0.096em), linear-gradient(var(--red), var(--red)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 0 7px rgba(255, 56, 56, 0.4)); }
-  .tc-r, .tc-g { background-image: repeating-linear-gradient(180deg, transparent 0 0.062em, var(--bg) 0.062em 0.096em), linear-gradient(var(--tc-ghost, currentColor), var(--tc-ghost, currentColor)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .tc-r { --tc-ghost: var(--red); }
-  .tc-g { --tc-ghost: var(--sig); }
+  .tc-face { background: linear-gradient(178deg, #f6ffff 6%, #c6dfe2 34%, #6f949c 49%, #e9fbfd 55%, #9dbfc6 74%, #55747c 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  [data-theme="light"] .tc-face { background: linear-gradient(178deg, #16333c 6%, #3d626e 34%, #7fa2ac 49%, #24444e 55%, #5d838f 74%, #10272e 96%); -webkit-background-clip: text; background-clip: text; }
 }
-.tc-mag { display: block; margin-top: 8px; text-align: right; font-family: var(--mich); font-size: clamp(17px, 3.4vw, 40px); letter-spacing: 0.12em; text-transform: lowercase; color: var(--sig); text-shadow: var(--mag-glow); }
-.tc-band { margin-top: clamp(30px, 7vh, 70px); border-top: 1px solid var(--line); padding-top: 14px; font-family: var(--helv); font-size: clamp(12px, 2.4vw, 20px); letter-spacing: 0.5em; color: var(--grey); white-space: nowrap; overflow: hidden; }
-.tc-note { margin: clamp(14px, 3vh, 26px) 0 0; margin-left: auto; width: fit-content; max-width: 100%; padding: 10px 16px; background: var(--bg2); background: color-mix(in oklab, var(--sig) 9%, transparent); border: 1px solid var(--line); font-family: var(--helv); font-size: clamp(10px, 1.8vw, 13px); letter-spacing: 0.34em; color: var(--ink); }
-/* interference band rolling down the frame */
-.tc-roll { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--sig); opacity: 0.1; filter: blur(1px); pointer-events: none; animation: tc-roll 7s linear infinite; }
-@keyframes tc-roll { from { top: 0; } to { top: 100%; } }
-/* slice bursts: calm fringe most of the cycle, then a fast stagger of
-   horizontal cuts thrown sideways — steps(1) so each cut lands whole */
-@keyframes tc-slice-r {
-  0%, 86% { clip-path: inset(0 0 0 0); transform: translateX(-0.014em); }
-  87% { clip-path: inset(12% 0 74% 0); transform: translateX(-0.07em); opacity: 0.9; }
-  90% { clip-path: inset(58% 0 22% 0); transform: translateX(0.05em); opacity: 0.9; }
-  93% { clip-path: inset(30% 0 55% 0); transform: translateX(-0.05em); opacity: 0.9; }
-  96% { clip-path: inset(78% 0 6% 0); transform: translateX(0.08em); opacity: 0.9; }
-  99%, 100% { clip-path: inset(0 0 0 0); transform: translateX(-0.014em); }
+/* the moving shadow — the only element allowed to glitch */
+.tc-streak { position: absolute; top: 0; left: 0; color: var(--sig); filter: blur(16px); transform: scaleX(1.5); transform-origin: left center; opacity: 0.3; pointer-events: none; animation: e4-drift 8s ease-in-out infinite alternate; }
+.tc-burst { position: absolute; top: 0; left: 0; pointer-events: none; filter: blur(4px); opacity: 0; transform-origin: left center; }
+.tc-burst-r { color: var(--red); animation: tc-tear-r 4.2s steps(1) infinite; }
+.tc-burst-g { color: var(--sig); animation: tc-tear-g 3.6s steps(1) infinite; }
+.tc-mag { display: block; margin-top: 8px; text-align: right; font-family: var(--mich); font-size: clamp(15px, 3vw, 26px); letter-spacing: 0.34em; text-transform: lowercase; color: var(--sig); text-shadow: var(--mag-glow); }
+/* the shadow's tears: nothing at all for most of the cycle, then a fast
+   stagger of blurred part-height cuts thrown sideways */
+@keyframes tc-tear-r {
+  0%, 86% { opacity: 0; clip-path: inset(0 0 0 0); transform: translateX(0) scaleX(1.3); }
+  87% { opacity: 0.5; clip-path: inset(12% 0 64% 0); transform: translateX(-0.12em) scaleX(1.3); }
+  90% { opacity: 0.5; clip-path: inset(56% 0 20% 0); transform: translateX(0.09em) scaleX(1.35); }
+  93% { opacity: 0.5; clip-path: inset(28% 0 52% 0); transform: translateX(-0.08em) scaleX(1.3); }
+  96% { opacity: 0.5; clip-path: inset(74% 0 6% 0); transform: translateX(0.13em) scaleX(1.4); }
+  99%, 100% { opacity: 0; clip-path: inset(0 0 0 0); transform: translateX(0) scaleX(1.3); }
 }
-@keyframes tc-slice-g {
-  0%, 88% { clip-path: inset(0 0 0 0); transform: translateX(0.014em); }
-  89% { clip-path: inset(64% 0 18% 0); transform: translateX(0.06em); opacity: 0.9; }
-  92% { clip-path: inset(8% 0 80% 0); transform: translateX(-0.06em); opacity: 0.9; }
-  95% { clip-path: inset(42% 0 40% 0); transform: translateX(0.05em); opacity: 0.9; }
-  98%, 100% { clip-path: inset(0 0 0 0); transform: translateX(0.014em); }
+@keyframes tc-tear-g {
+  0%, 88% { opacity: 0; clip-path: inset(0 0 0 0); transform: translateX(0) scaleX(1.35); }
+  89% { opacity: 0.5; clip-path: inset(62% 0 16% 0); transform: translateX(0.11em) scaleX(1.35); }
+  92% { opacity: 0.5; clip-path: inset(6% 0 78% 0); transform: translateX(-0.1em) scaleX(1.3); }
+  95% { opacity: 0.5; clip-path: inset(40% 0 38% 0); transform: translateX(0.08em) scaleX(1.4); }
+  98%, 100% { opacity: 0; clip-path: inset(0 0 0 0); transform: translateX(0) scaleX(1.35); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tc-r, .tc-g, .tc-roll { animation: none; }
-}
-@media (max-width: 760px) {
-  .tc-cap { letter-spacing: 0.34em; }
-  .tc-band { letter-spacing: 0.3em; }
-  .tc-note { margin-left: 0; }
+  .tc-streak, .tc-burst { animation: none; }
 }
 
 @keyframes e4-drift { from { transform: scaleX(1.32) translateX(-1.5%); } to { transform: scaleX(1.66) translateX(2.5%); } }
