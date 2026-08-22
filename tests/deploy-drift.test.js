@@ -22,11 +22,13 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SCRIPT = readFileSync(ROOT + "scripts/check-deploy-drift.mjs", "utf8");
-// The workflow is parked as a snippet, not a live workflow: the stored gh
-// OAuth token has no `workflow` scope, so GitHub rejects any push that
-// creates .github/workflows/*. The check itself is live (npm run
-// deploy:check); only the automation waits on the owner.
-const WORKFLOW = readFileSync(ROOT + "docs/deploy-drift-workflow.yml.txt", "utf8");
+// The LIVE workflow, not a copy of it. This used to read a parked snippet in
+// docs/ — written when the workflow could not be committed at all — and that
+// snippet outlived its purpose: it was pasted into .github/workflows/ on
+// 20 August, header and all, and for two days the suite guarded the paste
+// source while the file that actually ran went unchecked. The duplicate is
+// retired; assertions belong on the file GitHub executes.
+const WORKFLOW = readFileSync(ROOT + ".github/workflows/deploy-drift.yml", "utf8");
 const PKG = JSON.parse(readFileSync(ROOT + "package.json", "utf8"));
 
 test("the check is runnable the same way the other scheduled check is", () => {
@@ -108,12 +110,8 @@ test("the environment rename cannot silence the check (20 Aug: the vq9p deletion
     "merged lists must be re-sorted by created_at or the newest success is a lie");
 });
 
-test("the parked workflow can answer 'how far behind' and waits for the deploy", () => {
-  // Asserted even though it is inert, so the snippet is correct on the day
-  // someone activates it.
-  assert.match(WORKFLOW, /NOT ACTIVE YET/);
-  assert.match(WORKFLOW, /without `workflow` scope/);
-  // fetch-depth: 0 — a shallow clone cannot compare two shas.
+test("the LIVE workflow can answer 'how far behind' and waits for the deploy", () => {
+  // fetch-depth: 0 — the check compares two shas.
   assert.match(WORKFLOW, /fetch-depth: 0/);
   // A deployment takes minutes to report; checking instantly would flag every push.
   assert.match(WORKFLOW, /sleep 240/);
@@ -122,6 +120,30 @@ test("the parked workflow can answer 'how far behind' and waits for the deploy",
   // that reports no status at all.
   assert.match(WORKFLOW, /branches: \[main\]/);
   assert.match(WORKFLOW, /cron:/);
+});
+
+test("the workflow does not claim to be switched off while it is running", () => {
+  // It did, for two days. The file was authored as a paste-me snippet and was
+  // pasted verbatim, so its first line read "NOT ACTIVE YET" while it fired on
+  // every push to main and every six hours. That is not a stale comment: the
+  // 21 August wait-race was read against this header, and it sent the first
+  // reader hunting a checkout bug in the workflow instead of the real one in
+  // scripts/check-deploy-drift.mjs.
+  assert.doesNotMatch(WORKFLOW, /NOT ACTIVE YET/);
+  assert.doesNotMatch(WORKFLOW, /paste this to/);
+  assert.match(WORKFLOW, /^# ACTIVE\./,
+    "the first line must state what the file does, because it is the line a reader trusts");
+});
+
+test("the workflow's bytes survive the only route available for editing it", () => {
+  // No token here can write .github/workflows/* — `repo` scope is refused with
+  // a 403 — so this file can only be changed through the GitHub web UI. That
+  // route is how three em dashes became `\u201a\u00c4\u00ee`: written UTF-8, read back as
+  // MacRoman, re-encoded. The parked copy in docs/ was clean, which is how we
+  // know the paste did it and not the author. Any future edit takes the same
+  // route, so the corruption is worth a ratchet rather than a second discovery.
+  assert.doesNotMatch(WORKFLOW, /\u00c2|\u00e2\u20ac|\u201a\u00c4/,
+    "mojibake in the workflow — the web-UI paste re-encoded a non-ASCII character");
 });
 
 // ---------------------------------------------------------------------------
