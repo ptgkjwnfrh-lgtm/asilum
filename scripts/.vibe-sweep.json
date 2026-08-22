@@ -4823,6 +4823,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "and wander",
+  "cls": "designer",
+  "n": 18,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "alaïa",
   "cls": "designer",
   "n": 12,
@@ -4833,13 +4840,6 @@
   "q": "adidas originals",
   "cls": "designer",
   "n": 13,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "and wander",
-  "cls": "designer",
-  "n": 18,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -4879,6 +4879,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "carhartt wip",
+  "cls": "designer",
+  "n": 11,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "bottega veneta",
   "cls": "designer",
   "n": 10,
@@ -4889,13 +4896,6 @@
   "q": "bianca saunders",
   "cls": "designer",
   "n": 12,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "carhartt wip",
-  "cls": "designer",
-  "n": 11,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -4935,6 +4935,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "fear of god",
+  "cls": "designer",
+  "n": 17,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "dior men",
   "cls": "designer",
   "n": 19,
@@ -4952,13 +4959,6 @@
   "q": "craig green",
   "cls": "designer",
   "n": 21,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "fear of god",
-  "cls": "designer",
-  "n": 17,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -4991,6 +4991,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "kapital",
+  "cls": "designer",
+  "n": 7,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "jil sander",
   "cls": "designer",
   "n": 12,
@@ -5008,13 +5015,6 @@
   "q": "jw anderson",
   "cls": "designer",
   "n": 19,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "kapital",
-  "cls": "designer",
-  "n": 7,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -5047,6 +5047,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "marine serre",
+  "cls": "designer",
+  "n": 8,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "louis vuitton",
   "cls": "designer",
   "n": 12,
@@ -5064,13 +5071,6 @@
   "q": "loewe",
   "cls": "designer",
   "n": 12,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "marine serre",
-  "cls": "designer",
-  "n": 8,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -5103,6 +5103,13 @@
   "why": "literal: designer match"
  },
  {
+  "q": "patagonia",
+  "cls": "designer",
+  "n": 15,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "off-white",
   "cls": "designer",
   "n": 24,
@@ -5120,13 +5127,6 @@
   "q": "nike acg",
   "cls": "designer",
   "n": 10,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "patagonia",
-  "cls": "designer",
-  "n": 15,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -5159,9 +5159,23 @@
   "why": "literal: designer match"
  },
  {
+  "q": "supreme",
+  "cls": "designer",
+  "n": 19,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
   "q": "stone island",
   "cls": "designer",
   "n": 13,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "the row",
+  "cls": "designer",
+  "n": 9,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -5176,20 +5190,6 @@
   "q": "snow peak",
   "cls": "designer",
   "n": 10,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "supreme",
-  "cls": "designer",
-  "n": 19,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
-  "q": "the row",
-  "cls": "designer",
-  "n": 9,
   "out": "B",
   "why": "literal: designer match"
  },
@@ -5229,13 +5229,6 @@
   "why": "literal: designer match"
  },
  {
-  "q": "wales bonner",
-  "cls": "designer",
-  "n": 10,
-  "out": "B",
-  "why": "literal: designer match"
- },
- {
   "q": "like acne studios",
   "cls": "designer-similar",
   "n": 24,
@@ -5250,14 +5243,21 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like alaïa",
+  "q": "wales bonner",
+  "cls": "designer",
+  "n": 10,
+  "out": "B",
+  "why": "literal: designer match"
+ },
+ {
+  "q": "like and wander",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like and wander",
+  "q": "like alaïa",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5285,13 +5285,6 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like ann demeulemeester",
-  "cls": "designer-similar",
-  "n": 24,
-  "out": "A",
-  "why": "12/12 carry slate tags"
- },
- {
   "q": "like balenciaga",
   "cls": "designer-similar",
   "n": 24,
@@ -5306,7 +5299,7 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like bottega veneta",
+  "q": "like ann demeulemeester",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5314,6 +5307,13 @@
  },
  {
   "q": "like carhartt wip",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like bottega veneta",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5341,13 +5341,6 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like cav empt",
-  "cls": "designer-similar",
-  "n": 24,
-  "out": "A",
-  "why": "12/12 carry slate tags"
- },
- {
   "q": "like comme des garçons",
   "cls": "designer-similar",
   "n": 24,
@@ -5362,7 +5355,7 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like dries van noten",
+  "q": "like cav empt",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5370,6 +5363,13 @@
  },
  {
   "q": "like erl",
+  "cls": "designer-similar",
+  "n": 24,
+  "out": "A",
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "like dries van noten",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5397,14 +5397,14 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like fear of god",
+  "q": "like gucci",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like gucci",
+  "q": "like fear of god",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5418,14 +5418,14 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like jil sander",
+  "q": "like junya watanabe",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like junya watanabe",
+  "q": "like jil sander",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5453,14 +5453,14 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like kapital",
+  "q": "like kiko kostadinov",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like kiko kostadinov",
+  "q": "like kapital",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5474,14 +5474,14 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like louis vuitton",
+  "q": "like maison margiela",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "like maison margiela",
+  "q": "like louis vuitton",
   "cls": "designer-similar",
   "n": 24,
   "out": "A",
@@ -5502,6 +5502,13 @@
   "why": "12/12 carry slate tags"
  },
  {
+  "q": "willy chavarria varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "like miu miu",
   "cls": "designer-similar",
   "n": 24,
@@ -5516,13 +5523,6 @@
   "why": "12/12 carry slate tags"
  },
  {
-  "q": "willy chavarria varsity jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "bode varsity jacket",
   "cls": "designer-piece",
   "n": 24,
@@ -5530,14 +5530,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "miu miu anorak",
+  "q": "undercover bomber jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "undercover bomber jacket",
+  "q": "miu miu anorak",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5558,7 +5558,7 @@
   "why": "literal: title match"
  },
  {
-  "q": "chrome hearts hardshell parka",
+  "q": "vetements anorak",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5572,21 +5572,14 @@
   "why": "literal: title match"
  },
  {
+  "q": "chrome hearts hardshell parka",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "comme des garçons coach jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "vetements anorak",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "bottega veneta gore-tex shell",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5600,6 +5593,13 @@
   "why": "literal: title match"
  },
  {
+  "q": "bottega veneta gore-tex shell",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "the row down puffer",
   "cls": "designer-piece",
   "n": 24,
@@ -5607,21 +5607,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "helmut lang padded liner jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "junya watanabe anorak",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "arc'teryx down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "helmut lang padded liner jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5635,14 +5628,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "sacai coach jacket",
+  "q": "junya watanabe anorak",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "visvim chore coat",
+  "q": "sacai coach jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5656,21 +5649,14 @@
   "why": "literal: title match"
  },
  {
+  "q": "visvim chore coat",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "raf simons down puffer",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "patagonia coach jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "alaïa varsity jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5684,7 +5670,21 @@
   "why": "literal: title match"
  },
  {
+  "q": "patagonia coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "khaite padded liner jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "alaïa varsity jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5698,14 +5698,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "salomon chore coat",
+  "q": "martine rose varsity jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "martine rose varsity jacket",
+  "q": "salomon chore coat",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5719,21 +5719,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "craig green down puffer",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "saint laurent moto jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "kaptain sunshine down puffer",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "craig green down puffer",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5747,14 +5740,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "snow peak field jacket",
+  "q": "saint laurent moto jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "marine serre moto jacket",
+  "q": "snow peak field jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5768,21 +5761,14 @@
   "why": "literal: title match"
  },
  {
+  "q": "marine serre moto jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
   "q": "dries van noten padded liner jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "yohji yamamoto bomber jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
-  "q": "kiko kostadinov coach jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5803,14 +5789,21 @@
   "why": "literal: garment match"
  },
  {
-  "q": "aimé leon dore coach jacket",
+  "q": "yohji yamamoto bomber jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "stone island hardshell parka",
+  "q": "kiko kostadinov coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "aimé leon dore coach jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5824,14 +5817,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "maison margiela moto jacket",
+  "q": "stone island hardshell parka",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "namacheko field jacket",
+  "q": "maison margiela moto jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5845,13 +5838,6 @@
   "why": "literal: title match"
  },
  {
-  "q": "ferragamo varsity jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "rick owens fleece jacket",
   "cls": "designer-piece",
   "n": 24,
@@ -5859,14 +5845,21 @@
   "why": "literal: title match"
  },
  {
-  "q": "nike acg field jacket",
+  "q": "namacheko field jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "bianca saunders padded liner jacket",
+  "q": "ferragamo varsity jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "nike acg field jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5887,7 +5880,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "prada down puffer",
+  "q": "bianca saunders padded liner jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5901,13 +5894,6 @@
   "why": "literal: title match"
  },
  {
-  "q": "loewe coach jacket",
-  "cls": "designer-piece",
-  "n": 24,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "erl coach jacket",
   "cls": "designer-piece",
   "n": 24,
@@ -5915,14 +5901,21 @@
   "why": "literal: title match"
  },
  {
-  "q": "jil sander gore-tex shell",
+  "q": "prada down puffer",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "gucci bomber jacket",
+  "q": "loewe coach jacket",
+  "cls": "designer-piece",
+  "n": 24,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "jil sander gore-tex shell",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5943,7 +5936,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "celine work shirt",
+  "q": "gucci bomber jacket",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
@@ -5957,18 +5950,25 @@
   "why": "literal: garment match"
  },
  {
-  "q": "our legacy rugby shirt",
+  "q": "adidas originals coach jacket",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "celine work shirt",
   "cls": "designer-piece",
   "n": 24,
   "out": "B",
   "why": "literal: title match"
  },
  {
-  "q": "adidas originals coach jacket",
-  "cls": "designer-piece-mismatch",
+  "q": "our legacy rugby shirt",
+  "cls": "designer-piece",
   "n": 24,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "louis vuitton rugby shirt",
@@ -5999,13 +5999,6 @@
   "why": "literal: garment match"
  },
  {
-  "q": "auralee work shirt",
-  "cls": "designer-piece-mismatch",
-  "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
- },
- {
   "q": "bianca saunders coach jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
@@ -6013,7 +6006,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "balenciaga hardshell parka",
+  "q": "bode down puffer",
+  "cls": "designer-piece-mismatch",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "auralee work shirt",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6027,7 +6027,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "bode down puffer",
+  "q": "balenciaga hardshell parka",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6062,14 +6062,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "chrome hearts moto jacket",
+  "q": "dries van noten field jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
   "why": "literal: garment match"
  },
  {
-  "q": "comme des garçons varsity jacket",
+  "q": "chrome hearts moto jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6083,7 +6083,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "dries van noten field jacket",
+  "q": "comme des garçons varsity jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6118,14 +6118,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "gucci padded liner jacket",
+  "q": "junya watanabe rugby shirt",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
   "why": "literal: garment match"
  },
  {
-  "q": "helmut lang coach jacket",
+  "q": "gucci padded liner jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6139,7 +6139,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "junya watanabe rugby shirt",
+  "q": "helmut lang coach jacket",
   "cls": "designer-piece-mismatch",
   "n": 24,
   "out": "B",
@@ -6174,14 +6174,14 @@
   "why": "literal: product name match"
  },
  {
-  "q": "varsity jacket",
+  "q": "coach jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "bomber jacket",
+  "q": "varsity jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6195,7 +6195,7 @@
   "why": "literal: garment match"
  },
  {
-  "q": "coach jacket",
+  "q": "bomber jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6230,14 +6230,14 @@
   "why": "literal: product name match"
  },
  {
-  "q": "padded liner jacket",
+  "q": "fleece jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "moto jacket",
+  "q": "padded liner jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6251,7 +6251,7 @@
   "why": "literal: product name match"
  },
  {
-  "q": "fleece jacket",
+  "q": "moto jacket",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6275,11 +6275,18 @@
   "q": "striped knit polo",
   "cls": "garment",
   "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "rugby shirt",
+  "cls": "garment",
+  "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "rugby shirt",
+  "q": "zip hoodie",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6293,13 +6300,6 @@
   "why": "literal: product name match"
  },
  {
-  "q": "western snap shirt",
-  "cls": "garment",
-  "n": 24,
-  "out": "B",
-  "why": "literal: product name match"
- },
- {
   "q": "graphic tee",
   "cls": "garment",
   "n": 24,
@@ -6307,7 +6307,7 @@
   "why": "literal: product name match"
  },
  {
-  "q": "zip hoodie",
+  "q": "western snap shirt",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6342,14 +6342,14 @@
   "why": "literal: product name match"
  },
  {
-  "q": "climbing pants",
+  "q": "parachute pants",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "baggy denim",
+  "q": "climbing pants",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6363,7 +6363,7 @@
   "why": "9/12 carry slate tags"
  },
  {
-  "q": "parachute pants",
+  "q": "baggy denim",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6398,14 +6398,14 @@
   "why": "literal: product name match"
  },
  {
-  "q": "tech shorts",
+  "q": "climbing approach shoe",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "nylon track pants",
+  "q": "tech shorts",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6419,7 +6419,7 @@
   "why": "literal: product name match"
  },
  {
-  "q": "climbing approach shoe",
+  "q": "nylon track pants",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6454,16 +6454,16 @@
   "why": "literal: product name match"
  },
  {
-  "q": "leather derby",
+  "q": "nylon crossbody",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "balaclava",
+  "q": "leather derby",
   "cls": "garment",
-  "n": 20,
+  "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
@@ -6475,9 +6475,9 @@
   "why": "literal: product name match"
  },
  {
-  "q": "nylon crossbody",
+  "q": "balaclava",
   "cls": "garment",
-  "n": 24,
+  "n": 20,
   "out": "B",
   "why": "literal: product name match"
  },
@@ -6510,14 +6510,14 @@
   "why": "literal: product name match"
  },
  {
-  "q": "beanie",
+  "q": "zip-up knit",
   "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
  {
-  "q": "tabi boots",
+  "q": "beanie",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6531,7 +6531,7 @@
   "why": "literal: product name match"
  },
  {
-  "q": "zip-up knit",
+  "q": "tabi boots",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6563,19 +6563,19 @@
   "cls": "garment",
   "n": 24,
   "out": "A",
-  "why": "11/12 carry slate tags"
+  "why": "12/12 carry slate tags"
+ },
+ {
+  "q": "pleated wool trouser",
+  "cls": "garment",
+  "n": 24,
+  "out": "B",
+  "why": "literal: product name match"
  },
  {
   "q": "intarsia crewneck",
   "cls": "garment",
   "n": 12,
-  "out": "B",
-  "why": "literal: product name match"
- },
- {
-  "q": "tailored vest",
-  "cls": "garment",
-  "n": 24,
   "out": "B",
   "why": "literal: product name match"
  },
@@ -6587,7 +6587,7 @@
   "why": "literal: product name match"
  },
  {
-  "q": "pleated wool trouser",
+  "q": "tailored vest",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6618,18 +6618,18 @@
   "q": "knit column dress",
   "cls": "garment",
   "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "black jacket",
+  "cls": "garment-modified",
+  "n": 24,
   "out": "B",
-  "why": "literal: product name match"
+  "why": "literal: garment match"
  },
  {
   "q": "slip dress",
-  "cls": "garment",
-  "n": 24,
-  "out": "B",
-  "why": "literal: product name match"
- },
- {
-  "q": "utility shirt dress",
   "cls": "garment",
   "n": 24,
   "out": "B",
@@ -6643,8 +6643,8 @@
   "why": "literal: product name match"
  },
  {
-  "q": "black jacket",
-  "cls": "garment-modified",
+  "q": "utility shirt dress",
+  "cls": "garment",
   "n": 24,
   "out": "B",
   "why": "literal: garment match"
@@ -6678,18 +6678,18 @@
   "why": "disclosed category browse"
  },
  {
+  "q": "black bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
   "q": "black shirt",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
   "why": "literal: garment match"
- },
- {
-  "q": "black coat",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
  },
  {
   "q": "black knit",
@@ -6699,7 +6699,7 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "black bag",
+  "q": "black coat",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6734,28 +6734,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "leather dress",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "leather knit",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "leather boots",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
- },
- {
   "q": "leather coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "leather dress",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6769,7 +6755,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "leather skirt",
+  "q": "leather boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "leather knit",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6783,9 +6776,23 @@
   "why": "literal: title match"
  },
  {
+  "q": "leather skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
   "q": "vintage dress",
   "cls": "garment-modified",
   "n": 2,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "vintage knit",
+  "cls": "garment-modified",
+  "n": 10,
   "out": "B",
   "why": "literal: title match"
  },
@@ -6797,11 +6804,11 @@
   "why": "literal: title match"
  },
  {
-  "q": "vintage boots",
+  "q": "vintage coat",
   "cls": "garment-modified",
-  "n": 10,
-  "out": "B",
-  "why": "literal: title match"
+  "n": 23,
+  "out": "C",
+  "why": "disclosed category browse"
  },
  {
   "q": "vintage jacket",
@@ -6811,18 +6818,11 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "vintage knit",
+  "q": "vintage boots",
   "cls": "garment-modified",
   "n": 10,
   "out": "B",
   "why": "literal: title match"
- },
- {
-  "q": "vintage coat",
-  "cls": "garment-modified",
-  "n": 23,
-  "out": "C",
-  "why": "disclosed category browse"
  },
  {
   "q": "vintage sneakers",
@@ -6839,13 +6839,6 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "vintage skirt",
-  "cls": "garment-modified",
-  "n": 9,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
   "q": "oversized trousers",
   "cls": "garment-modified",
   "n": 24,
@@ -6853,18 +6846,18 @@
   "why": "literal: garment match"
  },
  {
+  "q": "vintage skirt",
+  "cls": "garment-modified",
+  "n": 9,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
   "q": "vintage bag",
   "cls": "garment-modified",
   "n": 10,
   "out": "C",
   "why": "disclosed category browse"
- },
- {
-  "q": "oversized jacket",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
  },
  {
   "q": "oversized boots",
@@ -6881,6 +6874,13 @@
   "why": "disclosed category browse"
  },
  {
+  "q": "oversized jacket",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
   "q": "oversized coat",
   "cls": "garment-modified",
   "n": 24,
@@ -6895,13 +6895,6 @@
   "why": "literal: garment match"
  },
  {
-  "q": "oversized bag",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
   "q": "cropped jacket",
   "cls": "garment-modified",
   "n": 24,
@@ -6909,14 +6902,14 @@
   "why": "literal: garment match"
  },
  {
-  "q": "oversized sneakers",
+  "q": "oversized bag",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
   "why": "disclosed category browse"
  },
  {
-  "q": "oversized skirt",
+  "q": "oversized sneakers",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6937,11 +6930,11 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "cropped shirt",
+  "q": "oversized skirt",
   "cls": "garment-modified",
   "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
+  "out": "C",
+  "why": "disclosed category browse"
  },
  {
   "q": "japanese trousers",
@@ -6951,21 +6944,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "cropped sneakers",
+  "q": "cropped shirt",
   "cls": "garment-modified",
   "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "out": "B",
+  "why": "literal: garment match"
  },
  {
   "q": "cropped skirt",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "cropped coat",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6979,7 +6965,7 @@
   "why": "literal: title match"
  },
  {
-  "q": "cropped bag",
+  "q": "cropped sneakers",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -6993,6 +6979,27 @@
   "why": "literal: title match"
  },
  {
+  "q": "cropped coat",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "cropped bag",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
+  "q": "japanese skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
   "q": "japanese dress",
   "cls": "garment-modified",
   "n": 7,
@@ -7000,7 +7007,14 @@
   "why": "literal: title match"
  },
  {
-  "q": "japanese skirt",
+  "q": "japanese sneakers",
+  "cls": "garment-modified",
+  "n": 22,
+  "out": "B",
+  "why": "literal: title match"
+ },
+ {
+  "q": "japanese bag",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -7014,30 +7028,9 @@
   "why": "literal: title match"
  },
  {
-  "q": "japanese sneakers",
-  "cls": "garment-modified",
-  "n": 22,
-  "out": "B",
-  "why": "literal: title match"
- },
- {
   "q": "japanese knit",
   "cls": "garment-modified",
   "n": 21,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "japanese bag",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "japanese coat",
-  "cls": "garment-modified",
-  "n": 24,
   "out": "C",
   "why": "disclosed category browse"
  },
@@ -7049,11 +7042,11 @@
   "why": "literal: garment match"
  },
  {
-  "q": "deconstructed trousers",
+  "q": "japanese coat",
   "cls": "garment-modified",
   "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
+  "out": "C",
+  "why": "disclosed category browse"
  },
  {
   "q": "deconstructed sneakers",
@@ -7063,21 +7056,14 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "deconstructed dress",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
- },
- {
-  "q": "deconstructed shirt",
+  "q": "deconstructed trousers",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
   "why": "literal: garment match"
  },
  {
-  "q": "deconstructed boots",
+  "q": "deconstructed shirt",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
@@ -7091,11 +7077,18 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "deconstructed knit",
+  "q": "deconstructed dress",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
   "why": "disclosed category browse"
+ },
+ {
+  "q": "deconstructed boots",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
  },
  {
   "q": "deconstructed bag",
@@ -7105,7 +7098,7 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "deconstructed skirt",
+  "q": "deconstructed knit",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -7119,11 +7112,11 @@
   "why": "literal: garment match"
  },
  {
-  "q": "waxed trousers",
+  "q": "deconstructed skirt",
   "cls": "garment-modified",
   "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
+  "out": "C",
+  "why": "disclosed category browse"
  },
  {
   "q": "waxed dress",
@@ -7133,13 +7126,6 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "waxed jacket",
-  "cls": "garment-modified",
-  "n": 24,
-  "out": "B",
-  "why": "literal: garment match"
- },
- {
   "q": "waxed knit",
   "cls": "garment-modified",
   "n": 24,
@@ -7147,7 +7133,14 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "waxed boots",
+  "q": "waxed trousers",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "B",
+  "why": "literal: garment match"
+ },
+ {
+  "q": "waxed jacket",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
@@ -7161,11 +7154,11 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "waxed sneakers",
+  "q": "waxed boots",
   "cls": "garment-modified",
   "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "out": "B",
+  "why": "literal: garment match"
  },
  {
   "q": "summer jacket",
@@ -7175,7 +7168,7 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "waxed skirt",
+  "q": "waxed sneakers",
   "cls": "garment-modified",
   "n": 24,
   "out": "C",
@@ -7189,6 +7182,20 @@
   "why": "season-filtered rack"
  },
  {
+  "q": "winter jacket",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "waxed skirt",
+  "cls": "garment-modified",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed category browse"
+ },
+ {
   "q": "waxed bag",
   "cls": "garment-modified",
   "n": 24,
@@ -7196,7 +7203,7 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "winter jacket",
+  "q": "winter dress",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7210,7 +7217,7 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "winter dress",
+  "q": "summer trousers",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7224,28 +7231,7 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "summer trousers",
-  "cls": "season",
-  "n": 24,
-  "out": "B",
-  "why": "season-filtered rack"
- },
- {
-  "q": "summer knit",
-  "cls": "season",
-  "n": 24,
-  "out": "B",
-  "why": "season-filtered rack"
- },
- {
   "q": "summer boots",
-  "cls": "season",
-  "n": 24,
-  "out": "B",
-  "why": "season-filtered rack"
- },
- {
-  "q": "winter knit",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7259,7 +7245,14 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "winter boots",
+  "q": "summer knit",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter knit",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7273,7 +7266,7 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "summer shirt",
+  "q": "winter boots",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7287,7 +7280,7 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "summer bag",
+  "q": "summer shirt",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7301,13 +7294,6 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "winter bag",
-  "cls": "season",
-  "n": 24,
-  "out": "B",
-  "why": "season-filtered rack"
- },
- {
   "q": "winter parka",
   "cls": "season",
   "n": 24,
@@ -7315,7 +7301,14 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "winter sneakers",
+  "q": "summer bag",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "winter bag",
   "cls": "season",
   "n": 24,
   "out": "B",
@@ -7329,6 +7322,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "winter sneakers",
+  "cls": "season",
+  "n": 24,
+  "out": "B",
+  "why": "season-filtered rack"
+ },
+ {
+  "q": "melon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "mango",
   "cls": "fruit",
   "n": 24,
@@ -7336,7 +7343,14 @@
   "why": "disclosed cultural read"
  },
  {
-  "q": "melon",
+  "q": "apricot",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "plum",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7350,14 +7364,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "apricot",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "plum",
+  "q": "papaya",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7378,20 +7385,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "papaya",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "kiwi",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "durian",
   "cls": "fruit",
   "n": 0,
@@ -7399,7 +7392,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "pomegranate",
+  "q": "kiwi",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7420,6 +7413,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "pomegranate",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lychee",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "guava",
   "cls": "fruit",
   "n": 0,
@@ -7434,20 +7441,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "lychee",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "persimmon",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "dragonfruit",
   "cls": "fruit",
   "n": 0,
@@ -7455,7 +7448,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "watermelon",
+  "q": "persimmon",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7476,6 +7469,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "watermelon",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "chicago",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "coconut",
   "cls": "fruit",
   "n": 0,
@@ -7485,13 +7492,6 @@
  {
   "q": "cantaloupe",
   "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "chicago",
-  "cls": "city-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
@@ -7511,13 +7511,6 @@
   "why": "disclosed cultural read"
  },
  {
-  "q": "lisbon",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "prague",
   "cls": "city-other",
   "n": 0,
@@ -7525,14 +7518,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "madrid",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "oslo",
+  "q": "lisbon",
   "cls": "city-other",
   "n": 0,
   "out": "C",
@@ -7553,6 +7539,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "madrid",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "oslo",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "montreal",
   "cls": "city-other",
   "n": 0,
@@ -7567,13 +7567,6 @@
   "why": "disclosed compositional read"
  },
  {
-  "q": "nairobi",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "denver",
   "cls": "city-other",
   "n": 0,
@@ -7581,14 +7574,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "cairo",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "toronto",
+  "q": "nairobi",
   "cls": "city-other",
   "n": 0,
   "out": "C",
@@ -7609,6 +7595,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "cairo",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "toronto",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "kettle",
   "cls": "object",
   "n": 0,
@@ -7623,13 +7623,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "toaster",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "bicycle",
   "cls": "object",
   "n": 0,
@@ -7637,14 +7630,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "helsinki",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "lamp",
+  "q": "toaster",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7665,6 +7651,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "helsinki",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "lamp",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "stapler",
   "cls": "object",
   "n": 0,
@@ -7679,6 +7679,20 @@
   "why": "disclosed cultural read"
  },
  {
+  "q": "chandelier",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "wheelbarrow",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "umbrella stand",
   "cls": "object",
   "n": 24,
@@ -7686,7 +7700,7 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "chandelier",
+  "q": "microscope",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7707,21 +7721,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "wheelbarrow",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "microscope",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "thermostat",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "aquarium",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7735,6 +7742,13 @@
   "why": "disclosed compositional read"
  },
  {
+  "q": "bookshelf",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "lawnmower",
   "cls": "object",
   "n": 0,
@@ -7742,7 +7756,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "aquarium",
+  "q": "spatula",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7763,21 +7777,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "bookshelf",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "spatula",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "gearbox",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "pulley",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7791,6 +7798,13 @@
   "why": "honestly empty"
  },
  {
+  "q": "turbine",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "compass",
   "cls": "object",
   "n": 0,
@@ -7798,7 +7812,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "pulley",
+  "q": "piston",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7819,20 +7833,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "turbine",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "piston",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "casablanca",
   "cls": "movie-other",
   "n": 0,
@@ -7847,6 +7847,20 @@
   "why": "honestly empty"
  },
  {
+  "q": "interstellar",
+  "cls": "movie-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "gladiator",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "jurassic park",
   "cls": "movie-other",
   "n": 0,
@@ -7854,7 +7868,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "interstellar",
+  "q": "the matrix reloaded",
+  "cls": "movie-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "the godfather",
   "cls": "movie-other",
   "n": 24,
   "out": "C",
@@ -7866,27 +7887,6 @@
   "n": 0,
   "out": "C",
   "why": "honestly empty"
- },
- {
-  "q": "gladiator",
-  "cls": "movie-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "the godfather",
-  "cls": "movie-other",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed compositional read"
- },
- {
-  "q": "the matrix reloaded",
-  "cls": "movie-other",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed compositional read"
  },
  {
   "q": "toy story",
@@ -7903,13 +7903,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "avatar",
-  "cls": "movie-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "rocky horror",
   "cls": "movie-other",
   "n": 24,
@@ -7917,14 +7910,21 @@
   "why": "disclosed compositional read"
  },
  {
-  "q": "die hard",
+  "q": "alien resurrection",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "alien resurrection",
+  "q": "avatar",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "the shining",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
@@ -7938,7 +7938,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "the shining",
+  "q": "die hard",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
@@ -7959,13 +7959,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "tom hanks",
-  "cls": "celebrity-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "denzel washington",
   "cls": "celebrity-other",
   "n": 0,
@@ -7973,18 +7966,11 @@
   "why": "honestly empty"
  },
  {
-  "q": "jaws",
-  "cls": "movie-other",
+  "q": "tom hanks",
+  "cls": "celebrity-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
- },
- {
-  "q": "meryl streep",
-  "cls": "celebrity-other",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed compositional read"
  },
  {
   "q": "lebron james",
@@ -7994,7 +7980,21 @@
   "why": "disclosed compositional read"
  },
  {
+  "q": "jaws",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "david attenborough",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
+ },
+ {
+  "q": "meryl streep",
   "cls": "celebrity-other",
   "n": 24,
   "out": "C",
@@ -8015,14 +8015,21 @@
   "why": "honestly empty"
  },
  {
-  "q": "marie curie",
+  "q": "simone biles",
   "cls": "celebrity-other",
   "n": 24,
   "out": "C",
   "why": "disclosed compositional read"
  },
  {
-  "q": "simone biles",
+  "q": "stephen hawking",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "marie curie",
   "cls": "celebrity-other",
   "n": 24,
   "out": "C",
@@ -8036,21 +8043,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "usain bolt",
-  "cls": "celebrity-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "stephen hawking",
-  "cls": "celebrity-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "warren buffett",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "usain bolt",
   "cls": "celebrity-other",
   "n": 0,
   "out": "C",
@@ -8071,28 +8071,7 @@
   "why": "disclosed compositional read"
  },
  {
-  "q": "malala yousafzai",
-  "cls": "celebrity-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "fnorbulate",
-  "cls": "nonsense",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "greta thunberg",
-  "cls": "celebrity-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "xqzvbl",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
@@ -8106,7 +8085,28 @@
   "why": "honestly empty"
  },
  {
+  "q": "malala yousafzai",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "greta thunberg",
+  "cls": "celebrity-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "vrembast",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "xqzvbl",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
@@ -8127,28 +8127,7 @@
   "why": "honestly empty"
  },
  {
-  "q": "blenkorp",
-  "cls": "nonsense",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "crumbolic",
-  "cls": "nonsense",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "zzyzx drift",
-  "cls": "nonsense",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
-  "q": "sniggleworth",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
@@ -8162,7 +8141,28 @@
   "why": "honestly empty"
  },
  {
+  "q": "blenkorp",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "zzyzx drift",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
   "q": "plimsollx",
+  "cls": "nonsense",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "sniggleworth",
   "cls": "nonsense",
   "n": 0,
   "out": "C",

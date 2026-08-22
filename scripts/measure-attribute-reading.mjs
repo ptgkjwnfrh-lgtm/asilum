@@ -120,6 +120,12 @@ const FAMILIES = [
   { name: "era-year", built: true, gated: true, probes: cross(["1996", "2015", "2020", "2024"]) },
   { name: "era-range", built: true, gated: true, probes: cross(["between 1990 and 2000", "1996 to 1998"]) },
   { name: "era-season", built: true, gated: true, probes: cross(["fall 2015", "spring 2020", "resort 2016"]) },
+  // Collection slots that can only mean a collection, and the trade's glued
+  // shorthand. 463 of 915 items are Resort or Pre-Fall and had no path.
+  { name: "collection-slot", built: true, gated: true, probes: [
+    ...cross(["resort", "cruise", "pre fall"]),
+    "fw15", "aw18", "ss01", "pf19", "rs16", "fw15 jacket", "aw18 knit", "ss01 dress",
+  ] },
   { name: "era-relative", built: true, gated: true, probes: cross(["vintage"]) },
   { name: "era-absent", built: true, gated: true, probes: cross(["80s", "1970s"]) },
   { name: "price-range", built: true, gated: false, probes: cross(["over 2000", "between 400 and 800", "up to 300"]) },
@@ -225,6 +231,7 @@ function designerChecker(query) {
 const CHECKERS = {
   "era-decade": eraChecker, "era-decade-part": eraChecker, "era-year": eraChecker,
   "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
+  "collection-slot": eraChecker,
   "era-absent": eraChecker, "price-range": priceChecker,
   origin: originChecker, "origin-absent": originChecker,
   "designer-credit": designerChecker, negation: negationChecker, size: sizeChecker,
@@ -342,6 +349,43 @@ console.log(`defects in the baseline arm (reported, not gated — amendment 4): 
 for (const d of defectsOff.slice(0, 10)) console.log(`  [baseline] [${d.fam}] "${d.q}" — ${d.why}`);
 for (const d of defects.slice(0, 30)) console.log(`  [${d.arm}] [${d.fam}] "${d.q}" — ${d.why}`);
 
+// ---- literal shapes -------------------------------------------------------
+// Three behaviours that are not per-item filters and so do not fit the class
+// table above: a price superlative is a SORT, a conjunction is an INTERLEAVE,
+// and a single digit is a token that used to be deleted before anything could
+// read or report it. Each gate is zero failures.
+const SHAPE_FAILURES = [];
+for (const [q, dir] of [["cheapest jacket", "asc"], ["most expensive knit", "desc"],
+                        ["cheapest boots", "asc"], ["priciest dress", "desc"],
+                        ["least expensive trousers", "asc"]]) {
+  const r = await searchProducts(q, { limit: 24 });
+  const prices = (r.results || []).map((it) => it.price).filter((p) => typeof p === "number");
+  const sorted = prices.every((p, i) => i === 0 || (dir === "asc" ? p >= prices[i - 1] : p <= prices[i - 1]));
+  if (!sorted) SHAPE_FAILURES.push(`"${q}" is not sorted ${dir}`);
+  if (!/sorted by price/.test(String(r.note || ""))) SHAPE_FAILURES.push(`"${q}" did not name the sort`);
+}
+for (const [q, cats] of [["jacket and boots", ["outerwear", "footwear"]],
+                         ["hoodie and sweatpants", ["tops", "bottoms"]],
+                         ["knit and dress and boots", ["knitwear", "dresses", "footwear"]]]) {
+  const r = await searchProducts(q, { limit: 24 });
+  const seen = new Set((r.results || []).map((it) => it.category));
+  for (const c of cats) if (!seen.has(c)) SHAPE_FAILURES.push(`"${q}" served no ${c} on page one`);
+  if (!/side by side/.test(String(r.note || ""))) SHAPE_FAILURES.push(`"${q}" did not name the interleave`);
+}
+for (const [q, digit] of [["show me 5 jackets", "5"], ["3 jackets", "3"]]) {
+  const r = await searchProducts(q, { limit: 24 });
+  if (!(r.unmatchedTokens || []).includes(digit)) SHAPE_FAILURES.push(`"${q}" swallowed the digit`);
+}
+// …and a count is not a budget.
+{
+  const r = await searchProducts("under 3 items", { limit: 24 });
+  if (r.interpreted?.era || /under \$3/.test(String(r.note || ""))) {
+    SHAPE_FAILURES.push('"under 3 items" was read as a three-dollar budget');
+  }
+}
+console.log(`\nliteral-shape failures: ${SHAPE_FAILURES.length}`);
+for (const f of SHAPE_FAILURES) console.log(`  ${f}`);
+
 // ---- false denials --------------------------------------------------------
 // A different failure from the classes above, and one the vibe sweep cannot
 // see: a response that DENIES a word the catalog carries. `no piece here
@@ -384,6 +428,7 @@ const absent = tOn["era-absent"];
 const oAbsent = tOn["origin-absent"];
 const absentAllFallback = absent.FALLBACK === absent.total && oAbsent.FALLBACK === oAbsent.total;
 const pass = defects.length === 0 && broken === 0 && falseDenials.length === 0 &&
+  SHAPE_FAILURES.length === 0 &&
   answeredOn === builtTotal && browseOn === 0 && answeredOn > answeredOff && absentAllFallback;
 console.log(`absent families all FALLBACK: ${absentAllFallback ? "yes" : "no"} (era ${absent.FALLBACK}/${absent.total}, origin ${oAbsent.FALLBACK}/${oAbsent.total})`);
 console.log(`\nVERDICT: ${pass ? "PASS" : "FAIL"} (criteria 1–3 in this file's header)`);
