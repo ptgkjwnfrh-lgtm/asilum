@@ -44,14 +44,22 @@ test("a subtype noun needs a real title hit — a derby is not a sneaker", async
 
 test("a generic noun is satisfied by its category (the r6 equivalence)", async () => {
   // A GORE-TEX shell IS a jacket that does not spell the word.
+  // (Amended when the category-read disclosure shipped: this test used to
+  // assert note === null, which pinned "says nothing at all" when what it
+  // meant was "makes no both-claim". The rack now says `reading "jacket" as
+  // the outerwear category`, which is true and is not this test's subject.)
   const r = await searchProducts("gore-tex jacket", { limit: 24 });
-  assert.equal(r.note, null);
+  assert.doesNotMatch(String(r.note || ""), /nothing here is both/);
 });
 
-test("a pair the catalog CAN satisfy says nothing", async () => {
+test("a pair the catalog CAN satisfy makes no both-claim", async () => {
+  // Amended with the test above, and for the same reason: "mohair knit" opens
+  // on a distressed mohair SWEATER, so the rack now also discloses that
+  // "knit" was read as the knitwear category. Both facts are true; only the
+  // both-claim is this test's subject.
   for (const q of ["mohair knit", "pleated trousers", "cropped knit", "chunky sneakers"]) {
     const r = await searchProducts(q, { limit: 24 });
-    assert.equal(r.note, null, `${q}: ${r.note}`);
+    assert.doesNotMatch(String(r.note || ""), /nothing here is both/, `${q}: ${r.note}`);
   }
 });
 
