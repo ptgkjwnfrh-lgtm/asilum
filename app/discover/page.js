@@ -43,6 +43,9 @@ export default function DiscoverPage() {
   const [ticketItem, setTicketItem] = useState(null);
   const [reading, setReading] = useState(null);      // Asterisk's cultural read of the query
   const [assumption, setAssumption] = useState(null); // Passport influenced-assumption (r10)
+  // What the engine says about this rack (Aug 21). Forwarded verbatim by
+  // /api/discover; rendered in the existing note typography, never reworded.
+  const [engineNote, setEngineNote] = useState(null);
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
@@ -93,6 +96,7 @@ export default function DiscoverPage() {
       if (reset) {
         setSearched(qval.trim());
         setAssumption(d.assumption && d.assumption.applied ? d.assumption : null);
+        setEngineNote(typeof d.note === "string" && d.note ? d.note : null);
       }
     } catch (error) {
       if (requestId === loadRequestRef.current.id && error?.name !== "AbortError") {
@@ -451,6 +455,11 @@ export default function DiscoverPage() {
       {reading && reading.interpretation && reading.interpretation.flaggedForResearch ? (
         <div className="areadnote">
           <b className="red">*</b> asterisk flagged this for research — answering with its best current reading
+        </div>
+      ) : null}
+      {engineNote ? (
+        <div className="areadnote">
+          <b className="red">*</b> {engineNote}
         </div>
       ) : null}
       {assumption && !activeInterp ? (

@@ -46,6 +46,7 @@ export async function GET(req) {
   let demo = false;
   let guidanceEnabled = false;
   let assumption = null;
+  let reading = null;
   if (q) {
     const requestedGuidance = searchParams.get("brain") === "1";
     const userId = requestedGuidance
@@ -55,6 +56,23 @@ export async function GET(req) {
     const result = await searchProducts(q, {
       userId, brain: guidanceEnabled, limit: 2000,
     });
+    // FORWARD THE READING (Aug 21). The engine writes a disclosure for almost
+    // every query — which word it could not match, which house it read a word
+    // as, what an era or a size narrowed to, what an exclusion removed — and
+    // this route took `results` and dropped every one of them. Across a
+    // 141-query corpus only 12 produced no note at all, so ~91% of what the
+    // engine had to say was computed and thrown away one line before the
+    // response. "leather jacket" on /discover was 170 outerwear items with
+    // zero caveat: the exact Aug 5 defect the disclosure layer was written to
+    // end, reintroduced by a route that did not carry it.
+    //
+    // Verbatim. A route may never synthesise or reword a note.
+    reading = {
+      note: result.note || null,
+      unmatchedTokens: result.unmatchedTokens || [],
+      interpreted: result.interpreted || null,
+      cultural: result.cultural || null,
+    };
     items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item), _createdAt: createdAtOf(item) }));
     demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
   } else {
@@ -106,6 +124,7 @@ export async function GET(req) {
     sources,
     guidanceEnabled,
     assumption,
+    ...(reading || {}),
     items: stripRecencyKey(items.slice(offset, offset + limit)),
   });
 }

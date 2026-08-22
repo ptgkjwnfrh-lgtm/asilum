@@ -76,6 +76,12 @@ export async function GET(req) {
     // category as though it had understood.
     note: out.note || null,
     unmatchedTokens: out.unmatchedTokens || [],
+    // The cultural and semantic tiers describe THEMSELVES — which entity was
+    // read, which interpretation, whether the reading was personalised,
+    // whether embeddings re-ranked or appended. All computed, all dropped
+    // here until now.
+    cultural: out.cultural || null,
+    semantic: out.semantic || null,
     results: out.results.map((it) => ({
       id: it.id, title: it.title, brand: it.brand, price: it.price,
       currency: it.currency, img: it.img, tags: it.tags, category: it.category,
