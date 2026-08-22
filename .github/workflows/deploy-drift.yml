@@ -1,17 +1,22 @@
-# NOT ACTIVE YET ‚Äî paste this to .github/workflows/deploy-drift.yml
+# ACTIVE. This file runs — every push to main, and every six hours.
 #
-# It lives here as a snippet because the stored gh OAuth token has no `workflow`
-# scope, so a push that creates or edits .github/workflows/* is rejected by
-# GitHub outright:
+# It spent its first two days telling the opposite story. It was written as a
+# snippet to be pasted, because the stored gh OAuth token carries `repo` scope
+# only and GitHub rejects any push that touches a workflow file:
 #
 #   ! [remote rejected] refusing to allow an OAuth App to create or update
 #     workflow `.github/workflows/deploy-drift.yml` without `workflow` scope
 #
-# The check itself is already live and runnable: `npm run deploy:check`
-# (scripts/check-deploy-drift.mjs). Only the automation is waiting.
+# Someone then pasted it here by hand, header and all, and the header kept
+# claiming the automation was still waiting while it was already firing. A
+# comment that contradicts the file it sits in is worse than no comment: the
+# 21 August wait-race was read against this header and sent the first reader
+# looking for a checkout bug that was not there.
 #
-# To activate, either commit this file to .github/workflows/ by hand, or
-# re-authorise the token with the `workflow` scope and let an agent do it.
+# EDITING THIS FILE still needs the GitHub web UI or a `workflow`-scoped token
+# — a normal push cannot touch it, so an agent asked to change it will fail.
+# The check itself is ordinary code and needs none of that:
+# `npm run deploy:check` (scripts/check-deploy-drift.mjs), runnable anywhere.
 #
 # ---------------------------------------------------------------------------
 
@@ -20,7 +25,7 @@ name: Deploy drift
 # "Merged" and "deployed" are not the same word, and on 17 August they came
 # apart for most of a day with no signal: first Vercel's daily build allowance
 # ran out, then production deployments stopped firing while PR previews kept
-# succeeding ‚Äî reporting nothing at all. The accessibility fixes existed and no
+# succeeding — reporting nothing at all. The accessibility fixes existed and no
 # user had them.
 #
 # This runs after every push to main (once the deployment has had time to land)
@@ -46,7 +51,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           # The check compares main against the deployed sha, so it needs real
-          # history ‚Äî a shallow clone cannot answer "how far behind".
+          # history — a shallow clone cannot answer "how far behind".
           fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
