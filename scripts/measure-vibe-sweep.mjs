@@ -108,7 +108,7 @@ for (const e of CULTURE) {
 // field the query matched exactly — not a read, so literalOK below learns to
 // look at designers[] as well as title/brand/category.
 const LITERAL_REASONS = new Set(["product name match", "title match", "partial title match", "brand match", "designer match", "designer credit", "garment match", "indexed text match", "tag match", "related term", "aesthetic match", "era match"]);
-const READ_REASONS = new Set(["category browse", "compositional read", "cultural read", "moodboard brain", "constraint match"]);
+const READ_REASONS = new Set(["category browse", "compositional read", "cultural read", "moodboard brain", "constraint match", "assisted read"]);
 const SEASON_CLIMATE = { "fall/winter": "cold", "pre-fall": "cold", "spring/summer": "warm", "resort": "warm" };
 
 async function classify(q, cls, r) {
