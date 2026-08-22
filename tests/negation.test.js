@@ -133,3 +133,60 @@ test("the kill flag restores the pre-change behavior exactly", async () => {
   assert.match(off.results[0].title.toLowerCase(), /logo/, "it used to open on a logo hoodie");
   assert.deepEqual(off.interpreted.exclusions, []);
 });
+
+// ---- a negation reaches every reader (Aug 22) ------------------------------
+//
+// Until now an exclusion could only ever be a NAME, so every other thing the
+// engine can read was invisible to it and the result was the OPPOSITE of the
+// request:
+//
+//   "not japanese"        915 items — `nothing here is named "japanese"`
+//   "not medium"          259 pieces, every one of them a US M
+//   "not 90s jacket"      the whole outerwear rack, 1990s included
+//   "not under 500"       excluded the WORD "under" and served nothing
+//   "not cheapest jacket" the exact cheapest-first rack
+
+test("a marker followed by a constraint negates the constraint", async () => {
+  for (const [q, ok] of [
+    ["not japanese", (it) => !["Comme des Garçons", "Sacai", "Undercover", "Junya Watanabe",
+                               "Yohji Yamamoto", "Kapital", "Needles", "Visvim", "Auralee",
+                               "Snow Peak", "And Wander", "Kaptain Sunshine"].includes(it.brand)],
+    ["not medium", (it) => it.size?.fitsLikeUS !== "M"],
+    ["not 90s jacket", (it) => !(it.era.year >= 1990 && it.era.year <= 1999)],
+    ["no womens", (it) => it.size?.gender !== "womens"],
+    ["not under 500", (it) => it.price >= 500],
+    ["no vintage", (it) => it.era.year > 2006],
+  ]) {
+    const r = await searchProducts(q, { limit: 48 });
+    assert.ok(r.results.length > 0, q);
+    for (const it of r.results) assert.ok(ok(it), `${q}: served ${it.id} ${it.title}`);
+  }
+});
+
+test("the raw-query parsers never see a negated phrase", async () => {
+  // Size and the price superlative read the ORIGINAL string, so "not medium"
+  // applied a US-M filter and then excluded every piece it had just selected.
+  const size = await searchProducts("not medium", { limit: 48 });
+  assert.equal(size.interpreted.size, null);
+  assert.ok(size.results.length > 0);
+
+  const sort = await searchProducts("not cheapest jacket", { limit: 24 });
+  assert.equal(sort.interpreted.priceSort, null);
+  assert.doesNotMatch(String(sort.note || ""), /sorted by price/);
+});
+
+test("the removal count is what the reader would have seen", async () => {
+  // "jacket without leather" reported 28 removed over a rack that did not
+  // change by one item — the leather here is shoes and bags.
+  const r = await searchProducts("jacket without leather", { limit: 24 });
+  assert.match(r.note, /nothing in outerwear is named "leather" — nothing to exclude/);
+  const scoped = await searchProducts("anything but japanese jacket", { limit: 24 });
+  assert.match(scoped.note, /excluding japanese houses — 37 pieces removed/);
+});
+
+test("a name is still a name when no reader claims it", async () => {
+  const r = await searchProducts("no logo hoodie", { limit: 24 });
+  assert.match(r.note, /excluding "logo" by name/);
+  const p = await searchProducts("not prada", { limit: 24 });
+  assert.match(p.note, /excluding "prada" by name — 13 pieces removed/);
+});

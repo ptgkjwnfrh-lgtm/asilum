@@ -97,10 +97,10 @@
 process.env.DATABASE_URL = "";
 const { searchProducts } = await import("../lib/search/index.js");
 const { itemMatchesEra, parseEraConstraint } = await import("../lib/search/era.js");
-const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { parseOriginConstraint, itemMatchesOrigin } = await import("../lib/search/origin.js");
 const { listDesigners, parseDesignerCredit, itemCreditsDesigner } = await import("../lib/search/designers.js");
-const { parseNegations, itemMatchesExclusion } = await import("../lib/search/negation.js");
+const { parseNegations, itemMatchesExclusion, exclusionMatches } = await import("../lib/search/negation.js");
+const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { parseSizeConstraint, itemMatchesSize } = await import("../lib/search/size.js");
 const { GENERIC_GARMENT_NOUNS: GENERIC } = await import("../lib/search/index.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
@@ -150,6 +150,13 @@ const FAMILIES = [
     "xxxl knit",
   ] },
   // Negation: the excluded word used to DRIVE the rack.
+  // A negation that names a CONSTRAINT, not a word — the readers get first
+  // refusal on whatever follows a marker.
+  { name: "negation-constraint", built: true, gated: true, probes: [
+    "not japanese", "not medium", "not 90s jacket", "no womens", "not under 500",
+    "no vintage", "anything but japanese jacket", "not xl", "no mens knit",
+    "not over 2000", "no 2020s coat", "not italian boots",
+  ] },
   { name: "negation", built: true, gated: true, probes: [
     "no logo hoodie", "hoodie without a logo", "anything but sneakers",
     "jacket not leather", "trousers no pleats", "knit minus the stripes",
@@ -210,14 +217,52 @@ function sizeChecker(query) {
   return (item) => itemMatchesSize(item, size);
 }
 
+// The engine hands its own readers to the negation parser; the checker must
+// use the same ones or it grades a different engine.
+const NEG_READERS_FOR_CHECK = [
+  { kind: "origin", parse: (slice) => {
+      const { origin } = parseOriginConstraint(slice.slice(0, 1));
+      return origin ? { consumed: 1, test: (it) => itemMatchesOrigin(it, origin) } : null; } },
+  { kind: "era", parse: (slice) => {
+      for (let k = Math.min(4, slice.length); k >= 1; k--) {
+        const { tokens: left, era } = parseEraConstraint(slice.slice(0, k));
+        if (era && !left.length) return { consumed: k, test: (it) => itemMatchesEra(it, era) };
+      }
+      return null; } },
+  { kind: "size", parse: (slice) => {
+      for (let k = Math.min(2, slice.length); k >= 1; k--) {
+        const part = slice.slice(0, k);
+        const { tokens: left, size } = parseSizeConstraint(part.join(" "), part);
+        if (size && !left.length) return { consumed: k, test: (it) => itemMatchesSize(it, size) };
+      }
+      return null; } },
+  { kind: "gender", parse: (slice) => {
+      const { tokens: left, constraints } = parseDenseConstraints(slice.slice(0, 1));
+      if (!constraints.gender || left.length) return null;
+      const g = constraints.gender;
+      return { consumed: 1, test: (it) => { const v = it.size && it.size.gender; return !v || v === g || v === "unisex"; } }; } },
+  { kind: "budget", parse: (slice) => {
+      for (let k = Math.min(4, slice.length); k >= 1; k--) {
+        const { tokens: left, constraints } = parseDenseConstraints(slice.slice(0, k));
+        const { minPrice, maxPrice } = constraints;
+        if ((minPrice == null && maxPrice == null) || left.length) continue;
+        return { consumed: k, test: (it) => typeof it.price === "number" &&
+          (minPrice == null || it.price >= minPrice) && (maxPrice == null || it.price <= maxPrice) };
+      }
+      return null; } },
+];
+
 function negationChecker(query) {
   const { exclusions } = parseNegations(
-    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1),
-    { phrases: [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))] }
+    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1 || /^[0-9]$/.test(t)),
+    {
+      phrases: [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))],
+      readers: NEG_READERS_FOR_CHECK,
+    }
   );
   if (!exclusions.length) return null;
   const opts = { categoryOf: (w) => GENERIC[w] || null };
-  return (item) => !exclusions.some((x) => itemMatchesExclusion(item, x.word, opts));
+  return (item) => !exclusions.some((x) => exclusionMatches(item, x, opts));
 }
 
 function designerChecker(query) {
@@ -234,7 +279,8 @@ const CHECKERS = {
   "collection-slot": eraChecker,
   "era-absent": eraChecker, "price-range": priceChecker,
   origin: originChecker, "origin-absent": originChecker,
-  "designer-credit": designerChecker, negation: negationChecker, size: sizeChecker,
+  "designer-credit": designerChecker, negation: negationChecker,
+  "negation-constraint": negationChecker, size: sizeChecker,
 };
 
 const ATTR_WORDS = (query) =>
