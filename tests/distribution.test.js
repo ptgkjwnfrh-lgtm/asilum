@@ -101,15 +101,41 @@ test("pagesToAlignment is 1-indexed and returns null for never", () => {
 // ---- 2. the loop, end to end ------------------------------------------------
 
 const POOL = CATALOG;
+// TWO WORLDS, ON PURPOSE (21 Aug). They were one constant, and the two jobs
+// pull in opposite directions.
+//
+// SMALL — the carry test below needs an UNSATURATED pool: its whole assertion
+// is that a fresh world touches fewer items than a carried one, which is only
+// true while the catalog has corners nobody has reached. Raise it and both
+// worlds touch everything, and the invariant becomes unprovable rather than
+// false.
 const PER_COHORT = 12, COHORTS = 2, PAGES = 3, SEED = 20260806;
 
+// POWER — the concentration tests need the opposite. At the small size this
+// world could not tell the fault from nothing: the injected delta-x3
+// concentrator moved top-decile share by +0.0017 while the MUTANT arm — an
+// UNMODIFIED split, the thing that must not trip the metric — moved it 0.0041.
+// The null was larger than the signal, and the two concentration measures
+// disagreed about the sign of a ~0.005 effect that measure-distribution itself
+// documents a 0.0066 noise band for at a LARGER sample. Both assertions were
+// riding luck.
+//
+// At 30x3x5 the arms separate about five to one — injected +0.0396 top-share /
+// +0.0583 gini against a null of 0.0082 — and gini agrees with top-share
+// again. Measured at head as well as on the branch that exposed it, so the
+// size is tailored to neither: head reads +0.0179 / +0.0285 injected against
+// the same 0.0082 null. The cost is seconds of suite time; the alternative was
+// a test that passes whichever way the coin lands.
+const LOAD = { perCohort: 30, cohorts: 3, pages: 5 };
+
 function runCohorts(policy) {
-  const bots = makeBots(COHORTS * PER_COHORT, SEED);
+  const { perCohort, cohorts, pages } = LOAD;
+  const bots = makeBots(cohorts * perCohort, SEED);
   let carry = null;
   const drift = [];
-  for (let c = 0; c < COHORTS; c++) {
-    const run = simulatePopulation(bots.slice(c * PER_COHORT, (c + 1) * PER_COHORT), {
-      pool: POOL, pages: PAGES, policy, world: WORLDS.flat, carry,
+  for (let c = 0; c < cohorts; c++) {
+    const run = simulatePopulation(bots.slice(c * perCohort, (c + 1) * perCohort), {
+      pool: POOL, pages, policy, world: WORLDS.flat, carry,
     });
     carry = { popularity: run.popularity, edges: run.edges };
     drift.push(topShare(exposureVector(POOL, run.popularity)));

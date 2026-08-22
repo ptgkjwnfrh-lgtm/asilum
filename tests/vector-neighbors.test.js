@@ -104,3 +104,49 @@ test("warm users get a real nearness map bounded by the artifact", () => {
     assert.ok(sim > 0 && sim <= 1);
   }
 });
+
+// ---- the owner's ruling, option 2 (21 Aug) ----------------------------------
+// docs/vector-gamma-ruling-2026-08-21.md: the core slate RANKS uncorroborated
+// similarity lower without SCORING it lower. These pin the seam — that the
+// explanation side is untouched and only the ranking key moved. Get this
+// backwards and the anti-forgery ordering silently inverts, which is exactly
+// what the rejected option would have done.
+
+test("option 2: the explanation is untouched — parts and score do not move", () => {
+  const anchor = CATALOG[0].id;
+  const [nid, sim] = VECTOR_NEIGHBORS.neighbors[anchor][0];
+  const item = CATALOG.find((it) => it.id === nid);
+  const vecNear = buildVecNear([anchor]);
+  const noEdge = blendedScore(item, { MINIMAL: 0.5 }, { recent: [anchor], edges: {}, vecNear });
+
+  // The full, undiscounted floor still lives in parts — this is the number the
+  // ordering law is written about and the number `_parts` shows a reader.
+  assert.ok(Math.abs(noEdge.parts.gamma - sim * 0.6) < 1e-9,
+    "uncorroborated gamma keeps its full value in parts");
+  // …and `score` still reconciles with those parts, so _score explains itself.
+  assert.ok(noEdge.score > 0);
+});
+
+test("option 2: only the core slate's ranking key discounts the uncorroborated", () => {
+  const anchor = CATALOG[0].id;
+  const [nid] = VECTOR_NEIGHBORS.neighbors[anchor][0];
+  const item = CATALOG.find((it) => it.id === nid);
+  const vecNear = buildVecNear([anchor]);
+
+  const noEdge = blendedScore(item, { MINIMAL: 0.5 }, { recent: [anchor], edges: {}, vecNear });
+  assert.ok(noEdge.slateScore < noEdge.score,
+    "similarity alone must rank lower for a core slot than it scores");
+
+  // A behavioural edge — even ONE unverified identity — restores full weight:
+  // the ranking key must never punish evidence, only its absence.
+  const solo = blendedScore(item, { MINIMAL: 0.5 }, { recent: [anchor], edges: { [anchor]: { [nid]: 1 } }, vecNear });
+  assert.equal(solo.slateScore, solo.score,
+    "an item with any behavioural evidence ranks exactly as it scores");
+
+  const strong = blendedScore(item, { MINIMAL: 0.5 }, { recent: [anchor], edges: { [anchor]: { [nid]: 50 } }, vecNear });
+  assert.equal(strong.slateScore, strong.score);
+
+  // And an item with no vector nearness at all is untouched in both.
+  const plain = blendedScore(CATALOG[5], { MINIMAL: 0.5 }, { recent: [anchor], edges: {} });
+  assert.equal(plain.slateScore, plain.score);
+});
