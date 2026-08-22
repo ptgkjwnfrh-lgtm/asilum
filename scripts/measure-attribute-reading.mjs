@@ -67,12 +67,22 @@
 // Gate restated: across built families BROWSE and DEFECT must both be zero;
 // era-absent must be 100% FALLBACK; every other era family READ or
 // HONEST-EMPTY.
+//
+// AMENDMENT 3 (price-range round). The two arms differ ONLY by
+// SEARCH_ERA_READING. Budget parsing has no kill flag of its own — a floor is
+// an extension of the ceiling the dense layer has applied since Day 26, and
+// that has never been flagged either — so the price-range family reads the
+// SAME in both arms by construction. Its baseline is the previous run of this
+// script, recorded in the PR: 0 READ / 12 BROWSE. Families whose capability
+// the flag does not gate are marked `gated: false` in the table below, so an
+// identical off→on pair is never mistaken for a change that did nothing.
 // Families for capabilities not yet built are listed and measured anyway, so
 // the gap is a number in this file rather than a memory.
 
 process.env.DATABASE_URL = "";
 const { searchProducts } = await import("../lib/search/index.js");
 const { itemMatchesEra, parseEraConstraint } = await import("../lib/search/era.js");
+const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
 
 const GARMENTS = ["jacket", "knit", "jeans", "boots", "dress", "trousers"];
@@ -80,15 +90,16 @@ const cross = (words, garments = GARMENTS) =>
   words.flatMap((w) => garments.map((g) => `${w} ${g}`));
 
 const FAMILIES = [
-  { name: "era-decade", built: true, probes: cross(["90s", "1990s", "nineties", "2000s", "2010s", "2020s"]) },
-  { name: "era-decade-part", built: true, probes: cross(["early 2000s", "mid 2010s", "late 90s"]) },
-  { name: "era-year", built: true, probes: cross(["1996", "2015", "2020", "2024"]) },
-  { name: "era-season", built: true, probes: cross(["fall 2015", "spring 2020", "resort 2016"]) },
-  { name: "era-relative", built: true, probes: cross(["vintage"]) },
-  { name: "era-absent", built: true, probes: cross(["80s", "1970s"]) },
+  { name: "era-decade", built: true, gated: true, probes: cross(["90s", "1990s", "nineties", "2000s", "2010s", "2020s"]) },
+  { name: "era-decade-part", built: true, gated: true, probes: cross(["early 2000s", "mid 2010s", "late 90s"]) },
+  { name: "era-year", built: true, gated: true, probes: cross(["1996", "2015", "2020", "2024"]) },
+  { name: "era-range", built: true, gated: true, probes: cross(["between 1990 and 2000", "1996 to 1998"]) },
+  { name: "era-season", built: true, gated: true, probes: cross(["fall 2015", "spring 2020", "resort 2016"]) },
+  { name: "era-relative", built: true, gated: true, probes: cross(["vintage"]) },
+  { name: "era-absent", built: true, gated: true, probes: cross(["80s", "1970s"]) },
+  { name: "price-range", built: true, gated: false, probes: cross(["over 2000", "between 400 and 800", "up to 300"]) },
   // Not built yet — measured so the gap is countable, not remembered.
-  { name: "origin", built: false, probes: cross(["japanese", "belgian", "italian", "french", "american", "british"]) },
-  { name: "price-range", built: false, probes: cross(["over 2000", "between 400 and 800"]) },
+  { name: "origin", built: false, gated: false, probes: cross(["japanese", "belgian", "italian", "french", "american", "british"]) },
 ];
 
 // Controls: queries that name no attribute at all. Their racks must be
@@ -111,10 +122,24 @@ function eraChecker(query) {
   return (item) => itemMatchesEra(item, era);
 }
 
+// The budget checker reads the same parser the engine uses, then verifies the
+// SERVED items against the real `price` field.
+function priceChecker(query) {
+  const { constraints } = parseDenseConstraints(
+    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1)
+  );
+  const { minPrice, maxPrice } = constraints;
+  if (minPrice == null && maxPrice == null) return null;
+  return (item) =>
+    typeof item.price === "number" &&
+    (minPrice == null || item.price >= minPrice) &&
+    (maxPrice == null || item.price <= maxPrice);
+}
+
 const CHECKERS = {
   "era-decade": eraChecker, "era-decade-part": eraChecker, "era-year": eraChecker,
-  "era-season": eraChecker, "era-relative": eraChecker, "era-absent": eraChecker,
-  origin: () => null, "price-range": () => null,
+  "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
+  "era-absent": eraChecker, "price-range": priceChecker, origin: () => null,
 };
 
 const ATTR_WORDS = (query) =>
@@ -201,12 +226,13 @@ for (const fam of FAMILIES) {
   const a = tOff[fam.name], b = tOn[fam.name];
   const pair = (k) => `${String(a[k]).padStart(4)}→${String(b[k]).padEnd(4)}`;
   console.log(
-    (fam.name + (fam.built ? "" : " *")).padEnd(18),
+    (fam.name + (fam.built ? "" : " *") + (fam.built && !fam.gated ? " \u2020" : "")).padEnd(18),
     String(a.total).padStart(5),
     "  " + pair("READ"), " " + pair("HONEST-EMPTY"), "  " + pair("FALLBACK"), "  " + pair("BROWSE"), "  " + pair("DEFECT")
   );
 }
 console.log("* capability not built — measured to keep the gap countable");
+console.log("\u2020 not gated by SEARCH_ERA_READING — both arms are the same run by construction (amendment 3)");
 
 const sum = (t, k) => Object.entries(t).filter(([f]) => FAMILIES.find((x) => x.name === f)?.built).reduce((a, [, v]) => a + v[k], 0);
 const answeredOff = sum(tOff, "READ") + sum(tOff, "HONEST-EMPTY") + sum(tOff, "FALLBACK");
