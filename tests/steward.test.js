@@ -8,6 +8,8 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { runSteward, exitCodeFor, schemaVersionsFrom, CHECKS, ATTENTION } from "../lib/steward/index.js";
 import {
@@ -171,4 +173,72 @@ test("repeat demand for an unanswered question is the research signal", async ()
   const loud = await unknownDemand.run({ query: fakeQuery([["unknown_queries", [{ demanded: 6, total: 20 }]]]) });
   assert.equal(loud.state, "warn");
   assert.match(loud.evidence, /two or more people/);
+});
+
+// ---------------------------------------------------------------------------
+// The schedule itself. `npm run steward` and desk panel 09 both need a person
+// to run them, and a watchdog nobody runs is a document — so the workflow is
+// the thing that makes the steward a watchdog at all. It is asserted here for
+// the same reason the drift workflow is: this file spent a day parked in docs/
+// as a paste-me snippet, and the neighbouring workflow that shipped from such
+// a snippet carried its "NOT ACTIVE YET" header into production and kept it
+// for two days while firing every six hours.
+
+const STEWARD_WORKFLOW = readFileSync(
+  fileURLToPath(new URL("../.github/workflows/steward.yml", import.meta.url)), "utf8",
+);
+const STEWARD_DOC = readFileSync(
+  fileURLToPath(new URL("../docs/steward-schedule.md", import.meta.url)), "utf8",
+);
+
+test("the steward runs on a schedule and on demand", () => {
+  assert.match(STEWARD_WORKFLOW, /name: Steward/);
+  assert.match(STEWARD_WORKFLOW, /cron: "23 12 \* \* \*"/);
+  // Without this there is no way to prove the wiring without waiting a day.
+  assert.match(STEWARD_WORKFLOW, /workflow_dispatch:/);
+  assert.match(STEWARD_WORKFLOW, /run: npm run steward/);
+});
+
+test("the scheduled steward can only read", () => {
+  // The steward's whole claim is that it never writes. A workflow that granted
+  // itself write permission would falsify that claim from the outside, whatever
+  // the code does.
+  assert.match(STEWARD_WORKFLOW, /permissions:\s*\n\s*contents: read/);
+  assert.doesNotMatch(STEWARD_WORKFLOW, /contents: write/);
+  assert.doesNotMatch(STEWARD_WORKFLOW, /packages: write|id-token: write|pull-requests: write/);
+});
+
+test("an unconfigured steward skips instead of failing every morning", () => {
+  // Without DATABASE_URL every check returns `unmeasurable` and the run exits
+  // 2. That is right for the CLI — a dark board is not a green one — and wrong
+  // for a schedule: a job that fails every morning for a reason nobody can fix
+  // teaches everyone to ignore it. Skipped renders as skipped, so it cannot
+  // report a pass it did not earn either.
+  assert.match(STEWARD_WORKFLOW, /if: \$\{\{ vars\.STEWARD_ENABLED == 'true' \}\}/);
+});
+
+test("the workflow does not claim to be unshippable now that it is shipped", () => {
+  // The exact failure this file was written to avoid repeating.
+  assert.doesNotMatch(STEWARD_WORKFLOW, /NOT ACTIVE YET/);
+  assert.doesNotMatch(STEWARD_WORKFLOW, /paste this to|ready to paste/);
+  // and the operator note must not still be offering the snippet it deleted
+  assert.doesNotMatch(STEWARD_DOC, /```yaml/,
+    "the parked YAML copy is deleted — a second copy is a second thing to drift");
+  assert.match(STEWARD_DOC, /\.github\/workflows\/steward\.yml/);
+});
+
+test("the two-switch trap is written down where an operator will hit it", () => {
+  // The guard reads the VARIABLE, but the thing that makes the steward useful
+  // is the SECRET. Add the secret alone and the job skips silently, which is
+  // indistinguishable from a watchdog that is working.
+  assert.match(STEWARD_WORKFLOW, /BOTH are required/);
+  assert.match(STEWARD_DOC, /Both are required, and the guard reads only the second/);
+});
+
+test("the workflow's bytes survive the only route available for editing it", () => {
+  // No token here can write .github/workflows/* — `repo` scope is refused with
+  // a 403 — so this file can only be changed through the GitHub web UI, and a
+  // paste through that editor once re-encoded three em dashes as MacRoman.
+  assert.doesNotMatch(STEWARD_WORKFLOW, /Â|â€|‚Ä/,
+    "mojibake in the workflow — the web-UI paste re-encoded a non-ASCII character");
 });
