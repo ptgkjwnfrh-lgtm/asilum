@@ -103,7 +103,11 @@ for (const e of CULTURE) {
 // constrained pool is the whole answer. Its evidence is a verified item
 // field, not a word in a title, so it is a READ reason rather than a literal
 // one — and every such response carries a note naming the reading.
-const LITERAL_REASONS = new Set(["product name match", "title match", "partial title match", "brand match", "designer match", "garment match", "indexed text match", "tag match", "related term", "aesthetic match", "era match"]);
+// (Aug 21) "designer credit" is a stored attribution: the query names a
+// person in the item's own designers[] field. That is literal evidence — a
+// field the query matched exactly — not a read, so literalOK below learns to
+// look at designers[] as well as title/brand/category.
+const LITERAL_REASONS = new Set(["product name match", "title match", "partial title match", "brand match", "designer match", "designer credit", "garment match", "indexed text match", "tag match", "related term", "aesthetic match", "era match"]);
 const READ_REASONS = new Set(["category browse", "compositional read", "cultural read", "moodboard brain", "constraint match"]);
 const SEASON_CLIMATE = { "fall/winter": "cold", "pre-fall": "cold", "spring/summer": "warm", "resort": "warm" };
 
@@ -143,7 +147,9 @@ async function classify(q, cls, r) {
   const word = (hay, t) => new RegExp("\\b" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(hay);
   const tokHit = (hay, t) => word(hay, t) || (t.endsWith("s") && t.length >= 4 && word(hay, t.slice(0, -1)));
   const decade = norm(top.decade || top.era?.decade);
+  const credited = norm((top.designers || []).join(" "));
   const literalOK = qTokens.some((t) => tokHit(title, t) || brand.includes(t)) ||
+    (credited && qTokens.every((t) => tokHit(credited, t))) ||
     qTokens.some((t) => GARMENT_CATEGORY[t] === top.category || GENERIC_GARMENT_NOUNS?.[t] === top.category) ||
     (decade && q.includes(decade));
   if (LITERAL_REASONS.has(top.matchReason)) {

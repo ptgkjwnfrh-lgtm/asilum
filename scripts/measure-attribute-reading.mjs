@@ -71,7 +71,16 @@
 //       being scored as the pre-change BROWSE it is strictly better than.
 // Gate restated: across built families BROWSE and DEFECT must both be zero;
 // era-absent must be 100% FALLBACK; every other era family READ or
-// HONEST-EMPTY. (Origin round: the arms now gate SEARCH_ORIGIN_READING too,
+// HONEST-EMPTY.
+//
+// AMENDMENT 4 (designer-credit round). DEFECT is now gated on the ON arm
+// only, and off-arm defects are REPORTED as the baseline they are. The
+// designer round is the first whose pre-change behavior is itself defective
+// rather than merely incomplete: "jun takahashi", "chitose abe", "hiroki
+// nakamura", "jerry lorenzo" and "catherine holstein" each returned an empty
+// rack with no note at all, while 16, 14, 14, 17 and 15 pieces respectively
+// carried the name in a stored field. A gate that fails the run because the
+// baseline is broken cannot be used to measure the fix. (Origin round: the arms now gate SEARCH_ORIGIN_READING too,
 // and origin-absent joins era-absent under the FALLBACK rule.)
 //
 // AMENDMENT 3 (price-range round). The two arms differ ONLY by
@@ -90,7 +99,13 @@ const { searchProducts } = await import("../lib/search/index.js");
 const { itemMatchesEra, parseEraConstraint } = await import("../lib/search/era.js");
 const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { parseOriginConstraint, itemMatchesOrigin } = await import("../lib/search/origin.js");
+const { listDesigners, parseDesignerCredit, itemCreditsDesigner } = await import("../lib/search/designers.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
+// Same vocabulary the engine builds: house names are excluded, because a
+// brand outranks a credit.
+const DESIGNERS = listDesigners(CATALOG, {
+  excludeBrands: [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))],
+});
 
 const GARMENTS = ["jacket", "knit", "jeans", "boots", "dress", "trousers"];
 const cross = (words, garments = GARMENTS) =>
@@ -106,6 +121,15 @@ const FAMILIES = [
   { name: "era-absent", built: true, gated: true, probes: cross(["80s", "1970s"]) },
   { name: "price-range", built: true, gated: false, probes: cross(["over 2000", "between 400 and 800", "up to 300"]) },
   { name: "origin", built: true, gated: true, probes: cross(["japanese", "belgian", "italian", "french", "american", "british"]) },
+  // Designer credits: a stored attribution, 915/915 populated, 523 items
+  // crediting somebody other than the label on the piece.
+  { name: "designer-credit", built: true, gated: true, probes: [
+    "jun takahashi", "rei kawakubo", "virgil abloh", "kim jones", "demna",
+    "miuccia prada", "chitose abe", "glenn martens", "grace wales bonner",
+    "hiroki nakamura", "jerry lorenzo", "catherine holstein",
+    "jun takahashi jacket", "kim jones coat", "virgil abloh knit",
+    "rei kawakubo dress", "demna jacket", "miuccia prada bag",
+  ] },
   { name: "origin-absent", built: true, gated: true, probes: cross(["korean", "brazilian"]) },
 ];
 
@@ -151,11 +175,20 @@ function originChecker(query) {
   return (item) => itemMatchesOrigin(item, origin);
 }
 
+function designerChecker(query) {
+  const hit = parseDesignerCredit(
+    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1), DESIGNERS
+  );
+  if (!hit) return null;
+  return (item) => itemCreditsDesigner(item, hit.designer);
+}
+
 const CHECKERS = {
   "era-decade": eraChecker, "era-decade-part": eraChecker, "era-year": eraChecker,
   "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
   "era-absent": eraChecker, "price-range": priceChecker,
   origin: originChecker, "origin-absent": originChecker,
+  "designer-credit": designerChecker,
 };
 
 const ATTR_WORDS = (query) =>
@@ -170,8 +203,10 @@ function classify(query, family, res) {
   const declaredUnservable =
     (res.interpreted?.era ? res.interpreted.era.served === false : false) ||
     (res.interpreted?.origin ? res.interpreted.origin.served === false : false);
+  // A credit names itself in the note rather than in a served flag.
+  const creditNamed = !!res.interpreted?.designerCredit;
   const disclosed =
-    declaredUnservable ||
+    declaredUnservable || creditNamed ||
     (res.unmatchedTokens || []).length > 0 ||
     ATTR_WORDS(query).some((w) => note.includes(`"${w}"`));
 
@@ -195,13 +230,13 @@ function classify(query, family, res) {
 
 // ---- run ------------------------------------------------------------------
 async function arm(reading) {
-  const eraReading = reading, originReading = reading;
+  const eraReading = reading, originReading = reading, designerCredit = reading;
   const rows = [];
   for (const fam of FAMILIES) {
     for (const q of fam.probes) {
       let r;
       try {
-        r = await searchProducts(q, { limit: 24, eraReading, originReading });
+        r = await searchProducts(q, { limit: 24, eraReading, originReading, designerCredit });
       } catch (e) {
         rows.push({ fam: fam.name, q, out: "DEFECT", why: "ENGINE ERROR: " + e.message, n: 0 });
         continue;
@@ -215,7 +250,7 @@ async function arm(reading) {
 async function controlPrints(reading) {
   const out = new Map();
   for (const q of CONTROLS) {
-    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading });
+    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading, designerCredit: reading });
     out.set(q, {
       note: r.note || null,
       rows: (r.results || []).map((it) => `${it.id}|${it.matchReason}|${it.confidenceScore}`),
@@ -259,9 +294,11 @@ const answeredOn = sum(tOn, "READ") + sum(tOn, "HONEST-EMPTY") + sum(tOn, "FALLB
 const builtTotal = FAMILIES.filter((f) => f.built).reduce((a, f) => a + f.probes.length, 0);
 console.log(`\nbuilt families answered: ${answeredOff}/${builtTotal} → ${answeredOn}/${builtTotal}`);
 
-const defects = [...off.map((r) => ({ ...r, arm: "off" })), ...on.map((r) => ({ ...r, arm: "on" }))]
-  .filter((r) => r.out === "DEFECT");
-console.log(`DEFECTS: ${defects.length}`);
+const defectsOff = off.filter((r) => r.out === "DEFECT").map((r) => ({ ...r, arm: "off" }));
+const defects = on.filter((r) => r.out === "DEFECT").map((r) => ({ ...r, arm: "on" }));
+console.log(`DEFECTS (on arm, gated): ${defects.length}`);
+console.log(`defects in the baseline arm (reported, not gated — amendment 4): ${defectsOff.length}`);
+for (const d of defectsOff.slice(0, 10)) console.log(`  [baseline] [${d.fam}] "${d.q}" — ${d.why}`);
 for (const d of defects.slice(0, 30)) console.log(`  [${d.arm}] [${d.fam}] "${d.q}" — ${d.why}`);
 
 // ---- false denials --------------------------------------------------------
