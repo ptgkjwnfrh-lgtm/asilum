@@ -14,7 +14,10 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdtempSync, writeFileSync, chmodSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -119,4 +122,161 @@ test("the parked workflow can answer 'how far behind' and waits for the deploy",
   // that reports no status at all.
   assert.match(WORKFLOW, /branches: \[main\]/);
   assert.match(WORKFLOW, /cron:/);
+});
+
+// ---------------------------------------------------------------------------
+// The 21 August wait-race, reproduced rather than described.
+//
+// The last red drift run that day was not drift. Its head was 90c5cb1 — the
+// merge of #336 — and while it slept its 240 seconds waiting for Vercel to
+// report, #337 merged and deployed as f938914. The run woke to find production
+// serving a commit that did not exist when it checked out, could not resolve
+// the range, and reported "shallow clone?" — with fetch-depth already 0.
+//
+// These tests build the situation out of real git objects and a stubbed `gh`,
+// because a source-text assertion cannot tell a fix from a reworded message.
+
+const SCRIPT_PATH = ROOT + "scripts/check-deploy-drift.mjs";
+
+// `gh api <path>` — the only two calls the script makes.
+const FAKE_GH = `#!/bin/sh
+case "$2" in
+  *statuses*) echo '[{"state":"success"}]' ;;
+  *) printf '[{"id":1,"sha":"%s","environment":"Production","created_at":"2026-08-21T19:38:00Z"}]' "$DRIFT_FAKE_SHA" ;;
+esac
+`;
+
+/** A world with an `origin` and a working clone, plus a `gh` that lies on cue. */
+function world() {
+  const dir = mkdtempSync(join(tmpdir(), "drift-"));
+  const sh = (cwd, ...args) =>
+    execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+
+  const bin = join(dir, "bin");
+  execFileSync("mkdir", ["-p", bin]);
+  writeFileSync(join(bin, "gh"), FAKE_GH);
+  chmodSync(join(bin, "gh"), 0o755);
+
+  const origin = join(dir, "origin.git");
+  sh(dir, "init", "--quiet", "--bare", "-b", "main", origin);
+
+  const work = join(dir, "work");
+  sh(dir, "init", "--quiet", "-b", "main", work);
+  sh(work, "config", "user.email", "drift@test");
+  sh(work, "config", "user.name", "drift test");
+  sh(work, "remote", "add", "origin", origin);
+
+  const commit = (message) => {
+    writeFileSync(join(work, "app-file.js"), message);
+    sh(work, "add", "-A");
+    sh(work, "commit", "--quiet", "-m", message);
+    return sh(work, "rev-parse", "HEAD");
+  };
+
+  const run = (cwd, deployedSha) => {
+    try {
+      const stdout = execFileSync(process.execPath, [SCRIPT_PATH], {
+        cwd,
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        env: {
+          ...process.env,
+          PATH: `${bin}:${process.env.PATH}`,
+          DRIFT_FAKE_SHA: deployedSha,
+          DRIFT_ENVIRONMENT: "Production",
+        },
+      });
+      return { code: 0, stdout, stderr: "" };
+    } catch (error) {
+      return { code: error.status, stdout: error.stdout || "", stderr: error.stderr || "" };
+    }
+  };
+
+  return { dir, work, origin, sh, commit, run, cleanup: () => rmSync(dir, { recursive: true, force: true }) };
+}
+
+test("production one merge ahead of this checkout is NOT drift (the #336 race)", () => {
+  // The exact 21 August shape: the run holds the older commit, production is
+  // already serving the newer one. Everything this run tested is live.
+  const w = world();
+  try {
+    const older = w.commit("the run's own checkout");
+    const newer = w.commit("merged and deployed during the 240s sleep");
+    w.sh(w.work, "push", "--quiet", "origin", "main");
+    // main moves back to what this run actually checked out; `newer` stays a
+    // reachable object, exactly as it is on a runner that fetched depth 0.
+    w.sh(w.work, "reset", "--hard", "--quiet", older);
+
+    const r = w.run(w.work, newer);
+    assert.equal(r.code, 0, `must pass, got exit ${r.code}\n${r.stderr}`);
+    assert.match(r.stdout, /production is AHEAD of this run/);
+    // and it must NOT reach for the old misdiagnosis
+    assert.doesNotMatch(r.stdout + r.stderr, /shallow clone/);
+    assert.doesNotMatch(r.stdout + r.stderr, /DEPLOY DRIFT/);
+  } finally { w.cleanup(); }
+});
+
+test("a deployed commit missing from the checkout is fetched, not blamed on the clone", () => {
+  // The harder half of the race: the newer commit is not in this checkout at
+  // all. fetch-depth 0 does not help — the commit did not exist when checkout
+  // ran. The script must go and get it before it judges anything.
+  const w = world();
+  try {
+    const older = w.commit("the run's own checkout");
+    w.sh(w.work, "push", "--quiet", "origin", "main");
+
+    // A second clone stops at `older` — this is the runner's checkout.
+    const runner = join(w.dir, "runner");
+    w.sh(w.dir, "clone", "--quiet", w.origin, runner);
+    w.sh(runner, "config", "user.email", "drift@test");
+    w.sh(runner, "config", "user.name", "drift test");
+
+    // Only now does the newer commit exist, and only on origin.
+    const newer = w.commit("merged and deployed during the 240s sleep");
+    w.sh(w.work, "push", "--quiet", "origin", "main");
+    assert.throws(
+      () => w.sh(runner, "cat-file", "-e", `${newer}^{commit}`),
+      "the runner must genuinely not have the commit yet, or this proves nothing",
+    );
+
+    const r = w.run(runner, newer);
+    assert.equal(r.code, 0, `must fetch and pass, got exit ${r.code}\n${r.stderr}`);
+    assert.match(r.stdout, /production is AHEAD of this run/);
+    assert.doesNotMatch(r.stdout + r.stderr, /shallow clone/);
+    assert.equal(older, w.sh(runner, "rev-parse", "main"),
+      "fetching the deployed sha must not move the tip this run is judging");
+  } finally { w.cleanup(); }
+});
+
+test("real drift still fails — the race fix must not become an escape hatch", () => {
+  // The mutation that would make this whole check worthless: treating every
+  // unresolved comparison as "ahead, therefore fine". Production genuinely
+  // behind on a user-facing file must still go red, with the merge list.
+  const w = world();
+  try {
+    const deployed = w.commit("what production is serving");
+    w.commit("a user-facing change that never shipped");
+    w.sh(w.work, "push", "--quiet", "origin", "main");
+
+    const r = w.run(w.work, deployed);
+    assert.equal(r.code, 1, "production behind on app code must fail");
+    assert.match(r.stderr, /DEPLOY DRIFT/);
+    assert.match(r.stderr, /production is serving/);
+    assert.doesNotMatch(r.stdout, /AHEAD/);
+  } finally { w.cleanup(); }
+});
+
+test("a deployed commit origin has never heard of is still a hard failure", () => {
+  // Force-pushed or deleted out from under production. The fetch cannot save
+  // this one, and it must not be quietly waved through as a race.
+  const w = world();
+  try {
+    w.commit("the only commit anyone has");
+    w.sh(w.work, "push", "--quiet", "origin", "main");
+
+    const r = w.run(w.work, "0".repeat(40));
+    assert.equal(r.code, 1, "an unfetchable deployed sha must fail");
+    assert.match(r.stderr, /cannot be fetched from origin at all/);
+    assert.match(r.stderr, /force-pushed or deleted commit/);
+  } finally { w.cleanup(); }
 });

@@ -38,6 +38,15 @@ const gh = (path) => {
   return JSON.parse(out);
 };
 const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
+// Quiet predicates — these ask questions, so a "no" must not print a git error.
+const isKnown = (sha) => {
+  try { execFileSync("git", ["cat-file", "-e", `${sha}^{commit}`], { stdio: "ignore" }); return true; }
+  catch { return false; }
+};
+const isAncestor = (a, b) => {
+  try { execFileSync("git", ["merge-base", "--is-ancestor", a, b], { stdio: "ignore" }); return true; }
+  catch { return false; }
+};
 
 function fail(lines) {
   console.error("DEPLOY DRIFT\n");
@@ -86,6 +95,46 @@ if (live.sha === tip) {
   process.exit(0);
 }
 
+// The deployed commit may not be in this checkout at all — and when it is not,
+// a shallow clone is the wrong diagnosis. The job sleeps 240s waiting for the
+// deployment to report, and a merge train can land another commit inside that
+// window, so the run wakes to find production serving something that did not
+// exist when it checked out. On 21 August that raced the #336 merge: the run
+// held 90c5cb1, #337 merged and deployed as f938914 during the sleep, the range
+// would not resolve, and the check blamed a shallow clone — while fetch-depth
+// was already 0. Twenty-two genuinely red runs that day were real drift; this
+// twenty-third was the check tripping over its own wait, and reading it as a
+// clone bug sends the next person to the wrong file. Fetch before judging.
+if (!isKnown(live.sha)) {
+  for (const ref of [live.sha, BRANCH]) {
+    try { git("fetch", "--quiet", "origin", ref); } catch { /* the check below rules */ }
+    if (isKnown(live.sha)) break;
+  }
+}
+
+if (!isKnown(live.sha)) {
+  fail([
+    `production is at ${live.sha.slice(0, 7)}, ${BRANCH} is at ${tip.slice(0, 7)},`,
+    "and the deployed commit cannot be fetched from origin at all.",
+    "That is not a wait-race: production is serving something the remote does",
+    "not have — a force-pushed or deleted commit. Compare the two by hand.",
+  ]);
+}
+
+// Production AHEAD of this checkout is not drift. A newer merge landed and
+// deployed while this run waited, so everything this run holds is live and then
+// some — the invariant the check exists to protect is satisfied with room to
+// spare. `tip` is deliberately NOT re-read from the remote: this run judges the
+// commit it actually checked out, and re-reading would quietly turn a stale run
+// into a verdict about code it never saw.
+if (isAncestor(tip, live.sha)) {
+  console.log(
+    `production is AHEAD of this run: ${live.environment} at ${live.sha.slice(0, 7)}, ` +
+    `this checkout at ${tip.slice(0, 7)} — a newer merge deployed while this run waited. Not drift.`,
+  );
+  process.exit(0);
+}
+
 // Behind — but by how much, and does any of it reach a user? A docs-only gap is
 // not worth waking anyone for.
 let range = [];
@@ -94,7 +143,7 @@ try {
 } catch {
   fail([
     `production is at ${live.sha.slice(0, 7)}, ${BRANCH} is at ${tip.slice(0, 7)},`,
-    "and the two are not comparable in this checkout (shallow clone?).",
+    `and the two have diverged — neither reaches the other from ${BRANCH}.`,
   ]);
 }
 
