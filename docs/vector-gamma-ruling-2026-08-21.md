@@ -1,3 +1,25 @@
+# RULED — option 2, shipped 21 August 2026
+
+> **The owner ruled option 2 and it is live.** The core slate now RANKS
+> uncorroborated similarity lower without SCORING it lower: `parts.gamma` is
+> untouched, so the ordering law below still holds and every explanation still
+> reconciles; only `byScore` — the core slate's ranking key — discounts
+> similarity that no behavioural edge corroborates. Any edge at all, including
+> a single unverified identity, restores full weight.
+>
+> Measured after: `measure-vector-feed` flat GATE **FAIL → PASS**, top-24
+> affinity **0.5393 → 0.5466** (it was 0.5226), reach +0.0193 and gamma-slot
+> 0.2428 → 0.4595, both better than the shipped configuration — the same
+> quality win option 1 offered, with nothing spent. The two tests that refused
+> option 1 pass **unamended**. `measure-tuning` flat and satiating both PASS;
+> `measure-distribution` improved from underpowered to **power PASS in both
+> worlds**, because the change makes an injected concentrator easier to see,
+> not harder.
+>
+> The record below is left exactly as it was written before the ruling.
+
+---
+
 # RULING NEEDED — vector gamma costs the slate, and the cheap fix breaks a security law
 
 *Measured 21 August 2026, autonomous round. Nothing was shipped from this
