@@ -32,6 +32,11 @@
 //   DEFECT        anything else: served items violate the attribute with no
 //                 disclosure, an empty rack with no explanation, or an error.
 //
+// A separate section counts FALSE DENIALS: responses that deny a word the
+// catalog carries ("no piece here matches \"leather\"" while 28 pieces do).
+// That failure is invisible to every class above and to the vibe sweep, and
+// its gate is zero.
+//
 // SUCCESS CRITERIA FOR THE ERA ROUND (declared before the run):
 //   1. era families: every probe READ or HONEST-EMPTY with the flag on, and
 //      BROWSE goes to zero. The baseline is reported, not asserted — see the
@@ -259,6 +264,31 @@ const defects = [...off.map((r) => ({ ...r, arm: "off" })), ...on.map((r) => ({ 
 console.log(`DEFECTS: ${defects.length}`);
 for (const d of defects.slice(0, 30)) console.log(`  [${d.arm}] [${d.fam}] "${d.q}" — ${d.why}`);
 
+// ---- false denials --------------------------------------------------------
+// A different failure from the classes above, and one the vibe sweep cannot
+// see: a response that DENIES a word the catalog carries. `no piece here
+// matches "leather"` is true about the rack and false about the catalog, and
+// the reader is the one who pays for the difference. Gate: zero.
+const { buildTitleWordScope, categoriesCarrying } = await import("../lib/search/wordScope.js");
+const wordScope = buildTitleWordScope(CATALOG);
+const MODIFIERS = ["leather", "oversized", "cropped", "deconstructed", "mohair",
+                   "wool", "nylon", "boxy", "pleated", "waxed", "black"];
+const falseDenials = [];
+let denialProbes = 0;
+for (const m of MODIFIERS) {
+  for (const g of GARMENTS) {
+    denialProbes++;
+    const r = await searchProducts(`${m} ${g}`, { limit: 24 });
+    const note = String(r.note || "");
+    const denied = new RegExp(`no piece here matches [^—]*"${m}"`).test(note);
+    if (denied && categoriesCarrying(m, wordScope).length) {
+      falseDenials.push(`"${m} ${g}" denies a word the catalog carries in ${categoriesCarrying(m, wordScope).join("/")}`);
+    }
+  }
+}
+console.log(`\nfalse denials: ${falseDenials.length}/${denialProbes} probes`);
+for (const d of falseDenials.slice(0, 12)) console.log(`  ${d}`);
+
 // ---- controls -------------------------------------------------------------
 let broken = 0;
 for (const [q, a] of cOff) {
@@ -275,7 +305,7 @@ const browseOn = sum(tOn, "BROWSE");
 const absent = tOn["era-absent"];
 const oAbsent = tOn["origin-absent"];
 const absentAllFallback = absent.FALLBACK === absent.total && oAbsent.FALLBACK === oAbsent.total;
-const pass = defects.length === 0 && broken === 0 &&
+const pass = defects.length === 0 && broken === 0 && falseDenials.length === 0 &&
   answeredOn === builtTotal && browseOn === 0 && answeredOn > answeredOff && absentAllFallback;
 console.log(`absent families all FALLBACK: ${absentAllFallback ? "yes" : "no"} (era ${absent.FALLBACK}/${absent.total}, origin ${oAbsent.FALLBACK}/${oAbsent.total})`);
 console.log(`\nVERDICT: ${pass ? "PASS" : "FAIL"} (criteria 1–3 in this file's header)`);
