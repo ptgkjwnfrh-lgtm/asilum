@@ -6948,7 +6948,7 @@
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "cropped coat",
@@ -6967,9 +6967,9 @@
  {
   "q": "japanese boots",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 22,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "cropped bag",
@@ -6983,7 +6983,7 @@
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "cropped skirt",
@@ -6995,9 +6995,9 @@
  {
   "q": "japanese dress",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 7,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "japanese bag",
@@ -7009,16 +7009,16 @@
  {
   "q": "japanese knit",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 21,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "japanese shirt",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "deconstructed jacket",
@@ -7031,8 +7031,8 @@
   "q": "japanese coat",
   "cls": "garment-modified",
   "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "japanese skirt",
@@ -7044,9 +7044,9 @@
  {
   "q": "japanese sneakers",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 22,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "deconstructed trousers",

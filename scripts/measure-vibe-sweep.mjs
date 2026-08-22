@@ -98,8 +98,13 @@ for (const e of CULTURE) {
   for (const key of [e.name, ...(e.aliases || [])]) if (!slateByQuery.has(norm(key))) slateByQuery.set(norm(key), tags);
 }
 
+// (Aug 21) "constraint match" is a rack where every query word was consumed
+// as a constraint (era / origin / gender / budget / climate) and the
+// constrained pool is the whole answer. Its evidence is a verified item
+// field, not a word in a title, so it is a READ reason rather than a literal
+// one — and every such response carries a note naming the reading.
 const LITERAL_REASONS = new Set(["product name match", "title match", "partial title match", "brand match", "designer match", "garment match", "indexed text match", "tag match", "related term", "aesthetic match", "era match"]);
-const READ_REASONS = new Set(["category browse", "compositional read", "cultural read", "moodboard brain"]);
+const READ_REASONS = new Set(["category browse", "compositional read", "cultural read", "moodboard brain", "constraint match"]);
 const SEASON_CLIMATE = { "fall/winter": "cold", "pre-fall": "cold", "spring/summer": "warm", "resort": "warm" };
 
 async function classify(q, cls, r) {
