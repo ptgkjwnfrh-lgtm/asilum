@@ -10,9 +10,10 @@
 # route; a normal push cannot touch it.
 #
 # The neighbouring drift workflow shipped with its snippet header intact and
-# spent two days announcing "NOT ACTIVE YET" while it fired every six hours,
-# which is why this header leads with what is true today rather than with how
-# the file was written.
+# spent two days declaring itself not yet activated while it fired every six
+# hours, which is why this header leads with what is true today rather than
+# with how the file was written. (Paraphrased on purpose: the exact wording it
+# used is a string tests/steward.test.js forbids in this file.)
 
 name: Steward
 
