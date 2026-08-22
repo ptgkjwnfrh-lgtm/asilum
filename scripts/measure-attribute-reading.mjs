@@ -101,6 +101,7 @@ const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { parseOriginConstraint, itemMatchesOrigin } = await import("../lib/search/origin.js");
 const { listDesigners, parseDesignerCredit, itemCreditsDesigner } = await import("../lib/search/designers.js");
 const { parseNegations, itemMatchesExclusion } = await import("../lib/search/negation.js");
+const { parseSizeConstraint, itemMatchesSize } = await import("../lib/search/size.js");
 const { GENERIC_GARMENT_NOUNS: GENERIC } = await import("../lib/search/index.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
 // Same vocabulary the engine builds: house names are excluded, because a
@@ -133,6 +134,15 @@ const FAMILIES = [
     "rei kawakubo dress", "demna jacket", "miuccia prada bag",
   ] },
   { name: "origin-absent", built: true, gated: true, probes: cross(["korean", "brazilian"]) },
+  // Size: label 915/915, fitsLikeUS 852/915 and differing from the label on
+  // 554 items. The engine denied the word outright.
+  { name: "size", built: true, gated: true, probes: [
+    "medium jacket", "large coat", "xl hoodie", "small knit", "size medium",
+    "xs dress", "xxl jacket", "large trousers", "medium boots",
+    "size 32", "32 waist jeans", "size 30", "size 34 trousers",
+    "jp 3 knit", "fr 48 coat", "it 48 jacket", "us 12 dress",
+    "xxxl knit",
+  ] },
   // Negation: the excluded word used to DRIVE the rack.
   { name: "negation", built: true, gated: true, probes: [
     "no logo hoodie", "hoodie without a logo", "anything but sneakers",
@@ -186,6 +196,14 @@ function originChecker(query) {
   return (item) => itemMatchesOrigin(item, origin);
 }
 
+function sizeChecker(query) {
+  const { size } = parseSizeConstraint(
+    query, query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1)
+  );
+  if (!size) return null;
+  return (item) => itemMatchesSize(item, size);
+}
+
 function negationChecker(query) {
   const { exclusions } = parseNegations(
     query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1),
@@ -209,7 +227,7 @@ const CHECKERS = {
   "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
   "era-absent": eraChecker, "price-range": priceChecker,
   origin: originChecker, "origin-absent": originChecker,
-  "designer-credit": designerChecker, negation: negationChecker,
+  "designer-credit": designerChecker, negation: negationChecker, size: sizeChecker,
 };
 
 const ATTR_WORDS = (query) =>
@@ -225,7 +243,8 @@ function classify(query, family, res) {
     (res.interpreted?.era ? res.interpreted.era.served === false : false) ||
     (res.interpreted?.origin ? res.interpreted.origin.served === false : false);
   // A credit names itself in the note rather than in a served flag.
-  const creditNamed = !!res.interpreted?.designerCredit || (res.interpreted?.exclusions || []).length > 0;
+  const creditNamed = !!res.interpreted?.designerCredit ||
+    (res.interpreted?.exclusions || []).length > 0 || !!res.interpreted?.size;
   const disclosed =
     declaredUnservable || creditNamed ||
     (res.unmatchedTokens || []).length > 0 ||
@@ -251,13 +270,14 @@ function classify(query, family, res) {
 
 // ---- run ------------------------------------------------------------------
 async function arm(reading) {
-  const eraReading = reading, originReading = reading, designerCredit = reading, negation = reading;
+  const eraReading = reading, originReading = reading, designerCredit = reading,
+    negation = reading, sizeReading = reading;
   const rows = [];
   for (const fam of FAMILIES) {
     for (const q of fam.probes) {
       let r;
       try {
-        r = await searchProducts(q, { limit: 24, eraReading, originReading, designerCredit, negation });
+        r = await searchProducts(q, { limit: 24, eraReading, originReading, designerCredit, negation, sizeReading });
       } catch (e) {
         rows.push({ fam: fam.name, q, out: "DEFECT", why: "ENGINE ERROR: " + e.message, n: 0 });
         continue;
@@ -271,7 +291,7 @@ async function arm(reading) {
 async function controlPrints(reading) {
   const out = new Map();
   for (const q of CONTROLS) {
-    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading, designerCredit: reading, negation: reading });
+    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading, designerCredit: reading, negation: reading, sizeReading: reading });
     out.set(q, {
       note: r.note || null,
       rows: (r.results || []).map((it) => `${it.id}|${it.matchReason}|${it.confidenceScore}`),
