@@ -5,6 +5,8 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 delete process.env.DATABASE_URL;
 delete process.env.STRIPE_SECRET_KEY;
@@ -96,4 +98,37 @@ test("the stamp persists on the ledger row", async () => {
     user: "u-attr", itemId: "test-real-item", amountCents: 10000, feeCents: 100, currency: "usd",
   });
   assert.equal(base.hotlist_attribution, null, "base sales carry no attribution");
+});
+
+// ---------------------------------------------------------------------------
+// ⚖ The EPN finding must survive the person who turns eBay on.
+//
+// The queue item asked whether the founders fee may share a click with an eBay
+// affiliate link. Reading the terms (docs/epn-terms-check-2026-08-22.md) found
+// no bar on that — and found a harder one nobody was looking for: EPN's
+// Prohibited AI Uses section bars using eBay Data to improve a system that
+// generates recommendations, which is exactly what ingested eBay items would
+// do, because they take the same inferTags() path as seed items.
+//
+// It is dormant only because EBAY_CLIENT_ID/SECRET are unset. A finding whose
+// entire protection is "someone will remember" is not protected, so the
+// pointer sits in the adapter a person edits to enable it.
+
+test("⚖ turning the eBay adapter on leads a reader to the EPN AI finding", () => {
+  const brief = readFileSync(
+    fileURLToPath(new URL("../docs/epn-terms-check-2026-08-22.md", import.meta.url)), "utf8");
+  const adapter = readFileSync(
+    fileURLToPath(new URL("../lib/ingest/adapters/ebayAdapter.js", import.meta.url)), "utf8");
+
+  assert.match(adapter, /epn-terms-check-2026-08-22\.md/,
+    "the file someone edits to enable eBay must point at the brief");
+  assert.match(adapter, /Prohibited AI Uses/);
+
+  // The brief must keep saying what is unresolved. A version that quietly
+  // reads as settled is worse than none — it would license the switch-on.
+  assert.match(brief, /Not legal advice/);
+  assert.match(brief, /Questions for counsel/);
+  assert.match(brief, /unresolved|counsel's, not mine|rulings are the owner's/);
+  // and it must not have lost the concrete hook that makes it checkable
+  assert.match(brief, /inferTags\(\)/);
 });
