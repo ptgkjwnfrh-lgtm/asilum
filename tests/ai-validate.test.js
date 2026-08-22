@@ -22,7 +22,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import {
-  CERTAINTY_STATUSES, normalizeAiTags, sanitizeModelText,
+  CERTAINTY_STATUSES, MODEL_CONFIDENCE_CEILING, normalizeAiTags, sanitizeModelText,
   validateMoodBoardAnalysisOutput, validateStylistOutput, validateTagAuditOutput,
 } from "../lib/ai/validate.js";
 
@@ -72,7 +72,12 @@ test("downgrading a status does not quietly discard the rest of the field", () =
   const out = validateTagAuditOutput(auditField({ status: "confirmed", confidence: 1, evidence: "the label says silk" }));
   assert.deepEqual(out.fields[0], {
     field: "material", value: "silk", status: "ai_generated",
-    confidence: 1, evidence: "the label says silk",
+    // Amended when the model ceiling shipped: a self-scored 1.000 is now
+    // capped at MODEL_CONFIDENCE_CEILING, the same 0.6 the LOCAL path has
+    // always lived under (lib/asterisk/tagAudit.js "local rules cap 0.6").
+    // The status downgrade and the preserved evidence are what this test is
+    // about, and both still hold.
+    confidence: 0.6, evidence: "the label says silk",
   });
 });
 
@@ -161,13 +166,34 @@ test("a tag that is not a tag is dropped, not coerced", () => {
 
 test("confidence outside 0..1 is not trusted, it is zeroed", () => {
   const c = (confidence) => validateTagAuditOutput(auditField({ confidence })).fields[0].confidence;
-  assert.equal(c(0.9), 0.9);
   assert.equal(c(0), 0);
-  assert.equal(c(1), 1);
   assert.equal(c(0.123456), 0.123, "rounded to three places");
   for (const bad of [5, -1, NaN, Infinity, "0.5", null, undefined, {}]) {
     assert.equal(c(bad), 0, `${JSON.stringify(bad)} is not a confidence`);
   }
+});
+
+test("a model's self-scored confidence cannot exceed the local-rules ceiling", () => {
+  // The asymmetry this closes: lib/asterisk/tagAudit.js caps every LOCALLY
+  // derived value at 0.6 while a model could return 1.000 and have it stored
+  // verbatim — so the least reliable number in the system was the only one
+  // with no ceiling, and it decides whether a human ever looks at a conflict
+  // (tagAudit escalates at >= 0.5).
+  const c = (confidence) => validateTagAuditOutput(auditField({ confidence })).fields[0].confidence;
+  assert.equal(MODEL_CONFIDENCE_CEILING, 0.6);
+  assert.equal(c(1), MODEL_CONFIDENCE_CEILING);
+  assert.equal(c(0.9), MODEL_CONFIDENCE_CEILING);
+  assert.equal(c(0.6), 0.6);
+  // Below the ceiling nothing is touched — the cap clamps, it does not
+  // rescale. Rescaling would drag an honest 0.5 under tagAudit's escalation
+  // threshold and quietly stop conflicts reaching a person.
+  assert.equal(c(0.55), 0.55);
+  assert.equal(c(0.5), 0.5);
+  // Every validator shares the one ceiling.
+  assert.equal(
+    validateMoodBoardAnalysisOutput({ aestheticTags: ["gorpcore"], confidenceScore: 1 }).confidenceScore,
+    MODEL_CONFIDENCE_CEILING
+  );
 });
 
 test("model text is stripped of markup, collapsed and capped", () => {

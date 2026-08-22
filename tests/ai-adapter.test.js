@@ -12,12 +12,16 @@
 // reachable in about a millisecond. `logAiModelEvent` failures are swallowed by
 // design, so the absence of a database changes nothing.
 //
-// WHAT THIS FILE DOES NOT COVER, and why: the success path and the
-// `invalid-output` path both require a provider that RETURNS text, and
-// `PROVIDERS` is a module-private const with no injection seam. Reaching them
-// means a real network call or module mocking. That is a testability gap in the
-// design of the seam, recorded here rather than faked — the parse/validate/log
-// branches of the most important function in `lib/ai` remain unverified.
+// WHAT THIS FILE DOES NOT COVER, and why (AMENDED Aug 21 — the gap is closed):
+// the success path and the `invalid-output` path both require a provider that
+// RETURNS text, and `PROVIDERS` used to be a module-private const with no
+// injection seam, so the parse/validate/log branches of the most important
+// function in `lib/ai` were unverified. `PROVIDERS` is exported now for
+// exactly that reason and those branches are covered in
+// tests/ai-seam-honesty.test.js, which swaps one entry and restores it.
+// What remains uncovered here is the ai_model_events WRITE itself:
+// logAiModelEvent is swallowed by design without a database, so the row is the
+// database-backed suite's to prove.
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
