@@ -332,8 +332,8 @@
   "q": "top gun",
   "cls": "culture:movie",
   "n": 24,
-  "out": "B",
-  "why": "literal: partial title match"
+  "out": "C",
+  "why": "disclosed category browse"
  },
  {
   "q": "clockwork orange",

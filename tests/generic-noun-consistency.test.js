@@ -56,6 +56,40 @@ function headClass(title) {
 const genericCategories = [...new Set(Object.values(GENERIC_GARMENT_NOUNS))];
 const genericItems = CATALOG.filter((it) => genericCategories.includes(it.category));
 
+// A CATEGORY'S OWN NAME IS NOT A GARMENT CLASS (Aug 21). "tailoring",
+// "accessories" and their six siblings were added to GENERIC_GARMENT_NOUNS so
+// that "mens knitwear" and "cheap accessories" stop returning a blank page.
+// They are exempt from the HEAD-NOUN invariants below, and only from those,
+// for a reason the classifier cannot see: a category name names the category
+// BY DEFINITION, so every item in it is one and the promise the beanie guard
+// protects cannot be broken. The classifier reads the last classifiable token
+// of a title, so it calls a "boxy suit jacket" outerwear and reports the
+// tailoring category as miscategorised — which is a fact about the head noun,
+// not about the item.
+//
+// The guard stays fully in force for every REAL garment noun: knit, sweater,
+// jacket, coat, shoes, dress. That is what caught the balaclava beanies, and
+// nothing here relaxes it.
+const CATEGORY_SELF_NAMES = new Set(
+  Object.entries(GENERIC_GARMENT_NOUNS)
+    .filter(([noun, category]) => noun === category)
+    .map(([noun]) => noun)
+);
+const garmentNounCategories = [...new Set(
+  Object.entries(GENERIC_GARMENT_NOUNS)
+    .filter(([noun]) => !CATEGORY_SELF_NAMES.has(noun))
+    .map(([, category]) => category)
+)];
+const garmentNounItems = CATALOG.filter((it) => garmentNounCategories.includes(it.category));
+
+test("a category self-name maps to a category the catalog actually has", () => {
+  const categories = new Set(CATALOG.map((it) => it.category));
+  assert.ok(CATEGORY_SELF_NAMES.size >= 8, "the eight category names are vocabulary");
+  for (const name of CATEGORY_SELF_NAMES) {
+    assert.ok(categories.has(name), `"${name}" names no category in this catalog`);
+  }
+});
+
 test("generic nouns agree with GARMENT_CATEGORY", () => {
   for (const [noun, category] of Object.entries(GENERIC_GARMENT_NOUNS)) {
     assert.equal(
@@ -76,7 +110,7 @@ test("every generic-noun category has items to extend credit to", () => {
 });
 
 test("every item in a generic-noun category has a classifiable head noun", () => {
-  const unclassified = genericItems.filter((it) => !headClass(it.title));
+  const unclassified = garmentNounItems.filter((it) => !headClass(it.title));
   assert.deepEqual(
     unclassified.map((it) => `${it.category} :: ${it.title}`),
     [],
@@ -85,7 +119,7 @@ test("every item in a generic-noun category has a classifiable head noun", () =>
 });
 
 test("no generic-noun category contains an item class that isn't the noun", () => {
-  const mismatches = genericItems
+  const mismatches = garmentNounItems
     .filter((it) => {
       const c = headClass(it.title);
       return c && c !== it.category;
