@@ -60,7 +60,10 @@ const PROBES = [
   "leather jacket", "90s jacket", "japanese coat", "vintage knit",
 ];
 
-const norm = (s) => String(s || "").toLowerCase();
+// Accent-folded, the same way the engine folds (lib/search/text.js): the
+// reader sees "Comme des Garçons" when they typed "garcons", so the word is
+// accounted for and this metric must agree.
+const norm = (s) => String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const pieceOf = (t) => {
   const full = norm(t);
   const d = full.indexOf("—");
