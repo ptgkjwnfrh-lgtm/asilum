@@ -6778,58 +6778,58 @@
  {
   "q": "vintage knit",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 10,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "vintage jacket",
   "cls": "garment-modified",
   "n": 24,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "vintage trousers",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 10,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "vintage coat",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 23,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "vintage boots",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 10,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "vintage shirt",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 21,
   "out": "B",
-  "why": "literal: garment match"
+  "why": "literal: title match"
  },
  {
   "q": "vintage dress",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 2,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "vintage sneakers",
   "cls": "garment-modified",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed category browse"
+  "n": 10,
+  "out": "B",
+  "why": "literal: title match"
  },
  {
   "q": "oversized boots",
@@ -6841,14 +6841,14 @@
  {
   "q": "vintage bag",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 10,
   "out": "C",
   "why": "disclosed category browse"
  },
  {
   "q": "vintage skirt",
   "cls": "garment-modified",
-  "n": 24,
+  "n": 9,
   "out": "C",
   "why": "disclosed category browse"
  },
@@ -7469,14 +7469,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "dragonfruit",
+  "q": "cantaloupe",
   "cls": "fruit",
-  "n": 24,
+  "n": 0,
   "out": "C",
-  "why": "disclosed compositional read"
+  "why": "honestly empty"
  },
  {
-  "q": "cantaloupe",
+  "q": "dragonfruit",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7525,14 +7525,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "dubai",
+  "q": "oslo",
   "cls": "city-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "oslo",
+  "q": "dubai",
   "cls": "city-other",
   "n": 0,
   "out": "C",
@@ -7581,14 +7581,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "montreal",
+  "q": "toronto",
   "cls": "city-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "toronto",
+  "q": "montreal",
   "cls": "city-other",
   "n": 0,
   "out": "C",
@@ -7637,14 +7637,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "kettle",
+  "q": "lamp",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "lamp",
+  "q": "kettle",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7693,14 +7693,14 @@
   "why": "disclosed category browse"
  },
  {
-  "q": "stapler",
+  "q": "doorknob",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "doorknob",
+  "q": "stapler",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7749,14 +7749,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "thermostat",
+  "q": "fireplace",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "fireplace",
+  "q": "thermostat",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7805,14 +7805,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "gearbox",
+  "q": "anvil",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "anvil",
+  "q": "gearbox",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7861,13 +7861,6 @@
   "why": "honestly empty"
  },
  {
-  "q": "casablanca",
-  "cls": "movie-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "the matrix reloaded",
   "cls": "movie-other",
   "n": 24,
@@ -7876,6 +7869,13 @@
  },
  {
   "q": "titanic",
+  "cls": "movie-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
+ },
+ {
+  "q": "casablanca",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
@@ -7924,14 +7924,14 @@
   "why": "literal: partial title match"
  },
  {
-  "q": "toy story",
+  "q": "die hard",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "die hard",
+  "q": "toy story",
   "cls": "movie-other",
   "n": 0,
   "out": "C",
@@ -8036,18 +8036,18 @@
   "why": "honestly empty"
  },
  {
-  "q": "jane goodall",
-  "cls": "celebrity-other",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed compositional read"
- },
- {
   "q": "usain bolt",
   "cls": "celebrity-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
+ },
+ {
+  "q": "jane goodall",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
  },
  {
   "q": "simone biles",
@@ -8092,14 +8092,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "sploctern",
+  "q": "xqzvbl",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "xqzvbl",
+  "q": "sploctern",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
@@ -8148,14 +8148,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "gronkular",
+  "q": "sniggleworth",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "sniggleworth",
+  "q": "gronkular",
   "cls": "nonsense",
   "n": 0,
   "out": "C",
