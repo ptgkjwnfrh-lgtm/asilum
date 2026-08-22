@@ -66,7 +66,8 @@
 //       being scored as the pre-change BROWSE it is strictly better than.
 // Gate restated: across built families BROWSE and DEFECT must both be zero;
 // era-absent must be 100% FALLBACK; every other era family READ or
-// HONEST-EMPTY.
+// HONEST-EMPTY. (Origin round: the arms now gate SEARCH_ORIGIN_READING too,
+// and origin-absent joins era-absent under the FALLBACK rule.)
 //
 // AMENDMENT 3 (price-range round). The two arms differ ONLY by
 // SEARCH_ERA_READING. Budget parsing has no kill flag of its own — a floor is
@@ -83,6 +84,7 @@ process.env.DATABASE_URL = "";
 const { searchProducts } = await import("../lib/search/index.js");
 const { itemMatchesEra, parseEraConstraint } = await import("../lib/search/era.js");
 const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
+const { parseOriginConstraint, itemMatchesOrigin } = await import("../lib/search/origin.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
 
 const GARMENTS = ["jacket", "knit", "jeans", "boots", "dress", "trousers"];
@@ -98,8 +100,8 @@ const FAMILIES = [
   { name: "era-relative", built: true, gated: true, probes: cross(["vintage"]) },
   { name: "era-absent", built: true, gated: true, probes: cross(["80s", "1970s"]) },
   { name: "price-range", built: true, gated: false, probes: cross(["over 2000", "between 400 and 800", "up to 300"]) },
-  // Not built yet — measured so the gap is countable, not remembered.
-  { name: "origin", built: false, gated: false, probes: cross(["japanese", "belgian", "italian", "french", "american", "british"]) },
+  { name: "origin", built: true, gated: true, probes: cross(["japanese", "belgian", "italian", "french", "american", "british"]) },
+  { name: "origin-absent", built: true, gated: true, probes: cross(["korean", "brazilian"]) },
 ];
 
 // Controls: queries that name no attribute at all. Their racks must be
@@ -136,10 +138,19 @@ function priceChecker(query) {
     (maxPrice == null || item.price <= maxPrice);
 }
 
+function originChecker(query) {
+  const { origin } = parseOriginConstraint(
+    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1)
+  );
+  if (!origin) return null;
+  return (item) => itemMatchesOrigin(item, origin);
+}
+
 const CHECKERS = {
   "era-decade": eraChecker, "era-decade-part": eraChecker, "era-year": eraChecker,
   "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
-  "era-absent": eraChecker, "price-range": priceChecker, origin: () => null,
+  "era-absent": eraChecker, "price-range": priceChecker,
+  origin: originChecker, "origin-absent": originChecker,
 };
 
 const ATTR_WORDS = (query) =>
@@ -151,7 +162,9 @@ function classify(query, family, res) {
   const note = String(res.note || "");
   // Structured disclosure counts (amendment 2): `served: false` is the
   // engine saying, in a field, that it could not honor the attribute.
-  const declaredUnservable = res.interpreted?.era ? res.interpreted.era.served === false : false;
+  const declaredUnservable =
+    (res.interpreted?.era ? res.interpreted.era.served === false : false) ||
+    (res.interpreted?.origin ? res.interpreted.origin.served === false : false);
   const disclosed =
     declaredUnservable ||
     (res.unmatchedTokens || []).length > 0 ||
@@ -176,13 +189,14 @@ function classify(query, family, res) {
 }
 
 // ---- run ------------------------------------------------------------------
-async function arm(eraReading) {
+async function arm(reading) {
+  const eraReading = reading, originReading = reading;
   const rows = [];
   for (const fam of FAMILIES) {
     for (const q of fam.probes) {
       let r;
       try {
-        r = await searchProducts(q, { limit: 24, eraReading });
+        r = await searchProducts(q, { limit: 24, eraReading, originReading });
       } catch (e) {
         rows.push({ fam: fam.name, q, out: "DEFECT", why: "ENGINE ERROR: " + e.message, n: 0 });
         continue;
@@ -193,10 +207,10 @@ async function arm(eraReading) {
   return rows;
 }
 
-async function controlPrints(eraReading) {
+async function controlPrints(reading) {
   const out = new Map();
   for (const q of CONTROLS) {
-    const r = await searchProducts(q, { limit: 24, eraReading });
+    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading });
     out.set(q, {
       note: r.note || null,
       rows: (r.results || []).map((it) => `${it.id}|${it.matchReason}|${it.confidenceScore}`),
@@ -259,9 +273,10 @@ console.log(`controls: ${CONTROLS.length - broken}/${CONTROLS.length} invariant`
 
 const browseOn = sum(tOn, "BROWSE");
 const absent = tOn["era-absent"];
-const absentAllFallback = absent.FALLBACK === absent.total;
+const oAbsent = tOn["origin-absent"];
+const absentAllFallback = absent.FALLBACK === absent.total && oAbsent.FALLBACK === oAbsent.total;
 const pass = defects.length === 0 && broken === 0 &&
   answeredOn === builtTotal && browseOn === 0 && answeredOn > answeredOff && absentAllFallback;
-console.log(`era-absent all FALLBACK: ${absentAllFallback ? "yes" : "no"} (${absent.FALLBACK}/${absent.total})`);
+console.log(`absent families all FALLBACK: ${absentAllFallback ? "yes" : "no"} (era ${absent.FALLBACK}/${absent.total}, origin ${oAbsent.FALLBACK}/${oAbsent.total})`);
 console.log(`\nVERDICT: ${pass ? "PASS" : "FAIL"} (criteria 1–3 in this file's header)`);
 process.exit(pass ? 0 : 1);
