@@ -100,6 +100,8 @@ const { itemMatchesEra, parseEraConstraint } = await import("../lib/search/era.j
 const { parseDenseConstraints } = await import("../lib/search/denseQuery.js");
 const { parseOriginConstraint, itemMatchesOrigin } = await import("../lib/search/origin.js");
 const { listDesigners, parseDesignerCredit, itemCreditsDesigner } = await import("../lib/search/designers.js");
+const { parseNegations, itemMatchesExclusion } = await import("../lib/search/negation.js");
+const { GENERIC_GARMENT_NOUNS: GENERIC } = await import("../lib/search/index.js");
 const { CATALOG } = await import("../lib/ingest/catalog.js");
 // Same vocabulary the engine builds: house names are excluded, because a
 // brand outranks a credit.
@@ -131,6 +133,15 @@ const FAMILIES = [
     "rei kawakubo dress", "demna jacket", "miuccia prada bag",
   ] },
   { name: "origin-absent", built: true, gated: true, probes: cross(["korean", "brazilian"]) },
+  // Negation: the excluded word used to DRIVE the rack.
+  { name: "negation", built: true, gated: true, probes: [
+    "no logo hoodie", "hoodie without a logo", "anything but sneakers",
+    "jacket not leather", "trousers no pleats", "knit minus the stripes",
+    "not prada", "jacket except puffer", "no puffer coat", "shoes not boots",
+    "knit without stripes", "trousers excluding cargo", "not rick owens",
+    "anything but comme des garcons", "no virgil abloh", "jeans no distressed",
+    "tops minus graphic", "coat sans down",
+  ] },
 ];
 
 // Controls: queries that name no attribute at all. Their racks must be
@@ -175,6 +186,16 @@ function originChecker(query) {
   return (item) => itemMatchesOrigin(item, origin);
 }
 
+function negationChecker(query) {
+  const { exclusions } = parseNegations(
+    query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1),
+    { phrases: [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))] }
+  );
+  if (!exclusions.length) return null;
+  const opts = { categoryOf: (w) => GENERIC[w] || null };
+  return (item) => !exclusions.some((x) => itemMatchesExclusion(item, x.word, opts));
+}
+
 function designerChecker(query) {
   const hit = parseDesignerCredit(
     query.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 1), DESIGNERS
@@ -188,7 +209,7 @@ const CHECKERS = {
   "era-range": eraChecker, "era-season": eraChecker, "era-relative": eraChecker,
   "era-absent": eraChecker, "price-range": priceChecker,
   origin: originChecker, "origin-absent": originChecker,
-  "designer-credit": designerChecker,
+  "designer-credit": designerChecker, negation: negationChecker,
 };
 
 const ATTR_WORDS = (query) =>
@@ -204,7 +225,7 @@ function classify(query, family, res) {
     (res.interpreted?.era ? res.interpreted.era.served === false : false) ||
     (res.interpreted?.origin ? res.interpreted.origin.served === false : false);
   // A credit names itself in the note rather than in a served flag.
-  const creditNamed = !!res.interpreted?.designerCredit;
+  const creditNamed = !!res.interpreted?.designerCredit || (res.interpreted?.exclusions || []).length > 0;
   const disclosed =
     declaredUnservable || creditNamed ||
     (res.unmatchedTokens || []).length > 0 ||
@@ -230,13 +251,13 @@ function classify(query, family, res) {
 
 // ---- run ------------------------------------------------------------------
 async function arm(reading) {
-  const eraReading = reading, originReading = reading, designerCredit = reading;
+  const eraReading = reading, originReading = reading, designerCredit = reading, negation = reading;
   const rows = [];
   for (const fam of FAMILIES) {
     for (const q of fam.probes) {
       let r;
       try {
-        r = await searchProducts(q, { limit: 24, eraReading, originReading, designerCredit });
+        r = await searchProducts(q, { limit: 24, eraReading, originReading, designerCredit, negation });
       } catch (e) {
         rows.push({ fam: fam.name, q, out: "DEFECT", why: "ENGINE ERROR: " + e.message, n: 0 });
         continue;
@@ -250,7 +271,7 @@ async function arm(reading) {
 async function controlPrints(reading) {
   const out = new Map();
   for (const q of CONTROLS) {
-    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading, designerCredit: reading });
+    const r = await searchProducts(q, { limit: 24, eraReading: reading, originReading: reading, designerCredit: reading, negation: reading });
     out.set(q, {
       note: r.note || null,
       rows: (r.results || []).map((it) => `${it.id}|${it.matchReason}|${it.confidenceScore}`),
