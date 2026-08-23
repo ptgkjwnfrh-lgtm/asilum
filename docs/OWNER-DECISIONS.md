@@ -33,6 +33,22 @@ Answer sheet at the bottom — ten lines, fill and return.
   or document verification at this scale; counsel confirms per launch
   region (13/16 split varies).
 - **Default:** no messaging, no public social surfaces.
+- **DECIDED 23 Aug 2026 — 13+, self-declared at account creation.** The
+  owner set the minimum at 13, below the 16+ recommended above. Recorded as
+  given; engineering does not decide this one.
+  - **Assertion:** self-declared date of birth at account creation, no
+    document or biometric verification at this scale. Stored so the check
+    survives a birthday — someone who is 12 today is 13 next year, and a
+    one-off boolean would silently never re-evaluate.
+  - **⚖ STILL COUNSEL'S, and this note's own words:** "counsel confirms per
+    launch region (13/16 split varies)". 13 is the US COPPA line and works
+    for the US/UK; several EU member states set the GDPR digital-age-of-
+    consent at 14, 15 or 16, so 13+ is not uniformly lawful across the EEA.
+    Launch regions (decision #1) and this one have to be answered together.
+  - **Consequence for DMs:** 13+ means minors ARE present. That does not
+    block text messaging; it is precisely why the media pipeline stays
+    gated on a CSAM provider, a designated DMCA agent, and named
+    moderators (below).
 
 ## 3. DMs: build or not, and under what safety bar (blocks Feature F with #2)
 
@@ -47,6 +63,30 @@ Answer sheet at the bottom — ten lines, fill and return.
   social loop is wanted sooner, profile-room reports + follows already
   exist without free-text risk.
 - **Default:** not built.
+- **DECIDED 23 Aug 2026 — DMs SHIP.** The owner directed the build against
+  the recommendation to defer. Recorded as given. Scope as ruled:
+  - a **separate requests inbox** — first contact from a stranger lands in
+    a requests queue, not the main inbox (owner ruling, 23 Aug). This is
+    load-bearing rather than cosmetic: a business cannot switch DMs off, so
+    without a request lane its inbox IS the spam target.
+  - **blocking is per-account**, not per-conversation (owner ruling,
+    23 Aug) — a block covers the person and must survive a new thread, a
+    second storefront thread, and every reply path.
+  - **text first.** Ships behind `MESSAGING_ENABLED` (FEATURE-FLAGS.md:37),
+    absent by default, no fake "coming soon" states in API responses.
+  - **media is a SEPARATE flag and is NOT enabled.** The per-conversation
+    "receive images and videos" consent law is built — both sides, per
+    conversation, revocable — but no attachment can be sent until the four
+    items below exist. There is also no video handling anywhere in the
+    codebase today; that is from-nothing work.
+- **STILL OPEN, and each one gates media rather than text:**
+  1. a CSAM hash-matching provider,
+  2. DMCA designated-agent registration (DATA-INVENTORY names it as
+     required before any user-media surface goes public),
+  3. named moderator credentials — today there is ONE shared `ADMIN_TOKEN`
+     and one `ADMIN_ACTOR` string, so "logged and purpose-limited" is only
+     half-satisfiable and no action can be attributed to a person,
+  4. a moderation response target, and who is on the other end of it.
 
 ## 4. Wardrobe default visibility
 

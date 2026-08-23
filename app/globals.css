@@ -2368,3 +2368,4 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ledgercell { border: 1px solid var(--line); padding: 14px 14px 12px; background: var(--paper); }
 .ledgercell h2 { font-size: 12px; letter-spacing: .16em; margin: 0 0 6px; }
 .ledgercell p { font-size: 11px; color: var(--grey); line-height: 1.5; margin: 0 0 10px; }
+.agenote { display: block; font-size: 10px; color: var(--grey); line-height: 1.5; margin-top: 4px; }
