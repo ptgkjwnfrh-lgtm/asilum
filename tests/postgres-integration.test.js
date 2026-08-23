@@ -1191,6 +1191,55 @@ test("DM export: a cap is reported, never silently applied",
   assert.equal((await dm.exportMessagesFor(a, { messages: Infinity })).caps.messages, 5000);
 });
 
+test("DM store: the counterparty is answerable from a conversation or a message, and only to a member",
+  { skip: !databaseUrl }, async () => {
+  // These two exist so the route can honour what lib/dm.js promises: "a
+  // refusal caused by the CALLER'S OWN block is NOT vague ... Yours is always
+  // explained, and always with the undo." It could only do that on first
+  // contact by handle, where the other person had already been resolved.
+  //
+  // They are membership-scoped for the same reason readThread is: a lookup
+  // that answers for a conversation you are not in is an oracle, and this one
+  // would hand back a handle-resolvable account id.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const { lo: stranger } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello" });
+
+  assert.equal(await dm.peerOf(a, convo.id), b, "from either side");
+  assert.equal(await dm.peerOf(b, convo.id), a);
+  assert.equal(await dm.peerOf(stranger, convo.id), null,
+    "and never for somebody who is not in it");
+  assert.equal(await dm.peerOfMessage(a, m.id), b, "the same answer from a message id");
+  assert.equal(await dm.peerOfMessage(b, m.id), a);
+  assert.equal(await dm.peerOfMessage(stranger, m.id), null);
+
+  // garbage in is null out, not a thrown query
+  assert.equal(await dm.peerOf(a, "not-a-uuid"), null);
+  assert.equal(await dm.peerOf(a, ""), null);
+  assert.equal(await dm.peerOf(a, randomUUID()), null, "a real uuid nobody owns");
+  assert.equal(await dm.peerOfMessage(a, 0), null);
+  assert.equal(await dm.peerOfMessage(a, "nonsense"), null);
+
+  // and the answer they make possible: after MY OWN decline-block, the refusal
+  // names it instead of collapsing to "not reachable"
+  const { lo: opener, hi: recipient } = await dmAccounts(pool);
+  const knock = await dm.openConversation(opener, recipient);
+  await dm.sendMessage({ conversationId: knock.id, senderId: opener, body: "hi" });
+  assert.equal(await dm.declineRequest(recipient, knock.id), true);
+  const peer = await dm.peerOf(recipient, knock.id);
+  assert.equal(peer, opener);
+  assert.equal(await dm.iBlocked(recipient, peer), true,
+    "which is what lets the route say 'you blocked this person' to the person who did");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
