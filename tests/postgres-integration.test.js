@@ -629,9 +629,15 @@ test("activity: a receipt appears only when BOTH sides emit", { skip: !databaseU
   seen = await dm.peerActivity(a, convo.id);
   assert.equal(seen.readUpTo, null, "with my signals off I see nobody's");
   assert.equal(seen.reciprocal, false);
-  // and B, still emitting, can still see A's — A's choice binds only A's view
+  // From B's side the two reasons for a null must stay DISTINGUISHABLE in the
+  // payload even though both render as nothing: B's channel is open
+  // (reciprocal: true) and A simply is not emitting. My first version of this
+  // asserted B could still see A's receipt, which was wrong about the feature
+  // -- switching your signals off stops you EMITTING as well as seeing, and
+  // that is the primary effect, not a side one.
   const fromB = await dm.peerActivity(b, convo.id);
-  assert.equal(fromB.readUpTo !== null, true, "B is unaffected by A's choice of what B may see");
+  assert.equal(fromB.reciprocal, true, "B's own view is not disabled by A's choice");
+  assert.equal(fromB.readUpTo, null, "but A, with signals off, emits nothing to see");
 });
 
 test("activity: typing expires rather than needing a 'stopped' write",
