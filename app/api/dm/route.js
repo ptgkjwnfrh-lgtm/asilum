@@ -26,6 +26,7 @@ import {
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
+  recipientFollowsSender,
   readActivitySignals, resolveAddressee, unsendMessage,
   sendMessage, setDmSettings, setMediaConsent, setMuted,
   unblockByConversation, unblockByHandle,
@@ -192,7 +193,15 @@ export async function POST(req) {
             { delivered: false, reason: "not-reachable",
               message: "this person is not reachable right now." }, { status: 409 });
         }
-        const convo = await openConversation(me, them);
+        // A THREAD YOU ASKED FOR SHOULD NOT ARRIVE AS A REQUEST. This option
+        // existed, was documented and was unit-tested from the first day, and
+        // had no caller — the route always took the false default, so someone
+        // the recipient explicitly follows still landed in REQUESTS,
+        // previewless, under an ACCEPT / DECLINE + BLOCK prompt. It only moves
+        // the knock between folders; the one-knock law is untouched.
+        const convo = await openConversation(me, them, {
+          knownToRecipient: await recipientFollowsSender(them, me).catch(() => false),
+        });
         conversationId = convo.id;
       }
       try {
