@@ -27,7 +27,8 @@ import {
 } from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
-  acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
+  acceptRequest, blockAccount, blockByConversation, declineRequestDetailed,
+  findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, peerOf, peerOfMessage, pingTyping, clearTyping, react,
   reactionKinds, reactionsFor, recipientFollowsSender,
@@ -282,18 +283,28 @@ export async function POST(req) {
     }
     if (op === "decline") {
       // Declining blocks by default, and the response SAYS it did, so the UI
-      // can tell the person what it just created on their behalf.
-      const blocked = body.block !== false;
-      const ok = await declineRequest(me, String(body.conversationId || ""), { block: blocked });
-      return NextResponse.json({ ok, blocked: ok && blocked });
+      // can tell the person what it just created on their behalf. `blocked`
+      // now comes from the STORE — what stands in the table — rather than from
+      // the request flag, which reported a block on any second decline of an
+      // already-declined request whether or not one existed.
+      const result = await declineRequestDetailed(
+        me, String(body.conversationId || ""), { block: body.block !== false });
+      return NextResponse.json({ ok: result.ok, blocked: result.blocked });
     }
     if (op === "read") {
       await markRead(me, String(body.conversationId || ""), body.upTo);
       return NextResponse.json({ ok: true });
     }
     if (op === "block") {
-      await blockAccount(me, String(body.accountId || ""));
-      return NextResponse.json({ ok: true });
+      // By CONVERSATION, like unblock — the client has never held an account
+      // uuid. Until now this op demanded one, so no surface could reach it and
+      // none did: the only way to create a block was DECLINE + BLOCK on a
+      // pending request, and harassment that began after acceptance had no
+      // remedy but MUTE, which does not stop delivery.
+      const ok = body.conversationId
+        ? await blockByConversation(me, String(body.conversationId))
+        : Boolean(await blockAccount(me, String(body.accountId || "")).then(() => true));
+      return NextResponse.json({ ok });
     }
     if (op === "unblock") {
       // By conversation or by handle — never by account uuid, which the client

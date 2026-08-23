@@ -69,6 +69,7 @@ export default function MailDesk() {
   const [found, setFound] = useState(null);   // null = not searching
   const [peer, setPeer] = useState(NO_SIGNAL);
   const [signalsOn, setSignalsOn] = useState(true);
+  const [doorOpen, setDoorOpen] = useState(true);
   // Everyone I have blocked — mostly people I DECLINED, which is a block the
   // banner has always promised was undoable. Until now there was nowhere to
   // undo it.
@@ -120,6 +121,7 @@ export default function MailDesk() {
       setAvailable(true); setFault(false);
       setCounts({ inbox: data.inbox || 0, requests: data.requests || 0 });
       if (typeof data.activitySignals === "boolean") setSignalsOn(data.activitySignals);
+      if (typeof data.dmsOpen === "boolean") setDoorOpen(data.dmsOpen);
     } catch {
       setAvailable(true); setFault(true);
     }
@@ -454,6 +456,24 @@ export default function MailDesk() {
                 }}
               >{thread.muted ? "MUTED" : "MUTE"}</button>
             ) : null}
+            {/* LAW 1 NEEDS A CONTROL. The only path that ever made a block was
+                DECLINE + BLOCK on a pending request, and that branch never
+                renders again once a request is accepted — so harassment that
+                began AFTER acceptance had no remedy but MUTE, which by design
+                silences your own badge and does not stop delivery. Addressed
+                by conversation: the client has never held an account uuid. */}
+            {thread && thread.folder !== "requests" ? (
+              <button
+                className="mailblock"
+                title="block — they stop reaching you, in both directions. undo it under BLOCKED."
+                onClick={async () => {
+                  if (await act("block", { conversationId: threadId })) {
+                    showThread(null);
+                    await loadBlocks(); await loadFolder(folder); await poll();
+                  }
+                }}
+              >BLOCK</button>
+            ) : null}
           </div>
 
           {note ? <p className="mailnote">{note}</p> : null}
@@ -635,6 +655,31 @@ export default function MailDesk() {
               ))}
             </div>
           </div>
+
+          {/* THE OTHER HALF OF LAW 2. `dms_open` was readable and writable
+              through the API and had no control on any surface, so a passport
+              could not shut its door. A BUSINESS may not shut its own — the
+              v40 trigger refuses it — and the refusal now arrives with the
+              state, so the box reverts and says why rather than drifting out
+              of step with the database until the next poll. */}
+          <label className="mailsignals">
+            <input
+              type="checkbox"
+              checked={doorOpen}
+              onChange={async (e) => {
+                const open2 = e.target.checked;
+                setDoorOpen(open2);
+                const result = await act("settings", { dmsOpen: open2 });
+                if (typeof result?.dmsOpen === "boolean") setDoorOpen(result.dmsOpen);
+                else if (!result) setDoorOpen(!open2);
+              }}
+            />
+            let people write to me
+            <span className="agenote">
+              with this off, a stranger cannot start a conversation. threads you
+              already accepted keep working.
+            </span>
+          </label>
 
           <label className="mailsignals">
             <input

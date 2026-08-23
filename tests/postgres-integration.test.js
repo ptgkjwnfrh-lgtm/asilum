@@ -1240,6 +1240,104 @@ test("DM store: the counterparty is answerable from a conversation or a message,
     "which is what lets the route say 'you blocked this person' to the person who did");
 });
 
+test("DM: law 1 has a control inside an accepted conversation",
+  { skip: !databaseUrl }, async () => {
+  // A MINOR finding, and the half of it that survived #385: the only path
+  // that ever created a block was DECLINE + BLOCK on a pending request, and
+  // that branch never renders once a request is accepted. Harassment that
+  // began AFTER acceptance had no user-facing remedy at all — the victim's
+  // only lever was MUTE, which by design silences their own badge and does
+  // not stop delivery.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "this is fine" });
+  await dm.pingTyping(a, convo.id);
+
+  assert.equal(await dm.blockByConversation(b, convo.id), true, "addressed by CONVERSATION");
+  assert.equal(await dm.iBlocked(b, a), true);
+
+  // It DELEGATES to blockAccount, so it inherits both of that function's
+  // guarantees rather than reimplementing them: the pair lock every law-1
+  // writer takes, and the sweep of presence written before the block.
+  const presence = await pool.query(
+    `SELECT 1 FROM dm_typing WHERE conversation_id=$1`, [convo.id]);
+  assert.equal(presence.rowCount, 0, "typing written before the block does not outlive it");
+
+  // and the law itself now holds in a thread that was already open
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: a, body: "and again" }),
+    (e) => e.name === "MessageRefused" && e.code === "P0001");
+  await assert.rejects(
+    () => dm.react(b, m.id, "♥"),
+    (e) => e.name === "MessageRefused" && e.code === "P0001");
+
+  // a stranger cannot block a pair they are not in
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal(await dm.blockByConversation(stranger, convo.id), false);
+  assert.equal(await dm.blockByConversation(b, randomUUID()), false, "nor a conversation nobody owns");
+
+  // and the undo #385 built still works on it
+  assert.equal(await dm.unblockByConversation(b, convo.id), true);
+  assert.equal(await dm.iBlocked(b, a), false);
+});
+
+test("DM: a decline reports the block that STANDS, not the one it was asked for",
+  { skip: !databaseUrl }, async () => {
+  // A MINOR finding. The route answered `blocked: ok && body.block !== false`
+  // — the request flag, not the world — so a second decline of an
+  // already-declined request said blocked:true whether or not a row existed.
+  // Reachable through the shipped UI: decline, unblock from the BLOCKED list,
+  // then decline again from a panel that had not reloaded.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+
+  const first = await dm.declineRequestDetailed(b, convo.id);
+  assert.deepEqual(first, { ok: true, blocked: true });
+
+  // the exact sequence the panel can produce
+  assert.equal(await dm.unblockByConversation(b, convo.id), true);
+  const stale = await dm.declineRequestDetailed(b, convo.id);
+  assert.equal(stale.ok, true, "declining what is already declined is not a failure");
+  assert.equal(stale.blocked, false,
+    "and it must not claim a block the person deliberately undid");
+
+  // declining WITHOUT blocking says so
+  const { lo: c, hi: d } = await dmAccounts(pool);
+  const quiet = await dm.openConversation(c, d);
+  await dm.sendMessage({ conversationId: quiet.id, senderId: c, body: "hello" });
+  assert.deepEqual(await dm.declineRequestDetailed(d, quiet.id, { block: false }),
+    { ok: true, blocked: false });
+
+  // and a decline that lands where a MANUAL block already stands is truthfully
+  // blocked, even though its ON CONFLICT insert added nothing
+  const { lo: e, hi: f } = await dmAccounts(pool);
+  const knock = await dm.openConversation(e, f);
+  await dm.sendMessage({ conversationId: knock.id, senderId: e, body: "hello" });
+  await dm.blockAccount(f, e);
+  assert.deepEqual(await dm.declineRequestDetailed(f, knock.id, { block: false }),
+    { ok: true, blocked: true }, "asked of the table, not inferred from rowCount");
+
+  // the boolean wrapper still answers what seven other assertions expect
+  const { lo: g, hi: h } = await dmAccounts(pool);
+  const third = await dm.openConversation(g, h);
+  await dm.sendMessage({ conversationId: third.id, senderId: g, body: "hello" });
+  assert.equal(await dm.declineRequest(h, third.id), true);
+  assert.equal(await dm.declineRequest(g, third.id), false, "the opener still cannot decline");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;

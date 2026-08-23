@@ -2415,6 +2415,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailsignals { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
   border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; cursor: pointer; }
 .mailsignals input { margin-right: 6px; }
+/* block, beside mute in an accepted thread — law 1's control */
+.mailblock { font-family: var(--mich); font-size: 8.5px; letter-spacing: .14em;
+  border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;
+  background: none; color: var(--grey); cursor: pointer; margin-left: 6px; }
+.mailblock:hover { color: var(--red); border-color: var(--red); }
 /* the block list — the undo the request banner had always promised */
 .mailblocks { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
 .mailblocks .maillist { max-height: 148px; }
