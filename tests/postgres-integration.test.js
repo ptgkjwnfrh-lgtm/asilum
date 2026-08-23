@@ -1370,11 +1370,24 @@ test("DM unsend: the database requires the withdrawal to name its author",
     (e) => e.code === "42501", "an unattributed withdrawal is nobody's act");
 
   // Naming the WRONG person is refused too — it is not a formality to satisfy.
-  await assert.rejects(
-    () => pool.query(
-      `SELECT set_config('asilum.dm_actor', $2, true);
-       UPDATE dm_messages SET body=NULL, unsent_at=now() WHERE id=$1`, [m.id, b]),
-    (e) => e.code === "42501", "the recipient cannot withdraw the sender's words");
+  //
+  // Two statements on ONE client inside a transaction, not one multi-statement
+  // query: node-postgres uses the extended protocol, so a parameterised
+  // `SELECT …; UPDATE …` is rejected before it ever reaches the trigger. The
+  // first version of this assertion did exactly that and failed for a reason
+  // that had nothing to do with the law it was testing.
+  const impostor = await pool.connect();
+  try {
+    await impostor.query("BEGIN");
+    await impostor.query("SELECT set_config('asilum.dm_actor', $1, true)", [b]);
+    await assert.rejects(
+      () => impostor.query(
+        `UPDATE dm_messages SET body=NULL, unsent_at=now() WHERE id=$1`, [m.id]),
+      (e) => e.code === "42501", "the recipient cannot withdraw the sender's words");
+    await impostor.query("ROLLBACK");
+  } finally {
+    impostor.release();
+  }
 
   // and the message is untouched by either attempt
   const intact = (await pool.query(
