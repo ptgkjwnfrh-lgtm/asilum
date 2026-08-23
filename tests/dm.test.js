@@ -190,6 +190,36 @@ test("every field the panel reads off an inbox row is one the route sends", asyn
     "if the route's mapping changes, this test's model must change with it");
 });
 
+test("the block list is projected like the inbox: handle and conversation, no uuid", async () => {
+  // The register found op=blocks returning raw account uuids while the file
+  // three lines up asserts "the uuid never leaves the server". Both cannot be
+  // true. This models the route's projection the way the inbox test above
+  // models its own — executed, not assumed.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const route = readFileSync(root + "app/api/dm/route.js", "utf8");
+  const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
+
+  const stored = {
+    accountId: "deadbeef-0000-4000-8000-000000000000",
+    conversationId: "c0ffee00-0000-4000-8000-000000000000",
+    source: "decline", at: "2026-08-23T00:00:00Z",
+  };
+  const handles = {};   // someone who knocked without ever publishing a room
+  const { accountId, ...rest } = stored;                  // the route's own line
+  const wire = { ...rest, handle: handles[accountId] || null };
+
+  assert.ok(!("accountId" in wire), "the uuid does not reach the client");
+  assert.equal(wire.handle, null, "and a handle is not guaranteed — knocking needs no room");
+  assert.ok(wire.conversationId, "which is why the conversation id must be there to name them");
+
+  assert.match(route, /blocks\.map\(\(\{ accountId, \.\.\.rest \}\)/,
+    "if the route's projection changes, this test's model must change with it");
+  assert.match(panel, /act\("unblock", naming\)/,
+    "and the panel addresses the undo by that projection, never by uuid");
+});
+
 test("the panel never renders a raw account id", async () => {
   // The uuid staying server-side is a privacy property, not a detail: it is
   // the identifier that makes the handle search skippable.

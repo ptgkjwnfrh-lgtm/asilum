@@ -2415,6 +2415,10 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailsignals { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
   border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; cursor: pointer; }
 .mailsignals input { margin-right: 6px; }
+/* the block list — the undo the request banner had always promised */
+.mailblocks { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+.mailblocks .maillist { max-height: 148px; }
+.mailblocks .mailprev { color: var(--sig); }
 /* reactions + unsend */
 .mailmsg { display: flex; flex-direction: column; gap: 3px; max-width: 82%; }
 .mailthread li.mine .mailmsg { align-items: flex-end; }
