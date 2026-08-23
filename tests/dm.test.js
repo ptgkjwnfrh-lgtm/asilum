@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 
 import {
   BODY_MAX, FOLDERS, decodeCursor, describeRefusal, dmMediaEnabled, encodeCursor,
-  foldersForNewConversation, messagingEnabled, normalizeBody, rateBucketFor,
+  foldersForNewConversation, messagingEnabled, normalizeBody, rateBucketFor, readBucketFor,
 } from "../lib/dm.js";
 
 test("messaging is ABSENT by default, and media needs a second switch", () => {
@@ -294,4 +294,44 @@ test("the safety controls do not share a rate budget with the chatter", () => {
   assert.equal(rateBucketFor("something-new").scope, "dm-act",
     "an unknown op falls into the tight bucket, not the generous one");
   assert.equal(rateBucketFor(undefined).scope, "dm-act");
+});
+
+test("every read op is bounded, including the ones nobody thought about", async () => {
+  // An UNVERIFIED claim of the 23 Aug register, checked and true: four of the
+  // six GET ops had no per-subject quota at all — `summary`, polled by every
+  // signed-in reader on a 45-second timer; `inbox`, a keyset page carrying a
+  // correlated unread count AND a correlated preview subquery per row;
+  // `thread`, a member probe plus a 101-row read plus a reactions aggregate
+  // plus the palette; and `blocks`.
+  //
+  // The default is what matters. The two ops that WERE limited got limits
+  // because somebody reasoned about enumeration and about polling; the other
+  // four were simply never considered. A table with a bounded default cannot
+  // acquire an unbounded op by omission.
+  for (const op of ["summary", "inbox", "thread", "blocks", "", undefined, "an-op-not-written-yet"]) {
+    const bucket = readBucketFor(op);
+    assert.ok(bucket.limit > 0, `${op} must be bounded`);
+    assert.equal(bucket.scope, "dm-inbox");
+  }
+  assert.equal(readBucketFor("find").scope, "dm-find", "enumeration keeps its tight bucket");
+  assert.ok(readBucketFor("find").limit < readBucketFor("summary").limit);
+  assert.equal(readBucketFor("activity").scope, "dm-activity",
+    "and polling keeps its generous one — throttling it makes the indicator lie");
+
+  // and the aggregate breakers are REAL, which is the half a per-subject quota
+  // cannot do: a flood of fresh identities shares no subject. Called, not
+  // read off a table — a budget of 0 is how this file disables a breaker, so
+  // "the key exists" proves nothing.
+  const { consumeGlobalBudget } = await import("../lib/security/rateLimit.js");
+  for (const scope of ["dm-read", "dm-write"]) {
+    const drawn = await consumeGlobalBudget(scope);
+    assert.equal(drawn.allowed, true, `${scope} allows ordinary traffic`);
+    assert.ok(drawn.limit > 0, `${scope} has a real ceiling, not a disabled one`);
+    assert.ok(drawn.used >= 1, "and drawing from it actually costs");
+  }
+
+  const route = (await import("node:fs")).readFileSync(
+    (await import("node:url")).fileURLToPath(new URL("../app/api/dm/route.js", import.meta.url)), "utf8");
+  assert.match(route, /consumeGlobalBudget\("dm-read"\)/, "the read path draws it");
+  assert.match(route, /consumeGlobalBudget\("dm-write"\)/, "and so does the write path");
 });

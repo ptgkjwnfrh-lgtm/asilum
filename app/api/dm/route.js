@@ -13,14 +13,18 @@
 import { NextResponse } from "next/server";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import {
+  consumeGlobalBudget, consumeRateLimit, rateLimitResponse,
+} from "../../../lib/security/rateLimit.js";
 // `me || requestSubject(req)` is the house pattern (app/api/discover/rails).
 // requestSubject takes ONE argument: `requestSubject(req, me)` silently
 // DISCARDED the account and keyed every DM quota on the device cookie, so one
 // account on three devices got three times the budget and the account was
 // never the unit being limited. JS drops extra arguments without a word.
 import { requestSubject } from "../../../lib/security/request.js";
-import { describeRefusal, messagingEnabled, normalizeBody, rateBucketFor } from "../../../lib/dm.js";
+import {
+  describeRefusal, messagingEnabled, normalizeBody, rateBucketFor, readBucketFor,
+} from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
@@ -62,6 +66,34 @@ export async function GET(req) {
   if (!me) return NextResponse.json({ error: "sign in to use messages" }, { status: 401 });
 
   const op = url.searchParams.get("op") || "summary";
+  // EVERY read is bounded, and every read draws the aggregate breaker.
+  //
+  // Four of six GET ops had neither: `summary`, polled by every signed-in
+  // reader on a 45-second timer; `inbox`, a keyset page carrying a correlated
+  // unread count AND a correlated preview subquery per row; `thread`, a member
+  // probe plus a 101-row read plus a reactions aggregate plus the palette; and
+  // `blocks`. Only `find` and `activity` were limited — bounded because
+  // somebody reasoned about enumeration and about polling, not because the
+  // line had been drawn at "every op".
+  //
+  // The global budget is the half that matters here: per-subject quotas bound
+  // ONE caller, and a flood of fresh identities shares no subject. Every other
+  // expensive surface in this codebase draws one; the mail desk drew none.
+  const readBucket = readBucketFor(op);
+  const readQuota = await consumeRateLimit({
+    scope: readBucket.scope,
+    subject: me || requestSubject(req),
+    limit: readBucket.limit,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!readQuota.allowed) return NextResponse.json(rateLimitResponse(readQuota), { status: 429 });
+  const readBudget = await consumeGlobalBudget("dm-read");
+  if (!readBudget.allowed) {
+    return NextResponse.json(rateLimitResponse(readBudget), {
+      status: 429,
+      headers: { "Retry-After": String(Math.max(1, Math.ceil(readBudget.retryAfterMs / 1000))) },
+    });
+  }
   try {
     if (op === "summary") {
       const counts = await unreadSummary(me);
@@ -105,22 +137,15 @@ export async function GET(req) {
       return NextResponse.json({ ...thread, reactions, palette: await reactionKinds() });
     }
     if (op === "find") {
-      // Searching is cheap for us and valuable to an enumerator, so it gets
-      // its own tight bucket separate from every other read.
-      const quota = await consumeRateLimit({
-        scope: "dm-find", subject: me || requestSubject(req), limit: 60, windowMs: 60 * 60 * 1000,
-      });
-      if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+      // Its tight bucket is in the table above: searching is cheap for us and
+      // valuable to an enumerator.
       return NextResponse.json({ people: await findAddressees(me, url.searchParams.get("q") || "") });
     }
     if (op === "activity") {
       // Polled every few seconds while a thread is open, so it is one small
-      // read and nothing else. Its own generous bucket: throttling this into
-      // failure would make the indicator lie rather than go quiet.
-      const quota = await consumeRateLimit({
-        scope: "dm-activity", subject: me || requestSubject(req), limit: 1200, windowMs: 60 * 60 * 1000,
-      });
-      if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+      // read and nothing else. Its own generous bucket in the table above:
+      // throttling this into failure would make the indicator lie rather than
+      // go quiet.
       // `reciprocal` is the store's own account of WHY a null is null, and it
       // does not go on the wire: a payload that names the reason defeats the
       // indistinguishability the nulls exist to provide. The panel never read
@@ -181,6 +206,15 @@ export async function POST(req) {
     windowMs: 60 * 60 * 1000,
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  // The write side draws its own aggregate breaker, for the reason the read
+  // side does: a per-subject quota does not bound a flood of identities.
+  const writeBudget = await consumeGlobalBudget("dm-write");
+  if (!writeBudget.allowed) {
+    return NextResponse.json(rateLimitResponse(writeBudget), {
+      status: 429,
+      headers: { "Retry-After": String(Math.max(1, Math.ceil(writeBudget.retryAfterMs / 1000))) },
+    });
+  }
 
   try {
     if (op === "send") {
