@@ -1468,3 +1468,166 @@ test("Postgres popularity through commitInteractionBatch", { skip: !databaseUrl 
   assert.ok(r.decayed_at, "and the v25 recompute runs there too — this is the statement that had never executed on Postgres");
   assert.ok(Math.abs(Number(r.engagers_decayed) - 1) < 1e-4, "one fresh person weighs 1.0");
 });
+// ---------------------------------------------------------------------------
+// THE DM LAWS (schema v40). These are Postgres triggers, and until now every
+// law in this product that lived in a trigger was proved only by a memory-mode
+// mirror written from the same prose — a second implementation that tests then
+// certified. The red team named that as the standing defect in the DM design,
+// and traps 58 and 71 are the same shape. So the laws are exercised HERE,
+// against a real database, through raw SQL rather than through the store, so
+// that a store that forgets to check still fails.
+//
+// Each law is asserted with the SQLSTATE the trigger raises, not just "it
+// threw" — a CHECK failing for an unrelated reason would otherwise read as the
+// law working.
+
+const dmAccounts = () => {
+  const ids = [randomUUID(), randomUUID()].sort();  // lo < hi, as the CHECK requires
+  return { lo: ids[0], hi: ids[1] };
+};
+
+async function dmFixture(pool, { state = "accepted", openedBy = "lo" } = {}) {
+  const { lo, hi } = dmAccounts();
+  const opener = openedBy === "lo" ? lo : hi;
+  const stamp = state === "accepted" ? ", accepted_at = now()"
+    : state === "declined" ? ", declined_at = now()" : "";
+  const r = await pool.query(
+    `INSERT INTO dm_conversations (lo_account_id, hi_account_id, state, opened_by, accepted_at, declined_at)
+     VALUES ($1,$2,$3,$4, CASE WHEN $3='accepted' THEN now() END, CASE WHEN $3='declined' THEN now() END)
+     RETURNING id`, [lo, hi, state, opener]);
+  const id = r.rows[0].id;
+  await pool.query(`INSERT INTO dm_participants (conversation_id, account_id) VALUES ($1,$2),($1,$3)`,
+    [id, lo, hi]);
+  return { id, lo, hi, opener };
+}
+
+test("DM law 1: a per-account block stops delivery in BOTH directions",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm1");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const c = await dmFixture(pool);
+  // baseline: both directions work
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'hello')`, [c.id, c.lo]);
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'hi')`, [c.id, c.hi]);
+
+  // hi blocks lo. Per-account (owner ruling), so the row names people, not a thread.
+  await pool.query(`INSERT INTO dm_blocks (blocker_account_id, blocked_account_id) VALUES ($1,$2)`, [c.hi, c.lo]);
+
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'again')`, [c.id, c.lo]),
+    (e) => e.code === "P0001", "the blocked person cannot send");
+  // and the BLOCKER cannot send either — a block is not a mute
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'reply')`, [c.id, c.hi]),
+    (e) => e.code === "P0001", "the block stops both directions");
+
+  // THE RULING: per-account, so it survives a brand-new conversation.
+  const second = await pool.query(
+    `INSERT INTO dm_conversations (lo_account_id, hi_account_id, state, opened_by, accepted_at)
+     VALUES ($1,$2,'accepted',$1, now()) RETURNING id`, [c.lo, c.hi]).catch((e) => e);
+  assert.ok(second instanceof Error && second.code === "23505",
+    "a duplicate pair is unrepresentable, so there is no second thread to escape into");
+});
+
+test("DM law 2: a passport can close its DMs; a BUSINESS cannot",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm2");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const c = await dmFixture(pool);
+  // hi is a passport and closes its door
+  await pool.query(`INSERT INTO dm_settings (account_id, dms_open) VALUES ($1,false)`, [c.hi]);
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'x')`, [c.id, c.lo]),
+    (e) => e.code === "P0002", "a closed passport receives nothing");
+
+  // the same account becomes a business — the door must reopen, and must not
+  // be closable again. The kind is read LIVE, so no pinned copy can go stale.
+  await pool.query(`INSERT INTO account_kinds (account_id, kind) VALUES ($1,'business')
+                    ON CONFLICT (account_id) DO UPDATE SET kind='business'`, [c.hi]);
+  await assert.rejects(
+    () => pool.query(`UPDATE dm_settings SET dms_open=false WHERE account_id=$1`, [c.hi]),
+    (e) => e.code === "P0004", "a business cannot switch messages off");
+
+  await pool.query(`UPDATE dm_settings SET dms_open=true WHERE account_id=$1`, [c.hi]);
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'now open')`, [c.id, c.lo]);
+});
+
+test("DM law 3: one knock until the request is accepted",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm3");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const c = await dmFixture(pool, { state: "requested", openedBy: "lo" });
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'knock')`, [c.id, c.lo]);
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'and again')`, [c.id, c.lo]),
+    (e) => e.code === "P0003", "a stranger gets one message, not a channel");
+
+  // the RECIPIENT is not limited — replying is how a request gets accepted
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'who is this')`, [c.id, c.hi]);
+
+  // once accepted, the initiator is free
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [c.id]);
+  await pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'thanks')`, [c.id, c.lo]);
+});
+
+test("DM: a non-participant cannot insert into someone else's conversation",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm4");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const c = await dmFixture(pool);
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'intruder')`,
+      [c.id, randomUUID()]),
+    (e) => e.code === "42501", "the trigger is the authorization, not the route");
+});
+
+test("DM: self-conversations and duplicate threads are UNREPRESENTABLE",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm5");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const me = randomUUID();
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$1,$1)`, [me]),
+    (e) => e.code === "23514", "lo < hi refuses a self-DM");
+
+  const { lo, hi } = dmAccounts();
+  await pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$2,$1)`, [lo, hi]);
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$2,$2)`, [lo, hi]),
+    (e) => e.code === "23505", "one pair, one thread");
+  // and the pair cannot be smuggled in reversed
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$2,$1)`, [hi, lo]),
+    (e) => e.code === "23514", "the ordered pair has no back door");
+});
+
+test("DM: leaving 'accepted' does not destroy the record that consent happened",
+  { skip: !databaseUrl }, async (t) => {
+  // A biconditional CHECK would force accepted_at to be NULLed to change
+  // state, deleting material context from a harassment case.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?dm6");
+  const pool = await db.getPool();
+  t.after(async () => { await pool.end(); });
+
+  const c = await dmFixture(pool);
+  await pool.query(`UPDATE dm_conversations SET state='declined', declined_at=now() WHERE id=$1`, [c.id]);
+  const row = await pool.query(`SELECT accepted_at, declined_at FROM dm_conversations WHERE id=$1`, [c.id]);
+  assert.ok(row.rows[0].accepted_at, "the acceptance timestamp survives the state change");
+  assert.ok(row.rows[0].declined_at);
+});
