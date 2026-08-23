@@ -1076,6 +1076,13 @@ test("DM export: both people get the record, and neither gets more than the thre
   assert.equal(forA.conversations[0].openedByMe, true, "a opened it");
   assert.equal(forB.conversations[0].openedByMe, false, "and b did not — each record is its own side");
 
+  // THE SHARED STATE COLUMN IS NOT RE-EMITTED. The route strips it from the
+  // inbox because it names "declined" to the person who was declined — the
+  // fact P0001 and P0002 are collapsed to hide — and an export is not a way
+  // around that.
+  assert.ok(!("state" in forA.conversations[0]), "the opener does not learn the answer here");
+  assert.ok(!("state" in forB.conversations[0]));
+
   // NAMED BY HANDLE, NEVER BY UUID (law 7).
   assert.equal(forB.conversations[0].with, `xa${tag}`, "b's record names a by handle");
   assert.equal(forA.conversations[0].with, null,
@@ -1131,6 +1138,10 @@ test("DM export: both people get the record, and neither gets more than the thre
   assert.equal(blockedForB.blocks.length, 1);
   assert.equal(blockedForB.blocks[0].handle, `xa${tag}`);
   assert.equal(blockedForB.blocks[0].source, "manual");
+  assert.equal(blockedForB.blocks[0].conversationId, convo.id,
+    "and the conversation comes with it — a decline blocks whoever knocked, "
+    + "knocking needs no published room, so the handle is NULL in the common case "
+    + "and a block nobody can name is a record nobody can act on");
   assert.equal((await dm.exportMessagesFor(a)).blocks.length, 0,
     "and a block is the blocker's record, not the blocked person's");
 });
@@ -1161,6 +1172,13 @@ test("DM export: a cap is reported, never silently applied",
   const whole = await dm.exportMessagesFor(a);
   assert.equal(whole.messages.length, 4);
   assert.equal(whole.caps.messages, 5000, "the default cap is stated even when nothing was cut");
+
+  // WHERE the cut fell, not merely that one happened. The cap is global and
+  // newest-first, so hitting it removes the oldest messages — and with them
+  // the entire content of the oldest conversations.
+  assert.equal(capped.oldestExportedMessageId, capped.messages[1].id,
+    "the reader can tell which end of their history is missing");
+  assert.equal(whole.oldestExportedMessageId, whole.messages[3].id);
 
   // a garbage cap does not become "everything" or "nothing"
   // Garbage is not a cap. A negative must not become a cap of ONE — that is a

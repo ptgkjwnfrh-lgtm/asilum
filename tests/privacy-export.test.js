@@ -212,6 +212,13 @@ test("E9 no declared cap exceeds what its reader will actually return", async ()
     ["stylist.outfits", out.data.stylist.outfits.cap, 100],
     ["stylist.feedback", out.data.stylist.feedback.cap, 500],
     ["corrections", out.data.corrections.cap, 500],
+    // The mail desk's three. exportMessagesFor clamps to exactly what it is
+    // handed, so these are self-consistent by construction — which is why
+    // they belong here: the guard is against a future edit that raises a
+    // declared cap above what the reader will return.
+    ["messages.conversations", out.data.messages.conversations.cap, 500],
+    ["messages.items", out.data.messages.items.cap, 5000],
+    ["messages.blocks", out.data.messages.blocks.cap, 500],
   ];
   for (const [name, declared, readerCeiling] of caps) {
     assert.ok(declared <= readerCeiling,
@@ -222,7 +229,7 @@ test("E9 no declared cap exceeds what its reader will actually return", async ()
   await fresh(user);
 });
 
-test("E4 every messaging table is declared in exactly one place", () => {
+test("E10 every messaging table is declared in exactly one place", () => {
   // An UNVERIFIED claim of docs/dm-open-findings-2026-08-23.md, checked and
   // true: erasure and export did not know the DM subsystem existed. No dm_*
   // table was deleted, none was exported, and the retention disclosure did not
@@ -280,7 +287,7 @@ test("E4 every messaging table is declared in exactly one place", () => {
   assert.ok(tables.includes("dm_reaction_kinds"));
 });
 
-test("E4b exported-but-retained means retained — erasure must not touch it", () => {
+test("E11 exported-but-retained means retained — erasure must not touch it", () => {
   // The invariant that keeps the new third category honest, in the direction
   // E2 cannot see. E2 asks "is every manifest table erased?"; this asks the
   // opposite of the other list. A table that is both exported-and-retained AND
@@ -302,7 +309,7 @@ test("E4b exported-but-retained means retained — erasure must not touch it", (
   assert.deepEqual(both, []);
 });
 
-test("E4c the export actually carries the mail desk, in the same shape as everything else", async () => {
+test("E12 the export actually carries the mail desk, in the same shape as everything else", async () => {
   // A declaration in a table is not an export. This asserts the DOMAIN exists
   // on the payload with the cap/truncated shape §6 requires, and that it says
   // WHICH answer it is giving — because "no messages" and "the store could not
@@ -332,7 +339,7 @@ test("E4c the export actually carries the mail desk, in the same shape as everyt
   }
 });
 
-test("E5 the retention disclosure names the messages it keeps", () => {
+test("E13 the retention disclosure names the messages it keeps", () => {
   // The /api/privacy DELETE response returns this array verbatim. It listed
   // purchase tickets, deidentified counters and the auth account — and not the
   // message store, which is also kept. A retention list that omits something
@@ -353,4 +360,28 @@ test("E5 the retention disclosure names the messages it keeps", () => {
   assert.deepEqual(literals, [],
     "and no call site rebuilds the list as a literal — the mem branch drifted from "
     + "the Postgres one exactly that way once before");
+});
+
+test("E14 the manifest does not claim a table the export never reads", async () => {
+  // Found by a reviewer while the mail desk was going in, and it had been
+  // true since the manifest existed: `user_profiles` is declared
+  // { domain: "profileRoom" } and only profile_rooms was ever selected. E1 and
+  // E2 both pass, because both diff purge's DELETE list against the manifest
+  // and NEITHER compares the manifest against what the export actually reads.
+  //
+  // This checks the one domain that had the gap, by name. A general version
+  // would need a table→reader map the code does not have, and inventing one to
+  // satisfy a test would be a second description of the export that could
+  // drift from the first.
+  const out = await exportPersonalizationData("u-export-e14");
+  assert.ok("profileRoom" in out.data, "the published page");
+  assert.ok("profileAccount" in out.data,
+    "and the account row behind it — user_profiles, which the manifest has always declared");
+
+  const declaredForDomain = Object.entries(EXPORT_MANIFEST)
+    .filter(([, entry]) => entry.domain === "profileRoom")
+    .map(([table]) => table)
+    .sort();
+  assert.deepEqual(declaredForDomain, ["profile_rooms", "user_profiles"],
+    "if a third table joins this domain, the export needs a third read");
 });
