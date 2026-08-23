@@ -41,3 +41,7 @@ ALTER TABLE dm_conversations ALTER COLUMN last_activity_at SET DEFAULT clock_tim
 -- reaction's time with its message's should not see the reaction land first.
 ALTER TABLE dm_reactions     ALTER COLUMN created_at       SET DEFAULT clock_timestamp();
 ALTER TABLE dm_blocks        ALTER COLUMN created_at       SET DEFAULT clock_timestamp();
+
+INSERT INTO app_schema_migrations (version, name)
+VALUES (45, 'dm-monotonic-time')
+ON CONFLICT (version) DO NOTHING;
