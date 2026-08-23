@@ -525,6 +525,103 @@ test("DM store: declining blocks, and the block is LISTED BACK to its author",
   assert.equal(await dm.iBlocked(b, a), false);
 });
 
+test("DM store: a declined request cannot later be accepted",
+  { skip: !databaseUrl }, async () => {
+  // BLOCKER 1 of the 23 Aug register. `acceptRequest`'s predicate was
+  // `state <> 'accepted'`, which reads a DECLINED row as acceptable. The
+  // register reaches this state through a double-tap racing on the pair lock,
+  // but no race is needed: decline, then ACCEPT from a panel that has not
+  // reloaded. The result displayed as an accepted thread in the inbox while
+  // LAW 1 refused every message in both directions, because the decline's
+  // block row was still there — a conversation that is alive on screen and
+  // dead in the database.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+  assert.equal(await dm.declineRequest(b, convo.id), true);
+
+  assert.equal(await dm.acceptRequest(b, convo.id), false,
+    "a decline is a decision, not a state to be overwritten");
+
+  const row = (await pool.query(
+    `SELECT state, accepted_at, declined_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0];
+  assert.equal(row.state, "declined");
+  assert.equal(row.accepted_at, null, "and it never became half-accepted");
+  assert.ok(row.declined_at, "the decline is still on the record");
+
+  // the two visible halves of the hybrid state, both checked
+  assert.equal(await dm.iBlocked(b, a), true, "the decline's block still stands");
+  assert.equal((await dm.listFolder(b, { folder: "inbox" })).items.length, 0,
+    "and a dead conversation is not sitting in the inbox looking alive");
+});
+
+test("DM store: only the RECIPIENT can decline, and only an undecided request",
+  { skip: !databaseUrl }, async () => {
+  // BLOCKER 3 of the 23 Aug register. `declineRequest` checked that the
+  // caller was A participant, never that they were the recipient, and its
+  // UPDATE had no state predicate. An opener who declined their own thread
+  // hit LAW 1's `state='declined' AND sender = opened_by` and was refused
+  // forever with no way back: accept requires `opened_by <> me`, there is no
+  // block to unblock, and UNIQUE(lo,hi) makes a second thread unrepresentable.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  // the opener cannot decline their own knock
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+  assert.equal(await dm.declineRequest(a, convo.id), false,
+    "declining is the recipient's answer to a knock, not the knocker's");
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0].state, "requested");
+  // and the proof it was not silently half-applied: a can still be accepted
+  assert.equal(await dm.acceptRequest(b, convo.id), true);
+
+  // nor can either side decline a thread that was already accepted
+  assert.equal(await dm.declineRequest(a, convo.id), false, "an accepted thread is past declining");
+  assert.equal(await dm.declineRequest(b, convo.id), false);
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0].state, "accepted");
+  assert.equal(await dm.iBlocked(a, b), false, "and no block was installed on the way past");
+  assert.equal(await dm.iBlocked(b, a), false);
+  // the channel is still open in both directions, which is the whole point
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "still here" });
+  await dm.sendMessage({ conversationId: convo.id, senderId: b, body: "so am I" });
+});
+
+test("DM store: declining twice is the same decline, not a second one",
+  { skip: !databaseUrl }, async () => {
+  // The state predicate added for blockers 1 and 3 must not turn a double-tap
+  // into a refusal the panel cannot explain. Declining an already-declined
+  // request is what the caller asked for and already true, so it answers true
+  // — without moving declined_at, which is evidence.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+
+  assert.equal(await dm.declineRequest(b, convo.id), true);
+  const first = (await pool.query(
+    `SELECT declined_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0].declined_at;
+  assert.equal(await dm.declineRequest(b, convo.id), true, "idempotent, not a refusal");
+  const second = (await pool.query(
+    `SELECT declined_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0].declined_at;
+  assert.deepEqual(second, first, "the second tap did not restamp the record");
+  // and accepting is still shut, which is the law the idempotence must not reopen
+  assert.equal(await dm.acceptRequest(b, convo.id), false);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
