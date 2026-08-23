@@ -2470,3 +2470,13 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailfind input:focus { border-color: var(--ink); outline: none; }
 .mailkind { font-size: 9px; letter-spacing: .14em; color: var(--sig); }
 .mailfound { border-top: 1px solid var(--line); padding-top: 8px; }
+.mailactivity { font-size: 10px; color: var(--grey); letter-spacing: .1em; text-align: right;
+  margin: -4px 0 8px; }
+.mailactivity.typing { color: var(--sig); }
+@media (prefers-reduced-motion: no-preference) {
+  .mailactivity.typing { animation: mailtyping 1.4s ease-in-out infinite; }
+  @keyframes mailtyping { 50% { opacity: .45; } }
+}
+.mailsignals { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
+  border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; cursor: pointer; }
+.mailsignals input { margin-right: 6px; }
