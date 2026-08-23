@@ -58,6 +58,11 @@ CREATE TABLE IF NOT EXISTS dm_participants (
   -- The per-conversation "receive images and videos" toggle, BOTH sides.
   -- Revocation is a timestamp rather than a flag flip so "was this attachment
   -- sent under a consent that still stands?" stays answerable after the fact.
+  -- THE STATE IS THE LATER OF THE TWO STAMPS (corrected 23 Aug): a re-grant
+  -- stamps a new grant and does NOT erase the revocation, which is what the
+  -- first version did — see setMediaConsent in lib/db/dm.js. What is kept is
+  -- the latest grant and the latest revocation, not every one of them; the
+  -- append-only table ships with the pipeline.
   -- Nothing can send an attachment yet; this is the state the pipeline will
   -- enforce against, in the same transaction, when it ships.
   media_consent_at TIMESTAMPTZ,
