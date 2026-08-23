@@ -17,6 +17,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useOverlayDismiss } from "./dismiss.js";
+import { UNDER_AGE_MESSAGE, checkAge } from "../../lib/age.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 const SEEN_KEY = "asilum-signup-seen";
@@ -54,6 +55,7 @@ export default function AccountSignup() {
   const dismissOverlay = useOverlayDismiss(dismiss, open); // AT ghost-click guarded
   const [mode, setMode] = useState("create"); // create | signin
   const [kind, setKind] = useState("passport"); // passport | business
+  const [birthDate, setBirthDate] = useState(""); // "YYYY-MM-DD", creation only
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -118,6 +120,17 @@ export default function AccountSignup() {
       setNote("password needs at least 8 characters");
       return null;
     }
+    // OWNER DECISION #2 (13+). Checked BEFORE the account is created, so an
+    // under-age person never has one to delete — refusing afterwards would
+    // mean creating the account first and then holding a known minor's record
+    // while we take it away again.
+    if (needsPassword) {
+      const verdict = checkAge(birthDate);
+      if (!verdict.ok) {
+        setNote(verdict.reason === "under" ? UNDER_AGE_MESSAGE : "enter your date of birth");
+        return null;
+      }
+    }
     return address;
   }
 
@@ -134,6 +147,19 @@ export default function AccountSignup() {
    * Deliberately swallows its own failure — the account exists either way, and
    * an unrecorded kind is a passport, which is the safe direction.
    */
+  /** Records the birth date against the account. Same account-id rule as the
+   *  kind: never the device id. The client already refused an under-age date,
+   *  and the server re-checks — a client-side gate is a curtain. */
+  async function recordAge(accountUuid) {
+    if (!accountUuid || !birthDate) return;
+    try {
+      await fetch("/api/account/age", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ birthDate, user: "sb-" + accountUuid }),
+      });
+    } catch { /* the gate already refused under-age; this is the record */ }
+  }
+
   async function recordKind(accountUuid) {
     if (kind === "passport") return; // the default; nothing to record
     if (!accountUuid) return;
@@ -187,7 +213,9 @@ export default function AccountSignup() {
         // at the desk, whereas silently handing someone a storefront they did
         // not ask for cannot be undone by them.
         markSeen();
-        await recordKind(data.session.user?.id || data.user?.id);
+        const uuid = data.session.user?.id || data.user?.id;
+        await recordAge(uuid);
+        await recordKind(uuid);
         setDone("created");
       } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         // Supabase returns a stub user for an address that already holds an
@@ -338,6 +366,21 @@ export default function AccountSignup() {
               <p className="acctline kindwarn">
                 this cannot be switched later on your own — ask the desk.
               </p>
+            ) : null}
+
+            {creating ? (
+              <label className="accountemail">date of birth
+                <input
+                  type="date"
+                  value={birthDate}
+                  max="9999-12-31"
+                  onChange={(event) => { setBirthDate(event.target.value); setNote(""); }}
+                />
+                <span className="agenote">
+                  you need to be 13 or older. we keep the date so the check stays
+                  true as you get older — nothing else.
+                </span>
+              </label>
             ) : null}
 
             {creating ? (
