@@ -620,11 +620,20 @@ test("reactions: the palette is CLOSED and the app cannot widen it",
     await assert.rejects(() => dm.react(b, m.id, smuggled),
       (e) => e.name === "MessageRefused", `${JSON.stringify(smuggled)} is not in the palette`);
   }
-  // and the app role genuinely cannot add one
-  await assert.rejects(
-    () => pool.query(`INSERT INTO dm_reaction_kinds (emoji) VALUES ('🆕')`),
-    (e) => e.code === "42501" || e.code === "23505",
-    "SELECT-only on the law table is what keeps the set closed");
+  // THE GRANT CANNOT BE TESTED HERE, and pretending otherwise is worse than
+  // not testing it. CI's Postgres connects as SUPERUSER, so a SELECT-only
+  // grant restrains nothing — the INSERT below succeeds in CI and is refused
+  // in production, where asilum_app is a real restricted role. The red team
+  // named this exact gap ("CI's Postgres runs as superuser, so the entire
+  // constraint layer is untested by any gate"). Asserted conditionally, and
+  // verified against production by hand after the migration is applied.
+  const su = await pool.query(`SELECT usesuper FROM pg_user WHERE usename = current_user`);
+  if (!su.rows[0]?.usesuper) {
+    await assert.rejects(
+      () => pool.query(`INSERT INTO dm_reaction_kinds (emoji) VALUES ('+')`),
+      (e) => e.code === "42501",
+      "SELECT-only on the law table is what keeps the set closed");
+  }
 });
 
 test("reactions: one per person per message, and replacing is not a second one",
