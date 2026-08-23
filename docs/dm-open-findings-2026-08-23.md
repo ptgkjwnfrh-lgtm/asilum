@@ -6,12 +6,33 @@ lenses, and every claim independently refuted by a separate agent
 
 **52 claims → 35 survived refutation · 6 refuted · 11 unverified.**
 
+> ## STATUS, 23 August (later the same day)
+>
+> **All four blockers are fixed. 27 findings remain open: 0 blocker · 9 serious
+> · 11 minor · 7 unverified.**
+>
+> | PR | what it closed |
+> |---|---|
+> | [#381](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/381) | blockers 1 + 3 — the request state machine |
+> | [#382](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/382) | blocker 2 — `now()` is the transaction start time (**v45, applied to prod**) |
+> | [#383](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/383) | blocker 4 — the search oracle, **ruled** and recorded |
+> | [#384](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/384) | 3 serious — state that outlived its context (drafts, folder pages, older-page reactions) |
+> | [#385](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/385) | 1 serious — the undo the request banner had always promised |
+>
+> Every fixed entry below is marked in place; nothing has been deleted, because
+> the reproduction is still the spec of the test that now guards it.
+>
+> **The seven UNVERIFIED are still unverified.** Nobody has looked at them since
+> the register was written. Silence is not clearance.
+
 > An UNVERIFIED item is not a cleared item. Its verifier died on a session
 > limit before reaching a verdict. Refute it yourself before you fix it OR
 > discard it.
 
 Three blockers were fixed in #378 (11 of the claims below were duplicates of
-them, found by different lenses) and are listed at the bottom. **35 remain open.**
+them, found by different lenses) and are listed at the bottom. 35 remained
+open when this file was written; **27 remain open now — see the status block
+above.**
 
 Treat each `Reproduce` as the spec for a regression test. If you cannot make
 it fail, say so in the PR — do not fix something you have not seen break.
@@ -34,6 +55,10 @@ it fail, say so in the PR — do not fix something you have not seen break.
 
 ### `dm.js`
 
+> **✅ FIXED 23 Aug in #381** — `acceptRequest` accepts only from `state='requested'`, the folder
+> move is inside the rowCount branch, both take the pair lock, both are idempotent for the state
+> already held. Regression arms proven red first in run 32665932895.
+
 **Problem.** `acceptRequest` (lines 336-359) and `declineRequest` (lines 367-399) take no pair advisory lock and no mutual state guard. `declineRequest`'s UPDATE has no `WHERE state <> ...` predicate at all, and `acceptRequest`'s only predicate is `state <> 'accepted'` — so `declined -> accepted` is a legal transition that leaves `declined_at` set AND leaves the `source='decline'` row in `dm_blocks` in place. Neither CHECK in v40 catches it (`dm_conversations_declined_ck` only fires when state IS 'declined'). Result: a conversation that displays as accepted, sits in the inbox, and is silently dead in both directions because LAW 1 in dm_guard_message still sees the block.
 
 **Reproduce.** Recipient R has a request from opener O and double-taps (or has two devices / a retried POST). T_decline: BEGIN; UPDATE conversations SET state='declined',declined_at=now(); UPDATE participants SET folder='archived'; INSERT dm_blocks(R,O,'decline'); COMMIT. T_accept, blocked on that row lock, then re-evaluates its predicate against the new version: state='declined' satisfies `state <> 'accepted'`, `opened_by <> R` holds, participant exists — so it sets state='accepted', accepted_at=now(), and its second (unconditional) UPDATE puts R's folder back to 'inbox'. Final row: state='accepted', accepted_at NOT NULL, declined_at NOT NULL, folder='inbox', block still present. R now sees an accepted thread in their inbox; every reply R types is refused P0001 by the block they no longer know exists, and every message O sends is refused too. The same end state is reachable without any race at all: decline, then tap ACCEPT from a stale panel.
@@ -50,6 +75,10 @@ it fail, say so in the PR — do not fix something you have not seen break.
 
 ### `dm.js`
 
+> **✅ FIXED 23 Aug in #382** — v45 defaults the DM stamps to `clock_timestamp()`, and the store
+> takes `last_activity_at` from the inserted message's `created_at` under `GREATEST`. v45 is
+> APPLIED TO PRODUCTION and verified as `asilum_app`. Proven red first in run 32666396768.
+
 **Problem.** `sendMessage` stamps `last_activity_at = now()` (line 155) and lets `created_at` default to `now()` (v40 line 93), but in PostgreSQL `now()` is the TRANSACTION START timestamp, and the pair advisory lock is acquired at line 138 — after BEGIN. A transaction that waits on the lock therefore writes a timestamp EARLIER than the transaction that already committed ahead of it. `last_activity_at` is not monotonic, even though listFolder's keyset cursor (lines 213-216, and the cursor contract in lib/dm.js:84-96) is built on the assumption that it only moves forward.
 
 **Reproduce.** Two sends into the same conversation X arrive together. T_A BEGINs at t=0 and blocks on the pair lock. T_B BEGINs at t=1, takes the lock, inserts message id 100 with created_at=t1, sets X.last_activity_at=t1, commits. T_A wakes, inserts message id 101 with created_at = its own transaction time t0 (< t1), and sets X.last_activity_at = t0 — moving it BACKWARD past the message that preceded it. Two wrong outcomes: (a) the thread renders newest-first by id (readThread ORDER BY id DESC) but message 101's displayed timestamp is earlier than message 100's, so the conversation reads out of order; (b) if the reader fetched page 1 in between, X was returned above the cursor with last_activity_at=t1; after T_A commits X's key falls below the cursor, so the MORE ↓ page returns X a second time — MailDesk's de-dupe (lines ~105-110) silently drops it and consumes a slot, pushing a real conversation off the page. A conversation that just received a message can also sort below one that has been quiet for longer.
@@ -62,6 +91,8 @@ it fail, say so in the PR — do not fix something you have not seen break.
 
 ### `dm.js`
 
+> **✅ FIXED 23 Aug in #381** — the UPDATE carries `state='requested' AND opened_by <> $2`.
+
 **Problem.** `declineRequest` (lines 367-399) checks only that the caller is A participant — never that they are the RECIPIENT — and applies `state='declined'` with no state predicate. When the caller IS `opened_by`, `them === me`, so the `them !== me` guard at line 386 skips the block insert, but the state change still lands. dm_guard_message then permanently refuses that person: `IF convo.state = 'declined' AND NEW.sender_account_id = convo.opened_by THEN RAISE ... P0001` (v40 lines 186-188). There is no path back, because `acceptRequest` requires `opened_by <> $2`.
 
 **Reproduce.** O opened a conversation with R and it was accepted; both are chatting. O's client (or any caller) POSTs `{op:"decline", conversationId}` — the route (route.js:184-190) does no role check. The conversation flips to state='declined', O's own folder becomes 'archived', and no block row is created. From then on every message O sends is refused P0001 and surfaced as the vague "this person is not reachable right now." O cannot accept (opened_by === me fails the predicate), cannot unblock (there is no block to list), and cannot open a second thread (UNIQUE(lo,hi) makes the pair unrepresentable twice). R can still send into it. The thread is permanently half-dead with no state visible anywhere that explains why.
@@ -73,6 +104,11 @@ it fail, say so in the PR — do not fix something you have not seen break.
 ---
 
 ### `dm.js`
+
+> **✅ RULED AND FIXED 23 Aug in #383** — a person who blocked me stays LISTED and stays
+> UNADDRESSABLE: `findAddressees` excludes only blocks I made, `resolveAddressee` keeps both
+> directions. The ruling, its cost and its reversal are in
+> `docs/dm-core-decisions-2026-08-23.md`. **The owner may overturn it — it is one predicate.**
 
 **Problem.** `findAddressees` (line 531-534) and `resolveAddressee` (line 571-574) exclude anyone who has blocked the caller. That turns search into a block-detection oracle and defeats the deliberate ambiguity built one file over: lib/dm.js:77-78 collapses P0001 and P0002 precisely because "distinguishing them tells a stranger which one it was". Detecting the block is the whole cost driver in ban evasion — a harasser who cannot tell whether a block landed wastes effort; one who gets a definitive read re-registers immediately.
 
@@ -89,6 +125,9 @@ it fail, say so in the PR — do not fix something you have not seen break.
 
 ### `MailDesk.jsx`
 
+> **✅ FIXED 23 Aug in #384** — drafts are keyed by composer, so the carry-over is
+> unrepresentable rather than cleared. `lib/dm-desk.js` + `tests/dm-desk.test.js`.
+
 **Problem.** A single `draft` state (line 55) backs both the search-mode "your first message" textarea (line 548) and the in-thread composer (line 451). It is cleared only on a confirmed send (lines 249, 264) — never on a thread switch, never when the search collapses, never when the panel closes.
 
 **Reproduce.** Type `find a handle…` = "stu", results appear, and write "the invoice is wrong, can you refund the 240" into the first-message box — then change your mind and clear the search field. The effect at 160 sees `q.length < 2` and sets `found = null`, so the panel falls back to the inbox list with `draft` untouched. Click any existing conversation. `loadThread` sets `thread` but not `draft`, so the composer opens pre-filled with the message meant for @stu. The textarea's `onKeyDown` sends on a bare Enter (line 458) with no confirmation, so one keystroke delivers it to the wrong person. The same carry-over happens thread-to-thread: half-typed text in A appears in B after using the back button.
@@ -100,6 +139,9 @@ it fail, say so in the PR — do not fix something you have not seen break.
 ---
 
 ### `MailDesk.jsx`
+
+> **✅ FIXED 23 Aug in #384** — every request carries a token and only the current one applies
+> (`pageIsCurrent`).
 
 **Problem.** `loadFolder` (97-120) has no cancellation token and no check that the folder it was called for is still the selected one. Its append branch merges into whatever `items` currently holds: `if (!more || !prev) return next;` otherwise `[...prev, ...next.filter(...)]`. The de-duplication is by conversation id only, which cannot detect that `prev` belongs to a different folder.
 
@@ -116,6 +158,9 @@ WRITE PATH (A pings typing on a 'requested' conversation)
 
 ### `MailDesk.jsx`
 
+> **✅ FIXED 23 Aug in #384** — each page keeps its own reactions and the lookup spans all of
+> them (`reactionsAcross`).
+
 **Problem.** `loadOlder` stores only `{ messages, olderBefore }` from the older-page response (line 235) and throws away `page.reactions` and `page.palette`. Rendering then looks reactions up exclusively in `thread.reactions` (lines 365-367), which the route computed only over the newest page's message ids (app/api/dm/route.js:90). Every message on a paged-in older page therefore renders with zero reactions regardless of what the database holds.
 
 **Reproduce.** The other person reacted 👍 to a message forty-one messages back. Open the thread, click "OLDER MESSAGES ↑". The message appears with no reaction chip. You click 👍 from the palette; `act("react")` succeeds and `loadThread(threadId)` runs — which also resets `older` to `[]` (line 125), so the message you just reacted to vanishes from the view entirely and the reaction is still nowhere on screen. Page up again and it is still bare, so the reaction reads as never having registered and gets clicked repeatedly.
@@ -127,6 +172,9 @@ WRITE PATH (A pings typing on a 'requested' conversation)
 ---
 
 ### `MailDesk.jsx`
+
+> **✅ FIXED 23 Aug in #385** — a BLOCKED list on the desk, unblock by conversation or handle,
+> `op=blocks` projected like the inbox (no uuid), and the banner now points at the real control.
 
 **Problem.** The request banner tells the user "declining also blocks them — you can undo that in settings." No such settings surface exists. Grepping the whole app tree, nothing outside app/api/dm/route.js and lib/db/dm.js references `unblock`, `listBlocks`, or `op: "blocks"` — MailDesk has an activity-signals checkbox and a mute button and nothing else. Worse, the one API that could serve the undo (`op:"unblock"`, route.js:199-201) keys on `body.accountId`, a raw account uuid, and route.js:71-73 asserts "the uuid never leaves the server" (an invariant tests/postgres-integration.test.js:1030 asserts as `"accountId" in hits[0] === false`). GET `op="blocks"` does return raw uuids (lib/db/dm.js:421-427), contradicting that same comment.
 
