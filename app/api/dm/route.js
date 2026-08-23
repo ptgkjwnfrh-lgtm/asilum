@@ -20,7 +20,8 @@ import {
   MessageRefused, MessagingUnavailable,
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
-  resolveAddressee, sendMessage, setDmsOpen, setMediaConsent, unblockAccount,
+  peerActivity, pingTyping, clearTyping, readActivitySignals, resolveAddressee,
+  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, unblockAccount,
   unreadSummary,
 } from "../../../lib/db/dm.js";
 
@@ -56,7 +57,11 @@ export async function GET(req) {
   try {
     if (op === "summary") {
       const counts = await unreadSummary(me);
-      return NextResponse.json({ ...counts, dmsOpen: await readDmsOpen(me) });
+      return NextResponse.json({
+        ...counts,
+        dmsOpen: await readDmsOpen(me),
+        activitySignals: await readActivitySignals(me),
+      });
     }
     if (op === "inbox") {
       const folder = ["inbox", "requests", "archived"].includes(url.searchParams.get("folder"))
@@ -89,6 +94,16 @@ export async function GET(req) {
       });
       if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
       return NextResponse.json({ people: await findAddressees(me, url.searchParams.get("q") || "") });
+    }
+    if (op === "activity") {
+      // Polled every few seconds while a thread is open, so it is one small
+      // read and nothing else. Its own generous bucket: throttling this into
+      // failure would make the indicator lie rather than go quiet.
+      const quota = await consumeRateLimit({
+        scope: "dm-activity", subject: requestSubject(req, me), limit: 1200, windowMs: 60 * 60 * 1000,
+      });
+      if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+      return NextResponse.json(await peerActivity(me, url.searchParams.get("c") || ""));
     }
     if (op === "blocks") return NextResponse.json({ blocks: await listBlocks(me) });
     return NextResponse.json({ error: "unknown op" }, { status: 400 });
@@ -186,10 +201,24 @@ export async function POST(req) {
       const ok = await setMediaConsent(me, String(body.conversationId || ""), body.allow === true);
       return NextResponse.json({ ok, allow: body.allow === true });
     }
+    if (op === "typing") {
+      // A ping, not a state machine. "Stopped" is the absence of a refresh.
+      const ok = body.on === false
+        ? (await clearTyping(me, String(body.conversationId || "")), true)
+        : await pingTyping(me, String(body.conversationId || ""));
+      return NextResponse.json({ ok });
+    }
     if (op === "settings") {
       try {
-        await setDmsOpen(me, body.dmsOpen !== false);
-        return NextResponse.json({ ok: true, dmsOpen: body.dmsOpen !== false });
+        if (typeof body.activitySignals === "boolean") {
+          await setActivitySignals(me, body.activitySignals);
+        }
+        if (typeof body.dmsOpen === "boolean") await setDmsOpen(me, body.dmsOpen);
+        return NextResponse.json({
+          ok: true,
+          dmsOpen: await readDmsOpen(me),
+          activitySignals: await readActivitySignals(me),
+        });
       } catch (error) {
         // A business trying to close its door is refused by the v40 trigger.
         return failure(error);

@@ -592,6 +592,132 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
 });
 
+// --- activity signals: read receipts + typing ------------------------------
+// RECIPROCITY is the whole control, so it is the thing pinned hardest: with my
+// signals off I see nothing, no matter what the other side chose. A test that
+// only checked "their setting hides their receipt" would pass on a one-way
+// mirror, which is exactly what a privacy setting must not be.
+
+test("activity: a receipt appears only when BOTH sides emit", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "did you see this?" });
+
+  // default: both on, b has not read yet
+  let seen = await dm.peerActivity(a, convo.id);
+  assert.equal(seen.readUpTo, 0, "nothing read yet");
+  await dm.markRead(b, convo.id, m.id);
+  seen = await dm.peerActivity(a, convo.id);
+  assert.equal(seen.readUpTo, Number(m.id), "a's view of b's read position");
+
+  // B switches signals off -> A sees nothing from B
+  await dm.setActivitySignals(b, false);
+  seen = await dm.peerActivity(a, convo.id);
+  assert.equal(seen.readUpTo, null, "their setting stops them emitting");
+  assert.equal(seen.typing, null);
+  assert.equal(seen.reciprocal, true, "A's own signals are still on");
+
+  // RECIPROCITY: A switches OFF -> A sees nothing even though B is back on
+  await dm.setActivitySignals(b, true);
+  await dm.setActivitySignals(a, false);
+  seen = await dm.peerActivity(a, convo.id);
+  assert.equal(seen.readUpTo, null, "with my signals off I see nobody's");
+  assert.equal(seen.reciprocal, false);
+  // From B's side the two reasons for a null must stay DISTINGUISHABLE in the
+  // payload even though both render as nothing: B's channel is open
+  // (reciprocal: true) and A simply is not emitting. My first version of this
+  // asserted B could still see A's receipt, which was wrong about the feature
+  // -- switching your signals off stops you EMITTING as well as seeing, and
+  // that is the primary effect, not a side one.
+  const fromB = await dm.peerActivity(b, convo.id);
+  assert.equal(fromB.reciprocal, true, "B's own view is not disabled by A's choice");
+  assert.equal(fromB.readUpTo, null, "but A, with signals off, emits nothing to see");
+});
+
+test("activity: typing expires rather than needing a 'stopped' write",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+
+  assert.equal((await dm.peerActivity(a, convo.id)).typing, false);
+  await dm.pingTyping(b, convo.id);
+  assert.equal((await dm.peerActivity(a, convo.id)).typing, true);
+
+  // A browser that vanished writes nothing. Simulate the lapse by ageing the
+  // row rather than sleeping the suite.
+  await pool.query(`UPDATE dm_typing SET typing_until = now() - interval '1 second'
+                     WHERE conversation_id=$1 AND account_id=$2`, [convo.id, b]);
+  assert.equal((await dm.peerActivity(a, convo.id)).typing, false,
+    "absence of a refresh IS 'stopped'");
+
+  // an explicit stop still works, for the tab that closes politely
+  await dm.pingTyping(b, convo.id);
+  await dm.clearTyping(b, convo.id);
+  assert.equal((await dm.peerActivity(a, convo.id)).typing, false);
+});
+
+test("activity: someone with signals off does not even write a typing row",
+  { skip: !databaseUrl }, async () => {
+  // Checked before the INSERT, so there is no row to leak in the seconds
+  // before it would have lapsed.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await dm.setActivitySignals(b, false);
+  assert.equal(await dm.pingTyping(b, convo.id), false);
+  const rows = await pool.query(`SELECT 1 FROM dm_typing WHERE conversation_id=$1 AND account_id=$2`,
+    [convo.id, b]);
+  assert.equal(rows.rowCount, 0, "nothing was written at all");
+});
+
+test("activity: a non-participant cannot claim to be typing", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  const { lo: stranger } = await dmAccounts(pool);
+  await assert.rejects(
+    () => pool.query(`INSERT INTO dm_typing (conversation_id, account_id, typing_until)
+                      VALUES ($1,$2, now() + interval '5 seconds')`, [convo.id, stranger]),
+    (e) => e.code === "42501", "the trigger guards it, not the route");
+});
+
+test("activity: a client cannot pin itself 'typing' for an hour", { skip: !databaseUrl }, async () => {
+  // A broken or lying client must not leave an indicator that outlives the
+  // person it describes.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`INSERT INTO dm_typing (conversation_id, account_id, typing_until)
+                    VALUES ($1,$2, now() + interval '1 hour')`, [convo.id, b]);
+  const row = await pool.query(
+    `SELECT typing_until <= now() + interval '31 seconds' AS capped FROM dm_typing
+      WHERE conversation_id=$1 AND account_id=$2`, [convo.id, b]);
+  assert.equal(row.rows[0].capped, true, "the horizon is capped at 30s by the trigger");
+});
+
 // --- search-to-start: the enumeration surface ------------------------------
 // A DM search is how a messaging product leaks its user list. These pin the
 // four exclusions; each one, removed, turns the search into a directory.

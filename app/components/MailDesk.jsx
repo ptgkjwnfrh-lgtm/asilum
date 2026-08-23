@@ -56,6 +56,9 @@ export default function MailDesk() {
   const [sending, setSending] = useState(false);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState(null);   // null = not searching
+  const [peer, setPeer] = useState({ typing: null, readUpTo: null });
+  const [signalsOn, setSignalsOn] = useState(true);
+  const typingSentAt = useRef(0);
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -74,6 +77,7 @@ export default function MailDesk() {
       const data = await r.json();
       setAvailable(true); setFault(false);
       setCounts({ inbox: data.inbox || 0, requests: data.requests || 0 });
+      if (typeof data.activitySignals === "boolean") setSignalsOn(data.activitySignals);
     } catch {
       setAvailable(true); setFault(true);
     }
@@ -155,6 +159,53 @@ export default function MailDesk() {
     return () => { cancelled = true; clearTimeout(timer); };
   }, [query]);
 
+  // Activity polling is the expensive part of this whole feature: a few
+  // seconds is the only cadence at which a typing indicator means anything.
+  // So it runs ONLY while a thread is open, ONLY while the tab is visible, and
+  // stops the moment either stops being true. A hidden tab polling every three
+  // seconds is a bill with no reader.
+  useEffect(() => {
+    if (!open || !threadId) return undefined;
+    let cancelled = false;
+    let timer = null;
+
+    async function tick() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const r = await fetch(`/api/dm?op=activity&c=${encodeURIComponent(threadId)}&user=`
+          + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+        if (!r.ok) return;
+        const data = await r.json();
+        if (!cancelled) setPeer({ typing: data.typing, readUpTo: data.readUpTo });
+      } catch { /* a missed tick is a quiet indicator, not an error */ }
+    }
+    tick();
+    timer = setInterval(tick, 3000);
+    const onVisible = () => { if (document.visibilityState === "visible") tick(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+      // Leaving the thread stops the broadcast immediately rather than waiting
+      // out the expiry.
+      fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ op: "typing", on: false, conversationId: threadId, user: getUid() }) })
+        .catch(() => {});
+    };
+  }, [open, threadId]);
+
+  /** Throttled to one ping per 2.5s: the row lives 6s, so this is enough. */
+  function noteTyping() {
+    if (!signalsOn || !threadId) return;
+    const now = Date.now();
+    if (now - typingSentAt.current < 2500) return;
+    typingSentAt.current = now;
+    fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ op: "typing", conversationId: threadId, user: getUid() }) })
+      .catch(() => {});
+  }
+
   async function startWith(handle) {
     const text = draft.trim();
     if (!text) { setNote("write the first message before you send it."); return; }
@@ -180,6 +231,9 @@ export default function MailDesk() {
     setSending(false);
     if (result?.delivered) { setDraft(""); await loadThread(threadId); await poll(); }
   }
+
+  // The newest message I sent — a receipt is only meaningful against that.
+  const myLastId = thread?.messages?.find((m) => m.mine)?.id || 0;
 
   if (available !== true) return null;
 
@@ -252,6 +306,18 @@ export default function MailDesk() {
                 {thread.messages.length === 0 ? <li className="mailnote">no messages yet.</li> : null}
               </ul>
 
+              {/* The receipt sits under the thread rather than on a bubble:
+                  it is one fact about the conversation ("they have read up to
+                  here"), not a property of each message. `readUpTo` is null
+                  when reciprocity denies it, and null renders NOTHING — a
+                  reader must not be able to tell "not read" from "you turned
+                  your own signals off". */}
+              {peer.typing ? (
+                <p className="mailactivity typing">typing…</p>
+              ) : peer.readUpTo !== null && myLastId && peer.readUpTo >= myLastId ? (
+                <p className="mailactivity">read</p>
+              ) : null}
+
               <label className="mailconsent">
                 <input
                   type="checkbox"
@@ -279,7 +345,7 @@ export default function MailDesk() {
                   value={draft}
                   maxLength={2000}
                   placeholder="write…"
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => { setDraft(e.target.value); noteTyping(); }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
                   }}
@@ -321,6 +387,22 @@ export default function MailDesk() {
               ))}
             </div>
           </div>
+
+          <label className="mailsignals">
+            <input
+              type="checkbox"
+              checked={signalsOn}
+              onChange={async (e) => {
+                const on = e.target.checked;
+                setSignalsOn(on);
+                if (!await act("settings", { activitySignals: on })) setSignalsOn(!on);
+              }}
+            />
+            show when I have read a message, and when I am typing
+            <span className="agenote">
+              reciprocal: with this off you will not see anyone else&apos;s either.
+            </span>
+          </label>
 
           {folder === "requests" ? (
             <p className="mailhint">
