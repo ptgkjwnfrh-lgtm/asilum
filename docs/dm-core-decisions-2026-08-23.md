@@ -119,3 +119,50 @@ blocked. Half of each is the state we were in.
 Restore the second arm of the `NOT EXISTS` in `findAddressees`
 (`b.blocker_account_id = r.account_id AND b.blocked_account_id = $1`) and
 update the "DM search is not a block detector" test. Read this note first.
+
+---
+
+## RULING — two people should have records (23 Aug, owner)
+
+`#395` closed the half of the erasure/export finding that was mine to close —
+the retention disclosure now names the messages it keeps — and left one
+question that was not: **does a DM export ship, and in what shape?** A
+conversation is two people's record, so one side asking for a copy is asking
+for words the other side wrote. That is a disclosure decision, not plumbing.
+
+### The ruling
+**Two people should have records.** Both sides are *in* the conversation, so
+both sides get it. A person's own conversation is theirs to keep; the
+alternative is a record only the company holds.
+
+### What that means in the code
+- `exportMessagesFor` in `lib/db/dm.js` reads one person's whole record:
+  conversations, both sides' messages, the marks on them, their blocks, their
+  two settings.
+- **It shows exactly what the thread shows.** Bodies go through `visibleBody`,
+  the same function `readThread` renders by — extracted for this, because a
+  second copy of that rule is how an export ends up showing something the
+  thread would not. An unsend stays withdrawn, a moderator's redaction stays
+  redacted, and a message hidden from the recipient does not reappear in their
+  download.
+- **Law 7 holds.** Counterparties are named by handle; the account uuid stops
+  at the server. Someone who never published a room has no handle, and the
+  conversation is still theirs to read.
+- **Presence is not a record.** `dm_typing` expires in six seconds and says
+  nothing about what was said. It stays declared-absent.
+
+### The structural consequence, which is the interesting part
+`EXPORT_MANIFEST` meant *erased AND exported*, and `E2` enforces that
+biconditional — a manifest table erasure never touches fails the test, because
+until now such a table could only be a mistake.
+
+**A two-party record is the first thing that is genuinely exported and
+retained.** Erasing it would delete somebody else's history of a conversation
+they were in. So the asymmetry got its own name — `EXPORTED_BUT_RETAINED` —
+rather than a hole in `E2`, and every `dm_*` table now sits in exactly one of
+three declared places, with tests that fail on a table in none of them or in
+more than one.
+
+`dm_settings` is in that list for a reason worth repeating: **both switches
+default to open**, so erasing the row is not neutral. It silently reopens what
+somebody closed.
