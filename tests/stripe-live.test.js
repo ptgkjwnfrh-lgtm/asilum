@@ -1,7 +1,23 @@
 // tests/stripe-live.test.js — the fetch client against the REAL Stripe API,
-// test mode. SKIPPED unless STRIPE_SECRET_KEY is set (CI is unkeyed; the
-// carried live-pg suite is the precedent). Never run with a live key: the
-// first assertion refuses anything that is not sk_test_.
+// test mode. SKIPPED unless STRIPE_SECRET_KEY is set. Never run with a live
+// key: the first assertion refuses anything that is not sk_test_.
+//
+// HOW TO ACTUALLY RUN IT: `npm run test:live-stripe`.
+//
+// Until 22 August these four had never executed anywhere, and the reason is
+// worth keeping. CI is unkeyed by design, and the live-pg suite was cited as
+// the precedent for that — but live-pg runs in CI's own dedicated step against
+// a disposable container (18 tests, 18 pass), so it is covered and this was
+// not. Locally the gate reads process.env, and `npm test` does not load
+// .env.local — only Next does. So the key sat in .env.local while every run,
+// everywhere, reported a tidy `# SKIP`.
+//
+// A skip is not a pass, and four skips that can never become passes are a
+// gauge wired to nothing. The npm script exists so exercising this seam is one
+// command instead of a remembered incantation. It passes ONLY the Stripe key
+// into the process — never the whole file, because exporting DATABASE_URL
+// globally once flipped the entire suite onto live Postgres and wrote test
+// rows into production.
 
 import test from "node:test";
 import assert from "node:assert/strict";
