@@ -633,9 +633,12 @@ test("a block stops typing and read receipts in BOTH directions",
   assert.equal(seenByBlocked.typing, null, "and the blocked party sees nothing either");
   assert.equal(seenByBlocked.readUpTo, null);
 
-  // stale rows written BEFORE the block do not outlive it
+  // Stale rows written BEFORE the block do not outlive it. This is swept by
+  // blockAccount, NOT by v44's migration DELETE -- the migration runs once and
+  // can only clear what existed at that moment, which this test proved when it
+  // failed against the migration-only version.
   const stale = await pool.query(`SELECT 1 FROM dm_typing WHERE conversation_id=$1`, [convo.id]);
-  assert.equal(stale.rowCount, 0, "v44 sweeps presence that predates the block");
+  assert.equal(stale.rowCount, 0, "blocking clears presence written before it");
 });
 
 test("peerActivity refuses a conversation I am not in", { skip: !databaseUrl }, async () => {
