@@ -11,7 +11,7 @@
 // it — with a reason, into the ledger — which is the rare case this needs.
 
 import { NextResponse } from "next/server";
-import { resolveRequestUser } from "../../../../lib/identity.js";
+import { accountIdFromIdentity, resolveRequestUser } from "../../../../lib/identity.js";
 import { readJsonRequest } from "../../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../../lib/security/request.js";
@@ -33,11 +33,13 @@ export async function GET(req) {
   // downgrade this route is written to avoid. House convention: ?user=.
   const claimed = new URL(req.url).searchParams.get("user") || "";
   const user = await resolveRequestUser(req, claimed);
-  // An unidentified caller is not an error: the shell asks before the device
-  // identity has necessarily landed. It is a passport with nothing chosen.
-  if (!user) return NextResponse.json(payload(DEFAULT_KIND, false));
+  // A signed-OUT reader is not an error, and is definitionally a passport:
+  // ADR-002 §"Consequences" — a business account is impossible for a
+  // signed-out user by construction, so there is nothing to look up.
+  const accountId = user ? accountIdFromIdentity(user) : null;
+  if (!accountId) return NextResponse.json(payload(DEFAULT_KIND, false));
   try {
-    const stored = await readAccountKind(user);
+    const stored = await readAccountKind(accountId);
     return NextResponse.json(payload(stored || DEFAULT_KIND, Boolean(stored)));
   } catch {
     // The store is unreadable. Say so instead of answering "passport" — a
@@ -55,8 +57,18 @@ export async function POST(req) {
   if (!user) {
     return NextResponse.json({ error: "identity required" }, { status: 401 });
   }
+  // A device identity may not choose. It would be written under `u-<uuid>` and
+  // read back under `sb-<uuid>` after adoption — the v37 defect. Refuse with
+  // the same shape app/api/business/route.js uses for the same reason.
+  const accountId = accountIdFromIdentity(user);
+  if (!accountId) {
+    return NextResponse.json({
+      error: "an account kind rides on a signed-in account",
+      note: "choose again once you are signed in — a device on its own is always a passport",
+    }, { status: 403 });
+  }
   const quota = await consumeRateLimit({
-    scope: "account-kind", subject: requestSubject(req, user), limit: 10, windowMs: 60 * 60 * 1000,
+    scope: "account-kind", subject: requestSubject(req, accountId), limit: 10, windowMs: 60 * 60 * 1000,
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
@@ -67,7 +79,7 @@ export async function POST(req) {
   }
 
   try {
-    const existing = await readAccountKind(user);
+    const existing = await readAccountKind(accountId);
     if (existing && existing !== kind) {
       // Not 409-and-nothing: tell the caller what it actually is, so a client
       // that raced itself can settle on the truth rather than retrying.
@@ -76,7 +88,7 @@ export async function POST(req) {
         { status: 409 });
     }
     if (existing === kind) return NextResponse.json(payload(existing, true));
-    await setAccountKind(user, kind, { actor: "signup" });
+    await setAccountKind(accountId, kind, { actor: "signup" });
     return NextResponse.json(payload(kind, true));
   } catch {
     return NextResponse.json({ error: "could not record the account kind" }, { status: 503 });

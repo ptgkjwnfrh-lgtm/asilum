@@ -165,17 +165,50 @@ export default function Shell({ children }) {
   const [accountKind, setAccountKind] = useState(DEFAULT_KIND);
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    async function readKind() {
       try {
+        // A parked choice from the confirm-by-email path: the account did not
+        // exist when it was made. Redeem it now that this device is signed in,
+        // then clear it — otherwise someone who chose BUSINESS and confirmed
+        // by email lands in a passport with no idea why.
         const uid = getUid();
+        if (uid && uid.startsWith("sb-")) {
+          let parked = null;
+          try { parked = window.localStorage.getItem("asilum-pending-kind"); } catch {}
+          if (parked) {
+            try {
+              const recorded = await fetch("/api/account/kind", {
+                method: "POST", headers: { "content-type": "application/json" },
+                body: JSON.stringify({ kind: parked, user: uid }),
+              });
+              // Clear only on a definite answer. A 409 means the account has
+              // already chosen, which is also settled. A network failure keeps
+              // the parked choice for the next load rather than losing it.
+              if (recorded.ok || recorded.status === 409) {
+                window.localStorage.removeItem("asilum-pending-kind");
+              }
+            } catch { /* keep it parked */ }
+          }
+        }
         const response = await fetch(
           "/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
         if (!response.ok) return; // includes 503 — hold what we have
         const data = await response.json();
         if (!cancelled && data?.kind) setAccountKind(data.kind);
       } catch { /* offline: hold what we have */ }
-    })();
-    return () => { cancelled = true; };
+    }
+    readKind();
+    // Signing in changes which account is reading, and therefore the nav. The
+    // first version asked once on mount, so a business that signed in kept the
+    // passport tabs until a hard reload.
+    const again = () => { readKind(); };
+    window.addEventListener("asilum:account-kind", again);
+    window.addEventListener("asilum:identity", again);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("asilum:account-kind", again);
+      window.removeEventListener("asilum:identity", again);
+    };
   }, []);
   const nav = navFor(accountKind);
 

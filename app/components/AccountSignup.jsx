@@ -17,10 +17,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useOverlayDismiss } from "./dismiss.js";
-import { getUid } from "../../lib/client.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 const SEEN_KEY = "asilum-signup-seen";
+// Read by the shell after adoption — see parkKind().
+export const PENDING_KIND_KEY = "asilum-pending-kind";
 
 const PASSPORT_MANIFEST = [
   "taste profile — everything the brain has learned here",
@@ -120,17 +121,42 @@ export default function AccountSignup() {
     return address;
   }
 
-  // Records the chosen kind against the device identity. Deliberately
-  // swallows its own failure: see the call site.
-  async function recordKind() {
+  /**
+   * Record the chosen kind against the ACCOUNT — never the device.
+   *
+   * The first version of this sent getUid(), which at this moment is still the
+   * device id `u-<uuid>`: adoption to `sb-<uuid>` happens afterwards, in the
+   * shell's auth listener. The kind was written under one id and read back
+   * under another, so a business read as a passport and the storefront never
+   * appeared. `accountUuid` comes straight off the Supabase response, so there
+   * is no race to lose.
+   *
+   * Deliberately swallows its own failure — the account exists either way, and
+   * an unrecorded kind is a passport, which is the safe direction.
+   */
+  async function recordKind(accountUuid) {
     if (kind === "passport") return; // the default; nothing to record
+    if (!accountUuid) return;
     try {
       await fetch("/api/account/kind", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ kind, user: getUid() }),
+        body: JSON.stringify({ kind, user: "sb-" + accountUuid }),
       });
+      window.dispatchEvent(new CustomEvent("asilum:account-kind"));
     } catch { /* the account still exists; it is a passport until corrected */ }
+  }
+
+  /**
+   * The confirm-by-email path has NO session yet, so there is no account to
+   * record against — the account is not usable until the link is clicked.
+   * Park the choice and let the shell record it on first sign-in rather than
+   * dropping it: someone who picked BUSINESS and then confirmed their email
+   * would otherwise land in a passport with no idea why.
+   */
+  function parkKind() {
+    if (kind === "passport") return;
+    try { window.localStorage.setItem(PENDING_KIND_KEY, kind); } catch {}
   }
 
   async function createAccount() {
@@ -161,7 +187,7 @@ export default function AccountSignup() {
         // at the desk, whereas silently handing someone a storefront they did
         // not ask for cannot be undone by them.
         markSeen();
-        await recordKind();
+        await recordKind(data.session.user?.id || data.user?.id);
         setDone("created");
       } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         // Supabase returns a stub user for an address that already holds an
@@ -170,7 +196,7 @@ export default function AccountSignup() {
         setMode("signin");
       } else if (data?.user) {
         markSeen();
-        await recordKind();
+        parkKind();
         setDone("confirm");
       } else {
         setNote("the account service gave no answer — try again");
