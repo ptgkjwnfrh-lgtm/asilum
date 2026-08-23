@@ -2500,3 +2500,14 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailmsgacts button:hover, .mailmsgacts button:focus-visible { border-color: var(--line); color: var(--ink); }
 .mailunsend { font-size: 9px !important; letter-spacing: .12em; }
 .mailunsend:hover { color: var(--red) !important; }
+/* mute + pagination */
+.mailmute { background: none; border: 1px solid var(--line); color: var(--grey);
+  font: inherit; font-size: 9px; letter-spacing: .14em; padding: 3px 7px; cursor: pointer; float: right; }
+.mailmute:hover { color: var(--ink); border-color: var(--ink); }
+.mailmute.cur { color: var(--red); border-color: var(--red); }
+.mailmutedot { font-size: 9px; color: var(--grey); letter-spacing: .1em; margin-left: 6px; }
+.mailmore { display: block; width: 100%; background: none; border: 1px dashed var(--line);
+  color: var(--grey); font: inherit; font-size: 10px; letter-spacing: .14em;
+  padding: 6px; margin: 6px 0; cursor: pointer; }
+.mailmore:hover:not(:disabled) { color: var(--ink); border-color: var(--ink); }
+.mailmore:disabled { cursor: default; opacity: .6; }
