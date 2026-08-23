@@ -8,22 +8,28 @@ lenses, and every claim independently refuted by a separate agent
 
 > ## STATUS, 23 August (later the same day)
 >
-> **Every BLOCKER, every SERIOUS and every UNVERIFIED finding has been worked.
-> 11 findings remain open, all MINOR.**
+> **EVERY FINDING IN THIS REGISTER IS CLOSED.** 52 claims, 35 that survived
+> refutation, and as of the end of 23 August none of them is open.
 >
 > | | was | now |
 > |---|---|---|
 > | blocker | 4 | **0** |
 > | serious | 13 | **0** |
-> | minor | 11 | **11 — untouched** |
-> | unverified | 7 | **0 unverified; 6 fixed, 1 half-fixed with the open half named** |
+> | minor | 11 | **0** |
+> | unverified | 7 | **0 — all verified, then fixed** |
 >
-> Three of the twenty were **already dead when the register was written** — fixed
-> by #378 after the review ran at `79d6c72` — and were found by checking
-> `git blame` rather than trusting the entry. **Refute before you fix.**
+> **Five of the thirty-five were already dead when this file was written** —
+> fixed by #378 after the review ran at `79d6c72` — and every one of them was
+> found by checking `git blame` rather than trusting the entry. Refuting first
+> saved five fixes against code that already had them, and caught one entry
+> whose *Reproduce* described the wrong mechanism.
 >
-> The one thing left that is not a minor finding is a **question for the owner**:
-> whether a DM export ships and in what shape (#395).
+> Nothing is deleted. A fixed finding's reproduction is still the spec of the
+> test that now guards it.
+>
+> The question this file left for the owner — whether a DM export ships, and in
+> what shape — was **answered on 23 August: two people should have records**
+> (#397, recorded in `docs/dm-core-decisions-2026-08-23.md`).
 >
 > | PR | what it closed |
 > |---|---|
@@ -41,6 +47,11 @@ lenses, and every claim independently refuted by a separate agent
 > | [#393](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/393) | the payload must not say what the refusal refuses to say |
 > | [#394](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/394) | every read is bounded, and both sides draw the breaker |
 > | [#395](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/395) | the export and the delete must describe the same world |
+> | [#397](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/397) | **the DM export — the owner's ruling: two people should have records** |
+> | [#398](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/398) | 4 minor — one thread at a time, and one door into it |
+> | [#399](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/399) | 2 minor — a refusal that says the true thing |
+> | [#400](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/400) | 2 minor — the laws get their controls |
+> | [#401](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/401) | 1 minor — an unsend names its author (**v48**) |
 >
 > Every fixed entry below is marked in place; nothing has been deleted, because
 > the reproduction is still the spec of the test that now guards it.
@@ -371,6 +382,12 @@ CHAIN VERIFIED IN CODE:
 
 ### `MailDesk.jsx`
 
+> **✅ FIXED 23 Aug in #398** — the page carries the thread it was asked for and a late one is
+> dropped. NOTE for the record: the entry's *Reproduce* is half wrong — the OLDER anchor does NOT
+> start walking A's history, because the fetch sends `c=threadId` from the current render. The
+> consequence is a duplicate or empty page in B, not a walk through A. The core claim — A's
+> messages rendered inside B's thread — is exactly right.
+
 **Problem.** `loadOlder` (lines 224-239) has no cancellation and no thread guard. It captures `threadId` at call time, but merges its result into the `older` state with `setOlder((prev) => [{...}, ...prev])`, which is whatever thread is current when the response lands. `loadThread` resets `older` to `[]` on a switch, but that reset happens before the in-flight page returns.
 
 **Reproduce.** Open conversation A (with a long history), click "OLDER MESSAGES ↑". While the request is in flight, click "← THE MAIL DESK" and open conversation B. `loadThread(B)` runs `setOlder([])` and populates `thread` with B. Conversation A's older page then resolves and is unshifted into `older`. The merge at line 349 (`[...older.flatMap(p => p.messages), ...thread.messages].sort((x,y) => x.id - y.id)`) now renders A's messages interleaved by id inside B's thread — including messages marked `mine: true` from A, and the "OLDER MESSAGES ↑" anchor becomes A's `olderBefore`, so paging up continues walking A's history while the header, mute button and composer all belong to B. Anything typed and sent goes to B.
@@ -382,6 +399,9 @@ CHAIN VERIFIED IN CODE:
 ---
 
 ### `MailDesk.jsx`
+
+> **✅ FIXED 23 Aug in #398** — every thread change goes through one door that clears it, and a
+> failed poll clears it too: quiet must mean NOTHING KNOWN, not the last thread's answer.
 
 **Problem.** `peer` (line 59) is never reset when `threadId` changes. The activity effect (181-210) tears down and restarts on a thread switch, but the only writer of `peer` is line 193 inside `tick()`, which runs asynchronously and only on `r.ok`. So the previous conversation's `{ typing, readUpTo }` is rendered against the new conversation's `myLastId`. Because `dm_messages.id` is a global BIGSERIAL, a `readUpTo` from a busy thread routinely exceeds the newest message id in a quiet one.
 
@@ -397,6 +417,9 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 
 ### `MailDesk.jsx`
 
+> **✅ FIXED 23 Aug in #398** — opening and refreshing are different acts. A refresh re-fetches
+> the newest page AND every page already scrolled in, and swaps them together.
+
 **Problem.** `loadThread` unconditionally does `setOlder([])` (line 125), and it is the refresh used by every in-thread mutation: send (264), mute (313), accept (330), consent (435), react (375, 393) and unsend (405). Any of those silently discards all paged-in history.
 
 **Reproduce.** Page up four times through a long conversation to re-read something, then reply. `send()` succeeds and calls `loadThread(threadId)`, which resets `older` to `[]`. The view snaps back to the newest 40 messages and the four pages must be clicked in again — and while it is refetching, `thread` is `null` (line 125 also does `setThread(null)`) so the entire thread flashes to "opening…" and the composer disappears mid-typing.
@@ -408,6 +431,10 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 ---
 
 ### `MailDesk.jsx`
+
+> **✅ FIXED 23 Aug in #385 and #400** — #385 built the BLOCKED list, the unblock, the handle and
+> conversation addressing, and corrected the banner. #400 added the BLOCK control INSIDE an
+> accepted conversation (the half #385 left) and the `dms_open` control, which law 2 never had.
 
 **Problem.** LAW 1 has no user-facing control. `op:"block"` and `op:"unblock"` (route.js lines 195-201) key on `body.accountId`, a bare auth uuid, and `accountId()` in lib/db/dm.js throws on anything else. The client is never given a counterparty uuid (the inbox route strips it by design), so no surface can call either op — a grep of app/ and lib/ finds zero callers of op=blocks, op=block or op=unblock. MailDesk line 326 nonetheless tells the user "declining also blocks them — you can undo that in settings", and app/settings/page.js contains no DM section at all. The `dmsOpen` half of law 2 has no control either: MailDesk exposes only the activitySignals checkbox.
 
@@ -421,6 +448,10 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 
 ### `dm.js`
 
+> **⛔ VERIFIED ALREADY DEAD — do not fix.** The membership clause landed in **#378** (`6c409ae`),
+> after the review ran at `79d6c72`. Duplicate of the UNVERIFIED entry below; both checked by
+> `git blame` on 23 Aug.
+
 **Problem.** `peerActivity` (line 651) is the only DM read with no membership check on the caller. Its query is `WHERE part.conversation_id = $1 AND part.account_id <> $2` — when `me` is not a participant, that matches BOTH participants and `r.rows[0]` returns one of them arbitrarily. readThread, listFolder, setMuted, setMediaConsent and markRead all scope by (conversation_id, account_id); this one does not.
 
 **Reproduce.** Any signed-in account calls GET /api/dm?op=activity&c=<some conversation uuid it is not a member of>. Instead of the 404-equivalent that op=thread returns for a non-member, it receives a live `{typing, readUpTo}` for one of the two real participants — a presence oracle on a conversation the caller has no claim to. Reaching it requires knowing a v4 conversation uuid, which is why this is minor rather than serious, but the route hands `url.searchParams.get("c")` straight through with no other gate.
@@ -432,6 +463,9 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 ---
 
 ### `dm.js`
+
+> **✅ FIXED 23 Aug in #399** — P0005 is "that message is gone." and 42501 "that mark is not
+> available." Nobody becomes unreachable because a message was withdrawn.
 
 **Problem.** `react()`'s docstring says "Every refusal the triggers raise is handed up as a MessageRefused so the route describes it the same way it describes a refused send." It is handed up, but `describeRefusal` (lib/dm.js:66-81) has cases only for P0003 and P0004; P0005 ("that message is gone" / "that mark is not available") and 42501 fall through to `default: { reason: "not-reachable", message: "this person is not reachable right now." }`. The route returns that verbatim and MailDesk's `act()` prints `data.message` into the note line.
 
@@ -445,6 +479,9 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 
 ### `route.js`
 
+> **✅ FIXED 23 Aug in #399** — `peerOf` and `peerOfMessage` resolve the counterparty, so the
+> caller's own block is answerable on the existing-conversation path and the reaction path too.
+
 **Problem.** lib/dm.js:60-67 states the law: "A refusal caused by the CALLER'S OWN block is NOT vague ... Yours is always explained, and always with the undo." But route.js:174-177 only computes `mine` when `them` is set, and `them` is only set on the first-contact-by-handle branch (line 153). Every send into an EXISTING conversationId — which is every send after the first, and every send from the thread view — passes `them === null`, so `iBlocked` is never consulted and describeRefusal falls through to the collapsed "this person is not reachable right now."
 
 **Reproduce.** R declines a request from O, which installs a `source='decline'` block (declineRequest line 388) — the exact case the doc says must never be hidden from its author. R later reconsiders, opens the archived thread and types a reply. MailDesk `send()` posts `{op:"send", conversationId, body}`. dm_guard_message LAW 1 raises P0001; the route's catch sees `them === null`, sets `mine=false`, and returns `{reason:"not-reachable", message:"this person is not reachable right now."}`. R is told the other person is unreachable when in fact R is the one blocking, and is given no pointer to the undo. This is precisely the red-team finding the comment claims was fixed.
@@ -456,6 +493,10 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 ---
 
 ### `route.js`
+
+> **✅ FIXED 23 Aug in #381 and #400** — #381 added the opener and state predicates; #400 made the
+> route report the block that STANDS, asked of the table on the locked connection, rather than the
+> request flag.
 
 **Problem.** `declineRequest` (lib/db/dm.js line 366) derives the person to block as `convo.opened_by` and only requires that the caller be a participant — it does not require that the caller be the non-opener, nor that the conversation still be in state 'requested'. When the opener declines their own conversation, `them === me`, the `block && them !== me` guard skips the insert, but route.js line 189 still returns `{ ok: true, blocked: true }`.
 
@@ -469,6 +510,9 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 
 ### `route.js`
 
+> **✅ FIXED 23 Aug in #399** — same fix as the entry above; this is the same finding seen from the
+> route rather than from lib/dm.js.
+
 **Problem.** lib/dm.js:59-64 states "A refusal caused by the CALLER'S OWN block is NOT vague... Yours is always explained, and always with the undo." The route only ever computes it on one path: line 174, `if (error instanceof MessageRefused && them)`, and `them` is assigned only inside `if (!conversationId)` (line 150-153). Every refusal on an existing conversation, and every refusal from `op:"react"` (line 213 calls `failure(error)` with no `extra`), goes through `describeRefusal(code, {})` and collapses to "this person is not reachable right now." "Always" is false.
 
 **Reproduce.** A declines B's request, which installs `dm_blocks(A -> B, source='decline')` and moves A's copy to `archived`. A later reaches the archived thread (GET /api/dm?op=inbox&folder=archived is accepted by route.js:68) and POSTs `{op:"send", conversationId, body}`. The trigger raises P0001 for A's own block; `them` is null because a conversationId was supplied, so A is told "this person is not reachable right now." — the exact withholding lib/dm.js says the red team flagged, aimed at the only person entitled to the answer, with the undo hidden. Same on the reaction path in any thread where the caller is the blocker.
@@ -480,6 +524,11 @@ MECHANISM CONFIRMED. lib/db/dm.js declineRequest: the gate SELECT requires only 
 ---
 
 ### `schema-v41-dm-activity.sql`
+
+> **✅ FIXED 23 Aug in #387 (v46) and #398** — v46 refuses presence on an unaccepted conversation
+> in the trigger and gates the read the same way; #398 stopped the client polling a knock at all.
+> The entry's note that the existing test pings typing on a `requested` conversation was true and
+> is fixed: five v41 fixtures now accept first (trap 98).
 
 **Problem.** LAW 3. `dm_guard_typing` (schema-v41 line 67) checks participation only; it never looks at `dm_conversations.state`. v42 refused reactions on unaccepted conversations for exactly this reason ("a reaction on an unaccepted request is a notification a stranger can send, repeatedly, past the one-knock law"), but typing pings were shipped one PR earlier and were never revisited. The existing test at tests/postgres-integration.test.js ("activity: typing expires rather than needing a 'stopped' write") in fact pings typing on a conversation left in state 'requested' and asserts it succeeds.
 
@@ -494,6 +543,10 @@ PATH: app/api/dm/route.js:192 passes body.upTo raw into markRead. readJsonReques
 ---
 
 ### `schema-v42-dm-reactions-unsend.sql`
+
+> **✅ FIXED 23 Aug in #401 (v48)** — the withdrawal must name its author, in a
+> transaction-local setting the trigger checks, scoped strictly to the `unsent_at` NULL → NOT NULL
+> transition so moderation and per-side hiding are untouched. **v48 applied to production.**
 
 **Problem.** The header above `dm_guard_unsend` reads "Unsend is the SENDER's act and nobody else's, and it is one-way". The trigger enforces only the one-way half (body must be NULL, unsent_at cannot be cleared, body cannot come back). There is no check that the updater is the sender — sender-scoping exists solely in the WHERE clause of `unsendMessage` in lib/db/dm.js:749-752. That is precisely the pattern docs/dm-core-decisions-2026-08-23.md rules out: "a law that lives in one caller is a convention", and "the route is not the only writer: the admin desk, a migration and any future job write too." `asilum_app` holds UPDATE on dm_messages (v40 grants) so the convention is enforced by nothing at the database level.
 
@@ -566,6 +619,12 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `production.js`
+
+> **✅ FULLY CLOSED 23 Aug in #395 and #397.** #395 named the retention. #397 shipped the export
+> on the **owner's ruling — two people should have records**: both sides get the record, bodies
+> through the same `visibleBody` rule the thread renders by, counterparties by handle.
+> `EXPORTED_BUT_RETAINED` names the first thing that is exported AND kept, because erasing it
+> would delete somebody else's history.
 
 > **⚠ VERIFIED, HALF FIXED 23 Aug in #395 — THE OPEN HALF IS THE OWNER'S.** The retention
 > disclosure now NAMES the messages and the blocks and why each is kept, and `DM_EXPORT_STATUS`
