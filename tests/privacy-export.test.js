@@ -8,7 +8,7 @@ import {
 } from "../lib/db/index.js";
 import {
   exportPersonalizationData, purgePersonalizationData, setFollow, EXPORT_MANIFEST,
-  DM_EXPORT_STATUS, RETAINED_AFTER_ERASURE,
+  DM_EXPORT_STATUS, EXPORTED_BUT_RETAINED, RETAINED_AFTER_ERASURE,
 } from "../lib/db/production.js";
 
 // CONSTITUTION.md §6 requires every signal to expose
@@ -222,22 +222,22 @@ test("E9 no declared cap exceeds what its reader will actually return", async ()
   await fresh(user);
 });
 
-test("E4 every messaging table is either exported or declared absent, with a reason", () => {
+test("E4 every messaging table is declared in exactly one place", () => {
   // An UNVERIFIED claim of docs/dm-open-findings-2026-08-23.md, checked and
   // true: erasure and export did not know the DM subsystem existed. No dm_*
-  // table is deleted, none is exported, and the retention disclosure did not
-  // name them — so the /api/privacy DELETE response listed what it kept and
-  // the message store was in neither list. Silence read as "erased".
+  // table was deleted, none was exported, and the retention disclosure did not
+  // name them — so /api/privacy's DELETE response listed what it keeps and the
+  // message store was in NEITHER list. Silence read as "erased".
   //
-  // E1 above cannot catch it, and says so in its own comment: it requires
+  // E1 above cannot catch that, and says so in its own comment: it requires
   // every table ERASURE touches to be in the manifest, and a table in NEITHER
-  // list passes. This is the missing half, scoped to the subsystem that
-  // exposed it: a dm_* table must be exported or declared absent WITH A
-  // REASON, so the next messaging table cannot be forgotten the way seven
-  // were.
-  // process.cwd(), like E1 above — `new URL(import.meta.url).pathname` is
-  // percent-encoded, and this repo's directory name has spaces and brackets in
-  // it, so that path does not open.
+  // list passes. This is the missing half.
+  //
+  // THREE PLACES, EXACTLY ONE EACH:
+  //   EXPORT_MANIFEST       — erased and exported (E1/E2 hold both directions)
+  //   EXPORTED_BUT_RETAINED — exported and KEPT, because it is also somebody
+  //                           else's record (owner ruling, 23 Aug)
+  //   DM_EXPORT_STATUS      — absent, with a reason
   const root = process.cwd();
   const sql = readFileSync(path.join(root, "supabase", "schema-v40-direct-messages.sql"), "utf8")
     + readFileSync(path.join(root, "supabase", "schema-v41-dm-activity.sql"), "utf8")
@@ -247,31 +247,89 @@ test("E4 every messaging table is either exported or declared absent, with a rea
   assert.ok(tables.length >= 6, `expected the mail desk's tables, found ${tables.join(", ")}`);
 
   // A LAW TABLE is not anybody's data. dm_reaction_kinds is a fixed palette
-  // granted SELECT-only — the same shape v42 chose deliberately, because an
-  // open emoji field is a covert text channel. It is not created per person
-  // and belongs in NEITHER list. Named here rather than skipped silently, so a
-  // future law table has to be named too.
+  // granted SELECT-only — the shape v42 chose deliberately, because an open
+  // emoji field is a covert text channel. It is not created per person and
+  // belongs in NONE of the three. Named here rather than skipped silently, so
+  // a future law table has to be named too.
   const LAW_TABLES = new Set(["dm_reaction_kinds"]);
 
   for (const table of new Set(tables)) {
+    const places = [
+      table in EXPORT_MANIFEST && "EXPORT_MANIFEST",
+      table in EXPORTED_BUT_RETAINED && "EXPORTED_BUT_RETAINED",
+      table in DM_EXPORT_STATUS && "DM_EXPORT_STATUS",
+    ].filter(Boolean);
+
     if (LAW_TABLES.has(table)) {
-      assert.ok(!(table in EXPORT_MANIFEST) && !(table in DM_EXPORT_STATUS),
+      assert.deepEqual(places, [],
         `${table} is a law table and must not be claimed as personal data`);
       continue;
     }
-    const exported = table in EXPORT_MANIFEST;
-    const declared = table in DM_EXPORT_STATUS;
-    assert.ok(exported || declared,
-      `${table} is in neither the export manifest nor the declared-absent list — `
-      + "which is exactly how the whole subsystem went missing from both");
-    if (!exported) {
-      assert.ok(DM_EXPORT_STATUS[table].length > 20,
-        `${table} is declared absent but the reason is not one`);
+    assert.equal(places.length, 1,
+      `${table} is declared in ${places.length === 0 ? "NONE" : places.join(" and ")} — `
+      + "which is exactly how the whole subsystem went missing from both lists");
+    if (table in DM_EXPORT_STATUS) {
+      assert.ok(DM_EXPORT_STATUS[table].length > 20, `${table} is declared absent but the reason is not one`);
+    }
+    if (table in EXPORTED_BUT_RETAINED) {
+      assert.ok(EXPORTED_BUT_RETAINED[table].length > 20, `${table} is declared kept but the reason is not one`);
     }
   }
   // and the enumeration really did reach the palette — a skip nobody exercises
   // is a rule nobody has
   assert.ok(tables.includes("dm_reaction_kinds"));
+});
+
+test("E4b exported-but-retained means retained — erasure must not touch it", () => {
+  // The invariant that keeps the new third category honest, in the direction
+  // E2 cannot see. E2 asks "is every manifest table erased?"; this asks the
+  // opposite of the other list. A table that is both exported-and-retained AND
+  // erased is one of the two lists lying, and the person reading the DELETE
+  // response is the one who finds out.
+  const src = readFileSync(path.join(process.cwd(), "lib", "db", "production.js"), "utf8");
+  const start = src.indexOf("export async function purgePersonalizationData");
+  const end = src.indexOf("\n// ---- §6 export", start);
+  const body = src.slice(start, end === -1 ? src.length : end);
+  const erased = new Set([...body.matchAll(/DELETE FROM ([a-z_]+)/g)].map((m) => m[1]));
+
+  const contradictions = Object.keys(EXPORTED_BUT_RETAINED).filter((t) => erased.has(t));
+  assert.deepEqual(contradictions, [],
+    "declared retained AND erased — one of the two lists is lying to whoever reads the DELETE response");
+
+  // and the manifest and the retained list must not overlap either: a table is
+  // erased-and-exported, or kept-and-exported, never described as both
+  const both = Object.keys(EXPORTED_BUT_RETAINED).filter((t) => t in EXPORT_MANIFEST);
+  assert.deepEqual(both, []);
+});
+
+test("E4c the export actually carries the mail desk, in the same shape as everything else", async () => {
+  // A declaration in a table is not an export. This asserts the DOMAIN exists
+  // on the payload with the cap/truncated shape §6 requires, and that it says
+  // WHICH answer it is giving — because "no messages" and "the store could not
+  // be read" are different facts, and mem mode can only ever give the second.
+  const out = await exportPersonalizationData("u-export-messages-shape");
+
+  assert.ok(out.data.messages, "the domain exists");
+  assert.ok(["read", "none", "unavailable", "unreadable"].includes(out.data.messages.store),
+    `store must say which answer this is, got ${out.data.messages.store}`);
+  for (const [name, list] of Object.entries({
+    conversations: out.data.messages.conversations,
+    items: out.data.messages.items,
+    blocks: out.data.messages.blocks,
+  })) {
+    assert.ok(Array.isArray(list.rows), `${name} carries rows`);
+    assert.equal(typeof list.cap, "number", `${name} states its cap (§6: no silent caps)`);
+    assert.equal(typeof list.truncated, "boolean", `${name} says whether it truncated`);
+  }
+
+  // MEM MODE MUST NOT REPORT AN EMPTY INBOX. lib/db/dm.js refuses in mem
+  // rather than mirroring the laws in JS; an export claiming "no messages"
+  // there would be the exact mem-vs-Postgres lie that module exists to prevent.
+  const { getPool } = await import("../lib/db/index.js");
+  if (!(await getPool())) {
+    assert.equal(out.data.messages.store, "unavailable",
+      "mem mode has no messaging at all, and the export has to say so");
+  }
 });
 
 test("E5 the retention disclosure names the messages it keeps", () => {

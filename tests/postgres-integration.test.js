@@ -1028,6 +1028,139 @@ test("DM: a knock from someone you follow lands in the inbox, not the requests q
   assert.ok(knock.id);
 });
 
+test("DM export: both people get the record, and neither gets more than the thread showed",
+  { skip: !databaseUrl }, async () => {
+  // OWNER RULING, 23 Aug: **two people should have records.** #395 left open
+  // whether a DM export ships at all, because a conversation is two people's
+  // record and one side asking for a copy is asking for words the other side
+  // wrote. Both sides are IN it, so both sides get it.
+  //
+  // What this proves is the shape of that answer: the SAME conversation from
+  // both directions, each person's own `mine` flags, counterparties named by
+  // HANDLE and never by uuid (law 7), and every absence rendered exactly the
+  // way the thread renders it — because an export is a copy of the record, not
+  // a way around it.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  await publishRoom(pool, a, `xa${tag}`);
+  // b deliberately publishes NO room: knocking needs none, so a counterparty
+  // with no handle is the normal case, not an edge one.
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+
+  const mine = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "kept" });
+  const theirs = await dm.sendMessage({ conversationId: convo.id, senderId: b, body: "also kept" });
+  const withdrawn = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "said too fast" });
+  const removed = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "moderator took this" });
+  const hidden = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hidden from them" });
+
+  await dm.react(b, mine.id, "♥");
+  assert.equal(await dm.unsendMessage(a, withdrawn.id), true);
+  await pool.query(`UPDATE dm_messages SET redacted_at=now() WHERE id=$1`, [removed.id]);
+  await pool.query(`UPDATE dm_messages SET hidden_for_recipient=true WHERE id=$1`, [hidden.id]);
+
+  const forA = await dm.exportMessagesFor(a);
+  const forB = await dm.exportMessagesFor(b);
+
+  // BOTH RECORDS EXIST, and they are the same conversation.
+  assert.equal(forA.conversations.length, 1);
+  assert.equal(forB.conversations.length, 1);
+  assert.equal(forA.conversations[0].id, convo.id);
+  assert.equal(forB.conversations[0].id, convo.id);
+  assert.equal(forA.conversations[0].openedByMe, true, "a opened it");
+  assert.equal(forB.conversations[0].openedByMe, false, "and b did not — each record is its own side");
+
+  // NAMED BY HANDLE, NEVER BY UUID (law 7).
+  assert.equal(forB.conversations[0].with, `xa${tag}`, "b's record names a by handle");
+  assert.equal(forA.conversations[0].with, null,
+    "and someone who never published a room has no handle — the record is still theirs");
+  const asText = JSON.stringify({ forA, forB });
+  assert.ok(!asText.includes(a) && !asText.includes(b),
+    "no account uuid anywhere in either export — the key stops at the server");
+
+  // EACH SIDE SEES ITS OWN AUTHORSHIP.
+  const aById = new Map(forA.messages.map((m) => [m.id, m]));
+  const bById = new Map(forB.messages.map((m) => [m.id, m]));
+  assert.equal(aById.get(mine.id).mine, true);
+  assert.equal(bById.get(mine.id).mine, false);
+  assert.equal(aById.get(theirs.id).mine, false);
+  assert.equal(bById.get(theirs.id).mine, true);
+  assert.equal(aById.get(mine.id).body, "kept");
+  assert.equal(bById.get(mine.id).body, "kept", "the other person's words ARE the other person's record too");
+
+  // THE THREE ABSENCES, EACH KEPT AS ITSELF.
+  for (const [who, map] of [["a", aById], ["b", bById]]) {
+    assert.equal(map.get(withdrawn.id).body, null, `${who}: an unsend stays withdrawn`);
+    assert.equal(map.get(withdrawn.id).unsent, true);
+    assert.equal(map.get(removed.id).body, null, `${who}: a moderator's redaction is not undone by an export`);
+    assert.equal(map.get(removed.id).redacted, true);
+    assert.equal(map.get(removed.id).unsent, false, "and the two are not conflated");
+  }
+  assert.equal(aById.get(hidden.id).body, "hidden from them", "the sender still sees their own words");
+  assert.equal(bById.get(hidden.id).body, null, "and hidden means hidden, in the download too");
+
+  // REACTIONS RIDE WITH THEIR MESSAGE, from each side's point of view.
+  assert.deepEqual(aById.get(mine.id).reactions, [{ emoji: "♥", mine: false }]);
+  assert.deepEqual(bById.get(mine.id).reactions, [{ emoji: "♥", mine: true }]);
+  assert.deepEqual(aById.get(withdrawn.id).reactions, [],
+    "an unsend clears the marks on it, so the export has none to carry");
+
+  // THE SIDE-STATE IS PER SIDE.
+  assert.equal(await dm.setMuted(b, convo.id, true), true);
+  const mutedForB = await dm.exportMessagesFor(b);
+  assert.equal(mutedForB.conversations[0].muted, true);
+  assert.equal((await dm.exportMessagesFor(a)).conversations[0].muted, false,
+    "mute is undetectable by the other party — including in their export");
+
+  // BLOCKS AND SETTINGS come with it, by handle.
+  await dm.blockAccount(b, a);
+  const blockedForB = await dm.exportMessagesFor(b);
+  assert.equal(blockedForB.blocks.length, 1);
+  assert.equal(blockedForB.blocks[0].handle, `xa${tag}`);
+  assert.equal(blockedForB.blocks[0].source, "manual");
+  assert.equal((await dm.exportMessagesFor(a)).blocks.length, 0,
+    "and a block is the blocker's record, not the blocked person's");
+});
+
+test("DM export: a cap is reported, never silently applied",
+  { skip: !databaseUrl }, async () => {
+  // CONSTITUTION §6 forbids silent caps. The export's own contract is that
+  // every bounded list says what it was cut to; this proves the store honours
+  // a cap it is handed rather than quietly returning everything or nothing.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+  for (let i = 0; i < 4; i++) {
+    await dm.sendMessage({ conversationId: convo.id, senderId: a, body: `line ${i}` });
+  }
+
+  const capped = await dm.exportMessagesFor(a, { messages: 2 });
+  assert.equal(capped.messages.length, 2, "the cap is applied");
+  assert.equal(capped.caps.messages, 2, "and reported, so the caller can say it truncated");
+  assert.ok(capped.messages[0].id > capped.messages[1].id, "newest first, so a cut loses the oldest");
+
+  const whole = await dm.exportMessagesFor(a);
+  assert.equal(whole.messages.length, 4);
+  assert.equal(whole.caps.messages, 5000, "the default cap is stated even when nothing was cut");
+
+  // a garbage cap does not become "everything" or "nothing"
+  const junk = await dm.exportMessagesFor(a, { messages: "not a number" });
+  assert.equal(junk.caps.messages, 5000);
+  assert.equal((await dm.exportMessagesFor(a, { messages: -5 })).caps.messages, 5000);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
