@@ -1338,6 +1338,76 @@ test("DM: a decline reports the block that STANDS, not the one it was asked for"
   assert.equal(await dm.declineRequest(g, third.id), false, "the opener still cannot decline");
 });
 
+test("DM unsend: the database requires the withdrawal to name its author",
+  { skip: !databaseUrl }, async () => {
+  // A MINOR finding. v42's header says "Unsend is the SENDER'S act and nobody
+  // else's", and the trigger enforced only the one-way half. Who did it was
+  // checked in exactly one place — the WHERE clause of unsendMessage — which
+  // is the shape the core decisions rule out in as many words: "a law that
+  // lives in one caller is a convention", and "the route is not the only
+  // writer". asilum_app holds UPDATE on dm_messages.
+  //
+  // The consequence was not abstract: a moderator tool nulling a body and
+  // setting unsent_at makes readThread report `unsent: true, redacted: false`,
+  // which tells the recipient the AUTHOR withdrew their words when a moderator
+  // removed them. v42's own header calls those different facts.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "mine to withdraw" });
+
+  // A raw write with NO actor named — the moderator tool, the cleanup
+  // migration, the future job — is refused by the trigger, not by a caller.
+  await assert.rejects(
+    () => pool.query(
+      `UPDATE dm_messages SET body=NULL, unsent_at=now() WHERE id=$1`, [m.id]),
+    (e) => e.code === "42501", "an unattributed withdrawal is nobody's act");
+
+  // Naming the WRONG person is refused too — it is not a formality to satisfy.
+  await assert.rejects(
+    () => pool.query(
+      `SELECT set_config('asilum.dm_actor', $2, true);
+       UPDATE dm_messages SET body=NULL, unsent_at=now() WHERE id=$1`, [m.id, b]),
+    (e) => e.code === "42501", "the recipient cannot withdraw the sender's words");
+
+  // and the message is untouched by either attempt
+  const intact = (await pool.query(
+    `SELECT body, unsent_at FROM dm_messages WHERE id=$1`, [m.id])).rows[0];
+  assert.equal(intact.body, "mine to withdraw");
+  assert.equal(intact.unsent_at, null);
+
+  // The store's own path names its actor and works.
+  assert.equal(await dm.unsendMessage(a, m.id), true);
+  const gone = (await pool.query(
+    `SELECT body, unsent_at, redacted_at FROM dm_messages WHERE id=$1`, [m.id])).rows[0];
+  assert.equal(gone.body, null);
+  assert.ok(gone.unsent_at);
+  assert.equal(gone.redacted_at, null, "an unsend is not a redaction, and stays distinguishable");
+
+  // THE MODERATION PATH IS UNTOUCHED. The check is scoped strictly to the
+  // unsent_at NULL -> NOT NULL transition, so a redaction — which is what a
+  // moderator should actually write — needs no actor and still works.
+  const other = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "removed later" });
+  await pool.query(`UPDATE dm_messages SET redacted_at=now(), body=NULL WHERE id=$1`, [other.id]);
+  const redacted = (await pool.query(
+    `SELECT unsent_at, redacted_at FROM dm_messages WHERE id=$1`, [other.id])).rows[0];
+  assert.equal(redacted.unsent_at, null, "and it does not masquerade as the author's own withdrawal");
+  assert.ok(redacted.redacted_at);
+
+  // and the per-side hide, the other future UPDATE on this table, is untouched
+  const third = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hidden later" });
+  await pool.query(`UPDATE dm_messages SET hidden_for_recipient=true WHERE id=$1`, [third.id]);
+  assert.equal((await pool.query(
+    `SELECT hidden_for_recipient FROM dm_messages WHERE id=$1`, [third.id])).rows[0].hidden_for_recipient,
+    true);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
