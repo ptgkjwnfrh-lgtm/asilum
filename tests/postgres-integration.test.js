@@ -764,6 +764,51 @@ test("DM store: the block a decline made can be undone without an account id",
   assert.equal(await dm.unblockByHandle(me, "no"), false, "a handle too short to be one");
 });
 
+test("DM presence: a knock is not a conversation yet",
+  { skip: !databaseUrl }, async () => {
+  // A SERIOUS finding of the 23 Aug register, and the same omission twice.
+  // v42 refused reactions on an unaccepted conversation because "a reaction on
+  // an unaccepted request is a notification a stranger can send". The typing
+  // channel shipped one migration EARLIER and never got the rule; and the
+  // receipt a stranger can READ never got it either — opening a knock to see
+  // who it was told the sender a real human had opened it, which is the
+  // tracking-pixel confirmation that separates a live address from a dead one.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  const knock = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello?" });
+
+  // THE READ SIDE. b opens the request to see who it is — which marks it read,
+  // because unread must clear when you look at it.
+  await dm.markRead(b, convo.id, knock.id);
+  const beforeAccept = await dm.peerActivity(a, convo.id);
+  assert.deepEqual(beforeAccept, { typing: null, readUpTo: null, reciprocal: true },
+    "a stranger learns nothing from a knock being opened");
+
+  // THE WRITE SIDE, through the store: nothing is broadcast either way.
+  assert.equal(await dm.pingTyping(b, convo.id), false, "and nothing is broadcast from one");
+  assert.equal(await dm.pingTyping(a, convo.id), false);
+
+  // and the LAW, not just the caller: a direct insert is refused by the
+  // trigger, because the route is not the only writer.
+  await assert.rejects(
+    () => pool.query(
+      `INSERT INTO dm_typing (conversation_id, account_id, typing_until)
+       VALUES ($1,$2, now() + interval '6 seconds')`, [convo.id, b]),
+    (e) => e.code === "P0003", "the trigger is where the law lives");
+
+  // ACCEPTED, and both halves come alive.
+  assert.equal(await dm.acceptRequest(b, convo.id), true);
+  assert.equal(await dm.pingTyping(b, convo.id), true);
+  const afterAccept = await dm.peerActivity(a, convo.id);
+  assert.equal(afterAccept.typing, true, "now presence means something");
+  assert.equal(afterAccept.readUpTo, Number(knock.id), "and so does the receipt");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
