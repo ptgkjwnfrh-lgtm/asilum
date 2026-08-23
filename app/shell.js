@@ -19,11 +19,10 @@ import {
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
 import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
-import { AsteriskDrawer, AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
+import { AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import ConsentMoment from "./components/ConsentMoment.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
 import AccountSignup from "./components/AccountSignup.jsx";
-import AsteriskDock from "./components/AsteriskDock.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
 import MailDesk from "./components/MailDesk.jsx";
@@ -510,8 +509,12 @@ export default function Shell({ children }) {
             )}
           </div>
         </div>
+        {/* The destination row carries the destinations and nothing else
+            (owner order, 23 Aug). The Asterisk guide chip that rode its left
+            end and the compact orb that rode its right end are both gone; the
+            guide lives whole at /asterisk, the orb still holds /stats and
+            /upload, and the seven tabs now centre in the full width. */}
         <nav className="topnav">
-          <AsteriskDrawer />
           <div className="snavs">
             {nav.map((n) => {
               const cur = n.match(pathname || "/");
@@ -534,7 +537,6 @@ export default function Shell({ children }) {
               );
             })}
           </div>
-          <AsteriskDock size={38} className="os-dock navdock" />
         </nav>
       </header>
 

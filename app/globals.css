@@ -890,47 +890,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .areadsum { font-family: var(--serif); font-style: italic; font-size: 12px; margin-top: 7px; }
 .areadnote { font-size: 10px; color: var(--grey); margin-top: 5px; }
 
-/* ── Asterisk memory (drawer + /asterisk page, Phase 2) ─────────────────── */
-.asterisk-trigger {
-  width: 100%; margin-top: 22px; padding: 8px 0; border: 0; border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line); background: var(--paper); cursor: pointer;
-  display: flex; align-items: center; gap: 9px; text-align: left;
-  font-size: 11px; font-weight: 900; letter-spacing: 0.14em;
-}
-.asterisk-trigger:hover, .asterisk-trigger[aria-expanded="true"] { color: var(--red); }
-.asterisk-state {
-  margin-left: auto; font-style: normal; font-size: 7px; letter-spacing: 0.1em;
-  color: var(--red);
-}
-.asterisk-state.off { color: var(--grey); }
-.asterisk-glyph {
-  width: 27px; height: 27px; flex: none; display: grid; place-items: center;
-  background: var(--bg3); border: 1px solid var(--line); border-radius: 7px;
-  color: var(--red); text-shadow: var(--glow-r); font-size: 25px; line-height: 1;
-}
-.asterisk-trigger[aria-expanded="true"] .asterisk-glyph { background: var(--red); color: var(--paper); }
-.adrawer { left: 12px; top: calc(var(--head-h) + 8px); width: 380px; max-height: 78vh; overflow-y: auto; }
-.aguideintro { font-size: 12px; line-height: 1.5; color: var(--grey); margin: 0 0 10px; }
-.aguideswitch {
-  display: flex; gap: 12px; align-items: center; justify-content: space-between;
-  border: 1px solid var(--line); border-left: 4px solid var(--red); padding: 9px 10px; margin-bottom: 10px;
-}
-.aguideswitch.off { border-left-color: var(--grey); border-style: dashed; }
-.aguideswitch div { display: grid; gap: 3px; }
-.aguideswitch b { font-size: 11px; letter-spacing: 0.1em; }
-.aguideswitch span { font-size: 10px; line-height: 1.35; color: var(--grey); }
-.aroute { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); margin-bottom: 8px; }
-.aroute a { display: flex; gap: 6px; padding: 8px; border-right: 1px solid var(--line); min-width: 0; }
-.aroute a:last-child { border-right: 0; }
-.aroute a:hover { background: var(--ink); color: var(--paper); }
-.aroute b { color: var(--red); font-size: 12px; }
-.aroute span { display: grid; gap: 2px; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; }
-.aroute em { font-size: 8px; font-weight: 400; letter-spacing: 0; color: var(--grey); font-style: normal; }
-.aroute a:hover em { color: var(--faint); }
-.aguidelean {
-  margin: 0 0 10px; font-size: 9px; font-weight: 900; letter-spacing: 0.1em;
-  color: var(--red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+/* ── Asterisk memory (/asterisk page, Phase 2) ──────────────────────────── */
 .amemsec { border-top: 1px solid var(--line); padding: 10px 0; }
 .amemsec:first-of-type { border-top: none; }
 .amemhead { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; letter-spacing: 0.14em; }
@@ -950,17 +910,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .amemconfirm { border: 1px solid var(--line); background: var(--bg3); color: var(--ink); border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 11px; letter-spacing: 0.08em; flex: 1; max-width: 260px; }
 .amemconfirm:focus { outline: none; border-color: var(--red); }
 @media (max-width: 760px) {
-  .asterisk-trigger { width: auto; margin: 0; padding: 0; border: 0; }
-  .asterisk-trigger span { display: none; }
-  .asterisk-state { display: none; }
-  .asterisk-glyph { width: 32px; height: 32px; }
-  /* top-anchored below the header: the drawer LIVES inside .tophead, whose
-     backdrop-filter makes it the containing block for fixed descendants —
-     a bottom anchor would grow the panel upward off-screen */
-  .adrawer {
-    left: 12px; right: 12px; top: calc(var(--head-h) + 8px); bottom: auto; width: auto;
-    max-height: calc(100vh - var(--head-h) - 24px);
-  }
   .amemlbl { flex-basis: 84px; }
   .searchguide { align-items: flex-start; flex-wrap: wrap; }
   .searchguide span { width: 100%; }
@@ -1202,17 +1151,6 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 /* ASTERISK dock — the engine's living form */
 .os-dock { border-top: 1px solid var(--line); padding: 8px 2px 4px; display: flex; gap: 10px; align-items: center; }
 .os-dock canvas { width: 44px; height: 44px; }
-/* compact form riding the destination row */
-.navdock { border-top: none; padding: 0; gap: 8px; flex: none; align-self: center; }
-.navdock canvas { width: 38px; height: 38px; }
-.navdock .t { font-size: 7px; letter-spacing: 0.16em; line-height: 1.5; white-space: nowrap; }
-/* the drawer trigger sheds its rail skin in the destination row */
-.topnav .asterisk-trigger {
-  width: auto; flex: none; align-self: center; margin: 0; padding: 5px 12px 5px 6px;
-  border: 1px solid transparent; border-radius: var(--ed-snav-rad, 10px);
-  background: none; white-space: nowrap;
-}
-.topnav .asterisk-trigger:hover { border-color: var(--line); background: var(--bg3); }
 /* the hologram orb is draggable — spin it */
 .os-holo { cursor: grab; touch-action: none; }
 .os-holo:active { cursor: grabbing; }
@@ -2110,17 +2048,14 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    rules by cascade order; the row never paints over its neighbours) ---- */
 @media (max-width: 1460px) {
   .snav .nmeta { display: none; }
-  .navdock .t { display: none; }
 }
 @media (max-width: 1360px) {
-  .topnav .asterisk-state { display: none; }
   .snavs { gap: 2px; }
   .snav { grid-template-columns: 1fr auto; }
   .snav .nic { display: none; }
   .snav .nled { grid-row: 1; }
 }
 @media (max-width: 1100px) {
-  .topnav .asterisk-trigger span { display: none; }
   .snav { font-size: 9.5px; padding: 4px 8px; }
   .snav .nled { display: none; }
 }
@@ -2145,7 +2080,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .snav { padding: 4px 8px; font-size: 8.5px; }
   .snav .nmeta, .snav .nled, .snav .nic { display: none; }
   .snav.cur::before { display: none; }
-  .navdock, .os-status { display: none; }
+  .os-status { display: none; }
 }
 @media (max-width: 560px) {
   .marquee { display: none; }

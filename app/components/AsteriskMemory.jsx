@@ -1,13 +1,13 @@
 "use client";
 // Asterisk memory surface (contract ADR-001 v2).
-// AsteriskDrawer = the guide button + slide-down panel used by the
-// shell on every page; MemorySections = the shared section renderer the
-// drawer and /asterisk both use, so both surfaces show the SAME contract.
+// MemorySections = the shared section renderer /asterisk uses, so the read
+// and the controls show the SAME contract. The shell drawer that used to
+// share it was removed 23 Aug (owner order); /asterisk is now the whole
+// surface, and it always was the superset.
 // All data comes from GET /api/asterisk/memory — a read facade over the
 // existing stores; writes are display visibility and Asterisk guidance.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useClickAway, useEscape } from "./dismiss.js";
 import {
   authorizedFetch, postJSON, getUid, brainEnabled, setBrainEnabled,
 } from "../../lib/client.js";
@@ -229,113 +229,6 @@ export function MemorySections({ memory, setHidden, full = false }) {
             ))
           : <div className="amemnote">No open questions.</div>}
       </Section>
-    </>
-  );
-}
-
-export function AsteriskDrawer() {
-  const [open, setOpen] = useState(false);
-  const drawerRef = useRef(null);
-  const triggerRef = useRef(null);
-  // One dismissal contract (synergy phase 1): Escape + click-away close.
-  useEscape(() => setOpen(false), open);
-  useClickAway(drawerRef, () => setOpen(false), { active: open, excludeRef: triggerRef });
-  const [guideMirror, setGuideMirror] = useState(true);
-  const { memory, err, setHidden, setGuidanceEnabled } = useAsteriskMemory(open);
-
-  // The shell needs only one boolean until the drawer opens. Keep ordinary
-  // page loads cheap; the full multi-store Passport read is lazy.
-  useEffect(() => {
-    let dead = false;
-    const syncLocal = () => setGuideMirror(brainEnabled());
-    const syncServer = async () => {
-      try {
-        const res = await authorizedFetch(
-          `/api/asterisk/memory?view=preferences&user=${encodeURIComponent(getUid() || "")}`
-        );
-        const data = await res.json();
-        if (dead || !res.ok) return;
-        setBrainEnabled(data.preferences?.guidanceEnabled !== false);
-      } catch {}
-    };
-    syncLocal();
-    syncServer();
-    window.addEventListener("asilum:brain", syncLocal);
-    window.addEventListener("asilum:identity", syncServer);
-    return () => {
-      dead = true;
-      window.removeEventListener("asilum:brain", syncLocal);
-      window.removeEventListener("asilum:identity", syncServer);
-    };
-  }, []);
-
-  const guidanceOn = memory
-    ? memory.preferences?.guidanceEnabled !== false
-    : guideMirror;
-  const leans = memory?.inferred?.dominantAesthetics?.slice(0, 3) || [];
-  return (
-    <>
-      <button
-        ref={triggerRef}
-        className="asterisk-trigger"
-        aria-label="Asterisk guide"
-        aria-expanded={open}
-        aria-controls="asterisk-memory-drawer"
-        onClick={() => setOpen((o) => !o)}
-      >
-        <b className="asterisk-glyph" aria-hidden="true">*</b>
-        <span>ASTERISK GUIDE</span>
-        <em className={"asterisk-state " + (guidanceOn ? "on" : "off")}>
-          {guidanceOn ? "GUIDING" : "PAUSED"}
-        </em>
-      </button>
-      {open && (
-        <div ref={drawerRef} className="panel adrawer" id="asterisk-memory-drawer" role="dialog" aria-label="Asterisk guide">
-          <div className="phead">ASTERISK — YOUR TRAVEL AGENT</div>
-          <div className="aguideintro">
-            Your Passport teaches Asterisk the route. Search sets the destination;
-            The Asterisk system orders the racks so the trip still feels like you.
-          </div>
-          <div className={"aguideswitch " + (guidanceOn ? "on" : "off")}>
-            <div>
-              <b>{guidanceOn ? "GUIDANCE ON" : "GUIDANCE PAUSED"}</b>
-              <span>
-                {guidanceOn
-                  ? "Passport taste is shaping Home, Search, Discover, and Stylist."
-                  : "Those surfaces are general. Your Passport stays saved."}
-              </span>
-            </div>
-            <button
-              className="fitbtn"
-              aria-pressed={guidanceOn}
-              onClick={() => setGuidanceEnabled(!guidanceOn)}
-            >
-              {guidanceOn ? "PAUSE" : "TURN ON"}
-            </button>
-          </div>
-          <div className="aroute">
-            <a href="/board"><b>1</b><span>PASSPORT<em>show your taste</em></span></a>
-            <a href="/discover"><b>2</b><span>EXPLORE<em>name any destination</em></span></a>
-            <a href="/stylist"><b>3</b><span>STYLE<em>build the whole look</em></span></a>
-          </div>
-          {leans.length > 0 && (
-            <div className="aguidelean">
-              CURRENT ROUTE · {leans.map((lean) => lean.tag).join(" / ")}
-            </div>
-          )}
-          {err && <div className="pempty">{err}</div>}
-          {!err && !memory && <div className="pempty">reading…</div>}
-          {memory && <MemorySections memory={memory} setHidden={setHidden} />}
-          <a className="btn ghost wide" href="/asterisk" style={{ display: "block", textAlign: "center" }}>
-            OPEN PASSPORT READ & CONTROLS →
-          </a>
-          <div className="adisclose">
-            ✳ The Asterisk system is an automated recommendation &amp; interpretation system.
-            Readings are human-curated and cited; no generative AI is active.
-            <a href="/asterisk"> WHAT ASTERISK IS</a>
-          </div>
-        </div>
-      )}
     </>
   );
 }
