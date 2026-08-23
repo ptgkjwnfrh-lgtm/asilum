@@ -8,10 +8,22 @@ lenses, and every claim independently refuted by a separate agent
 
 > ## STATUS, 23 August (later the same day)
 >
-> **All four blockers are fixed. 24 findings remain open: 0 blocker · 6 serious
-> · 11 minor · 7 unverified** — and two of the closed ones were closed by
-> **#378 before this file was written**, found by checking `git blame` rather
-> than trusting the entry. Refute before you fix.
+> **Every BLOCKER, every SERIOUS and every UNVERIFIED finding has been worked.
+> 11 findings remain open, all MINOR.**
+>
+> | | was | now |
+> |---|---|---|
+> | blocker | 4 | **0** |
+> | serious | 13 | **0** |
+> | minor | 11 | **11 — untouched** |
+> | unverified | 7 | **0 unverified; 6 fixed, 1 half-fixed with the open half named** |
+>
+> Three of the twenty were **already dead when the register was written** — fixed
+> by #378 after the review ran at `79d6c72` — and were found by checking
+> `git blame` rather than trusting the entry. **Refute before you fix.**
+>
+> The one thing left that is not a minor finding is a **question for the owner**:
+> whether a DM export ships and in what shape (#395).
 >
 > | PR | what it closed |
 > |---|---|
@@ -21,6 +33,14 @@ lenses, and every claim independently refuted by a separate agent
 > | [#384](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/384) | 3 serious — state that outlived its context (drafts, folder pages, older-page reactions) |
 > | [#385](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/385) | 1 serious — the undo the request banner had always promised |
 > | [#387](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/387) | 1 serious — presence needs an accepted conversation (**v46**); 2 more marked already-dead |
+> | [#388](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/388) | an unsend is one act (**v47**) |
+> | [#389](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/389) | consent that remembers having been revoked |
+> | [#390](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/390) | one gesture is one act, and safety does not share a rate budget |
+> | [#391](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/391) | every writer in law 1 takes the pair lock |
+> | [#392](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/392) | a thread you asked for should not arrive as a request |
+> | [#393](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/393) | the payload must not say what the refusal refuses to say |
+> | [#394](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/394) | every read is bounded, and both sides draw the breaker |
+> | [#395](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/395) | the export and the delete must describe the same world |
 >
 > Every fixed entry below is marked in place; nothing has been deleted, because
 > the reproduction is still the spec of the test that now guards it.
@@ -191,6 +211,9 @@ WRITE PATH (A pings typing on a 'requested' conversation)
 
 ### `dm.js`
 
+> **✅ FIXED 23 Aug in #388** — one transaction on one client, and v47 gives `dm_guard_reaction`
+> `FOR SHARE` so the unsend waits for the reaction it is about to sweep. **v47 applied to prod.**
+
 **Problem.** `unsendMessage` (lines 743-759) performs two independent autocommit statements on the pool — `UPDATE dm_messages SET body=NULL, unsent_at=now()` and then `DELETE FROM dm_reactions WHERE message_id=$1` — with no BEGIN/COMMIT around them, and no pair advisory lock. `dm_guard_reaction` (v42, lines 83-85) refuses a reaction on an unsent message with a plain non-locking SELECT, so nothing serialises a concurrent `react()` against the unsend, and nothing rolls the pair back if the second statement never runs.
 
 **Reproduce.** A sends a message m; B has the thread open. B taps ♥ and A taps UNSEND at the same instant. (1) B's INSERT fires dm_guard_reaction, which SELECTs m and reads unsent_at = NULL — it does not lock the row, so it passes. (2) A's UPDATE commits: body NULL, unsent_at set. (3) A's DELETE FROM dm_reactions runs on a different pooled connection and deletes zero rows — B's insert has not committed yet, so it is invisible. (4) B's INSERT commits. dm_reactions now holds a ♥ on a tombstone, permanently: reactionsFor returns it, and MailDesk renders the reaction span unconditionally (it is not gated on `!m.unsent`, unlike the palette and UNSEND controls), so A sees a heart on the message A just withdrew. Only B can remove it. The same orphan survives non-concurrently if the process dies or the pool errors between the two statements — a partial write with no rollback.
@@ -202,6 +225,9 @@ WRITE PATH (A pings typing on a 'requested' conversation)
 ---
 
 ### `dm.js`
+
+> **✅ FIXED 23 Aug in #391** (declineRequest's half in #381) — both take the pair advisory lock.
+> `pairLockKey` is exported so the test can hold it and assert the block WAITS.
 
 **Problem.** `blockAccount` (lines 402-410) and the `INSERT INTO dm_blocks` inside `declineRequest` (lines 386-390) do not take the pair advisory lock that the module's own comment (lines 62-65) says "every write that must read-then-write inside one transaction" takes. `dm_guard_message`'s LAW 1 block check is a plain `EXISTS` SELECT inside the sender's transaction, so a block committed after that check but before the send commits does not stop the send. Product law 1 ("a block stops delivery in BOTH directions") has an open window exactly at the moment a person reaches for the block button.
 
@@ -219,6 +245,10 @@ The chain holds at every step:
 
 ### `dm.js`
 
+> **✅ FIXED 23 Aug in #389** — the state is the LATER of the two stamps and neither erases the
+> other. Both comments corrected to say what is kept (latest grant, latest revocation) rather than
+> implying a full audit trail.
+
 **Problem.** `setMediaConsent` (the `allow` branch) does `SET media_consent_at = COALESCE(media_consent_at, now()), media_consent_revoked_at = NULL`. That erases the revocation stamp and keeps the *original* grant timestamp. Both the schema comment (supabase/schema-v40-direct-messages.sql: "Revocation is a timestamp rather than a flag flip so 'was this attachment sent under a consent that still stands?' stays answerable after the fact") and this function's own docstring ("Revocation stamps rather than clears, so the window a past attachment was sent under stays answerable once the pipeline exists") claim the opposite. The consent state is the entire deliverable of law 4 — OWNER-DECISIONS #3 ships the state and nothing else — and it is lossy.
 
 **Reproduce.** B ticks "receive images and videos" at 10:00 (`media_consent_at = 10:00`). At 11:00 B unticks it (`media_consent_revoked_at = 11:00`). At 12:00 B ticks it again. The row now reads `media_consent_at = 10:00, media_consent_revoked_at = NULL` — indistinguishable from a consent that has stood unbroken since 10:00. The hour B spent withholding consent no longer exists. When the media pipeline lands and asks "was the item A sent at 11:30 covered by a consent that stood?", the row answers yes. The integration test at tests/postgres-integration.test.js:~576 only walks give→revoke and stops, so the erasing path is never exercised.
@@ -234,6 +264,10 @@ Reachability is clean. The back button (line 301) does only setThreadId(null); s
 ---
 
 ### `dm.js`
+
+> **✅ FIXED 23 Aug in #392** — WIRED, not deleted. `recipientFollowsSender` converts the identity
+> string and the handle in one query and fails closed. It moves the knock between folders only; the
+> one-knock law is untouched and the test asserts it.
 
 **Problem.** `foldersForNewConversation` and the `knownToRecipient` option are exported, documented ("`knownToRecipient` is true when the recipient already follows the sender or has messaged them before; a thread you asked for should not arrive as a request") and unit-tested — and never used by production code. Grep across the repo: `foldersForNewConversation` appears only in lib/dm.js and tests/dm.test.js; `knownToRecipient` is passed `true` only inside tests/postgres-integration.test.js. app/api/dm/route.js:161 calls `openConversation(me, them)` with no options, so lib/db/dm.js:77 always takes the `false` default. `user_follows` exists (supabase/schema-v14-asterisk-memory.sql:37) and is never consulted.
 
@@ -286,6 +320,9 @@ CHAIN VERIFIED IN CODE:
 
 ### `route.js`
 
+> **✅ FIXED 23 Aug in #390** — `setDmSettings` applies both in one transaction, and the refusal
+> reports what actually stands.
+
 **Problem.** The `settings` op (lines 232-247) applies `setActivitySignals` and `setDmsOpen` as two separate autocommit statements against dm_settings, then reads both back. When the second one is refused by the v40 P0004 trigger, the route returns a 409 refusal while the first write has already committed — and the refusal body carries no settings state, so the client never learns what actually persisted.
 
 **Reproduce.** A business account posts `{op:"settings", activitySignals:false, dmsOpen:false}` (MailDesk sends them separately today, but the endpoint accepts both and the panel's checkbox handler at MailDesk.jsx:~500 reverts its local state on any non-ok response). `setActivitySignals` commits activity_signals=false. `setDmsOpen` raises P0004 and the route returns 409 "a business cannot switch messages off". The client reverts its activity-signals checkbox to true, but the database says false — so the account is now silently emitting no read receipts and, by reciprocity, seeing none, with a UI that says the opposite until the next summary poll.
@@ -297,6 +334,9 @@ CHAIN VERIFIED IN CODE:
 ---
 
 ### `route.js`
+
+> **✅ FIXED 23 Aug in #390** — presence has its own bucket; the table lives in `lib/dm.js` as
+> `rateBucketFor` so the rule is tested, and an unknown op falls into the TIGHT bucket.
 
 **Problem.** The `dm-act` bucket (240/hour, lines 130-136) is shared by the two highest-frequency ops in the product and the victim's only safety control. `op:"typing"` fires up to once per 2.5 seconds while composing (app/components/MailDesk.jsx:214-220 — up to 1440 writes/hour) and `op:"read"` fires on every thread open (MailDesk.jsx:135-138), while `op:"block"`, `op:"decline"`, `op:"unblock"` and `op:"mute"` draw from the same 240. The route's comment claims "the rest share a looser one so a burst of reads cannot exhaust the ability to block" — but the exhausting traffic is writes in that same bucket, not reads.
 
@@ -474,6 +514,9 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `dm.js`
 
+> **✅ VERIFIED AND FIXED 23 Aug in #387** (duplicate of the SERIOUS entry above) — v46 in the
+> trigger, and the same gate in the query, because no trigger can stop a read. **v46 applied to prod.**
+
 **Problem.** peerActivity applies no conversation-state gate, so read receipts and typing flow on an UNACCEPTED request. This contradicts the quarantine the rest of the request path builds: listFolder suppresses the preview for the requests folder (line ~232) and dm_guard_reaction refuses reactions until state='accepted' (v42) precisely because "a reaction on an unaccepted request is a notification a stranger can send". A read receipt is the same class of signal in reverse, and it is emitted before the recipient has agreed to any relationship. MailDesk makes it automatic: loadThread POSTs op=read on open (MailDesk.jsx:133-139), before the ACCEPT button is ever pressed.
 
 **Reproduce.** Mallory finds Alice via op=find and sends one knock. It lands in Alice's requests folder. Alice opens it to decide whether to accept; her client immediately marks it read. Mallory polls GET /api/dm?op=activity&c=<id> and gets readUpTo == his message id — confirmation that Alice personally opened and read a message from a stranger she never accepted, plus `typing:true` for the reply she started and deleted. Alice's only defence is the global activity_signals switch, which she would have to turn off before ever receiving a request.
@@ -483,6 +526,9 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `dm.js`
+
+> **✅ VERIFIED AND FIXED 23 Aug in #393** — `state` is stripped in the route beside the account
+> uuid. The panel keys its request controls on the per-side `folder`, and never read `state`.
 
 **Problem.** listFolder returns the shared dm_conversations.state to both sides (line ~187/222), and the route passes it straight to the client (app/api/dm/route.js:67-81). describeRefusal deliberately collapses P0001 (blocked) and P0002 (their DMs are closed) into "not reachable" so a stranger cannot discover that a particular person declined or blocked them — and then the inbox payload names it outright.
 
@@ -494,6 +540,9 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `dm.js`
 
+> **⛔ VERIFIED ALREADY DEAD — do not fix.** The membership clause landed in **#378** (`6c409ae`),
+> after the review ran at `79d6c72`. Confirmed by `git blame` on 23 Aug.
+
 **Problem.** peerActivity (line 651) is reached from op="activity" with no check that the caller is a participant. When the caller is not in the conversation the query `WHERE part.conversation_id=$1 AND part.account_id <> $2` matches BOTH participant rows and the function returns rows[0] — an arbitrary stranger's last_read_message_id and live typing state. It is also an existence oracle: a real conversation with signals on returns numbers, a nonexistent id returns nulls. readThread deliberately makes a non-member indistinguishable from a nonexistent thread (line 275-281); this sibling endpoint does not.
 
 **Reproduce.** A caller who obtains a conversation id by any means other than membership — a logged URL, a copied support ticket, a database export, or a future feature that surfaces ids — calls GET /api/dm?op=activity&c=<id> and receives a third party's read position and live typing state for a conversation they have no relation to, plus confirmation that the conversation exists at all.
@@ -503,6 +552,10 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `dm.js`
+
+> **✅ VERIFIED AND FIXED 23 Aug in #393** — the flag is stripped at the route; the store keeps it.
+> The docstring now states the residual property honestly: a reader whose own signals are on can
+> still infer a null means theirs are off, and hiding that would require inventing a read position.
 
 **Problem.** peerActivity returns a `reciprocal` flag that defeats the indistinguishability its own docstring claims ("both null when reciprocity denies them, so a caller cannot tell 'they are not typing' from 'you switched signals off'"). With reciprocal:false meaning "your signals are off" and reciprocal:true + null readUpTo meaning "theirs are", the caller — who already knows their own setting — can read the peer's setting straight off the payload. activity_signals is a single global column in dm_settings, so this is a fact about the peer everywhere, not just in this thread.
 
@@ -514,6 +567,13 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `production.js`
 
+> **⚠ VERIFIED, HALF FIXED 23 Aug in #395 — THE OPEN HALF IS THE OWNER'S.** The retention
+> disclosure now NAMES the messages and the blocks and why each is kept, and `DM_EXPORT_STATUS`
+> declares every messaging table absent with a reason under a test (E4) that fails on a `dm_*`
+> table in neither list. **The tables are still not exported**: they key on the bare auth uuid
+> rather than the identity string, so it needs a bespoke reader — and a conversation is TWO
+> people's record, so what one side may take a copy of is a disclosure ruling, not plumbing.
+
 **Problem.** Erasure and export do not know the DM subsystem exists. purgePersonalizationData (line 114) deletes ~25 named tables and profile_rooms but no dm_* table; EXPORT_MANIFEST (line ~337) lists no dm_* table either. Nothing outside lib/db/dm.js, the four schema files and the tests references dm_messages/dm_conversations/dm_participants/dm_blocks/dm_settings/dm_typing/dm_reactions. The DELETE response returns retained: ["purchase tickets", "deidentified raw event counters…", "auth account"], so the message store is neither erased nor named as retained, and tests/privacy-export.test.js only asserts purge's DELETE list is a subset of the manifest — a table in neither passes.
 
 **Reproduce.** A user holds a hundred DM threads, then goes to settings and runs the erasure with the confirmation phrase. /api/privacy returns {deleted:true, buyerVaultErased:true, retained:[three items]}. Every message body they ever sent is still in dm_messages keyed to their bare auth uuid, their dm_blocks rows still silently block people, dm_settings still holds their dms_open/activity_signals choices, and GET /api/privacy (the §6 access right) returns a JSON export containing none of it — so they can neither see nor delete their message history while the product tells them the erasure was complete. Their profile_rooms row IS deleted, so the surviving DM rows are now an un-nameable uuid in someone else's inbox.
@@ -524,6 +584,9 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `route.js`
 
+> **✅ VERIFIED AND FIXED 23 Aug in #394** — `readBucketFor` has a BOUNDED DEFAULT, so an op
+> nobody thought about cannot be unbounded, and both directions draw `consumeGlobalBudget`.
+
 **Problem.** Four of the seven GET ops have no rate limit and no global budget: `summary` (lines 59-66, three queries), `inbox` (67-81, a keyset page plus a handle lookup, with a correlated unread count and a correlated preview subquery per row — lib/db/dm.js:186-219), `thread` (82-92, a member probe + a 101-row read + a reactions aggregate + the palette read) and `blocks`. Only `find` and `activity` were limited. No DM op draws `consumeGlobalBudget`, unlike every other expensive surface in the codebase (search, discover, feed, interpret, boards, interaction — lib/security/rateLimit.js:70-85), whose comment states the exact reason: per-subject quotas do not bound a flood of identities.
 
 **Reproduce.** One signed-in account loops GET /api/dm?op=inbox&folder=inbox&cursor=… as fast as the connection allows. Each request runs the participant join plus two correlated subqueries per returned row against dm_messages; nothing counts the requests and nothing caps the aggregate. The pool saturates, `getPool()` starts failing, and `pool()` throws MessagingUnavailable — so every other user's mail desk answers 503 "the mail desk is unavailable" while the attacker keeps going. Cost: one account and a for-loop; no message is ever sent, so none of the send-side laws or quotas are touched.
@@ -533,6 +596,9 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `route.js`
+
+> **✅ VERIFIED AND FIXED 23 Aug in #385** — projected through `handlesFor` like the inbox, and
+> the unblock it now serves addresses by handle or conversation.
 
 **Problem.** op="blocks" (line 112) returns listBlocks() verbatim: [{accountId: <bare auth uuid>, source, at}]. The inbox path maps counterparties through handlesFor precisely so "the uuid never leaves the server" (route comment, line 71-73); the blocks path does not, and no UI consumes it, so the uuid is shipped to the browser for no rendering purpose. The value is the auth.users id — the same uuid that forms the sb-<uuid> identity string used across every other surface.
 
