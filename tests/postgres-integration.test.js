@@ -975,6 +975,59 @@ test("DM block: the block waits for the send it is racing",
     (e) => e.name === "MessageRefused" && e.code === "P0001");
 });
 
+test("DM: a knock from someone you follow lands in the inbox, not the requests queue",
+  { skip: !databaseUrl }, async () => {
+  // A SERIOUS finding of the 23 Aug register, and the worst kind: a green test
+  // over an unreachable path. `knownToRecipient`, `foldersForNewConversation`
+  // and the unit test asserting "a thread you asked for should not arrive as a
+  // request" all shipped with NO CALLER, so the suite reported the rule as
+  // covered while nothing could produce it.
+  //
+  // user_follows predates this subsystem: it keys on the IDENTITY STRING
+  // (sb-<uuid>), not the bare account uuid ADR-002 requires here, and its
+  // target for kind='user' is a HANDLE. Both conversions are what this proves.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: sender, hi: recipient } = await dmAccounts(pool);
+  await publishRoom(pool, sender, `fol${tag}`);
+
+  assert.equal(await dm.recipientFollowsSender(recipient, sender), false, "nobody follows anybody yet");
+
+  await pool.query(
+    `INSERT INTO user_follows (user_id, kind, target) VALUES ($1,'user',$2)
+     ON CONFLICT DO NOTHING`, ['sb-' + recipient, `fol${tag}`]);
+  assert.equal(await dm.recipientFollowsSender(recipient, sender), true,
+    "the identity string and the handle are both converted here, not by the caller");
+  assert.equal(await dm.recipientFollowsSender(sender, recipient), false,
+    "and it is not symmetric — following is not being followed");
+
+  const convo = await dm.openConversation(sender, recipient, {
+    knownToRecipient: await dm.recipientFollowsSender(recipient, sender),
+  });
+  const knock = await dm.sendMessage({ conversationId: convo.id, senderId: sender, body: "hello you" });
+
+  assert.equal((await dm.listFolder(recipient, { folder: "requests" })).items.length, 0,
+    "not in the queue you screen strangers with");
+  const inbox = await dm.listFolder(recipient, { folder: "inbox" });
+  assert.equal(inbox.items.length, 1);
+  assert.equal(inbox.items[0].preview, "hello you",
+    "and it carries its words, because you asked for this thread");
+
+  // THE ONE-KNOCK LAW IS UNTOUCHED. A follow moves the knock; it does not open
+  // the door.
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0].state, "requested");
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: sender, body: "and again" }),
+    (e) => e.name === "MessageRefused" && e.code === "P0003",
+    "still one message until they reply");
+  assert.ok(knock.id);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
