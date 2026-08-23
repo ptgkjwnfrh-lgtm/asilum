@@ -1085,30 +1085,37 @@ test("DM export: both people get the record, and neither gets more than the thre
     "no account uuid anywhere in either export — the key stops at the server");
 
   // EACH SIDE SEES ITS OWN AUTHORSHIP.
+  //
+  // Keyed by NUMBER on both sides. sendMessage returns the BIGSERIAL as pg
+  // hands it over — a string — while the export narrows it with Number(), the
+  // same way readThread does. A Map keyed on one and read with the other
+  // misses every entry and reports it as "undefined has no property mine",
+  // which is what CI said the first time.
+  const id = (returned) => Number(returned.id);
   const aById = new Map(forA.messages.map((m) => [m.id, m]));
   const bById = new Map(forB.messages.map((m) => [m.id, m]));
-  assert.equal(aById.get(mine.id).mine, true);
-  assert.equal(bById.get(mine.id).mine, false);
-  assert.equal(aById.get(theirs.id).mine, false);
-  assert.equal(bById.get(theirs.id).mine, true);
-  assert.equal(aById.get(mine.id).body, "kept");
-  assert.equal(bById.get(mine.id).body, "kept", "the other person's words ARE the other person's record too");
+  assert.equal(aById.get(id(mine)).mine, true);
+  assert.equal(bById.get(id(mine)).mine, false);
+  assert.equal(aById.get(id(theirs)).mine, false);
+  assert.equal(bById.get(id(theirs)).mine, true);
+  assert.equal(aById.get(id(mine)).body, "kept");
+  assert.equal(bById.get(id(mine)).body, "kept", "the other person's words ARE the other person's record too");
 
   // THE THREE ABSENCES, EACH KEPT AS ITSELF.
   for (const [who, map] of [["a", aById], ["b", bById]]) {
-    assert.equal(map.get(withdrawn.id).body, null, `${who}: an unsend stays withdrawn`);
-    assert.equal(map.get(withdrawn.id).unsent, true);
-    assert.equal(map.get(removed.id).body, null, `${who}: a moderator's redaction is not undone by an export`);
-    assert.equal(map.get(removed.id).redacted, true);
-    assert.equal(map.get(removed.id).unsent, false, "and the two are not conflated");
+    assert.equal(map.get(id(withdrawn)).body, null, `${who}: an unsend stays withdrawn`);
+    assert.equal(map.get(id(withdrawn)).unsent, true);
+    assert.equal(map.get(id(removed)).body, null, `${who}: a moderator's redaction is not undone by an export`);
+    assert.equal(map.get(id(removed)).redacted, true);
+    assert.equal(map.get(id(removed)).unsent, false, "and the two are not conflated");
   }
-  assert.equal(aById.get(hidden.id).body, "hidden from them", "the sender still sees their own words");
-  assert.equal(bById.get(hidden.id).body, null, "and hidden means hidden, in the download too");
+  assert.equal(aById.get(id(hidden)).body, "hidden from them", "the sender still sees their own words");
+  assert.equal(bById.get(id(hidden)).body, null, "and hidden means hidden, in the download too");
 
   // REACTIONS RIDE WITH THEIR MESSAGE, from each side's point of view.
-  assert.deepEqual(aById.get(mine.id).reactions, [{ emoji: "♥", mine: false }]);
-  assert.deepEqual(bById.get(mine.id).reactions, [{ emoji: "♥", mine: true }]);
-  assert.deepEqual(aById.get(withdrawn.id).reactions, [],
+  assert.deepEqual(aById.get(id(mine)).reactions, [{ emoji: "♥", mine: false }]);
+  assert.deepEqual(bById.get(id(mine)).reactions, [{ emoji: "♥", mine: true }]);
+  assert.deepEqual(aById.get(id(withdrawn)).reactions, [],
     "an unsend clears the marks on it, so the export has none to carry");
 
   // THE SIDE-STATE IS PER SIDE.
@@ -1156,9 +1163,14 @@ test("DM export: a cap is reported, never silently applied",
   assert.equal(whole.caps.messages, 5000, "the default cap is stated even when nothing was cut");
 
   // a garbage cap does not become "everything" or "nothing"
+  // Garbage is not a cap. A negative must not become a cap of ONE — that is a
+  // truncation to a single message arrived at by accident, which is exactly
+  // the silent cap §6 forbids.
   const junk = await dm.exportMessagesFor(a, { messages: "not a number" });
   assert.equal(junk.caps.messages, 5000);
   assert.equal((await dm.exportMessagesFor(a, { messages: -5 })).caps.messages, 5000);
+  assert.equal((await dm.exportMessagesFor(a, { messages: 0 })).caps.messages, 5000);
+  assert.equal((await dm.exportMessagesFor(a, { messages: Infinity })).caps.messages, 5000);
 });
 
 test("DM store: mark-read is monotonic and unread is derived from it",
