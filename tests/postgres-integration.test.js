@@ -944,6 +944,32 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
   assert.equal(after.mediaConsent.given, false);
   assert.ok(after.mediaConsent.revokedAt,
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
+
+  // A SERIOUS finding of the 23 Aug register: the RE-GRANT was lossy. It kept
+  // `COALESCE(media_consent_at, now())` — the ORIGINAL grant time — and set
+  // `media_consent_revoked_at = NULL`, so a consent granted, revoked and
+  // granted again read as "granted the first time, never revoked". The one
+  // question these two columns exist to answer was answered wrongly, while the
+  // schema comment and the function's own docstring claimed the opposite.
+  const firstGrant = after.mediaConsent.grantedAt;
+  const revoked = after.mediaConsent.revokedAt;
+  await dm.setMediaConsent(a, convo.id, true);
+  const again = await dm.readThread(a, convo.id);
+  assert.equal(again.mediaConsent.given, true, "consent can be given back");
+  assert.deepEqual(again.mediaConsent.revokedAt, revoked,
+    "and the revocation is STILL ON THE RECORD — it is not erased by the re-grant");
+  assert.ok(new Date(again.mediaConsent.grantedAt) > new Date(firstGrant),
+    "the new grant is a NEW fact with its own time, not the old one re-used");
+  assert.ok(new Date(again.mediaConsent.grantedAt) > new Date(revoked),
+    "so the later stamp is the state, and the window each attachment fell in stays answerable");
+
+  // idempotent in both directions: asking for the state you are already in
+  // must not restamp the record, because the stamps are evidence
+  assert.equal(await dm.setMediaConsent(a, convo.id, true), false, "already given");
+  const unchanged = await dm.readThread(a, convo.id);
+  assert.deepEqual(unchanged.mediaConsent.grantedAt, again.mediaConsent.grantedAt);
+  await dm.setMediaConsent(a, convo.id, false);
+  assert.equal(await dm.setMediaConsent(a, convo.id, false), false, "already revoked");
 });
 
 // --- v44: a block stops PRESENCE, not only words ---------------------------
