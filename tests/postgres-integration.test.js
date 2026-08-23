@@ -809,6 +809,76 @@ test("DM presence: a knock is not a conversation yet",
   assert.equal(afterAccept.readUpTo, Number(knock.id), "and so does the receipt");
 });
 
+test("DM unsend: a reaction cannot land on a tombstone",
+  { skip: !databaseUrl }, async () => {
+  // A SERIOUS finding of the 23 Aug register. dm_guard_reaction read the
+  // message with a plain, NON-LOCKING SELECT, so a reaction inserted at the
+  // same instant as an unsend passed its check (unsent_at still NULL), the
+  // sweep ran before that insert committed and deleted nothing, and the
+  // reaction stayed on a withdrawn message forever — visible to the author,
+  // removable only by the person who left it.
+  //
+  // This is deterministic, not a race: the reaction is held OPEN in its own
+  // transaction, which is the same state the racing insert is in at the
+  // instant that matters. If the guard takes no lock the unsend sails past it.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "the thing" });
+
+  const reactor = await pool.connect();
+  let unsend;
+  try {
+    await reactor.query("BEGIN");
+    // b reacts. v47's FOR SHARE means this row is now pinned until b commits.
+    await reactor.query(
+      // The palette is a LAW TABLE and dm_reactions carries an FK to it, so
+      // this has to be a real one: \u2665 is the house heart.
+      `INSERT INTO dm_reactions (message_id, account_id, emoji) VALUES ($1,$2,'\u2665')`,
+      [m.id, b]);
+
+    // a unsends at the same instant. It must WAIT — this is the assertion that
+    // fails without the lock, because the UPDATE would otherwise sail through
+    // and its DELETE would find nothing to remove.
+    unsend = dm.unsendMessage(a, m.id);
+    const raced = await Promise.race([
+      unsend.then(() => "finished"),
+      new Promise((r) => setTimeout(() => r("waiting"), 400)),
+    ]);
+    assert.equal(raced, "waiting",
+      "the unsend must wait for the reaction it is about to sweep");
+
+    await reactor.query("COMMIT");
+  } finally {
+    reactor.release();
+  }
+
+  assert.equal(await unsend, true, "and then it proceeds");
+  const left = await pool.query(`SELECT count(*)::int AS n FROM dm_reactions WHERE message_id=$1`,
+    [m.id]);
+  assert.equal(left.rows[0].n, 0, "no heart survives on the tombstone");
+
+  // the other ordering: once it IS unsent, the guard refuses outright
+  await assert.rejects(
+    () => pool.query(
+      `INSERT INTO dm_reactions (message_id, account_id, emoji) VALUES ($1,$2,'\u2665')`,
+      [m.id, b]),
+    (e) => e.code === "P0005", "nothing to react to once it is gone");
+
+  // and the withdrawal itself is intact and idempotent
+  const row = (await pool.query(
+    `SELECT body, unsent_at FROM dm_messages WHERE id=$1`, [m.id])).rows[0];
+  assert.equal(row.body, null);
+  assert.ok(row.unsent_at);
+  assert.equal(await dm.unsendMessage(a, m.id), false, "an unsend cannot be undone or repeated");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
