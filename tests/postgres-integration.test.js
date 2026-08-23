@@ -713,6 +713,57 @@ test("DM store: a conversation's activity time is the newest message's, and neve
     "a send must never move the inbox key backwards past a write already made");
 });
 
+test("DM store: the block a decline made can be undone without an account id",
+  { skip: !databaseUrl }, async () => {
+  // The register's SERIOUS finding: the request banner promised "you can undo
+  // that in settings" and no such surface existed — nothing outside the route
+  // and the store referenced unblock at all. The one API that could have
+  // served it keyed on a raw account uuid, which the client has never held and
+  // must not: route.js strips it from every inbox row on purpose.
+  //
+  // So the undo names the person the two ways a client legitimately can.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  // BY CONVERSATION — the case that matters, because knocking requires no room
+  // of your own, so most people a decline blocks have no handle to name.
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+  assert.equal(await dm.declineRequest(b, convo.id), true);
+
+  const listed = await dm.listBlocks(b);
+  assert.equal(listed.length, 1);
+  assert.equal(listed[0].conversationId, convo.id,
+    "the row carries the conversation, which is the handle-free way to name them");
+  assert.equal(listed[0].source, "decline");
+
+  // the other party cannot undo MY block through their copy of the thread
+  assert.equal(await dm.unblockByConversation(a, convo.id), false,
+    "a block is undone by the person who made it, not by its target");
+  assert.equal(await dm.iBlocked(b, a), true);
+
+  assert.equal(await dm.unblockByConversation(b, convo.id), true);
+  assert.equal(await dm.iBlocked(b, a), false);
+  assert.equal((await dm.listBlocks(b)).length, 0);
+  assert.equal(await dm.unblockByConversation(b, convo.id), false, "and once is once");
+
+  // BY HANDLE — resolved against profile_rooms directly, NOT through
+  // resolveAddressee, which excludes the very people this is for.
+  const { lo: me, hi: them } = await dmAccounts(pool);
+  const tag = randomUUID().slice(0, 6);
+  await publishRoom(pool, them, `ub${tag}`);
+  await dm.blockAccount(me, them);
+  assert.equal(await dm.resolveAddressee(me, `ub${tag}`), null,
+    "someone I blocked is unaddressable — which is why the undo cannot go through that path");
+  assert.equal(await dm.unblockByHandle(me, `ub${tag}`), true);
+  assert.equal(await dm.iBlocked(me, them), false);
+  assert.equal(await dm.unblockByHandle(me, `ub${tag}`), false);
+  assert.equal(await dm.unblockByHandle(me, "no"), false, "a handle too short to be one");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;

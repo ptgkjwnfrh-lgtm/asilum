@@ -68,6 +68,10 @@ export default function MailDesk() {
   const [found, setFound] = useState(null);   // null = not searching
   const [peer, setPeer] = useState({ typing: null, readUpTo: null });
   const [signalsOn, setSignalsOn] = useState(true);
+  // Everyone I have blocked — mostly people I DECLINED, which is a block the
+  // banner has always promised was undoable. Until now there was nowhere to
+  // undo it.
+  const [blocks, setBlocks] = useState([]);
   const typingSentAt = useRef(0);
   const [cursor, setCursor] = useState("");
   const [loadingMore, setLoadingMore] = useState(false);
@@ -135,6 +139,18 @@ export default function MailDesk() {
   }, []);
 
   useEffect(() => { if (open) loadFolder(folder); }, [open, folder, loadFolder]);
+
+  const loadBlocks = useCallback(async () => {
+    try {
+      const r = await fetch("/api/dm?op=blocks&user=" + encodeURIComponent(getUid() || ""),
+        { cache: "no-store" });
+      if (!r.ok) return;
+      const data = await r.json();
+      setBlocks(data.blocks || []);
+    } catch { /* the list is an undo, not a status; silence beats a false empty */ }
+  }, []);
+
+  useEffect(() => { if (open) loadBlocks(); }, [open, loadBlocks]);
 
   const loadThread = useCallback(async (id) => {
     setThread(null); setNote(""); setOlder([]);
@@ -356,7 +372,7 @@ export default function MailDesk() {
                 <div className="mailreq">
                   <p className="mailhint">
                     a request. accepting lets them write again; declining also
-                    blocks them — you can undo that in settings.
+                    blocks them — undo that under BLOCKED, back on the desk.
                   </p>
                   <div className="mailacts">
                     <button className="btn" onClick={async () => {
@@ -544,6 +560,47 @@ export default function MailDesk() {
               reciprocal: with this off you will not see anyone else&apos;s either.
             </span>
           </label>
+
+          {blocks.length ? (
+            <div className="mailblocks">
+              <div className="psub">BLOCKED · {blocks.length}</div>
+              <p className="mailhint">
+                declining a request blocks whoever sent it. this is that list, and
+                this is the undo — unblocking lets them knock once again.
+              </p>
+              <ul className="maillist">
+                {blocks.map((b) => (
+                  <li key={b.conversationId || b.handle}>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        // By conversation where there is one, by handle
+                        // otherwise. Never by account id: the client has never
+                        // held one, and that is the point.
+                        const naming = b.conversationId
+                          ? { conversationId: b.conversationId }
+                          : { handle: b.handle };
+                        if (await act("unblock", naming)) {
+                          await loadBlocks(); await loadFolder(folder); await poll();
+                        }
+                      }}
+                    >
+                      <span className="mailwho">
+                        {/* Someone can knock without ever publishing a room, so
+                            a handle is not guaranteed — and a blank line would
+                            read as a bug rather than as a person. */}
+                        {b.handle || "an account with no public room"}
+                      </span>
+                      <span className="mailkind">
+                        {b.source === "decline" ? "DECLINED" : "BLOCKED"}
+                      </span>
+                      <span className="mailprev">unblock →</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {folder === "requests" ? (
             <p className="mailhint">

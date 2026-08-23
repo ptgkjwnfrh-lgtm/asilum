@@ -27,7 +27,8 @@ import {
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
   readActivitySignals, resolveAddressee, unsendMessage,
-  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, setMuted, unblockAccount,
+  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, setMuted,
+  unblockByConversation, unblockByHandle,
   unreadSummary,
 } from "../../../lib/db/dm.js";
 
@@ -114,7 +115,21 @@ export async function GET(req) {
       if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
       return NextResponse.json(await peerActivity(me, url.searchParams.get("c") || ""));
     }
-    if (op === "blocks") return NextResponse.json({ blocks: await listBlocks(me) });
+    if (op === "blocks") {
+      // Projected exactly like the inbox is: HANDLE and the conversation id,
+      // never the account uuid. The store carries the uuid because it is the
+      // key; the wire carries the two things a client can address with. A
+      // block against someone who never published a room has no handle — most
+      // decline-blocks are exactly that, since knocking requires no room of
+      // your own — so the conversation id is what names them.
+      const blocks = await listBlocks(me);
+      const handles = await handlesFor(blocks.map((b) => b.accountId));
+      return NextResponse.json({
+        blocks: blocks.map(({ accountId, ...rest }) => ({
+          ...rest, handle: handles[accountId] || null,
+        })),
+      });
+    }
     return NextResponse.json({ error: "unknown op" }, { status: 400 });
   } catch (error) {
     return failure(error);
@@ -202,7 +217,13 @@ export async function POST(req) {
       return NextResponse.json({ ok: true });
     }
     if (op === "unblock") {
-      return NextResponse.json({ ok: await unblockAccount(me, String(body.accountId || "")) });
+      // By conversation or by handle — never by account uuid, which the client
+      // has never held. The conversation form is the one that works for a
+      // decline-block against someone with no published room.
+      const ok = body.conversationId
+        ? await unblockByConversation(me, String(body.conversationId))
+        : await unblockByHandle(me, String(body.handle || ""));
+      return NextResponse.json({ ok });
     }
     if (op === "consent") {
       // The per-conversation "receive images and videos" toggle. Recorded now;
