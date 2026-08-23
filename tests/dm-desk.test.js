@@ -8,7 +8,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  composerKey, mergeFolderItems, pageIsCurrent, reactionsAcross,
+  composerKey, mergeFolderItems, NO_SIGNAL, pageIsCurrent, reactionsAcross,
+  shouldPollActivity,
 } from "../lib/dm-desk.js";
 
 test("a draft cannot reach a composer it was not written for", () => {
@@ -88,4 +89,68 @@ test("a reaction on an older page is still a reaction", () => {
   assert.deepEqual(reactionsAcross(pages, 12), [], "a message nobody reacted to");
   assert.deepEqual(reactionsAcross([{ messages: [] }], 1), [], "a page that carried none at all");
   assert.deepEqual(reactionsAcross(null, 1), []);
+});
+
+test("a knock is not polled for presence", () => {
+  // v46 made presence need an ACCEPTED conversation — in the trigger and in
+  // the query — so polling an unaccepted knock returns nulls forever. The
+  // client kept polling anyway: 1200 guaranteed-empty reads an hour, which is
+  // exactly the caller's own dm-activity budget. Spend it on a knock and the
+  // indicators in their REAL threads go quiet for the rest of the hour,
+  // because the tick ignores a 429.
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "requests" }), false,
+    "a request has nothing to poll for");
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "inbox" }), true);
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "archived" }), true,
+    "an archived thread was accepted once — its presence is still meaningful");
+
+  // not open, or no thread, is not a poll either way
+  assert.equal(shouldPollActivity({ open: false, threadId: "c1", folder: "inbox" }), false);
+  assert.equal(shouldPollActivity({ open: true, threadId: null, folder: "inbox" }), false);
+  assert.equal(shouldPollActivity({}), false);
+  assert.equal(shouldPollActivity(), false);
+
+  // A thread that has not loaded yet has no folder. Poll: the common case is
+  // an accepted thread, and one wasted tick is cheaper than an indicator that
+  // never starts.
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: null }), true);
+});
+
+test("no signal is nothing known, not a negative answer", () => {
+  // Product law 5: a reader must not be able to tell "not read" from "signals
+  // off". Both are null, and the panel renders nothing for null — so the reset
+  // between threads has to be THIS, not `{typing: false, readUpTo: 0}`, which
+  // would print a positive claim about a person nobody has heard from.
+  assert.deepEqual(NO_SIGNAL, { typing: null, readUpTo: null });
+  assert.notEqual(NO_SIGNAL.readUpTo, 0, "0 is a read position; null is the absence of one");
+  assert.notEqual(NO_SIGNAL.typing, false, "false says they are not typing; null says we do not know");
+  assert.ok(Object.isFrozen(NO_SIGNAL), "one shared constant nobody can mutate into a claim");
+});
+
+test("the panel routes every thread change through one door", async () => {
+  // The guards this file exists to make testable are refs inside the
+  // component, so what can be checked here is that the component actually uses
+  // them — that no writer of the open thread bypasses the reset, and that both
+  // in-flight readers check they are still current before merging.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const panel = readFileSync(
+    fileURLToPath(new URL("../app/components/MailDesk.jsx", import.meta.url)), "utf8");
+
+  const raw = [...panel.matchAll(/setThreadId\(/g)].length;
+  assert.equal(raw, 1,
+    "setThreadId is called in exactly one place — inside showThread, which also "
+    + "clears the last thread's pages and its stale peer signal");
+  assert.match(panel, /openThreadRef\.current = id/, "and that one place updates the ref");
+
+  // both async readers bail on a late response
+  assert.match(panel, /if \(openThreadRef\.current !== id\) return;/,
+    "loadThread drops a page for a thread nobody is looking at");
+  assert.match(panel, /const forThread = threadId;/,
+    "loadOlder captures the thread its page belongs to");
+
+  // a failed poll must go quiet rather than keep the last thread's answer
+  assert.match(panel, /setPeer\(NO_SIGNAL\)/, "and a failed tick clears the signal");
+  assert.equal([...panel.matchAll(/setPeer\(NO_SIGNAL\)/g)].length >= 3, true,
+    "on switch, on a bad response, and on a thrown fetch");
 });

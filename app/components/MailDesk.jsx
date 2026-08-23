@@ -24,7 +24,8 @@ import { getUid } from "../../lib/client.js";
 // lib/dm-desk.js — all three answer the same complaint from the 23 Aug
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
-  composerKey, mergeFolderItems, pageIsCurrent, reactionsAcross,
+  composerKey, mergeFolderItems, NO_SIGNAL, pageIsCurrent, reactionsAcross,
+  shouldPollActivity,
 } from "../../lib/dm-desk.js";
 
 const POLL_MS = 45000;
@@ -66,7 +67,7 @@ export default function MailDesk() {
   const [sending, setSending] = useState(false);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState(null);   // null = not searching
-  const [peer, setPeer] = useState({ typing: null, readUpTo: null });
+  const [peer, setPeer] = useState(NO_SIGNAL);
   const [signalsOn, setSignalsOn] = useState(true);
   // Everyone I have blocked — mostly people I DECLINED, which is a block the
   // banner has always promised was undoable. Until now there was nowhere to
@@ -81,6 +82,27 @@ export default function MailDesk() {
   // Which folder request the panel is currently willing to hear an answer to.
   const requestToken = useRef(0);
   const current = useRef({ folder: "inbox", token: 0 });
+  // WHICH THREAD IS ON SCREEN, readable by a response that has been in flight
+  // across a switch. `threadId` state is not enough: a fetch started before the
+  // switch closes over the old value, and the merge it performs happens against
+  // whatever is current when it lands.
+  const openThreadRef = useRef(null);
+  // The pages already scrolled into view, and the anchor each was fetched with,
+  // so a refresh can rebuild them instead of throwing them away.
+  const olderRef = useRef([]);
+
+  const showThread = useCallback((id) => {
+    openThreadRef.current = id;
+    olderRef.current = [];
+    setThreadId(id);
+    setThread(null);
+    setOlder([]);
+    // A new thread knows nothing about the other person yet. Carrying the last
+    // thread's signal here is how a quiet conversation printed "read" under a
+    // message nobody had read — dm_messages.id is a GLOBAL bigserial, so a
+    // readUpTo from a busy thread routinely exceeds a quiet one's newest id.
+    setPeer(NO_SIGNAL);
+  }, []);
 
   useEscape(() => setOpen(false), open);
   useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
@@ -152,26 +174,66 @@ export default function MailDesk() {
 
   useEffect(() => { if (open) loadBlocks(); }, [open, loadBlocks]);
 
-  const loadThread = useCallback(async (id) => {
-    setThread(null); setNote(""); setOlder([]);
+  const fetchPage = useCallback(async (id, before) => {
+    const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(id)}`
+      + (before ? `&before=${encodeURIComponent(before)}` : "")
+      + `&user=${encodeURIComponent(getUid() || "")}`, { cache: "no-store" });
+    if (!r.ok) throw new Error("thread unavailable");
+    return r.json();
+  }, []);
+
+  /**
+   * OPENING a thread and REFRESHING one are different acts, and conflating
+   * them is what threw away paged history. This is the refresh every in-thread
+   * mutation runs — send, mute, accept, react, unsend, consent — and it used to
+   * null the thread (so the whole panel flashed "opening…" and the composer
+   * vanished mid-typing) and empty `older` (so four pages of scrollback the
+   * reader had clicked in, to re-read the thing they were replying to, were
+   * gone the moment they replied).
+   *
+   * A refresh now re-fetches the newest page AND every page already scrolled
+   * in, in parallel, and swaps them together. Keeping the old pages without
+   * refetching would be worse than losing them: a mark added to a message four
+   * pages up would never appear, which is the same complaint one PR over.
+   */
+  const loadThread = useCallback(async (id, { opening = false } = {}) => {
+    if (opening) { setThread(null); setOlder([]); olderRef.current = []; }
+    setNote("");
+    const anchors = opening ? [] : olderRef.current.map((page) => page.before);
     try {
-      const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(id)}&user=`
-        + encodeURIComponent(getUid() || ""), { cache: "no-store" });
-      if (!r.ok) { setNote("that conversation could not be opened."); return; }
-      const data = await r.json();
-      setThread(data);
+      const [head, ...pages] = await Promise.all([
+        fetchPage(id, null),
+        ...anchors.map((before) => fetchPage(id, before)),
+      ]);
+      // A response for a thread nobody is looking at any more is not an answer
+      // to anything.
+      if (openThreadRef.current !== id) return;
+      setThread(head);
+      if (!opening) {
+        const rebuilt = pages.map((page, i) => ({
+          before: anchors[i],
+          messages: page.messages || [],
+          reactions: page.reactions || {},
+          olderBefore: page.olderBefore,
+        }));
+        olderRef.current = rebuilt;
+        setOlder(rebuilt);
+      }
       // Mark read at the newest message we actually rendered. Monotonic on the
       // server, so a slow response cannot un-read something newer.
-      const newest = data.messages?.[0]?.id;
+      const newest = head.messages?.[0]?.id;
       if (newest) {
         fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ op: "read", conversationId: id, upTo: newest, user: getUid() }) })
           .then(() => poll()).catch(() => {});
       }
-    } catch { setNote("that conversation could not be opened."); }
-  }, [poll]);
+    } catch {
+      if (openThreadRef.current !== id) return;
+      setNote("that conversation could not be opened.");
+    }
+  }, [poll, fetchPage]);
 
-  useEffect(() => { if (threadId) loadThread(threadId); }, [threadId, loadThread]);
+  useEffect(() => { if (threadId) loadThread(threadId, { opening: true }); }, [threadId, loadThread]);
 
   async function act(op, extra = {}) {
     try {
@@ -210,19 +272,36 @@ export default function MailDesk() {
   // stops the moment either stops being true. A hidden tab polling every three
   // seconds is a bill with no reader.
   useEffect(() => {
-    if (!open || !threadId) return undefined;
+    // A REQUEST IS NOT A CONVERSATION YET. v46 made presence need an accepted
+    // conversation in the trigger and in the query, so polling a knock returns
+    // nulls forever — 1200 guaranteed-empty reads an hour, which is exactly
+    // this caller's own activity budget. Spend it on a knock and the
+    // indicators in the reader's REAL threads go quiet for the rest of the
+    // hour, because a 429 is silently ignored by the tick below.
+    if (!shouldPollActivity({ open, threadId, folder: thread?.folder })) return undefined;
     let cancelled = false;
     let timer = null;
 
     async function tick() {
       if (document.visibilityState !== "visible") return;
+      const forThread = threadId;
       try {
-        const r = await fetch(`/api/dm?op=activity&c=${encodeURIComponent(threadId)}&user=`
+        const r = await fetch(`/api/dm?op=activity&c=${encodeURIComponent(forThread)}&user=`
           + encodeURIComponent(getUid() || ""), { cache: "no-store" });
-        if (!r.ok) return;
+        // A FAILED POLL GOES QUIET RATHER THAN KEEPING THE LAST ANSWER. It used
+        // to `return`, leaving whatever the previous tick — or the previous
+        // THREAD — had put there, which is how a 429 or a hidden tab froze a
+        // stale "read" under a message nobody had read.
+        if (!r.ok) { if (!cancelled && openThreadRef.current === forThread) setPeer(NO_SIGNAL); return; }
         const data = await r.json();
-        if (!cancelled) setPeer({ typing: data.typing, readUpTo: data.readUpTo });
-      } catch { /* a missed tick is a quiet indicator, not an error */ }
+        if (!cancelled && openThreadRef.current === forThread) {
+          setPeer({ typing: data.typing, readUpTo: data.readUpTo });
+        }
+      } catch {
+        // A missed tick is a quiet indicator, not an error — but quiet means
+        // NOTHING KNOWN, not "whatever we last knew about another thread".
+        if (!cancelled && openThreadRef.current === forThread) setPeer(NO_SIGNAL);
+      }
     }
     tick();
     timer = setInterval(tick, 3000);
@@ -238,7 +317,7 @@ export default function MailDesk() {
         body: JSON.stringify({ op: "typing", on: false, conversationId: threadId, user: getUid() }) })
         .catch(() => {});
     };
-  }, [open, threadId]);
+  }, [open, threadId, thread?.folder]);
 
   /** Throttled to one ping per 2.5s: the row lives 6s, so this is enough. */
   function noteTyping() {
@@ -257,21 +336,33 @@ export default function MailDesk() {
       ? older[0].olderBefore
       : thread?.olderBefore;
     if (!anchor || loadingMore) return;
+    // The thread this page BELONGS to. Without it, a page fetched for
+    // conversation A could be unshifted into `older` after the reader switched
+    // to B — A's messages interleaved by id inside B's thread, A's anchor
+    // driving "OLDER MESSAGES ↑", and everything typed going to B.
+    const forThread = threadId;
     setLoadingMore(true);
     try {
-      const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(threadId)}`
+      const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(forThread)}`
         + `&before=${anchor}&user=` + encodeURIComponent(getUid() || ""), { cache: "no-store" });
-      if (r.ok) {
+      if (r.ok && openThreadRef.current === forThread) {
         const page = await r.json();
+        if (openThreadRef.current !== forThread) return;
         // The page's REACTIONS travel with its messages. The route computes
         // them over the ids of the page it is answering, so dropping them here
         // left every message paged in from above rendering bare no matter what
-        // the database held.
-        setOlder((prev) => [{
-          messages: page.messages || [],
-          reactions: page.reactions || {},
-          olderBefore: page.olderBefore,
-        }, ...prev]);
+        // the database held. `before` travels with them so a refresh can
+        // rebuild this page instead of discarding it.
+        setOlder((prev) => {
+          const next = [{
+            before: anchor,
+            messages: page.messages || [],
+            reactions: page.reactions || {},
+            olderBefore: page.olderBefore,
+          }, ...prev];
+          olderRef.current = next;
+          return next;
+        });
       }
     } catch { /* leave the button; a retry is cheap */ }
     setLoadingMore(false);
@@ -286,7 +377,7 @@ export default function MailDesk() {
     setSending(false);
     if (result?.delivered) {
       setDraft(""); setQuery(""); setFound(null);
-      setThreadId(result.conversationId);
+      showThread(result.conversationId);
       await poll();
     }
   }
@@ -347,7 +438,7 @@ export default function MailDesk() {
         {threadId ? (
           <>
           <div className="mailhead">
-            <button className="mailback" onClick={() => { setThreadId(null); setThread(null); }}>
+            <button className="mailback" onClick={() => showThread(null)}>
               ← THE MAIL DESK
             </button>
             {thread ? (
@@ -380,7 +471,7 @@ export default function MailDesk() {
                     }}>ACCEPT ✓</button>
                     <button className="btn ghost" onClick={async () => {
                       const r = await act("decline", { conversationId: threadId });
-                      if (r?.ok) { setThreadId(null); await loadFolder("requests"); await poll(); }
+                      if (r?.ok) { showThread(null); await loadFolder("requests"); await poll(); }
                     }}>DECLINE + BLOCK</button>
                   </div>
                 </div>
@@ -670,7 +761,7 @@ export default function MailDesk() {
                       in row 1's `auto` column beside the name. Placed after
                       the preview it wrapped to its own row and stretched full
                       width, reading as a bar rather than a badge. */}
-                  <button type="button" onClick={() => setThreadId(c.id)}>
+                  <button type="button" onClick={() => showThread(c.id)}>
                     <span className="mailwho">
                       {c.handle || "someone"}
                       {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
