@@ -20,7 +20,8 @@ import {
   MessageRefused, MessagingUnavailable,
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
-  peerActivity, pingTyping, clearTyping, readActivitySignals, resolveAddressee,
+  peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
+  readActivitySignals, resolveAddressee, unsendMessage,
   sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, unblockAccount,
   unreadSummary,
 } from "../../../lib/db/dm.js";
@@ -84,7 +85,10 @@ export async function GET(req) {
       // A non-member gets exactly what a nonexistent conversation gets, so the
       // endpoint cannot be used to discover that a thread exists.
       if (!thread) return absent();
-      return NextResponse.json(thread);
+      // Reactions ride with the thread rather than a second round-trip: they
+      // are per-message and useless without it.
+      const reactions = await reactionsFor(thread.messages.map((m) => m.id), me);
+      return NextResponse.json({ ...thread, reactions, palette: await reactionKinds() });
     }
     if (op === "find") {
       // Searching is cheap for us and valuable to an enumerator, so it gets
@@ -200,6 +204,19 @@ export async function POST(req) {
       // nothing can send an attachment yet (OWNER-DECISIONS #3).
       const ok = await setMediaConsent(me, String(body.conversationId || ""), body.allow === true);
       return NextResponse.json({ ok, allow: body.allow === true });
+    }
+    if (op === "react") {
+      try {
+        const result = await react(me, body.messageId, body.emoji ?? null);
+        return NextResponse.json({ ok: true, ...result });
+      } catch (error) {
+        return failure(error);
+      }
+    }
+    if (op === "unsend") {
+      // One answer for "not yours", "no such message" and "already gone":
+      // distinguishing them describes a message the caller has no claim to.
+      return NextResponse.json({ ok: await unsendMessage(me, body.messageId) });
     }
     if (op === "typing") {
       // A ping, not a state machine. "Stopped" is the absence of a refresh.

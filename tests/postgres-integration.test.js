@@ -592,6 +592,166 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
 });
 
+// --- reactions and unsend --------------------------------------------------
+// The interesting failures here are not "does a heart appear". They are the
+// two ways these features become something else: a reaction as a covert text
+// channel past the one-knock law, and an unsend as a way to rewrite history.
+
+test("reactions: the palette is CLOSED and the app cannot widen it",
+  { skip: !databaseUrl }, async () => {
+  // An open emoji field is a text channel. A stranger held to one message
+  // could otherwise spell sentences one glyph at a time, and no moderation
+  // pass would read them as messages.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello" });
+
+  const palette = await dm.reactionKinds();
+  assert.ok(palette.length >= 3 && palette.includes("♥"));
+  await dm.react(b, m.id, "♥");
+
+  for (const smuggled of ["🅷", "A", "help me", "♥♥", "\u200b"]) {
+    await assert.rejects(() => dm.react(b, m.id, smuggled),
+      (e) => e.name === "MessageRefused", `${JSON.stringify(smuggled)} is not in the palette`);
+  }
+  // THE GRANT CANNOT BE TESTED HERE, and pretending otherwise is worse than
+  // not testing it. CI's Postgres connects as SUPERUSER, so a SELECT-only
+  // grant restrains nothing — the INSERT below succeeds in CI and is refused
+  // in production, where asilum_app is a real restricted role. The red team
+  // named this exact gap ("CI's Postgres runs as superuser, so the entire
+  // constraint layer is untested by any gate"). Asserted conditionally, and
+  // verified against production by hand after the migration is applied.
+  const su = await pool.query(`SELECT usesuper FROM pg_user WHERE usename = current_user`);
+  if (!su.rows[0]?.usesuper) {
+    await assert.rejects(
+      () => pool.query(`INSERT INTO dm_reaction_kinds (emoji) VALUES ('+')`),
+      (e) => e.code === "42501",
+      "SELECT-only on the law table is what keeps the set closed");
+  }
+});
+
+test("reactions: one per person per message, and replacing is not a second one",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello" });
+
+  await dm.react(b, m.id, "♥");
+  await dm.react(b, m.id, "✓");
+  const counts = await dm.reactionsFor([m.id], a);
+  assert.equal(counts[String(m.id)].length, 1, "replacing, not accumulating");
+  assert.equal(counts[String(m.id)][0].emoji, "✓");
+
+  // removal
+  await dm.react(b, m.id, null);
+  assert.deepEqual(await dm.reactionsFor([m.id], a), {});
+});
+
+test("reactions: refused on an unaccepted request, and after a block",
+  { skip: !databaseUrl }, async () => {
+  // A reaction on a request is a notification a stranger can send repeatedly,
+  // straight past law 3.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);           // still 'requested'
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "knock" });
+  await assert.rejects(() => dm.react(b, m.id, "♥"),
+    (e) => e.name === "MessageRefused" && e.code === "P0003",
+    "requests get replies or nothing");
+
+  await dm.acceptRequest(b, convo.id);
+  await dm.react(b, m.id, "♥");                            // now fine
+
+  // a block stops the heart too: one that allows a mark every few minutes is
+  // not a block
+  await dm.blockAccount(b, a);
+  await assert.rejects(() => dm.react(b, m.id, "✓"),
+    (e) => e.name === "MessageRefused" && e.code === "P0001");
+});
+
+test("unsend: only mine, one-way, and the envelope survives",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const mine = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "regrettable" });
+
+  assert.equal(await dm.unsendMessage(b, mine.id), false, "not b's to unsend");
+  assert.equal(await dm.unsendMessage(a, mine.id), true);
+  assert.equal(await dm.unsendMessage(a, mine.id), false, "already gone");
+
+  // the envelope stays: "unsent" is not "never existed"
+  const row = await pool.query(`SELECT sender_account_id, body, unsent_at, created_at
+                                  FROM dm_messages WHERE id=$1`, [mine.id]);
+  assert.equal(row.rows[0].body, null, "the words are gone");
+  assert.ok(row.rows[0].unsent_at, "the fact that it happened is not");
+  assert.equal(row.rows[0].sender_account_id, a);
+  assert.ok(row.rows[0].created_at);
+
+  // and it cannot be undone or refilled, by any path
+  await assert.rejects(
+    () => pool.query(`UPDATE dm_messages SET unsent_at=NULL WHERE id=$1`, [mine.id]),
+    (e) => e.code === "P0006", "an unsend cannot be reversed");
+  await assert.rejects(
+    () => pool.query(`UPDATE dm_messages SET body='back again' WHERE id=$1`, [mine.id]),
+    (e) => e.code === "P0006", "nor the body restored");
+
+  // the reader sees a tombstone, distinct from a moderator removal
+  const thread = await dm.readThread(b, convo.id);
+  const seen = thread.messages.find((x) => x.id === Number(mine.id));
+  assert.equal(seen.unsent, true);
+  assert.equal(seen.redacted, false, "unsent and removed stay different facts");
+  assert.equal(seen.body, null);
+});
+
+test("unsend: derived unread and preview follow it with no recompute",
+  { skip: !databaseUrl }, async () => {
+  // The payoff for deriving them in v40 instead of denormalising.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "first" });
+  const last = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "the one I regret" });
+
+  let inbox = await dm.listFolder(b, { folder: "inbox" });
+  assert.equal(inbox.items[0].preview, "the one I regret");
+  assert.equal((await dm.unreadSummary(b)).inbox, 1);
+
+  await dm.unsendMessage(a, last.id);
+  inbox = await dm.listFolder(b, { folder: "inbox" });
+  assert.equal(inbox.items[0].preview, "first",
+    "the preview falls back to the newest surviving message, with no write");
+
+  // reactions on it are cleared: a mark on a tombstone is noise
+  assert.deepEqual(await dm.reactionsFor([last.id], b), {});
+});
+
 // --- activity signals: read receipts + typing ------------------------------
 // RECIPROCITY is the whole control, so it is the thing pinned hardest: with my
 // signals off I see nothing, no matter what the other side chose. A test that

@@ -2480,3 +2480,23 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailsignals { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
   border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; cursor: pointer; }
 .mailsignals input { margin-right: 6px; }
+/* reactions + unsend */
+.mailmsg { display: flex; flex-direction: column; gap: 3px; max-width: 82%; }
+.mailthread li.mine .mailmsg { align-items: flex-end; }
+.mailbody.gone { color: var(--grey); border-style: dashed; }
+.mailreacts { display: flex; gap: 3px; }
+.mailreact { display: inline-flex; align-items: center; gap: 2px; font: inherit; font-size: 11px;
+  line-height: 1; padding: 2px 5px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.mailreact.mine { border-color: var(--red); color: var(--red); }
+.mailreactn { font-size: 9px; color: var(--grey); }
+/* The palette stays out of the way until the message is hovered or focused —
+   five buttons under every bubble would out-shout the conversation. */
+.mailmsgacts { display: flex; gap: 3px; opacity: 0; transition: opacity .12s; }
+.mailmsg:hover .mailmsgacts, .mailmsgacts:focus-within { opacity: 1; }
+@media (hover: none) { .mailmsgacts { opacity: 1; } }
+.mailmsgacts button { font: inherit; font-size: 11px; line-height: 1; padding: 2px 4px;
+  border: 1px solid transparent; background: none; color: var(--grey); cursor: pointer; }
+.mailmsgacts button:hover, .mailmsgacts button:focus-visible { border-color: var(--line); color: var(--ink); }
+.mailunsend { font-size: 9px !important; letter-spacing: .12em; }
+.mailunsend:hover { color: var(--red) !important; }

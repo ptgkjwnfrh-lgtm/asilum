@@ -297,10 +297,64 @@ export default function MailDesk() {
               <ul className="mailthread">
                 {[...thread.messages].reverse().map((m) => (
                   <li key={m.id} className={m.mine ? "mine" : "theirs"}>
-                    <span className="mailbody">
-                      {m.redacted ? <em>this message was removed</em>
-                        : m.body === null ? <em>hidden</em> : m.body}
-                    </span>
+                    <div className="mailmsg">
+                      <span className={"mailbody" + (m.unsent || m.redacted ? " gone" : "")}>
+                        {/* Three different absences, three different words.
+                            Collapsing them would tell a reader that a person
+                            who withdrew their own words and a moderator who
+                            removed them are the same event. */}
+                        {m.unsent ? <em>unsent</em>
+                          : m.redacted ? <em>removed</em>
+                          : m.body === null ? <em>hidden</em> : m.body}
+                      </span>
+
+                      {(thread.reactions?.[String(m.id)] || []).length ? (
+                        <span className="mailreacts">
+                          {thread.reactions[String(m.id)].map((r) => (
+                            <button
+                              key={r.emoji}
+                              type="button"
+                              className={"mailreact" + (r.mine ? " mine" : "")}
+                              aria-label={`${r.emoji} — ${r.count}${r.mine ? ", yours" : ""}`}
+                              onClick={async () => {
+                                await act("react", { messageId: m.id, emoji: r.mine ? null : r.emoji });
+                                await loadThread(threadId);
+                              }}
+                            >
+                              {r.emoji}{r.count > 1 ? <span className="mailreactn">{r.count}</span> : null}
+                            </button>
+                          ))}
+                        </span>
+                      ) : null}
+
+                      {!m.unsent && !m.redacted ? (
+                        <span className="mailmsgacts">
+                          {(thread.palette || []).map((emoji) => (
+                            <button
+                              key={emoji}
+                              type="button"
+                              aria-label={`react ${emoji}`}
+                              onClick={async () => {
+                                await act("react", { messageId: m.id, emoji });
+                                await loadThread(threadId);
+                              }}
+                            >{emoji}</button>
+                          ))}
+                          {m.mine ? (
+                            <button
+                              type="button"
+                              className="mailunsend"
+                              aria-label="unsend this message"
+                              onClick={async () => {
+                                await act("unsend", { messageId: m.id });
+                                await loadThread(threadId);
+                                await poll();
+                              }}
+                            >UNSEND</button>
+                          ) : null}
+                        </span>
+                      ) : null}
+                    </div>
                   </li>
                 ))}
                 {thread.messages.length === 0 ? <li className="mailnote">no messages yet.</li> : null}
