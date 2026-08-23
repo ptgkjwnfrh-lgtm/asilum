@@ -19,6 +19,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEscape, useClickAway } from "./dismiss.js";
 import { getUid } from "../../lib/client.js";
+// The desk's decisions live in a module because there is no DOM harness in
+// this repo: a rule inside this file is a rule no test can reach. See
+// lib/dm-desk.js — all three answer the same complaint from the 23 Aug
+// register, STATE THAT OUTLIVES ITS CONTEXT.
+import {
+  composerKey, mergeFolderItems, pageIsCurrent, reactionsAcross,
+} from "../../lib/dm-desk.js";
 
 const POLL_MS = 45000;
 
@@ -52,7 +59,10 @@ export default function MailDesk() {
   const [note, setNote] = useState("");
   const [threadId, setThreadId] = useState(null);
   const [thread, setThread] = useState(null);
-  const [draft, setDraft] = useState("");
+  // KEYED BY COMPOSER, not one shared string. A thread and the search box are
+  // different composers, and so are two threads, so there is no ordering of
+  // events that can hand one composer another's words — see lib/dm-desk.js.
+  const [drafts, setDrafts] = useState({});
   const [sending, setSending] = useState(false);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState(null);   // null = not searching
@@ -64,6 +74,9 @@ export default function MailDesk() {
   const [older, setOlder] = useState([]);   // pages loaded above the newest
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
+  // Which folder request the panel is currently willing to hear an answer to.
+  const requestToken = useRef(0);
+  const current = useRef({ folder: "inbox", token: 0 });
 
   useEscape(() => setOpen(false), open);
   useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
@@ -95,26 +108,28 @@ export default function MailDesk() {
   }, [poll]);
 
   const loadFolder = useCallback(async (which, more = "") => {
+    // Every request carries a token, and only the CURRENT one may be applied.
+    // Without it, a MORE ↓ page for the inbox could land after a switch to
+    // REQUESTS and be appended there — accepted threads under "first messages
+    // from people you have not spoken to", with the preview the store nulls
+    // for requests, and the inbox cursor installed underneath them.
+    const token = ++requestToken.current;
+    const asked = { folder: which, token };
+    current.current = asked;
     if (!more) { setItems(null); setCursor(""); }
     setNote("");
     try {
       const r = await fetch(
         `/api/dm?op=inbox&folder=${which}&cursor=${encodeURIComponent(more)}&user=`
           + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+      if (!pageIsCurrent(asked, current.current)) return;
       if (!r.ok) { setNote("the mail desk is unavailable right now."); setItems([]); return; }
       const data = await r.json();
-      // Appending rather than replacing on "more" — and de-duplicating by id,
-      // because a conversation that gained a message mid-scroll can legally
-      // appear on two pages. The snapshot cursor makes that rare, not
-      // impossible.
-      setItems((prev) => {
-        const next = data.items || [];
-        if (!more || !prev) return next;
-        const seen = new Set(prev.map((x) => x.id));
-        return [...prev, ...next.filter((x) => !seen.has(x.id))];
-      });
+      if (!pageIsCurrent(asked, current.current)) return;
+      setItems((prev) => mergeFolderItems(prev, data.items, { append: Boolean(more) }));
       setCursor(data.cursor || "");
     } catch {
+      if (!pageIsCurrent(asked, current.current)) return;
       setNote("the mail desk is unavailable right now."); setItems([]);
     }
   }, []);
@@ -232,7 +247,15 @@ export default function MailDesk() {
         + `&before=${anchor}&user=` + encodeURIComponent(getUid() || ""), { cache: "no-store" });
       if (r.ok) {
         const page = await r.json();
-        setOlder((prev) => [{ messages: page.messages || [], olderBefore: page.olderBefore }, ...prev]);
+        // The page's REACTIONS travel with its messages. The route computes
+        // them over the ids of the page it is answering, so dropping them here
+        // left every message paged in from above rendering bare no matter what
+        // the database held.
+        setOlder((prev) => [{
+          messages: page.messages || [],
+          reactions: page.reactions || {},
+          olderBefore: page.olderBefore,
+        }, ...prev]);
       }
     } catch { /* leave the button; a retry is cheap */ }
     setLoadingMore(false);
@@ -266,6 +289,16 @@ export default function MailDesk() {
 
   // The newest message I sent — a receipt is only meaningful against that.
   const myLastId = thread?.messages?.find((m) => m.mine)?.id || 0;
+
+  // WHICH COMPOSER IS ON SCREEN. The drafts are keyed by it, so the words you
+  // wrote for one addressee cannot appear in front of another. `draft` and
+  // `setDraft` read and write that one key.
+  const composer = composerKey({ threadId, searching: found !== null });
+  const draft = drafts[composer] || "";
+  const setDraft = (value) => setDrafts((prev) => ({ ...prev, [composer]: value }));
+
+  // Every page in the thread, newest first — what a reaction lookup must span.
+  const pages = thread ? [thread, ...older] : older;
 
   if (available !== true) return null;
 
@@ -362,9 +395,9 @@ export default function MailDesk() {
                           : m.body === null ? <em>hidden</em> : m.body}
                       </span>
 
-                      {(thread.reactions?.[String(m.id)] || []).length ? (
+                      {reactionsAcross(pages, m.id).length ? (
                         <span className="mailreacts">
-                          {thread.reactions[String(m.id)].map((r) => (
+                          {reactionsAcross(pages, m.id).map((r) => (
                             <button
                               key={r.emoji}
                               type="button"
