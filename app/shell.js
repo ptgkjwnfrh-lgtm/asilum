@@ -26,6 +26,7 @@ import AccountSignup from "./components/AccountSignup.jsx";
 import AsteriskDock from "./components/AsteriskDock.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
+import MailDesk from "./components/MailDesk.jsx";
 import { DEFAULT_KIND } from "../lib/accounts.js";
 import { navFor } from "../lib/nav.js";
 
@@ -482,6 +483,11 @@ export default function Shell({ children }) {
                 SEARCH
               </button>
             )}
+            {/* The mail desk sits between BAG and the account corner, so it is
+                in the right-hand cluster on EVERY tab (owner order). It renders
+                nothing at all when messaging is off or the reader is signed
+                out — absent, not disabled. */}
+            <MailDesk />
             <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 5h10.8l-.9 9H3.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M5.4 5V4a2.6 2.6 0 0 1 5.2 0v1" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
               BAG ({bag.length})

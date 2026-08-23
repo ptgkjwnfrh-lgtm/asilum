@@ -1,0 +1,170 @@
+// app/api/dm/route.js
+// The mail desk. One route, op-dispatched.
+//
+// FEATURE F IS ABSENT UNLESS MESSAGING_ENABLED=1. FEATURE-FLAGS.md is explicit
+// that "absent" means absent — a 404, not a 200 carrying a "coming soon"
+// state. A flag that answers politely is a feature that shipped.
+//
+// Every path resolves the caller through resolveRequestUser and then
+// accountIdFromIdentity: DMs are impossible for signed-out users by
+// construction (ADR-002), so a device identity is refused rather than served
+// an empty inbox that looks like "no messages".
+
+import { NextResponse } from "next/server";
+import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
+import { describeRefusal, messagingEnabled, normalizeBody } from "../../../lib/dm.js";
+import {
+  MessageRefused, MessagingUnavailable,
+  acceptRequest, blockAccount, declineRequest, iBlocked, listBlocks, listFolder,
+  markRead, openConversation, readDmsOpen, readThread, sendMessage, setDmsOpen,
+  setMediaConsent, unblockAccount, unreadSummary,
+} from "../../../lib/db/dm.js";
+
+export const dynamic = "force-dynamic";
+
+const absent = () => NextResponse.json({ error: "not found" }, { status: 404 });
+
+/** Map a store failure onto a response without leaking which law fired. */
+function failure(error, extra = {}) {
+  if (error instanceof MessagingUnavailable) {
+    // Honest: the desk cannot be read right now. NOT an empty inbox — showing
+    // "no messages" when the store is unreachable is a false statement.
+    return NextResponse.json({ error: "the mail desk is unavailable" }, { status: 503 });
+  }
+  if (error instanceof MessageRefused) {
+    return NextResponse.json({ delivered: false, ...describeRefusal(error.code, extra) }, { status: 409 });
+  }
+  return NextResponse.json({ error: "could not complete that" }, { status: 500 });
+}
+
+async function caller(req, claimed) {
+  const user = await resolveRequestUser(req, claimed);
+  return user ? accountIdFromIdentity(user) : null;
+}
+
+export async function GET(req) {
+  if (!messagingEnabled()) return absent();
+  const url = new URL(req.url);
+  const me = await caller(req, url.searchParams.get("user") || "");
+  if (!me) return NextResponse.json({ error: "sign in to use messages" }, { status: 401 });
+
+  const op = url.searchParams.get("op") || "summary";
+  try {
+    if (op === "summary") {
+      const counts = await unreadSummary(me);
+      return NextResponse.json({ ...counts, dmsOpen: await readDmsOpen(me) });
+    }
+    if (op === "inbox") {
+      const folder = ["inbox", "requests", "archived"].includes(url.searchParams.get("folder"))
+        ? url.searchParams.get("folder") : "inbox";
+      return NextResponse.json(await listFolder(me, {
+        folder, cursor: url.searchParams.get("cursor") || "",
+      }));
+    }
+    if (op === "thread") {
+      const id = url.searchParams.get("c") || "";
+      const thread = await readThread(me, id, { before: url.searchParams.get("before") || null });
+      // A non-member gets exactly what a nonexistent conversation gets, so the
+      // endpoint cannot be used to discover that a thread exists.
+      if (!thread) return absent();
+      return NextResponse.json(thread);
+    }
+    if (op === "blocks") return NextResponse.json({ blocks: await listBlocks(me) });
+    return NextResponse.json({ error: "unknown op" }, { status: 400 });
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function POST(req) {
+  if (!messagingEnabled()) return absent();
+  const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body || {};
+  const me = await caller(req, String(body.user || ""));
+  if (!me) return NextResponse.json({ error: "sign in to use messages" }, { status: 401 });
+
+  const op = String(body.op || "");
+  // Sending is the abusable op and gets its own tighter bucket; the rest share
+  // a looser one so a burst of reads cannot exhaust the ability to block.
+  const quota = await consumeRateLimit({
+    scope: op === "send" ? "dm-send" : "dm-act",
+    subject: requestSubject(req, me),
+    limit: op === "send" ? 120 : 240,
+    windowMs: 60 * 60 * 1000,
+  });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+
+  try {
+    if (op === "send") {
+      const text = normalizeBody(body.body);
+      if (!text) return NextResponse.json({ error: "nothing to send" }, { status: 400 });
+
+      let conversationId = String(body.conversationId || "");
+      let them = String(body.to || "");
+      if (!conversationId) {
+        if (!them) return NextResponse.json({ error: "who to?" }, { status: 400 });
+        const convo = await openConversation(me, them);
+        conversationId = convo.id;
+      }
+      try {
+        const sent = await sendMessage({
+          conversationId, senderId: me, body: text,
+          clientOperationId: body.clientOperationId ? String(body.clientOperationId) : null,
+        });
+        return NextResponse.json({ delivered: true, conversationId, ...sent });
+      } catch (error) {
+        // If the refusal is MY OWN block, say so and offer the undo. Only
+        // someone else's reasons are collapsed — see lib/dm.js.
+        let mine = false;
+        if (error instanceof MessageRefused && them) {
+          mine = await iBlocked(me, them).catch(() => false);
+        }
+        return failure(error, { callerBlockedThem: mine });
+      }
+    }
+
+    if (op === "accept") {
+      return NextResponse.json({ ok: await acceptRequest(me, String(body.conversationId || "")) });
+    }
+    if (op === "decline") {
+      // Declining blocks by default, and the response SAYS it did, so the UI
+      // can tell the person what it just created on their behalf.
+      const blocked = body.block !== false;
+      const ok = await declineRequest(me, String(body.conversationId || ""), { block: blocked });
+      return NextResponse.json({ ok, blocked: ok && blocked });
+    }
+    if (op === "read") {
+      await markRead(me, String(body.conversationId || ""), body.upTo);
+      return NextResponse.json({ ok: true });
+    }
+    if (op === "block") {
+      await blockAccount(me, String(body.accountId || ""));
+      return NextResponse.json({ ok: true });
+    }
+    if (op === "unblock") {
+      return NextResponse.json({ ok: await unblockAccount(me, String(body.accountId || "")) });
+    }
+    if (op === "consent") {
+      // The per-conversation "receive images and videos" toggle. Recorded now;
+      // nothing can send an attachment yet (OWNER-DECISIONS #3).
+      const ok = await setMediaConsent(me, String(body.conversationId || ""), body.allow === true);
+      return NextResponse.json({ ok, allow: body.allow === true });
+    }
+    if (op === "settings") {
+      try {
+        await setDmsOpen(me, body.dmsOpen !== false);
+        return NextResponse.json({ ok: true, dmsOpen: body.dmsOpen !== false });
+      } catch (error) {
+        // A business trying to close its door is refused by the v40 trigger.
+        return failure(error);
+      }
+    }
+    return NextResponse.json({ error: "unknown op" }, { status: 400 });
+  } catch (error) {
+    return failure(error);
+  }
+}

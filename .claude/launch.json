@@ -4,17 +4,29 @@
     {
       "name": "asilum",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["next", "start", "-p", "3458"],
+      "runtimeArgs": [
+        "next",
+        "start",
+        "-p",
+        "3458"
+      ],
       "port": 3458
     },
     {
       "name": "asilum-memmode-verify",
       "runtimeExecutable": "env",
       "runtimeArgs": [
-        "-u", "DATABASE_URL", "-u", "DATABASE_ADMIN_URL",
+        "-u",
+        "DATABASE_URL",
+        "-u",
+        "DATABASE_ADMIN_URL",
         "ADMIN_TOKEN=memmode-verify-throwaway-token-1",
         "SITE_ORIGIN=http://localhost:3461",
-        "npx", "next", "start", "-p", "3461"
+        "npx",
+        "next",
+        "start",
+        "-p",
+        "3461"
       ],
       "port": 3461
     },
@@ -22,12 +34,38 @@
       "name": "asilum-memmode-verify-b",
       "runtimeExecutable": "env",
       "runtimeArgs": [
-        "-u", "DATABASE_URL", "-u", "DATABASE_ADMIN_URL",
+        "-u",
+        "DATABASE_URL",
+        "-u",
+        "DATABASE_ADMIN_URL",
         "ADMIN_TOKEN=memmode-verify-throwaway-token-1",
         "SITE_ORIGIN=http://localhost:3462",
-        "npx", "next", "start", "-p", "3462"
+        "npx",
+        "next",
+        "start",
+        "-p",
+        "3462"
       ],
       "port": 3462
+    },
+    {
+      "name": "asilum-dm-verify",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "-u",
+        "DATABASE_URL",
+        "-u",
+        "DATABASE_ADMIN_URL",
+        "MESSAGING_ENABLED=1",
+        "ADMIN_TOKEN=dm-verify-throwaway-token-1",
+        "SITE_ORIGIN=http://localhost:3463",
+        "npx",
+        "next",
+        "start",
+        "-p",
+        "3463"
+      ],
+      "port": 3463
     }
   ]
 }
