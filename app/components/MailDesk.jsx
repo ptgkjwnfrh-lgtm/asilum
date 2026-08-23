@@ -581,7 +581,10 @@ export default function MailDesk() {
                       the preview it wrapped to its own row and stretched full
                       width, reading as a bar rather than a badge. */}
                   <button type="button" onClick={() => setThreadId(c.id)}>
-                    <span className="mailwho">{c.otherId.slice(0, 8)}</span>
+                    <span className="mailwho">
+                      {c.handle || "someone"}
+                      {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
+                    </span>
                     {c.unread ? <span className="mailcount">{c.unread}</span> : <span />}
                     <span className="mailprev">
                       {c.preview ? c.preview.slice(0, 90) : <em>no preview</em>}

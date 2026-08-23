@@ -592,6 +592,69 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
 });
 
+// --- v44: a block stops PRESENCE, not only words ---------------------------
+// v40 stopped messages, v42 stopped reactions, and v41's activity signals were
+// written between them and never got the predicate. The person you blocked
+// kept watching you type and kept seeing your read position. Found only by
+// reviewing the FINISHED subsystem: each feature was correct on the day it
+// shipped, and the law moved underneath the ones written earlier.
+
+test("a block stops typing and read receipts in BOTH directions",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const m = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello" });
+  await dm.markRead(b, convo.id, m.id);
+  await dm.pingTyping(b, convo.id);
+
+  // baseline: the channel works
+  assert.equal((await dm.peerActivity(a, convo.id)).typing, true);
+  assert.equal((await dm.peerActivity(a, convo.id)).readUpTo, Number(m.id));
+
+  await dm.blockAccount(a, b);
+
+  // the blocked party can no longer BROADCAST
+  await assert.rejects(() => dm.pingTyping(b, convo.id),
+    (e) => e.code === "P0001" || e.name === "MessageRefused",
+    "the trigger refuses a typing row across a block");
+
+  // and neither side can READ the other's presence — including the receipt,
+  // which no trigger can stop because it is a plain column read
+  const seenByBlocker = await dm.peerActivity(a, convo.id);
+  assert.equal(seenByBlocker.typing, null, "the blocker sees no typing");
+  assert.equal(seenByBlocker.readUpTo, null, "and no read position");
+  const seenByBlocked = await dm.peerActivity(b, convo.id);
+  assert.equal(seenByBlocked.typing, null, "and the blocked party sees nothing either");
+  assert.equal(seenByBlocked.readUpTo, null);
+
+  // stale rows written BEFORE the block do not outlive it
+  const stale = await pool.query(`SELECT 1 FROM dm_typing WHERE conversation_id=$1`, [convo.id]);
+  assert.equal(stale.rowCount, 0, "v44 sweeps presence that predates the block");
+});
+
+test("peerActivity refuses a conversation I am not in", { skip: !databaseUrl }, async () => {
+  // It filters `account_id <> me`, which without a membership check answers
+  // for ANY conversation id a caller can name.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await dm.markRead(b, convo.id, 0);
+  const { lo: stranger } = await dmAccounts(pool);
+  const peeked = await dm.peerActivity(stranger, convo.id);
+  assert.equal(peeked.readUpTo, null, "a stranger learns nothing about someone else's thread");
+  assert.equal(peeked.typing, null);
+});
+
 // --- mute and pagination ---------------------------------------------------
 // Mute's whole risk is being built as a quiet block. These pin that it changes
 // EXACTLY ONE thing: the badge. Delivery, unread inside the thread, and the

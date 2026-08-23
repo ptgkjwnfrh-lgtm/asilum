@@ -143,3 +143,61 @@ test("the store keys on the bare auth uuid, and says so before it touches a pool
   await assert.rejects(() => dm.blockAccount(good, good), /cannot block yourself/);
   await assert.rejects(() => dm.openConversation(good, good), /with yourself/);
 });
+
+// --- the wire contract between the route and the panel ----------------------
+//
+// THIS EXISTS BECAUSE THE TWO HALVES DISAGREED AND NOTHING NOTICED. The route
+// deliberately strips `otherId` from every inbox item and substitutes `handle`
+// ("the uuid never leaves the server"), while the panel rendered
+// `c.otherId.slice(0, 8)`. The result was a TypeError on the first render with
+// any conversation at all — and with no error boundary anywhere in app/, the
+// whole client tree came down, on every tab, because the mail desk lives in
+// the header.
+//
+// Two behavioural suites could not catch it: the store tests prove SQL and the
+// browser check ran with a stubbed fetch whose shape I wrote by hand to match
+// the client. Only the two real halves, compared, catches this.
+
+test("every field the panel reads off an inbox row is one the route sends", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const route = readFileSync(root + "app/api/dm/route.js", "utf8");
+  const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
+
+  // What listFolder produces, then what the route's op=inbox mapping does to
+  // it — executed, not assumed, so a change to the mapping changes this test.
+  const row = {
+    id: "c0ffee00-0000-4000-8000-000000000000", state: "accepted",
+    otherId: "deadbeef-0000-4000-8000-000000000000", folder: "inbox",
+    unread: 2, muted: false, lastActivityAt: "2026-08-23T00:00:00Z", preview: "hi",
+  };
+  const handles = { [row.otherId]: "some-handle" };
+  const { otherId, ...rest } = row;                       // the route's own line
+  const wire = { ...rest, handle: handles[otherId] || null };
+
+  assert.ok(!("otherId" in wire), "the route strips the uuid — that is the point");
+  assert.equal(wire.handle, "some-handle");
+
+  // Every `c.<field>` the panel reads must exist on the wire object.
+  const read = new Set([...panel.matchAll(/\bc\.([a-zA-Z_][a-zA-Z0-9_]*)/g)].map((m) => m[1]));
+  const missing = [...read].filter((f) => !(f in wire));
+  assert.deepEqual(missing, [],
+    `the panel reads ${JSON.stringify(missing)} off an inbox row, and the route does not send it`);
+
+  // and the mapping in the route is still the one this test modelled
+  assert.match(route, /page\.items\.map\(\(\{ otherId, \.\.\.rest \}\)/,
+    "if the route's mapping changes, this test's model must change with it");
+});
+
+test("the panel never renders a raw account id", async () => {
+  // The uuid staying server-side is a privacy property, not a detail: it is
+  // the identifier that makes the handle search skippable.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const panel = readFileSync(
+    fileURLToPath(new URL("../app/components/MailDesk.jsx", import.meta.url)), "utf8");
+  assert.doesNotMatch(panel, /\botherId\b/,
+    "the panel must address people by handle only");
+  assert.doesNotMatch(panel, /\baccountId\b/);
+});

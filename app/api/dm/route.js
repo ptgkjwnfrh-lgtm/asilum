@@ -14,6 +14,11 @@ import { NextResponse } from "next/server";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+// `me || requestSubject(req)` is the house pattern (app/api/discover/rails).
+// requestSubject takes ONE argument: `requestSubject(req, me)` silently
+// DISCARDED the account and keyed every DM quota on the device cookie, so one
+// account on three devices got three times the budget and the account was
+// never the unit being limited. JS drops extra arguments without a word.
 import { requestSubject } from "../../../lib/security/request.js";
 import { describeRefusal, messagingEnabled, normalizeBody } from "../../../lib/dm.js";
 import {
@@ -94,7 +99,7 @@ export async function GET(req) {
       // Searching is cheap for us and valuable to an enumerator, so it gets
       // its own tight bucket separate from every other read.
       const quota = await consumeRateLimit({
-        scope: "dm-find", subject: requestSubject(req, me), limit: 60, windowMs: 60 * 60 * 1000,
+        scope: "dm-find", subject: me || requestSubject(req), limit: 60, windowMs: 60 * 60 * 1000,
       });
       if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
       return NextResponse.json({ people: await findAddressees(me, url.searchParams.get("q") || "") });
@@ -104,7 +109,7 @@ export async function GET(req) {
       // read and nothing else. Its own generous bucket: throttling this into
       // failure would make the indicator lie rather than go quiet.
       const quota = await consumeRateLimit({
-        scope: "dm-activity", subject: requestSubject(req, me), limit: 1200, windowMs: 60 * 60 * 1000,
+        scope: "dm-activity", subject: me || requestSubject(req), limit: 1200, windowMs: 60 * 60 * 1000,
       });
       if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
       return NextResponse.json(await peerActivity(me, url.searchParams.get("c") || ""));
@@ -129,7 +134,7 @@ export async function POST(req) {
   // a looser one so a burst of reads cannot exhaust the ability to block.
   const quota = await consumeRateLimit({
     scope: op === "send" ? "dm-send" : "dm-act",
-    subject: requestSubject(req, me),
+    subject: me || requestSubject(req),
     limit: op === "send" ? 120 : 240,
     windowMs: 60 * 60 * 1000,
   });
