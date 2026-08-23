@@ -26,30 +26,14 @@ import AccountSignup from "./components/AccountSignup.jsx";
 import AsteriskDock from "./components/AsteriskDock.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
+import { DEFAULT_KIND } from "../lib/accounts.js";
+import { navFor } from "../lib/nav.js";
 
 // Seven destinations — the complete mental model of the OS. Every legacy
 // route stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE,
 // STATS/UPLOAD under PASSPORT, and the brain/control-room pages highlight
 // their parent subsystem.
-const NAV = [
-  { href: "/cover", icon: "▣", label: "FRONT COVER", meta: "LIVE EDITION",
-    match: (p) => p.startsWith("/cover") },
-  { href: "/", icon: "✦", label: "CATALOG", meta: "YOUR EDIT // CURATED",
-    match: (p) => p === "/" },
-  { href: "/hotlist", icon: "✎", label: "THE WIRE", meta: "POSTS + THE HOTLIST",
-    match: (p) => p.startsWith("/hotlist") },
-  { href: "/board", icon: "✚", label: "PASSPORT", meta: "IDENT // MOODBOARD",
-    match: (p) => p.startsWith("/board") || p.startsWith("/stats") || p.startsWith("/asterisk") || p.startsWith("/upload"),
-    sub: [{ href: "/upload", label: "UPLOAD ⇪" }, { href: "/stats", label: "STATS →" }] },
-  { href: "/discover", icon: "◎", label: "DISCOVER", meta: "OPEN INDEX",
-    match: (p) => p.startsWith("/discover") || p.startsWith("/stylist"),
-    sub: [{ href: "/stylist", label: "STYLIST ✂" }] },
-  { href: "/profile", icon: "◉", label: "PROFILE", meta: "PUBLIC RECORD",
-    match: (p) => p.startsWith("/profile") || p.startsWith("/orders") || p.startsWith("/u/"),
-    sub: [{ href: "/orders", label: "ORDERS →" }] },
-  { href: "/settings", icon: "⚙", label: "SETTINGS", meta: "CONTROL PANEL",
-    match: (p) => p.startsWith("/settings") || p.startsWith("/privacy") || p.startsWith("/terms") || p.startsWith("/accessibility") },
-];
+
 
 // What the ticker carries when the account follows nothing yet (owner order,
 // 17 Aug). It used to advertise the machinery — "THE TASTE ENGINE IS LIVE —
@@ -170,6 +154,30 @@ export default function Shell({ children }) {
   useEffect(() => {
     if (searchOpen && q.trim()) onSearchInput(q);
   }, [guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ---- What kind of account is reading this? ----
+  // Held in state rather than read per-render: the nav must not flicker from
+  // passport to business on every navigation. It starts at the default and
+  // corrects itself once, which means a business briefly sees passport tabs on
+  // a cold load — acceptable, because the ROUTE GUARD is server-side and the
+  // tabs are only the invitation. A 503 (the store is unreadable) deliberately
+  // leaves the last known kind in place instead of downgrading to passport.
+  const [accountKind, setAccountKind] = useState(DEFAULT_KIND);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const uid = getUid();
+        const response = await fetch(
+          "/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
+        if (!response.ok) return; // includes 503 — hold what we have
+        const data = await response.json();
+        if (!cancelled && data?.kind) setAccountKind(data.kind);
+      } catch { /* offline: hold what we have */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+  const nav = navFor(accountKind);
 
   // ---- Server-issued device identity + Supabase magic-link auth. ----
   async function ensureDeviceIdentity() {
@@ -466,7 +474,7 @@ export default function Shell({ children }) {
         <nav className="topnav">
           <AsteriskDrawer />
           <div className="snavs">
-            {NAV.map((n) => {
+            {nav.map((n) => {
               const cur = n.match(pathname || "/");
               return (
                 <span className="snavwrap" key={n.href}>
