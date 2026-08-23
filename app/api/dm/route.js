@@ -22,7 +22,7 @@ import {
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
   readActivitySignals, resolveAddressee, unsendMessage,
-  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, unblockAccount,
+  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, setMuted, unblockAccount,
   unreadSummary,
 } from "../../../lib/db/dm.js";
 
@@ -217,6 +217,10 @@ export async function POST(req) {
       // One answer for "not yours", "no such message" and "already gone":
       // distinguishing them describes a message the caller has no claim to.
       return NextResponse.json({ ok: await unsendMessage(me, body.messageId) });
+    }
+    if (op === "mute") {
+      const muted = await setMuted(me, String(body.conversationId || ""), body.muted !== false);
+      return NextResponse.json({ ok: muted !== null, muted });
     }
     if (op === "typing") {
       // A ping, not a state machine. "Stopped" is the absence of a refresh.

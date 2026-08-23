@@ -59,6 +59,9 @@ export default function MailDesk() {
   const [peer, setPeer] = useState({ typing: null, readUpTo: null });
   const [signalsOn, setSignalsOn] = useState(true);
   const typingSentAt = useRef(0);
+  const [cursor, setCursor] = useState("");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [older, setOlder] = useState([]);   // pages loaded above the newest
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -91,15 +94,26 @@ export default function MailDesk() {
     return () => { clearInterval(timer); window.removeEventListener("asilum:identity", onIdentity); };
   }, [poll]);
 
-  const loadFolder = useCallback(async (which) => {
-    setItems(null); setNote("");
+  const loadFolder = useCallback(async (which, more = "") => {
+    if (!more) { setItems(null); setCursor(""); }
+    setNote("");
     try {
       const r = await fetch(
-        `/api/dm?op=inbox&folder=${which}&user=` + encodeURIComponent(getUid() || ""),
-        { cache: "no-store" });
+        `/api/dm?op=inbox&folder=${which}&cursor=${encodeURIComponent(more)}&user=`
+          + encodeURIComponent(getUid() || ""), { cache: "no-store" });
       if (!r.ok) { setNote("the mail desk is unavailable right now."); setItems([]); return; }
       const data = await r.json();
-      setItems(data.items || []);
+      // Appending rather than replacing on "more" — and de-duplicating by id,
+      // because a conversation that gained a message mid-scroll can legally
+      // appear on two pages. The snapshot cursor makes that rare, not
+      // impossible.
+      setItems((prev) => {
+        const next = data.items || [];
+        if (!more || !prev) return next;
+        const seen = new Set(prev.map((x) => x.id));
+        return [...prev, ...next.filter((x) => !seen.has(x.id))];
+      });
+      setCursor(data.cursor || "");
     } catch {
       setNote("the mail desk is unavailable right now."); setItems([]);
     }
@@ -108,7 +122,7 @@ export default function MailDesk() {
   useEffect(() => { if (open) loadFolder(folder); }, [open, folder, loadFolder]);
 
   const loadThread = useCallback(async (id) => {
-    setThread(null); setNote("");
+    setThread(null); setNote(""); setOlder([]);
     try {
       const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(id)}&user=`
         + encodeURIComponent(getUid() || ""), { cache: "no-store" });
@@ -206,6 +220,24 @@ export default function MailDesk() {
       .catch(() => {});
   }
 
+  /** Page UP through a thread. Older messages prepend; the newest page stays. */
+  async function loadOlder() {
+    const anchor = older.length
+      ? older[0].olderBefore
+      : thread?.olderBefore;
+    if (!anchor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(threadId)}`
+        + `&before=${anchor}&user=` + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+      if (r.ok) {
+        const page = await r.json();
+        setOlder((prev) => [{ messages: page.messages || [], olderBefore: page.olderBefore }, ...prev]);
+      }
+    } catch { /* leave the button; a retry is cheap */ }
+    setLoadingMore(false);
+  }
+
   async function startWith(handle) {
     const text = draft.trim();
     if (!text) { setNote("write the first message before you send it."); return; }
@@ -269,6 +301,19 @@ export default function MailDesk() {
             <button className="mailback" onClick={() => { setThreadId(null); setThread(null); }}>
               ← THE MAIL DESK
             </button>
+            {thread ? (
+              <button
+                className={"mailmute" + (thread.muted ? " cur" : "")}
+                aria-pressed={Boolean(thread.muted)}
+                title={thread.muted
+                  ? "muted — messages still arrive, they just stop reaching the corner"
+                  : "mute — keep receiving, stop being told"}
+                onClick={async () => {
+                  await act("mute", { conversationId: threadId, muted: !thread.muted });
+                  await loadThread(threadId); await poll();
+                }}
+              >{thread.muted ? "MUTED" : "MUTE"}</button>
+            ) : null}
           </div>
 
           {note ? <p className="mailnote">{note}</p> : null}
@@ -294,8 +339,17 @@ export default function MailDesk() {
 
               {/* Newest-first from the API; reversed here so a thread reads
                   downward the way a conversation does. */}
+              {(older.length ? older[0].olderBefore : thread.olderBefore) ? (
+                <button className="mailmore" onClick={loadOlder} disabled={loadingMore}>
+                  {loadingMore ? "…" : "OLDER MESSAGES ↑"}
+                </button>
+              ) : null}
+
               <ul className="mailthread">
-                {[...thread.messages].reverse().map((m) => (
+                {[...older.flatMap((page) => page.messages), ...thread.messages]
+                  .slice()
+                  .sort((x, y) => x.id - y.id)
+                  .map((m) => (
                   <li key={m.id} className={m.mine ? "mine" : "theirs"}>
                     <div className="mailmsg">
                       <span className={"mailbody" + (m.unsent || m.redacted ? " gone" : "")}>
@@ -357,7 +411,7 @@ export default function MailDesk() {
                     </div>
                   </li>
                 ))}
-                {thread.messages.length === 0 ? <li className="mailnote">no messages yet.</li> : null}
+                {thread.messages.length === 0 && older.length === 0 ? <li className="mailnote">no messages yet.</li> : null}
               </ul>
 
               {/* The receipt sits under the thread rather than on a bubble:
@@ -537,6 +591,13 @@ export default function MailDesk() {
               ))}
             </ul>
           )}
+
+          {cursor && found === null ? (
+            <button className="mailmore" disabled={loadingMore}
+              onClick={async () => { setLoadingMore(true); await loadFolder(folder, cursor); setLoadingMore(false); }}>
+              {loadingMore ? "…" : "MORE ↓"}
+            </button>
+          ) : null}
           </>
         )}
         </div>

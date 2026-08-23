@@ -592,6 +592,123 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
 });
 
+// --- mute and pagination ---------------------------------------------------
+// Mute's whole risk is being built as a quiet block. These pin that it changes
+// EXACTLY ONE thing: the badge. Delivery, unread inside the thread, and the
+// other person's experience are all untouched.
+
+test("mute silences the BADGE and nothing else", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "one" });
+
+  assert.equal((await dm.unreadSummary(b)).inbox, 1);
+  assert.equal(await dm.setMuted(b, convo.id, true), true);
+
+  assert.equal((await dm.unreadSummary(b)).inbox, 0, "the corner goes quiet");
+
+  // ...and NOTHING else changed:
+  const list = await dm.listFolder(b, { folder: "inbox" });
+  assert.equal(list.items.length, 1, "still in the list");
+  assert.equal(list.items[0].muted, true, "and says so");
+  assert.equal(list.items[0].unread, 1, "still unread INSIDE the conversation");
+
+  // delivery is untouched — this is the line between mute and block
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "two" });
+  assert.equal((await dm.listFolder(b, { folder: "inbox" })).items[0].unread, 2);
+  assert.equal((await dm.unreadSummary(b)).inbox, 0, "still quiet, still arriving");
+
+  // the sender cannot tell: their side of the conversation is unchanged
+  const fromA = await dm.listFolder(a, { folder: "inbox" });
+  assert.equal(fromA.items[0].muted, false, "muting is my view, not a property of the thread");
+
+  assert.equal(await dm.setMuted(b, convo.id, false), false);
+  assert.equal((await dm.unreadSummary(b)).inbox, 1, "unmuting restores the badge");
+});
+
+test("mute is per-side and refuses a conversation I am not in",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal(await dm.setMuted(stranger, convo.id, true), null,
+    "no row to update, so no mute — and no error that confirms the thread exists");
+});
+
+test("thread pagination pages UP without a count query", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const ids = [];
+  for (let i = 0; i < 7; i += 1) {
+    const m = await dm.sendMessage({ conversationId: convo.id, senderId: i % 2 ? b : a, body: `m${i}` });
+    ids.push(Number(m.id));
+  }
+
+  const page1 = await dm.readThread(b, convo.id, { limit: 3 });
+  assert.equal(page1.messages.length, 3, "the limit is respected exactly");
+  assert.equal(page1.hasOlder, true);
+  assert.deepEqual(page1.messages.map((m) => m.id), ids.slice(-3).reverse(), "newest first");
+
+  const page2 = await dm.readThread(b, convo.id, { limit: 3, before: page1.olderBefore });
+  assert.deepEqual(page2.messages.map((m) => m.id), ids.slice(1, 4).reverse());
+  assert.equal(page2.hasOlder, true);
+
+  const page3 = await dm.readThread(b, convo.id, { limit: 3, before: page2.olderBefore });
+  assert.deepEqual(page3.messages.map((m) => m.id), [ids[0]]);
+  assert.equal(page3.hasOlder, false, "the top of the thread reports itself");
+  assert.equal(page3.olderBefore, null);
+
+  // no page repeats or skips an id
+  const walked = [...page1.messages, ...page2.messages, ...page3.messages].map((m) => m.id).sort((x, y) => x - y);
+  assert.deepEqual(walked, ids, "every message exactly once across the walk");
+});
+
+test("inbox pagination walks folders without repeating a conversation",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: me } = await dmAccounts(pool);
+  const made = [];
+  for (let i = 0; i < 5; i += 1) {
+    const { lo: other } = await dmAccounts(pool);
+    const partner = other === me ? (await dmAccounts(pool)).hi : other;
+    const convo = await dm.openConversation(me, partner, { knownToRecipient: true });
+    await dm.sendMessage({ conversationId: convo.id, senderId: me, body: `hello ${i}` });
+    made.push(convo.id);
+  }
+
+  const seen = [];
+  let cursor = "";
+  for (let guard = 0; guard < 10; guard += 1) {
+    const page = await dm.listFolder(me, { folder: "inbox", cursor, limit: 2 });
+    seen.push(...page.items.map((i) => i.id));
+    if (!page.cursor) break;
+    cursor = page.cursor;
+  }
+  assert.equal(new Set(seen).size, seen.length, "no conversation appears twice");
+  for (const id of made) assert.ok(seen.includes(id), `${id} was skipped by the walk`);
+});
+
 // --- reactions and unsend --------------------------------------------------
 // The interesting failures here are not "does a heart appear". They are the
 // two ways these features become something else: a reaction as a covert text
