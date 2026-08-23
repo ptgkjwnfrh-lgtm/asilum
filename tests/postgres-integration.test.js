@@ -919,6 +919,62 @@ test("DM settings: a refused half rolls the other half back",
   assert.equal(await dm.readDmsOpen(person), false);
 });
 
+test("DM block: the block waits for the send it is racing",
+  { skip: !databaseUrl }, async () => {
+  // A SERIOUS finding of the 23 Aug register. dm_guard_message's LAW 1 check
+  // is a plain EXISTS inside the SENDER's transaction, which holds the pair
+  // advisory lock for its whole life. blockAccount never took that lock, so a
+  // block could commit AFTER the sender's check and BEFORE the sender's
+  // commit: the message landed in the thread of someone whose block was
+  // already durable, and their badge counted it. The window opened at exactly
+  // the moment a person reaches for the block button.
+  //
+  // Deterministic, and it has to be: the test HOLDS the pair lock itself —
+  // `pairLockKey` is exported for this — and asserts the block WAITS. A test
+  // that only fails on an unlucky schedule is not a regression test.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+
+  const sender = await pool.connect();
+  let blocking;
+  try {
+    await sender.query("BEGIN");
+    // stand where a send in flight stands: holding the pair lock
+    await sender.query("SELECT pg_advisory_xact_lock($1::bigint)", [dm.pairLockKey(a, b)]);
+
+    blocking = dm.blockAccount(b, a);
+    const raced = await Promise.race([
+      blocking.then(() => "finished"),
+      new Promise((r) => setTimeout(() => r("waiting"), 400)),
+    ]);
+    assert.equal(raced, "waiting",
+      "a block must not slip past a send that is already inside the lock");
+
+    // the send completes on its own terms, as it must — it was legal when it
+    // began and nothing may retroactively unsend it
+    await sender.query(
+      `INSERT INTO dm_messages (conversation_id, sender_account_id, body)
+       VALUES ($1,$2,'in flight')`, [convo.id, a]);
+    await sender.query("COMMIT");
+  } finally {
+    sender.release();
+  }
+
+  await blocking;
+  assert.equal(await dm.iBlocked(b, a), true);
+  // and from here the law holds with no window at all
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: a, body: "after" }),
+    (e) => e.name === "MessageRefused" && e.code === "P0001");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
