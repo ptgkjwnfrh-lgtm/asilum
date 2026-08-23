@@ -622,6 +622,97 @@ test("DM store: declining twice is the same decline, not a second one",
   assert.equal(await dm.acceptRequest(b, convo.id), false);
 });
 
+test("DM store: a message written later reads later, whatever now() says",
+  { skip: !databaseUrl }, async () => {
+  // BLOCKER 2 of the 23 Aug register, at its root. `now()` is the TRANSACTION
+  // START time in PostgreSQL — fixed at BEGIN and never moved again — so a
+  // transaction that begins early and commits late stamps a row that lands
+  // second with a time from before the row that landed first. The pair
+  // advisory lock is taken AFTER BEGIN, which is exactly such a wait.
+  //
+  // No race is staged here and none is needed: two transactions, interleaved
+  // by hand, reproduce the inversion deterministically. Message two is
+  // inserted after message one commits, so it has the LATER id — and under
+  // `DEFAULT now()` it carried the EARLIER created_at.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+
+  const early = await pool.connect();
+  const late = await pool.connect();
+  try {
+    // `early` begins first, so its now() is fixed here...
+    await early.query("BEGIN");
+    await early.query("SELECT 1");
+    await new Promise((r) => setTimeout(r, 60));
+    // ...but `late` begins, inserts and commits entirely inside that gap.
+    await late.query("BEGIN");
+    const first = await late.query(
+      `INSERT INTO dm_messages (conversation_id, sender_account_id, body)
+       VALUES ($1,$2,'first to land') RETURNING id, created_at`, [convo.id, a]);
+    await late.query("COMMIT");
+    // and only now does the transaction that began earlier write its row
+    const second = await early.query(
+      `INSERT INTO dm_messages (conversation_id, sender_account_id, body)
+       VALUES ($1,$2,'second to land') RETURNING id, created_at`, [convo.id, a]);
+    await early.query("COMMIT");
+
+    assert.ok(Number(second.rows[0].id) > Number(first.rows[0].id),
+      "the second insert has the later id — that is not in question");
+    assert.ok(second.rows[0].created_at >= first.rows[0].created_at,
+      "and its stamp must not be earlier than the message it followed: the thread "
+      + "reads newest-first BY ID, so a backwards clock renders out of order");
+  } finally {
+    await early.query("ROLLBACK").catch(() => {});
+    await late.query("ROLLBACK").catch(() => {});
+    early.release(); late.release();
+  }
+});
+
+test("DM store: a conversation's activity time is the newest message's, and never walks back",
+  { skip: !databaseUrl }, async () => {
+  // The other half of blocker 2. listFolder's keyset cursor is
+  // `(last_activity_at, id) < (cursor)` under `ORDER BY last_activity_at DESC`
+  // — built on the key only ever moving forward. `SET last_activity_at = now()`
+  // could move it backwards past a write that had already committed: the
+  // conversation then falls below a cursor it was returned above, comes back
+  // on the next page, and the panel's de-dupe drops it and spends the slot.
+  //
+  // The forward stamp here stands in for that already-committed writer. It is
+  // set directly rather than raced, because a test that only fails on an
+  // unlucky schedule is not a regression test.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+
+  const sent = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "one" });
+  const after = (await pool.query(
+    `SELECT last_activity_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0];
+  assert.deepEqual(after.last_activity_at, sent.at,
+    "the activity time IS the newest message's time — not a second clock reading");
+
+  // somebody else's write lands ahead of us
+  const ahead = new Date(Date.now() + 60_000);
+  await pool.query(`UPDATE dm_conversations SET last_activity_at=$2 WHERE id=$1`, [convo.id, ahead]);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "two" });
+  const now = (await pool.query(
+    `SELECT last_activity_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0];
+  assert.deepEqual(now.last_activity_at, ahead,
+    "a send must never move the inbox key backwards past a write already made");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
