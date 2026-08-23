@@ -592,6 +592,109 @@ test("DM store: the media consent toggle records BOTH sides, and revocation stam
     "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
 });
 
+// --- search-to-start: the enumeration surface ------------------------------
+// A DM search is how a messaging product leaks its user list. These pin the
+// four exclusions; each one, removed, turns the search into a directory.
+
+async function publishRoom(pool, account, handle) {
+  await pool.query(
+    `INSERT INTO profile_rooms (account_id, handle, published, moderation_status)
+     VALUES ($1,$2,true,'visible')
+     ON CONFLICT (account_id) DO UPDATE SET handle=EXCLUDED.handle, published=true`,
+    [account, handle]);
+}
+
+test("DM search finds ONLY people who published a room", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: me, hi: published } = await dmAccounts(pool);
+  const { lo: unpublished } = await dmAccounts(pool);
+  const tag = randomUUID().slice(0, 6);
+  await publishRoom(pool, published, `pub-${tag}`);
+  // present in profile_rooms but NOT published — the common case, and the
+  // reason this search is not a directory of everyone who signed up
+  await pool.query(
+    `INSERT INTO profile_rooms (account_id, handle, published) VALUES ($1,$2,false)
+     ON CONFLICT (account_id) DO UPDATE SET published=false`, [unpublished, `pub-${tag}-x`]);
+
+  const hits = await dm.findAddressees(me, `pub-${tag}`);
+  assert.deepEqual(hits.map((h) => h.handle), [`pub-${tag}`],
+    "an unpublished room is absent from the table this reads, not filtered by policy");
+  assert.equal("accountId" in (hits[0] || {}), false,
+    "the uuid must never leave the server — it is the key that skips the search");
+});
+
+test("DM search excludes me, blocks in EITHER direction, and closed doors",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: me } = await dmAccounts(pool);
+  const { lo: iBlockedThem } = await dmAccounts(pool);
+  const { lo: theyBlockedMe } = await dmAccounts(pool);
+  const { lo: doorShut } = await dmAccounts(pool);
+  const { lo: openPerson } = await dmAccounts(pool);
+  await publishRoom(pool, me, `x${tag}-me`);
+  await publishRoom(pool, iBlockedThem, `x${tag}-a`);
+  await publishRoom(pool, theyBlockedMe, `x${tag}-b`);
+  await publishRoom(pool, doorShut, `x${tag}-c`);
+  await publishRoom(pool, openPerson, `x${tag}-d`);
+
+  await dm.blockAccount(me, iBlockedThem);
+  await dm.blockAccount(theyBlockedMe, me);
+  await dm.setDmsOpen(doorShut, false);
+
+  const hits = (await dm.findAddressees(me, `x${tag}`, { limit: 10 })).map((h) => h.handle);
+  assert.deepEqual(hits, [`x${tag}-d`],
+    "self, both block directions and a closed passport are all absent");
+
+  // and the same predicate guards ADDRESSING, so a handle kept from before a
+  // block cannot still open a thread
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-a`), null, "a person I blocked");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-b`), null, "a person who blocked me");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-c`), null, "a closed door");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-me`), null, "myself");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-d`), openPerson);
+});
+
+test("a BUSINESS is always findable — it cannot close its door", { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: me, hi: shop } = await dmAccounts(pool);
+  await publishRoom(pool, shop, `biz${tag}`);
+  await pool.query(`INSERT INTO account_kinds (account_id, kind) VALUES ($1,'business')
+                    ON CONFLICT (account_id) DO UPDATE SET kind='business'`, [shop]);
+
+  const hits = await dm.findAddressees(me, `biz${tag}`);
+  assert.equal(hits.length, 1);
+  assert.equal(hits[0].kind, "business", "labelled, so a reader knows it is a storefront");
+});
+
+test("DM search refuses a query short or odd enough to walk the table",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  await db.getPool();
+  const { lo: me } = await dmAccounts(await db.getPool());
+
+  // One character walks the alphabet in 26 requests; a wildcard walks it in 1.
+  for (const q of ["", "a", " ", "%", "_", "a%", "----------------------------x"]) {
+    assert.deepEqual(await dm.findAddressees(me, q), [],
+      `${JSON.stringify(q)} must not return anything`);
+  }
+});
+
 // They live ABOVE the board/ticket test on purpose: that test ends the
 // default pool in its cleanup (see the note at the top of this file).
 test("Postgres transmission lifecycle: author-bound edit and soft delete", { skip: !databaseUrl }, async (t) => {
