@@ -173,11 +173,20 @@ test("every field the panel reads off an inbox row is one the route sends", asyn
     unread: 2, muted: false, lastActivityAt: "2026-08-23T00:00:00Z", preview: "hi",
   };
   const handles = { [row.otherId]: "some-handle" };
-  const { otherId, ...rest } = row;                       // the route's own line
+  const { otherId, state, ...rest } = row;                // the route's own line
   const wire = { ...rest, handle: handles[otherId] || null };
 
   assert.ok(!("otherId" in wire), "the route strips the uuid — that is the point");
   assert.equal(wire.handle, "some-handle");
+
+  // AND IT STRIPS `state`. That column is SHARED by both sides, so the
+  // opener's own inbox row carried the word "declined" — naming outright the
+  // fact describeRefusal collapses P0001 and P0002 to hide. The panel keys its
+  // request controls on `folder`, which is per-side and says only where the
+  // thread sits for the reader.
+  assert.ok(!("state" in wire),
+    "a shared state column on a per-side payload is the refusal spelled out");
+  assert.ok("folder" in wire, "the per-side fact is the one the panel needs");
 
   // Every `c.<field>` the panel reads must exist on the wire object.
   const read = new Set([...panel.matchAll(/\bc\.([a-zA-Z_][a-zA-Z0-9_]*)/g)].map((m) => m[1]));
@@ -186,8 +195,35 @@ test("every field the panel reads off an inbox row is one the route sends", asyn
     `the panel reads ${JSON.stringify(missing)} off an inbox row, and the route does not send it`);
 
   // and the mapping in the route is still the one this test modelled
-  assert.match(route, /page\.items\.map\(\(\{ otherId, \.\.\.rest \}\)/,
+  assert.match(route, /page\.items\.map\(\(\{ otherId, state, \.\.\.rest \}\)/,
     "if the route's mapping changes, this test's model must change with it");
+});
+
+test("the activity payload does not name WHY a null is null", async () => {
+  // peerActivity returns `reciprocal` so the store can say which case it hit —
+  // your signals off, theirs off, a block, an unaccepted knock, a conversation
+  // you are not in. Forwarding that flag defeats the indistinguishability the
+  // nulls exist to provide: `reciprocal:false` means "yours", and
+  // `reciprocal:true` with a null readUpTo means "theirs". The panel never
+  // read it.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const route = readFileSync(root + "app/api/dm/route.js", "utf8");
+  const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
+
+  const stored = { typing: null, readUpTo: null, reciprocal: true };
+  const { reciprocal, ...activity } = stored;             // the route's own line
+  assert.deepEqual(activity, { typing: null, readUpTo: null });
+  assert.ok(!("reciprocal" in activity));
+
+  assert.match(route, /const \{ reciprocal, \.\.\.activity \} = await peerActivity/,
+    "if the route stops stripping it, this test's model must change with it");
+  // A property access, not the word: the panel says "reciprocal" in the
+  // checkbox copy on purpose, and a regex that cannot tell those apart is a
+  // test of its own cleverness.
+  assert.doesNotMatch(panel, /\.reciprocal\b/,
+    "and nothing in the panel reads it off the wire");
 });
 
 test("the block list is projected like the inbox: handle and conversation, no uuid", async () => {

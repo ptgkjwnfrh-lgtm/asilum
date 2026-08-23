@@ -78,10 +78,17 @@ export async function GET(req) {
       // Render counterparties by HANDLE. The uuid never leaves the server: it
       // is the addressing key, and handing it to the client is handing over
       // the thing that makes the search skippable.
+      //
+      // `state` is stripped for the same class of reason. It is the SHARED
+      // column, so the opener's own inbox row carried the word "declined" —
+      // naming outright the fact describeRefusal collapses P0001 and P0002 to
+      // hide. Nothing in the panel reads it: the request controls key on the
+      // reader's own `folder`, which is per-side and says only where the
+      // thread sits for them.
       const handles = await handlesFor(page.items.map((i) => i.otherId));
       return NextResponse.json({
         ...page,
-        items: page.items.map(({ otherId, ...rest }) => ({
+        items: page.items.map(({ otherId, state, ...rest }) => ({
           ...rest, handle: handles[otherId] || null,
         })),
       });
@@ -114,7 +121,12 @@ export async function GET(req) {
         scope: "dm-activity", subject: me || requestSubject(req), limit: 1200, windowMs: 60 * 60 * 1000,
       });
       if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-      return NextResponse.json(await peerActivity(me, url.searchParams.get("c") || ""));
+      // `reciprocal` is the store's own account of WHY a null is null, and it
+      // does not go on the wire: a payload that names the reason defeats the
+      // indistinguishability the nulls exist to provide. The panel never read
+      // it — it renders `typing` and `readUpTo` and nothing else.
+      const { reciprocal, ...activity } = await peerActivity(me, url.searchParams.get("c") || "");
+      return NextResponse.json(activity);
     }
     if (op === "blocks") {
       // Projected exactly like the inbox is: HANDLE and the conversation id,
