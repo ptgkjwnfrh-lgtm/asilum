@@ -2369,3 +2369,98 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ledgercell h2 { font-size: 12px; letter-spacing: .16em; margin: 0 0 6px; }
 .ledgercell p { font-size: 11px; color: var(--grey); line-height: 1.5; margin: 0 0 10px; }
 .agenote { display: block; font-size: 10px; color: var(--grey); line-height: 1.5; margin-top: 4px; }
+
+/* ── THE MAIL DESK ────────────────────────────────────────────────────────
+   The retro "you got mail" corner. An envelope whose flap LIFTS when
+   something is waiting, sealed with the house asterisk — the 1990s metaphor
+   in this magazine's language rather than a borrowed skeuomorph. */
+.maildesk { position: relative; display: inline-flex; }
+.mailbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid transparent; color: var(--ink);
+  font: inherit; font-size: 11px; letter-spacing: .12em; cursor: pointer;
+  padding: 4px 7px;
+}
+.mailbtn:hover, .mailbtn.cur { border-color: var(--line); }
+.mailglyph { display: inline-flex; position: relative; line-height: 0; }
+.mailglyph.open { color: var(--red); }
+.mailglyph.fault { color: var(--grey); }
+/* The seal only exists while mail is waiting; it is the asterisk, not a dot. */
+.mailseal {
+  position: absolute; top: -5px; right: -5px; font-size: 11px; line-height: 1;
+  color: var(--red);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mailglyph.open .mailseal { animation: mailseal-in .22s ease-out; }
+  @keyframes mailseal-in { from { transform: scale(.4) rotate(-30deg); opacity: 0; } }
+}
+.mailword { font-weight: 700; }
+.mailcount {
+  min-width: 16px; padding: 0 4px; border: 1px solid var(--red); color: var(--red);
+  font-size: 10px; line-height: 15px; text-align: center;
+}
+.mailfault { color: var(--grey); font-weight: 700; }
+
+.mailpanel {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 170;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--paper); border: 2px solid var(--ink);
+  box-shadow: 0 0 0 1px var(--line); padding: 12px;
+}
+.mailhead { border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+.mailtabs { display: flex; gap: 6px; margin-top: 6px; }
+.mailtabs button {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid var(--line); color: var(--grey);
+  font: inherit; font-size: 10px; letter-spacing: .14em; padding: 4px 8px; cursor: pointer;
+}
+.mailtabs button.cur { border-color: var(--ink); color: var(--ink); font-weight: 700; }
+.mailtabn { color: var(--red); font-size: 10px; }
+.mailhint, .mailnote { font-size: 10px; color: var(--grey); line-height: 1.55; margin: 0 0 8px; }
+.maillist { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+.maillist li { border-bottom: 1px solid var(--line); }
+.maillist li:last-child { border-bottom: 0; }
+.maillist a {
+  display: grid; grid-template-columns: 1fr auto; gap: 2px 8px;
+  padding: 9px 2px; text-decoration: none; color: var(--ink);
+}
+.maillist li.unread .mailwho { font-weight: 700; }
+.mailwho { font-size: 11px; letter-spacing: .08em; }
+.mailprev { grid-column: 1 / -1; font-size: 10px; color: var(--grey); line-height: 1.45; }
+/* thread view inside the mail panel — no eighth destination (asilum-ui rule 1) */
+.mailback { background: none; border: 0; color: var(--grey); font: inherit; font-size: 10px;
+  letter-spacing: .14em; cursor: pointer; padding: 0; }
+.mailback:hover { color: var(--ink); }
+.mailreq { border: 1px solid var(--line); padding: 9px; margin-bottom: 9px; }
+.mailacts { display: flex; gap: 6px; }
+.mailacts .btn { font-size: 10px; padding: 5px 9px; }
+.mailthread { list-style: none; margin: 0 0 9px; padding: 0; max-height: 260px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 6px; }
+.mailthread li { display: flex; }
+.mailthread li.mine { justify-content: flex-end; }
+.mailbody { display: inline-block; max-width: 82%; padding: 6px 9px; font-size: 11px;
+  line-height: 1.5; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+.mailthread li.mine .mailbody { border-color: var(--ink); }
+.mailconsent { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
+  border-top: 1px solid var(--line); padding-top: 8px; margin-bottom: 8px; cursor: pointer; }
+.mailconsent input { margin-right: 6px; }
+.mailcompose { display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: end; }
+.mailcompose textarea { font: inherit; font-size: 11px; padding: 6px; min-height: 44px;
+  resize: vertical; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.mailcompose .btn { font-size: 10px; padding: 6px 10px; }
+.maillist button { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; width: 100%;
+  padding: 9px 2px; background: none; border: 0; color: var(--ink); font: inherit;
+  text-align: left; cursor: pointer; }
+.maillist button:hover .mailwho { color: var(--sig); }
+/* ≤760px the panel cannot hang off the button: .maildesk sits mid-header, so
+   `right: -8px` pushed its left edge 76px off-screen at 375px. Anchor it to
+   the VIEWPORT instead — the header is fixed, so a fixed panel tracks it. */
+@media (max-width: 760px) {
+  .mailpanel {
+    position: fixed; left: 10px; right: 10px; width: auto;
+    top: var(--mailpanel-top, 76px);
+    max-height: calc(100vh - var(--mailpanel-top, 76px) - 16px);
+    overflow-y: auto;
+  }
+  .mailthread { max-height: 40vh; }
+}

@@ -397,6 +397,201 @@ test("Postgres assembles the §6 export with the same shape as mem", { skip: !da
 // Postgres. A parse error, a wrong conflict target, or a predicate that
 // behaves differently in SQL than in the mem filter would have shipped
 // green. These run the real statements against a real database.
+// ---------------------------------------------------------------------------
+// THE MAIL DESK STORE, end to end. lib/db/dm.js has no memory mirror by
+// design, so this is the ONLY place its behaviour is exercised. If these do
+// not run, the store is unproven — which is the point of putting them here
+// rather than writing a mem mirror the unit suite would certify instead.
+//
+// THESE LIVE ABOVE THE BOARD/TICKET TEST, ON THE DEFAULT POOL, AND END
+// NOTHING. lib/db/dm.js imports "./index.js" with NO query suffix, so a
+// suffixed pool in the test does not reach it — the store still asks for the
+// DEFAULT pool, and the board/ticket test ends that one in its cleanup. Placed
+// below it, every store test failed with "Cannot use a pool after calling end
+// on the pool". This is the trap the note at the top of this file describes,
+// walked into exactly as written.
+
+test("DM store: a stranger's first message lands in REQUESTS, with no preview",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "  hello there  " });
+
+  // the RECIPIENT sees a request, and the request carries no words
+  const theirRequests = await dm.listFolder(b, { folder: "requests" });
+  assert.equal(theirRequests.items.length, 1);
+  assert.equal(theirRequests.items[0].unread, 1, "unread is DERIVED, not counted");
+  assert.equal(theirRequests.items[0].preview, null,
+    "a request must not put a stranger's words in the recipient's list");
+  assert.equal((await dm.listFolder(b, { folder: "inbox" })).items.length, 0);
+
+  // the SENDER's own copy is in their inbox — they chose to send it
+  const mine = await dm.listFolder(a, { folder: "inbox" });
+  assert.equal(mine.items.length, 1);
+  assert.equal(mine.items[0].preview, "hello there", "trimmed, and visible to its author");
+  assert.equal(mine.items[0].unread, 0, "your own message is not unread to you");
+
+  const summary = await dm.unreadSummary(b);
+  assert.deepEqual(summary, { inbox: 0, requests: 1 });
+});
+
+test("DM store: accepting moves the thread and opens the channel",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "knock" });
+
+  // the one-knock law, through the store
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: a, body: "again" }),
+    (e) => e.name === "MessageRefused" && e.code === "P0003");
+
+  assert.equal(await dm.acceptRequest(b, convo.id), true);
+  assert.equal((await dm.listFolder(b, { folder: "requests" })).items.length, 0);
+  assert.equal((await dm.listFolder(b, { folder: "inbox" })).items.length, 1,
+    "an accepted thread leaves the requests queue");
+  // and now the initiator may speak freely
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "thanks for accepting" });
+
+  // the accepted thread DOES show a preview
+  const inbox = await dm.listFolder(b, { folder: "inbox" });
+  assert.equal(inbox.items[0].preview, "thanks for accepting");
+});
+
+test("DM store: an idempotent retry returns the ORIGINAL, even after a block",
+  { skip: !databaseUrl }, async () => {
+  // The red team's finding: the block trigger fires BEFORE INSERT, so a design
+  // that detects duplicates by catching the unique violation reports an
+  // already-delivered message as undelivered. Resolving by SELECT first is the
+  // fix, and this is the sequence that proves it.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+
+  const op = "retry-token-0001";
+  const first = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "did this land?", clientOperationId: op });
+  assert.equal(first.duplicate, false);
+
+  // b now blocks a — the response to the FIRST send was lost, and a retries
+  await dm.blockAccount(b, a);
+  const retry = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "did this land?", clientOperationId: op });
+  assert.equal(retry.duplicate, true, "the retry must recognise its own delivered message");
+  assert.equal(Number(retry.id), Number(first.id));
+
+  // a genuinely NEW message is still refused
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hello?" }),
+    (e) => e.name === "MessageRefused" && e.code === "P0001");
+});
+
+test("DM store: declining blocks, and the block is LISTED BACK to its author",
+  { skip: !databaseUrl }, async () => {
+  // The red team found a decline installing a permanent block that an
+  // ambiguous refusal then hid from the person who made it.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "hi" });
+
+  assert.equal(await dm.declineRequest(b, convo.id), true);
+  const blocks = await dm.listBlocks(b);
+  assert.equal(blocks.length, 1);
+  assert.equal(blocks[0].accountId, a);
+  assert.equal(blocks[0].source, "decline",
+    "distinguished from a manual block so it can be shown and undone");
+  assert.equal(await dm.iBlocked(b, a), true, "so the refusal shown to b names b's own block");
+
+  // and it is undoable
+  assert.equal(await dm.unblockAccount(b, a), true);
+  assert.equal(await dm.iBlocked(b, a), false);
+});
+
+test("DM store: mark-read is monotonic and unread is derived from it",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
+  const m1 = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "one" });
+  const m2 = await dm.sendMessage({ conversationId: convo.id, senderId: a, body: "two" });
+
+  assert.equal((await dm.unreadSummary(b)).inbox, 1, "one CONVERSATION unread, not two messages");
+  const thread = await dm.readThread(b, convo.id);
+  assert.equal(thread.messages.length, 2);
+  assert.equal(thread.messages[0].mine, false);
+
+  await dm.markRead(b, convo.id, m2.id);
+  assert.equal((await dm.unreadSummary(b)).inbox, 0);
+  // a stale client replaying an older mark must not un-read the newer message
+  await dm.markRead(b, convo.id, m1.id);
+  assert.equal((await dm.unreadSummary(b)).inbox, 0, "GREATEST() keeps it read");
+});
+
+test("DM store: a non-member reading a thread gets the same answer as a missing one",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b);
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal(await dm.readThread(stranger, convo.id), null);
+  assert.equal(await dm.readThread(stranger, "00000000-0000-4000-8000-000000000000"), null,
+    "membership and existence are indistinguishable from outside");
+});
+
+test("DM store: the media consent toggle records BOTH sides, and revocation stamps",
+  { skip: !databaseUrl }, async () => {
+  // Nothing can send an attachment yet (OWNER-DECISIONS #3). What is proven
+  // here is that the STATE the pipeline will enforce against is recorded
+  // per-side and that revoking leaves a timestamp rather than erasing the
+  // fact that consent once existed.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+
+  assert.equal((await dm.readThread(a, convo.id)).mediaConsent.given, false, "off by default");
+  await dm.setMediaConsent(a, convo.id, true);
+  assert.equal((await dm.readThread(a, convo.id)).mediaConsent.given, true);
+  assert.equal((await dm.readThread(b, convo.id)).mediaConsent.given, false,
+    "one side consenting does NOT consent for the other");
+
+  await dm.setMediaConsent(a, convo.id, false);
+  const after = await dm.readThread(a, convo.id);
+  assert.equal(after.mediaConsent.given, false);
+  assert.ok(after.mediaConsent.revokedAt,
+    "revocation is a timestamp, so 'was this sent under a consent that still stands?' stays answerable");
+});
+
 // They live ABOVE the board/ticket test on purpose: that test ends the
 // default pool in its cleanup (see the note at the top of this file).
 test("Postgres transmission lifecycle: author-bound edit and soft delete", { skip: !databaseUrl }, async (t) => {
