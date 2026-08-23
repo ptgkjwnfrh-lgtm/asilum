@@ -8,8 +8,10 @@ lenses, and every claim independently refuted by a separate agent
 
 > ## STATUS, 23 August (later the same day)
 >
-> **All four blockers are fixed. 27 findings remain open: 0 blocker · 9 serious
-> · 11 minor · 7 unverified.**
+> **All four blockers are fixed. 24 findings remain open: 0 blocker · 6 serious
+> · 11 minor · 7 unverified** — and two of the closed ones were closed by
+> **#378 before this file was written**, found by checking `git blame` rather
+> than trusting the entry. Refute before you fix.
 >
 > | PR | what it closed |
 > |---|---|
@@ -18,6 +20,7 @@ lenses, and every claim independently refuted by a separate agent
 > | [#383](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/383) | blocker 4 — the search oracle, **ruled** and recorded |
 > | [#384](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/384) | 3 serious — state that outlived its context (drafts, folder pages, older-page reactions) |
 > | [#385](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/385) | 1 serious — the undo the request banner had always promised |
+> | [#387](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/387) | 1 serious — presence needs an accepted conversation (**v46**); 2 more marked already-dead |
 >
 > Every fixed entry below is marked in place; nothing has been deleted, because
 > the reproduction is still the spec of the test that now guards it.
@@ -244,6 +247,12 @@ Reachability is clean. The back button (line 301) does only setThreadId(null); s
 
 ### `dm.js`
 
+> **⛔ ALREADY DEAD WHEN THIS WAS WRITTEN — do not fix.** The review ran at
+> `79d6c72`; the `EXISTS (… mine …)` membership clause landed in **#378** (`6c409ae`),
+> confirmed by `git blame`. Verified 23 Aug before touching it — refuting first is this
+> file's own first instruction, and here it saved a fix written against code that already
+> had one.
+
 **Problem.** `peerActivity` performs no membership check. It filters `dm_participants WHERE conversation_id=$1 AND account_id <> $2`, which for a non-member returns BOTH participant rows and uses `rows[0]`. Every neighbouring read holds itself to the opposite standard: `readThread`'s comment says "Authorization IS the participant probe. A non-member gets the same answer as a nonexistent conversation, so the endpoint is not a membership oracle", and the mute test (tests/postgres-integration.test.js:~660) asserts "no error that confirms the thread exists". Route op="activity" exposes this directly.
 
 **Reproduce.** Someone holding a conversation uuid they are not a participant in (leaked from a log line, a support paste, a shared screenshot of a request body) hits GET /api/dm?op=activity&c=<uuid>. A nonexistent uuid returns `{typing:null, readUpTo:null}`; a real conversation they are not in returns `{typing:false, readUpTo:0}` — existence confirmed — and, polled every 3s, streams one participant's live typing state and read position to a third party. The reciprocity control was designed so nobody outside the pair sees this.
@@ -255,6 +264,10 @@ Reachability is clean. The back button (line 301) does only setThreadId(null); s
 ---
 
 ### `dm.js`
+
+> **✅ FIXED 23 Aug in #387** — v46 refuses typing on an unaccepted conversation in the
+> trigger, `peerActivity` carries the same gate in the query (no trigger can stop a read),
+> and `pingTyping` answers false instead of raising on every keystroke into a knock.
 
 **Problem.** Read receipts are emitted from UNACCEPTED requests. `peerActivity` has no acceptance gate, and MailDesk.jsx:133-138 POSTs op=read with the newest message id whenever a thread is opened — including a request the recipient opened only to see who it was. v42 explicitly refused reactions on unaccepted conversations because "a reaction on an unaccepted request is a notification a stranger can send"; the same reasoning was not applied to the receipt a stranger can READ. The result is an email-tracking-pixel equivalent: confirmation that a real human opened the knock.
 
@@ -296,6 +309,12 @@ CHAIN VERIFIED IN CODE:
 ---
 
 ### `schema-v41-dm-activity.sql`
+
+> **⛔ HALF ALREADY DEAD — check before fixing.** The BLOCK predicate on `dm_guard_typing`
+> and on `peerActivity` landed in **v44 / #378** (`6c409ae`), after the review ran at
+> `79d6c72`. What was genuinely missing was ACCEPTANCE, not the block — **fixed in #387**
+> (v46). The claim that there is no test is also stale: `tests/postgres-integration.test.js`
+> covers block-vs-presence (v44's own arm) and now knock-vs-presence.
 
 **Problem.** A block does not stop typing indicators or activity reads. `dm_guard_typing` (v41 lines 67-82) checks participation and caps the horizon but never consults `dm_blocks`; `peerActivity` in lib/db/dm.js:651-679 checks reciprocity but consults neither `dm_blocks` nor participation. v42 got this exactly right for reactions ("A block that stops words but allows a heart every few minutes is not a block", schema-v42 lines 72-80) and the identical reasoning was not applied to the typing channel. There is no test for it — tests/postgres-integration.test.js covers block-vs-send and block-vs-reaction, nothing for block-vs-typing.
 
