@@ -54,6 +54,8 @@ export default function MailDesk() {
   const [thread, setThread] = useState(null);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [query, setQuery] = useState("");
+  const [found, setFound] = useState(null);   // null = not searching
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -132,6 +134,39 @@ export default function MailDesk() {
       if (!r.ok) { setNote(data.message || data.error || "that did not work."); return null; }
       return data;
     } catch { setNote("that did not work."); return null; }
+  }
+
+  // Debounced so a typist does not spend the search budget one keystroke at a
+  // time. Two characters minimum, matching the server — a one-character query
+  // walks the alphabet in twenty-six requests.
+  useEffect(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) { setFound(null); return undefined; }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/dm?op=find&q=${encodeURIComponent(q)}&user=`
+          + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+        if (!r.ok) { if (!cancelled) setFound([]); return; }
+        const data = await r.json();
+        if (!cancelled) setFound(data.people || []);
+      } catch { if (!cancelled) setFound([]); }
+    }, 260);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [query]);
+
+  async function startWith(handle) {
+    const text = draft.trim();
+    if (!text) { setNote("write the first message before you send it."); return; }
+    setSending(true);
+    const opId = "s" + Math.abs(Date.now() ^ (text.length * 2654435761)).toString(36) + handle.slice(0, 8);
+    const result = await act("send", { toHandle: handle, body: text, clientOperationId: opId });
+    setSending(false);
+    if (result?.delivered) {
+      setDraft(""); setQuery(""); setFound(null);
+      setThreadId(result.conversationId);
+      await poll();
+    }
   }
 
   async function send() {
@@ -260,6 +295,17 @@ export default function MailDesk() {
           <>
           <div className="mailhead">
             <span className="psub">THE MAIL DESK</span>
+            {/* aria-label only — this codebase has no visually-hidden utility,
+                so a "screen-reader" span would simply render. */}
+            <label className="mailfind">
+              <input
+                type="search"
+                aria-label="find someone by handle"
+                value={query}
+                placeholder="find a handle…"
+                onChange={(e) => { setQuery(e.target.value); setNote(""); }}
+              />
+            </label>
             <div className="mailtabs" role="tablist">
               {["inbox", "requests"].map((f) => (
                 <button
@@ -286,7 +332,45 @@ export default function MailDesk() {
 
           {note ? <p className="mailnote">{note}</p> : null}
 
-          {items === null ? (
+          {found !== null ? (
+            <div className="mailfound">
+              {found.length === 0 ? (
+                <p className="mailnote">
+                  nobody by that handle. only people who have published a
+                  profile room can be found here.
+                </p>
+              ) : (
+                <>
+                  <ul className="maillist">
+                    {found.map((person) => (
+                      <li key={person.handle}>
+                        <button type="button" onClick={() => startWith(person.handle)} disabled={sending}>
+                          <span className="mailwho">{person.handle}</span>
+                          {person.kind === "business" ? <span className="mailkind">STOREFRONT</span> : <span />}
+                          <span className="mailprev">
+                            write the first message below, then choose them.
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mailcompose">
+                    <textarea
+                      aria-label="your first message"
+                      value={draft}
+                      maxLength={2000}
+                      placeholder="your first message…"
+                      onChange={(e) => setDraft(e.target.value)}
+                    />
+                  </div>
+                  <p className="mailnote">
+                    one message until they reply — that is the whole of a first
+                    contact here.
+                  </p>
+                </>
+              )}
+            </div>
+          ) : items === null ? (
             <p className="mailnote">reading…</p>
           ) : items.length === 0 ? (
             <p className="mailnote">

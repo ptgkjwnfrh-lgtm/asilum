@@ -18,9 +18,10 @@ import { requestSubject } from "../../../lib/security/request.js";
 import { describeRefusal, messagingEnabled, normalizeBody } from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
-  acceptRequest, blockAccount, declineRequest, iBlocked, listBlocks, listFolder,
-  markRead, openConversation, readDmsOpen, readThread, sendMessage, setDmsOpen,
-  setMediaConsent, unblockAccount, unreadSummary,
+  acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
+  listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
+  resolveAddressee, sendMessage, setDmsOpen, setMediaConsent, unblockAccount,
+  unreadSummary,
 } from "../../../lib/db/dm.js";
 
 export const dynamic = "force-dynamic";
@@ -60,9 +61,17 @@ export async function GET(req) {
     if (op === "inbox") {
       const folder = ["inbox", "requests", "archived"].includes(url.searchParams.get("folder"))
         ? url.searchParams.get("folder") : "inbox";
-      return NextResponse.json(await listFolder(me, {
-        folder, cursor: url.searchParams.get("cursor") || "",
-      }));
+      const page = await listFolder(me, { folder, cursor: url.searchParams.get("cursor") || "" });
+      // Render counterparties by HANDLE. The uuid never leaves the server: it
+      // is the addressing key, and handing it to the client is handing over
+      // the thing that makes the search skippable.
+      const handles = await handlesFor(page.items.map((i) => i.otherId));
+      return NextResponse.json({
+        ...page,
+        items: page.items.map(({ otherId, ...rest }) => ({
+          ...rest, handle: handles[otherId] || null,
+        })),
+      });
     }
     if (op === "thread") {
       const id = url.searchParams.get("c") || "";
@@ -71,6 +80,15 @@ export async function GET(req) {
       // endpoint cannot be used to discover that a thread exists.
       if (!thread) return absent();
       return NextResponse.json(thread);
+    }
+    if (op === "find") {
+      // Searching is cheap for us and valuable to an enumerator, so it gets
+      // its own tight bucket separate from every other read.
+      const quota = await consumeRateLimit({
+        scope: "dm-find", subject: requestSubject(req, me), limit: 60, windowMs: 60 * 60 * 1000,
+      });
+      if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+      return NextResponse.json({ people: await findAddressees(me, url.searchParams.get("q") || "") });
     }
     if (op === "blocks") return NextResponse.json({ blocks: await listBlocks(me) });
     return NextResponse.json({ error: "unknown op" }, { status: 400 });
@@ -104,9 +122,23 @@ export async function POST(req) {
       if (!text) return NextResponse.json({ error: "nothing to send" }, { status: 400 });
 
       let conversationId = String(body.conversationId || "");
-      let them = String(body.to || "");
+      // ADDRESSED BY HANDLE, NEVER BY UUID. Accepting a raw account id would
+      // let a caller message any account whose id they can produce — the
+      // search's whole enumeration defence, skipped in one field. The handle
+      // is resolved through the same predicate the search applies, so a handle
+      // kept from before a block does not still work.
+      let them = null;
       if (!conversationId) {
-        if (!them) return NextResponse.json({ error: "who to?" }, { status: 400 });
+        const handle = String(body.toHandle || "");
+        if (!handle) return NextResponse.json({ error: "who to?" }, { status: 400 });
+        them = await resolveAddressee(me, handle);
+        if (!them) {
+          // Deliberately one answer for "no such handle", "they blocked you",
+          // "you blocked them" and "their door is shut".
+          return NextResponse.json(
+            { delivered: false, reason: "not-reachable",
+              message: "this person is not reachable right now." }, { status: 409 });
+        }
         const convo = await openConversation(me, them);
         conversationId = convo.id;
       }
