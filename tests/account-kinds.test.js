@@ -128,18 +128,18 @@ test("an account that never chose has NO row, and reads as the default", () => {
   // back-filled with a row nobody asked for.
   __resetAccountKindsForTests();
   return (async () => {
-    assert.equal(await readAccountKind("acct-never-chose"), null);
-    assert.equal(await accountKind("acct-never-chose"), "passport");
+    assert.equal(await readAccountKind("11111111-1111-4111-8111-111111111111"), null);
+    assert.equal(await accountKind("11111111-1111-4111-8111-111111111111"), "passport");
   })();
 });
 
 test("choosing records the kind AND a ledger entry", async () => {
   __resetAccountKindsForTests();
-  const result = await setAccountKind("acct-1", "business", { actor: "signup" });
+  const result = await setAccountKind("aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa", "business", { actor: "signup" });
   assert.deepEqual(result, { kind: "business", changed: true });
-  assert.equal(await readAccountKind("acct-1"), "business");
+  assert.equal(await readAccountKind("aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa"), "business");
 
-  const history = await accountKindHistory("acct-1");
+  const history = await accountKindHistory("aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa");
   assert.equal(history.length, 1);
   assert.equal(history[0].fromKind, null, "the first choice comes from nothing");
   assert.equal(history[0].toKind, "business");
@@ -150,17 +150,17 @@ test("re-choosing the same kind is a no-op and does NOT pad the ledger", async (
   // A retry, a double-click, or a client that replays its own request must not
   // make the trail unreadable.
   __resetAccountKindsForTests();
-  await setAccountKind("acct-2", "business");
-  const again = await setAccountKind("acct-2", "business");
+  await setAccountKind("bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb", "business");
+  const again = await setAccountKind("bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb", "business");
   assert.deepEqual(again, { kind: "business", changed: false });
-  assert.equal((await accountKindHistory("acct-2")).length, 1);
+  assert.equal((await accountKindHistory("bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb")).length, 1);
 });
 
 test("a change records where it came FROM", async () => {
   __resetAccountKindsForTests();
-  await setAccountKind("acct-3", "passport", { actor: "signup" });
-  await setAccountKind("acct-3", "business", { actor: "admin", note: "verified storefront" });
-  const history = await accountKindHistory("acct-3");
+  await setAccountKind("cccccccc-3333-4333-8333-cccccccccccc", "passport", { actor: "signup" });
+  await setAccountKind("cccccccc-3333-4333-8333-cccccccccccc", "business", { actor: "admin", note: "verified storefront" });
+  const history = await accountKindHistory("cccccccc-3333-4333-8333-cccccccccccc");
   assert.equal(history.length, 2);
   assert.equal(history[0].toKind, "business");
   assert.equal(history[0].fromKind, "passport", "the trail must say what it was");
@@ -170,17 +170,17 @@ test("a change records where it came FROM", async () => {
 
 test("the store refuses a kind or an actor it does not know", async () => {
   __resetAccountKindsForTests();
-  await assert.rejects(() => setAccountKind("acct-4", "superuser"), /unknown account kind/);
-  await assert.rejects(() => setAccountKind("acct-4", "business", { actor: "itself" }), /unknown actor/);
-  await assert.rejects(() => setAccountKind("", "business"), /account id required/);
-  assert.equal(await readAccountKind("acct-4"), null, "a refused write leaves nothing behind");
+  await assert.rejects(() => setAccountKind("dddddddd-4444-4444-8444-dddddddddddd", "superuser"), /unknown account kind/);
+  await assert.rejects(() => setAccountKind("dddddddd-4444-4444-8444-dddddddddddd", "business", { actor: "itself" }), /unknown actor/);
+  await assert.rejects(() => setAccountKind("", "business"), /bare auth uuid/);
+  assert.equal(await readAccountKind("dddddddd-4444-4444-8444-dddddddddddd"), null, "a refused write leaves nothing behind");
 });
 
 test("the roster splits by kind for the admin terminal", async () => {
   __resetAccountKindsForTests();
-  await setAccountKind("a", "business");
-  await setAccountKind("b", "passport");
-  await setAccountKind("c", "business");
+  await setAccountKind("aaaaaaaa-0001-4001-8001-aaaaaaaaaaaa", "business");
+  await setAccountKind("bbbbbbbb-0002-4002-8002-bbbbbbbbbbbb", "passport");
+  await setAccountKind("cccccccc-0003-4003-8003-cccccccccccc", "business");
   assert.deepEqual(await accountKindCounts(), { passport: 1, business: 2 });
 });
 
@@ -235,4 +235,49 @@ test("the nav never offers a door the route guard closes", async () => {
       }
     }
   }
+});
+
+// --- ADR-002: a kind belongs to an ACCOUNT, never to a device ---------------
+
+test("only a bare auth uuid may hold a kind — ADR-002", async () => {
+  // v37 keyed on the raw identity string. The chooser then wrote the DEVICE id
+  // `u-<uuid>` (adoption to `sb-<uuid>` happens later, in the shell's auth
+  // listener), and the reader looked up `sb-<uuid>`. The row existed, no error
+  // was raised, and the account read as `passport` forever: a business whose
+  // storefront silently never appeared.
+  __resetAccountKindsForTests();
+  const uuid = "eeeeeeee-5555-4555-8555-eeeeeeeeeeee";
+
+  for (const wrong of [`u-${uuid}`, `sb-${uuid}`, "guest", "acct-1", "", null, undefined]) {
+    await assert.rejects(
+      () => setAccountKind(wrong, "business"),
+      /bare auth uuid/,
+      `${JSON.stringify(wrong)} must not be able to hold a kind`);
+  }
+
+  // and the bare uuid works, case-insensitively
+  await setAccountKind(uuid.toUpperCase(), "business");
+  assert.equal(await readAccountKind(uuid), "business",
+    "the uuid is normalized, so case cannot split one account into two rows");
+});
+
+test("a device identity reads as an unchosen passport, not as an error", async () => {
+  // Reading is the hot path on every page. A device that has not signed in is
+  // definitionally a passport (ADR-002: a business account is impossible for a
+  // signed-out user), so the read answers rather than throwing.
+  __resetAccountKindsForTests();
+  assert.equal(await readAccountKind("u-eeeeeeee-5555-4555-8555-eeeeeeeeeeee"), null);
+  assert.equal(await accountKind("u-eeeeeeee-5555-4555-8555-eeeeeeeeeeee"), "passport");
+});
+
+test("the store and the route agree on what an account id is", async () => {
+  // The defect was a DISAGREEMENT between two id spaces, so pin that the
+  // helper the route uses produces exactly what the store accepts.
+  const { accountIdFromIdentity } = await import("../lib/identity.js");
+  const uuid = "ffffffff-6666-4666-8666-ffffffffffff";
+  assert.equal(accountIdFromIdentity("sb-" + uuid), uuid);
+  assert.equal(accountIdFromIdentity("u-" + uuid), null, "a device identity maps to no account");
+  __resetAccountKindsForTests();
+  await setAccountKind(accountIdFromIdentity("sb-" + uuid), "business");
+  assert.equal(await readAccountKind(uuid), "business");
 });
