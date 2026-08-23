@@ -879,6 +879,46 @@ test("DM unsend: a reaction cannot land on a tombstone",
   assert.equal(await dm.unsendMessage(a, m.id), false, "an unsend cannot be undone or repeated");
 });
 
+test("DM settings: a refused half rolls the other half back",
+  { skip: !databaseUrl }, async () => {
+  // A SERIOUS finding of the 23 Aug register. The settings op applied
+  // activity_signals and dms_open as two separate autocommit statements. A
+  // BUSINESS closing its door is refused by the v40 trigger — and by then the
+  // signals write had already committed, so the caller got a 409 with half of
+  // what they asked for standing, and the refusal body carried no state to
+  // tell them which half.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: shop } = await dmAccounts(pool);
+  await pool.query(`INSERT INTO account_kinds (account_id, kind) VALUES ($1,'business')
+                    ON CONFLICT (account_id) DO UPDATE SET kind='business'`, [shop]);
+
+  assert.equal(await dm.readActivitySignals(shop), true, "the default both start from");
+  assert.equal(await dm.readDmsOpen(shop), true);
+
+  await assert.rejects(
+    () => dm.setDmSettings(shop, { activitySignals: false, dmsOpen: false }),
+    (e) => e.code === "P0004", "a business cannot switch messages off");
+
+  assert.equal(await dm.readActivitySignals(shop), true,
+    "and the half that WAS legal must not survive the refusal — one gesture, one act");
+  assert.equal(await dm.readDmsOpen(shop), true);
+
+  // the legal half alone still applies
+  await dm.setDmSettings(shop, { activitySignals: false });
+  assert.equal(await dm.readActivitySignals(shop), false);
+  assert.equal(await dm.readDmsOpen(shop), true, "untouched, because it was not asked about");
+
+  // and a passport may do both together
+  const { lo: person } = await dmAccounts(pool);
+  await dm.setDmSettings(person, { activitySignals: false, dmsOpen: false });
+  assert.equal(await dm.readActivitySignals(person), false);
+  assert.equal(await dm.readDmsOpen(person), false);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;

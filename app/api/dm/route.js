@@ -20,14 +20,14 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 // account on three devices got three times the budget and the account was
 // never the unit being limited. JS drops extra arguments without a word.
 import { requestSubject } from "../../../lib/security/request.js";
-import { describeRefusal, messagingEnabled, normalizeBody } from "../../../lib/dm.js";
+import { describeRefusal, messagingEnabled, normalizeBody, rateBucketFor } from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
   readActivitySignals, resolveAddressee, unsendMessage,
-  sendMessage, setActivitySignals, setDmsOpen, setMediaConsent, setMuted,
+  sendMessage, setDmSettings, setMediaConsent, setMuted,
   unblockByConversation, unblockByHandle,
   unreadSummary,
 } from "../../../lib/db/dm.js";
@@ -145,12 +145,26 @@ export async function POST(req) {
   if (!me) return NextResponse.json({ error: "sign in to use messages" }, { status: 401 });
 
   const op = String(body.op || "");
-  // Sending is the abusable op and gets its own tighter bucket; the rest share
-  // a looser one so a burst of reads cannot exhaust the ability to block.
+  // THREE BUCKETS, BECAUSE THE SAFETY CONTROLS MUST NOT SHARE ONE WITH THE
+  // CHATTER. Sending is the abusable op and keeps its own tight bucket. The
+  // rest used to share a single 240/hour — and the two highest-frequency
+  // writes in the product were in it: typing fires up to once per 2.5 seconds
+  // while composing (1440/hour from one composer) and read fires on every
+  // thread open, while block, decline, unblock and mute drew from the same
+  // 240. The old comment said "a burst of READS cannot exhaust the ability to
+  // block"; the traffic that could exhaust it was writes in that very bucket.
+  //
+  // So presence gets its own generous bucket and cannot starve the controls a
+  // person reaches for when they need them. Throttling presence into failure
+  // only makes an indicator lie; throttling a BLOCK is a safety failure.
+  //
+  // The table itself lives in lib/dm.js so the rule can be tested without a
+  // request: a safety rule asserted only by reading this file is not asserted.
+  const bucket = rateBucketFor(op);
   const quota = await consumeRateLimit({
-    scope: op === "send" ? "dm-send" : "dm-act",
+    scope: bucket.scope,
     subject: me || requestSubject(req),
-    limit: op === "send" ? 120 : 240,
+    limit: bucket.limit,
     windowMs: 60 * 60 * 1000,
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
@@ -257,10 +271,14 @@ export async function POST(req) {
     }
     if (op === "settings") {
       try {
-        if (typeof body.activitySignals === "boolean") {
-          await setActivitySignals(me, body.activitySignals);
-        }
-        if (typeof body.dmsOpen === "boolean") await setDmsOpen(me, body.dmsOpen);
+        // ONE act, one transaction. These were two autocommit writes: a
+        // business closing its door is refused by the v40 trigger, and by then
+        // the activity-signals write had already committed — a 409 with half
+        // the request standing and no way for the client to tell which half.
+        await setDmSettings(me, {
+          activitySignals: typeof body.activitySignals === "boolean" ? body.activitySignals : null,
+          dmsOpen: typeof body.dmsOpen === "boolean" ? body.dmsOpen : null,
+        });
         return NextResponse.json({
           ok: true,
           dmsOpen: await readDmsOpen(me),
@@ -268,7 +286,16 @@ export async function POST(req) {
         });
       } catch (error) {
         // A business trying to close its door is refused by the v40 trigger.
-        return failure(error);
+        // The refusal SAYS what stands, because a control that reports a
+        // failure without its state leaves the checkbox and the database
+        // disagreeing until the next poll.
+        const response = failure(error);
+        if (response.status !== 409) return response;
+        return NextResponse.json({
+          ...(await response.json()),
+          dmsOpen: await readDmsOpen(me),
+          activitySignals: await readActivitySignals(me),
+        }, { status: 409 });
       }
     }
     return NextResponse.json({ error: "unknown op" }, { status: 400 });

@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 
 import {
   BODY_MAX, FOLDERS, decodeCursor, describeRefusal, dmMediaEnabled, encodeCursor,
-  foldersForNewConversation, messagingEnabled, normalizeBody,
+  foldersForNewConversation, messagingEnabled, normalizeBody, rateBucketFor,
 } from "../lib/dm.js";
 
 test("messaging is ABSENT by default, and media needs a second switch", () => {
@@ -230,4 +230,32 @@ test("the panel never renders a raw account id", async () => {
   assert.doesNotMatch(panel, /\botherId\b/,
     "the panel must address people by handle only");
   assert.doesNotMatch(panel, /\baccountId\b/);
+});
+
+test("the safety controls do not share a rate budget with the chatter", () => {
+  // A SERIOUS finding of the 23 Aug register. Everything except `send` shared
+  // one 240/hour bucket, and the two highest-frequency writes in the product
+  // were in it: `typing` fires up to once per 2.5s while composing — 1440/hour
+  // from a single composer — and `read` fires on every thread open, while
+  // `block`, `decline`, `unblock` and `mute` drew from the same 240. The
+  // route's comment claimed "a burst of READS cannot exhaust the ability to
+  // block". The traffic that could exhaust it was writes in that very bucket.
+  const presence = ["typing", "read"].map(rateBucketFor);
+  const safety = ["block", "decline", "unblock", "mute"].map(rateBucketFor);
+
+  for (const p of presence) assert.equal(p.scope, "dm-presence");
+  for (const s of safety) assert.equal(s.scope, "dm-act",
+    "the controls a person reaches for when they need them");
+  assert.notEqual(presence[0].scope, safety[0].scope,
+    "which is the whole point: one cannot starve the other");
+
+  // A single composer can spend 1440/hour on its own, so the presence budget
+  // has to clear that with room, and it must never be the safety budget.
+  assert.ok(presence[0].limit > 1440, "a typist must not throttle their own indicator");
+
+  assert.equal(rateBucketFor("send").scope, "dm-send", "sending keeps its own tighter bucket");
+  assert.ok(rateBucketFor("send").limit < safety[0].limit);
+  assert.equal(rateBucketFor("something-new").scope, "dm-act",
+    "an unknown op falls into the tight bucket, not the generous one");
+  assert.equal(rateBucketFor(undefined).scope, "dm-act");
 });
