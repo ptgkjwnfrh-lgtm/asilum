@@ -927,7 +927,10 @@ test("a block stops typing and read receipts in BOTH directions",
 
 test("peerActivity refuses a conversation I am not in", { skip: !databaseUrl }, async () => {
   // It filters `account_id <> me`, which without a membership check answers
-  // for ANY conversation id a caller can name.
+  // for ANY conversation id a caller can name. The conversation is ACCEPTED on
+  // purpose: after v46 an unaccepted one returns nothing to anybody, so
+  // leaving it a knock would let this test pass without membership ever being
+  // checked — a green light for the wrong reason.
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
   const dm = await import("../lib/db/dm.js");
@@ -935,6 +938,8 @@ test("peerActivity refuses a conversation I am not in", { skip: !databaseUrl }, 
 
   const { lo: a, hi: b } = await dmAccounts(pool);
   const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  // v46: presence needs an ACCEPTED conversation — a knock carries none.
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
   await dm.markRead(b, convo.id, 0);
   const { lo: stranger } = await dmAccounts(pool);
   const peeked = await dm.peerActivity(stranger, convo.id);
@@ -1276,6 +1281,8 @@ test("activity: typing expires rather than needing a 'stopped' write",
 
   const { lo: a, hi: b } = await dmAccounts(pool);
   const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  // v46: presence needs an ACCEPTED conversation — a knock carries none.
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
 
   assert.equal((await dm.peerActivity(a, convo.id)).typing, false);
   await dm.pingTyping(b, convo.id);
@@ -1305,6 +1312,8 @@ test("activity: someone with signals off does not even write a typing row",
 
   const { lo: a, hi: b } = await dmAccounts(pool);
   const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  // v46: presence needs an ACCEPTED conversation — a knock carries none.
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
   await dm.setActivitySignals(b, false);
   assert.equal(await dm.pingTyping(b, convo.id), false);
   const rows = await pool.query(`SELECT 1 FROM dm_typing WHERE conversation_id=$1 AND account_id=$2`,
@@ -1320,6 +1329,8 @@ test("activity: a non-participant cannot claim to be typing", { skip: !databaseU
 
   const { lo: a, hi: b } = await dmAccounts(pool);
   const convo = await dm.openConversation(a, b);
+  // v46: presence needs an ACCEPTED conversation — a knock carries none.
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
   const { lo: stranger } = await dmAccounts(pool);
   await assert.rejects(
     () => pool.query(`INSERT INTO dm_typing (conversation_id, account_id, typing_until)
@@ -1337,6 +1348,8 @@ test("activity: a client cannot pin itself 'typing' for an hour", { skip: !datab
 
   const { lo: a, hi: b } = await dmAccounts(pool);
   const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  // v46: presence needs an ACCEPTED conversation — a knock carries none.
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [convo.id]);
   await pool.query(`INSERT INTO dm_typing (conversation_id, account_id, typing_until)
                     VALUES ($1,$2, now() + interval '1 hour')`, [convo.id, b]);
   const row = await pool.query(
