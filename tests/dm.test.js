@@ -68,6 +68,67 @@ test("MY OWN block is explained; someone else's refusal is not", () => {
   // conversation and the product, not about the other person's choices.
   assert.equal(describeRefusal("P0003", {}).reason, "awaiting-reply");
   assert.equal(describeRefusal("P0004", {}).reason, "business-always-open");
+
+  // AND SO ARE THESE. A MINOR finding of the 23 Aug register: P0005 and 42501
+  // fell through to "this person is not reachable right now." P0005 is raised
+  // on a message that was unsent or redacted — a fact about the MESSAGE — so
+  // reacting to something the other person had just withdrawn told the reader
+  // their correspondent had become unreachable. The vagueness above protects
+  // somebody's privacy; spending it here bought nothing and said something
+  // false.
+  const gone = describeRefusal("P0005", {});
+  assert.equal(gone.reason, "message-gone");
+  assert.doesNotMatch(gone.message, /reachable/, "nobody became unreachable");
+  assert.doesNotMatch(gone.message, /person/i, "and it is not about a person at all");
+
+  const mark = describeRefusal("42501", {});
+  assert.equal(mark.reason, "mark-unavailable");
+  assert.doesNotMatch(mark.message, /reachable/);
+
+  // The two that MUST stay collapsed are still the only ones that collapse.
+  const collapsed = ["P0001", "P0002"].map((c) => describeRefusal(c, {}).reason);
+  assert.deepEqual(collapsed, ["not-reachable", "not-reachable"]);
+  for (const code of ["P0003", "P0004", "P0005", "42501"]) {
+    assert.notEqual(describeRefusal(code, {}).reason, "not-reachable",
+      `${code} is a fact about the conversation, not a claim about a person`);
+  }
+
+  // An unknown code still collapses — a refusal nobody has described yet must
+  // not invent a specific reason for itself.
+  assert.equal(describeRefusal("P9999", {}).reason, "not-reachable");
+
+  // And MY OWN block still outranks every one of them: the caller is entitled
+  // to their own answer whatever the trigger said.
+  for (const code of ["P0001", "P0003", "P0005", "42501"]) {
+    assert.equal(describeRefusal(code, { callerBlockedThem: true }).reason, "you-blocked-them");
+  }
+});
+
+test("the caller's own block is answerable on EVERY path, not just first contact", async () => {
+  // The MINOR finding this closes: lib/dm.js promises "Yours is always
+  // explained, and always with the undo", and the route could only honour it
+  // where it happened to have resolved the other person already — first
+  // contact by handle. Every send into an existing conversation, and every
+  // reaction, had nobody to ask about.
+  //
+  // The decliner is the ONLY person this product lets create a block, so they
+  // were also the most likely person to hit the collapsed answer about their
+  // own decision.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const route = readFileSync(
+    fileURLToPath(new URL("../app/api/dm/route.js", import.meta.url)), "utf8");
+
+  assert.match(route, /const peer = them \|\| await peerOf\(me, conversationId\)/,
+    "the send path resolves the counterparty when the handle branch did not");
+  assert.match(route, /await peerOfMessage\(me, body\.messageId\)/,
+    "and the reaction path resolves it from the message");
+
+  // No `failure(error)` call in a MessageRefused catch may go without the
+  // caller-block question being asked first.
+  const reactBlock = route.slice(route.indexOf('if (op === "react")'));
+  assert.match(reactBlock.slice(0, 900), /callerBlockedThem: mine/,
+    "the reaction path used to call failure(error) with no extra at all");
 });
 
 test("a body is stripped, bounded, and an empty one stays empty", () => {

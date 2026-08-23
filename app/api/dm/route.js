@@ -29,8 +29,8 @@ import {
   MessageRefused, MessagingUnavailable,
   acceptRequest, blockAccount, declineRequest, findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
-  peerActivity, pingTyping, clearTyping, react, reactionKinds, reactionsFor,
-  recipientFollowsSender,
+  peerActivity, peerOf, peerOfMessage, pingTyping, clearTyping, react,
+  reactionKinds, reactionsFor, recipientFollowsSender,
   readActivitySignals, resolveAddressee, unsendMessage,
   sendMessage, setDmSettings, setMediaConsent, setMuted,
   unblockByConversation, unblockByHandle,
@@ -259,9 +259,19 @@ export async function POST(req) {
       } catch (error) {
         // If the refusal is MY OWN block, say so and offer the undo. Only
         // someone else's reasons are collapsed — see lib/dm.js.
+        //
+        // `them` is only assigned on the first-contact-by-handle branch, so
+        // this used to be answerable on exactly one path: the FIRST message
+        // ever sent to somebody. Every send after that, and every send from the
+        // thread view, had nobody to ask about and collapsed the caller's own
+        // block into "this person is not reachable right now." — the exact
+        // withholding the ambiguity rule exists to prevent, aimed at the only
+        // person entitled to the answer. Resolve the counterparty from the
+        // conversation when the handle path did not hand one over.
         let mine = false;
-        if (error instanceof MessageRefused && them) {
-          mine = await iBlocked(me, them).catch(() => false);
+        if (error instanceof MessageRefused) {
+          const peer = them || await peerOf(me, conversationId).catch(() => null);
+          if (peer) mine = await iBlocked(me, peer).catch(() => false);
         }
         return failure(error, { callerBlockedThem: mine });
       }
@@ -305,7 +315,16 @@ export async function POST(req) {
         const result = await react(me, body.messageId, body.emoji ?? null);
         return NextResponse.json({ ok: true, ...result });
       } catch (error) {
-        return failure(error);
+        // The reaction path holds a message id rather than a conversation, and
+        // it used to call failure() with no `extra` at all — so a reaction
+        // refused by the caller's OWN block was described as the other person
+        // being unreachable, in a thread the caller is looking at.
+        let mine = false;
+        if (error instanceof MessageRefused) {
+          const peer = await peerOfMessage(me, body.messageId).catch(() => null);
+          if (peer) mine = await iBlocked(me, peer).catch(() => false);
+        }
+        return failure(error, { callerBlockedThem: mine });
       }
     }
     if (op === "unsend") {
