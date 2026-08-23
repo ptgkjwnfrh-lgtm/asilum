@@ -68,3 +68,54 @@ too, and a law that lives in one caller is a convention.
 - **Ambiguous refusals** — collapsing every negative outcome to "not
   reachable" hides a person's OWN block from them. The core tells you when the
   refusal is yours.
+
+---
+
+## RULING — search is not a block detector (23 Aug, autonomy window)
+
+**Blocker 4** of `dm-open-findings-2026-08-23.md` was a design error of mine,
+not an oversight. I wrote the rule that collapses "they blocked you" and "their
+door is shut" into one sentence — *"precisely because distinguishing them tells
+a stranger which one it was"* — and then, three PRs later, excluded blockers
+from the DM search. A person vanishing from your search says exactly what the
+collapsed refusal refuses to say.
+
+The register parked it as needing a ruling because both options look like they
+leak something. **The owner was away, so I made the call.** It is one predicate
+and it reverses in one line; the reasoning is here so that reversal is an
+informed one.
+
+### The ruling
+**A person who has blocked me stays LISTED in search, and stays UNADDRESSABLE.**
+
+`findAddressees` excludes only blocks *I* made. `resolveAddressee` keeps the
+full bidirectional predicate, so addressing still fails — with the same
+collapsed refusal, from the same branch, as a closed door or a handle nobody
+registered. It returns *before* `openConversation`, so a blocked sender cannot
+bring an empty thread into existence in someone's requests folder.
+
+### Why this and not the other way
+- **The exclusion never enforced anything.** A profile room is a public page.
+  The handle was always visible; only the DM search hid it. Enforcement lives
+  in the trigger and in `resolveAddressee`, and neither moved.
+- **It cost the entire ambiguity design.** Two searches — one from your own
+  account, one from a throwaway — read the block. Against a business it took no
+  second account at all: a business cannot close its door, so absence could
+  only mean a block.
+- **Detection is the cost driver in ban evasion.** Someone who cannot tell
+  whether a block landed wastes effort. Someone with a definitive read
+  re-registers immediately.
+
+### What it costs, stated plainly
+Someone you blocked can see your handle in a DM search result. They could
+already see it on your public room, and they cannot write to you from either.
+If the owner would rather the blocked person never see the handle in the mail
+desk at all, that is a legitimate product preference — but it brings the oracle
+back with it, and the honest version of that choice is to also drop the
+ambiguity in `describeRefusal` and tell people plainly when they have been
+blocked. Half of each is the state we were in.
+
+### To reverse
+Restore the second arm of the `NOT EXISTS` in `findAddressees`
+(`b.blocker_account_id = r.account_id AND b.blocked_account_id = $1`) and
+update the "DM search is not a block detector" test. Read this note first.

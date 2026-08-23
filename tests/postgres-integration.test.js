@@ -1284,7 +1284,7 @@ test("DM search finds ONLY people who published a room", { skip: !databaseUrl },
     "the uuid must never leave the server — it is the key that skips the search");
 });
 
-test("DM search excludes me, blocks in EITHER direction, and closed doors",
+test("DM search is not a block detector",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
@@ -1308,16 +1308,46 @@ test("DM search excludes me, blocks in EITHER direction, and closed doors",
   await dm.setDmsOpen(doorShut, false);
 
   const hits = (await dm.findAddressees(me, `x${tag}`, { limit: 10 })).map((h) => h.handle);
-  assert.deepEqual(hits, [`x${tag}-d`],
-    "self, both block directions and a closed passport are all absent");
 
-  // and the same predicate guards ADDRESSING, so a handle kept from before a
-  // block cannot still open a thread
+  // BLOCKER 4 of the 23 Aug register, and the assertion this test used to
+  // make is the defect. It required `x-b` — the person who blocked ME — to be
+  // ABSENT, which made absence caller-specific and therefore readable: search
+  // the handle from your own account and from a throwaway, compare, and you
+  // have been told the block landed. For a business it took no second account
+  // at all, since a business cannot close its door.
+  //
+  // A person who blocked me is LISTED. Nothing is leaked by that: their room
+  // is a public page, so the handle was already visible.
+  assert.deepEqual(hits, [`x${tag}-b`, `x${tag}-d`],
+    "a block made against me is not a fact the result set may carry");
+
+  // What the block actually stops is ADDRESSING, and that predicate keeps
+  // BOTH directions — so a handle kept from before a block, or read off a
+  // public room, still opens nothing.
   assert.equal(await dm.resolveAddressee(me, `x${tag}-a`), null, "a person I blocked");
-  assert.equal(await dm.resolveAddressee(me, `x${tag}-b`), null, "a person who blocked me");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-b`), null,
+    "a person who blocked me — visible, and still unaddressable");
   assert.equal(await dm.resolveAddressee(me, `x${tag}-c`), null, "a closed door");
   assert.equal(await dm.resolveAddressee(me, `x${tag}-me`), null, "myself");
   assert.equal(await dm.resolveAddressee(me, `x${tag}-d`), openPerson);
+
+  // The refusals must be INDISTINGUISHABLE, which is the property the whole
+  // ruling rests on: a null from a block reads exactly like a null from a
+  // closed door and from a handle nobody ever registered.
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-nobody`), null, "never existed");
+
+  // And a business that blocked me stays listed too — the case where absence
+  // needed no second account to interpret.
+  const { lo: shopBlockedMe } = await dmAccounts(pool);
+  await publishRoom(pool, shopBlockedMe, `x${tag}-shop`);
+  await pool.query(
+    `INSERT INTO account_kinds (account_id, kind) VALUES ($1,'business')
+     ON CONFLICT (account_id) DO UPDATE SET kind='business'`, [shopBlockedMe]);
+  await dm.blockAccount(shopBlockedMe, me);
+  const withShop = (await dm.findAddressees(me, `x${tag}`, { limit: 10 })).map((h) => h.handle);
+  assert.ok(withShop.includes(`x${tag}-shop`),
+    "a business cannot close its door, so its absence could only ever mean a block");
+  assert.equal(await dm.resolveAddressee(me, `x${tag}-shop`), null, "and it is still unaddressable");
 });
 
 test("a BUSINESS is always findable — it cannot close its door", { skip: !databaseUrl }, async () => {
