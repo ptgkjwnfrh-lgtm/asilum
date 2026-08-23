@@ -2343,3 +2343,28 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .e4-seek { flex-wrap: wrap; }
   .e4-seek label { width: 100%; }
 }
+
+/* The account-kind chooser (AccountSignup). Two doors, equal weight — the
+   layout must not argue for one, because the choice removes surfaces either
+   way and a person who picks wrong cannot undo it themselves. */
+.kindpick { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 12px; }
+.kindopt {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 12px 12px 11px; text-align: left; cursor: pointer;
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  font: inherit;
+}
+.kindopt:hover { border-color: var(--ink); }
+.kindopt.cur { border: 2px solid var(--ink); padding: 11px 11px 10px; }
+.kindic { font-size: 15px; line-height: 1; color: var(--red); }
+.kindname { font-weight: 700; letter-spacing: .14em; font-size: 12px; }
+.kindwhat { font-size: 10px; color: var(--grey); line-height: 1.4; }
+.kindwarn { color: var(--red); font-size: 10px; margin-top: 2px; }
+@media (max-width: 420px) { .kindpick { grid-template-columns: 1fr; } }
+
+/* ANALYTICS + WATCH TOWER — the business surfaces. */
+.kindwait { padding: 40px 24px; color: var(--grey); font-size: 12px; letter-spacing: .06em; }
+.ledgergrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 18px 0; }
+.ledgercell { border: 1px solid var(--line); padding: 14px 14px 12px; background: var(--paper); }
+.ledgercell h2 { font-size: 12px; letter-spacing: .16em; margin: 0 0 6px; }
+.ledgercell p { font-size: 11px; color: var(--grey); line-height: 1.5; margin: 0 0 10px; }

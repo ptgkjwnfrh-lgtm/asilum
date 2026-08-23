@@ -17,6 +17,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useOverlayDismiss } from "./dismiss.js";
+import { getUid } from "../../lib/client.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 const SEEN_KEY = "asilum-signup-seen";
@@ -28,6 +29,21 @@ const PASSPORT_MANIFEST = [
   "follows, corrections, purchase tickets",
 ];
 
+// What each kind actually gets. Written as the difference, not as a pitch:
+// someone choosing here is choosing which half of the product exists for them,
+// and the storefront half REMOVES things.
+const BUSINESS_MANIFEST = [
+  "a storefront profile you lay out yourself",
+  "analytics — reach, clicks, follows, foot traffic, earnings",
+  "the watch tower — what this catalog's readers already wear",
+  "direct messages, always open (readers can close theirs; you cannot)",
+];
+
+const KINDS = [
+  { id: "passport", icon: "✚", name: "PASSPORT", what: "you are here to look" },
+  { id: "business", icon: "▤", name: "BUSINESS", what: "you are here to sell" },
+];
+
 function markSeen() {
   try { window.localStorage.setItem(SEEN_KEY, "1"); } catch {}
 }
@@ -36,6 +52,7 @@ export default function AccountSignup() {
   const [open, setOpen] = useState(false);
   const dismissOverlay = useOverlayDismiss(dismiss, open); // AT ghost-click guarded
   const [mode, setMode] = useState("create"); // create | signin
+  const [kind, setKind] = useState("passport"); // passport | business
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -103,6 +120,19 @@ export default function AccountSignup() {
     return address;
   }
 
+  // Records the chosen kind against the device identity. Deliberately
+  // swallows its own failure: see the call site.
+  async function recordKind() {
+    if (kind === "passport") return; // the default; nothing to record
+    try {
+      await fetch("/api/account/kind", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind, user: getUid() }),
+      });
+    } catch { /* the account still exists; it is a passport until corrected */ }
+  }
+
   async function createAccount() {
     const address = validate(true);
     if (!address || busy) return;
@@ -124,7 +154,14 @@ export default function AccountSignup() {
       } else if (data?.session) {
         // Signed in immediately: the shell's auth listener is already
         // adopting the device Passport into this account.
+        //
+        // The kind is recorded AFTER the account exists and is NOT allowed to
+        // fail the signup. If this call does not land the account is a
+        // passport, which is the safe direction — a business can be corrected
+        // at the desk, whereas silently handing someone a storefront they did
+        // not ask for cannot be undone by them.
         markSeen();
+        await recordKind();
         setDone("created");
       } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         // Supabase returns a stub user for an address that already holds an
@@ -133,6 +170,7 @@ export default function AccountSignup() {
         setMode("signin");
       } else if (data?.user) {
         markSeen();
+        await recordKind();
         setDone("confirm");
       } else {
         setNote("the account service gave no answer — try again");
@@ -208,6 +246,7 @@ export default function AccountSignup() {
   if (!open) return null;
 
   const creating = mode === "create";
+  const business = kind === "business";
 
   return (
     <div className="overlay" onClick={dismissOverlay}>
@@ -234,19 +273,46 @@ export default function AccountSignup() {
           <>
             <div className="psub">{creating ? "OPEN AN ACCOUNT" : "SIGN IN"}</div>
             <h2>
-              Hold your Passport<span style={{ color: "var(--red)" }}>.</span>
+              {creating && business ? "Open a storefront" : "Hold your Passport"}
+              <span style={{ color: "var(--red)" }}>.</span>
             </h2>
+
+            {creating ? (
+              <div className="kindpick" role="radiogroup" aria-label="account kind">
+                {KINDS.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={kind === option.id}
+                    className={"kindopt" + (kind === option.id ? " cur" : "")}
+                    onClick={() => { setKind(option.id); setNote(""); }}
+                  >
+                    <span className="kindic" aria-hidden="true">{option.icon}</span>
+                    <span className="kindname">{option.name}</span>
+                    <span className="kindwhat">{option.what}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
             <p className="deck">
-              an account keeps your Passport — the map of taste this device is
-              building — safe across devices. private by default, inspectable
-              any time, erasable in one move.
+              {creating && business
+                ? "a storefront account trades the passport for a ledger: who reaches you, what they already wear, and what they buy. you get analytics and the watch tower instead of the stylist and discovery."
+                : "an account keeps your Passport — the map of taste this device is building — safe across devices. private by default, inspectable any time, erasable in one move."}
             </p>
 
             <ul className="signuplist">
-              {PASSPORT_MANIFEST.map((line) => (
+              {(creating && business ? BUSINESS_MANIFEST : PASSPORT_MANIFEST).map((line) => (
                 <li key={line}>{line}</li>
               ))}
             </ul>
+
+            {creating && business ? (
+              <p className="acctline kindwarn">
+                this cannot be switched later on your own — ask the desk.
+              </p>
+            ) : null}
 
             {creating ? (
               <label className="accountemail">name — optional
