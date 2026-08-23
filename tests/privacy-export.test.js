@@ -8,6 +8,7 @@ import {
 } from "../lib/db/index.js";
 import {
   exportPersonalizationData, purgePersonalizationData, setFollow, EXPORT_MANIFEST,
+  DM_EXPORT_STATUS, RETAINED_AFTER_ERASURE,
 } from "../lib/db/production.js";
 
 // CONSTITUTION.md §6 requires every signal to expose
@@ -219,4 +220,79 @@ test("E9 no declared cap exceeds what its reader will actually return", async ()
   }
 
   await fresh(user);
+});
+
+test("E4 every messaging table is either exported or declared absent, with a reason", () => {
+  // An UNVERIFIED claim of docs/dm-open-findings-2026-08-23.md, checked and
+  // true: erasure and export did not know the DM subsystem existed. No dm_*
+  // table is deleted, none is exported, and the retention disclosure did not
+  // name them — so the /api/privacy DELETE response listed what it kept and
+  // the message store was in neither list. Silence read as "erased".
+  //
+  // E1 above cannot catch it, and says so in its own comment: it requires
+  // every table ERASURE touches to be in the manifest, and a table in NEITHER
+  // list passes. This is the missing half, scoped to the subsystem that
+  // exposed it: a dm_* table must be exported or declared absent WITH A
+  // REASON, so the next messaging table cannot be forgotten the way seven
+  // were.
+  // process.cwd(), like E1 above — `new URL(import.meta.url).pathname` is
+  // percent-encoded, and this repo's directory name has spaces and brackets in
+  // it, so that path does not open.
+  const root = process.cwd();
+  const sql = readFileSync(path.join(root, "supabase", "schema-v40-direct-messages.sql"), "utf8")
+    + readFileSync(path.join(root, "supabase", "schema-v41-dm-activity.sql"), "utf8")
+    + readFileSync(path.join(root, "supabase", "schema-v42-dm-reactions-unsend.sql"), "utf8");
+  const tables = [...sql.matchAll(/CREATE TABLE IF NOT EXISTS\s+(dm_[a-z_]+)/g)].map((m) => m[1]);
+
+  assert.ok(tables.length >= 6, `expected the mail desk's tables, found ${tables.join(", ")}`);
+
+  // A LAW TABLE is not anybody's data. dm_reaction_kinds is a fixed palette
+  // granted SELECT-only — the same shape v42 chose deliberately, because an
+  // open emoji field is a covert text channel. It is not created per person
+  // and belongs in NEITHER list. Named here rather than skipped silently, so a
+  // future law table has to be named too.
+  const LAW_TABLES = new Set(["dm_reaction_kinds"]);
+
+  for (const table of new Set(tables)) {
+    if (LAW_TABLES.has(table)) {
+      assert.ok(!(table in EXPORT_MANIFEST) && !(table in DM_EXPORT_STATUS),
+        `${table} is a law table and must not be claimed as personal data`);
+      continue;
+    }
+    const exported = table in EXPORT_MANIFEST;
+    const declared = table in DM_EXPORT_STATUS;
+    assert.ok(exported || declared,
+      `${table} is in neither the export manifest nor the declared-absent list — `
+      + "which is exactly how the whole subsystem went missing from both");
+    if (!exported) {
+      assert.ok(DM_EXPORT_STATUS[table].length > 20,
+        `${table} is declared absent but the reason is not one`);
+    }
+  }
+  // and the enumeration really did reach the palette — a skip nobody exercises
+  // is a rule nobody has
+  assert.ok(tables.includes("dm_reaction_kinds"));
+});
+
+test("E5 the retention disclosure names the messages it keeps", () => {
+  // The /api/privacy DELETE response returns this array verbatim. It listed
+  // purchase tickets, deidentified counters and the auth account — and not the
+  // message store, which is also kept. A retention list that omits something
+  // retained is a false statement to the person who asked to be forgotten.
+  const named = RETAINED_AFTER_ERASURE.join(" | ").toLowerCase();
+  assert.match(named, /direct messages/, "the messages are named");
+  assert.match(named, /other person/, "and WHY they are kept is named with them");
+  assert.match(named, /blocks you made/, "so are the safety controls erasure must not undo");
+
+  // and the three original entries are still there — this is an addition, not
+  // a rewrite of what was already disclosed
+  assert.match(named, /purchase tickets/);
+  assert.match(named, /deidentified raw event counters/);
+  assert.match(named, /auth account/);
+
+  const source = readFileSync(path.join(process.cwd(), "lib", "db", "production.js"), "utf8");
+  const literals = source.match(/retained: \[/g) || [];
+  assert.deepEqual(literals, [],
+    "and no call site rebuilds the list as a literal — the mem branch drifted from "
+    + "the Postgres one exactly that way once before");
 });
