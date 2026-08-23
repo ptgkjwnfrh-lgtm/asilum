@@ -302,3 +302,18 @@ test("a deployed commit origin has never heard of is still a hard failure", () =
     assert.match(r.stderr, /force-pushed or deleted commit/);
   } finally { w.cleanup(); }
 });
+
+test("the live-Stripe seam is runnable by one command, not an incantation", () => {
+  // These four arms had never executed anywhere: CI is unkeyed, and `npm test`
+  // does not load .env.local, so the gate read an empty process.env and every
+  // run reported a tidy SKIP. A gauge that cannot be read is not a gauge.
+  const script = PKG.scripts["test:live-stripe"];
+  assert.ok(script, "npm run test:live-stripe must exist");
+  assert.match(script, /tests\/stripe-live\.test\.js/);
+  assert.match(script, /STRIPE_SECRET_KEY=/,
+    "it must pass the key explicitly");
+  // and it must NOT source the whole env file — exporting DATABASE_URL
+  // globally once flipped the suite onto live Postgres and wrote into prod.
+  assert.doesNotMatch(script, /--env-file|set -a|source |^\. /,
+    "pass only the Stripe key, never the whole .env.local");
+});
