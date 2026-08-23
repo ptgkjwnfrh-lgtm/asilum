@@ -1481,13 +1481,20 @@ test("Postgres popularity through commitInteractionBatch", { skip: !databaseUrl 
 // threw" — a CHECK failing for an unrelated reason would otherwise read as the
 // law working.
 
-const dmAccounts = () => {
+// CI creates a stub `auth.users (id uuid PRIMARY KEY)` (ci.yml), and v40 adds
+// the conditional FK against it — so a DM account must EXIST before it can
+// hold a conversation. That is the constraint working: a thread cannot name a
+// person who was never here. The fixture seeds the two accounts.
+async function dmAccounts(pool) {
   const ids = [randomUUID(), randomUUID()].sort();  // lo < hi, as the CHECK requires
+  for (const id of ids) {
+    await pool.query(`INSERT INTO auth.users (id) VALUES ($1) ON CONFLICT DO NOTHING`, [id]);
+  }
   return { lo: ids[0], hi: ids[1] };
-};
+}
 
 async function dmFixture(pool, { state = "accepted", openedBy = "lo" } = {}) {
-  const { lo, hi } = dmAccounts();
+  const { lo, hi } = await dmAccounts(pool);
   const opener = openedBy === "lo" ? lo : hi;
   const stamp = state === "accepted" ? ", accepted_at = now()"
     : state === "declined" ? ", declined_at = now()" : "";
@@ -1550,6 +1557,8 @@ test("DM law 2: a passport can close its DMs; a BUSINESS cannot",
   // be closable again. The kind is read LIVE, so no pinned copy can go stale.
   await pool.query(`INSERT INTO account_kinds (account_id, kind) VALUES ($1,'business')
                     ON CONFLICT (account_id) DO UPDATE SET kind='business'`, [c.hi]);
+  // (c.hi already exists in auth.users — the fixture seeded it — so v38's FK
+  // on account_kinds is satisfied.)
   await assert.rejects(
     () => pool.query(`UPDATE dm_settings SET dms_open=false WHERE account_id=$1`, [c.hi]),
     (e) => e.code === "P0004", "a business cannot switch messages off");
@@ -1587,10 +1596,13 @@ test("DM: a non-participant cannot insert into someone else's conversation",
   t.after(async () => { await pool.end(); });
 
   const c = await dmFixture(pool);
+  const stranger = randomUUID();
+  await pool.query(`INSERT INTO auth.users (id) VALUES ($1) ON CONFLICT DO NOTHING`, [stranger]);
   await assert.rejects(
     () => pool.query(`INSERT INTO dm_messages (conversation_id, sender_account_id, body) VALUES ($1,$2,'intruder')`,
-      [c.id, randomUUID()]),
-    (e) => e.code === "42501", "the trigger is the authorization, not the route");
+      [c.id, stranger]),
+    (e) => e.code === "42501",
+    "a REAL account that is simply not in this thread is refused by the trigger, not by the FK");
 });
 
 test("DM: self-conversations and duplicate threads are UNREPRESENTABLE",
@@ -1601,11 +1613,12 @@ test("DM: self-conversations and duplicate threads are UNREPRESENTABLE",
   t.after(async () => { await pool.end(); });
 
   const me = randomUUID();
+  await pool.query(`INSERT INTO auth.users (id) VALUES ($1) ON CONFLICT DO NOTHING`, [me]);
   await assert.rejects(
     () => pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$1,$1)`, [me]),
-    (e) => e.code === "23514", "lo < hi refuses a self-DM");
+    (e) => e.code === "23514", "lo < hi refuses a self-DM, before the FK is even consulted");
 
-  const { lo, hi } = dmAccounts();
+  const { lo, hi } = await dmAccounts(pool);
   await pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$2,$1)`, [lo, hi]);
   await assert.rejects(
     () => pool.query(`INSERT INTO dm_conversations (lo_account_id, hi_account_id, opened_by) VALUES ($1,$2,$2)`, [lo, hi]),
