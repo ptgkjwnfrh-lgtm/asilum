@@ -1221,6 +1221,33 @@ test("DM export: a cap is reported, never silently applied",
   assert.deepEqual(whole2.truncated, { conversations: false, messages: false, blocks: false });
   assert.equal(whole2.oldestExportedMessageId, null);
 
+  // A CAP IN BYTES, because the row cap alone can build a response that cannot
+  // be delivered: 5000 messages x the 2000-character body limit is ~10MB of
+  // bodies before anything else in the export, and a serverless response body
+  // has a ceiling well under that. The export would then FAIL for exactly the
+  // people whose history is large enough to need it, and the route's catch
+  // does not see a response-size rejection — so they would get an unexplained
+  // failure rather than a file that says it was cut.
+  const { lo: chatty, hi: withThem } = await dmAccounts(pool);
+  const long = await dm.openConversation(chatty, withThem, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [long.id]);
+  for (let i = 0; i < 5; i++) {
+    await dm.sendMessage({ conversationId: long.id, senderId: chatty, body: "x".repeat(500) });
+  }
+  const byBytes = await dm.exportMessagesFor(chatty, { bytes: 1400 });
+  assert.ok(byBytes.messages.length >= 1, "a byte cap never returns an empty file");
+  assert.ok(byBytes.messages.length < 5, "but it does stop");
+  assert.equal(byBytes.truncated.messages, true, "and says so");
+  assert.ok(byBytes.oldestExportedMessageId,
+    "a byte cut drops the OLDEST, like the row cap, so the marker still means something");
+  assert.equal(byBytes.caps.bytes, 1400, "the cap it was read under is reported");
+
+  // one message always survives, even one bigger than the whole budget —
+  // returning nothing would be a worse answer than returning what fits
+  const huge = await dm.exportMessagesFor(chatty, { bytes: 1 });
+  assert.equal(huge.messages.length, 1);
+  assert.equal(huge.truncated.messages, true);
+
   // Garbage is not a cap. A negative must not become a cap of ONE — that is a
   // truncation to a single message arrived at by accident, which is exactly
   // the silent cap §6 forbids.
