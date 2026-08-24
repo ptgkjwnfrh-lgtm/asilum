@@ -10,6 +10,7 @@
 // unchanged: dwell, skips, zones, graph, rotation.
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
@@ -1036,7 +1037,11 @@ function AsteriskWhy({ item, onNotice }) {
       <div className="awhyhead"><b className="red">*</b> ASTERISK — WHY THIS</div>
       <div className="awhysum">
         {why.summary}
-        {why.tasteMatch > 0 ? " · taste match " + Math.round(why.tasteMatch * 100) + "%" : ""}
+        {/* A BAND, NOT A PERCENTAGE — constitution A5. "taste match 62%" is a
+            number invented from a dot product over ten hand-weighted
+            aesthetics; the second decimal is not knowledge. confidenceBand()
+            was written to say the true amount and had never been rendered. */}
+        {why.tasteMatch > 0 ? " · " + confidenceBand(why.tasteMatch) : ""}
       </div>
       {(why.warnings || []).map((w) => <div className="awhywarn" key={w}>{w}</div>)}
       {why.uncertainty ? <div className="awhywarn">{why.uncertainty}</div> : null}

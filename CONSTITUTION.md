@@ -250,6 +250,42 @@ The bag stays client-side until then. Same decision: sign-in from a second
 device MERGES both sides (not account-wins, not ask-the-user), with the
 shared-device pollution risk accepted knowingly.
 
+**A5 — THE MARGIN TO ASSUME (Aug 24, 2026).** Extends §5, and narrows it.
+The owner's instruction: *"a very small margin for it to assume things."*
+Asterisk may infer — it is a recommender and inference is the job — but the
+margin between what a person did and what the system says about them is
+small, declared, and never compounds.
+
+1. **One floor, one place.** Whether there is enough evidence to describe a
+   person at all is ONE number in ONE module (`lib/asterisk/margin.js`,
+   `EVIDENCE_FLOOR`). It was the same number typed twice in two files that
+   never referenced each other, plus a third that measured something else and
+   read like the same rule. A floor in three places is a floor nobody can
+   raise.
+2. **Abstention is a shippable answer.** Below the floor, Asterisk says it
+   does not know yet, in words, on the surface — not only in a payload field.
+   Ranking may still fall back to general results; what it may never do is
+   present a general result as a personal one.
+3. **Bands, not percentages.** No surface prints a confidence percentage.
+   `confidenceBand()` is the vocabulary and it already existed for this
+   reason — *"a phrase, never a bare percentage pretending to be objective
+   truth"* — while two screens printed the percentage it was written to
+   prevent. A number carries a precision the evidence does not have.
+4. **An inference is not evidence.** The taste halo bleeds a strong signal
+   into ADJACENT tags a person never touched. That is legitimate for RANKING —
+   it is how a MINIMAL reader is shown an adjacent TAILORED piece instead of a
+   wall of the same thing — and it may never be cited back as "your taste",
+   nor used as the input to a further inference. Fine to rank with, never to
+   cite. A guess drawn from a guess is a claim.
+5. **Separated confidence stays separated on screen.** §5 already forbids
+   averaging the five confidences into one number; showing exactly one of them
+   and calling it "confidence" is the same collapse performed by the UI.
+
+Nothing here loosens the Search-accuracy law: an unknown query still falls
+through honestly to the research queue, and a fabricated reading is still a
+violation. A5 says the same thing about a PERSON that that law already says
+about a QUERY.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with
