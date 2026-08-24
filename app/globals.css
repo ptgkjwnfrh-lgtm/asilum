@@ -2079,6 +2079,10 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .snavs { justify-content: flex-start; }
   .snav { padding: 4px 8px; font-size: 8.5px; }
   .snav .nmeta, .snav .nled, .snav .nic { display: none; }
+  /* The envelope keeps its place at the right end of the row; the word goes,
+     the way every other label in this row does at this width. */
+  .topnav .mailword { display: none; }
+  .topnav .mailbtn { padding: 5px 6px; gap: 4px; }
   .snav.cur::before { display: none; }
   .os-status { display: none; }
 }
@@ -2309,7 +2313,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    The retro "you got mail" corner. An envelope whose flap LIFTS when
    something is waiting, sealed with the house asterisk — the 1990s metaphor
    in this magazine's language rather than a borrowed skeuomorph. */
-.maildesk { position: relative; display: inline-flex; }
+/* THE MAIL DESK RIDES THE DESTINATION ROW, at its right end — where the owner
+   marked it. `flex: none` so it keeps its width while `.snavs` (flex: 1) takes
+   the rest, and `align-self: center` so the envelope sits on the tabs' optical
+   line rather than stretching the 40px row. */
+.maildesk { position: relative; display: inline-flex; flex: none; align-self: center; }
+.topnav .mailbtn { border-radius: var(--ed-snav-rad, 10px); padding: 5px 10px; }
 .mailbtn {
   display: inline-flex; align-items: center; gap: 6px;
   background: none; border: 1px solid transparent; color: var(--ink);
@@ -2393,8 +2402,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 @media (max-width: 760px) {
   .mailpanel {
     position: fixed; left: 10px; right: 10px; width: auto;
-    top: var(--mailpanel-top, 76px);
-    max-height: calc(100vh - var(--mailpanel-top, 76px) - 16px);
+    /* Anchored to the HEADER, not to a guessed number. The desk moved from the
+       top row down to the destination row, so a hardcoded 76px overlapped the
+       row the button now lives in. --head-h is that height, exactly. */
+    top: calc(var(--head-h) + 6px);
+    max-height: calc(100vh - var(--head-h) - 22px);
     overflow-y: auto;
   }
   .mailthread { max-height: 40vh; }
