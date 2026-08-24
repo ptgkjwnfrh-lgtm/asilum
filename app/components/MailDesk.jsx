@@ -17,7 +17,7 @@
 // it is the same rule the account-kind read follows.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useEscape, useClickAway } from "./dismiss.js";
+import { useEscape, useClickAway, useFocusTrap } from "./dismiss.js";
 import { getUid } from "../../lib/client.js";
 // The desk's decisions live in a module because there is no DOM harness in
 // this repo: a rule inside this file is a rule no test can reach. See
@@ -107,6 +107,12 @@ export default function MailDesk() {
 
   useEscape(() => setOpen(false), open);
   useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
+  // THE THIRD PART OF THE DISMISSAL CONTRACT, which this panel never took. It
+  // is a dialog over the page: Tab walked straight into the catalog behind it,
+  // and closing left focus nowhere. useFocusTrap has been in this codebase
+  // since the item modal, and it restores the origin on close — the half
+  // people forget.
+  useFocusTrap(panelRef, open);
 
   const poll = useCallback(async () => {
     const uid = getUid();
@@ -119,13 +125,25 @@ export default function MailDesk() {
       if (!r.ok) { setAvailable(true); setFault(true); return; }
       const data = await r.json();
       setAvailable(true); setFault(false);
-      setCounts({ inbox: data.inbox || 0, requests: data.requests || 0 });
+      // A COUNT THAT CLIMBS OVER A LIST THAT DOES NOT is a panel disagreeing
+      // with itself. The badge poll refreshed the numbers and left `items`
+      // alone, so an open desk showed "2 waiting" above yesterday's rows.
+      setCounts((prev) => {
+        const next = { inbox: data.inbox || 0, requests: data.requests || 0 };
+        if (prev.inbox !== next.inbox || prev.requests !== next.requests) countsMoved.current = true;
+        return next;
+      });
       if (typeof data.activitySignals === "boolean") setSignalsOn(data.activitySignals);
       if (typeof data.dmsOpen === "boolean") setDoorOpen(data.dmsOpen);
     } catch {
       setAvailable(true); setFault(true);
     }
   }, []);
+
+  // Set by the badge poll when a count actually changes, read by the effect
+  // below. A ref rather than state so the poll does not re-render the panel
+  // just to say "nothing happened".
+  const countsMoved = useRef(false);
 
   useEffect(() => {
     poll();
@@ -163,6 +181,17 @@ export default function MailDesk() {
   }, []);
 
   useEffect(() => { if (open) loadFolder(folder); }, [open, folder, loadFolder]);
+
+  // When the counts move, the list under them is stale — refetch page one.
+  // Only page one: re-fetching a scrolled list would either lose the pages the
+  // reader walked or double them, and the snapshot cursor exists precisely so
+  // a conversation that becomes active mid-scroll surfaces at the top on the
+  // next refresh instead of jumping the cursor.
+  useEffect(() => {
+    if (!open || !countsMoved.current) return;
+    countsMoved.current = false;
+    if (!cursor) loadFolder(folder);
+  }, [open, counts, cursor, folder, loadFolder]);
 
   const loadBlocks = useCallback(async () => {
     try {
@@ -303,6 +332,14 @@ export default function MailDesk() {
         const data = await r.json();
         if (!cancelled && openThreadRef.current === forThread) {
           setPeer({ typing: Boolean(data.typing), readYours: Boolean(data.readYours) });
+          // The same tick asks whether anything ARRIVED. `newest` is the id of
+          // the newest message in the thread, which the activity op now
+          // returns; a refresh happens only when it moves.
+          if (data.newest && Number(data.newest) > Number(newestSeen.current || 0)) {
+            newestSeen.current = Number(data.newest);
+            loadThread(forThread);
+            poll();
+          }
         }
       } catch {
         // A missed tick is a quiet indicator, not an error — but quiet means
@@ -324,7 +361,23 @@ export default function MailDesk() {
         body: JSON.stringify({ op: "typing", on: false, conversationId: threadId, user: getUid() }) })
         .catch(() => {});
     };
-  }, [open, threadId, thread?.folder, thread?.messages]);
+  }, [open, threadId, thread?.folder, thread?.messages, loadThread, poll]);
+
+  // A THREAD THAT RECEIVES.
+  //
+  // Until now nothing refetched an open thread. `loadThread` ran on open and
+  // after YOUR OWN actions; the 45-second poll moved only the badge counts and
+  // the 3-second activity poll moved only typing and read. So the other
+  // person's message never arrived: you watched "typing…" appear and then
+  // nothing, until you sent something or closed the panel. Two people could
+  // not hold a conversation in a messaging product.
+  //
+  // It rides the poll that is already running rather than adding a third
+  // timer, and it REPLACES nothing unless something changed: comparing the
+  // newest id keeps a mid-typing composer, the scroll position and every page
+  // of scrollback that #398 fought to preserve.
+  const newestSeen = useRef(0);
+  useEffect(() => { newestSeen.current = thread?.messages?.[0]?.id || 0; }, [thread]);
 
   /** Throttled to one ping per 2.5s: the row lives 6s, so this is enough. */
   function noteTyping() {
@@ -441,13 +494,32 @@ export default function MailDesk() {
           desk on the very click that opened the thread. The contents switch;
           the surface does not. */}
       {open ? (
-        <div className="mailpanel" ref={panelRef}>
+        <div
+          className="mailpanel"
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={threadId ? "conversation" : "the mail desk"}
+          tabIndex={-1}
+        >
         {threadId ? (
           <>
           <div className="mailhead">
             <button className="mailback" onClick={() => showThread(null)}>
               ← THE MAIL DESK
             </button>
+            {/* WHO THIS IS WITH. The header was a back button, MUTE and BLOCK —
+                a reader had to remember which row they had clicked. Somebody
+                who never published a room has no handle, and the desk says so
+                in words rather than rendering a blank, the way the BLOCKED
+                list already does. */}
+            {thread ? (
+              <span className="mailwith">
+                {thread.with
+                  ? <b>{thread.with}</b>
+                  : <em>an account with no public room</em>}
+              </span>
+            ) : null}
             {thread ? (
               <button
                 className={"mailmute" + (thread.muted ? " cur" : "")}
@@ -481,7 +553,7 @@ export default function MailDesk() {
             ) : null}
           </div>
 
-          {note ? <p className="mailnote">{note}</p> : null}
+          {note ? <p className="mailnote" role="status" aria-live="polite">{note}</p> : null}
           {thread === null ? <p className="mailnote">opening…</p> : (
             <>
               {thread.folder === "requests" ? (
@@ -496,7 +568,15 @@ export default function MailDesk() {
                     }}>ACCEPT ✓</button>
                     <button className="btn ghost" onClick={async () => {
                       const r = await act("decline", { conversationId: threadId });
-                      if (r?.ok) { showThread(null); await loadFolder("requests"); await poll(); }
+                      if (r?.ok) {
+                        showThread(null);
+                        // A decline WRITES a block, so the undo list it wrote to
+                        // must be refetched — the manual BLOCK path did this and
+                        // the decline path did not, so the person you had just
+                        // blocked was missing from BLOCKED until the panel was
+                        // closed and reopened.
+                        await loadBlocks(); await loadFolder("requests"); await poll();
+                      }
                     }}>DECLINE + BLOCK</button>
                   </div>
                 </div>
@@ -665,6 +745,106 @@ export default function MailDesk() {
             </div>
           </div>
 
+
+          {folder === "requests" ? (
+            <p className="mailhint">
+              first messages from people you have not spoken to. no preview until
+              you accept — a request should not put a stranger&apos;s words in your
+              list before you agreed to hear them.
+            </p>
+          ) : null}
+
+          {note ? <p className="mailnote" role="status" aria-live="polite">{note}</p> : null}
+
+          {found !== null ? (
+            <div className="mailfound">
+              {found.length === 0 ? (
+                <p className="mailnote">
+                  nobody by that handle. only people who have published a
+                  profile room can be found here.
+                </p>
+              ) : (
+                <>
+                  <ul className="maillist">
+                    {found.map((person) => (
+                      <li key={person.handle}>
+                        <button type="button" onClick={() => startWith(person.handle)} disabled={sending}>
+                          <span className="mailwho">{person.handle}</span>
+                          {person.kind === "business" ? <span className="mailkind">STOREFRONT</span> : <span />}
+                          <span className="mailprev">
+                            write the first message below, then choose them.
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mailcompose">
+                    <textarea
+                      aria-label="your first message"
+                      value={draft}
+                      maxLength={2000}
+                      placeholder="your first message…"
+                      onChange={(e) => setDraft(e.target.value)}
+                    />
+                  </div>
+                  <p className="mailnote">
+                    one message until they reply — that is the whole of a first
+                    contact here.
+                  </p>
+                </>
+              )}
+            </div>
+          ) : items === null ? (
+            <p className="mailnote">reading…</p>
+          ) : items.length === 0 ? (
+            <p className="mailnote">
+              {folder === "requests" ? "no requests." : "no messages yet."}
+            </p>
+          ) : (
+            <ul className="maillist">
+              {items.map((c) => (
+                <li key={c.id} className={c.unread ? "unread" : ""}>
+                  {/* A BUTTON, not a link to /messages/<id>. Two reasons: that
+                      route does not exist, and asilum-ui rule 1 allows exactly
+                      seven destinations — a mail thread is not one of them.
+                      The thread opens inside this panel instead, which is also
+                      where a reader expects it.
+
+                      Order matters: the count is the SECOND child so it lands
+                      in row 1's `auto` column beside the name. Placed after
+                      the preview it wrapped to its own row and stretched full
+                      width, reading as a bar rather than a badge. */}
+                  <button type="button" onClick={() => showThread(c.id)}>
+                    <span className="mailwho">
+                      {/* Knocking needs no published room, so a null handle is
+                          the ORDINARY case in requests — three of them rendered
+                          as three rows all reading "someone". The BLOCKED list
+                          solved this properly; the inbox says the same thing. */}
+                      {c.handle || <em className="mailnohandle">an account with no public room</em>}
+                      {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
+                    </span>
+                    {c.unread ? <span className="mailcount">{c.unread}</span> : <span />}
+                    <span className="mailprev">
+                      {c.preview ? c.preview.slice(0, 90) : <em>no preview</em>}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {cursor && found === null ? (
+            <button className="mailmore" disabled={loadingMore}
+              onClick={async () => { setLoadingMore(true); await loadFolder(folder, cursor); setLoadingMore(false); }}>
+              {loadingMore ? "…" : "MORE ↓"}
+            </button>
+          ) : null}
+
+          {/* THE SETTINGS AND THE UNDO LIST SIT UNDER THE MAIL, not over
+              it. Opening your messages used to mean scrolling past two
+              checkboxes and a list of people you had blocked before you
+              reached a single conversation. The primary object of a
+              surface goes first; the controls that shape it go after. */}
           {/* THE OTHER HALF OF LAW 2. `dms_open` was readable and writable
               through the API and had no control on any surface, so a passport
               could not shut its door. A BUSINESS may not shut its own — the
@@ -747,96 +927,6 @@ export default function MailDesk() {
                 ))}
               </ul>
             </div>
-          ) : null}
-
-          {folder === "requests" ? (
-            <p className="mailhint">
-              first messages from people you have not spoken to. no preview until
-              you accept — a request should not put a stranger&apos;s words in your
-              list before you agreed to hear them.
-            </p>
-          ) : null}
-
-          {note ? <p className="mailnote">{note}</p> : null}
-
-          {found !== null ? (
-            <div className="mailfound">
-              {found.length === 0 ? (
-                <p className="mailnote">
-                  nobody by that handle. only people who have published a
-                  profile room can be found here.
-                </p>
-              ) : (
-                <>
-                  <ul className="maillist">
-                    {found.map((person) => (
-                      <li key={person.handle}>
-                        <button type="button" onClick={() => startWith(person.handle)} disabled={sending}>
-                          <span className="mailwho">{person.handle}</span>
-                          {person.kind === "business" ? <span className="mailkind">STOREFRONT</span> : <span />}
-                          <span className="mailprev">
-                            write the first message below, then choose them.
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mailcompose">
-                    <textarea
-                      aria-label="your first message"
-                      value={draft}
-                      maxLength={2000}
-                      placeholder="your first message…"
-                      onChange={(e) => setDraft(e.target.value)}
-                    />
-                  </div>
-                  <p className="mailnote">
-                    one message until they reply — that is the whole of a first
-                    contact here.
-                  </p>
-                </>
-              )}
-            </div>
-          ) : items === null ? (
-            <p className="mailnote">reading…</p>
-          ) : items.length === 0 ? (
-            <p className="mailnote">
-              {folder === "requests" ? "no requests." : "no messages yet."}
-            </p>
-          ) : (
-            <ul className="maillist">
-              {items.map((c) => (
-                <li key={c.id} className={c.unread ? "unread" : ""}>
-                  {/* A BUTTON, not a link to /messages/<id>. Two reasons: that
-                      route does not exist, and asilum-ui rule 1 allows exactly
-                      seven destinations — a mail thread is not one of them.
-                      The thread opens inside this panel instead, which is also
-                      where a reader expects it.
-
-                      Order matters: the count is the SECOND child so it lands
-                      in row 1's `auto` column beside the name. Placed after
-                      the preview it wrapped to its own row and stretched full
-                      width, reading as a bar rather than a badge. */}
-                  <button type="button" onClick={() => showThread(c.id)}>
-                    <span className="mailwho">
-                      {c.handle || "someone"}
-                      {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
-                    </span>
-                    {c.unread ? <span className="mailcount">{c.unread}</span> : <span />}
-                    <span className="mailprev">
-                      {c.preview ? c.preview.slice(0, 90) : <em>no preview</em>}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {cursor && found === null ? (
-            <button className="mailmore" disabled={loadingMore}
-              onClick={async () => { setLoadingMore(true); await loadFolder(folder, cursor); setLoadingMore(false); }}>
-              {loadingMore ? "…" : "MORE ↓"}
-            </button>
           ) : null}
           </>
         )}

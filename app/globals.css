@@ -2352,6 +2352,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   box-shadow: 0 0 0 1px var(--line); padding: 12px;
 }
 .mailhead { border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+/* who the thread is with, beside the back button */
+.mailwith { font-size: 11px; letter-spacing: .06em; margin-left: 8px; }
+.mailwith b { color: var(--sig); font-weight: 700; }
+.mailnohandle { color: var(--grey); font-style: italic; font-size: 10px; }
+.mailwith em { color: var(--grey); font-style: italic; font-size: 10px; }
 .mailtabs { display: flex; gap: 6px; margin-top: 6px; }
 .mailtabs button {
   display: inline-flex; align-items: center; gap: 5px;
