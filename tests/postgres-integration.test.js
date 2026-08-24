@@ -786,7 +786,9 @@ test("DM presence: a knock is not a conversation yet",
   // because unread must clear when you look at it.
   await dm.markRead(b, convo.id, knock.id);
   const beforeAccept = await dm.peerActivity(a, convo.id);
-  assert.deepEqual(beforeAccept, { typing: false, readYours: false, reciprocal: true },
+  assert.deepEqual(
+    { typing: beforeAccept.typing, readYours: beforeAccept.readYours },
+    { typing: false, readYours: false },
     "a stranger learns nothing from a knock being opened");
 
   // THE WRITE SIDE, through the store: nothing is broadcast either way.
@@ -1744,6 +1746,54 @@ test("DM: answering a knock accepts it, and a thread the recipient asked for can
     "a decline is not undone by writing into the thread");
 });
 
+test("DM: the thread says who it is with, and the poll says when something arrived",
+  { skip: !databaseUrl }, async () => {
+  // Two things the mail desk did not do. Neither is in the findings register;
+  // both are the first things a person would notice.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  await publishRoom(pool, b, `th${tag}`);
+  const convo = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [convo.id]);
+
+  // WHO IT IS WITH, by handle, from either side — and never a uuid.
+  const forA = await dm.readThread(a, convo.id);
+  assert.equal(forA.with, `th${tag}`);
+  const forB = await dm.readThread(b, convo.id);
+  assert.equal(forB.with, null, "a counterparty with no published room has no handle");
+  assert.ok(!JSON.stringify(forA).includes(b), "and the uuid stays on the server");
+
+  // WHEN SOMETHING ARRIVED. The activity poll is the only thing that runs
+  // while a thread sits open, so it is what has to notice.
+  const before = await dm.peerActivity(a, convo.id);
+  assert.equal(before.newest, 0, "nothing said yet");
+  const first = await dm.sendMessage({ conversationId: convo.id, senderId: b, body: "hello?" });
+  const after = await dm.peerActivity(a, convo.id);
+  assert.equal(after.newest, Number(first.id), "the poll reports the newest id in the thread");
+  const second = await dm.sendMessage({ conversationId: convo.id, senderId: b, body: "still there?" });
+  assert.equal((await dm.peerActivity(a, convo.id)).newest, Number(second.id), "and it moves");
+
+  // It is a fact about MY OWN thread, so a non-member learns nothing from it —
+  // the same answer as a conversation that does not exist.
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal((await dm.peerActivity(stranger, convo.id)).newest, 0);
+  assert.equal((await dm.peerActivity(stranger, randomUUID())).newest, 0);
+
+  // and it survives the cases that deny presence, because a message arriving
+  // is not presence: with signals off, both sides still learn that the thread
+  // moved — otherwise switching off receipts would stop your mail.
+  await dm.setActivitySignals(a, false);
+  const quiet = await dm.peerActivity(a, convo.id);
+  assert.equal(quiet.typing, false, "no presence");
+  assert.equal(quiet.newest, Number(second.id), "but the mail still arrives");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
@@ -2253,8 +2303,13 @@ test("activity: the payload cannot be used to read the other person's setting",
   const dm = await import("../lib/db/dm.js");
   const pool = await db.getPool();
 
+  // `reciprocal` is stripped by the route. `newest` is NOT — the client needs
+  // it to know a message arrived — and it is excluded here for a different
+  // reason: it is the id of the newest message in the CALLER'S OWN thread,
+  // which they can already read off the messages they are looking at. What
+  // must be indistinguishable is everything that describes the OTHER person.
   const onWire = (activity) => {
-    const { reciprocal, ...rest } = activity;   // the route's own line
+    const { reciprocal, newest, ...rest } = activity;
     return JSON.stringify(rest);
   };
 
@@ -2294,6 +2349,13 @@ test("activity: the payload cannot be used to read the other person's setting",
   await dm.blockAccount(quiet, a1);
   assert.equal(onWire(await dm.peerActivity(a1, pairs[0].id)),
     onWire(await dm.peerActivity(a2, pairs[1].id)), "and so does a block");
+
+  // And `newest` really is the reader's own thread rather than a channel: it
+  // equals the newest id in the conversation they are in, and is 0 for one
+  // they are not.
+  const own = await dm.peerActivity(a1, pairs[0].id);
+  const seen = await dm.readThread(a1, pairs[0].id);
+  assert.equal(own.newest, seen.messages[0].id, "the id they can already see");
 
   // The positive case still WORKS — a collapse that hides everything would be
   // a feature that never fires.

@@ -169,3 +169,45 @@ test("the panel routes every thread change through one door", async () => {
   assert.equal([...panel.matchAll(/setPeer\(NO_SIGNAL\)/g)].length >= 3, true,
     "on switch, on a bad response, and on a thrown fetch");
 });
+
+test("the panel is a thread that receives, and a desk that leads with the mail", async () => {
+  // Four things the desk did not do, none of them in the findings register,
+  // all of them the first things a person would notice.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
+  const store = readFileSync(root + "lib/db/dm.js", "utf8");
+
+  // 1. AN OPEN THREAD NEVER RECEIVED A MESSAGE. Nothing refetched it: the
+  // badge poll moved counts, the activity poll moved typing and read, and
+  // loadThread ran only on open and after the reader's OWN actions. You
+  // watched "typing…" and then nothing arrived.
+  assert.match(store, /AS newest/, "the activity read returns the newest id in MY thread");
+  assert.match(panel, /newestSeen/, "and the panel remembers what it has already seen");
+  assert.match(panel, /Number\(data\.newest\) > Number\(newestSeen\.current/,
+    "so a refresh happens when it MOVES, not on every tick");
+
+  // 2. You could not see who you were talking to.
+  assert.match(store, /with: \(await handlesFor\(\[member\.rows\[0\]\.other_id\]\)\)/,
+    "readThread carries the counterparty, by handle");
+  assert.match(panel, /thread\.with/);
+  assert.doesNotMatch(panel, /\botherId\b/, "and still never a uuid");
+
+  // 3. A count that climbed over a list that did not move.
+  assert.match(panel, /countsMoved/, "the badge poll now says when the list beneath it is stale");
+
+  // 4. The panel led with two checkboxes and a list of people you had blocked.
+  const listAt = panel.indexOf('className="maillist"');
+  const settingsAt = panel.indexOf('className="mailsignals"');
+  const blocksAt = panel.indexOf('className="mailblocks"');
+  assert.ok(listAt > 0 && settingsAt > 0 && blocksAt > 0);
+  assert.ok(listAt < settingsAt && listAt < blocksAt,
+    "the mail comes before the controls that shape it");
+
+  // and the dismissal contract is complete: the panel is a dialog, it traps
+  // focus, and closing gives focus back — the half people forget.
+  assert.match(panel, /useFocusTrap\(panelRef, open\)/);
+  assert.match(panel, /role="dialog"/);
+  assert.match(panel, /aria-live="polite"/, "and a failure is announced, not just drawn");
+});
