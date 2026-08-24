@@ -30,7 +30,8 @@ import {
   acceptRequest, blockByConversation, declineRequestDetailed,
   findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
-  peerActivity, peerOf, peerOfMessage, pendingKnockBy, pingTyping, clearTyping,
+  peerActivity, peerOf, peerOfMessage, pendingKnockBy, pendingKnockToHandle,
+  pingTyping, clearTyping,
   react, reactionKinds, reactionsFor, recipientFollowsSender,
   readActivitySignals, resolveAddressee, unsendMessage,
   sendMessage, setDmSettings, setMediaConsent, setMuted,
@@ -254,11 +255,18 @@ export async function POST(req) {
         if (!handle) return NextResponse.json({ error: "who to?" }, { status: 400 });
         them = await resolveAddressee(me, handle);
         if (!them) {
-          // Deliberately one answer for "no such handle", "they blocked you",
-          // "you blocked them" and "their door is shut".
+          // THE OTHER SEND PATH HAS TO COLLAPSE THE SAME WAY.
+          //
+          // #403 made an opener whose knock was never accepted read the same
+          // whether it was ignored, declined, blocked or shut out — and did it
+          // in the catch below, which this branch returns before ever reaching.
+          // So the panel's own search composer took the reader straight past
+          // it: knock, get declined, search the handle again (they are still
+          // listed), send — and the sentence changes.
+          const pending = await pendingKnockToHandle(me, handle).catch(() => false);
           return NextResponse.json(
-            { delivered: false, reason: "not-reachable",
-              message: "this person is not reachable right now." }, { status: 409 });
+            { delivered: false, ...describeRefusal("P0001", { knockPending: pending }) },
+            { status: 409 });
         }
         // A THREAD YOU ASKED FOR SHOULD NOT ARRIVE AS A REQUEST. This option
         // existed, was documented and was unit-tested from the first day, and

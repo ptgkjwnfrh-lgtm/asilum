@@ -166,3 +166,29 @@ more than one.
 `dm_settings` is in that list for a reason worth repeating: **both switches
 default to open**, so erasing the row is not neutral. It silently reopens what
 somebody closed.
+
+### AMENDMENT to the search ruling (23 Aug, same day)
+
+The ruling above kept blocked-by-them people **listed** and unaddressable. The
+adversarial pass over the UNVERIFIED findings showed that half-applied it: the
+search still excluded a passport whose **door was shut**, so
+
+> present in search **and** refused on send
+
+could only mean a block, because a shut door would have removed them from the
+results. The refusal collapses P0001 and P0002 on purpose. **Both surfaces have
+to agree for that collapse to be worth anything, and it was the search that
+disagreed.**
+
+`findAddressees` now excludes only: myself, people **I** blocked, and hidden or
+under-review rooms. Everything it lists and `resolveAddressee` refuses is more
+than one thing.
+
+**The cost, stated:** a search result you cannot write to. Their room is a
+public page either way, so nothing is revealed that was not already published —
+and the alternative is a collapse that only looks like one.
+
+And the same day showed the third surface: the **refusal wording** named what
+the payload and the search had stopped naming, on both send paths. An opener
+whose knock was never accepted now reads the same sentence whether it was
+ignored, declined, blocked or shut out — by handle or by conversation.

@@ -1564,6 +1564,69 @@ test("DM: a non-member gets the same answer as a nonexistent conversation, from 
   assert.equal(await dm.peerOf(a, accepted.id), b);
 });
 
+test("DM: both send paths tell an opener the same thing",
+  { skip: !databaseUrl }, async () => {
+  // #403 collapsed the refusal for an opener whose knock was never accepted —
+  // ignored, declined, blocked or shut out all read "one message until they
+  // reply." — and did it in the catch around sendMessage. The OTHER send path
+  // returns before that catch: when a handle does not resolve, the route
+  // answers 409 straight away.
+  //
+  // The panel takes a reader through the second path by itself. Knock, get
+  // declined, search the handle again (they are still listed — the search
+  // lists blockers on purpose), click, send. Two sentences, one difference,
+  // and the opener knows the recipient acted.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const { describeRefusal } = await import("../lib/dm.js");
+  const pool = await db.getPool();
+
+  const tag = randomUUID().slice(0, 6);
+  const { lo: opener, hi: ignoring } = await dmAccounts(pool);
+  const { lo: opener2, hi: declining } = await dmAccounts(pool);
+  await publishRoom(pool, ignoring, `ig${tag}`);
+  await publishRoom(pool, declining, `de${tag}`);
+
+  // both openers knock, by handle, exactly as the panel does
+  for (const [me, handle] of [[opener, `ig${tag}`], [opener2, `de${tag}`]]) {
+    const them = await dm.resolveAddressee(me, handle);
+    assert.ok(them, "the first knock resolves");
+    const convo = await dm.openConversation(me, them);
+    await dm.sendMessage({ conversationId: convo.id, senderId: me, body: "hello" });
+  }
+  // one is ignored; the other declines, which blocks by default
+  const declined = await dm.listFolder(declining, { folder: "requests" });
+  assert.equal(await dm.declineRequest(declining, declined.items[0].id), true);
+
+  // NOW BOTH SEND AGAIN BY HANDLE. The ignored one resolves and is refused by
+  // LAW 3; the declined one does not resolve at all.
+  const ignoredResolves = await dm.resolveAddressee(opener, `ig${tag}`);
+  const declinedResolves = await dm.resolveAddressee(opener2, `de${tag}`);
+  assert.ok(ignoredResolves, "an ignored knock still resolves");
+  assert.equal(declinedResolves, null, "a declined one does not — which is the fork");
+
+  // The route's two answers, built the way the route builds them.
+  const ignoredAnswer = describeRefusal("P0003", {
+    knockPending: await dm.pendingKnockBy(opener, declined.items[0].id) || true,
+  });
+  const declinedAnswer = describeRefusal("P0001", {
+    knockPending: await dm.pendingKnockToHandle(opener2, `de${tag}`),
+  });
+  assert.deepEqual(declinedAnswer, ignoredAnswer,
+    "the handle path must reach the same sentence as the conversation path");
+  assert.equal(declinedAnswer.message, "one message until they reply.");
+
+  // and a handle that never existed is NOT given the pending wording — there
+  // is no knock to be pending, and claiming one would invent a conversation
+  assert.equal(await dm.pendingKnockToHandle(opener2, `no${tag}`), false);
+  assert.equal(await dm.pendingKnockToHandle(opener2, "xy"), false, "too short to be a handle");
+
+  // nor is somebody I never knocked
+  assert.equal(await dm.pendingKnockToHandle(opener, `de${tag}`), false,
+    "it answers only about a conversation the CALLER opened");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
@@ -2288,8 +2351,12 @@ test("DM search is not a block detector",
   //
   // A person who blocked me is LISTED. Nothing is leaked by that: their room
   // is a public page, so the handle was already visible.
-  assert.deepEqual(hits, [`x${tag}-b`, `x${tag}-d`],
-    "a block made against me is not a fact the result set may carry");
+  assert.deepEqual(hits, [`x${tag}-b`, `x${tag}-c`, `x${tag}-d`],
+    "a block made against me is not a fact the result set may carry — AND NEITHER IS "
+    + "A CLOSED DOOR. Listing blockers while hiding closed doors made the pair readable: "
+    + "present in search and refused on send could only mean a block, because a shut "
+    + "door would have removed them. The refusal collapses P0001 and P0002 on purpose, "
+    + "and both surfaces have to agree for that collapse to be worth anything.");
 
   // What the block actually stops is ADDRESSING, and that predicate keeps
   // BOTH directions — so a handle kept from before a block, or read off a
@@ -2305,6 +2372,17 @@ test("DM search is not a block detector",
   // ruling rests on: a null from a block reads exactly like a null from a
   // closed door and from a handle nobody ever registered.
   assert.equal(await dm.resolveAddressee(me, `x${tag}-nobody`), null, "never existed");
+
+  // AND THE TWO SURFACES MUST AGREE. Everything the search lists and the
+  // resolve refuses has to be more than one thing, or "listed but unreachable"
+  // names which one it was.
+  const listedButRefused = [];
+  for (const h of hits) {
+    if (await dm.resolveAddressee(me, h) === null) listedButRefused.push(h);
+  }
+  assert.deepEqual(listedButRefused.sort(), [`x${tag}-b`, `x${tag}-c`].sort(),
+    "a blocker AND a closed door, indistinguishable from each other — one of them "
+    + "alone would have been an answer");
 
   // And a business that blocked me stays listed too — the case where absence
   // needed no second account to interpret.
