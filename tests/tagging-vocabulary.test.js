@@ -14,7 +14,7 @@ import path from "node:path";
 import {
   FACETS, FACET_NAMES, FACET_WEIGHTS, facetOf, facetWeight,
 } from "../lib/tagging/vocabulary.js";
-import { TYPE_WEIGHTS } from "../lib/search/denseQuery.js";
+import { TYPE_WEIGHTS, weighTypedTagScores } from "../lib/search/denseQuery.js";
 
 const root = process.cwd();
 const read = (p) => readFileSync(path.join(root, p), "utf8");
@@ -60,6 +60,37 @@ test("an alias resolves to its facet, and an invented facet resolves to nothing"
   assert.equal(facetOf(""), null);
   assert.equal(facetOf(null), null);
   assert.equal(facetWeight("vibe"), 0, "and it is worth nothing, not a default");
+});
+
+test("a facet name is a string, not a property name", () => {
+  // The fence had an inherited door. `facetOf` looked its answer up in a plain
+  // object, so every name on Object.prototype resolved to something truthy:
+  // `facetOf("constructor")` handed back the `Object` FUNCTION, which passed
+  // the `if (!tagType) return` that is the whole guarantee of this register,
+  // and the write then died on the v49 CHECK — an error naming a constraint
+  // rather than the caller who invented a facet.
+  //
+  // It is reachable: app/api/admin/route.js passes `body.tagType` from a
+  // request straight into addProductTags. So the probes are the prototype,
+  // not a hypothetical.
+  for (const inherited of [
+    "constructor", "__proto__", "toString", "valueOf", "hasOwnProperty",
+    "isPrototypeOf", "propertyIsEnumerable", "toLocaleString",
+  ]) {
+    assert.equal(facetOf(inherited), null,
+      `"${inherited}" is a property of Object, not a facet of a garment`);
+    assert.equal(facetWeight(inherited), 0,
+      `"${inherited}" must be worth nothing, and must not throw reading it`);
+    assert.equal(TYPE_WEIGHTS[inherited] ?? 0.3, 0.3,
+      `"${inherited}" must fall to the unknown floor, not multiply a score by a function`);
+  }
+
+  // And the same door on the scoring side: an inherited hit made `s` NaN,
+  // which is not > 0, so the piece left the results entirely instead of
+  // scoring at the floor.
+  const scored = weighTypedTagScores({ p1: { constructor: 1, material: 1 } });
+  assert.equal(scored.p1, 0.3 + TYPE_WEIGHTS.material,
+    "an unknown facet costs the floor; it does not delete the piece");
 });
 
 test("the search weight table is DERIVED from the vocabulary, not kept beside it", () => {
