@@ -470,3 +470,39 @@ test("every read op is bounded, including the ones nobody thought about", async 
   assert.equal(exportBudget.allowed, true);
   assert.ok(exportBudget.limit > 0, "a real ceiling, not a disabled one");
 });
+
+test("law 7 runs both ways: no client may NAME somebody by account uuid", async () => {
+  // The register's UNVERIFIED entry was about the outbound direction —
+  // op="blocks" returned the bare auth uuid — and #385 closed that. The
+  // adversarial pass found the INVERSE wide open, in the same op block, four
+  // lines under a comment claiming the uuid path was gone.
+  //
+  // What the fallback bought: POST a guessed or overheard uuid to op="block"
+  // (dm_blocks has no foreign key, so it need not belong to anybody), then
+  // read it back as a HANDLE from op="blocks" or from the privacy export —
+  // both project through handlesFor, which has no notion of who may look a
+  // uuid up and was safe only because every previous caller fed it
+  // server-derived ids. uuid in, handle out.
+  //
+  // Closing the readback would not have been enough: there are two, and one of
+  // them is /api/privacy, outside the DM buckets entirely. This closes the
+  // injection.
+  const { readFileSync } = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const route = readFileSync(
+    fileURLToPath(new URL("../app/api/dm/route.js", import.meta.url)), "utf8");
+
+  assert.doesNotMatch(route, /body\.accountId/,
+    "no DM op may take an account uuid from the client — the inverse of the rule "
+    + "that says the server never hands one out");
+
+  // and the ops that name a person do it the two ways a client legitimately can
+  assert.match(route, /blockByConversation\(me, String\(body\.conversationId/);
+  assert.match(route, /unblockByConversation\(me, String\(body\.conversationId/);
+  assert.match(route, /unblockByHandle\(me, String\(body\.handle/);
+
+  // The panel, for its part, never held one to send.
+  const panel = readFileSync(
+    fileURLToPath(new URL("../app/components/MailDesk.jsx", import.meta.url)), "utf8");
+  assert.doesNotMatch(panel, /\baccountId\b/);
+});

@@ -27,7 +27,7 @@ import {
 } from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
-  acceptRequest, blockAccount, blockByConversation, declineRequestDetailed,
+  acceptRequest, blockByConversation, declineRequestDetailed,
   findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
   peerActivity, peerOf, peerOfMessage, pendingKnockBy, pingTyping, clearTyping,
@@ -324,14 +324,27 @@ export async function POST(req) {
       return NextResponse.json({ ok: true });
     }
     if (op === "block") {
-      // By CONVERSATION, like unblock — the client has never held an account
-      // uuid. Until now this op demanded one, so no surface could reach it and
-      // none did: the only way to create a block was DECLINE + BLOCK on a
-      // pending request, and harassment that began after acceptance had no
-      // remedy but MUTE, which does not stop delivery.
-      const ok = body.conversationId
-        ? await blockByConversation(me, String(body.conversationId))
-        : Boolean(await blockAccount(me, String(body.accountId || "")).then(() => true));
+      // BY CONVERSATION, AND ONLY BY CONVERSATION.
+      //
+      // #400 added the conversation path and left the account-uuid fallback
+      // sitting under it, four lines below a comment saying the uuid path was
+      // gone. It was not, and law 7 runs BOTH WAYS: the rule is not only that
+      // the server never hands a uuid out, it is that the server never lets a
+      // client name somebody by one.
+      //
+      // What the fallback bought an attacker: POST a guessed or overheard uuid
+      // — `dm_blocks` has no foreign key, so it need not even belong to
+      // anybody — then read it straight back as a HANDLE, from op="blocks" or
+      // from the privacy export, both of which project through `handlesFor`.
+      // uuid in, handle out. And the bare uuid IS the `sb-<uuid>` identity
+      // string, which the client puts in `?user=` on every request, so it
+      // lands in access logs, Referer headers and support pastes; this turned
+      // any stray one into a named public profile.
+      //
+      // Closing the READBACK would not have been enough — there are two, and
+      // one of them is /api/privacy, outside these buckets entirely. Closing
+      // the INJECTION closes both.
+      const ok = await blockByConversation(me, String(body.conversationId || ""));
       return NextResponse.json({ ok });
     }
     if (op === "unblock") {
