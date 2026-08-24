@@ -1181,6 +1181,42 @@ test("DM export: a cap is reported, never silently applied",
   assert.equal(whole.oldestExportedMessageId, whole.messages[3].id);
 
   // a garbage cap does not become "everything" or "nothing"
+  // A CAP THAT SAYS WHICH CAP. Two caps feed one list: conversations are
+  // limited first, and messages are read only for the survivors. So an account
+  // past the CONVERSATION cap loses whole conversations' worth of messages
+  // while the message list sits far below its own cap — and the caller,
+  // computing `rows.length >= cap` per list, affirmatively reported
+  // `items.truncated: false` while every message of the cut conversations was
+  // absent. §6 forbids a silent cap and that is the field which exists to
+  // satisfy it.
+  const { lo: many } = await dmAccounts(pool);
+  for (let i = 0; i < 3; i++) {
+    const { lo: other } = await dmAccounts(pool);
+    const c = await dm.openConversation(many, other, { knownToRecipient: true });
+    await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`, [c.id]);
+    await dm.sendMessage({ conversationId: c.id, senderId: many, body: `note ${i}` });
+  }
+  const clipped = await dm.exportMessagesFor(many, { conversations: 2 });
+  assert.equal(clipped.conversations.length, 2, "the conversation cap bit");
+  assert.equal(clipped.truncated.conversations, true);
+  assert.ok(clipped.messages.length < 5000, "and the message list is nowhere near ITS cap");
+  assert.equal(clipped.truncated.messages, true,
+    "yet messages ARE missing — a whole conversation of them — and the export must say so");
+  assert.equal(clipped.oldestExportedMessageId, null,
+    "and it must NOT claim the loss is 'everything older than this id', because it is not: "
+    + "the missing messages are whole conversations from anywhere in the history");
+
+  // when the MESSAGE cap is the one that bit, the marker is meaningful again
+  const byMessages = await dm.exportMessagesFor(many, { messages: 2 });
+  assert.equal(byMessages.truncated.messages, true);
+  assert.equal(byMessages.truncated.conversations, false);
+  assert.ok(byMessages.oldestExportedMessageId, "here the cut IS an id, and it is reported");
+
+  // and an untruncated export says so on every list
+  const whole2 = await dm.exportMessagesFor(many);
+  assert.deepEqual(whole2.truncated, { conversations: false, messages: false, blocks: false });
+  assert.equal(whole2.oldestExportedMessageId, null);
+
   // Garbage is not a cap. A negative must not become a cap of ONE — that is a
   // truncation to a single message arrived at by accident, which is exactly
   // the silent cap §6 forbids.
