@@ -443,4 +443,30 @@ test("every read op is bounded, including the ones nobody thought about", async 
     (await import("node:url")).fileURLToPath(new URL("../app/api/dm/route.js", import.meta.url)), "utf8");
   assert.match(route, /consumeGlobalBudget\("dm-read"\)/, "the read path draws it");
   assert.match(route, /consumeGlobalBudget\("dm-write"\)/, "and so does the write path");
+
+  // AND IT IS DRAWN BEFORE THE AUTH ROUND-TRIP. `caller` resolves an `sb-`
+  // claim through Supabase — an outbound GET to GoTrue, the endpoint real
+  // sign-ins traverse. With the breaker under the 401, a request with a junk
+  // bearer token bought one serverless invocation and one unit of the
+  // project's GoTrue limit for free, and registered on no instrument.
+  //
+  // Position, not presence, is the property — so this asserts the ORDER.
+  for (const [handler, scope] of [["GET", "dm-read"], ["POST", "dm-write"]]) {
+    const body = route.slice(route.indexOf(`export async function ${handler}(req)`));
+    const fn = body.slice(0, body.indexOf("\nexport ", 1) + 1 || body.length);
+    const budgetAt = fn.indexOf(`consumeGlobalBudget("${scope}")`);
+    const authAt = fn.indexOf("await caller(req");
+    assert.ok(budgetAt > 0 && authAt > 0, `${handler} must both draw the budget and resolve a caller`);
+    assert.ok(budgetAt < authAt,
+      `${handler} draws ${scope} AFTER the auth round-trip, so an unauthenticated flood is free`);
+  }
+
+  // The export is the heaviest read in the codebase now that it carries the
+  // whole mail desk, and it had no aggregate breaker at all.
+  const privacy = (await import("node:fs")).readFileSync(
+    (await import("node:url")).fileURLToPath(new URL("../app/api/privacy/route.js", import.meta.url)), "utf8");
+  assert.match(privacy, /consumeGlobalBudget\("privacy-export"\)/);
+  const exportBudget = await consumeGlobalBudget("privacy-export");
+  assert.equal(exportBudget.allowed, true);
+  assert.ok(exportBudget.limit > 0, "a real ceiling, not a disabled one");
 });

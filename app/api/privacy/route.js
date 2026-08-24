@@ -12,7 +12,9 @@ import {
 } from "../../../lib/db/production.js";
 import { deleteUserPhotos } from "../../../lib/wardrobe/photos.js";
 import { deleteBuyerProfile } from "../../../lib/vault.js";
-import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import {
+  consumeGlobalBudget, consumeRateLimit, rateLimitResponse,
+} from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +47,18 @@ export async function GET(req) {
   if (!quota.allowed) {
     return NextResponse.json(rateLimitResponse(quota), {
       status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(quota.retryAfterMs / 1000))) },
+    });
+  }
+  // THE AGGREGATE BREAKER, which this route never had. The per-subject 10/hour
+  // bounds one caller; it does not bound a flood of fresh device identities,
+  // and each of those ten requests now reads the WHOLE mail desk on top of
+  // every other personal domain — the heaviest single read in the codebase.
+  // Every other expensive surface draws one of these; this one was written
+  // before the export grew that large.
+  const budget = await consumeGlobalBudget("privacy-export");
+  if (!budget.allowed) {
+    return NextResponse.json(rateLimitResponse(budget), {
+      status: 429, headers: { "Retry-After": String(Math.max(1, Math.ceil(budget.retryAfterMs / 1000))) },
     });
   }
   try {
