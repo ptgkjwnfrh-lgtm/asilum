@@ -97,6 +97,37 @@ test("MY OWN block is explained; someone else's refusal is not", () => {
   // not invent a specific reason for itself.
   assert.equal(describeRefusal("P9999", {}).reason, "not-reachable");
 
+  // AN IGNORED KNOCK AND A DECLINED ONE MUST READ ALIKE. The payload stopped
+  // naming dm_conversations.state (#393) and the WORDING named it anyway:
+  // dm_guard_message checks LAW 1 before LAW 3 and a decline installs a block,
+  // so an opener's second message returns "one message until they reply." while
+  // pending and "this person is not reachable right now." once the recipient
+  // has decided. One extra send and the opener knows they ACTED.
+  const ignored = describeRefusal("P0003", { knockPending: true });
+  for (const code of ["P0001", "P0002"]) {
+    assert.deepEqual(describeRefusal(code, { knockPending: true }), ignored,
+      `${code} on an unaccepted knock must be indistinguishable from being ignored`);
+  }
+  assert.equal(ignored.message, "one message until they reply.",
+    "and the words are true in every one of those cases — they have not replied, "
+    + "and no further message will go");
+
+  // An ACCEPTED conversation is different and stays different: messages used to
+  // arrive there, so their stopping is not concealable, and pretending would be
+  // the lie this avoids.
+  assert.equal(describeRefusal("P0001", { knockPending: false }).reason, "not-reachable");
+
+  // The caller's OWN block still outranks it — that one is always explained,
+  // and always with the undo, even on a knock they opened.
+  assert.equal(
+    describeRefusal("P0001", { knockPending: true, callerBlockedThem: true }).reason,
+    "you-blocked-them");
+
+  // And the collapse is scoped: it must not swallow the two codes that are
+  // facts about the PRODUCT rather than about the recipient's choice.
+  assert.equal(describeRefusal("P0004", { knockPending: true }).reason, "business-always-open");
+  assert.equal(describeRefusal("P0005", { knockPending: true }).reason, "message-gone");
+
   // And MY OWN block still outranks every one of them: the caller is entitled
   // to their own answer whatever the trigger said.
   for (const code of ["P0001", "P0003", "P0005", "42501"]) {
@@ -260,31 +291,48 @@ test("every field the panel reads off an inbox row is one the route sends", asyn
     "if the route's mapping changes, this test's model must change with it");
 });
 
-test("the activity payload does not name WHY a null is null", async () => {
-  // peerActivity returns `reciprocal` so the store can say which case it hit —
-  // your signals off, theirs off, a block, an unaccepted knock, a conversation
-  // you are not in. Forwarding that flag defeats the indistinguishability the
-  // nulls exist to provide: `reciprocal:false` means "yours", and
-  // `reciprocal:true` with a null readUpTo means "theirs". The panel never
-  // read it.
+test("the activity payload is two booleans, so there is nothing to read off it", async () => {
+  // THIS TEST REPLACES ONE THAT COULD NOT HAVE CAUGHT THE DEFECT IT WAS
+  // WRITTEN FOR. The old version built `{ typing: null, readUpTo: null,
+  // reciprocal: true }` BY HAND, destructured it in its own body, and grepped
+  // route.js for the destructuring line. It never called peerActivity and
+  // never compared a signals-ON payload with a signals-OFF one — which is
+  // where the oracle lived. Trap 64 and trap 90 in a single test.
+  //
+  // The real behaviour is proven against Postgres in
+  // tests/postgres-integration.test.js ("the activity payload cannot be used
+  // to read the other person's setting"). What is checked HERE is the SHAPE
+  // the wire is allowed to carry, because a shape with a null in it is a shape
+  // that can carry a fact about the peer.
   const { readFileSync } = await import("node:fs");
   const { fileURLToPath } = await import("node:url");
   const root = fileURLToPath(new URL("..", import.meta.url));
-  const route = readFileSync(root + "app/api/dm/route.js", "utf8");
+  const store = readFileSync(root + "lib/db/dm.js", "utf8");
   const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
 
-  const stored = { typing: null, readUpTo: null, reciprocal: true };
-  const { reciprocal, ...activity } = stored;             // the route's own line
-  assert.deepEqual(activity, { typing: null, readUpTo: null });
-  assert.ok(!("reciprocal" in activity));
+  // Every return from peerActivity must be booleans. A number was the oracle:
+  // `Number(last_read_message_id) || 0` made "signals on, read nothing" into 0
+  // while "signals off" stayed null.
+  const body = store.slice(store.indexOf("export async function peerActivity"));
+  const fn = body.slice(0, body.indexOf("\n}\n") + 2);
+  assert.doesNotMatch(fn, /readUpTo/,
+    "a read POSITION on the wire is a number only some peers produce");
+  assert.match(fn, /readYours: Boolean\(/, "the answer is a yes/no about MY newest message");
+  assert.match(fn, /NOTHING_TO_REPORT/, "and every denied case returns the same shared constant");
 
+  // The constant itself must not contain a null — that is the whole point.
+  const constant = store.match(/const NOTHING_TO_REPORT = Object\.freeze\(([^)]*)\)/);
+  assert.ok(constant, "NOTHING_TO_REPORT must exist");
+  assert.doesNotMatch(constant[1], /null/,
+    "a null here is a value only the denied cases can produce, which is the oracle again");
+
+  // `reciprocal` is the store's own account of WHICH case it was, and it still
+  // does not go on the wire.
+  const route = readFileSync(root + "app/api/dm/route.js", "utf8");
   assert.match(route, /const \{ reciprocal, \.\.\.activity \} = await peerActivity/,
     "if the route stops stripping it, this test's model must change with it");
-  // A property access, not the word: the panel says "reciprocal" in the
-  // checkbox copy on purpose, and a regex that cannot tell those apart is a
-  // test of its own cleverness.
-  assert.doesNotMatch(panel, /\.reciprocal\b/,
-    "and nothing in the panel reads it off the wire");
+  assert.doesNotMatch(panel, /\.reciprocal\b/, "and nothing in the panel reads it off the wire");
+  assert.doesNotMatch(panel, /\.readUpTo\b/, "nor the position that used to leak");
 });
 
 test("the block list is projected like the inbox: handle and conversation, no uuid", async () => {

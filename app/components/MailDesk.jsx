@@ -297,7 +297,7 @@ export default function MailDesk() {
         if (!r.ok) { if (!cancelled && openThreadRef.current === forThread) setPeer(NO_SIGNAL); return; }
         const data = await r.json();
         if (!cancelled && openThreadRef.current === forThread) {
-          setPeer({ typing: data.typing, readUpTo: data.readUpTo });
+          setPeer({ typing: Boolean(data.typing), readYours: Boolean(data.readYours) });
         }
       } catch {
         // A missed tick is a quiet indicator, not an error — but quiet means
@@ -575,14 +575,18 @@ export default function MailDesk() {
               </ul>
 
               {/* The receipt sits under the thread rather than on a bubble:
-                  it is one fact about the conversation ("they have read up to
-                  here"), not a property of each message. `readUpTo` is null
-                  when reciprocity denies it, and null renders NOTHING — a
-                  reader must not be able to tell "not read" from "you turned
-                  your own signals off". */}
+                  it is one fact about the conversation ("they have read what I
+                  last sent"), not a property of each message.
+
+                  The wire now answers exactly that, as a boolean. It used to
+                  send a read POSITION, and the position was an oracle: signals
+                  on with nothing read serialised as 0, signals off as null, so
+                  one request classified the other person's global setting. The
+                  false case now covers every reason at once — including the
+                  ordinary one, that they simply have not read it yet. */}
               {peer.typing ? (
                 <p className="mailactivity typing">typing…</p>
-              ) : peer.readUpTo !== null && myLastId && peer.readUpTo >= myLastId ? (
+              ) : peer.readYours && myLastId ? (
                 <p className="mailactivity">read</p>
               ) : null}
 
@@ -694,6 +698,8 @@ export default function MailDesk() {
             show when I have read a message, and when I am typing
             <span className="agenote">
               reciprocal: with this off you will not see anyone else&apos;s either.
+              it stops you sending those signals — it cannot hide from someone
+              you are already talking to that you stopped.
             </span>
           </label>
 

@@ -30,8 +30,8 @@ import {
   acceptRequest, blockAccount, blockByConversation, declineRequestDetailed,
   findAddressees, handlesFor, iBlocked,
   listBlocks, listFolder, markRead, openConversation, readDmsOpen, readThread,
-  peerActivity, peerOf, peerOfMessage, pingTyping, clearTyping, react,
-  reactionKinds, reactionsFor, recipientFollowsSender,
+  peerActivity, peerOf, peerOfMessage, pendingKnockBy, pingTyping, clearTyping,
+  react, reactionKinds, reactionsFor, recipientFollowsSender,
   readActivitySignals, resolveAddressee, unsendMessage,
   sendMessage, setDmSettings, setMediaConsent, setMuted,
   unblockByConversation, unblockByHandle,
@@ -270,11 +270,19 @@ export async function POST(req) {
         // person entitled to the answer. Resolve the counterparty from the
         // conversation when the handle path did not hand one over.
         let mine = false;
+        let knockPending = false;
         if (error instanceof MessageRefused) {
           const peer = them || await peerOf(me, conversationId).catch(() => null);
           if (peer) mine = await iBlocked(me, peer).catch(() => false);
+          // An opener whose knock was never accepted is told the same thing
+          // whether it was ignored, declined, blocked or shut out — see
+          // describeRefusal. Not asked when the refusal is the caller's OWN
+          // block: that one is always explained, and always with the undo.
+          if (!mine && conversationId) {
+            knockPending = await pendingKnockBy(me, conversationId).catch(() => false);
+          }
         }
-        return failure(error, { callerBlockedThem: mine });
+        return failure(error, { callerBlockedThem: mine, knockPending });
       }
     }
 
