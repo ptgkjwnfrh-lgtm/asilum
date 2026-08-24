@@ -1662,6 +1662,88 @@ test("DM: both send paths tell an opener the same thing",
     "it answers only about a conversation the CALLER opened");
 });
 
+test("DM: answering a knock accepts it, and a thread the recipient asked for can be answered",
+  { skip: !databaseUrl }, async () => {
+  // Pressing ACCEPT was the only way to reach 'accepted', and that button
+  // renders only when the reader's folder is 'requests'. Two consequences,
+  // both reachable in the shipped product:
+  //
+  //   A recipient who simply REPLIED left the state at 'requested'. LAW 3
+  //   gates on `state <> 'accepted' AND sender = opened_by`, so the opener
+  //   stayed frozen at one message — and was shown "one message until they
+  //   reply." AFTER they had replied.
+  //
+  //   Worse, #392 puts a FOLLOWED sender's knock straight into the recipient's
+  //   inbox. State stays 'requested', folder is not 'requests', so the button
+  //   never renders: the thread could never advance, presence was dead in it
+  //   forever, and the opener was frozen for its life. The thread the
+  //   recipient had asked for was the one that could not be answered.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  // THE PLAIN CASE: a reply, with no button pressed.
+  const { lo: opener, hi: recipient } = await dmAccounts(pool);
+  const convo = await dm.openConversation(opener, recipient);
+  await dm.sendMessage({ conversationId: convo.id, senderId: opener, body: "knock" });
+  await assert.rejects(
+    () => dm.sendMessage({ conversationId: convo.id, senderId: opener, body: "again" }),
+    (e) => e.code === "P0003", "one knock, as always");
+
+  await dm.sendMessage({ conversationId: convo.id, senderId: recipient, body: "who is this?" });
+  const state = (await pool.query(
+    `SELECT state, accepted_at FROM dm_conversations WHERE id=$1`, [convo.id])).rows[0];
+  assert.equal(state.state, "accepted", "the reply IS the acceptance");
+  assert.ok(state.accepted_at, "and it is stamped, as the CHECK requires");
+  await dm.sendMessage({ conversationId: convo.id, senderId: opener, body: "it is me" });
+
+  // THE #392 CASE: a followed sender, whose knock lands in the inbox and whose
+  // thread therefore never shows an accept button.
+  const tag = randomUUID().slice(0, 6);
+  const { lo: sender, hi: follower } = await dmAccounts(pool);
+  await publishRoom(pool, sender, `an${tag}`);
+  await pool.query(
+    `INSERT INTO user_follows (user_id, kind, target) VALUES ($1,'user',$2) ON CONFLICT DO NOTHING`,
+    ["sb-" + follower, `an${tag}`]);
+  const asked = await dm.openConversation(sender, follower, {
+    knownToRecipient: await dm.recipientFollowsSender(follower, sender),
+  });
+  await dm.sendMessage({ conversationId: asked.id, senderId: sender, body: "hello you" });
+  assert.equal((await dm.listFolder(follower, { folder: "inbox" })).items.length, 1,
+    "it lands in the inbox, which is what #392 is for");
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [asked.id])).rows[0].state, "requested",
+    "and the state is still requested, which is what made it unanswerable");
+
+  await dm.sendMessage({ conversationId: asked.id, senderId: follower, body: "hi!" });
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [asked.id])).rows[0].state, "accepted");
+  // the three things that were dead in that thread are alive
+  await dm.sendMessage({ conversationId: asked.id, senderId: sender, body: "not frozen" });
+  assert.equal(await dm.pingTyping(sender, asked.id), true, "presence works");
+  assert.equal((await dm.peerActivity(follower, asked.id)).typing, true);
+
+  // A KNOCKER CANNOT ACCEPT THEIR OWN KNOCK — the whole point of the gate.
+  const { lo: pushy, hi: silent } = await dmAccounts(pool);
+  const unanswered = await dm.openConversation(pushy, silent);
+  await dm.sendMessage({ conversationId: unanswered.id, senderId: pushy, body: "hello?" });
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [unanswered.id])).rows[0].state, "requested",
+    "their own message does not accept it");
+
+  // AND IT CANNOT REVIVE A DECLINE. The predicate is state='requested', so a
+  // declined conversation stays declined even if the decliner writes into it.
+  const { lo: knocker, hi: decliner } = await dmAccounts(pool);
+  const refused = await dm.openConversation(knocker, decliner);
+  await dm.sendMessage({ conversationId: refused.id, senderId: knocker, body: "hi" });
+  assert.equal(await dm.declineRequest(decliner, refused.id, { block: false }), true);
+  await dm.sendMessage({ conversationId: refused.id, senderId: decliner, body: "no thanks" });
+  assert.equal((await pool.query(
+    `SELECT state FROM dm_conversations WHERE id=$1`, [refused.id])).rows[0].state, "declined",
+    "a decline is not undone by writing into the thread");
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;

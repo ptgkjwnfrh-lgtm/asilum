@@ -280,7 +280,12 @@ export default function MailDesk() {
     // this caller's own activity budget. Spend it on a knock and the
     // indicators in the reader's REAL threads go quiet for the rest of the
     // hour, because a 429 is silently ignored by the tick below.
-    if (!shouldPollActivity({ open, threadId, folder: thread?.folder })) return undefined;
+    if (!shouldPollActivity({
+      open, threadId, folder: thread?.folder,
+      // Has this conversation ever had two voices in it? The reader's own
+      // thread, not a fact about anybody else.
+      heardFromThem: Boolean(thread?.messages?.some((m) => !m.mine)),
+    })) return undefined;
     let cancelled = false;
     let timer = null;
 
@@ -319,7 +324,7 @@ export default function MailDesk() {
         body: JSON.stringify({ op: "typing", on: false, conversationId: threadId, user: getUid() }) })
         .catch(() => {});
     };
-  }, [open, threadId, thread?.folder]);
+  }, [open, threadId, thread?.folder, thread?.messages]);
 
   /** Throttled to one ping per 2.5s: the row lives 6s, so this is enough. */
   function noteTyping() {

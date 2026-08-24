@@ -104,6 +104,16 @@ test("a knock is not polled for presence", () => {
   assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "archived" }), true,
     "an archived thread was accepted once — its presence is still meaningful");
 
+  // NOR A KNOCK NOBODY HAS ANSWERED, from either side. The folder test only
+  // silenced the RECIPIENT: the opener's own copy of a knock sits in their
+  // INBOX, so they polled every three seconds forever for an answer v46
+  // guarantees is empty — the exact waste this predicate exists to stop, on
+  // the side nobody checked.
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "inbox", heardFromThem: false }),
+    false, "my own knock, still unanswered");
+  assert.equal(shouldPollActivity({ open: true, threadId: "c1", folder: "inbox", heardFromThem: true }),
+    true, "once they have said anything, presence means something");
+
   // not open, or no thread, is not a poll either way
   assert.equal(shouldPollActivity({ open: false, threadId: "c1", folder: "inbox" }), false);
   assert.equal(shouldPollActivity({ open: true, threadId: null, folder: "inbox" }), false);
