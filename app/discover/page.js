@@ -5,6 +5,7 @@
 // exploration through the user's Passport, but the user can pause that layer.
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { confidenceBand } from "../../lib/asterisk/confidence.js";
 import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
 import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../lib/social.js";
 import TicketFlow from "../components/TicketFlow.jsx";
@@ -404,7 +405,14 @@ export default function DiscoverPage() {
           ) : null}
           {reading.interpretation && reading.interpretation.confidence.interpretation != null ? (
             <div className="areadnote">
-              interpretation confidence: <b>{Math.round(reading.interpretation.confidence.interpretation * 100)}%</b>
+              {/* A BAND, NOT A PERCENTAGE. confidenceBand() was written for
+                  exactly this — "returns a phrase, never a bare percentage
+                  pretending to be objective truth" — and had never been
+                  rendered anywhere, while this line printed the percentage it
+                  exists to prevent. 87% claims a precision the evidence does
+                  not have; "plausible interpretation" is what is actually
+                  known. Constitution A5. */}
+              interpretation: <b>{confidenceBand(reading.interpretation.confidence.interpretation)}</b>
               {reading.interpretation.assumptions[0] ? ` — ${reading.interpretation.assumptions[0]}` : ""}
             </div>
           ) : null}
