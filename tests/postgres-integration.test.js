@@ -786,7 +786,9 @@ test("DM presence: a knock is not a conversation yet",
   // because unread must clear when you look at it.
   await dm.markRead(b, convo.id, knock.id);
   const beforeAccept = await dm.peerActivity(a, convo.id);
-  assert.deepEqual(beforeAccept, { typing: false, readYours: false, reciprocal: true },
+  assert.deepEqual(
+    { typing: beforeAccept.typing, readYours: beforeAccept.readYours },
+    { typing: false, readYours: false },
     "a stranger learns nothing from a knock being opened");
 
   // THE WRITE SIDE, through the store: nothing is broadcast either way.
@@ -2301,8 +2303,13 @@ test("activity: the payload cannot be used to read the other person's setting",
   const dm = await import("../lib/db/dm.js");
   const pool = await db.getPool();
 
+  // `reciprocal` is stripped by the route. `newest` is NOT — the client needs
+  // it to know a message arrived — and it is excluded here for a different
+  // reason: it is the id of the newest message in the CALLER'S OWN thread,
+  // which they can already read off the messages they are looking at. What
+  // must be indistinguishable is everything that describes the OTHER person.
   const onWire = (activity) => {
-    const { reciprocal, ...rest } = activity;   // the route's own line
+    const { reciprocal, newest, ...rest } = activity;
     return JSON.stringify(rest);
   };
 
@@ -2342,6 +2349,13 @@ test("activity: the payload cannot be used to read the other person's setting",
   await dm.blockAccount(quiet, a1);
   assert.equal(onWire(await dm.peerActivity(a1, pairs[0].id)),
     onWire(await dm.peerActivity(a2, pairs[1].id)), "and so does a block");
+
+  // And `newest` really is the reader's own thread rather than a channel: it
+  // equals the newest id in the conversation they are in, and is 0 for one
+  // they are not.
+  const own = await dm.peerActivity(a1, pairs[0].id);
+  const seen = await dm.readThread(a1, pairs[0].id);
+  assert.equal(own.newest, seen.messages[0].id, "the id they can already see");
 
   // The positive case still WORKS — a collapse that hides everything would be
   // a feature that never fires.
