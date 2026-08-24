@@ -1178,7 +1178,11 @@ test("DM export: a cap is reported, never silently applied",
   // the entire content of the oldest conversations.
   assert.equal(capped.oldestExportedMessageId, capped.messages[1].id,
     "the reader can tell which end of their history is missing");
-  assert.equal(whole.oldestExportedMessageId, whole.messages[3].id);
+  // Nothing was cut, so there is no cut to describe. The marker used to be set
+  // unconditionally, which said "your history begins here" about a complete
+  // export — a claim of loss where there was none.
+  assert.equal(whole.oldestExportedMessageId, null,
+    "an untruncated export has no missing end to point at");
 
   // a garbage cap does not become "everything" or "nothing"
   // A CAP THAT SAYS WHICH CAP. Two caps feed one list: conversations are
