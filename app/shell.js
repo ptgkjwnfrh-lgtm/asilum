@@ -482,11 +482,6 @@ export default function Shell({ children }) {
                 SEARCH
               </button>
             )}
-            {/* The mail desk sits between BAG and the account corner, so it is
-                in the right-hand cluster on EVERY tab (owner order). It renders
-                nothing at all when messaging is off or the reader is signed
-                out — absent, not disabled. */}
-            <MailDesk />
             <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 5h10.8l-.9 9H3.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M5.4 5V4a2.6 2.6 0 0 1 5.2 0v1" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
               BAG ({bag.length})
@@ -509,11 +504,15 @@ export default function Shell({ children }) {
             )}
           </div>
         </div>
-        {/* The destination row carries the destinations and nothing else
-            (owner order, 23 Aug). The Asterisk guide chip that rode its left
-            end and the compact orb that rode its right end are both gone; the
-            guide lives whole at /asterisk, the orb still holds /stats and
-            /upload, and the seven tabs now centre in the full width. */}
+        {/* The destination row carries the destinations, and at its RIGHT END
+            the mail desk — the place the owner marked on the screenshot. The
+            Asterisk guide chip that rode the left end and the compact orb that
+            rode the right end are both gone; the guide lives whole at
+            /asterisk and the orb still holds /stats and /upload.
+
+            The desk renders nothing at all when messaging is off or the reader
+            is signed out — absent, not disabled — so for everyone else the row
+            is exactly the seven destinations. */}
         <nav className="topnav">
           <div className="snavs">
             {nav.map((n) => {
@@ -537,6 +536,7 @@ export default function Shell({ children }) {
               );
             })}
           </div>
+          <MailDesk />
         </nav>
       </header>
 
