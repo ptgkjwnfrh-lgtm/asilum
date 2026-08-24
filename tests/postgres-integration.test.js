@@ -1546,6 +1546,41 @@ test("DM: a non-member gets the same answer as a nonexistent conversation, from 
   // a message id nobody owns.
   assert.equal(await dm.peerOfMessage(stranger, m.id), await dm.peerOfMessage(stranger, 999999999));
 
+  // SEND AND REACT ARE THE TWO THAT TAKE A BODY, so they were not in the loop
+  // above — and both were oracles.
+  //
+  // send: the conversation read had no membership predicate and threw a PLAIN
+  // Error when the row was absent, so `error.code` was undefined, the
+  // MessageRefused wrapper did not apply, and the route answered 500. When the
+  // row existed and the sender was not a party, the trigger raised 42501, the
+  // wrapper caught it, and the route answered 409. The status code alone told
+  // a stranger whether a uuid named something real.
+  const sendReal = await dm.sendMessage({ conversationId: accepted.id, senderId: stranger, body: "x" })
+    .then(() => "delivered", (e) => `${e.name}:${e.code}`);
+  const sendFake = await dm.sendMessage({ conversationId: nowhere, senderId: stranger, body: "x" })
+    .then(() => "delivered", (e) => `${e.name}:${e.code}`);
+  assert.equal(sendReal, sendFake,
+    "sending into a real conversation you are not in must fail exactly like sending into one "
+    + "that does not exist");
+  assert.equal(sendReal, "MessageRefused:DM_NO_ACCESS",
+    "and as a REFUSAL the route collapses, not a 500 that says the row was missing");
+
+  // react: dm_messages.id is a guessable BIGSERIAL and the route passes it
+  // straight through. The trigger raised 23503 for "no such message" and 42501
+  // for "not in that conversation", and #399 gave those two DIFFERENT wire
+  // strings — so "mark-unavailable" meant "this id names a real message in
+  // somebody else's thread".
+  const reactReal = await dm.react(stranger, m.id, "♥")
+    .then(() => "ok", (e) => `${e.name}:${e.code}`);
+  const reactFake = await dm.react(stranger, 999999999, "♥")
+    .then(() => "ok", (e) => `${e.name}:${e.code}`);
+  assert.equal(reactReal, reactFake, "and a real message in someone else's thread reads like no message");
+  assert.equal(reactReal, "MessageRefused:P0005");
+
+  // the members can still do both, which is the half a gate must not break
+  await dm.sendMessage({ conversationId: accepted.id, senderId: b, body: "still works" });
+  await dm.react(b, m.id, "♥");
+
   // and none of the probes wrote anything
   const untouched = (await pool.query(
     `SELECT state, accepted_at FROM dm_conversations WHERE id=$1`, [accepted.id])).rows[0];
