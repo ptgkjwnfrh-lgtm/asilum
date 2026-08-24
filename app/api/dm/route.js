@@ -63,6 +63,29 @@ async function caller(req, claimed) {
 export async function GET(req) {
   if (!messagingEnabled()) return absent();
   const url = new URL(req.url);
+
+  // THE BREAKER IS DRAWN BEFORE THE AUTH ROUND-TRIP, because the auth check is
+  // itself the expensive thing an unauthenticated flood buys.
+  //
+  // `caller` resolves an `sb-` claim through Supabase, which is an outbound
+  // GET to GoTrue — the same endpoint real sign-ins and token refreshes
+  // traverse. Below the auth check, a request with a junk bearer token cost
+  // one serverless invocation held for that upstream latency and one unit of
+  // the project's GoTrue limit, and was charged NOTHING: the quota and the
+  // budget both sat under the 401. The comment beneath used to say "EVERY read
+  // is bounded"; reads that failed auth were neither, and the gauge read clean
+  // while the surface was under load.
+  //
+  // The aggregate breaker is the right instrument for it — per-subject quotas
+  // bound ONE caller and a flood of fresh identities shares no subject, which
+  // is the reason this file's own comment gives for having one at all.
+  const preAuth = await consumeGlobalBudget("dm-read");
+  if (!preAuth.allowed) {
+    return NextResponse.json(rateLimitResponse(preAuth), {
+      status: 429,
+      headers: { "Retry-After": String(Math.max(1, Math.ceil(preAuth.retryAfterMs / 1000))) },
+    });
+  }
   const me = await caller(req, url.searchParams.get("user") || "");
   if (!me) return NextResponse.json({ error: "sign in to use messages" }, { status: 401 });
 
@@ -88,13 +111,7 @@ export async function GET(req) {
     windowMs: 60 * 60 * 1000,
   });
   if (!readQuota.allowed) return NextResponse.json(rateLimitResponse(readQuota), { status: 429 });
-  const readBudget = await consumeGlobalBudget("dm-read");
-  if (!readBudget.allowed) {
-    return NextResponse.json(rateLimitResponse(readBudget), {
-      status: 429,
-      headers: { "Retry-After": String(Math.max(1, Math.ceil(readBudget.retryAfterMs / 1000))) },
-    });
-  }
+  // The aggregate breaker was already drawn above, before the auth round-trip.
   try {
     if (op === "summary") {
       const counts = await unreadSummary(me);
@@ -177,6 +194,16 @@ export async function GET(req) {
 
 export async function POST(req) {
   if (!messagingEnabled()) return absent();
+  // Before the body parse AND before the auth round-trip, for the reason GET
+  // draws it early: an 8KB parse plus an outbound GoTrue call is what an
+  // unauthenticated flood was buying for free.
+  const preAuth = await consumeGlobalBudget("dm-write");
+  if (!preAuth.allowed) {
+    return NextResponse.json(rateLimitResponse(preAuth), {
+      status: 429,
+      headers: { "Retry-After": String(Math.max(1, Math.ceil(preAuth.retryAfterMs / 1000))) },
+    });
+  }
   const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
   if (parsed.response) return parsed.response;
   const body = parsed.body || {};
@@ -207,15 +234,8 @@ export async function POST(req) {
     windowMs: 60 * 60 * 1000,
   });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  // The write side draws its own aggregate breaker, for the reason the read
-  // side does: a per-subject quota does not bound a flood of identities.
-  const writeBudget = await consumeGlobalBudget("dm-write");
-  if (!writeBudget.allowed) {
-    return NextResponse.json(rateLimitResponse(writeBudget), {
-      status: 429,
-      headers: { "Retry-After": String(Math.max(1, Math.ceil(writeBudget.retryAfterMs / 1000))) },
-    });
-  }
+  // The write side's aggregate breaker was already drawn above, before the
+  // body parse and the auth round-trip.
 
   try {
     if (op === "send") {
