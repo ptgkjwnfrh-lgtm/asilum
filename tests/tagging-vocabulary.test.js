@@ -74,12 +74,25 @@ test("the search weight table is DERIVED from the vocabulary, not kept beside it
 test("every writer goes through the vocabulary", () => {
   // The two paths that put a tag on a piece. If a third appears, it has to
   // resolve its facet the same way or this fails.
-  for (const file of ["lib/tagging/dense.js", "lib/ingest/adapters/normalize.js"]) {
+  // THREE of them, not two. `addProductTags` in lib/db/production.js accepted
+  // whatever facet name a caller passed and defaulted to "aesthetic" — it was
+  // missed on the first pass and the v49 CHECK is what found it, by refusing a
+  // write three layers below the code that made it. A register acquires its
+  // next dialect exactly that way.
+  for (const file of [
+    "lib/tagging/dense.js",
+    "lib/ingest/adapters/normalize.js",
+    "lib/db/production.js",
+  ]) {
     const src = read(file);
     assert.match(src, /facetOf\(/, `${file} must resolve its facet through the vocabulary`);
-    assert.match(src, /if \(!tagType\) return/,
+  }
+  for (const file of ["lib/tagging/dense.js", "lib/ingest/adapters/normalize.js"]) {
+    assert.match(read(file), /if \(!tagType\) return/,
       `${file} must DROP an unknown facet rather than write it`);
   }
+  assert.match(read("lib/db/production.js"), /filter\(\(t\) => t\.tag && t\.tagType\)/,
+    "and the third drops it in its filter");
 });
 
 test("the database fence lists exactly the vocabulary", () => {

@@ -40,7 +40,7 @@ ALTER TABLE product_tags ADD CONSTRAINT product_tags_facet_ck CHECK (
     -- when it is from
     'decade', 'year', 'season', 'climate',
     -- what it means
-    'aesthetic', 'aesthetic-adjacent', 'aesthetic-brand', 'subculture',
+    'aesthetic', 'aesthetic-adjacent', 'aesthetic-brand', 'mood', 'subculture',
     -- practical facts
     'gender', 'size', 'size-system', 'price-band'
   )
