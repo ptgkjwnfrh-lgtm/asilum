@@ -117,13 +117,18 @@ test("a knock is not polled for presence", () => {
 });
 
 test("no signal is nothing known, not a negative answer", () => {
-  // Product law 5: a reader must not be able to tell "not read" from "signals
-  // off". Both are null, and the panel renders nothing for null — so the reset
-  // between threads has to be THIS, not `{typing: false, readUpTo: 0}`, which
-  // would print a positive claim about a person nobody has heard from.
-  assert.deepEqual(NO_SIGNAL, { typing: null, readUpTo: null });
-  assert.notEqual(NO_SIGNAL.readUpTo, 0, "0 is a read position; null is the absence of one");
+  // The panel's LOCAL state when a thread opens or a poll fails. Here the
+  // answer is genuinely unknown and null says so, so nothing renders.
+  //
+  // This is deliberately NOT the shape the wire uses. The payload answers two
+  // booleans, because a null that only SOME peers produce is a fact about
+  // those peers — that was the activity oracle: signals on with nothing read
+  // serialised as 0, signals off as null, and one request told you which. This
+  // constant never crosses the network and is never compared against another
+  // person's data.
+  assert.deepEqual(NO_SIGNAL, { typing: null, readYours: null });
   assert.notEqual(NO_SIGNAL.typing, false, "false says they are not typing; null says we do not know");
+  assert.notEqual(NO_SIGNAL.readYours, false);
   assert.ok(Object.isFrozen(NO_SIGNAL), "one shared constant nobody can mutate into a claim");
 });
 

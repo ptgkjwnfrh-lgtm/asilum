@@ -786,7 +786,7 @@ test("DM presence: a knock is not a conversation yet",
   // because unread must clear when you look at it.
   await dm.markRead(b, convo.id, knock.id);
   const beforeAccept = await dm.peerActivity(a, convo.id);
-  assert.deepEqual(beforeAccept, { typing: null, readUpTo: null, reciprocal: true },
+  assert.deepEqual(beforeAccept, { typing: false, readYours: false, reciprocal: true },
     "a stranger learns nothing from a knock being opened");
 
   // THE WRITE SIDE, through the store: nothing is broadcast either way.
@@ -806,7 +806,7 @@ test("DM presence: a knock is not a conversation yet",
   assert.equal(await dm.pingTyping(b, convo.id), true);
   const afterAccept = await dm.peerActivity(a, convo.id);
   assert.equal(afterAccept.typing, true, "now presence means something");
-  assert.equal(afterAccept.readUpTo, Number(knock.id), "and so does the receipt");
+  assert.equal(afterAccept.readYours, true, "and so does the receipt");
 });
 
 test("DM unsend: a reaction cannot land on a tombstone",
@@ -1537,7 +1537,7 @@ test("a block stops typing and read receipts in BOTH directions",
 
   // baseline: the channel works
   assert.equal((await dm.peerActivity(a, convo.id)).typing, true);
-  assert.equal((await dm.peerActivity(a, convo.id)).readUpTo, Number(m.id));
+  assert.equal((await dm.peerActivity(a, convo.id)).readYours, true);
 
   await dm.blockAccount(a, b);
 
@@ -1549,11 +1549,11 @@ test("a block stops typing and read receipts in BOTH directions",
   // and neither side can READ the other's presence — including the receipt,
   // which no trigger can stop because it is a plain column read
   const seenByBlocker = await dm.peerActivity(a, convo.id);
-  assert.equal(seenByBlocker.typing, null, "the blocker sees no typing");
-  assert.equal(seenByBlocker.readUpTo, null, "and no read position");
+  assert.equal(seenByBlocker.typing, false, "the blocker sees no typing");
+  assert.equal(seenByBlocker.readYours, false, "and no receipt");
   const seenByBlocked = await dm.peerActivity(b, convo.id);
-  assert.equal(seenByBlocked.typing, null, "and the blocked party sees nothing either");
-  assert.equal(seenByBlocked.readUpTo, null);
+  assert.equal(seenByBlocked.typing, false, "and the blocked party sees nothing either");
+  assert.equal(seenByBlocked.readYours, false);
 
   // Stale rows written BEFORE the block do not outlive it. This is swept by
   // blockAccount, NOT by v44's migration DELETE -- the migration runs once and
@@ -1581,8 +1581,8 @@ test("peerActivity refuses a conversation I am not in", { skip: !databaseUrl }, 
   await dm.markRead(b, convo.id, 0);
   const { lo: stranger } = await dmAccounts(pool);
   const peeked = await dm.peerActivity(stranger, convo.id);
-  assert.equal(peeked.readUpTo, null, "a stranger learns nothing about someone else's thread");
-  assert.equal(peeked.typing, null);
+  assert.equal(peeked.readYours, false, "a stranger learns nothing about someone else's thread");
+  assert.equal(peeked.typing, false);
 });
 
 // --- mute and pagination ---------------------------------------------------
@@ -1881,23 +1881,23 @@ test("activity: a receipt appears only when BOTH sides emit", { skip: !databaseU
 
   // default: both on, b has not read yet
   let seen = await dm.peerActivity(a, convo.id);
-  assert.equal(seen.readUpTo, 0, "nothing read yet");
+  assert.equal(seen.readYours, false, "nothing read yet");
   await dm.markRead(b, convo.id, m.id);
   seen = await dm.peerActivity(a, convo.id);
-  assert.equal(seen.readUpTo, Number(m.id), "a's view of b's read position");
+  assert.equal(seen.readYours, true, "a's view of whether b reached a's newest");
 
   // B switches signals off -> A sees nothing from B
   await dm.setActivitySignals(b, false);
   seen = await dm.peerActivity(a, convo.id);
-  assert.equal(seen.readUpTo, null, "their setting stops them emitting");
-  assert.equal(seen.typing, null);
+  assert.equal(seen.readYours, false, "their setting stops them emitting");
+  assert.equal(seen.typing, false);
   assert.equal(seen.reciprocal, true, "A's own signals are still on");
 
   // RECIPROCITY: A switches OFF -> A sees nothing even though B is back on
   await dm.setActivitySignals(b, true);
   await dm.setActivitySignals(a, false);
   seen = await dm.peerActivity(a, convo.id);
-  assert.equal(seen.readUpTo, null, "with my signals off I see nobody's");
+  assert.equal(seen.readYours, false, "with my signals off I see nobody's");
   assert.equal(seen.reciprocal, false);
   // From B's side the two reasons for a null must stay DISTINGUISHABLE in the
   // payload even though both render as nothing: B's channel is open
@@ -1907,7 +1907,87 @@ test("activity: a receipt appears only when BOTH sides emit", { skip: !databaseU
   // that is the primary effect, not a side one.
   const fromB = await dm.peerActivity(b, convo.id);
   assert.equal(fromB.reciprocal, true, "B's own view is not disabled by A's choice");
-  assert.equal(fromB.readUpTo, null, "but A, with signals off, emits nothing to see");
+  assert.equal(fromB.readYours, false, "but A, with signals off, emits nothing to see");
+});
+
+test("activity: the payload cannot be used to read the other person's setting",
+  { skip: !databaseUrl }, async () => {
+  // THE TEST THAT SHOULD HAVE EXISTED. An UNVERIFIED finding said the
+  // `reciprocal` flag let a caller read their correspondent's activity_signals
+  // off the wire. It was removed — and it was never the carrier: `reciprocal`
+  // is false in exactly ONE branch, when the CALLER's own signals are off,
+  // which the caller already knows.
+  //
+  // The carrier was `readUpTo: Number(last_read_message_id) || 0`. Signals ON
+  // with nothing read serialised as 0; signals OFF as null. One request, no
+  // baseline, and you had classified your correspondent's GLOBAL setting — one
+  // column in dm_settings, the same in every conversation they have.
+  //
+  // So this compares the two payloads directly, which is the only thing that
+  // could ever have caught it.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const onWire = (activity) => {
+    const { reciprocal, ...rest } = activity;   // the route's own line
+    return JSON.stringify(rest);
+  };
+
+  // Two identical conversations. In one the peer has signals ON and has read
+  // nothing; in the other the peer has signals OFF. Nothing else differs.
+  const { lo: a1, hi: quiet } = await dmAccounts(pool);
+  const { lo: a2, hi: silent } = await dmAccounts(pool);
+  const pairs = [];
+  for (const [me, them] of [[a1, quiet], [a2, silent]]) {
+    const convo = await dm.openConversation(me, them, { knownToRecipient: true });
+    await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+      [convo.id]);
+    await dm.sendMessage({ conversationId: convo.id, senderId: me, body: "hello" });
+    pairs.push({ me, them, id: convo.id });
+  }
+  await dm.setActivitySignals(silent, false);
+
+  assert.equal(
+    onWire(await dm.peerActivity(a1, pairs[0].id)),
+    onWire(await dm.peerActivity(a2, pairs[1].id)),
+    "a peer who has not read it yet and a peer who switched signals off must be "
+    + "BYTE-IDENTICAL on the wire — otherwise every accepted contact is a permanent "
+    + "monitor of that person's global privacy switch");
+
+  // And the same collapse for every other denied case, so the ordinary one
+  // keeps them company: a block, an unaccepted knock, a conversation I am not in.
+  const { lo: c, hi: d } = await dmAccounts(pool);
+  const knock = await dm.openConversation(c, d);
+  await dm.sendMessage({ conversationId: knock.id, senderId: c, body: "hi" });
+  assert.equal(onWire(await dm.peerActivity(c, knock.id)), onWire(await dm.peerActivity(a1, pairs[0].id)),
+    "an unaccepted knock reads the same");
+
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal(onWire(await dm.peerActivity(stranger, pairs[0].id)),
+    onWire(await dm.peerActivity(a1, pairs[0].id)), "so does a conversation I am not in");
+
+  await dm.blockAccount(quiet, a1);
+  assert.equal(onWire(await dm.peerActivity(a1, pairs[0].id)),
+    onWire(await dm.peerActivity(a2, pairs[1].id)), "and so does a block");
+
+  // The positive case still WORKS — a collapse that hides everything would be
+  // a feature that never fires.
+  const { lo: e, hi: f } = await dmAccounts(pool);
+  const live = await dm.openConversation(e, f, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [live.id]);
+  const mine = await dm.sendMessage({ conversationId: live.id, senderId: e, body: "read this" });
+  await dm.markRead(f, live.id, mine.id);
+  const shown = await dm.peerActivity(e, live.id);
+  assert.equal(shown.readYours, true, "when they HAVE read it, the receipt appears");
+
+  // and it goes back to false when I send something newer — which is exactly
+  // what makes the false above ambiguous rather than merely undefined
+  await dm.sendMessage({ conversationId: live.id, senderId: e, body: "and this" });
+  assert.equal((await dm.peerActivity(e, live.id)).readYours, false,
+    "the ordinary reason for a false is the commonest thing in the product");
 });
 
 test("activity: typing expires rather than needing a 'stopped' write",
