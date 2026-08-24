@@ -565,7 +565,57 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 # UNVERIFIED
 
+> ## THESE SEVEN GOT THEIR ADVERSARIAL PASS — 24 AUGUST
+>
+> The instruction on this file is *"refute it yourself before you fix it OR
+> discard it."* It was not followed the first time: the session that wrote the
+> fixes did the verifying inline, in the same pass, and marked two of the seven
+> closed by inheritance from PRs it had already merged. **The items flagged as
+> never-checked got the least independent scrutiny.**
+>
+> Eleven independent agents then attacked the seven claims and the fixes said to
+> close them, and four more swept the classes.
+>
+> **ALL SEVEN ORIGINAL CLAIMS WERE TRUE at 79d6c72.** Verified from
+> `git show 79d6c72:<path>`, not from this file's prose. The unverified pile was
+> 7 for 7 — no false positives.
+>
+> **The fixes were another matter:** 2 held, 2 had holes, 3 were partial. Ten
+> further defects came out of it, and **six of those were created by the fix
+> round itself** — #381, #387, #392, #393, #399, #400. A fix is a change, and a
+> change is a thing that can be wrong.
+>
+> | | closed by |
+> |---|---|
+> | the activity payload was still an oracle — `readUpTo` was `0` for "read nothing" and `null` for "signals off", one request, no baseline | [#403](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/403) |
+> | the refusal WORDING named the state the payload had stopped naming | [#403](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/403), [#409](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/409) |
+> | `acceptRequest` and `pingTyping` answered differently for a non-member | [#404](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/404) |
+> | the export said `items.truncated: false` while whole conversations were missing; and 5000 × 2000 bytes cannot be delivered | [#405](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/405) |
+> | the budget was drawn AFTER the auth round-trip, and `/api/privacy` had none | [#406](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/406) |
+> | law 7's **inverse**: `op="block"` still took a raw uuid, and read it back as a handle | [#407](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/407) |
+> | `send` and `react` were existence oracles — one by status code, one by wording | [#408](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/408) |
+> | the search and the refusal disagreed, so "listed but refused" meant "blocked" | [#409](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/409) |
+> | a thread the recipient had ASKED FOR could never be answered | [#410](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/410) |
+>
+> **The two lessons, because they are worth more than the bugs:**
+>
+> 1. **A test written from the same mental model as the fix cannot see past it.**
+>    The test for the activity oracle built the payload BY HAND and grepped the
+>    route for a destructuring line. It never called the function and never
+>    compared a signals-on payload with a signals-off one — which is where the
+>    oracle lived. Traps 64 and 90 in one test.
+> 2. **A comment asserting safety is not evidence of it.** #399 said 42501 came
+>    from "a reaction from someone who is not in the conversation — which no
+>    surface can produce". `op="react"` is that surface, one POST away. The
+>    justification was the thing that was false.
+
+
+
 ### `dm.js`
+
+> **✅ TRUE at 79d6c72 · FIX HOLDS.** Attacked from eight directions in the 24 Aug pass and could not
+> be reinstated. The attack did surface a BREAK the fix set had created — a thread the recipient
+> had asked for could never reach 'accepted' — fixed in #410.
 
 > **✅ VERIFIED AND FIXED 23 Aug in #387** (duplicate of the SERIOUS entry above) — v46 in the
 > trigger, and the same gate in the query, because no trigger can stop a read. **v46 applied to prod.**
@@ -580,6 +630,10 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `dm.js`
 
+> **✅ TRUE at 79d6c72 · FIX HAD A HOLE, now closed (#403, #409).** The literal strip held, and the
+> same disclosure arrived through the REFUSAL WORDING on both send paths, and through the search
+> disagreeing with the refusal. See the amendment in `docs/dm-core-decisions-2026-08-23.md`.
+
 > **✅ VERIFIED AND FIXED 23 Aug in #393** — `state` is stripped in the route beside the account
 > uuid. The panel keys its request controls on the per-side `folder`, and never read `state`.
 
@@ -592,6 +646,11 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `dm.js`
+
+> **✅ TRUE at 79d6c72 · FIX PARTIAL, now complete (#404, #408).** The named path was fixed by #378.
+> The 24 Aug pass found FOUR ops still answering differently for a non-member — `accept` and
+> `typing` (created by #381 and #387), and `send` and `react` (one older than the register, one
+> created by #399).
 
 > **⛔ VERIFIED ALREADY DEAD — do not fix.** The membership clause landed in **#378** (`6c409ae`),
 > after the review ran at `79d6c72`. Confirmed by `git blame` on 23 Aug.
@@ -606,6 +665,12 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `dm.js`
 
+> **⚠ PARTLY TRUE at 79d6c72 · THE FIX FIXED THE WRONG THING, now closed (#403).** `reciprocal` was
+> never the carrier — it is false in exactly one branch, when the CALLER's own signals are off.
+> The carrier was `readUpTo: Number(...) || 0`: `0` for a peer who had read nothing, `null` for a
+> peer with signals off. One request, no baseline, and every accepted contact was a permanent
+> monitor of that person's global switch.
+
 > **✅ VERIFIED AND FIXED 23 Aug in #393** — the flag is stripped at the route; the store keeps it.
 > The docstring now states the residual property honestly: a reader whose own signals are on can
 > still infer a null means theirs are off, and hiding that would require inventing a read position.
@@ -619,6 +684,11 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `production.js`
+
+> **✅ TRUE at 79d6c72 · FIX PARTIAL, now complete (#395, #397, #405, #406).** The export shipped on
+> the owner's ruling; the pass then found it reported `items.truncated: false` while whole
+> conversations were missing, could build a response too large to deliver, and drew no aggregate
+> breaker.
 
 > **✅ FULLY CLOSED 23 Aug in #395 and #397.** #395 named the retention. #397 shipped the export
 > on the **owner's ruling — two people should have records**: both sides get the record, bodies
@@ -643,6 +713,10 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 
 ### `route.js`
 
+> **✅ TRUE at 79d6c72 · FIX PARTIAL, now complete (#406).** The table held; the POSITION did not.
+> Both quota and budget sat UNDER the auth check, and the auth check is an outbound round-trip to
+> GoTrue — so an unauthenticated flood was free and registered on no instrument.
+
 > **✅ VERIFIED AND FIXED 23 Aug in #394** — `readBucketFor` has a BOUNDED DEFAULT, so an op
 > nobody thought about cannot be unbounded, and both directions draw `consumeGlobalBudget`.
 
@@ -655,6 +729,10 @@ Mechanism verified line by line in app/components/MailDesk.jsx:
 ---
 
 ### `route.js`
+
+> **✅ TRUE at 79d6c72 · FIX HOLDS OUTBOUND · THE INVERSE WAS OPEN, now closed (#407).** Nothing
+> hands a uuid out. But `op="block"` still ACCEPTED one from the client — four lines under a
+> comment of mine saying that path was gone — and `handlesFor` read it straight back as a handle.
 
 > **✅ VERIFIED AND FIXED 23 Aug in #385** — projected through `handlesFor` like the inbox, and
 > the unblock it now serves addresses by handle or conversation.
