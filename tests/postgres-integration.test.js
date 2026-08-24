@@ -1421,6 +1421,82 @@ test("DM unsend: the database requires the withdrawal to name its author",
     true);
 });
 
+test("DM: a non-member gets the same answer as a nonexistent conversation, from every op",
+  { skip: !databaseUrl }, async () => {
+  // readThread states the rule — "A non-member gets the same answer as a
+  // nonexistent conversation, so the endpoint is not a membership oracle" —
+  // and TWO ops broke it, both of them broken BY THE ROUND THAT FIXED
+  // SOMETHING ELSE:
+  //
+  //   acceptRequest's idempotence branch (#381) re-read the row with no
+  //   participant predicate, so a stranger POSTing a well-formed uuid got
+  //   {ok:true} for an accepted conversation and {ok:false} otherwise. One
+  //   probe, no write, no trace.
+  //
+  //   pingTyping's guarded upsert (#387) matched nothing for a nonexistent or
+  //   unaccepted conversation (200 {ok:false}) but reached the trigger for an
+  //   accepted one, raising 42501 with no catch — a 500. Before #387 the
+  //   INSERT was unconditional and both surfaced as 500, indistinguishable.
+  //
+  // The rule is per-op and has to be tested per-op, so this walks all of them
+  // with one stranger and one uuid nobody owns.
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+
+  const { lo: a, hi: b } = await dmAccounts(pool);
+  const { lo: stranger } = await dmAccounts(pool);
+  const accepted = await dm.openConversation(a, b, { knownToRecipient: true });
+  await pool.query(`UPDATE dm_conversations SET state='accepted', accepted_at=now() WHERE id=$1`,
+    [accepted.id]);
+  const m = await dm.sendMessage({ conversationId: accepted.id, senderId: a, body: "private" });
+  const nowhere = randomUUID();
+
+  // Each probe must answer identically for a real conversation the stranger is
+  // not in, and for a uuid that names nothing.
+  const probes = {
+    accept: (id) => dm.acceptRequest(stranger, id),
+    decline: (id) => dm.declineRequest(stranger, id),
+    typing: (id) => dm.pingTyping(stranger, id),
+    thread: (id) => dm.readThread(stranger, id).then((t) => t === null),
+    mute: (id) => dm.setMuted(stranger, id, true),
+    consent: (id) => dm.setMediaConsent(stranger, id, true),
+    peer: (id) => dm.peerOf(stranger, id),
+    block: (id) => dm.blockByConversation(stranger, id),
+    unblock: (id) => dm.unblockByConversation(stranger, id),
+  };
+  for (const [name, probe] of Object.entries(probes)) {
+    const real = JSON.stringify(await probe(accepted.id) ?? null);
+    const fake = JSON.stringify(await probe(nowhere) ?? null);
+    assert.equal(real, fake,
+      `op="${name}" answers differently for a conversation the caller is not in `
+      + `(${real}) than for one that does not exist (${fake}) — that difference IS the oracle`);
+  }
+
+  // peerOfMessage takes a message id rather than a conversation id, and gets
+  // the same treatment: a real message in someone else's thread must read like
+  // a message id nobody owns.
+  assert.equal(await dm.peerOfMessage(stranger, m.id), await dm.peerOfMessage(stranger, 999999999));
+
+  // and none of the probes wrote anything
+  const untouched = (await pool.query(
+    `SELECT state, accepted_at FROM dm_conversations WHERE id=$1`, [accepted.id])).rows[0];
+  assert.equal(untouched.state, "accepted");
+  assert.equal((await pool.query(
+    `SELECT count(*)::int AS n FROM dm_typing WHERE conversation_id=$1`, [accepted.id])).rows[0].n, 0,
+    "a stranger's typing ping left no presence row");
+  assert.equal((await pool.query(
+    `SELECT count(*)::int AS n FROM dm_participants WHERE conversation_id=$1`, [accepted.id])).rows[0].n, 2,
+    "and no participant row appeared");
+
+  // THE MEMBERS STILL GET REAL ANSWERS — a gate that denies everybody is not a
+  // gate, it is an outage.
+  assert.equal(await dm.pingTyping(a, accepted.id), true);
+  assert.ok(await dm.readThread(a, accepted.id));
+  assert.equal(await dm.peerOf(a, accepted.id), b);
+});
+
 test("DM store: mark-read is monotonic and unread is derived from it",
   { skip: !databaseUrl }, async () => {
   process.env.DATABASE_URL = databaseUrl;
