@@ -17,96 +17,126 @@ a technical reason.
 
 ---
 
-## The numbers, as of main @ ed316d8
+## The numbers
 
-| Measure | State |
-| --- | --- |
-| Source files | 307 |
-| Files over 1,200 lines | **5** |
-| Files with no header comment | **38** (87.6% documented) |
-| Exported functions | 877 |
-| …with no label | **417** (52.5% labelled) |
+| Measure | At the start | Now |
+| --- | ---: | ---: |
+| Source files | 307 | 317 |
+| Files over 1,200 lines | 5 | **4** (3 of them `lib/db`) |
+| Files with no header | 38 (87.6%) | **0 — 100% documented** |
+| Exported functions | 877 | 880 |
+| …with no label | 417 (52.5%) | **116 (86.8% labelled)** |
 
-**Read that second number correctly.** 87.6% of files explain themselves at the
-top, and many of them explain themselves unusually well — this codebase's house
-style is a header that gives the *reason* a module exists, not just its name.
-The gap is concentrated, not spread thin, and the table below says exactly
-where.
+**The 116 unlabelled are exactly `lib/db`.** Everything outside the held layer
+is done.
 
----
+### Two of the original numbers were my own measurement error
+
+Worth recording, because it changed what got worked on:
+
+- The audit looked only at the first three non-empty lines, so every
+  `"use client"` component scored as headerless — **76% reported, 87.5% real**.
+- Fixed that, and it then failed to skip a `#!` shebang, so all 30
+  `measure-*` harnesses scored as headerless — every one of which opens with a
+  thorough header on the next line. **89.6% reported, 99.3% real.**
+
+An audit that **over**-reports is not the safe direction to err in: it sends
+someone to fix files that need nothing, and the noise buries the real gaps.
+Both detector bugs are fixed in `scripts/audit-navigability.mjs`.
+
 
 ## 1. Oversized files
 
 A file a newcomer cannot hold in their head is the single biggest tax on a
 handover. Five files are over 1,200 lines.
 
-| File | Lines | What it holds | Split risk |
+| File | Lines | What it holds | Status |
 | --- | ---: | --- | --- |
-| `lib/db/production.js` | 4,461 | CRUD for ~20 production tables in one module | **HIGH** — verified only by the Postgres suite |
-| `lib/search/index.js` | 1,870 | Query parse → retrieve → rank → rack assembly | Medium — well covered by unit tests |
-| `lib/asterisk/culture.js` | 1,826 | Curated cultural knowledge (films, music, cities, decades) | **LOW** — mostly a data table |
-| `lib/db/dm.js` | 1,747 | The mail desk's whole store | **HIGH** — Postgres suite only |
-| `lib/db/index.js` | 1,724 | Persistence layer + in-memory fallback | **HIGH** — Postgres suite only |
+| `lib/db/production.js` | 4,461 | CRUD for ~20 production tables | 🔒 **HELD** — Postgres suite only |
+| `lib/db/dm.js` | 1,747 | The mail desk's whole store | 🔒 **HELD** — Postgres suite only |
+| `lib/search/index.js` | 1,735 | `searchProducts` is 1,283 of these lines | ⚠️ **partially split** |
+| `lib/db/index.js` | 1,724 | Persistence layer + in-memory fallback | 🔒 **HELD** — Postgres suite only |
+| ~~`lib/asterisk/culture.js`~~ | 1,826 → **141** | Curated cultural knowledge | ✅ **done** |
 
-### The proposed split
+### ✅ `lib/asterisk/culture.js` — done, 1,826 → 141
 
-**`lib/asterisk/culture.js` → do this first.** It is largely a static data
-table with a few readers. Separating the data (`culture/films.js`,
-`culture/music.js`, `culture/cities.js`, `culture/decades.js`) from the reading
-logic (`culture/index.js`) is close to risk-free and removes 1,800 lines from
-the "scary files" list immediately.
+Split into `lib/asterisk/culture/`. **Not by kind**, which was the obvious move
+and would have been wrong: order is behaviour (`cultureIndex()` lets a later
+record's name overwrite an earlier one's) and the sections interleave, so
+grouping by kind would have reordered 607 records and silently changed which
+reading some queries resolve to. The parts are contiguous slices named for the
+expansion that added them.
 
-**`lib/search/index.js` → second.** It already has natural seams — parse,
-retrieve, rank, assemble racks. Those are four modules. The 1,299-test unit
-suite genuinely covers this path, so the split is verifiable on a laptop with
-no database.
+Verified by serialising `CULTURE`, the full index key list and the suggestion
+view before and after — all three byte-identical.
+`tests/culture-catalog-assembly.test.js` pins the order so the next re-split
+fails loudly; confirmed non-tautological by swapping two parts and watching it
+go red.
 
-**`lib/db/*` → last, and only with CI green.** These three files are 7,932
-lines together and every one of them is verified by the 72-test Postgres
-integration suite, which cannot run locally (no Postgres, no Docker on the
-current machine). Splitting them blind is the one change most likely to
+### ⚠️ `lib/search/index.js` — partially split, 1,870 → 1,735
+
+Three modules lifted out: `search/tokens.js` (how a query becomes words),
+`search/vocabulary.js` (grammar words, garment nouns, and the null-prototype
+tables), `search/intent.js` (what kind of question this is). `index.js`
+re-exports all of it, so no caller changed.
+
+**It is still oversized and cannot stop being oversized without decomposing
+`searchProducts`, which is 1,283 lines on its own.** That is a real
+behavioural change to the most complex function in the codebase, and it waits
+for CI for the same reason `lib/db` does.
+
+**A near-miss worth knowing about.** `npm run search:snapshot` serialises the
+engine's answers for a query corpus so a refactor can be proved inert. During
+this split it reported **IDENTICAL while the code was broken** — moving the
+intent layer left `brandMatch` unimported inside `searchProducts`, a
+ReferenceError on a live path that none of the 28 queries happened to reach.
+Five tests in the suite caught it instantly. A corpus proves the paths it
+walks and says nothing about the rest: it is a supplement to `npm test`, never
+a substitute.
+
+### 🔒 `lib/db/*` — held for CI
+
+7,932 lines across three files, every one verified by the 72-test Postgres
+integration suite, which cannot run locally (no Postgres, no Docker, no
+Homebrew on this machine). Splitting them blind is the change most likely to
 introduce a silent fault in the layer where a silent fault costs the most.
+
 The seams are obvious and already implied by the table groups — `products`,
-`tags`, `tickets`, `identity`, `measurements`, `brands` — so this is a
-mechanical job the day the suite can run.
+`tags`, `tickets`, `identity`, `measurements`, `brands`. This is a mechanical
+job the day the suite can run, and the same before/after identity discipline
+should be applied to it.
 
-## 2. Unlabelled exported functions — 417
 
-Concentrated, not scattered:
+## 2. Unlabelled exported functions — 116, all of them `lib/db`
+
+Started at 417 across the whole tree. Everything outside the held database
+layer is now labelled, and what a label says is the DISTINCTION a reader
+cannot recover from a signature — why the obvious simplification is wrong, what
+a null return means, which of two near-identical functions to reach for.
 
 | Area | Unlabelled | Note |
 | --- | ---: | --- |
-| `lib/db` | 115 | Largely the CRUD in the oversized files above — best fixed *during* the split, not twice |
-| `app/api` | 64 | Route handlers. `GET`/`POST` tell you the verb and nothing about the contract |
-| `lib/brain` | 23 | The ranking engine — the highest-value labels in the repo |
-| `lib/search` | 21 | Same seam as the split above |
-| `lib/client.js` | 20 | Browser-side helpers |
-| `lib/asterisk` | 19 | |
-| `lib/social.js` | 18 | |
-| `app/components` | 17 | React components; several are self-evident from the name |
-| `lib/security` | 10 | **Do these first regardless of size** — see below |
+| `lib/db` | **116** | 🔒 Held. Best done *during* the split rather than twice |
+| everything else | **0** | ✅ |
 
-**`lib/security/` is the priority despite being only 10 functions.** It has no
-file headers at all and holds the primitives everything else trusts:
-`bearerToken`, `secureTokenEqual`, request identity, JSON parsing limits. A
-newcomer who misreads one of these introduces a security fault, not a bug.
+**When the `lib/db` split happens, label as you go.** Those functions are the
+CRUD sitting inside the three oversized files; labelling them first and
+splitting later would mean touching every one of them twice.
 
-## 3. Files with no header — 38
+## 3. Files with no header — 0
 
-Thirty of the thirty-eight are `scripts/measure-*.mjs`, the evaluation
-harnesses. They are consistent with each other and low-traffic, so they are
-real but cheap debt. The eight that matter:
+Was 38 (really 8 — see the measurement-error note above). All written.
 
-```
-app/components/ProductSignals.jsx      lib/identity.js
-app/api/measurements/route.js          lib/brain/measurements.js
-lib/security/request.js                lib/ingest/inferTags.js
-lib/security/json.js
-lib/security/http.js
-```
+The two that genuinely had none and mattered:
 
-`lib/identity.js` and the three `lib/security/*` files are the ones to fix
-first, for the reason given above.
+- **`lib/ingest/inferTags.js`** — the single text-to-taste bridge every
+  ingestion path shares. The header now says what breaks if somebody inlines
+  it "just for one adapter": two sources start disagreeing about what the same
+  garment is, and both answers look reasonable in isolation.
+- **`app/api/measurements/route.js`** — first-party-only body measurements.
+  The header states the rule the route exists to keep: they never reach a
+  merchant, a model, or a URL.
+
 
 ## 4. Documentation that had drifted
 
@@ -132,11 +162,28 @@ fails in 2–6 seconds with zero steps and this annotation:
 
 The fix is owner-only, at <https://github.com/settings/billing>.
 
-What still works on a laptop: the 1,299-test unit suite (`npm test`) and the
-production build (`npm run build`). Those genuinely cover the pure modules —
-which is why the split order above runs from `culture.js` (no database, fully
+What still works on a laptop: the **1,303-test unit suite** (`npm test`) and
+the production build (`npm run build`). Those genuinely cover the pure
+modules — which is why the work ran from `culture.js` (no database, fully
 verifiable today) to `lib/db/*` (verifiable only by CI, held).
 
 **Reorganizing the persistence layer while the instrument that checks it is
 offline would be the single worst-timed change available.** It is held
 deliberately, not forgotten.
+
+### What "held" costs, so the trade is visible
+
+`lib/db` is 7,932 lines across three files and 116 unlabelled functions — the
+largest single block of remaining debt, and the one a new CTO will feel most.
+Holding it is a judgement, not a rule, and it rests on one fact: the only
+thing that can tell whether a `lib/db` refactor broke something is the
+Postgres suite, and it cannot run here.
+
+The search split is the evidence for that caution rather than an argument
+against it. A green unit suite and a 35-query identity corpus both said the
+extraction was inert; it had a `ReferenceError` on a live path, and only the
+suite caught it. In `lib/search` the suite is deep enough to catch that. In
+`lib/db` the equivalent depth is exactly what is offline.
+
+**The day CI runs, this is a mechanical afternoon** — the seams are listed
+above, and `npm run search:snapshot` is the pattern for proving it inert.
