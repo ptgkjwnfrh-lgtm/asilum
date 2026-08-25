@@ -8,6 +8,21 @@ one hop through the aesthetic-affinity matrix), and a couple of deliberate
 far-reach explorers. It learns from favorites, board saves, shares, skips
 (fast skips count double), and on-screen dwell time.
 
+## New here? Start with the handover
+
+**`docs/HANDOVER.md` is the front door** — current state, how work is done, and
+what is open. Then `docs/CODE-MAP.md` for where every file lives, and
+`CONSTITUTION.md` for the rules that govern what may be built.
+
+| Command | What it tells you |
+| --- | --- |
+| `npm test` | the 1,299-test unit suite (no database needed) |
+| `npm run build` | production build |
+| `npm run deploy:check` | whether production is actually serving `main` |
+| `npm run steward` | 12 read-only health checks against the live database |
+| `npm run audit:nav` | navigability debt, measured |
+| `npm run docs:codemap` | regenerate `docs/CODE-MAP.md` from the tree |
+
 ## Run locally
 
 ```bash

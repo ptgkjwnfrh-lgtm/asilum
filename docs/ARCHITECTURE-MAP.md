@@ -1,5 +1,24 @@
 # Architecture & Data-Flow Map (Phase 0)
 
+> ## ⚠️ STALE — read `docs/CODE-MAP.md` first
+>
+> This map was written by hand during Phase 0 and never regenerated. Its
+> baseline line below still says **schema v12**; production has been on **v48**
+> since 23 August 2026, and whole subsystems built since — direct messaging,
+> account kinds, the storefront, the steward — appear nowhere on it.
+>
+> **What it is still good for:** the *data-flow* diagrams below are the clearest
+> statement of how a request moves through the system, and that shape has not
+> changed. Read them for the flows, not for the inventory or the version.
+>
+> **For what actually exists today**, use `docs/CODE-MAP.md`, which is generated
+> by `npm run docs:codemap` and cannot drift this way.
+>
+> Kept rather than deleted because a corrected map is more useful than a missing
+> one — but a map that lies about its own age is the most expensive kind, so it
+> says its age here.
+
+
 One page, every flow named. Arrows are data flows; (auth) marks the identity
 gate; [table] marks persistence. Baseline: main @ 8c5e838, schema v12.
 
