@@ -11,6 +11,17 @@ import { applyStripeWebhook } from "../../../../lib/orders.js";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * POST — Stripe's callback. THE SIGNATURE IS THE AUTHENTICATION; there is no
+ * session and no token here, so the HMAC check is not optional and must run
+ * over the RAW body text. Parsing before verifying would authenticate a
+ * re-serialised copy of the payload rather than the payload Stripe signed.
+ *
+ * The 500 on a processing failure is intentional, not a leak: Stripe retries
+ * any non-2xx, and `order_events.stripe_event_id UNIQUE` makes a retry a
+ * no-op, so failing loudly is how a half-written order gets completed. An
+ * unkeyed deployment answers 503 rather than pretending to accept events.
+ */
 export async function POST(req) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {

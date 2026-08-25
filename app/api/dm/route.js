@@ -61,6 +61,24 @@ async function caller(req, claimed) {
   return user ? accountIdFromIdentity(user) : null;
 }
 
+/**
+ * GET — the mail desk's six READ ops, chosen by `?op=`:
+ *
+ *   summary   unread badge count. Polled on a 45s timer by every signed-in
+ *             reader, so it is the highest-volume op in the subsystem.
+ *   inbox     keyset page of conversations, with unread counts and previews.
+ *   thread    one conversation's messages, with reactions and the palette.
+ *   find      start-a-thread search over PUBLISHED profile rooms only.
+ *   activity  typing and presence. Polled every 3s while a thread is open.
+ *   blocks    who this account has blocked.
+ *
+ * An unknown op is 400. Absent entirely unless MESSAGING_ENABLED=1 — a 404,
+ * not a polite 200.
+ *
+ * Quota buckets are per-op (readBucketFor), because `summary` at 45s and
+ * `inbox` with its correlated subqueries per row cost wildly different
+ * amounts and must not share an allowance.
+ */
 export async function GET(req) {
   if (!messagingEnabled()) return absent();
   const url = new URL(req.url);
@@ -193,6 +211,34 @@ export async function GET(req) {
   }
 }
 
+/**
+ * POST — the mail desk's twelve WRITE ops, chosen by `body.op`:
+ *
+ *   send      deliver a message, or knock on a closed thread.
+ *   accept / decline / block / unblock    the consent controls.
+ *   read      advance the read receipt.
+ *   consent   the media-consent toggle.
+ *   react / unsend                        message-level edits.
+ *   mute      silence the BADGE only — never delivery, and undetectable by
+ *             the sender. Do not "improve" it into a delivery block.
+ *   typing    emit a typing signal (carries an expiry, not a flag).
+ *   settings  the reciprocal activity-signals switch.
+ *
+ * An unknown op is 400. Absent entirely unless MESSAGING_ENABLED=1.
+ *
+ * THREE QUOTA BUCKETS (`rateBucketFor` in lib/dm.js), and the split is a
+ * safety property rather than a performance one:
+ *
+ *   dm-send      120/h   sending is the abusable op, so it is bounded tightly
+ *   dm-presence  2400/h  typing and read — the two highest-frequency writes
+ *   dm-act        240/h  everything else, INCLUDING block, decline and mute
+ *
+ * Presence is separated so it cannot starve the third bucket. When all of them
+ * shared one 240/hour allowance, a person composing normally spent it on
+ * typing signals alone (one every 2.5s is 1440/hour) and could then be unable
+ * to BLOCK someone. Throttling presence only makes an indicator lie;
+ * throttling a block is a safety failure.
+ */
 export async function POST(req) {
   if (!messagingEnabled()) return absent();
   // Before the body parse AND before the auth round-trip, for the reason GET

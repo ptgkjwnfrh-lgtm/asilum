@@ -81,7 +81,7 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*22 files, 3,184 lines*
+*22 files, 3,259 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -93,13 +93,13 @@ Nothing here may import from `app/`.
 | `uilab.js` | 177 | DESIGN CONSOLE registry + persistence (client-safe). |
 | `analytics.js` | 166 | The /stats dashboards (owner directive, HANDOVER-2026-08-14 backlog 5). SERVER ONLY — reads the database directly. |
 | `vault.js` | 152 | The buyer vault (owner ruling 20 Aug 2026): name, address, and saved-card REFERENCES — Stripe customer/payment-method ids plus brand/last4 display |
+| `identity.js` | 135 | WHO THE CALLER IS. The root of trust for the whole app. |
 | `dm-desk.js` | 129 | The mail desk's decisions, as functions. |
 | `hotlist.js` | 123 | The hotlist program's laws in one home (P2–P4, owner build order 20 Aug 2026; ruling record docs/hotlist-program-spec-2026-08-20.md). SERVER-ONLY. |
 | `accounts.js` | 122 | WHAT KIND OF ACCOUNT THIS IS, and — more importantly — the single table that says what each kind can reach. Isomorphic: no database, no imports with a |
 | `url.js` | 83 | Shared URL guard for anything rendered as a link or persisted from a source. ASILUM never needs executable/data URLs, private-network destinations, or |
 | `age.js` | 80 | The age gate. Isomorphic: the signup sheet and the server compute the same answer from the same function, because two implementations of "how old is |
 | `nav.js` | 68 | The seven destinations, as DATA. Extracted from the shell so the swap a business sees can be tested without mounting React — a nav rule asserted by |
-| `identity.js` | 60 | _no header — tracked in docs/DEBT-REGISTER.md_ |
 | `site.js` | 57 | THE canonical origin, in one place. |
 | `notify.js` | 52 | Operator notification for paid orders (risk campaign F29/F74: an order nobody notices is a customer failed). SERVER-ONLY. |
 | `supabase.js` | 40 | Supabase auth client factory. The app must run fully without Supabase (constitution: nothing fake, no crashes on missing keys), so: |
@@ -347,15 +347,15 @@ Nothing here may import from `app/`.
 | `text.js` | 40 | the one place text is folded for matching. |
 
 ### `lib/security/`
-*5 files, 426 lines*
+*5 files, 639 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `rateLimit.js` | 116 | Fixed-window quotas backed by Postgres, with a bounded in-memory fallback for keyless development. Subjects are hashed so the quota table stores no user id. |
-| `json.js` | 99 | _no header — tracked in docs/DEBT-REGISTER.md_ |
-| `request.js` | 98 | _no header — tracked in docs/DEBT-REGISTER.md_ |
-| `multipart.js` | 58 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
-| `http.js` | 55 | _no header — tracked in docs/DEBT-REGISTER.md_ |
+| `request.js` | 166 | WHO IS ASKING, and how much they may ask for. |
+| `rateLimit.js` | 164 | Fixed-window quotas backed by Postgres, with a bounded in-memory fallback for keyless development. Subjects are hashed so the quota table stores no user id. |
+| `json.js` | 140 | READING A REQUEST BODY FROM A BROWSER, safely. |
+| `http.js` | 97 | READING A RESPONSE FROM SOMEWHERE ELSE, safely. |
+| `multipart.js` | 72 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
 
 ### `lib/steward/`
 *2 files, 489 lines*
@@ -422,11 +422,11 @@ request becomes trusted arguments.
 
 
 ### `app/api/account/age/`
-*1 file, 69 lines*
+*1 file, 80 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 69 | Records the self-declared birth date behind OWNER DECISION #2 (13+). |
+| `route.js` | 80 | Records the self-declared birth date behind OWNER DECISION #2 (13+). |
 
 ### `app/api/account/kind/`
 *1 file, 97 lines*
@@ -513,11 +513,11 @@ request becomes trusted arguments.
 | `route.js` | 61 | cultural Discover rails (Feature D). GET  ?user=  → every enabled rail from the registry, content resolved live |
 
 ### `app/api/dm/`
-*1 file, 440 lines*
+*1 file, 486 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 440 | The mail desk. One route, op-dispatched. |
+| `route.js` | 486 | The mail desk. One route, op-dispatched. |
 
 ### `app/api/ebay/`
 *1 file, 61 lines*
@@ -681,11 +681,11 @@ request becomes trusted arguments.
 | `route.js` | 79 | GET /api/stats — aggregate health metrics for the brain: interaction volume by action, user/board/graph sizes, and the most-engaged items. Read by the |
 
 ### `app/api/stripe/webhook/`
-*1 file, 44 lines*
+*1 file, 55 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 44 | Stripe → ASILUM. The signature IS the authentication: HMAC over the RAW body with STRIPE_WEBHOOK_SECRET (constant-time, ±5 min). Unkeyed deploys |
+| `route.js` | 55 | Stripe → ASILUM. The signature IS the authentication: HMAC over the RAW body with STRIPE_WEBHOOK_SECRET (constant-time, ±5 min). Unkeyed deploys |
 
 ### `app/api/style-profile/`
 *1 file, 44 lines*
@@ -968,7 +968,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*51 files, 6,992 lines*
+*51 files, 7,007 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1002,12 +1002,12 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `measure-graph-corroboration.mjs` | 107 | the forged-edge battery (Aug 6). |
 | `measure-composed-disclosure.mjs` | 106 | does the engine still say what it knows when a query carries TWO constraints instead of one? |
 | `measure-tiebreak.mjs` | 105 | declared-criteria measurement for r7 semantic tie-breaking. OFF = r5+r6 shipped behavior, ON = + tie-break. |
+| `audit-navigability.mjs` | 104 | measure how findable this codebase is. |
 | `measure-search-loop.mjs` | 102 | declared-criteria measurement for r17: the search→brain loop (an applied reading trains the feed). |
 | `measure-cultural-reach.mjs` | 99 | does a curated reading actually reach the reader, or does junk evidence shadow it? |
 | `measure-ontology.mjs` | 94 | declared-criteria measurement for r13: the Fashionpedia-informed garment vocabulary (curated crosswalk, CC BY 4.0 |
 | `measure-typo.mjs` | 92 | declared-criteria measurement for r12: the literal-engine typo bridge (fastest-levenshtein at interpretation time). |
 | `measure-stems.mjs` | 91 | declared-criteria measurement for r11: the stem-indexed garment vocabulary (words/stemmer replaces the strip-s |
-| `audit-navigability.mjs` | 89 | measure how findable this codebase is. |
 | `measure-attribution.mjs` | 87 | declared-criteria measurement for r14: bridge attribution instrumentation. The whole point of this round is that |
 | `verify-stripe-e2e.mjs` | 84 | Proves the checkout engine end to end against REAL Stripe (test mode), with zero UI and zero database: refuses to run if DATABASE_URL is set, seeds one |
 | `apply-schema.mjs` | 73 | Apply a SQL file to the database behind DATABASE_URL (.env.local or env). Usage: node scripts/apply-schema.mjs supabase/schema-v2.sql |
@@ -1026,4 +1026,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ ed316d8 — 307 source files, 56,635 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 9679b33 — 307 source files, 57,006 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

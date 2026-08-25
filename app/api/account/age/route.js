@@ -16,6 +16,17 @@ import { MINIMUM_AGE, UNDER_AGE_MESSAGE } from "../../../../lib/age.js";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * GET — has this account asserted a birth date yet?
+ *
+ * Answers `{ asserted, minimumAge }` and DELIBERATELY NEVER THE DATE. The
+ * shell only needs to know whether to ask; the date itself is personal data
+ * and belongs in the §6 export, where a person reads their own.
+ *
+ * An unidentified caller gets `asserted: false` rather than a 401, because
+ * "we have nothing on file for you" is the honest answer to a question about
+ * an account that does not exist yet.
+ */
 export async function GET(req) {
   const claimed = new URL(req.url).searchParams.get("user") || "";
   const user = await resolveRequestUser(req, claimed);
