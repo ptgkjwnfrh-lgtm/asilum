@@ -33,11 +33,24 @@ for (const file of files) {
   const lines = readFileSync(file, "utf8").split("\n");
   if (lines.length > BIG) big.push({ file, lines: lines.length });
 
-  // A header is a comment near the top; "use client" may precede it.
+  // A header is a comment near the top of the file. Two things may legally sit
+  // ABOVE it, and both have caused this check to lie:
+  //
+  //   "use client"        — the first pass scored every interactive component
+  //                         as headerless, reporting 76% coverage when it was
+  //                         really 87.5%.
+  //   #!/usr/bin/env node — the second pass then scored all 30 measurement
+  //                         harnesses as headerless, when every one of them
+  //                         opens with a thorough header on the NEXT line.
+  //
+  // Both times the instrument was wrong and the code was fine. An audit that
+  // over-reports is not the safe direction to err in: it sends someone to
+  // "fix" files that need nothing, and the noise hides the real gaps.
   let hasHeader = false;
   for (let i = 0; i < Math.min(6, lines.length); i++) {
     const t = lines[i].trim();
     if (!t) continue;
+    if (/^#!/.test(t)) continue;
     if (/^["']use (client|server)["'];?$/.test(t)) continue;
     if (/^(\/\/|\/\*)/.test(t)) hasHeader = true;
     break;

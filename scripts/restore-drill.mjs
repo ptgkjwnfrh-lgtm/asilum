@@ -63,6 +63,13 @@ function latestDump(dir) {
   return dumps.length ? path.join(dir, dumps[dumps.length - 1]) : null;
 }
 
+/**
+ * Restore the latest dump into a scratch database, verify it, and drop it.
+ *
+ * THE HALF OF BACKUP THAT ACTUALLY PROVES ANYTHING: a dump nobody has ever
+ * restored is a hope. Runs against a throwaway database, never a live one, and
+ * needs owner credentials to create and drop it.
+ */
 export async function drill({ dumpPath } = {}) {
   loadEnv();
   const adminUrl = process.env.DATABASE_ADMIN_URL;

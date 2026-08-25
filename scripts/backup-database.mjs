@@ -48,6 +48,15 @@ async function psql(url, sql) {
   return stdout.trim();
 }
 
+/**
+ * Take a full logical dump of the database. OWNER CREDENTIALS ONLY.
+ *
+ * Requires DATABASE_ADMIN_URL and refuses without it. The runtime
+ * DATABASE_URL connects as `asilum_app`, which deliberately cannot read every
+ * table — a backup taken as the app role would be SILENTLY PARTIAL and would
+ * look like a successful backup until the day it was restored. There is no
+ * best-effort option here on purpose.
+ */
 export async function backup({ outDir, stamp } = {}) {
   loadEnv();
   // OWNER ONLY. DATABASE_URL connects as asilum_app, which cannot read

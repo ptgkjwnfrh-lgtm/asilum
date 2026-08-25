@@ -1,3 +1,19 @@
+// app/api/measurements/route.js
+// GET / PUT / DELETE — the reader's own body measurements.
+//
+// FIRST-PARTY ONLY, AND THIS IS THE WHOLE POINT OF THE ROUTE. Measurements
+// never travel to a merchant, a model, or any external service, and they are
+// never placed in a URL or a query string — every method here takes and
+// returns them in the body.
+//
+// Storage is always INCHES (see lib/brain/measurements.js for the four shapes
+// these numbers travel in); `preferredUnit` records only what to display.
+// Responses are private-cached, because a shared cache holding one person's
+// measurements and serving them to another is the exact failure this data
+// cannot survive.
+//
+// DELETE is real deletion, not a flag — it is part of the §6 privacy promise.
+
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { deleteUserMeasurements, getUserMeasurements, saveUserMeasurements } from "../../../lib/db/production.js";
