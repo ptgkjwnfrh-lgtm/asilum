@@ -62,6 +62,13 @@ function chunkPoly(pts) {
 // the passport page primes it while the bearer is still reading — the
 // click itself only schedules and draws.
 let parsedCache = null; // { map, layers: { key: polylines } }
+/**
+ * Parse the road geometry AHEAD of the click that needs it.
+ *
+ * Purely a smoothness measure: ~52k points is the expensive part, so the
+ * passport page primes it while the bearer is still reading and the click only
+ * schedules and draws. Safe to call repeatedly — a matching cache is a no-op.
+ */
 export function primeRoads(map) {
   if (!map || (parsedCache && parsedCache.map === map)) return;
   const layers = {};

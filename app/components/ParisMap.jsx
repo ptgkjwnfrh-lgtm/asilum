@@ -16,6 +16,14 @@ import { useEffect, useState } from "react";
 // page. A failed load clears the cache so a later mount can try again.
 let roadsPromise = null;
 
+/**
+ * Load the Paris road geometry once per page, shared by every caller.
+ *
+ * The document is immutable and public, so a single in-flight promise serves
+ * all mounts — parsing ~52k points twice would cost the main thread for
+ * identical bytes. A FAILED LOAD CLEARS THE CACHE, so a later mount retries
+ * instead of inheriting the failure forever.
+ */
 export function useParisRoads() {
   const [map, setMap] = useState(null);
   useEffect(() => {

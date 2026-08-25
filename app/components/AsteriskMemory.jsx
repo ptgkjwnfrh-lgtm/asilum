@@ -12,6 +12,15 @@ import {
   authorizedFetch, postJSON, getUid, brainEnabled, setBrainEnabled,
 } from "../../lib/client.js";
 
+/**
+ * Load and mutate the reader's ASTERISK memory while the surface is open.
+ *
+ * Fetches only when `open` — memory is a personal record and there is no
+ * reason to read it for a panel nobody has opened. `saving` guards against
+ * overlapping writes, so a fast double-toggle cannot land out of order.
+ *
+ * Returns the memory, an error string, and the mutators the panel binds to.
+ */
 export function useAsteriskMemory(open) {
   const [memory, setMemory] = useState(null);
   const [err, setErr] = useState("");
@@ -155,6 +164,9 @@ function Row({ label, children }) {
   );
 }
 
+/** The shared section renderer, used by BOTH the /asterisk page and the dock
+ *  panel — one component so the two views cannot drift into showing a person
+ *  different accounts of what is remembered about them. */
 export function MemorySections({ memory, setHidden, full = false }) {
   if (!memory) return null;
   const hidden = new Set(memory.preferences?.hiddenSections || []);

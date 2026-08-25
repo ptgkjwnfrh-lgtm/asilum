@@ -56,6 +56,13 @@ function describe(item) {
   return { name, description: facts ? `${facts}. ${demo}`.trim() : demo };
 }
 
+/**
+ * Per-piece metadata for the tab title and social preview cards.
+ *
+ * Next.js calls this on the server before render. A missing piece returns
+ * "piece not found" metadata rather than throwing — the 404 body is the page's
+ * job, and a metadata failure would take the whole route down with it.
+ */
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const item = await readPiece(id);

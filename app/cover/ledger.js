@@ -30,6 +30,9 @@ const FOLIO = [
   ["edges", "GRAPH EDGES"],
 ];
 
+/** The cover's system line — "915 PIECES · 4156 READERS · …".
+ *  Only counts that are actually FINITE are printed, so a metric the server
+ *  could not read is absent rather than shown as zero. */
 export function systemLedger(sys) {
   if (!sys || typeof sys !== "object") return "";
   return FOLIO
