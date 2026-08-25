@@ -44,6 +44,18 @@ export async function GET(req) {
   }
 }
 
+/**
+ * POST — record a self-declared birth date, and re-check the age gate.
+ *
+ * THE SECOND LINE, NOT THE FIRST: the client refuses an under-age date before
+ * an account is created, but a client-side gate is a curtain. The number that
+ * matters is the one the server agreed to store.
+ *
+ * Answers 422 (not 400) on refusal — the request was well-formed and was
+ * declined on its merits — and NEVER echoes the date back. Rate-limited
+ * tightly, because a caller trying dates until one passes is guessing at the
+ * gate rather than correcting a typo.
+ */
 export async function POST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 512 });
   if (parsed.response) return parsed.response;
