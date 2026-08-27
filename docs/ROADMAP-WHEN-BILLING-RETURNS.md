@@ -195,7 +195,20 @@ a merchant, and a lawyer.
 - [ ] Fall back: Yahoo! JAPAN official Shopping API, Rakuten Web Service
       (Rakuten owns Rakuma) as direct licensed channels
 
-### 4.5 Japanese ↔ English identity resolution — the real engineering
+### 4.5 ✅ BUILT — Japanese ↔ English identity resolution
+
+`lib/ingest/japan/` reads a listing title into facets — houses, garments,
+materials, condition grades, departments — plus the seller's colour claim and
+any authenticity claim, and reports every katakana run it could NOT read to an
+archivalist queue ordered by frequency.
+
+It never guesses: no transliteration, no fuzzy brand match, no model. Full
+spec and the finishing procedure: **`docs/JAPAN-INGESTION.md`**.
+
+The FETCH is what remains, and it is blocked on a Buyee/ZenMarket agreement
+rather than on code. Both adapters are registered and honestly disabled.
+
+### 4.5b The original design notes
 
 This is the piece with the most depth, and the best ASTERISK training ground.
 
