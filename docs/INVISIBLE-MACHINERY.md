@@ -108,6 +108,8 @@ of low confidence is silence**, not a caveat.
 | Price/comparables | *"below the twelve like it we hold"* — never a "market value" widget |
 | JP↔EN resolution | Japanese listings are simply readable. No language control |
 | Authenticity evidence | Only where the stake is real (`stakeOf`). No "verify" button |
+| Reverse image on a listing | ✅ **BUILT** — the same photograph elsewhere arrives when a piece opens. No control. `lib/vision/sameShot.js` |
+| Alerts and the digest | ✅ **BUILT** — a want is an empty search you already made. No alert to configure. `lib/waiting/` |
 | Archivalist training | A queue with buttons. The reader never sees it happened |
 
 ## What this is NOT permission to do

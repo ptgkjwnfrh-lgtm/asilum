@@ -11,6 +11,7 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 import { readEvidence } from "../../../lib/authenticity/evidence.js";
+import { sameShotElsewhere, sameShotNote } from "../../../lib/vision/sameShot.js";
 
 export const dynamic = "force-dynamic";
 
@@ -40,9 +41,20 @@ export async function GET(req) {
   // entirely, so a cheap piece carries no trace of the feature at all.
   const evidence = await readEvidence(source).catch(() => null);
 
+  // THE SAME PHOTOGRAPH, ELSEWHERE — on the same ride, for the same reason.
+  // Not stake-gated like the authenticity reading: a cheaper identical listing
+  // is worth knowing at any price. One computation, two readings; we state the
+  // fact and the reader draws their own conclusion. lib/vision/sameShot.js
+  const byId = new Map(pool.map((it) => [it.id, it]));
+  const elsewhere = await sameShotElsewhere(source, (id) => byId.get(id));
+  const sameShot = elsewhere.length
+    ? { note: sameShotNote(elsewhere), listings: elsewhere }
+    : null;
+
   return NextResponse.json({
     source: source.id, item: publicProduct(source), count: items.length,
     items: items.map(publicProduct).filter(Boolean),
     ...(evidence ? { evidence } : {}),
+    ...(sameShot ? { sameShot } : {}),
   });
 }

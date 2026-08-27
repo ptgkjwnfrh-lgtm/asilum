@@ -305,6 +305,25 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* THE SAME PHOTOGRAPH, ELSEWHERE (lib/vision/sameShot.js).
+   Reads as a FACT, not as a warning: the identical image being listed cheaper
+   is useful, and dressing it in alarm colours would make a price note look
+   like an accusation. The authenticity reading of the same finding lives in
+   .sawline below and is stake-gated; this one is not. */
+.shotline {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 9px; font-size: 12px; color: var(--ink);
+}
+.shotline > span[aria-hidden] { color: var(--sig); }
+.shotline-row { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.shotline-go {
+  padding: 2px 7px; font-size: 11px; letter-spacing: 0.04em;
+  border: 1px solid color-mix(in oklab, var(--sig) 34%, transparent);
+  color: var(--sig); text-decoration: none; white-space: nowrap;
+}
+.shotline-go:hover { border-color: var(--sig); }
+.shotline-go b { font-weight: 800; }
+
 /* WHAT WE COULD SEE — the authenticity evidence line (lib/authenticity).
    NOT a verdict, so it is styled as READING rather than as a warning: no
    badge, no colour-coded score, no shield icon. A shield would be a claim.

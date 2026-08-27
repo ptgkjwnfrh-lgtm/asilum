@@ -95,6 +95,7 @@ Three systems shipped as working frames with real first implementations —
 | **Authenticity evidence** (`lib/authenticity/evidence.js`) | `image-reuse`, `seller-declaration` | Replacing one `read: null` with a function. See §5 of its doc |
 | **Japanese reading** (`lib/ingest/japan/`) | Full title reading: houses, garments, materials, conditions, claims | The FETCH. Blocked on a Buyee/ZenMarket agreement, not on code |
 | **Waiting** (`lib/waiting/`) | Wants from empty searches; on-platform delivery | Setting `built: true` on a channel and adding a `send` |
+| **Same-shot** (`lib/vision/sameShot.js`) | The same photograph elsewhere, with price deltas | Visual similarity — needs `embedImage`, deliberately unbuilt |
 
 ## The verification you can still run without CI
 
@@ -127,3 +128,4 @@ broken.
 | `culture-catalog-assembly.test.js` | A catalog re-split that silently reorders records |
 | `japan-reading.test.js` | Guessing at an unread Japanese word; a colour claim promoted to a fact |
 | `waiting.test.js` | A silent-when-broken engine; a replayed query polluting the search log |
+| `same-shot.test.js` | Widening dhash into "similarity"; a missing price rendering as a bargain |

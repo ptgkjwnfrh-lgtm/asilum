@@ -544,11 +544,13 @@ export default function Home() {
   }
 
   const [modalEvidence, setModalEvidence] = useState(null);
+  const [modalSameShot, setModalSameShot] = useState(null);
 
   function openModal(item) {
     setModal(item);
     setModalRel([]);
     setModalEvidence(null);
+    setModalSameShot(null);
     fetch("/api/related?item=" + encodeURIComponent(item.id) + "&limit=6")
       .then((r) => r.json())
       .then((d) => {
@@ -557,6 +559,7 @@ export default function Home() {
         // anyway. Absent below the stake threshold, and then this stays null
         // and nothing renders. docs/INVISIBLE-MACHINERY.md.
         setModalEvidence(d.evidence || null);
+        setModalSameShot(d.sameShot || null);
       })
       .catch(() => {});
   }
@@ -850,6 +853,24 @@ export default function Home() {
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
               <ColorEvidenceLine item={modal} detailed />
+              {/* THE SAME PHOTOGRAPH, ELSEWHERE. No button asked for this and
+                  none exists — it arrives with the pieces that were already
+                  being fetched. Absent when the photograph is unique, which is
+                  the ordinary case. lib/vision/sameShot.js */}
+              {modalSameShot && (
+                <div className="shotline">
+                  <span aria-hidden="true">◦</span> {modalSameShot.note}
+                  <span className="shotline-row">
+                    {modalSameShot.listings.map((l) => (
+                      <a key={l.id} className="shotline-go"
+                         href={"/?item=" + encodeURIComponent(l.id)}>
+                        {l.currency && l.price != null ? `${l.currency} ${l.price}` : "see it"}
+                        {l.saving ? <b> · {l.currency || ""} {l.saving} less</b> : null}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
               {/* WHAT WE COULD SEE. Never a verdict, never a score, and never
                   the words authentic or fake — lib/authenticity/evidence.js.
                   Absent entirely on a cheap piece; the coverage line appears

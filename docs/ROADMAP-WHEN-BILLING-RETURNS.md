@@ -130,7 +130,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | 1 | **Multi-marketplace ingestion** | Yahoo Japan Auctions, Mercari Japan, Rakuma — 115,000+ listings, continuous |
 | 2 | **JP↔EN identity resolution** | Listings are Japanese (`ディオール` = Dior, `プラダ` = Prada). Matching them to a curated brand list is the hard part |
 | 3 | **Price intelligence** | "Underpriced" implies a market comparable per piece, plus JPY→USD |
-| 4 | **Reverse image search** | ✅ **BUILT, invisibly** — a stamp uploaded to a passport is recognised with no control, no vocabulary, and no empty state |
+| 4 | **Reverse image search** | ✅ **BUILT, invisibly, both directions** — a stamp uploaded to a passport is recognised, and a listing says where else its photograph appears. No control either way |
 | 5 | **Proxy deep links** | ZenMarket + Buyee links built into every listing |
 | 6 | **Sub-60s alerting** | ✅ **ENGINE BUILT** as waiting — see `docs/WAITING.md`. No alert to configure: a want is an empty search you already made |
 | 7 | **Dashboard + filters** | brand, category, source, price |
@@ -146,7 +146,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | Ingestion | `lib/ingest/adapters/` — the adapter pattern, `syncProducts`, sync logs | Three JP adapters |
 | Brand resolution | `lib/search/intent.js` `resolveBrandSpelling`, `lib/asterisk/houses.js` | **Japanese script handling** |
 | Price band | `lib/tagging/dense.js` `priceBand` | Market comparables, FX |
-| Reverse image | ✅ **done for stamps** — `lib/vision/stampReading.js`, `lib/images/dhash.js` | Extend to catalog-vs-catalog |
+| Reverse image | ✅ **done both ways** — `lib/vision/stampReading.js` + `lib/vision/sameShot.js` | True visual similarity, which needs `embedImage` |
 | Proxy links | `purchase_tickets`, `refusalReason`, booth attribution | Proxy URL builder |
 | Alerting | ✅ `lib/waiting/` — wants, answering, channel registry | The off-platform channels |
 | Dashboard/filters | The feed, `/discover`, dense constraints | Nearly free |
