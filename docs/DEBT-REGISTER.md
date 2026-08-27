@@ -138,7 +138,27 @@ The two that genuinely had none and mattered:
   merchant, a model, or a URL.
 
 
-## 4. Documentation that had drifted
+## 4. Pagination — correct today, breaks on ingestion
+
+**Measured 27 August 2026.** Recorded here because it is a known limitation of
+shipped code, not only future work. Full detail and the ordering:
+`ROADMAP-WHEN-BILLING-RETURNS.md` §4.5c–d.
+
+| Issue | Present today? | Fixed by cursors? |
+| --- | --- | --- |
+| `offset` pagination in search and discover drifts once the pool changes | latent — the catalog is static | **yes** |
+| `SEEN_CAP = 200` caps feed rotation; a heavy scroller loops | **yes** | no |
+| Feed rotation mutates shared `_meta.seen` unguarded across tabs | **yes** | no |
+
+The first is a **precondition of the Japanese ingestion work** and should be
+done before it runs at volume. The other two are independent and can be taken
+any time; `withUserLock` already exists for the third.
+
+Only `lib/dm.js` uses keyset cursors today, and it is the model to copy —
+including the `snapshot` component, which is the part that stops rows becoming
+active mid-scroll from jumping above the cursor.
+
+## 5. Documentation that had drifted
 
 `docs/ARCHITECTURE-MAP.md` described "schema v12" while production ran **v48** —
 it was written by hand in Phase 0 and never regenerated. It is now marked with

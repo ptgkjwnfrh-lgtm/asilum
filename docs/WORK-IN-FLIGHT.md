@@ -70,6 +70,22 @@ needs a real signed-in account. That is the first-day list in
   itself; at a high price the name is most of what is bought and the name is
   the unchecked part
 
+## One thing to do BEFORE the ingestion work, not after
+
+**Cursor pagination for search and discover.** Nothing is broken today —
+measured — but `offset` over a re-ranked list is only stable while the catalog
+is static, and continuous Japanese ingestion is exactly what makes it move.
+Page 1 and page 2 will silently skip and duplicate.
+
+It is a **precondition of §4**, not a follow-up, because retrofitting it after
+readers are paging through live inventory means fixing it while it is visibly
+wrong. `ROADMAP-WHEN-BILLING-RETURNS.md` §4.5c has the detail; `lib/dm.js` is
+the in-house model.
+
+Two related feed issues (`SEEN_CAP = 200`, and unguarded shared rotation state)
+are filed **separately** in §4.5d — they exist today, and cursors do not fix
+either of them.
+
 ## Documents to read, in order
 
 | Document | What it answers |

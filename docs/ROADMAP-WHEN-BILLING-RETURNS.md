@@ -225,6 +225,52 @@ This is the piece with the most depth, and the best ASTERISK training ground.
       archivalists", and it is the same shape as
       `lib/asterisk/unknownQueries.js` — which already exists
 
+### 4.5c ⚠️ PAGINATION — a precondition of ingestion, not a separate task
+
+**Measured 27 August 2026.** Nothing is broken today. It breaks the day
+continuous ingestion runs, which is why it sits here rather than in a backlog.
+
+Three surfaces, three strategies, and **only the DM inbox uses cursors**:
+
+| Surface | Today | Stable while |
+| --- | --- | --- |
+| Feed | No pagination at all — reissues the same URL, relies on seen-state rotation | always (it is a feed) |
+| Search | `offset` — `ranked.slice(offset, offset + limit)` | the pool is static |
+| Discover | `offset`, capped at 10,000 | the pool is static |
+| DM inbox | **keyset cursor**, with a `snapshot` component | — |
+
+**Why it holds today:** two identical search calls return identical pages with
+zero overlap, and `getDiscoverablePool` caches for 15s, so a reader scrolling
+quickly sees a consistent pool.
+
+**Why ingestion breaks it:** offset over a re-ranked list is only stable while
+the pool does not move. At SwagSearch-like volume — 115k listings, continuous —
+the pool changes *between* page 1 and page 2, and offset silently skips and
+duplicates. Tagging pushes the same way: a backfill that adds a tag changes an
+item's rank, shifting its position under a reader mid-scroll.
+
+- [ ] **Before ingestion goes live at volume**, move `/api/search` and
+      `/api/discover` to keyset pagination
+- [ ] `lib/dm.js` `encodeCursor`/`decodeCursor` is the in-house model — copy the
+      **snapshot component**, which is what stops rows that become active
+      mid-scroll from jumping above the cursor
+- [ ] The cursor's shape depends on the sort key, so **decide the sort first**:
+      recency for a marketplace feed, score for search. Designing the cursor
+      before that decision is wasted work
+
+### 4.5d Two feed issues that cursors do NOT fix
+
+Filed separately on purpose. They exist **today**, they are unrelated to
+ingestion, and grouping them under "pagination" would bury them.
+
+- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`) is a hard ceiling on feed
+      rotation. Past ~200 pieces served, the oldest fall out of `_meta.seen`
+      and can reappear — a heavy scroller loops. Raising the cap trades memory
+      per profile; the alternative is a bloom filter or a served-ledger table.
+- [ ] **Feed rotation mutates shared state.** Two tabs, or a double-fire, both
+      write `_meta.seen` and can serve overlapping sets. Nothing guards it.
+      `withUserLock` already exists in `lib/db/index.js` and is the likely fix.
+
 ### 4.6 Price intelligence — no guessing
 
 "Underpriced" is a claim. Under rule #1 it needs evidence.
