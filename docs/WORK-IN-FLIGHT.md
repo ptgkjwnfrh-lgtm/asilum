@@ -96,6 +96,7 @@ Three systems shipped as working frames with real first implementations —
 | **Japanese reading** (`lib/ingest/japan/`) | Full title reading: houses, garments, materials, conditions, claims | The FETCH. Blocked on a Buyee/ZenMarket agreement, not on code |
 | **Waiting** (`lib/waiting/`) | Wants from empty searches; on-platform delivery | Setting `built: true` on a channel and adding a `send` |
 | **Same-shot** (`lib/vision/sameShot.js`) | The same photograph elsewhere, with price deltas | Visual similarity — needs `embedImage`, deliberately unbuilt |
+| **Constraints** (`lib/search/constraints.js`) | Shows what a sentence became; releases one | Surfacing it on more than `/discover` |
 
 ## The verification you can still run without CI
 
@@ -129,3 +130,4 @@ broken.
 | `japan-reading.test.js` | Guessing at an unread Japanese word; a colour claim promoted to a fact |
 | `waiting.test.js` | A silent-when-broken engine; a replayed query polluting the search log |
 | `same-shot.test.js` | Widening dhash into "similarity"; a missing price rendering as a bargain |
+| `constraints.test.js` | A release that mangles the query, or a chip that quietly creates a filter |

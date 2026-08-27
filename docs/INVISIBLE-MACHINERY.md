@@ -121,3 +121,32 @@ of low confidence is silence**, not a caveat.
   upload the person chose, under the existing explicit-action consent gate.
 - **Not permission to be quiet about being wrong.** Silence is for
   uncertainty, never for error.
+
+---
+
+## Applied: filters
+
+The competitor gives you four dropdowns — brand, category, source, price. You
+operate the dashboard, the dashboard gives you rows.
+
+**ASILUM has no filter controls, because the sentence already carries the
+constraints.** `1990s helmut lang size L not leather` is parsed into an era, a
+house, a size and an exclusion before a single product is scored. Adding
+dropdowns on top would be a second way to say the same thing, and the two
+would drift.
+
+The gap that *was* real: a constraint the reader never set is still one they
+may want gone. Ask for `japanese wool coat under 400`, get nothing, and the
+only way to loosen it was to retype and guess which word was the problem.
+
+So `lib/search/constraints.js` **shows what the sentence became and lets one be
+released** — and the distinction from a filter control is exact:
+
+- It **never creates** a constraint. Only the sentence does.
+- Release **removes the words** that made it and re-runs the ordinary search.
+  There is no "drop this constraint" path through the engine, so there is no
+  second code path to diverge from the first.
+- The URL stays the whole state.
+
+It renders nothing when the sentence carried no constraints — an empty row
+would advertise a filter mechanism that does not exist.

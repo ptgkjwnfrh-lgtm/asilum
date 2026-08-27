@@ -305,6 +305,24 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* WHAT THE SENTENCE BECAME (lib/search/constraints.js).
+   These read as a RECEIPT, not as controls: they are what the reader already
+   said, shown back. Styled quietly for that reason — a row of bright pills
+   would look like filters to set, which is the one thing they are not. The ×
+   is the only interactive part, and it removes rather than adds. */
+.readsback { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.readsback-c {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 4px 2px 8px; font-size: 11px; letter-spacing: 0.04em;
+  color: var(--grey); border: 1px dashed color-mix(in oklab, var(--grey) 45%, transparent);
+}
+.readsback-c.fixed { padding-right: 8px; opacity: 0.75; }
+.readsback-c button {
+  background: none; border: none; cursor: pointer; padding: 0 4px;
+  color: var(--grey); font-size: 13px; line-height: 1;
+}
+.readsback-c button:hover { color: var(--red); }
+
 /* THE SAME PHOTOGRAPH, ELSEWHERE (lib/vision/sameShot.js).
    Reads as a FACT, not as a warning: the identical image being listed cheaper
    is useful, and dressing it in alarm colours would make a price note look

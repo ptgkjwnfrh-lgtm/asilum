@@ -133,7 +133,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | 4 | **Reverse image search** | ✅ **BUILT, invisibly, both directions** — a stamp uploaded to a passport is recognised, and a listing says where else its photograph appears. No control either way |
 | 5 | **Proxy deep links** | ZenMarket + Buyee links built into every listing |
 | 6 | **Sub-60s alerting** | ✅ **ENGINE BUILT** as waiting — see `docs/WAITING.md`. No alert to configure: a want is an empty search you already made |
-| 7 | **Dashboard + filters** | brand, category, source, price |
+| 7 | **Dashboard + filters** | ✅ **BUILT, inverted** — no filter controls; the sentence carries the constraints, and `lib/search/constraints.js` shows them back and releases one |
 | 8 | **Curated brand watch** | CDG, Number Nine, Yohji, Issey, Raf, Undercover + 30 more |
 | 9 | **Weekly digest** | Declared channel. Sends what ARRIVED, and does not send when nothing did |
 
@@ -149,7 +149,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | Reverse image | ✅ **done both ways** — `lib/vision/stampReading.js` + `lib/vision/sameShot.js` | True visual similarity, which needs `embedImage` |
 | Proxy links | `purchase_tickets`, `refusalReason`, booth attribution | Proxy URL builder |
 | Alerting | ✅ `lib/waiting/` — wants, answering, channel registry | The off-platform channels |
-| Dashboard/filters | The feed, `/discover`, dense constraints | Nearly free |
+| Dashboard/filters | ✅ done — constraints read from the sentence, shown back, releasable | Surfacing on more than `/discover` |
 | Curated watch | `lib/asterisk/culture.js`, the designer register | Watchlist model |
 
 ### 4.3 The ingestion problem, stated honestly
