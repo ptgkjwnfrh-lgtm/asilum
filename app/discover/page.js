@@ -11,7 +11,7 @@ import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../li
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -529,6 +529,7 @@ export default function DiscoverPage() {
                 ))}
               </div>
               <ColorEvidenceLine item={it} />
+              <OriginLine item={it} />
               <ProductFitLine item={it} fit={fit} />
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
               <div className="cardacts" onClick={(e) => e.stopPropagation()}>

@@ -17,7 +17,7 @@ import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
   const fit = useFitBrain();
@@ -455,6 +455,7 @@ export default function BoardPage() {
                     <div className="ttl">{it.title}</div>
                     <div className="brand2">{it.brand}</div>
                     <ColorEvidenceLine item={it} />
+                    <OriginLine item={it} />
                     <ProductFitLine item={it} fit={fit} />
                     <div className="pricerow">
                       {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}

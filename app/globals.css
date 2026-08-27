@@ -305,6 +305,29 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* PROVENANCE — what backs a piece (owner ruling, 27 Aug 2026).
+   Marketplace inventory is ingested and LABELLED, never hidden, so this line
+   is styled to be READ rather than to be tasteful about it: the same weight
+   and red underline the demo flag earned, for the same reason. It sits at
+   equal-or-higher specificity than the card text it lands in, so it cannot be
+   quietly greyed out by whichever surface renders it next.
+
+   `.warn` is the unverified and sample states. `.ok` is a merchant under
+   agreement, which is the only case allowed to be quiet — and even then it
+   speaks on the detail view. */
+.originline,
+.card .originline,
+.fitline .originline {
+  margin-top: 5px; font-size: 12px; letter-spacing: 0.05em;
+  text-transform: uppercase; line-height: 1.35;
+}
+.originline b, .card .originline b { font-weight: 900; letter-spacing: 0.06em; }
+.originline.warn, .card .originline.warn { color: var(--ink); opacity: 0.95; }
+.originline.warn b, .card .originline.warn b { border-bottom: 2px solid var(--red); }
+.originline.ok, .card .originline.ok { color: var(--grey); }
+.originline.ok b, .card .originline.ok b { border-bottom: 1px solid var(--sig); }
+.originline span { text-transform: none; letter-spacing: 0; color: var(--grey); }
+
 .rule { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 
 .btn {

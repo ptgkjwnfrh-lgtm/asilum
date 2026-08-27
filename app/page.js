@@ -22,7 +22,7 @@ import {
   observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
-import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, useFitProfile } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -841,6 +841,7 @@ export default function Home() {
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
               <ColorEvidenceLine item={modal} detailed />
+              <OriginLine item={modal} detailed />
               {(modal.size?.label || fitPhrase(modal.size, fitBrain)) ? (
                 <div className="size">
                   {modal.size?.label ? <span className="szlabel">{modal.size.label}</span> : null}
@@ -971,6 +972,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
           : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
         {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
         <ColorEvidenceLine item={it} />
+        <OriginLine item={it} />
         {fitLine ? <div className="fitline">{fitLine}</div> : null}
         <div className="cardacts">
           <button onClick={onFavorite}>Favorite</button>

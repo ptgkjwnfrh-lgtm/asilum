@@ -16,7 +16,7 @@ import {
 } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 
 export default function StylistPage() {
@@ -245,6 +245,7 @@ export default function StylistPage() {
                           {it.owned ? "YOUR WARDROBE" : sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}
                         </span>
                         <ColorEvidenceLine item={it} />
+                        <OriginLine item={it} />
                         <ProductFitLine item={it} fit={fit} />
                       </a>
                       );

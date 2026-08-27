@@ -229,23 +229,24 @@ Taobao is **not** the same problem as Japan and should not share a pipeline.
       most buyers already use
 - [ ] Shipping/customs differ from Japan — line consolidation, longer lead times
 
-> ### ⚖ THE CONFLICT, and it needs your ruling
+> ### ✅ RULED, 27 August 2026 — position 2
 >
-> A large share of Taobao fashion is **replica**. You have asked for a Taobao
-> pipeline *and* a replica checker in the same breath, and those two features
-> fight unless the policy is explicit. Three coherent positions:
+> *"taobao is unverified-origin, label everything, dont hide it."*
 >
-> 1. **Taobao is blanks-and-basics only** — no branded listings ingested at all
-> 2. **Taobao is ingested and every piece is labelled `unverified-origin`** —
->    honest, and the checker's job is to say so
-> 3. **Taobao is a user-directed fetch** — we never surface it in the catalog;
->    a reader who asks for a specific piece gets a proxy link
+> Marketplace stock is **ingested and labelled**, never hidden. Built and
+> shipped ahead of the pipeline, because ASILUM already carried unlabelled
+> unverified inventory: `lib/provenance.js`, stamped onto every public payload,
+> rendered on all nine product surfaces, pinned by `tests/provenance.test.js`.
 >
-> Note the precedent: **Pandabuy was raided and shut down in 2024** over
-> counterfeit facilitation. A platform that knowingly routes replicas carries
-> real liability. Pick a position and record it in `OWNER-DECISIONS.md`.
-
----
+> The load-bearing part: on an unverified piece **the brand is a CLAIM**, not a
+> fact. That is ASTERISK's first law at the catalog boundary — it may not reason
+> from a word it cannot back. And **verification is earned**: an unregistered
+> source defaults to unverified, because the failure mode of guessing the other
+> way is telling a reader something is genuine when nobody checked.
+>
+> Recorded in `docs/OWNER-DECISIONS.md` §11. Still open there: whether
+> unverified stock ranks differently. It does not today — suppression is a soft
+> form of hiding.
 
 ## 6. THE AUTHENTICITY SYSTEM
 

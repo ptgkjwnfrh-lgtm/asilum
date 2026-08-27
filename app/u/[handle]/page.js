@@ -18,7 +18,7 @@ import { MOCK_USERS, listPosts, postStats, timeAgo, fetchPostsByHandle } from ".
 import { Avatar, FollowButton } from "../../components/UserBits.jsx";
 import TransmissionText from "../../components/TransmissionText.jsx";
 import { PublicRoom } from "../../components/ProfileRoom.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../../components/ProductSignals.jsx";
 
 // The poster's transmissions, wire-cut: caption headers, permalinked
 // timestamps (server posts always have server ids here).
@@ -174,6 +174,7 @@ export default function UserPage({ params }) {
             <div className="body">
               <div className="ttl">{it.title}</div>
               <ColorEvidenceLine item={it} />
+              <OriginLine item={it} />
               <ProductFitLine item={it} fit={fit} />
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
             </div>

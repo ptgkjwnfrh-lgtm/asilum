@@ -96,6 +96,36 @@ export function useFitBrain() {
   return fitProfileForBrain(profile);
 }
 
+/**
+ * WHAT BACKS THIS PIECE — and unlike ColorEvidenceLine above, this one is
+ * LOUD WHEN IT KNOWS LEAST.
+ *
+ * The colour line renders nothing when there is no evidence, because an
+ * unverified colour is simply not a claim worth making. Provenance inverts
+ * that: the owner's 27 August ruling is that marketplace inventory is
+ * ingested, labelled, and NOT HIDDEN — so the weaker the backing, the more
+ * visible the line. Silence is reserved for the one case that needs no
+ * caveat, a merchant under agreement.
+ *
+ * `originEvidence` is stamped server-side by lib/products.js so this component
+ * never re-derives the rule and cannot drift from it.
+ */
+export function OriginLine({ item, detailed = false }) {
+  const evidence = item?.originEvidence;
+  if (!evidence) return null;
+  // A merchant under agreement needs no caveat on a card; the detail view
+  // still says who is standing behind it.
+  if (evidence.status === "verified" && !detailed) return null;
+  const tone = evidence.status === "verified" ? "originline ok" : "originline warn";
+  return (
+    <div className={tone} title={evidence.note}>
+      <b>{evidence.status === "verified" ? "BACKED" : evidence.status === "demo" ? "SAMPLE" : "UNVERIFIED ORIGIN"}</b>
+      {detailed ? <span> {evidence.note}</span>
+        : evidence.sourceLabel ? <span> · {evidence.sourceLabel}</span> : null}
+    </div>
+  );
+}
+
 /** The one-line fit sentence for a piece, or nothing when there is nothing
  *  honest to say. See fitPhrase in lib/brain/sizing.js for the three states. */
 export function ProductFitLine({ item, fit }) {
