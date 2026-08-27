@@ -177,7 +177,7 @@ export default function Shell({ children }) {
           try { parked = window.localStorage.getItem("asilum-pending-kind"); } catch {}
           if (parked) {
             try {
-              const recorded = await fetch("/api/account/kind", {
+              const recorded = await authorizedFetch("/api/account/kind", {
                 method: "POST", headers: { "content-type": "application/json" },
                 body: JSON.stringify({ kind: parked, user: uid }),
               });
@@ -190,8 +190,7 @@ export default function Shell({ children }) {
             } catch { /* keep it parked */ }
           }
         }
-        const response = await fetch(
-          "/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
+        const response = await authorizedFetch("/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
         if (!response.ok) return; // includes 503 — hold what we have
         const data = await response.json();
         if (!cancelled && data?.kind) setAccountKind(data.kind);

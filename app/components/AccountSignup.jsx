@@ -150,10 +150,16 @@ export default function AccountSignup() {
   /** Records the birth date against the account. Same account-id rule as the
    *  kind: never the device id. The client already refused an under-age date,
    *  and the server re-checks — a client-side gate is a curtain. */
+  // THROUGH authorizedFetch, AND THE CATCH IS NOT A SHRUG.
+  //
+  // This posted with a bare `fetch`, so it never carried the bearer token that
+  // proves the sb- identity it was claiming, so the route answered 401 every
+  // time — and the catch below swallowed it. The age assertion behind OWNER
+  // DECISION #2 was never recorded for anybody, and nothing said so.
   async function recordAge(accountUuid) {
     if (!accountUuid || !birthDate) return;
     try {
-      await fetch("/api/account/age", {
+      await authorizedFetch("/api/account/age", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ birthDate, user: "sb-" + accountUuid }),
       });
@@ -164,7 +170,7 @@ export default function AccountSignup() {
     if (kind === "passport") return; // the default; nothing to record
     if (!accountUuid) return;
     try {
-      await fetch("/api/account/kind", {
+      await authorizedFetch("/api/account/kind", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ kind, user: "sb-" + accountUuid }),
