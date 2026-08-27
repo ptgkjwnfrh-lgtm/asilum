@@ -305,6 +305,46 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* THE CORNER STICKER — top-left of a listing, over the image.
+   Owner ruling, 27 Aug 2026: unverified stock is NOT demoted, it is MARKED.
+   Ranking is untouched; this sticker is the whole intervention.
+
+   Its weight scales with what is riding on the claim (lib/provenance.js
+   stakeOf), because verification is not a constant worry — at a low price the
+   piece is bought for itself, at a high price the NAME is most of what is
+   being bought and the name is the unchecked part.
+
+   VERIFIED IS DELIBERATELY QUIET. A reader trained to hunt for a green tick
+   stops noticing anything; the point is that its ABSENCE is legible where it
+   matters. So the affirmative sticker recedes and `.warn.high` is the one that
+   carries weight. */
+.ostick {
+  position: absolute; top: 8px; left: 8px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 7px; font-size: 10px; font-weight: 800;
+  letter-spacing: 0.09em; text-transform: uppercase; line-height: 1;
+  border: 1px solid currentColor; border-radius: 2px;
+  background: color-mix(in oklab, var(--bg, #070b10) 82%, transparent);
+  backdrop-filter: blur(3px); pointer-events: none; max-width: calc(100% - 16px);
+}
+.ostick b { font-weight: 900; font-size: 11px; }
+.ostick em { font-style: normal; font-weight: 600; letter-spacing: 0.04em; text-transform: none; }
+
+/* backed — recedes */
+.ostick.ok { color: var(--sig); opacity: 0.72; }
+/* a sample — plain, no alarm; it is openly not for sale */
+.ostick.demo { color: var(--grey); }
+
+/* unverified, in three volumes */
+.ostick.warn { color: var(--ink); }
+.ostick.warn.low { opacity: 0.66; border-style: dashed; }
+.ostick.warn.material { opacity: 0.92; }
+.ostick.warn.high {
+  color: #fff; border-color: var(--red);
+  background: color-mix(in oklab, var(--red) 78%, #000);
+  opacity: 1; box-shadow: 0 0 0 1px color-mix(in oklab, var(--red) 40%, transparent);
+}
+
 /* PROVENANCE — what backs a piece (owner ruling, 27 Aug 2026).
    Marketplace inventory is ingested and LABELLED, never hidden, so this line
    is styled to be READ rather than to be tasteful about it: the same weight

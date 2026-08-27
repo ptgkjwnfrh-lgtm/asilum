@@ -11,7 +11,7 @@ import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../li
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
-import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -504,6 +504,7 @@ export default function DiscoverPage() {
             onClick={() => { window.location.href = "/?item=" + encodeURIComponent(it.id); }}
           >
             <div className="imgwrap" aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+              <OriginSticker item={it} />
               <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
             </div>
             <div className="body">

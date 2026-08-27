@@ -17,7 +17,7 @@ import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
   const fit = useFitBrain();
@@ -449,6 +449,7 @@ export default function BoardPage() {
               {view.items.map((it) => (
                 <div className="card" key={it.id}>
                   <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
+                    <OriginSticker item={it} />
                     <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
                   </div>
                   <div className="body">

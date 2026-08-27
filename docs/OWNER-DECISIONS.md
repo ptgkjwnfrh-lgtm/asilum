@@ -206,9 +206,35 @@ Answer sheet at the bottom — ten lines, fill and return.
 - **What this is NOT:** `verified` describes an agreement with a MERCHANT, not
   an authenticated garment. **ASILUM authenticates nothing** — asserted in the
   tests, which reject the words "authentic" or "genuine" in that note.
-- **Still open:** whether unverified stock is ranked differently. Today it is
-  labelled but not demoted. Suppression would be a soft form of hiding, so the
-  default stands until ruled otherwise.
+- **✅ RULED 27 Aug 2026 (the open half):** *"unverified stock ranks the same,
+  dont demote it just add a verified sticker in the top left of the listing."*
+  Ranking is untouched, and `tests/provenance.test.js` asserts it two ways —
+  `lib/search` and `lib/brain` may not even reference the provenance fields,
+  and two otherwise-identical pieces are shown to score identically (6 and 6).
+  The sticker is the whole intervention.
+
+- **✅ AND THE REASONING BEHIND IT, which shaped the design:** *"the avid
+  consumer doesnt really care if its real if it looks cool at a good price its
+  being bought. if it is highly priced comparitivley to construction, brand
+  socially viewed value, matreial used, associated hype then the verifcation is
+  needed because multiple factors are at play for my choice to buy it."*
+
+  So verification is not a constant worry — **it scales with what is riding on
+  it.** `stakeOf` in `lib/provenance.js` holds that ladder, and the sticker's
+  weight follows it: dashed and faded under $150, solid to $600, and red and
+  unmissable above it, where the name is most of what is being bought.
+
+  **What that model does NOT yet know, stated in the code rather than implied:**
+  the ruling says *comparatively to* construction, brand value, material and
+  hype. We cannot compute that today — it needs the comparables model
+  (ROADMAP §4.6, silent below n=3). Absolute price is the honest proxy in the
+  meantime: a real number we hold, moving the right way, not pretending to be
+  the comparison actually described. When comparables land, `stakeOf` gains a
+  second input and these thresholds become the fallback.
+
+- **Deliberately quiet:** the VERIFIED sticker recedes. A reader trained to
+  hunt for a green tick stops noticing anything; the point is that its
+  **absence** is legible where it matters.
 
 ## Answer sheet
 

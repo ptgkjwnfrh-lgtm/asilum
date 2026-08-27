@@ -101,3 +101,94 @@ test("the label is loud where it knows least, quiet only where it is backed", ()
     "silence is reserved for a merchant under agreement");
   assert.match(component, /UNVERIFIED ORIGIN/, "the unverified state says so in words");
 });
+
+// ---- the 27 August rulings, part two ---------------------------------------
+
+import {
+  stakeOf, STAKE_NONE, STAKE_LOW, STAKE_MATERIAL, STAKE_HIGH,
+} from "../lib/provenance.js";
+import { rankSearchResults, interpretSearchQuery } from "../lib/search/index.js";
+
+const priced = (price, source = "taobao") => ({
+  id: `p-${price}-${source}`, title: "wool coat", brand: "Balenciaga", price,
+  source_name: source, source_product_url: "https://example.com/item/1",
+  tags: { MINIMAL: 0.8 },
+});
+
+test("what is riding on the claim scales with the price", () => {
+  // The owner's reasoning: at a low price the piece is bought for itself; at a
+  // high price the NAME is most of what is bought, and the name is unchecked.
+  assert.equal(stakeOf(priced(40)).level, STAKE_LOW);
+  assert.equal(stakeOf(priced(300)).level, STAKE_MATERIAL);
+  assert.equal(stakeOf(priced(900)).level, STAKE_HIGH);
+});
+
+test("a backed piece and a sample both carry no stake, for opposite reasons", () => {
+  assert.equal(stakeOf(priced(900, "woocommerce")).level, STAKE_NONE);
+  assert.equal(stakeOf({ id: "x", price: 900, source_name: "seed" }).level, STAKE_NONE);
+});
+
+test("an unreadable price does not get the benefit of the doubt", () => {
+  // "We do not know what it costs" is not a reason to reassure somebody, so a
+  // missing price lands on MATERIAL rather than LOW.
+  for (const price of [null, undefined, 0, -5, "ask"]) {
+    assert.equal(stakeOf(priced(price)).level, STAKE_MATERIAL,
+      `price ${String(price)} must not read as low stake`);
+  }
+});
+
+test("UNVERIFIED STOCK IS NOT DEMOTED — ranking never reads provenance", () => {
+  // The owner ruled it explicitly: mark it, do not demote it. Demotion is a
+  // soft form of hiding. This asserts the ranking layer cannot even see the
+  // provenance fields, so a future change cannot quietly start weighting them.
+  const rank = readFileSync("lib/search/index.js", "utf8");
+  for (const leak of ["originEvidence", "brandIsClaim", "stakeOf", "provenance.js"]) {
+    assert.doesNotMatch(rank, new RegExp(leak),
+      `lib/search must not read ${leak} — unverified stock ranks the same`);
+  }
+  const brain = readFileSync("lib/brain/index.js", "utf8");
+  for (const leak of ["originEvidence", "brandIsClaim", "provenance.js"]) {
+    assert.doesNotMatch(brain, new RegExp(leak),
+      `lib/brain must not read ${leak} — unverified stock ranks the same`);
+  }
+});
+
+test("two identical pieces rank identically whatever backs them", async () => {
+  // The property itself, not just the absence of an import.
+  const verified = { ...priced(900, "woocommerce"), id: "same-a" };
+  const unverified = { ...priced(900, "taobao"), id: "same-b" };
+  const pool = [verified, unverified];
+  const interpreted = await interpretSearchQuery("wool coat", { pool, mappings: [] });
+  const ranked = rankSearchResults(pool, interpreted);
+  const a = ranked.find((r) => r.id === "same-a");
+  const b = ranked.find((r) => r.id === "same-b");
+  assert.ok(a && b, "both pieces must survive ranking");
+  assert.equal(a._score, b._score,
+    "provenance must not move a score — mark it, never demote it");
+});
+
+test("the sticker sits on every true listing surface", () => {
+  // "top left of the listing" — the four surfaces that render a listing card
+  // over an image. The other product surfaces are compact rows and carry the
+  // sentence instead.
+  for (const file of ["app/page.js", "app/discover/page.js", "app/board/page.js",
+                      "app/u/[handle]/page.js"]) {
+    const src = readFileSync(file, "utf8");
+    const wraps = (src.match(/className="imgwrap"/g) || []).length;
+    const sticks = (src.match(/<OriginSticker\b/g) || []).length;
+    assert.equal(sticks, wraps,
+      `${file}: ${wraps} listing image(s) but ${sticks} sticker(s)`);
+  }
+});
+
+test("the sticker is decorative, because the sentence already speaks", () => {
+  // Two of the four imgwraps are aria-hidden. Marking the sticker consistently
+  // hidden is what stops provenance being announced twice on some cards and
+  // once on others — OriginLine is the accessible statement everywhere.
+  const src = readFileSync("app/components/ProductSignals.jsx", "utf8");
+  const component = src.slice(src.indexOf("export function OriginSticker"),
+                              src.indexOf("export function OriginLine"));
+  const spans = (component.match(/<span /g) || []).length;
+  const hidden = (component.match(/<span aria-hidden="true"/g) || []).length;
+  assert.equal(hidden, spans, "every sticker variant must be aria-hidden");
+});

@@ -244,9 +244,18 @@ Taobao is **not** the same problem as Japan and should not share a pipeline.
 > source defaults to unverified, because the failure mode of guessing the other
 > way is telling a reader something is genuine when nobody checked.
 >
-> Recorded in `docs/OWNER-DECISIONS.md` §11. Still open there: whether
-> unverified stock ranks differently. It does not today — suppression is a soft
-> form of hiding.
+> **Both halves now ruled.** Unverified stock **ranks the same** — the sticker
+> is the whole intervention, and the tests assert ranking cannot even see the
+> provenance fields. The sticker's weight scales with what is riding on the
+> claim (`stakeOf`), because verification matters in proportion to how much of
+> the price rests on an unchecked name.
+>
+> §4.6's comparables model is now load-bearing for a second reason: it is what
+> turns "expensive" into "expensive *relative to what would justify it*", which
+> is the comparison the owner actually described. Until then `stakeOf` uses
+> absolute price and says so.
+>
+> Recorded in `docs/OWNER-DECISIONS.md` §11.
 
 ## 6. THE AUTHENTICITY SYSTEM
 

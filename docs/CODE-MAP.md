@@ -81,7 +81,7 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*23 files, 3,722 lines*
+*23 files, 3,802 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -91,13 +91,13 @@ Nothing here may import from `app/`.
 | `products.js` | 386 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
 | `dm.js` | 210 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
 | `uilab.js` | 201 | DESIGN CONSOLE registry + persistence (client-safe). |
+| `provenance.js` | 193 | DOES ANYBODY BACK THIS, OR DID A SELLER SAY IT? |
 | `analytics.js` | 177 | The /stats dashboards (owner directive, HANDOVER-2026-08-14 backlog 5). SERVER ONLY — reads the database directly. |
 | `vault.js` | 155 | The buyer vault (owner ruling 20 Aug 2026): name, address, and saved-card REFERENCES — Stripe customer/payment-method ids plus brand/last4 display |
 | `identity.js` | 135 | WHO THE CALLER IS. The root of trust for the whole app. |
 | `accounts.js` | 133 | WHAT KIND OF ACCOUNT THIS IS, and — more importantly — the single table that says what each kind can reach. Isomorphic: no database, no imports with a |
 | `dm-desk.js` | 129 | The mail desk's decisions, as functions. |
 | `hotlist.js` | 126 | The hotlist program's laws in one home (P2–P4, owner build order 20 Aug 2026; ruling record docs/hotlist-program-spec-2026-08-20.md). SERVER-ONLY. |
-| `provenance.js` | 113 | DOES ANYBODY BACK THIS, OR DID A SELLER SAY IT? |
 | `url.js` | 104 | Shared URL guard for anything rendered as a link or persisted from a source. ASILUM never needs executable/data URLs, private-network destinations, or |
 | `age.js` | 80 | The age gate. Isomorphic: the signup sheet and the server compute the same answer from the same function, because two implementations of "how old is |
 | `nav.js` | 68 | The seven destinations, as DATA. Extracted from the shell so the swap a business sees can be tested without mounting React — a nav rule asserted by |
@@ -775,11 +775,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,243 lines*
+*7 files, 2,244 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1061 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1062 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 703 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -818,11 +818,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/board/`
-*2 files, 503 lines*
+*2 files, 504 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 484 | Moodboard viewer/manager. Your own boards: rename, remove pieces, create new boards, copy the share link. Opened with ?id=<boardId> it shows anyone's |
+| `page.js` | 485 | Moodboard viewer/manager. Your own boards: rename, remove pieces, create new boards, copy the share link. Opened with ?id=<boardId> it shows anyone's |
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/checkout/`
@@ -834,7 +834,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*20 files, 4,470 lines*
+*20 files, 4,515 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -847,10 +847,10 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `WardrobeTab.jsx` | 265 | Profile → WARDROBE tab (Feature C, Phase 3a). Pieces you actually own: manual adds here, catalog pieces marked owned, and "bought" ticket |
 | `AsteriskMemory.jsx` | 247 | Asterisk memory surface (contract ADR-001 v2). MemorySections = the shared section renderer /asterisk uses, so the read |
 | `BusinessAccount.jsx` | 205 | the passport → business panel (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown |
+| `ProductSignals.jsx` | 180 | the small honest signals on a piece: what colour it VERIFIABLY is, and how it would fit the reader. |
 | `ConsentMoment.jsx` | 138 | D4's first-visit consent moment (ruled 20 Aug 2026; spec docs/d4-consent-spec-2026-08-20.md). Shell- |
 | `DiscoverRails.jsx` | 137 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
 | `dismiss.js` | 136 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
-| `ProductSignals.jsx` | 135 | the small honest signals on a piece: what colour it VERIFIABLY is, and how it would fit the reader. |
 | `TicketFlow.jsx` | 117 | the third-party purchase-assistant flow. Buy/Request → ticket created → availability + price shown → REQUIRED |
 | `UserBits.jsx` | 105 | Reusable social atoms: monogram avatar, "Who to follow" module, and the user search bar. All follow state is local until real accounts exist. |
 | `PassportSecurity.jsx` | 79 | UV security artwork for the PASSPORT document (redesign/passport-uv), color-matched to the OS tokens. |
@@ -869,11 +869,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/discover/`
-*2 files, 596 lines*
+*2 files, 597 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 571 | DISCOVER. The full site inventory across every source. Asterisk may route search and exploration through the user's Passport, but the user can pause that layer. |
+| `page.js` | 572 | DISCOVER. The full site inventory across every source. Asterisk may route search and exploration through the user's Passport, but the user can pause that layer. |
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/hotlist/`
@@ -954,11 +954,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `page.js` | 77 | the magazine's title card (owner-directed, 21 Aug; revised same day: "make it appear more like the 404 screen"). The card now |
 
 ### `app/u/[handle]/`
-*1 file, 187 lines*
+*1 file, 188 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 187 | a poster's public page (the identity chain, owner order Aug 13: every wire byline lands somewhere REAL). |
+| `page.js` | 188 | a poster's public page (the identity chain, owner order Aug 13: every wire byline lands somewhere REAL). |
 
 ### `app/upload/`
 *2 files, 466 lines*
@@ -1043,4 +1043,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 4b670a8 — 318 source files, 58,849 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 2188408 — 318 source files, 58,978 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

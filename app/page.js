@@ -22,7 +22,7 @@ import {
   observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
-import { ColorEvidenceLine, OriginLine, useFitProfile } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -961,6 +961,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
           keeps its pointer affordance, so a screen reader announces the piece
           once rather than twice. */}
       <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+        <OriginSticker item={it} />
         <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>
       <div className="body">
