@@ -10,6 +10,7 @@ import { getEdges } from "../../../lib/db/index.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
+import { readEvidence } from "../../../lib/authenticity/evidence.js";
 
 export const dynamic = "force-dynamic";
 
@@ -30,8 +31,18 @@ export async function GET(req) {
   const items = relatedItems(source, { edges, pool, limit });
   // `item` carries the full source object so deep links (/?item=<id>) can
   // open the detail modal directly.
+  // EVIDENCE RIDES THE REQUEST THAT ALREADY FIRES. Opening a piece calls this
+  // route for "more like this", so what we can see about the piece arrives on
+  // the same round-trip — no control, no second fetch, nothing in the
+  // interface that offers a check. docs/INVISIBLE-MACHINERY.md.
+  //
+  // It returns null below the stake threshold and the key is then omitted
+  // entirely, so a cheap piece carries no trace of the feature at all.
+  const evidence = await readEvidence(source).catch(() => null);
+
   return NextResponse.json({
     source: source.id, item: publicProduct(source), count: items.length,
     items: items.map(publicProduct).filter(Boolean),
+    ...(evidence ? { evidence } : {}),
   });
 }

@@ -543,12 +543,21 @@ export default function Home() {
     postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) }).catch(() => {});
   }
 
+  const [modalEvidence, setModalEvidence] = useState(null);
+
   function openModal(item) {
     setModal(item);
     setModalRel([]);
+    setModalEvidence(null);
     fetch("/api/related?item=" + encodeURIComponent(item.id) + "&limit=6")
       .then((r) => r.json())
-      .then((d) => setModalRel(d.items || []))
+      .then((d) => {
+        setModalRel(d.items || []);
+        // Arrives with the related pieces, on the request that was happening
+        // anyway. Absent below the stake threshold, and then this stays null
+        // and nothing renders. docs/INVISIBLE-MACHINERY.md.
+        setModalEvidence(d.evidence || null);
+      })
       .catch(() => {});
   }
 
@@ -841,6 +850,29 @@ export default function Home() {
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
               <ColorEvidenceLine item={modal} detailed />
+              {/* WHAT WE COULD SEE. Never a verdict, never a score, and never
+                  the words authentic or fake — lib/authenticity/evidence.js.
+                  Absent entirely on a cheap piece; the coverage line appears
+                  only where a reader is about to pay for a claim, because
+                  there withholding it would hide a consequence. */}
+              {modalEvidence && (
+                <div className="sawline">
+                  {modalEvidence.observations.map((o) => (
+                    <div className="sawline-said" key={o.id}>
+                      <span aria-hidden="true">·</span> {o.said}
+                    </div>
+                  ))}
+                  <div className="sawline-cover">
+                    {modalEvidence.checked} of {modalEvidence.total} checks could run
+                    {modalEvidence.notChecked.length > 0 && (
+                      <span className="sawline-gap">
+                        {" — "}
+                        {modalEvidence.notChecked.map((n) => n.needs).join("; ")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               <OriginLine item={modal} detailed />
               {(modal.size?.label || fitPhrase(modal.size, fitBrain)) ? (
                 <div className="size">

@@ -305,6 +305,28 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* WHAT WE COULD SEE — the authenticity evidence line (lib/authenticity).
+   NOT a verdict, so it is styled as READING rather than as a warning: no
+   badge, no colour-coded score, no shield icon. A shield would be a claim.
+
+   It appears only on the piece detail, only above the stake threshold, and it
+   leads with what is TRUE before it states coverage. The coverage line is
+   deliberately plain — "1 of 5 checks could run" is the honest headline for a
+   system that checked one thing, and dressing it up either way would be the
+   lie. See docs/AUTHENTICITY-EVIDENCE.md. */
+.sawline {
+  margin-top: 9px; padding-top: 8px;
+  border-top: 1px solid color-mix(in oklab, var(--line) 90%, transparent);
+  font-size: 12px; line-height: 1.5;
+}
+.sawline-said { color: var(--ink); }
+.sawline-said span { color: var(--red); margin-right: 4px; }
+.sawline-cover {
+  margin-top: 5px; color: var(--grey); font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.sawline-gap { color: color-mix(in oklab, var(--grey) 82%, transparent); }
+
 /* RECOGNITION — the passport noticing a stamp it already knows.
    Deliberately UNDERSTATED (owner directive, 27 Aug 2026): the effect depends
    on the system not congratulating itself. No panel, no heading, no result

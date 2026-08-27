@@ -286,7 +286,18 @@ do.** A model that outputs "authentic — 94%" from a phone photo is guessing,
 and it is guessing about a purchase, where being wrong costs a reader real
 money and costs ASILUM real liability.
 
-### 6.2 What to build instead — an EVIDENCE engine
+### 6.2 ✅ BUILT — the evidence engine
+
+`lib/authenticity/evidence.js` ships with the frame complete and one real
+signal (`image-reuse`) running. Four more are **declared and unbuilt**, so they
+report honestly as "not checked" today and each is one function away.
+
+Full spec, including the add-a-signal procedure: **`docs/AUTHENTICITY-EVIDENCE.md`**.
+
+It is invisible by the third law: no control, evidence rides the request that
+already fires when a piece opens, and it is silent below the stake threshold.
+
+### 6.3 The original design notes
 
 Not a verdict machine. **It never says "authentic".** It reports what was
 checked, what was found, and what it could not see — which is exactly the

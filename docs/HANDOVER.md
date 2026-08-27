@@ -36,6 +36,7 @@ these rules into concrete tasks.
 | 1 | **`docs/CODE-MAP.md`** | Where every file lives and what it is. Generated from the tree, so it cannot drift. |
 | 2 | **`CONSTITUTION.md`** | The owner's binding rules. Not advisory — it governs what may be built, what may not, and how changes are made. §10 holds the amendments. |
 | 3 | **`docs/DEBT-REGISTER.md`** | What is *not* organized yet, measured, with the plan and the reason. |
+| 3.3 | **`docs/AUTHENTICITY-EVIDENCE.md`** | ASILUM authenticates nothing. What it reports instead, and how to extend it. |
 | 3.4 | **`docs/INVISIBLE-MACHINERY.md`** | How every complex system is surfaced. Binding. |
 | 3.5 | **`docs/ROADMAP-WHEN-BILLING-RETURNS.md`** | What to do the moment CI is back, in order. |
 | 4 | **`docs/adr/`** | The seven decisions that constrain everything else. ADR-002 (identity) has been violated before — read it before touching accounts. |
