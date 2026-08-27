@@ -132,10 +132,10 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | 3 | **Price intelligence** | "Underpriced" implies a market comparable per piece, plus JPY→USD |
 | 4 | **Reverse image search** | ✅ **BUILT, invisibly** — a stamp uploaded to a passport is recognised with no control, no vocabulary, and no empty state |
 | 5 | **Proxy deep links** | ZenMarket + Buyee links built into every listing |
-| 6 | **Sub-60s alerting** | Discord push |
+| 6 | **Sub-60s alerting** | ✅ **ENGINE BUILT** as waiting — see `docs/WAITING.md`. No alert to configure: a want is an empty search you already made |
 | 7 | **Dashboard + filters** | brand, category, source, price |
 | 8 | **Curated brand watch** | CDG, Number Nine, Yohji, Issey, Raf, Undercover + 30 more |
-| 9 | **Weekly digest** | 50 finds every Sunday |
+| 9 | **Weekly digest** | Declared channel. Sends what ARRIVED, and does not send when nothing did |
 
 ### 4.2 What ASILUM already owns
 
@@ -148,7 +148,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | Price band | `lib/tagging/dense.js` `priceBand` | Market comparables, FX |
 | Reverse image | ✅ **done for stamps** — `lib/vision/stampReading.js`, `lib/images/dhash.js` | Extend to catalog-vs-catalog |
 | Proxy links | `purchase_tickets`, `refusalReason`, booth attribution | Proxy URL builder |
-| Alerting | — | The whole thing |
+| Alerting | ✅ `lib/waiting/` — wants, answering, channel registry | The off-platform channels |
 | Dashboard/filters | The feed, `/discover`, dense constraints | Nearly free |
 | Curated watch | `lib/asterisk/culture.js`, the designer register | Watchlist model |
 

@@ -80,6 +80,7 @@ needs a real signed-in account. That is the first-day list in
 | `INVISIBLE-MACHINERY.md` | How every complex system is surfaced. Binding |
 | `AUTHENTICITY-EVIDENCE.md` | ASILUM authenticates nothing. What it reports instead |
 | `JAPAN-INGESTION.md` | The reading is built; the fetch waits on an agreement |
+| `WAITING.md` | Alerts and the digest, without an alert to configure |
 | `OWNER-DECISIONS.md` | Rulings made |
 
 ## Built and ready to extend
@@ -93,6 +94,7 @@ Three systems shipped as working frames with real first implementations —
 | **Stamp recognition** (`lib/vision/stampReading.js`) | Same-photograph recognition, on-device hashing | Visual embeddings for same-*garment* — needs `embedImage` |
 | **Authenticity evidence** (`lib/authenticity/evidence.js`) | `image-reuse`, `seller-declaration` | Replacing one `read: null` with a function. See §5 of its doc |
 | **Japanese reading** (`lib/ingest/japan/`) | Full title reading: houses, garments, materials, conditions, claims | The FETCH. Blocked on a Buyee/ZenMarket agreement, not on code |
+| **Waiting** (`lib/waiting/`) | Wants from empty searches; on-platform delivery | Setting `built: true` on a channel and adding a `send` |
 
 ## The verification you can still run without CI
 
@@ -124,3 +126,4 @@ broken.
 | `authenticity-evidence.test.js` | A verdict, a score, a stub pretending to be a check |
 | `culture-catalog-assembly.test.js` | A catalog re-split that silently reorders records |
 | `japan-reading.test.js` | Guessing at an unread Japanese word; a colour claim promoted to a fact |
+| `waiting.test.js` | A silent-when-broken engine; a replayed query polluting the search log |
