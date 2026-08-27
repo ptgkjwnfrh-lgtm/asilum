@@ -21,8 +21,13 @@ development:
    conversational surface, ever. It reads, routes, ranks, remembers and
    discloses through the OS surfaces — never through a chat box.
 
+3. **Invisible machinery.** A complex system does its work without being asked
+   and never names its mechanism — no control, no jargon, no empty state. When
+   it is unsure it goes silent rather than hedging. Full law and the four
+   design questions: `docs/INVISIBLE-MACHINERY.md`.
+
 `docs/ROADMAP-WHEN-BILLING-RETURNS.md` is the current plan of work and expands
-both rules into concrete tasks.
+these rules into concrete tasks.
 
 ## 1. Read these four, in this order
 
@@ -31,6 +36,7 @@ both rules into concrete tasks.
 | 1 | **`docs/CODE-MAP.md`** | Where every file lives and what it is. Generated from the tree, so it cannot drift. |
 | 2 | **`CONSTITUTION.md`** | The owner's binding rules. Not advisory — it governs what may be built, what may not, and how changes are made. §10 holds the amendments. |
 | 3 | **`docs/DEBT-REGISTER.md`** | What is *not* organized yet, measured, with the plan and the reason. |
+| 3.4 | **`docs/INVISIBLE-MACHINERY.md`** | How every complex system is surfaced. Binding. |
 | 3.5 | **`docs/ROADMAP-WHEN-BILLING-RETURNS.md`** | What to do the moment CI is back, in order. |
 | 4 | **`docs/adr/`** | The seven decisions that constrain everything else. ADR-002 (identity) has been violated before — read it before touching accounts. |
 

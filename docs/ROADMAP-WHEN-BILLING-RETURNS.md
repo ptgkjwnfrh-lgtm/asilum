@@ -27,6 +27,18 @@ already how `lib/asterisk/confidence.js` works, and that module is now the
 pattern for everything new: four separate values, never averaged into one
 impressive number, and `1.0` reserved for literally nothing.
 
+### 3. Invisible machinery (added 27 August 2026)
+
+A complex system **does its work without being asked and never names the
+mechanism** — no control, no jargon, no empty state. Silence is the correct
+output of low confidence, not a caveat.
+
+The moat: a competitor can copy a button in an afternoon because the label
+tells them what to build. They cannot copy a capability with no control
+attached, because the hard part is the JUDGEMENT about when to speak. Full law
+and the four design questions: `docs/INVISIBLE-MACHINERY.md`. Reference
+implementation: stamp recognition (§4.4 of that file).
+
 ### 2. ASTERISK is an operating system, not a chatbot
 
 **There is no conversational surface. Ever.** No "ask ASTERISK" box, no chat
@@ -118,7 +130,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | 1 | **Multi-marketplace ingestion** | Yahoo Japan Auctions, Mercari Japan, Rakuma — 115,000+ listings, continuous |
 | 2 | **JP↔EN identity resolution** | Listings are Japanese (`ディオール` = Dior, `プラダ` = Prada). Matching them to a curated brand list is the hard part |
 | 3 | **Price intelligence** | "Underpriced" implies a market comparable per piece, plus JPY→USD |
-| 4 | **Reverse image search** | Check a listing against known pieces before buying |
+| 4 | **Reverse image search** | ✅ **BUILT, invisibly** — a stamp uploaded to a passport is recognised with no control, no vocabulary, and no empty state |
 | 5 | **Proxy deep links** | ZenMarket + Buyee links built into every listing |
 | 6 | **Sub-60s alerting** | Discord push |
 | 7 | **Dashboard + filters** | brand, category, source, price |
@@ -134,7 +146,7 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | Ingestion | `lib/ingest/adapters/` — the adapter pattern, `syncProducts`, sync logs | Three JP adapters |
 | Brand resolution | `lib/search/intent.js` `resolveBrandSpelling`, `lib/asterisk/houses.js` | **Japanese script handling** |
 | Price band | `lib/tagging/dense.js` `priceBand` | Market comparables, FX |
-| Reverse image | `lib/images/fingerprint.js` **dhash already built**, `embedImage` is a declared seam | Wire the seam |
+| Reverse image | ✅ **done for stamps** — `lib/vision/stampReading.js`, `lib/images/dhash.js` | Extend to catalog-vs-catalog |
 | Proxy links | `purchase_tickets`, `refusalReason`, booth attribution | Proxy URL builder |
 | Alerting | — | The whole thing |
 | Dashboard/filters | The feed, `/discover`, dense constraints | Nearly free |

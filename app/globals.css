@@ -305,6 +305,41 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* RECOGNITION — the passport noticing a stamp it already knows.
+   Deliberately UNDERSTATED (owner directive, 27 Aug 2026): the effect depends
+   on the system not congratulating itself. No panel, no heading, no result
+   count, no progress state — one line and the pieces. Absent entirely when
+   there is nothing to say, because an empty state explains the trick.
+   See docs/INVISIBLE-MACHINERY.md. */
+.stampknow {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 10px; padding-top: 9px;
+  border-top: 1px solid color-mix(in oklab, var(--sig) 22%, transparent);
+  animation: stampknow-in 620ms ease-out both;
+}
+.stampknow-mark { color: var(--red); font-size: 13px; line-height: 1; }
+.stampknow-say {
+  color: var(--sig); font-size: 12px; letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+.stampknow-row { display: inline-flex; gap: 7px; }
+.stampknow-piece {
+  display: block; width: 38px; height: 46px; overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--sig) 34%, transparent);
+}
+.stampknow-piece img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stampknow-piece:hover { border-color: var(--sig); }
+/* It arrives a beat late and settles, rather than snapping in like a search
+   result. That delay is the difference between a system ANSWERING and a
+   system NOTICING. */
+@keyframes stampknow-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stampknow { animation: none; }
+}
+
 /* THE CORNER STICKER — top-left of a listing, over the image.
    Owner ruling, 27 Aug 2026: unverified stock is NOT demoted, it is MARKED.
    Ranking is untouched; this sticker is the whole intervention.
