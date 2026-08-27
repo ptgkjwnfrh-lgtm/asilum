@@ -27,10 +27,32 @@ Independent of the stack:
 | --- | --- | --- | --- |
 | — | [#415](https://github.com/ptgkjwnfrh-lgtm/asilum/pull/415) | `tagging/one-vocabulary` | Tag vocabulary + schema **v49** |
 
+### The exact sequence, once billing is fixed
+
+Verified 27 Aug: all six branches pushed, tree clean, suite **1381 — 1305 pass
+/ 0 fail**, build 0 errors. Nothing is half-applied.
+
 ```bash
-gh pr checks <n> --watch --fail-fast && gh pr merge <n>
+# 1. confirm CI is actually alive again — a zero-step failure means it is not
+gh run list --limit 3
+
+# 2. the independent one first; it is the oldest and carries schema v49
+gh pr checks 415 --watch --fail-fast && gh pr merge 415
+
+# 3. then the stack, strictly in this order
+for n in 416 417 418 419 420; do
+  gh pr checks $n --watch --fail-fast && gh pr merge $n || break
+done
+
+# 4. production must land on the new main
 npm run deploy:check
 ```
+
+**If a job fails in under ~6 seconds with no steps, CI is still dead** — read
+the check-run annotation, not the logs, which will be empty.
+
+**Then go straight to §2** and confirm messaging actually works. That is the
+one thing on this page that is broken in front of users right now.
 
 **If the stack conflicts**, take them in order — each was verified against the
 one before it.
