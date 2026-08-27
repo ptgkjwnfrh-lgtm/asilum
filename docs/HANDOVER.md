@@ -26,6 +26,12 @@ development:
    it is unsure it goes silent rather than hedging. Full law and the four
    design questions: `docs/INVISIBLE-MACHINERY.md`.
 
+**The objective (27 August 2026):** monopolize the digital clothing resale
+space. `docs/WHAT-ACTUALLY-BLOCKS-THE-GOAL.md` is the audit of what stands in
+the way — and the finding is that it is not the rules above. Those three laws
+are the moat; the blockers are four live bugs, dead CI, and having no real
+inventory.
+
 `docs/ROADMAP-WHEN-BILLING-RETURNS.md` is the current plan of work and expands
 these rules into concrete tasks.
 
