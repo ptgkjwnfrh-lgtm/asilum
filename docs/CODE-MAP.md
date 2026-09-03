@@ -204,11 +204,11 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 8,644 lines*
+*9 files, 8,652 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `production.js` | 4461 ⚠️ | CRUD for the production-foundation tables (supabase/schema-v2.sql): product_tags, product_images, search_mappings, search_logs, purchase_tickets, |
+| `production.js` | 4469 ⚠️ | CRUD for the production-foundation tables (supabase/schema-v2.sql): product_tags, product_images, search_mappings, search_logs, purchase_tickets, |
 | `dm.js` | 1747 ⚠️ | The mail desk's store (schema v40). SERVER-ONLY. |
 | `index.js` | 1724 ⚠️ | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
@@ -276,11 +276,11 @@ Nothing here may import from `app/`.
 | `inferTags.js` | 18 | ONE text-to-taste bridge for every ingestion path. |
 
 ### `lib/ingest/adapters/`
-*6 files, 596 lines*
+*6 files, 608 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `normalize.js` | 196 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
+| `normalize.js` | 208 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
 | `woocommerceAdapter.js` | 134 | WooCommerce Store API adapter. The Store API is officially documented and unauthenticated, but ASILUM still requires explicit merchant approval before |
 | `ebayAdapter.js` | 103 | The one adapter with a real implementation today: eBay's OFFICIAL Browse API (lib/ingest/ebay.js). Enabled only when EBAY_CLIENT_ID/SECRET are set. |
 | `types.js` | 69 | Source adapter contract (JSDoc — this codebase is plain JS; lib/db/types.js set the precedent). Every marketplace adapter implements the same interface |
@@ -324,15 +324,15 @@ Nothing here may import from `app/`.
 | `index.js` | 63 | Recommendation service facade — ONE place that names every recommender the Alpha Learning Brain will offer, delegating to live Alpha Learning Bridge |
 
 ### `lib/search/`
-*17 files, 4,168 lines*
+*17 files, 4,157 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `index.js` | 1932 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
 | `era.js` | 365 | era comprehension for the search engine (Aug 21). |
 | `negation.js` | 218 | the engine stops serving the thing you excluded. |
-| `denseQuery.js` | 193 | Dense-layer query understanding for the search engine (Day 26). |
 | `size.js` | 184 | the size the reader asked for (Aug 21). |
+| `denseQuery.js` | 182 | Dense-layer query understanding for the search engine (Day 26). |
 | `mappings-seed.js` | 171 | Curated search mappings — the cultural lexicon that turns human phrases into tags and related terms. Seeded into the search_mappings table (idempotent |
 | `typo.js` | 168 | literal-engine typo bridge (r12). |
 | `designers.js` | 153 | the people, not just the houses (Aug 21). |
@@ -366,11 +366,12 @@ Nothing here may import from `app/`.
 | `index.js` | 90 | the Asterisk steward: one pass over the live machine. |
 
 ### `lib/tagging/`
-*1 file, 170 lines*
+*2 files, 382 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `dense.js` | 170 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
+| `vocabulary.js` | 206 | ONE VOCABULARY FOR EVERY TAG ON A PIECE. |
+| `dense.js` | 176 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
 
 ### `lib/taste-graph/`
 *1 file, 141 lines*
@@ -436,11 +437,11 @@ request becomes trusted arguments.
 | `route.js` | 97 | GET  → this account's kind + the capabilities it opens. POST → choose a kind. Chosen once at signup; changing it afterwards is an |
 
 ### `app/api/admin/`
-*1 file, 598 lines*
+*1 file, 615 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 598 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
+| `route.js` | 615 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
 
 ### `app/api/asterisk/memory/`
 *1 file, 68 lines*
@@ -1026,4 +1027,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 7057cf1 — 307 source files, 58,333 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ f4e5588 — 308 source files, 58,571 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
