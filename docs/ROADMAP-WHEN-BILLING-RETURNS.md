@@ -57,7 +57,13 @@ Find the OS surface for it.
 
 ---
 
-## 1. FIRST HOUR — unblock the backlog
+## 1. ✅ DONE, 3 September — the backlog is empty
+
+All six PRs merged, each green through the full Postgres suite. v49 applied and
+verified in production. See `docs/WORK-IN-FLIGHT.md` for what landed and the
+two things the merge taught about stacked PRs.
+
+### The original plan, kept for the record
 
 Four PRs are stacked and green locally, blocked only on CI.
 
