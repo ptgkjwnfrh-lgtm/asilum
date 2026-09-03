@@ -184,6 +184,12 @@ const POOL_CALLERS = {
   "app/api/related/route.js": "no-identity",
   "app/api/discover/route.js": "browse-full-inventory",
   "app/api/orders/route.js": "id-lookup",
+  // Stamp recognition. The reader UPLOADED this photograph — they are pointing
+  // AT the piece, not being offered it. A correction says "stop suggesting
+  // this to me"; it does not say "pretend not to recognise it when I show it
+  // to you", and honouring it here would read as the archive lying about what
+  // it holds. Exclusions govern what we PUSH, never what a person ASKS about.
+  "app/api/moodboard/route.js": "id-lookup",
   "lib/search/index.js": "explicit-query",
   "lib/products.js": "internal-resolution",
 };

@@ -18,7 +18,7 @@ import {
 } from "../lib/social.js";
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 import { AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import ConsentMoment from "./components/ConsentMoment.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
@@ -581,6 +581,7 @@ export default function Shell({ children }) {
                   <span>{it.title}</span>
                   <em>{it.src}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}</em>
                   <ColorEvidenceLine item={it} />
+                  <OriginLine item={it} />
                   <ProductFitLine item={it} fit={fit} />
                 </a>
               ))}
@@ -632,6 +633,7 @@ export default function Shell({ children }) {
                     <div className="bagttl">{x.title}</div>
                     <div className="bagprice">{sourceFor(x)} · {x.currency || "USD"} {x.price}</div>
                     <ColorEvidenceLine item={x} />
+                    <OriginLine item={x} />
                     <ProductFitLine item={x} fit={fit} />
                   </div>
                   <button className="bagx" onClick={() => bagRemove(x.id)}>×</button>

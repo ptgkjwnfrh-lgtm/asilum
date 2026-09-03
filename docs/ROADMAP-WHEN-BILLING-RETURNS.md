@@ -27,6 +27,18 @@ already how `lib/asterisk/confidence.js` works, and that module is now the
 pattern for everything new: four separate values, never averaged into one
 impressive number, and `1.0` reserved for literally nothing.
 
+### 3. Invisible machinery (added 27 August 2026)
+
+A complex system **does its work without being asked and never names the
+mechanism** — no control, no jargon, no empty state. Silence is the correct
+output of low confidence, not a caveat.
+
+The moat: a competitor can copy a button in an afternoon because the label
+tells them what to build. They cannot copy a capability with no control
+attached, because the hard part is the JUDGEMENT about when to speak. Full law
+and the four design questions: `docs/INVISIBLE-MACHINERY.md`. Reference
+implementation: stamp recognition (§4.4 of that file).
+
 ### 2. ASTERISK is an operating system, not a chatbot
 
 **There is no conversational surface. Ever.** No "ask ASTERISK" box, no chat
@@ -118,12 +130,12 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | 1 | **Multi-marketplace ingestion** | Yahoo Japan Auctions, Mercari Japan, Rakuma — 115,000+ listings, continuous |
 | 2 | **JP↔EN identity resolution** | Listings are Japanese (`ディオール` = Dior, `プラダ` = Prada). Matching them to a curated brand list is the hard part |
 | 3 | **Price intelligence** | "Underpriced" implies a market comparable per piece, plus JPY→USD |
-| 4 | **Reverse image search** | Check a listing against known pieces before buying |
+| 4 | **Reverse image search** | ✅ **BUILT, invisibly, both directions** — a stamp uploaded to a passport is recognised, and a listing says where else its photograph appears. No control either way |
 | 5 | **Proxy deep links** | ZenMarket + Buyee links built into every listing |
-| 6 | **Sub-60s alerting** | Discord push |
-| 7 | **Dashboard + filters** | brand, category, source, price |
+| 6 | **Sub-60s alerting** | ✅ **ENGINE BUILT** as waiting — see `docs/WAITING.md`. No alert to configure: a want is an empty search you already made |
+| 7 | **Dashboard + filters** | ✅ **BUILT, inverted** — no filter controls; the sentence carries the constraints, and `lib/search/constraints.js` shows them back and releases one |
 | 8 | **Curated brand watch** | CDG, Number Nine, Yohji, Issey, Raf, Undercover + 30 more |
-| 9 | **Weekly digest** | 50 finds every Sunday |
+| 9 | **Weekly digest** | Declared channel. Sends what ARRIVED, and does not send when nothing did |
 
 ### 4.2 What ASILUM already owns
 
@@ -134,10 +146,10 @@ resell on Grailed at 3–8x. $25/month, free trial, Discord community.
 | Ingestion | `lib/ingest/adapters/` — the adapter pattern, `syncProducts`, sync logs | Three JP adapters |
 | Brand resolution | `lib/search/intent.js` `resolveBrandSpelling`, `lib/asterisk/houses.js` | **Japanese script handling** |
 | Price band | `lib/tagging/dense.js` `priceBand` | Market comparables, FX |
-| Reverse image | `lib/images/fingerprint.js` **dhash already built**, `embedImage` is a declared seam | Wire the seam |
+| Reverse image | ✅ **done both ways** — `lib/vision/stampReading.js` + `lib/vision/sameShot.js` | True visual similarity, which needs `embedImage` |
 | Proxy links | `purchase_tickets`, `refusalReason`, booth attribution | Proxy URL builder |
-| Alerting | — | The whole thing |
-| Dashboard/filters | The feed, `/discover`, dense constraints | Nearly free |
+| Alerting | ✅ `lib/waiting/` — wants, answering, channel registry | The off-platform channels |
+| Dashboard/filters | ✅ done — constraints read from the sentence, shown back, releasable | Surfacing on more than `/discover` |
 | Curated watch | `lib/asterisk/culture.js`, the designer register | Watchlist model |
 
 ### 4.3 The ingestion problem, stated honestly
@@ -183,7 +195,20 @@ a merchant, and a lawyer.
 - [ ] Fall back: Yahoo! JAPAN official Shopping API, Rakuten Web Service
       (Rakuten owns Rakuma) as direct licensed channels
 
-### 4.5 Japanese ↔ English identity resolution — the real engineering
+### 4.5 ✅ BUILT — Japanese ↔ English identity resolution
+
+`lib/ingest/japan/` reads a listing title into facets — houses, garments,
+materials, condition grades, departments — plus the seller's colour claim and
+any authenticity claim, and reports every katakana run it could NOT read to an
+archivalist queue ordered by frequency.
+
+It never guesses: no transliteration, no fuzzy brand match, no model. Full
+spec and the finishing procedure: **`docs/JAPAN-INGESTION.md`**.
+
+The FETCH is what remains, and it is blocked on a Buyee/ZenMarket agreement
+rather than on code. Both adapters are registered and honestly disabled.
+
+### 4.5b The original design notes
 
 This is the piece with the most depth, and the best ASTERISK training ground.
 
@@ -199,6 +224,52 @@ This is the piece with the most depth, and the best ASTERISK training ground.
       corrects each JP→EN mapping. That is rule #1's "trained via ASILUM
       archivalists", and it is the same shape as
       `lib/asterisk/unknownQueries.js` — which already exists
+
+### 4.5c ⚠️ PAGINATION — a precondition of ingestion, not a separate task
+
+**Measured 27 August 2026.** Nothing is broken today. It breaks the day
+continuous ingestion runs, which is why it sits here rather than in a backlog.
+
+Three surfaces, three strategies, and **only the DM inbox uses cursors**:
+
+| Surface | Today | Stable while |
+| --- | --- | --- |
+| Feed | No pagination at all — reissues the same URL, relies on seen-state rotation | always (it is a feed) |
+| Search | `offset` — `ranked.slice(offset, offset + limit)` | the pool is static |
+| Discover | `offset`, capped at 10,000 | the pool is static |
+| DM inbox | **keyset cursor**, with a `snapshot` component | — |
+
+**Why it holds today:** two identical search calls return identical pages with
+zero overlap, and `getDiscoverablePool` caches for 15s, so a reader scrolling
+quickly sees a consistent pool.
+
+**Why ingestion breaks it:** offset over a re-ranked list is only stable while
+the pool does not move. At SwagSearch-like volume — 115k listings, continuous —
+the pool changes *between* page 1 and page 2, and offset silently skips and
+duplicates. Tagging pushes the same way: a backfill that adds a tag changes an
+item's rank, shifting its position under a reader mid-scroll.
+
+- [ ] **Before ingestion goes live at volume**, move `/api/search` and
+      `/api/discover` to keyset pagination
+- [ ] `lib/dm.js` `encodeCursor`/`decodeCursor` is the in-house model — copy the
+      **snapshot component**, which is what stops rows that become active
+      mid-scroll from jumping above the cursor
+- [ ] The cursor's shape depends on the sort key, so **decide the sort first**:
+      recency for a marketplace feed, score for search. Designing the cursor
+      before that decision is wasted work
+
+### 4.5d Two feed issues that cursors do NOT fix
+
+Filed separately on purpose. They exist **today**, they are unrelated to
+ingestion, and grouping them under "pagination" would bury them.
+
+- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`) is a hard ceiling on feed
+      rotation. Past ~200 pieces served, the oldest fall out of `_meta.seen`
+      and can reappear — a heavy scroller loops. Raising the cap trades memory
+      per profile; the alternative is a bloom filter or a served-ledger table.
+- [ ] **Feed rotation mutates shared state.** Two tabs, or a double-fire, both
+      write `_meta.seen` and can serve overlapping sets. Nothing guards it.
+      `withUserLock` already exists in `lib/db/index.js` and is the likely fix.
 
 ### 4.6 Price intelligence — no guessing
 
@@ -229,23 +300,33 @@ Taobao is **not** the same problem as Japan and should not share a pipeline.
       most buyers already use
 - [ ] Shipping/customs differ from Japan — line consolidation, longer lead times
 
-> ### ⚖ THE CONFLICT, and it needs your ruling
+> ### ✅ RULED, 27 August 2026 — position 2
 >
-> A large share of Taobao fashion is **replica**. You have asked for a Taobao
-> pipeline *and* a replica checker in the same breath, and those two features
-> fight unless the policy is explicit. Three coherent positions:
+> *"taobao is unverified-origin, label everything, dont hide it."*
 >
-> 1. **Taobao is blanks-and-basics only** — no branded listings ingested at all
-> 2. **Taobao is ingested and every piece is labelled `unverified-origin`** —
->    honest, and the checker's job is to say so
-> 3. **Taobao is a user-directed fetch** — we never surface it in the catalog;
->    a reader who asks for a specific piece gets a proxy link
+> Marketplace stock is **ingested and labelled**, never hidden. Built and
+> shipped ahead of the pipeline, because ASILUM already carried unlabelled
+> unverified inventory: `lib/provenance.js`, stamped onto every public payload,
+> rendered on all nine product surfaces, pinned by `tests/provenance.test.js`.
 >
-> Note the precedent: **Pandabuy was raided and shut down in 2024** over
-> counterfeit facilitation. A platform that knowingly routes replicas carries
-> real liability. Pick a position and record it in `OWNER-DECISIONS.md`.
-
----
+> The load-bearing part: on an unverified piece **the brand is a CLAIM**, not a
+> fact. That is ASTERISK's first law at the catalog boundary — it may not reason
+> from a word it cannot back. And **verification is earned**: an unregistered
+> source defaults to unverified, because the failure mode of guessing the other
+> way is telling a reader something is genuine when nobody checked.
+>
+> **Both halves now ruled.** Unverified stock **ranks the same** — the sticker
+> is the whole intervention, and the tests assert ranking cannot even see the
+> provenance fields. The sticker's weight scales with what is riding on the
+> claim (`stakeOf`), because verification matters in proportion to how much of
+> the price rests on an unchecked name.
+>
+> §4.6's comparables model is now load-bearing for a second reason: it is what
+> turns "expensive" into "expensive *relative to what would justify it*", which
+> is the comparison the owner actually described. Until then `stakeOf` uses
+> absolute price and says so.
+>
+> Recorded in `docs/OWNER-DECISIONS.md` §11.
 
 ## 6. THE AUTHENTICITY SYSTEM
 
@@ -264,7 +345,18 @@ do.** A model that outputs "authentic — 94%" from a phone photo is guessing,
 and it is guessing about a purchase, where being wrong costs a reader real
 money and costs ASILUM real liability.
 
-### 6.2 What to build instead — an EVIDENCE engine
+### 6.2 ✅ BUILT — the evidence engine
+
+`lib/authenticity/evidence.js` ships with the frame complete and one real
+signal (`image-reuse`) running. Four more are **declared and unbuilt**, so they
+report honestly as "not checked" today and each is one function away.
+
+Full spec, including the add-a-signal procedure: **`docs/AUTHENTICITY-EVIDENCE.md`**.
+
+It is invisible by the third law: no control, evidence rides the request that
+already fires when a piece opens, and it is silent below the stake threshold.
+
+### 6.3 The original design notes
 
 Not a verdict machine. **It never says "authentic".** It reports what was
 checked, what was found, and what it could not see — which is exactly the

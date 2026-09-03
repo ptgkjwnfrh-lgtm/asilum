@@ -17,6 +17,7 @@ import { listEvents } from "../../../lib/db/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
+import { whatArrived } from "../../../lib/waiting/index.js";
 import {
   getProfile, mutateProfile,
   getEdges, getBoard, bumpPopularity,
@@ -269,6 +270,13 @@ export async function GET(req) {
     await Promise.all(writes);
   } catch {}
 
+  // WHAT THE READER WAS WAITING FOR — only for a reader we can identify, since
+  // a want is one person's own record of having asked. Rides the request that
+  // already fires when the app opens: no alert to configure, no channel to
+  // join, no settings page. Never throws; waiting is an extra on top of a feed
+  // that must serve regardless. docs/WAITING.md
+  const arrived = userId ? await whatArrived(userId).catch(() => []) : [];
+
   return NextResponse.json({
     userId,
     serveId,
@@ -290,5 +298,8 @@ export async function GET(req) {
     zones,
     count: items.length,
     items: items.map(publicProduct).filter(Boolean),
+    // Absent entirely when nothing is answerable, so a reader with no answered
+    // wants sees no trace of the feature at all.
+    ...(arrived.length ? { arrived } : {}),
   });
 }

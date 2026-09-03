@@ -305,6 +305,163 @@ button { font-family: var(--helv); }
 .demoflag b, .card .fitline.demoflag b, .srclabel.demoflag b {
   font-weight: 900; border-bottom: 2px solid var(--red);
 }
+/* WHAT THE SENTENCE BECAME (lib/search/constraints.js).
+   These read as a RECEIPT, not as controls: they are what the reader already
+   said, shown back. Styled quietly for that reason — a row of bright pills
+   would look like filters to set, which is the one thing they are not. The ×
+   is the only interactive part, and it removes rather than adds. */
+.readsback { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+.readsback-c {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 4px 2px 8px; font-size: 11px; letter-spacing: 0.04em;
+  color: var(--grey); border: 1px dashed color-mix(in oklab, var(--grey) 45%, transparent);
+}
+.readsback-c.fixed { padding-right: 8px; opacity: 0.75; }
+.readsback-c button {
+  background: none; border: none; cursor: pointer; padding: 0 4px;
+  color: var(--grey); font-size: 13px; line-height: 1;
+}
+.readsback-c button:hover { color: var(--red); }
+
+/* THE SAME PHOTOGRAPH, ELSEWHERE (lib/vision/sameShot.js).
+   Reads as a FACT, not as a warning: the identical image being listed cheaper
+   is useful, and dressing it in alarm colours would make a price note look
+   like an accusation. The authenticity reading of the same finding lives in
+   .sawline below and is stake-gated; this one is not. */
+.shotline {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-top: 9px; font-size: 12px; color: var(--ink);
+}
+.shotline > span[aria-hidden] { color: var(--sig); }
+.shotline-row { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.shotline-go {
+  padding: 2px 7px; font-size: 11px; letter-spacing: 0.04em;
+  border: 1px solid color-mix(in oklab, var(--sig) 34%, transparent);
+  color: var(--sig); text-decoration: none; white-space: nowrap;
+}
+.shotline-go:hover { border-color: var(--sig); }
+.shotline-go b { font-weight: 800; }
+
+/* WHAT WE COULD SEE — the authenticity evidence line (lib/authenticity).
+   NOT a verdict, so it is styled as READING rather than as a warning: no
+   badge, no colour-coded score, no shield icon. A shield would be a claim.
+
+   It appears only on the piece detail, only above the stake threshold, and it
+   leads with what is TRUE before it states coverage. The coverage line is
+   deliberately plain — "1 of 5 checks could run" is the honest headline for a
+   system that checked one thing, and dressing it up either way would be the
+   lie. See docs/AUTHENTICITY-EVIDENCE.md. */
+.sawline {
+  margin-top: 9px; padding-top: 8px;
+  border-top: 1px solid color-mix(in oklab, var(--line) 90%, transparent);
+  font-size: 12px; line-height: 1.5;
+}
+.sawline-said { color: var(--ink); }
+.sawline-said span { color: var(--red); margin-right: 4px; }
+.sawline-cover {
+  margin-top: 5px; color: var(--grey); font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.sawline-gap { color: color-mix(in oklab, var(--grey) 82%, transparent); }
+
+/* RECOGNITION — the passport noticing a stamp it already knows.
+   Deliberately UNDERSTATED (owner directive, 27 Aug 2026): the effect depends
+   on the system not congratulating itself. No panel, no heading, no result
+   count, no progress state — one line and the pieces. Absent entirely when
+   there is nothing to say, because an empty state explains the trick.
+   See docs/INVISIBLE-MACHINERY.md. */
+.stampknow {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-top: 10px; padding-top: 9px;
+  border-top: 1px solid color-mix(in oklab, var(--sig) 22%, transparent);
+  animation: stampknow-in 620ms ease-out both;
+}
+.stampknow-mark { color: var(--red); font-size: 13px; line-height: 1; }
+.stampknow-say {
+  color: var(--sig); font-size: 12px; letter-spacing: 0.05em;
+  text-transform: lowercase;
+}
+.stampknow-row { display: inline-flex; gap: 7px; }
+.stampknow-piece {
+  display: block; width: 38px; height: 46px; overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--sig) 34%, transparent);
+}
+.stampknow-piece img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stampknow-piece:hover { border-color: var(--sig); }
+/* It arrives a beat late and settles, rather than snapping in like a search
+   result. That delay is the difference between a system ANSWERING and a
+   system NOTICING. */
+@keyframes stampknow-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stampknow { animation: none; }
+}
+
+/* THE CORNER STICKER — top-left of a listing, over the image.
+   Owner ruling, 27 Aug 2026: unverified stock is NOT demoted, it is MARKED.
+   Ranking is untouched; this sticker is the whole intervention.
+
+   Its weight scales with what is riding on the claim (lib/provenance.js
+   stakeOf), because verification is not a constant worry — at a low price the
+   piece is bought for itself, at a high price the NAME is most of what is
+   being bought and the name is the unchecked part.
+
+   VERIFIED IS DELIBERATELY QUIET. A reader trained to hunt for a green tick
+   stops noticing anything; the point is that its ABSENCE is legible where it
+   matters. So the affirmative sticker recedes and `.warn.high` is the one that
+   carries weight. */
+.ostick {
+  position: absolute; top: 8px; left: 8px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 7px; font-size: 10px; font-weight: 800;
+  letter-spacing: 0.09em; text-transform: uppercase; line-height: 1;
+  border: 1px solid currentColor; border-radius: 2px;
+  background: color-mix(in oklab, var(--bg, #070b10) 82%, transparent);
+  backdrop-filter: blur(3px); pointer-events: none; max-width: calc(100% - 16px);
+}
+.ostick b { font-weight: 900; font-size: 11px; }
+.ostick em { font-style: normal; font-weight: 600; letter-spacing: 0.04em; text-transform: none; }
+
+/* backed — recedes */
+.ostick.ok { color: var(--sig); opacity: 0.72; }
+/* a sample — plain, no alarm; it is openly not for sale */
+.ostick.demo { color: var(--grey); }
+
+/* unverified, in three volumes */
+.ostick.warn { color: var(--ink); }
+.ostick.warn.low { opacity: 0.66; border-style: dashed; }
+.ostick.warn.material { opacity: 0.92; }
+.ostick.warn.high {
+  color: #fff; border-color: var(--red);
+  background: color-mix(in oklab, var(--red) 78%, #000);
+  opacity: 1; box-shadow: 0 0 0 1px color-mix(in oklab, var(--red) 40%, transparent);
+}
+
+/* PROVENANCE — what backs a piece (owner ruling, 27 Aug 2026).
+   Marketplace inventory is ingested and LABELLED, never hidden, so this line
+   is styled to be READ rather than to be tasteful about it: the same weight
+   and red underline the demo flag earned, for the same reason. It sits at
+   equal-or-higher specificity than the card text it lands in, so it cannot be
+   quietly greyed out by whichever surface renders it next.
+
+   `.warn` is the unverified and sample states. `.ok` is a merchant under
+   agreement, which is the only case allowed to be quiet — and even then it
+   speaks on the detail view. */
+.originline,
+.card .originline,
+.fitline .originline {
+  margin-top: 5px; font-size: 12px; letter-spacing: 0.05em;
+  text-transform: uppercase; line-height: 1.35;
+}
+.originline b, .card .originline b { font-weight: 900; letter-spacing: 0.06em; }
+.originline.warn, .card .originline.warn { color: var(--ink); opacity: 0.95; }
+.originline.warn b, .card .originline.warn b { border-bottom: 2px solid var(--red); }
+.originline.ok, .card .originline.ok { color: var(--grey); }
+.originline.ok b, .card .originline.ok b { border-bottom: 1px solid var(--sig); }
+.originline span { text-transform: none; letter-spacing: 0; color: var(--grey); }
+
 .rule { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
 
 .btn {

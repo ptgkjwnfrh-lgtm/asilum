@@ -10,6 +10,8 @@ import { getEdges } from "../../../lib/db/index.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
+import { readEvidence } from "../../../lib/authenticity/evidence.js";
+import { sameShotElsewhere, sameShotNote } from "../../../lib/vision/sameShot.js";
 
 export const dynamic = "force-dynamic";
 
@@ -30,8 +32,29 @@ export async function GET(req) {
   const items = relatedItems(source, { edges, pool, limit });
   // `item` carries the full source object so deep links (/?item=<id>) can
   // open the detail modal directly.
+  // EVIDENCE RIDES THE REQUEST THAT ALREADY FIRES. Opening a piece calls this
+  // route for "more like this", so what we can see about the piece arrives on
+  // the same round-trip — no control, no second fetch, nothing in the
+  // interface that offers a check. docs/INVISIBLE-MACHINERY.md.
+  //
+  // It returns null below the stake threshold and the key is then omitted
+  // entirely, so a cheap piece carries no trace of the feature at all.
+  const evidence = await readEvidence(source).catch(() => null);
+
+  // THE SAME PHOTOGRAPH, ELSEWHERE — on the same ride, for the same reason.
+  // Not stake-gated like the authenticity reading: a cheaper identical listing
+  // is worth knowing at any price. One computation, two readings; we state the
+  // fact and the reader draws their own conclusion. lib/vision/sameShot.js
+  const byId = new Map(pool.map((it) => [it.id, it]));
+  const elsewhere = await sameShotElsewhere(source, (id) => byId.get(id));
+  const sameShot = elsewhere.length
+    ? { note: sameShotNote(elsewhere), listings: elsewhere }
+    : null;
+
   return NextResponse.json({
     source: source.id, item: publicProduct(source), count: items.length,
     items: items.map(publicProduct).filter(Boolean),
+    ...(evidence ? { evidence } : {}),
+    ...(sameShot ? { sameShot } : {}),
   });
 }

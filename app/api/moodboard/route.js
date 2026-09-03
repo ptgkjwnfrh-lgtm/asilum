@@ -26,6 +26,8 @@ import { analyzeMoodBoardItem } from "../../../lib/ai/moodBoardAnalyzer.js";
 import { rebuildUserStyleProfile } from "../../../lib/ai/styleProfile.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
+import { findImageCollisions } from "../../../lib/db/imageFingerprints.js";
+import { getDiscoverablePool, publicProduct } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -137,12 +139,65 @@ export async function POST(req) {
       if (a.ok) analysis = { source: a.source, summary: a.analysis.summary, confidence: a.analysis.confidenceScore };
       rebuildUserStyleProfile(user).catch(() => {});
     }
+    // RECOGNITION. Nobody asked for this and nothing in the interface offers
+    // it — see docs/INVISIBLE-MACHINERY.md. If a stamp IS a photograph the
+    // archive already holds, the passport says so; otherwise it says nothing
+    // at all. There is no "no match found", because a person who did not ask
+    // a question is not owed a negative answer.
+    //
+    // The client sends 16-character hashes, never the pictures. Matching is a
+    // pixel computation over evidence we hold, which is why it is allowed to
+    // speak plainly under ASTERISK's first law — and why it goes quiet the
+    // moment it is merely probable.
+    const recognized = await recognizeStamps(body.stamps);
+
     return NextResponse.json({
       id: rec.id, persistent: rec.persistent, tags: rec.tags, palette,
       duplicate: rec.duplicate === true, analysis,
+      ...(recognized.length ? { recognized } : {}),
     });
   } catch {
     return NextResponse.json({ error: "moodboard record failed" }, { status: 500 });
+  }
+}
+
+/**
+ * Pieces the archive already holds a photograph of, for the stamps just
+ * uploaded.
+ *
+ * ONLY EXACT PHOTOGRAPH MATCHES. `findImageCollisions` defaults to the
+ * "same photo" hamming threshold, and that tightness is the feature: a
+ * recognition that is sometimes wrong is not magic, it is a bug with good
+ * lighting. A different photograph of the same garment will not match, and
+ * that is correct — we go silent rather than guess.
+ *
+ * Never throws and never explains itself. A failure here leaves the upload
+ * untouched and the passport quiet.
+ */
+async function recognizeStamps(stamps) {
+  if (!Array.isArray(stamps) || !stamps.length) return [];
+  const clean = stamps
+    .filter((h) => typeof h === "string" && /^[0-9a-f]{16}$/i.test(h))
+    .slice(0, 6);
+  if (!clean.length) return [];
+  try {
+    const seen = new Set();
+    const ids = [];
+    for (const dhash of clean) {
+      for (const hit of await findImageCollisions(dhash)) {
+        if (!seen.has(hit.itemId)) { seen.add(hit.itemId); ids.push(hit.itemId); }
+      }
+    }
+    if (!ids.length) return [];
+    const pool = await getDiscoverablePool();
+    return ids
+      .map((id) => pool.find((item) => item.id === id))
+      .filter(Boolean)
+      .slice(0, 4)
+      .map(publicProduct)
+      .filter(Boolean);
+  } catch {
+    return [];
   }
 }
 
