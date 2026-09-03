@@ -23,6 +23,7 @@ const files = execSync(
 
 // An exported function, either declaration or arrow form.
 const EXPORT_FN = /^export\s+(async\s+)?function\s+([A-Za-z0-9_$]+)/;
+const HTTP_VERBS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
 const EXPORT_ARROW = /^export\s+const\s+([A-Za-z0-9_$]+)\s*=\s*(async\s*)?(\([^)]*\)|[A-Za-z0-9_$]+)\s*=>/;
 
 const big = [], headerless = [], undocumented = [];
@@ -32,16 +33,40 @@ for (const file of files) {
   const lines = readFileSync(file, "utf8").split("\n");
   if (lines.length > BIG) big.push({ file, lines: lines.length });
 
-  // A header is a comment near the top; "use client" may precede it.
+  // A header is a comment near the top of the file. Two things may legally sit
+  // ABOVE it, and both have caused this check to lie:
+  //
+  //   "use client"        — the first pass scored every interactive component
+  //                         as headerless, reporting 76% coverage when it was
+  //                         really 87.5%.
+  //   #!/usr/bin/env node — the second pass then scored all 30 measurement
+  //                         harnesses as headerless, when every one of them
+  //                         opens with a thorough header on the NEXT line.
+  //
+  // Both times the instrument was wrong and the code was fine. An audit that
+  // over-reports is not the safe direction to err in: it sends someone to
+  // "fix" files that need nothing, and the noise hides the real gaps.
   let hasHeader = false;
   for (let i = 0; i < Math.min(6, lines.length); i++) {
     const t = lines[i].trim();
     if (!t) continue;
+    if (/^#!/.test(t)) continue;
     if (/^["']use (client|server)["'];?$/.test(t)) continue;
     if (/^(\/\/|\/\*)/.test(t)) hasHeader = true;
     break;
   }
   if (!hasHeader) headerless.push({ file });
+
+  // A route handler is named for its HTTP verb, so the file header is often
+  // the right place for its contract — "POST /api/reset { user }" at the top
+  // of a single-handler file explains it better than a comment repeating the
+  // verb two lines above the function. Requiring a per-function comment there
+  // would measure ceremony rather than clarity, and would be satisfied by
+  // adding noise. So a verb export counts as labelled when the header names
+  // that verb; a file with several handlers cannot do that for all of them,
+  // which is exactly where per-handler labels DO earn their place.
+  const headerText = lines.slice(0, 40).filter((l) => /^\s*(\/\/|\*|\/\*)/.test(l)).join(" ");
+  const isRoute = /app\/api\/.*route\.(js|jsx)$/.test(file);
 
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(EXPORT_FN) || lines[i].match(EXPORT_ARROW);
@@ -51,7 +76,10 @@ for (const file of files) {
     // walk back past blank lines; a comment directly above counts as a label
     let j = i - 1;
     while (j >= 0 && lines[j].trim() === "") j--;
-    const labelled = j >= 0 && /^\s*(\/\/|\*|\*\/|\/\*)/.test(lines[j]);
+    let labelled = j >= 0 && /^\s*(\/\/|\*|\*\/|\/\*)/.test(lines[j]);
+    if (!labelled && isRoute && HTTP_VERBS.has(name)) {
+      labelled = new RegExp(`\\b${name}\\b`).test(headerText);
+    }
     if (!labelled) undocumented.push({ file, line: i + 1, name });
   }
 }

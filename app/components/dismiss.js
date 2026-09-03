@@ -27,6 +27,14 @@ export function useOverlayDismiss(onClose, active = true) {
   };
 }
 
+/**
+ * Close on Escape. THE BASELINE FOR EVERY TRANSIENT SURFACE — a modal, sheet
+ * or drawer that cannot be dismissed from the keyboard is an accessibility
+ * failure, not a styling choice.
+ *
+ * `active` is the surface's open condition; the listener is removed when it is
+ * false, so a closed surface cannot swallow Escape from the one above it.
+ */
 export function useEscape(onClose, active = true) {
   useEffect(() => {
     if (!active) return undefined;
@@ -53,6 +61,15 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(", ");
 
+/**
+ * Keep Tab inside a surface while it is open, and RETURN FOCUS to whatever
+ * opened it on close.
+ *
+ * The return is the half that gets forgotten: without it a keyboard or screen
+ * reader user is dropped at the top of the document every time they dismiss
+ * something, losing their place entirely. Focus is only restored if the origin
+ * element is still connected.
+ */
 export function useFocusTrap(surfaceRef, active = true) {
   useEffect(() => {
     if (!active) return undefined;
@@ -94,6 +111,15 @@ export function useFocusTrap(surfaceRef, active = true) {
   }, [active, surfaceRef]);
 }
 
+/**
+ * Close when a click lands outside a surface that floats WITHOUT an overlay —
+ * the bag, the Asterisk drawer. Surfaces with an overlay use
+ * useOverlayDismiss instead.
+ *
+ * `excludeRef` must be the surface's own toggle button. Without it the toggle
+ * stops working: the click closes the panel and then re-opens it, or appears
+ * to do nothing at all.
+ */
 export function useClickAway(surfaceRef, onClose, { active = true, excludeRef = null } = {}) {
   useEffect(() => {
     if (!active) return undefined;

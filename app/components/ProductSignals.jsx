@@ -1,5 +1,15 @@
 "use client";
 
+// app/components/ProductSignals.jsx — the small honest signals on a piece:
+// what colour it VERIFIABLY is, and how it would fit the reader.
+//
+// Both are claims about the physical garment, so both refuse to guess. A
+// colour line appears only where the merchant listing and the product images
+// AGREE; a fit line appears only where a size can be read. Rendering nothing
+// is the correct output for "we do not know" — a swatch nobody verified is
+// worse than no swatch, because a reader buys against it.
+
+
 import { useEffect, useState } from "react";
 import { fitPhrase } from "../../lib/brain/sizing.js";
 import {
@@ -16,6 +26,9 @@ const COLOR_SWATCH = {
   purple: "#704191", silver: "#bec0c8", gold: "#c6a050",
 };
 
+/** The verified colour swatches for a piece, or NOTHING.
+ *  Renders only for `colorEvidence.status === "verified"` — a colour the
+ *  merchant claimed but the images did not corroborate is not shown at all. */
 export function ColorEvidenceLine({ item, detailed = false }) {
   const evidence = item?.colorEvidence;
   const colors = evidence?.status === "verified" ? evidence.verifiedColors : [];
@@ -46,6 +59,15 @@ export function refreshFitProfile() {
   return refresh;
 }
 
+/**
+ * The reader's fit profile, kept live across tabs and sign-ins.
+ *
+ * Seeds from the on-device cache for an instant first paint, then refreshes
+ * from the server. Re-reads on `asilum:fit` (edited here) and on
+ * `asilum:identity` (signed in or out) — the second matters because a fit
+ * profile belongs to a PERSON, and leaving the previous reader's measurements
+ * on screen after a sign-out would be showing one person another's body.
+ */
 export function useFitProfile() {
   const [profile, setProfile] = useState(() => loadFitProfile());
   useEffect(() => {
@@ -67,11 +89,15 @@ export function useFitProfile() {
   return profile;
 }
 
+/** The fit profile in the shape lib/brain/sizing.js consumes. Use this when
+ *  passing it to fit scoring; useFitProfile is for display. */
 export function useFitBrain() {
   const profile = useFitProfile();
   return fitProfileForBrain(profile);
 }
 
+/** The one-line fit sentence for a piece, or nothing when there is nothing
+ *  honest to say. See fitPhrase in lib/brain/sizing.js for the three states. */
 export function ProductFitLine({ item, fit }) {
   const phrase = fitPhrase(item?.size, fit);
   return phrase ? <span className="fitline">{phrase}</span> : null;

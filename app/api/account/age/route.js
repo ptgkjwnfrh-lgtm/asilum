@@ -16,6 +16,17 @@ import { MINIMUM_AGE, UNDER_AGE_MESSAGE } from "../../../../lib/age.js";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * GET — has this account asserted a birth date yet?
+ *
+ * Answers `{ asserted, minimumAge }` and DELIBERATELY NEVER THE DATE. The
+ * shell only needs to know whether to ask; the date itself is personal data
+ * and belongs in the §6 export, where a person reads their own.
+ *
+ * An unidentified caller gets `asserted: false` rather than a 401, because
+ * "we have nothing on file for you" is the honest answer to a question about
+ * an account that does not exist yet.
+ */
 export async function GET(req) {
   const claimed = new URL(req.url).searchParams.get("user") || "";
   const user = await resolveRequestUser(req, claimed);
@@ -33,6 +44,18 @@ export async function GET(req) {
   }
 }
 
+/**
+ * POST — record a self-declared birth date, and re-check the age gate.
+ *
+ * THE SECOND LINE, NOT THE FIRST: the client refuses an under-age date before
+ * an account is created, but a client-side gate is a curtain. The number that
+ * matters is the one the server agreed to store.
+ *
+ * Answers 422 (not 400) on refusal — the request was well-formed and was
+ * declined on its merits — and NEVER echoes the date back. Rate-limited
+ * tightly, because a caller trying dates until one passes is guessing at the
+ * gate rather than correcting a typo.
+ */
 export async function POST(req) {
   const parsed = await readJsonRequest(req, { maxBytes: 512 });
   if (parsed.response) return parsed.response;

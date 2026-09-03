@@ -7,12 +7,17 @@
 import { useState } from "react";
 import { DEMO_SOCIAL_ENABLED, MOCK_USERS, searchUsers, followedUsers, setFollowUser } from "../../lib/social.js";
 
+/** Monogram avatar — up to two initials. No image, so nothing to fail to
+ *  load and no request to a third party for a picture of a person. */
 export function Avatar({ name }) {
   const initials = String(name || "?")
     .split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   return <span className="uavatar">{initials}</span>;
 }
 
+/** Follow toggle. Optimistic: the local state flips at once and the write
+ *  syncs behind it, because a follow that waits for a round-trip feels broken.
+ *  Seeds its initial state from the local follow list on first render. */
 export function FollowButton({ handle }) {
   const [on, setOn] = useState(() => followedUsers().includes(handle));
   return (
@@ -25,6 +30,14 @@ export function FollowButton({ handle }) {
   );
 }
 
+/**
+ * The "who to follow" module, paged.
+ *
+ * DEMO FIXTURES ONLY. When demo social is off, MOCK_USERS is empty and this
+ * says so plainly rather than rendering an empty shelf that looks like nobody
+ * uses the product — the constitution's no-faking rule applies to absence as
+ * much as to invention.
+ */
 export function WhoToFollowList({ compact = false, withSearch = false }) {
   const [page, setPage] = useState(0);
   const per = compact ? 3 : 5;
@@ -57,6 +70,8 @@ export function WhoToFollowList({ compact = false, withSearch = false }) {
   );
 }
 
+/** Search over the demo user fixtures. Never reaches real accounts — see
+ *  searchUsers in lib/social.js. */
 export function UserSearch({ placeholder = "search users…" }) {
   const [q, setQ] = useState("");
   const hits = searchUsers(q).slice(0, 5);

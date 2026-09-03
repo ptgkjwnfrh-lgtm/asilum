@@ -59,6 +59,9 @@ async function prepPhoto(file) {
   return { blob, swatches };
 }
 
+/** The reader's own wardrobe: what they own, add and retire.
+ *  Photos are PRIVATE — processed down to the storage limit on-device before
+ *  upload, and never part of the public catalog. */
 export function WardrobeTab() {
   const [items, setItems] = useState(null);
   const [showRetired, setShowRetired] = useState(false);

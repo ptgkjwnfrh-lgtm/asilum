@@ -11,6 +11,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { authorizedFetch, postJSON, getUid, thumbFor } from "../../lib/client.js";
 
+/** The named, collapsible Discover strips. Content derives LIVE from reviewed
+ *  cultural sources — nothing here is a hand-written editorial list, so a rail
+ *  with no reviewed sources behind it renders empty rather than invented. */
 export function DiscoverRails({ onPickTags }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
