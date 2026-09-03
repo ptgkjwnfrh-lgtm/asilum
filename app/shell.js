@@ -313,9 +313,29 @@ export default function Shell({ children }) {
           setAuthNotice("signed in, but this device's taste could not be adopted");
         }
       }
-      if (adopted && pendingAdoptionRef.current === pending) {
+      // BEING SIGNED IN IS NOT CONTINGENT ON YOUR TASTE MOVING.
+      //
+      // `setUid(account)` used to sit behind `adopted`, so any failure of the
+      // adoption POST left localStorage holding the old `u-` device id while
+      // the Supabase session was perfectly valid. The reader was signed in and
+      // the app did not know it.
+      //
+      // The visible cost was the mail desk. MailDesk gates on
+      // `getUid().startsWith("sb-")` — correctly, since DMs are impossible for
+      // a device identity under ADR-002 — so a failed adoption removed
+      // MESSAGING ENTIRELY on that device, permanently, with nothing on screen
+      // connecting the two. It presented as "DMs work on my phone but not my
+      // laptop", because adoption is heavier on the device with more history
+      // to move and fails there first.
+      //
+      // Two unrelated things were coupled: whether your taste TRANSFERRED
+      // decided whether you could see your MESSAGES. Identity is who you are;
+      // adoption is what moves with you. The first does not wait on the second.
+      if (pendingAdoptionRef.current === pending) {
         setUid(account);
-        setAuthNotice(`signed in as ${user.email || user.id}`);
+        // The adoption failure already has its own notice, set in the catch
+        // above; only overwrite it when there is nothing to warn about.
+        if (adopted) setAuthNotice(`signed in as ${user.email || user.id}`);
       }
     })();
     try { await pending.promise; } finally {
