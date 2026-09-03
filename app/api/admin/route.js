@@ -27,6 +27,11 @@
 //     is the account's verify token served by its claimed domains?
 //   business.link-source { accountId, sourceName } — verified business ↔
 //     inventory namespace, unique, one time each.
+//   steward.report — the board, the repairs the hands would make, the ledger
+//   steward.act { confirm?: [actionId], dryRun? } — make the delegated
+//     repairs (lib/steward/decisions.js); `confirm` is a person's yes, for
+//     this run only, to a confirm-tier one. Never-tier ids are refused.
+//   steward.revert { id } — undo one ledger row; refuses a second time
 //   inventory.import-shopify { accountId, currency?, allowImageCollisions? }
 //     — consented bulk import from the business's own store; gate-passing
 //     items land, failures are reported loudly (partial, unlike
@@ -449,17 +454,51 @@ export async function POST(req) {
       // finding rather than as silence. Migration FILES are not in this
       // bundle, so schemaVersions is deliberately not passed and the ledger
       // check says so in its own evidence.
-      case "steward.report": {
-        const [{ runSteward, exitCodeFor }, { getPool }] = await Promise.all([
+      // ---- 09 THE STEWARD. report = the board + what the hands WOULD do +
+      // the ledger (all reads). act = the delegated repairs, plus any confirm-
+      // tier one named in `confirm` (a person's yes for THIS run). revert =
+      // undo one ledger row. Every write goes through lib/steward/index.js,
+      // where the ledger row precedes the mutation in one transaction.
+      case "steward.report":
+      case "steward.act":
+      case "steward.revert": {
+        const [steward, { getPool }] = await Promise.all([
           import("../../../lib/steward/index.js"),
           import("../../../lib/db/index.js"),
         ]);
         const pool = await getPool();
-        const report = await runSteward({
+        const ctx = {
           query: pool ? (sql, params) => pool.query(sql, params) : null,
+          transact: steward.transactorFor(pool),
           now: new Date().toISOString(),
+        };
+        if (body.action === "steward.revert") {
+          const r = await steward.revertAction(ctx, String(body.id || ""), { actor: adminActor() });
+          return NextResponse.json(r, { status: r.ok ? 200 : 409 });
+        }
+        if (body.action === "steward.act") {
+          const known = new Set(steward.BOUNDARY.map((b) => b.id));
+          const confirm = (Array.isArray(body.confirm) ? body.confirm : []).map(String).filter((id) => known.has(id));
+          const out = await steward.actSteward(ctx, { confirm, dryRun: !!body.dryRun, actor: adminActor(), firedBy: "desk" });
+          return NextResponse.json({ hands: out.hands, runId: out.runId, acts: out.acts,
+            plans: out.plans.map(({ targets, inverse, ...p }) => p) });
+        }
+        const report = await steward.runSteward(ctx);
+        // An unread ledger is reported as unread, never as empty — on a
+        // memory-mode deploy "the hands have not acted yet" would be a claim
+        // the server cannot make.
+        const [plans, ledger] = await Promise.all([
+          steward.planRepairs(ctx, report),
+          ctx.query
+            ? steward.readLedger(ctx, { limit: 20 }).catch((err) => ({ error: err?.message || String(err) }))
+            : { error: "no database" },
+        ]);
+        return NextResponse.json({
+          ...report, exitCode: steward.exitCodeFor(report),
+          repairs: plans.map(({ targets, inverse, ...p }) => p),
+          ledger,
+          boundary: steward.BOUNDARY.map(({ id, check, tier, cap }) => ({ id, check, tier, cap: cap ?? null })),
         });
-        return NextResponse.json({ ...report, exitCode: exitCodeFor(report) });
       }
       case "asterisk.corrections": {
         const { listUserCorrections } = await import("../../../lib/db/production.js");

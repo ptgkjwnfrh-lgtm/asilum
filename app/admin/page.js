@@ -55,7 +55,7 @@ const PANELS = [
     filter: { key: "status", label: "STATUS", options: ["observed", "research_created", "resolved", "dismissed", "all"] },
     note: "what people asked that asterisk could not answer. this is the demand signal for research — promoting one says it is worth investigating, not that an answer exists." },
   { id: "steward", n: "09", title: "THE STEWARD", read: { action: "steward.report" },
-    note: "one read-only pass over the live machine, worst first. the steward never writes, never migrates, never deletes — every action here is yours to take. a check that could not run is shown as UNMEASURABLE and counts against the board: a dark light is not a green one." },
+    note: "one pass over the live machine, worst first — and, since 3 sep, hands. the checks only read. what the hands would do is listed under HANDS before it is done; ACT makes the delegated repairs (reversible, capped, ledgered before each one), CONFIRM is your yes to a money-adjacent one for this run only, and the never tier is reported and left. every repair is a ledger row you can REVERT. a check that could not run is shown as UNMEASURABLE and counts against the board: a dark light is not a green one." },
   { id: "ontology", n: "08", title: "ONTOLOGY", read: { action: "asterisk.ontology", limit: 500 },
     filter: { key: "tagType", label: "TYPE", options: ["", "aesthetic", "category", "material", "silhouette", "color", "era", "mood"] },
     note: "the canonical tag space, seeded from the LIVE vocabularies so it extends rather than forks (§6). SYNC is idempotent and additive — merges and deprecations are versioned rows, never silent renames." },
@@ -361,6 +361,43 @@ export default function AdminDeskPage() {
                 {data.ranAt ? ` read ${data.ranAt}.` : ""}
               </div>
             </div>
+            {/* HANDS. What the steward WOULD do is a read and is always shown;
+                ACT is the only thing that turns it into a write. A confirm-
+                tier plan carries its own button, because the yes is per run
+                and per action — never a standing permission. */}
+            <div className="rkrow">
+              <div className="rkname">
+                <span className={"rkled" + ((data.repairs || []).length === 0 ? " on" : "")} aria-hidden="true" />
+                HANDS
+              </div>
+              <div className="rkctl">
+                <span className="rkmono">{(data.repairs || []).length} PLANNED</span>
+                <button className="fitbtn" disabled={busy !== "" || !(data.repairs || []).some((p) => p.tier === "delegated")}
+                  onClick={() => act({ action: "steward.act" }, "steward.act")}>
+                  ACT
+                </button>
+              </div>
+              <div className="rkdesc">
+                {(data.repairs || []).length
+                  ? "the repairs below are planned, not made. ACT makes the delegated ones; each writes its ledger row first and can be reverted below."
+                  : "nothing for the hands to do — every finding is ok, unmeasurable, or in the never tier."}
+              </div>
+            </div>
+            {(data.repairs || []).map((p) => (
+              <div className="rkrow" key={p.actionId}>
+                <div className="rkname">{p.actionId}</div>
+                <div className="rkctl">
+                  <span className="rkmono">×{p.count} · {p.tier.toUpperCase()}</span>
+                  {p.tier === "confirm" ? (
+                    <button className="fitbtn" disabled={busy !== ""}
+                      onClick={() => act({ action: "steward.act", confirm: [p.actionId] }, p.actionId)}>
+                      CONFIRM
+                    </button>
+                  ) : null}
+                </div>
+                <div className="rkdesc">{p.error || p.evidence}</div>
+              </div>
+            ))}
             {(data.findings || []).map((f) => (
               <div className="rkrow" key={f.id}>
                 <div className="rkname">
@@ -371,6 +408,37 @@ export default function AdminDeskPage() {
                 <div className="rkdesc">
                   {f.evidence}
                   {f.action ? <><br />→ {f.action}</> : null}
+                </div>
+              </div>
+            ))}
+            {/* THE LEDGER. Newest first. A row that stands can be reverted;
+                a reverted row says so and offers nothing. */}
+            <div className="rkrow">
+              <div className="rkname">LEDGER</div>
+              <div className="rkctl rkmono">
+                {Array.isArray(data.ledger) ? `${data.ledger.length} ROW${data.ledger.length === 1 ? "" : "S"}` : "UNREAD"}
+              </div>
+              <div className="rkdesc">
+                {Array.isArray(data.ledger)
+                  ? (data.ledger.length ? "every repair the hands have made, and every revert." : "the hands have not acted yet.")
+                  : `the ledger could not be read: ${data.ledger?.error || "no database"}`}
+              </div>
+            </div>
+            {(Array.isArray(data.ledger) ? data.ledger : []).map((r) => (
+              <div className="rkrow" key={r.id}>
+                <div className="rkname">{r.actionId}</div>
+                <div className="rkctl">
+                  <span className="rkmono">{r.state.toUpperCase()} ×{r.count}{r.reverted ? " · REVERTED" : ""}</span>
+                  {r.state === "applied" && !r.reverted ? (
+                    <button className="fitbtn" disabled={busy !== ""}
+                      onClick={() => act({ action: "steward.revert", id: r.id }, r.id)}>
+                      REVERT
+                    </button>
+                  ) : null}
+                </div>
+                <div className="rkdesc">
+                  {r.evidence}
+                  <br />{String(r.at).slice(0, 19).replace("T", " ")} · {r.actor} · {r.tier}
                 </div>
               </div>
             ))}

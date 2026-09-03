@@ -43,8 +43,26 @@ and GitHub renders skipped as skipped: it never reports a pass it did not earn.
 Exit codes: `0` nothing needs a person · `1` a blocker · `2` warn or
 unmeasurable. Anything but 0 fails the run.
 
-The steward only ever reads: no writes, no migrations, no deletions, no
-external calls.
+## Two schedules, and which one has hands (3 September 2026)
+
+Since 3 September the steward has hands — `lib/steward/actions.js`, inside the
+boundary `lib/steward/decisions.js` declares and `docs/steward-boundary-2026-09-03.md`
+records. **This workflow does not use them.** Its `permissions: contents: read`
+is the outside proof, and `scripts/steward.mjs` never acts unless it is passed
+`--act`, which the workflow does not pass. What this schedule does that the
+CLI does not: in GitHub Actions (`GITHUB_ACTIONS=true`) the run records
+itself in `steward_runs` and runs the seven instruments, so movement between
+nights has a history to compare against. Recording a run is the one write it
+makes, and it is a write about the steward, not about the catalog.
+
+The tier that acts on its own runs from the **Vercel cron** instead —
+`vercel.json` fires `/api/steward/run` daily at 05:17 UTC. That route answers
+503 until `CRON_SECRET` is set on the deployment (Vercel sends it as a
+bearer), 401 to anyone else, and makes the delegated repairs with a ledger row
+before each one. Confirm-tier repairs are planned and named there, never
+made: nobody is present to say yes. The instruments do not run there (~20s of
+CPU against a 60s budget). Set the secret, then redeploy — an env var does
+nothing until the next deployment carries it.
 
 ## Editing the workflow file
 
