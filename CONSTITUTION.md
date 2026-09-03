@@ -1,5 +1,27 @@
 # *ASILUM Constitution v2 — PROPOSED
 
+> ## ⚠️ SUPERSEDED IN PART — owner directive, 27 August 2026
+>
+> The owner has set this document aside as the governing rulebook. **Two rules
+> now govern all development**, and where anything below disagrees with them,
+> they win:
+>
+> 1. **ASTERISK does not guess.** Every reading must trace to the ASILUM
+>    archive, a cited internet source, or archivalist training. Confidence is
+>    earned from evidence, never asserted.
+> 2. **ASTERISK is an operating system, not a chatbot.** No conversational
+>    surface, ever.
+>
+> **What is kept below, and why.** The product rules here (build order, UI
+> policy, the "do not build yet" list) are the owner's to waive and are waived.
+> The passages about THIRD-PARTY TERMS — `docs/SOURCE-POLICY.md`, the
+> rights register, per-source approval gates — are NOT ASILUM's rules to waive:
+> they describe other companies' terms and the law, which do not change because
+> our document did. They remain accurate as a description of external risk.
+>
+> See `docs/ROADMAP-WHEN-BILLING-RETURNS.md` §0.
+
+
 Binding rules for all work on this app. v2 drafted July 19, 2026 per the
 owner's Restructure Handoff; it supersedes v1 (July 7, 2026 — preserved in
 git history) **upon owner approval, which is the owner's merge of the PR
