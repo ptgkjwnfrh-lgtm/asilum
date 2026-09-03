@@ -128,17 +128,17 @@ Nothing here may import from `app/`.
 | `contract.js` | 25 | Shared helpers that keep the Alpha Brain foundation HONEST. Every placeholder in lib/* returns through one of these, so nothing can |
 
 ### `lib/asterisk/`
-*17 files, 4,075 lines*
+*17 files, 2,370 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `culture.js` | 1847 ⚠️ | Asterisk AI — curated cultural knowledge v1 (films, music, cities, decades). These are EDITORIAL STYLE READINGS, not factual claims: no designer credits, |
 | `orchestrator.js` | 392 | Asterisk AI — universal interpretation orchestrator (handoff Feature A, Phase 1). Deterministic, layered, and honest: |
 | `explain.js` | 221 | Asterisk AI — the explanation system. Every recommendation can answer "why am I seeing this?" with reasons built ONLY from real, named signals: |
 | `research.js` | 207 | Asterisk AI — research-ingestion pipeline (docs/ASTERISK-AI.md §9, P2 v1). The controlled path from web research to culture records — and the only |
 | `houses.js` | 193 | where the houses are from. |
 | `tagAudit.js` | 167 | Asterisk AI — the secondary audit of every tagged product. Dual tagging: Base Tags (items fields + product_tags: retailer/seller/admin) |
 | `confidence.js` | 145 | Asterisk AI — separated, honest confidence (handoff Feature A rules). Four independent values, NEVER averaged into one impressive number: |
+| `culture.js` | 142 | Asterisk AI — curated cultural knowledge v1 (films, music, cities, decades). These are EDITORIAL STYLE READINGS, not factual claims: no designer credits, |
 | `memory.js` | 140 | the Asterisk memory READ FACADE (ADR-001, v2). One versioned contract that Home, Discover, Stylist, Moodboard, Profile, |
 | `cultureSchema.js` | 138 | One schema boundary for both staged proposals and checked-in research. Keeping normalization here prevents the database gate and module loader |
 | `unknownQueries.js` | 104 | Asterisk AI — unknown-query aggregation (handoff Feature A, Phase 1). An unresolved or research-flagged query becomes a normalized, demand- |
@@ -149,6 +149,18 @@ Nothing here may import from `app/`.
 | `queryRouter.js` | 61 | Asterisk AI — query classification + entity resolution v1. A search box entry may be a brand, a garment, an aesthetic, a film, a |
 | `interpretationSchema.js` | 60 | Asterisk AI — the versioned interpretation contract (handoff Feature A). One shape every consumer (search, drawer, rails, eval harness) can pin. |
 | `correctionSignals.js` | 41 | Shared correction semantics for every recommendation surface. Persistence aggregates explicit feedback; consumers apply the same weights |
+
+### `lib/asterisk/culture/`
+*6 files, 1,842 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `catalog-expansion.js` | 677 | PART OF THE CULTURE CATALOG — see lib/asterisk/culture.js, which assembles every part IN ORDER and is the only module anything else imports. |
+| `catalog-hiphop.js` | 377 | PART OF THE CULTURE CATALOG — see lib/asterisk/culture.js, which assembles every part IN ORDER and is the only module anything else imports. |
+| `catalog-aesthetics.js` | 300 | PART OF THE CULTURE CATALOG — see lib/asterisk/culture.js, which assembles every part IN ORDER and is the only module anything else imports. |
+| `catalog-figures.js` | 248 | PART OF THE CULTURE CATALOG — see lib/asterisk/culture.js, which assembles every part IN ORDER and is the only module anything else imports. |
+| `catalog-core.js` | 206 | PART OF THE CULTURE CATALOG — see lib/asterisk/culture.js, which assembles every part IN ORDER and is the only module anything else imports. |
+| `provenance.js` | 34 | WHERE A READING CAME FROM. |
 
 ### `lib/background-jobs/`
 *1 file, 33 lines*
@@ -324,11 +336,11 @@ Nothing here may import from `app/`.
 | `index.js` | 63 | Recommendation service facade — ONE place that names every recommender the Alpha Learning Brain will offer, delegating to live Alpha Learning Bridge |
 
 ### `lib/search/`
-*17 files, 4,157 lines*
+*20 files, 4,241 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 1932 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
+| `index.js` | 1735 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
 | `era.js` | 365 | era comprehension for the search engine (Aug 21). |
 | `negation.js` | 218 | the engine stops serving the thing you excluded. |
 | `size.js` | 184 | the size the reader asked for (Aug 21). |
@@ -336,8 +348,10 @@ Nothing here may import from `app/`.
 | `mappings-seed.js` | 171 | Curated search mappings — the cultural lexicon that turns human phrases into tags and related terms. Seeded into the search_mappings table (idempotent |
 | `typo.js` | 168 | literal-engine typo bridge (r12). |
 | `designers.js` | 153 | the people, not just the houses (Aug 21). |
+| `intent.js` | 145 | WHAT KIND OF QUESTION IS THIS? |
 | `origin.js` | 135 | origin comprehension for the search engine (Aug 21). |
 | `suggest.js` | 135 | Autocomplete + misspelling correction. Basic fuzzy matching on purpose (constitution: don't overcomplicate; no AI here). SERVER-ONLY via the pool. |
+| `vocabulary.js` | 116 | THE WORDS THE ENGINE KNOWS. |
 | `eraAnchors.js` | 100 | era-anchor extraction for cultural reads (Aug 5). |
 | `wordScope.js` | 96 | "the word is here, just not there" (Aug 21). |
 | `passportAssumption.js` | 89 | the influenced-assumption clause (r10). |
@@ -345,6 +359,7 @@ Nothing here may import from `app/`.
 | `vocab.js` | 53 | stem-indexed token lookup (r11). |
 | `ontology.js` | 49 | Fashionpedia-informed garment vocabulary (r13). |
 | `text.js` | 40 | the one place text is folded for matching. |
+| `tokens.js` | 20 | HOW A QUERY BECOMES WORDS. |
 
 ### `lib/security/`
 *5 files, 639 lines*
@@ -969,7 +984,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*51 files, 7,036 lines*
+*52 files, 7,137 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1005,6 +1020,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `measure-composed-disclosure.mjs` | 106 | does the engine still say what it knows when a query carries TWO constraints instead of one? |
 | `measure-tiebreak.mjs` | 105 | declared-criteria measurement for r7 semantic tie-breaking. OFF = r5+r6 shipped behavior, ON = + tie-break. |
 | `measure-search-loop.mjs` | 102 | declared-criteria measurement for r17: the search→brain loop (an applied reading trains the feed). |
+| `search-identity-snapshot.mjs` | 101 | WHAT SEARCH ANSWERS, serialized. |
 | `measure-cultural-reach.mjs` | 99 | does a curated reading actually reach the reader, or does junk evidence shadow it? |
 | `measure-ontology.mjs` | 94 | declared-criteria measurement for r13: the Fashionpedia-informed garment vocabulary (curated crosswalk, CC BY 4.0 |
 | `measure-typo.mjs` | 92 | declared-criteria measurement for r12: the literal-engine typo bridge (fastest-levenshtein at interpretation time). |
@@ -1027,4 +1043,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ f4e5588 — 308 source files, 58,571 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 9892e37 — 318 source files, 58,893 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
