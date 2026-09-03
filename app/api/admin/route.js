@@ -484,9 +484,14 @@ export async function POST(req) {
             plans: out.plans.map(({ targets, inverse, ...p }) => p) });
         }
         const report = await steward.runSteward(ctx);
+        // An unread ledger is reported as unread, never as empty — on a
+        // memory-mode deploy "the hands have not acted yet" would be a claim
+        // the server cannot make.
         const [plans, ledger] = await Promise.all([
           steward.planRepairs(ctx, report),
-          steward.readLedger(ctx, { limit: 20 }).catch((err) => ({ error: err?.message || String(err) })),
+          ctx.query
+            ? steward.readLedger(ctx, { limit: 20 }).catch((err) => ({ error: err?.message || String(err) }))
+            : { error: "no database" },
         ]);
         return NextResponse.json({
           ...report, exitCode: steward.exitCodeFor(report),
