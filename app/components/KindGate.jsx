@@ -15,7 +15,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DEFAULT_KIND, can, homeFor } from "../../lib/accounts.js";
-import { getUid } from "../../lib/client.js";
+import { authorizedFetch, getUid } from "../../lib/client.js";
 
 export default function KindGate({ capability, children }) {
   const router = useRouter();
@@ -25,7 +25,12 @@ export default function KindGate({ capability, children }) {
     let cancelled = false;
     (async () => {
       try {
-        const response = await fetch(
+        // authorizedFetch, NOT fetch. A bare fetch cannot prove the sb-
+        // identity, so the route fell back to the DEFAULT kind and every
+        // business account was told it was a passport — then bounced off its
+        // own analytics by the redirect below. The database hiccup the next
+        // comment worries about was, in fact, permanent and universal.
+        const response = await authorizedFetch(
           "/api/account/kind?user=" + encodeURIComponent(getUid() || ""),
           { cache: "no-store" });
         if (!response.ok) {

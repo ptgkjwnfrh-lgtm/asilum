@@ -12,6 +12,7 @@
 
 import { useEffect, useState } from "react";
 import { fitPhrase } from "../../lib/brain/sizing.js";
+import { stakeOf } from "../../lib/provenance.js";
 import {
   fitProfileForBrain, getUid, loadFitProfile, loadServerFitProfile, saveFitProfile,
 } from "../../lib/client.js";
@@ -94,6 +95,80 @@ export function useFitProfile() {
 export function useFitBrain() {
   const profile = useFitProfile();
   return fitProfileForBrain(profile);
+}
+
+/**
+ * THE CORNER STICKER — top-left of a listing, over the image.
+ *
+ * Owner ruling, 27 Aug 2026: unverified stock is NOT demoted, it is marked.
+ * Ranking is untouched; the sticker is the whole intervention. Demoting would
+ * be a soft form of hiding, which is what the ruling forbids.
+ *
+ * ITS LOUDNESS SCALES WITH WHAT IS RIDING ON IT — the owner's second ruling.
+ * At a low price a person is buying an object and the mark is a footnote; at a
+ * high price the NAME is most of what is being bought, and the name is the
+ * unchecked part. `stakeOf` in lib/provenance.js holds that ladder and the
+ * honest note about what it cannot yet compute.
+ *
+ * The verified sticker is quiet on purpose. A reader should not be trained to
+ * hunt for a green tick — they should notice its ABSENCE where it matters.
+ */
+export function OriginSticker({ item }) {
+  // DECORATIVE BY DESIGN. OriginLine states the same fact in words on every
+  // surface, and two of the four imgwraps it sits in are already aria-hidden —
+  // so marking the sticker consistently hidden is what stops a screen reader
+  // announcing the provenance twice on some cards and once on others.
+  const evidence = item?.originEvidence;
+  if (!evidence) return null;
+  const { level, why } = stakeOf(item);
+
+  if (evidence.status === "verified") {
+    return (
+      <span aria-hidden="true" className="ostick ok" title={evidence.note}>
+        <b aria-hidden="true">✓</b> VERIFIED
+      </span>
+    );
+  }
+  if (evidence.status === "demo") {
+    return <span aria-hidden="true" className="ostick demo" title={evidence.note}>SAMPLE</span>;
+  }
+  // Unverified. One mark, three volumes.
+  return (
+    <span aria-hidden="true" className={`ostick warn ${level}`} title={`${evidence.note} — ${why}`}>
+      <b aria-hidden="true">?</b> UNVERIFIED
+      {level === "high" ? <em> · check before you pay this</em> : null}
+    </span>
+  );
+}
+
+/**
+ * WHAT BACKS THIS PIECE — and unlike ColorEvidenceLine above, this one is
+ * LOUD WHEN IT KNOWS LEAST.
+ *
+ * The colour line renders nothing when there is no evidence, because an
+ * unverified colour is simply not a claim worth making. Provenance inverts
+ * that: the owner's 27 August ruling is that marketplace inventory is
+ * ingested, labelled, and NOT HIDDEN — so the weaker the backing, the more
+ * visible the line. Silence is reserved for the one case that needs no
+ * caveat, a merchant under agreement.
+ *
+ * `originEvidence` is stamped server-side by lib/products.js so this component
+ * never re-derives the rule and cannot drift from it.
+ */
+export function OriginLine({ item, detailed = false }) {
+  const evidence = item?.originEvidence;
+  if (!evidence) return null;
+  // A merchant under agreement needs no caveat on a card; the detail view
+  // still says who is standing behind it.
+  if (evidence.status === "verified" && !detailed) return null;
+  const tone = evidence.status === "verified" ? "originline ok" : "originline warn";
+  return (
+    <div className={tone} title={evidence.note}>
+      <b>{evidence.status === "verified" ? "BACKED" : evidence.status === "demo" ? "SAMPLE" : "UNVERIFIED ORIGIN"}</b>
+      {detailed ? <span> {evidence.note}</span>
+        : evidence.sourceLabel ? <span> · {evidence.sourceLabel}</span> : null}
+    </div>
+  );
 }
 
 /** The one-line fit sentence for a piece, or nothing when there is nothing

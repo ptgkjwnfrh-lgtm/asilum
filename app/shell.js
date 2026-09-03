@@ -18,7 +18,7 @@ import {
 } from "../lib/social.js";
 import { getSupabase } from "../lib/supabase.js";
 import { Avatar, FollowButton } from "./components/UserBits.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "./components/ProductSignals.jsx";
 import { AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import ConsentMoment from "./components/ConsentMoment.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
@@ -177,7 +177,7 @@ export default function Shell({ children }) {
           try { parked = window.localStorage.getItem("asilum-pending-kind"); } catch {}
           if (parked) {
             try {
-              const recorded = await fetch("/api/account/kind", {
+              const recorded = await authorizedFetch("/api/account/kind", {
                 method: "POST", headers: { "content-type": "application/json" },
                 body: JSON.stringify({ kind: parked, user: uid }),
               });
@@ -190,8 +190,7 @@ export default function Shell({ children }) {
             } catch { /* keep it parked */ }
           }
         }
-        const response = await fetch(
-          "/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
+        const response = await authorizedFetch("/api/account/kind?user=" + encodeURIComponent(uid || ""), { cache: "no-store" });
         if (!response.ok) return; // includes 503 — hold what we have
         const data = await response.json();
         if (!cancelled && data?.kind) setAccountKind(data.kind);
@@ -582,6 +581,7 @@ export default function Shell({ children }) {
                   <span>{it.title}</span>
                   <em>{it.src}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}</em>
                   <ColorEvidenceLine item={it} />
+                  <OriginLine item={it} />
                   <ProductFitLine item={it} fit={fit} />
                 </a>
               ))}
@@ -633,6 +633,7 @@ export default function Shell({ children }) {
                     <div className="bagttl">{x.title}</div>
                     <div className="bagprice">{sourceFor(x)} · {x.currency || "USD"} {x.price}</div>
                     <ColorEvidenceLine item={x} />
+                    <OriginLine item={x} />
                     <ProductFitLine item={x} fit={fit} />
                   </div>
                   <button className="bagx" onClick={() => bagRemove(x.id)}>×</button>

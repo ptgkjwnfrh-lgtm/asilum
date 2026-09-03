@@ -8,10 +8,11 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { confidenceBand } from "../../lib/asterisk/confidence.js";
 import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
 import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../lib/social.js";
+import { readConstraints, releaseConstraint } from "../../lib/search/constraints.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -47,6 +48,9 @@ export default function DiscoverPage() {
   // What the engine says about this rack (Aug 21). Forwarded verbatim by
   // /api/discover; rendered in the existing note typography, never reworded.
   const [engineNote, setEngineNote] = useState(null);
+  // What the sentence turned into. Never set by a control — see
+  // lib/search/constraints.js.
+  const [constraints, setConstraints] = useState([]);
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
@@ -98,6 +102,7 @@ export default function DiscoverPage() {
         setSearched(qval.trim());
         setAssumption(d.assumption && d.assumption.applied ? d.assumption : null);
         setEngineNote(typeof d.note === "string" && d.note ? d.note : null);
+        setConstraints(d.interpreted ? readConstraints(d.interpreted) : []);
       }
     } catch (error) {
       if (requestId === loadRequestRef.current.id && error?.name !== "AbortError") {
@@ -465,6 +470,31 @@ export default function DiscoverPage() {
           <b className="red">*</b> asterisk flagged this for research — answering with its best current reading
         </div>
       ) : null}
+      {/* THE FILTERS NOBODY SET. Not a control that creates a constraint —
+          the sentence already did that. This shows what it became and lets a
+          reader take one back, by removing the words that made it and asking
+          again. Absent entirely when the sentence carried none, because an
+          empty row would advertise a filter mechanism that does not exist.
+          docs/INVISIBLE-MACHINERY.md */}
+      {constraints.length > 0 ? (
+        <div className="readsback">
+          {constraints.map((c, i) => (
+            <span className={"readsback-c" + (c.releasable ? "" : " fixed")} key={c.kind + i}>
+              {c.label}
+              {c.releasable ? (
+                <button
+                  type="button"
+                  aria-label={`search without ${c.label}`}
+                  onClick={() => {
+                    const next = releaseConstraint(q, c);
+                    if (next !== q) { setQ(next); load(true, next); }
+                  }}
+                >×</button>
+              ) : null}
+            </span>
+          ))}
+        </div>
+      ) : null}
       {engineNote ? (
         <div className="areadnote">
           <b className="red">*</b> {engineNote}
@@ -504,6 +534,7 @@ export default function DiscoverPage() {
             onClick={() => { window.location.href = "/?item=" + encodeURIComponent(it.id); }}
           >
             <div className="imgwrap" aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+              <OriginSticker item={it} />
               <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
             </div>
             <div className="body">
@@ -529,6 +560,7 @@ export default function DiscoverPage() {
                 ))}
               </div>
               <ColorEvidenceLine item={it} />
+              <OriginLine item={it} />
               <ProductFitLine item={it} fit={fit} />
               {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
               <div className="cardacts" onClick={(e) => e.stopPropagation()}>

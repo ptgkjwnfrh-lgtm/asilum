@@ -182,6 +182,60 @@ Answer sheet at the bottom — ten lines, fill and return.
 - **Default:** drafts remain drafts; search_logs keeps growing — this is
   the one decision where inaction actively accrues risk.
 
+## 11. Taobao and marketplace provenance — ✅ RULED 27 August 2026
+
+- **Question:** a large share of Taobao fashion is replica. A pipeline that
+  surfaces it and an authenticity checker that flags it pull against each
+  other unless one policy is stated.
+- **RULING (owner, 27 Aug 2026):** *"taobao is unverified-origin, label
+  everything, dont hide it."*
+- **What that means, as built:**
+  - Marketplace inventory **is ingested**. It is not suppressed, not filtered
+    out, not quietly ranked into oblivion.
+  - Every piece carries `originEvidence` — stamped server-side in
+    `publicProduct`, so no surface can re-derive it and drift.
+  - The label is **visible on every surface that shows a piece**, pinned to
+    the colour-evidence line by `tests/provenance.test.js` so a new grid
+    cannot ship without it.
+  - On an unverified piece **the brand is recorded as a CLAIM**
+    (`brandIsClaim: true`), never as a fact. This is ASTERISK's first law at
+    the catalog boundary: it may not reason from a word it cannot back.
+  - **Verification is earned.** An unregistered source defaults to
+    `unverified`. Guessing "verified" would tell a reader something is genuine
+    when nobody checked.
+- **What this is NOT:** `verified` describes an agreement with a MERCHANT, not
+  an authenticated garment. **ASILUM authenticates nothing** — asserted in the
+  tests, which reject the words "authentic" or "genuine" in that note.
+- **✅ RULED 27 Aug 2026 (the open half):** *"unverified stock ranks the same,
+  dont demote it just add a verified sticker in the top left of the listing."*
+  Ranking is untouched, and `tests/provenance.test.js` asserts it two ways —
+  `lib/search` and `lib/brain` may not even reference the provenance fields,
+  and two otherwise-identical pieces are shown to score identically (6 and 6).
+  The sticker is the whole intervention.
+
+- **✅ AND THE REASONING BEHIND IT, which shaped the design:** *"the avid
+  consumer doesnt really care if its real if it looks cool at a good price its
+  being bought. if it is highly priced comparitivley to construction, brand
+  socially viewed value, matreial used, associated hype then the verifcation is
+  needed because multiple factors are at play for my choice to buy it."*
+
+  So verification is not a constant worry — **it scales with what is riding on
+  it.** `stakeOf` in `lib/provenance.js` holds that ladder, and the sticker's
+  weight follows it: dashed and faded under $150, solid to $600, and red and
+  unmissable above it, where the name is most of what is being bought.
+
+  **What that model does NOT yet know, stated in the code rather than implied:**
+  the ruling says *comparatively to* construction, brand value, material and
+  hype. We cannot compute that today — it needs the comparables model
+  (ROADMAP §4.6, silent below n=3). Absolute price is the honest proxy in the
+  meantime: a real number we hold, moving the right way, not pretending to be
+  the comparison actually described. When comparables land, `stakeOf` gains a
+  second input and these thresholds become the fallback.
+
+- **Deliberately quiet:** the VERIFIED sticker recedes. A reader trained to
+  hunt for a green tick stops noticing anything; the point is that its
+  **absence** is legible where it matters.
+
 ## Answer sheet
 
 Reply with ten lines (any format):

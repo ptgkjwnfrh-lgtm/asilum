@@ -28,7 +28,7 @@ import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
 import {
-  ColorEvidenceLine, ProductFitLine, refreshFitProfile, useFitBrain,
+  ColorEvidenceLine, OriginLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
 
 export default function ProfilePage() {
@@ -307,6 +307,7 @@ export default function ProfilePage() {
                 <div className="hlttl" style={{ fontSize: 15 }}>{o.title}</div>
                 <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
                 <ColorEvidenceLine item={o} />
+                <OriginLine item={o} />
                 <ProductFitLine item={o} fit={fit} />
               </div>
               <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>

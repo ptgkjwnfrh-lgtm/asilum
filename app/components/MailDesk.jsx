@@ -1,6 +1,29 @@
 "use client";
 
-// app/components/MailDesk.jsx — the mail icon in the header, on every tab,
+// app/components/MailDesk.jsx
+//
+// EVERY CALL HERE GOES THROUGH authorizedFetch, AND THAT IS NOT STYLE.
+//
+// DMs require an ACCOUNT identity (sb-) by ADR-002 — a device identity is
+// refused on purpose. An account identity is provable ONLY by the
+// `Authorization: Bearer` header: lib/supabase.js getAuthenticatedUser reads
+// that header and nothing else, with no cookie fallback.
+//
+// This file used bare `fetch` for all ten of its calls, so it never sent that
+// header, so `resolveRequestUser` could never confirm the sb- id it was
+// claiming, so EVERY DM REQUEST 401'd — inbox, send, accept, block, the lot.
+// The feature was live in production and structurally could not work for
+// anybody.
+//
+// It survived because the production check was "401 not 404", which only ever
+// proved the feature flag was on, and because the 13 CI tests cover the
+// database layer rather than the browser wiring. Measured after the fact:
+// this was the ONLY authenticated surface in the app with zero authorizedFetch
+// calls — upload, stylist, profile, orders, wardrobe, tickets and business all
+// used it.
+//
+// If you add a call, use authorizedFetch. A bare fetch reaches the route as an
+// anonymous stranger and gets a 401 that looks like a sign-in problem. — the mail icon in the header, on every tab,
 // and the panel behind it.
 //
 // The owner asked for a retro "you got mail" icon. It is an envelope that
@@ -18,7 +41,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEscape, useClickAway, useFocusTrap } from "./dismiss.js";
-import { getUid } from "../../lib/client.js";
+import { authorizedFetch, getUid } from "../../lib/client.js";
 // The desk's decisions live in a module because there is no DOM harness in
 // this repo: a rule inside this file is a rule no test can reach. See
 // lib/dm-desk.js — all three answer the same complaint from the 23 Aug
@@ -119,7 +142,7 @@ export default function MailDesk() {
     // Signed-out: the feature is not for this reader (ADR-002). Not a fault.
     if (!uid || !uid.startsWith("sb-")) { setAvailable(false); return; }
     try {
-      const r = await fetch("/api/dm?op=summary&user=" + encodeURIComponent(uid), { cache: "no-store" });
+      const r = await authorizedFetch("/api/dm?op=summary&user=" + encodeURIComponent(uid), { cache: "no-store" });
       if (r.status === 404) { setAvailable(false); return; }   // flag off — absent
       if (r.status === 401) { setAvailable(false); return; }
       if (!r.ok) { setAvailable(true); setFault(true); return; }
@@ -165,8 +188,7 @@ export default function MailDesk() {
     if (!more) { setItems(null); setCursor(""); }
     setNote("");
     try {
-      const r = await fetch(
-        `/api/dm?op=inbox&folder=${which}&cursor=${encodeURIComponent(more)}&user=`
+      const r = await authorizedFetch(`/api/dm?op=inbox&folder=${which}&cursor=${encodeURIComponent(more)}&user=`
           + encodeURIComponent(getUid() || ""), { cache: "no-store" });
       if (!pageIsCurrent(asked, current.current)) return;
       if (!r.ok) { setNote("the mail desk is unavailable right now."); setItems([]); return; }
@@ -195,7 +217,7 @@ export default function MailDesk() {
 
   const loadBlocks = useCallback(async () => {
     try {
-      const r = await fetch("/api/dm?op=blocks&user=" + encodeURIComponent(getUid() || ""),
+      const r = await authorizedFetch("/api/dm?op=blocks&user=" + encodeURIComponent(getUid() || ""),
         { cache: "no-store" });
       if (!r.ok) return;
       const data = await r.json();
@@ -206,7 +228,7 @@ export default function MailDesk() {
   useEffect(() => { if (open) loadBlocks(); }, [open, loadBlocks]);
 
   const fetchPage = useCallback(async (id, before) => {
-    const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(id)}`
+    const r = await authorizedFetch(`/api/dm?op=thread&c=${encodeURIComponent(id)}`
       + (before ? `&before=${encodeURIComponent(before)}` : "")
       + `&user=${encodeURIComponent(getUid() || "")}`, { cache: "no-store" });
     if (!r.ok) throw new Error("thread unavailable");
@@ -254,7 +276,7 @@ export default function MailDesk() {
       // server, so a slow response cannot un-read something newer.
       const newest = head.messages?.[0]?.id;
       if (newest) {
-        fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
+        authorizedFetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ op: "read", conversationId: id, upTo: newest, user: getUid() }) })
           .then(() => poll()).catch(() => {});
       }
@@ -268,7 +290,7 @@ export default function MailDesk() {
 
   async function act(op, extra = {}) {
     try {
-      const r = await fetch("/api/dm", {
+      const r = await authorizedFetch("/api/dm", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ op, user: getUid(), ...extra }),
       });
@@ -287,7 +309,7 @@ export default function MailDesk() {
     let cancelled = false;
     const timer = setTimeout(async () => {
       try {
-        const r = await fetch(`/api/dm?op=find&q=${encodeURIComponent(q)}&user=`
+        const r = await authorizedFetch(`/api/dm?op=find&q=${encodeURIComponent(q)}&user=`
           + encodeURIComponent(getUid() || ""), { cache: "no-store" });
         if (!r.ok) { if (!cancelled) setFound([]); return; }
         const data = await r.json();
@@ -322,7 +344,7 @@ export default function MailDesk() {
       if (document.visibilityState !== "visible") return;
       const forThread = threadId;
       try {
-        const r = await fetch(`/api/dm?op=activity&c=${encodeURIComponent(forThread)}&user=`
+        const r = await authorizedFetch(`/api/dm?op=activity&c=${encodeURIComponent(forThread)}&user=`
           + encodeURIComponent(getUid() || ""), { cache: "no-store" });
         // A FAILED POLL GOES QUIET RATHER THAN KEEPING THE LAST ANSWER. It used
         // to `return`, leaving whatever the previous tick — or the previous
@@ -357,7 +379,7 @@ export default function MailDesk() {
       document.removeEventListener("visibilitychange", onVisible);
       // Leaving the thread stops the broadcast immediately rather than waiting
       // out the expiry.
-      fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
+      authorizedFetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ op: "typing", on: false, conversationId: threadId, user: getUid() }) })
         .catch(() => {});
     };
@@ -385,7 +407,7 @@ export default function MailDesk() {
     const now = Date.now();
     if (now - typingSentAt.current < 2500) return;
     typingSentAt.current = now;
-    fetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
+    authorizedFetch("/api/dm", { method: "POST", headers: { "content-type": "application/json" },
       body: JSON.stringify({ op: "typing", conversationId: threadId, user: getUid() }) })
       .catch(() => {});
   }
@@ -403,7 +425,7 @@ export default function MailDesk() {
     const forThread = threadId;
     setLoadingMore(true);
     try {
-      const r = await fetch(`/api/dm?op=thread&c=${encodeURIComponent(forThread)}`
+      const r = await authorizedFetch(`/api/dm?op=thread&c=${encodeURIComponent(forThread)}`
         + `&before=${anchor}&user=` + encodeURIComponent(getUid() || ""), { cache: "no-store" });
       if (r.ok && openThreadRef.current === forThread) {
         const page = await r.json();

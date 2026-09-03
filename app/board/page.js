@@ -11,13 +11,14 @@ import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, authorizedFetch, thumbFor, safeExternalUrl, aspectFor } from "../../lib/client.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
+import { readStamps } from "../../lib/vision/stampReading.js";
 import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
 import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { ColorEvidenceLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 
 export default function BoardPage() {
   const fit = useFitBrain();
@@ -182,6 +183,10 @@ export default function BoardPage() {
   }
 
   // Downsampled pixels for palette v0 — 48px is plenty for color statistics.
+  // Pieces the archive turned out to already hold. Cleared on the next
+  // upload so it never becomes a permanent shelf.
+  const [recognized, setRecognized] = useState([]);
+
   async function pixelsFrom(file) {
     const bmp = await createImageBitmap(file);
     const size = 48;
@@ -196,6 +201,7 @@ export default function BoardPage() {
   async function onUpload(e) {
     const files = [...(e.target.files || [])];
     if (!files.length) return;
+    setRecognized([]);
     const words = files.map((f) => f.name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_.]+/g, " ")).join(" ");
     // Palette v0: the brain's first real look at the pixels — dominant colors,
     // brightness, mood. Colors only; object/texture recognition still needs a
@@ -204,6 +210,11 @@ export default function BoardPage() {
     for (const f of files.slice(0, 6)) {
       try { const a = analyzePalette(await pixelsFrom(f), 5, 48); if (a) analyses.push(a); } catch {}
     }
+    // The pixels are already being decoded above for the palette. Reading the
+    // stamps costs one more canvas pass and sends 16 characters per image —
+    // never the photographs. See lib/vision/stampReading.js for why there is
+    // no button for this and never will be.
+    const stamps = await readStamps(files.slice(0, 6));
     const merged = mergePalettes(analyses);
     const paletteWords = [...new Set(analyses.flatMap((a) => [...a.words, ...a.moods]))].slice(0, 14);
     const prompt = [words, paletteWords.join(" ")].filter(Boolean).join(" ").trim();
@@ -217,8 +228,15 @@ export default function BoardPage() {
       user: uid, kind: "upload",
       filenames: files.map((f) => f.name.slice(0, 200)),
       palette: merged.palette.map((s) => ({ hex: s.hex, weight: s.weight })),
+      stamps,
       uploadId: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10),
-    }).catch(() => {});
+    })
+      .then((r) => (r && r.ok ? r.json() : null))
+      // Quiet on purpose. When the archive holds one of these photographs the
+      // passport shows it; when it does not, nothing appears and nothing is
+      // said. A person who asked no question is owed no negative answer.
+      .then((d) => { if (d && d.recognized?.length) setRecognized(d.recognized); })
+      .catch(() => {});
     const seen = [...new Set(merged.palette.map((s) => s.name))].slice(0, 3).join(", ");
     setNotice(analyses.length
       ? `${files.length} image${files.length > 1 ? "s" : ""} read — palette v0 saw ${seen}; trained on colors + filename words`
@@ -376,6 +394,31 @@ export default function BoardPage() {
             <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
           </div>
           <p className="deck" style={{ marginTop: 4 }}>clothing or anything that&apos;s your vibe.</p>
+          {/* THE PASSPORT SIMPLY KNOWS. No heading that explains itself, no
+              mechanism named, no count of what was searched — see
+              docs/INVISIBLE-MACHINERY.md. It appears only when the archive
+              holds the actual photograph, and otherwise this whole block is
+              absent rather than empty. An empty state would give the trick
+              away. */}
+          {recognized.length > 0 && (
+            <div className="stampknow">
+              <span className="stampknow-mark" aria-hidden="true">✳</span>
+              <span className="stampknow-say">
+                {recognized.length === 1
+                  ? "the archive holds this one."
+                  : `the archive holds ${recognized.length} of these.`}
+              </span>
+              <span className="stampknow-row">
+                {recognized.map((it) => (
+                  <a key={it.id} className="stampknow-piece"
+                     href={"/?item=" + encodeURIComponent(it.id)}
+                     title={[it.brand, it.title].filter(Boolean).join(" — ")}>
+                    <img src={it.img || thumbFor(it)} alt={it.title || "piece"} loading="lazy" />
+                  </a>
+                ))}
+              </span>
+            </div>
+          )}
           <div className="gxplugs" aria-label="future imports">
             {["PINTEREST", "SPOTIFY", "APPLE MUSIC", "LETTERBOXD"].map((n, i) => (
               <button key={n} className={"gxplug p" + (i + 1) + " soon"} style={{ animationDelay: `${i * 0.7}s` }}
@@ -449,12 +492,14 @@ export default function BoardPage() {
               {view.items.map((it) => (
                 <div className="card" key={it.id}>
                   <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
+                    <OriginSticker item={it} />
                     <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
                   </div>
                   <div className="body">
                     <div className="ttl">{it.title}</div>
                     <div className="brand2">{it.brand}</div>
                     <ColorEvidenceLine item={it} />
+                    <OriginLine item={it} />
                     <ProductFitLine item={it} fit={fit} />
                     <div className="pricerow">
                       {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}

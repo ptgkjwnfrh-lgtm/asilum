@@ -22,7 +22,7 @@ import {
   observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
-import { ColorEvidenceLine, useFitProfile } from "./components/ProductSignals.jsx";
+import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -543,12 +543,24 @@ export default function Home() {
     postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) }).catch(() => {});
   }
 
+  const [modalEvidence, setModalEvidence] = useState(null);
+  const [modalSameShot, setModalSameShot] = useState(null);
+
   function openModal(item) {
     setModal(item);
     setModalRel([]);
+    setModalEvidence(null);
+    setModalSameShot(null);
     fetch("/api/related?item=" + encodeURIComponent(item.id) + "&limit=6")
       .then((r) => r.json())
-      .then((d) => setModalRel(d.items || []))
+      .then((d) => {
+        setModalRel(d.items || []);
+        // Arrives with the related pieces, on the request that was happening
+        // anyway. Absent below the stake threshold, and then this stays null
+        // and nothing renders. docs/INVISIBLE-MACHINERY.md.
+        setModalEvidence(d.evidence || null);
+        setModalSameShot(d.sameShot || null);
+      })
       .catch(() => {});
   }
 
@@ -841,6 +853,48 @@ export default function Home() {
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
               <ColorEvidenceLine item={modal} detailed />
+              {/* THE SAME PHOTOGRAPH, ELSEWHERE. No button asked for this and
+                  none exists — it arrives with the pieces that were already
+                  being fetched. Absent when the photograph is unique, which is
+                  the ordinary case. lib/vision/sameShot.js */}
+              {modalSameShot && (
+                <div className="shotline">
+                  <span aria-hidden="true">◦</span> {modalSameShot.note}
+                  <span className="shotline-row">
+                    {modalSameShot.listings.map((l) => (
+                      <a key={l.id} className="shotline-go"
+                         href={"/?item=" + encodeURIComponent(l.id)}>
+                        {l.currency && l.price != null ? `${l.currency} ${l.price}` : "see it"}
+                        {l.saving ? <b> · {l.currency || ""} {l.saving} less</b> : null}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              )}
+              {/* WHAT WE COULD SEE. Never a verdict, never a score, and never
+                  the words authentic or fake — lib/authenticity/evidence.js.
+                  Absent entirely on a cheap piece; the coverage line appears
+                  only where a reader is about to pay for a claim, because
+                  there withholding it would hide a consequence. */}
+              {modalEvidence && (
+                <div className="sawline">
+                  {modalEvidence.observations.map((o) => (
+                    <div className="sawline-said" key={o.id}>
+                      <span aria-hidden="true">·</span> {o.said}
+                    </div>
+                  ))}
+                  <div className="sawline-cover">
+                    {modalEvidence.checked} of {modalEvidence.total} checks could run
+                    {modalEvidence.notChecked.length > 0 && (
+                      <span className="sawline-gap">
+                        {" — "}
+                        {modalEvidence.notChecked.map((n) => n.needs).join("; ")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+              <OriginLine item={modal} detailed />
               {(modal.size?.label || fitPhrase(modal.size, fitBrain)) ? (
                 <div className="size">
                   {modal.size?.label ? <span className="szlabel">{modal.size.label}</span> : null}
@@ -960,6 +1014,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
           keeps its pointer affordance, so a screen reader announces the piece
           once rather than twice. */}
       <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+        <OriginSticker item={it} />
         <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>
       <div className="body">
@@ -971,6 +1026,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
           : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
         {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
         <ColorEvidenceLine item={it} />
+        <OriginLine item={it} />
         {fitLine ? <div className="fitline">{fitLine}</div> : null}
         <div className="cardacts">
           <button onClick={onFavorite}>Favorite</button>
