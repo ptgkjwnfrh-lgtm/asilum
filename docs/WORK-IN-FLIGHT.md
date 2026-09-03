@@ -1,11 +1,39 @@
-# WORK IN FLIGHT — everything built while CI was down
+# WORK IN FLIGHT — ✅ ALL MERGED, 3 September 2026
 
-**Read this first next month.** Every branch below is **pushed to the remote**
-and has an open PR. Nothing lives only on the laptop. Nothing is half-applied.
+**This backlog is empty.** Everything below shipped. Kept as the record of what
+landed and why, not as a list of things to do.
 
-Written 27 August 2026. CI has been dead on a billing failure since 24 August,
-so none of this could merge — but all of it is finished, locally verified, and
-waiting.
+Billing was fixed on 3 September and all six PRs merged the same evening, each
+one green through the full **72-test Postgres integration suite** — the thing
+that could not run for ten days. Production is current at the last merge.
+
+| Merged | What it was |
+| --- | --- |
+| **#415** | Tag vocabulary + schema **v49**. The PR that sat unverified since 24 Aug — its August failure (`mood` missing from the CHECK) is confirmed fixed |
+| **#416** | CODE-MAP, HANDOVER, DEBT-REGISTER + two generators |
+| **#421** | 100% file headers, 417→116 unlabelled exports *(recreated from #417)* |
+| **#418** | culture.js 1,826→141; search modules split |
+| **#419** | **The four authentication bugs** |
+| **#420** | Provenance, stamp recognition, authenticity evidence, Japanese reading, waiting, same-shot, constraints |
+
+**v49 is applied to production and verified** — `product_tags_facet_ck` exists
+and includes `mood`.
+
+## What the merge taught, at a cost
+
+**A stacked PR dies when its base branch is deleted.** #417 was auto-CLOSED
+when `docs/navigation-for-handover` was deleted on merge, and a closed PR whose
+base no longer exists **cannot be reopened or retargeted** — GitHub refuses
+both. It had to be recreated as #421.
+
+The rule that avoids it: **retarget every dependent to `main` BEFORE merging
+its parent**, and never pass `--delete-branch` while anything still bases on
+the branch.
+
+**Squash-merging makes every downstream branch diverge by whole commits**, so
+each remaining PR needed `git merge origin/main` and hand resolution.
+`docs/CODE-MAP.md` conflicts every time and must be resolved by
+`npm run docs:codemap`, never by hand.
 
 ---
 

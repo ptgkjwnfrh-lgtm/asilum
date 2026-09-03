@@ -61,34 +61,36 @@ app runs with no database at all.
 
 ## 3. Current state
 
-*Verified 24 August 2026. Re-verify with the commands in §4 rather than
-trusting this block — that is the point of listing them.*
+*Verified 3 September 2026 against the live database and a green CI run.
+Re-verify with §4 rather than trusting this block — that is why it lists them.*
 
 | | |
 | --- | --- |
-| `main` | `ed316d8` (#414) |
-| Production | **current at `ed316d8`** — confirmed by `npm run deploy:check` |
-| Schema | **v48** in production; ledger continuous v7→v48 |
-| Unit suite | **1,299 tests — 1,224 pass, 0 fail, 75 skipped** |
-| Build | green |
-| Live health | steward: **0 blocker · 0 warn · 3 note · 9 ok** |
-| Open PRs | **#415** — one vocabulary for every tag on a piece (schema v49) |
+| `main` | `18233c2` (#420) |
+| Production | **current** at that merge |
+| Schema | **v50** applied — v49 verified present (`product_tags_facet_ck` includes `mood`) |
+| CI | **alive.** Billing fixed 3 Sep; the full Postgres suite runs again |
+| Open PRs | **none of mine.** All six merged |
 
-### Two things are genuinely open
+### What is open
 
-**CI is down on a billing failure.** Since ~14:00 UTC on 24 August every job
-fails in 2–6 seconds with zero steps. The annotation reads: *"The job was not
-started because recent account payments have failed or your spending limit
-needs to be increased."* The fix is owner-only at
-<https://github.com/settings/billing>. **When a job fails with zero steps, read
-the check-run annotation — the logs are empty and tell you nothing.**
+**The messaging fix is deployed but not confirmed end-to-end.** The four
+authentication bugs are fixed and on production, and the database says
+unambiguously that they were real — **4,158 profiles and ZERO rows** in
+`account_ages`, `account_kinds`, `dm_conversations` and `dm_messages`. Nothing
+has ever been recorded by any of them.
 
-**PR #415 cannot be merged until CI runs.** It adds a database CHECK constraint
-(v49) restricting `product_tags.tag_type` to a defined vocabulary. It had one
-genuine test failure, since fixed, and nothing has been able to re-run the
-Postgres suite to confirm. Production data was checked directly and holds only
-facets inside the new list, so the migration will apply — but the code path is
-unverified. Do not merge on the strength of that.
+Confirming the fix needs a real signed-in account, which is an owner action.
+Sixty seconds:
+
+1. Sign in. The mail icon should appear at the right of the destination row.
+2. Open it — the inbox should load rather than 401.
+3. Then re-run the counts above; a new signup should now write `account_ages`.
+
+**A backfill decision is waiting.** Every one of those 4,158 profiles is
+missing its age assertion, because the write never worked. Either re-prompt at
+next sign-in or accept the gap — and record which, because it is the 13+ gate
+from owner decision #2.
 
 ## 4. Verify all of the above yourself
 
