@@ -224,11 +224,11 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 8,699 lines*
+*9 files, 8,707 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `production.js` | 4495 ⚠️ | CRUD for the production-foundation tables (supabase/schema-v2.sql): product_tags, product_images, search_mappings, search_logs, purchase_tickets, |
+| `production.js` | 4503 ⚠️ | CRUD for the production-foundation tables (supabase/schema-v2.sql): product_tags, product_images, search_mappings, search_logs, purchase_tickets, |
 | `dm.js` | 1747 ⚠️ | The mail desk's store (schema v40). SERVER-ONLY. |
 | `index.js` | 1724 ⚠️ | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
@@ -297,11 +297,11 @@ Nothing here may import from `app/`.
 | `inferTags.js` | 18 | ONE text-to-taste bridge for every ingestion path. |
 
 ### `lib/ingest/adapters/`
-*6 files, 624 lines*
+*6 files, 636 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `normalize.js` | 196 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
+| `normalize.js` | 208 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
 | `woocommerceAdapter.js` | 134 | WooCommerce Store API adapter. The Store API is officially documented and unauthenticated, but ASILUM still requires explicit merchant approval before |
 | `ebayAdapter.js` | 103 | The one adapter with a real implementation today: eBay's OFFICIAL Browse API (lib/ingest/ebay.js). Enabled only when EBAY_CLIENT_ID/SECRET are set. |
 | `types.js` | 69 | Source adapter contract (JSDoc — this codebase is plain JS; lib/db/types.js set the precedent). Every marketplace adapter implements the same interface |
@@ -353,15 +353,15 @@ Nothing here may import from `app/`.
 | `index.js` | 63 | Recommendation service facade — ONE place that names every recommender the Alpha Learning Brain will offer, delegating to live Alpha Learning Bridge |
 
 ### `lib/search/`
-*21 files, 4,383 lines*
+*21 files, 4,372 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `index.js` | 1742 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
 | `era.js` | 365 | era comprehension for the search engine (Aug 21). |
 | `negation.js` | 218 | the engine stops serving the thing you excluded. |
-| `denseQuery.js` | 193 | Dense-layer query understanding for the search engine (Day 26). |
 | `size.js` | 184 | the size the reader asked for (Aug 21). |
+| `denseQuery.js` | 182 | Dense-layer query understanding for the search engine (Day 26). |
 | `mappings-seed.js` | 171 | Curated search mappings — the cultural lexicon that turns human phrases into tags and related terms. Seeded into the search_mappings table (idempotent |
 | `typo.js` | 168 | literal-engine typo bridge (r12). |
 | `designers.js` | 153 | the people, not just the houses (Aug 21). |
@@ -391,19 +391,24 @@ Nothing here may import from `app/`.
 | `multipart.js` | 72 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
 
 ### `lib/steward/`
-*2 files, 494 lines*
+*6 files, 1,229 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `checks.js` | 404 | what the Asterisk watches when nobody is looking. |
-| `index.js` | 90 | the Asterisk steward: one pass over the live machine. |
+| `index.js` | 330 | the Asterisk steward: one pass over the live machine, and — since 3 September 2026 — hands to act on what it finds. |
+| `actions.js` | 220 | the steward's hands. |
+| `decisions.js` | 164 | what the steward may decide on its own. |
+| `instruments.js` | 93 | the seven instruments, run as one movement. |
+| `cronGate.js` | 18 | who may fire the steward from outside. |
 
 ### `lib/tagging/`
-*1 file, 170 lines*
+*2 files, 382 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `dense.js` | 170 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
+| `vocabulary.js` | 206 | ONE VOCABULARY FOR EVERY TAG ON A PIECE. |
+| `dense.js` | 176 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
 
 ### `lib/taste-graph/`
 *1 file, 141 lines*
@@ -478,11 +483,11 @@ request becomes trusted arguments.
 | `route.js` | 97 | GET  → this account's kind + the capabilities it opens. POST → choose a kind. Chosen once at signup; changing it afterwards is an |
 
 ### `app/api/admin/`
-*1 file, 598 lines*
+*1 file, 615 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 598 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
+| `route.js` | 615 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
 
 ### `app/api/asterisk/memory/`
 *1 file, 68 lines*
@@ -721,6 +726,13 @@ request becomes trusted arguments.
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `route.js` | 79 | GET /api/stats — aggregate health metrics for the brain: interaction volume by action, user/board/graph sizes, and the most-engaged items. Read by the |
+
+### `app/api/steward/run/`
+*1 file, 52 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 52 | the steward, fired by the clock. |
 
 ### `app/api/stripe/webhook/`
 *1 file, 55 lines*
@@ -1010,7 +1022,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*52 files, 7,137 lines*
+*52 files, 7,229 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1030,6 +1042,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `measure-noise-stability.mjs` | 165 | declared-criteria measurement for r26: RESAMPLED NOISE FLOORS (audit #26). |
 | `measure-vector-feed.mjs` | 162 | declared-criteria measurement for r18: catalog vectors into the feed (gamma sparse-graph fallback + reach |
 | `backup-database.mjs` | 161 | Take a restorable backup of the ASILUM database (owner directive, HANDOVER-2026-08-14 backlog 6). |
+| `steward.mjs` | 157 | "is anything wrong?", and since 3 Sep 2026, "fix it". |
 | `measure-lexical-fidelity.mjs` | 155 | does the engine read the words a person actually types? |
 | `measure-assisted-interpretation.mjs` | 146 | the safety rails around a model-assisted read, measured before anyone turns one on. |
 | `generate-code-map.mjs` | 144 | regenerate docs/CODE-MAP.md from the tree. |
@@ -1056,7 +1069,6 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `apply-schema.mjs` | 73 | Apply a SQL file to the database behind DATABASE_URL (.env.local or env). Usage: node scripts/apply-schema.mjs supabase/schema-v2.sql |
 | `embed-catalog.mjs` | 71 | backfill text-v1 embeddings for the catalog (asterisk-boost r4). Requires EMBEDDINGS_PROVIDER + EMBEDDINGS_API_KEY in |
 | `check-trend-freshness.mjs` | 69 | Fails scheduled CI before dated fashion claims silently become stale. Covers BOTH trend layers behind lib/asterisk/trends.js: the garment-level |
-| `steward.mjs` | 65 | "is anything wrong?", answered in one command. |
 | `configure-database-role.mjs` | 61 | One-time local helper: activate the v11 asilum_app role with a strong secret. The owner URL and new password are read from the environment and never logged. |
 | `build-vector-neighbors.mjs` | 58 | precompute item-item vector neighbors for the feed (r18). Reads the catalog embeddings (text-v1, the space the |
 | `seed-mappings.mjs` | 52 | Idempotent: (1) upserts the curated search mappings into search_mappings, (2) backfills the typed product_tags layer + production source fields for |
@@ -1069,4 +1081,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ c1b1977 — 326 source files, 60,391 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 4de3324 — 332 source files, 61,508 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
