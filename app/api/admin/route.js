@@ -10,7 +10,8 @@
 // POST { action, ... }:
 //   business.approve { accountId, note? }   — raise passport → business
 //   business.reject  { accountId, note }    — note required; applicant reads it
-//   tag.add    { productId, tag, tagType?, confidence? }
+//   tag.add    { productId, tag, tagType?, confidence? } — tagType from the
+//              vocabulary (lib/tagging/vocabulary.js); an invented one is a 400
 //   tag.delete { id }
 //   tag.merge  { from, to }
 //   mapping.upsert { searchPhrase, mappedTags, relatedTerms, referenceType?, confidence? }
@@ -37,6 +38,7 @@ import { NextResponse } from "next/server";
 import { getPool, upsertItems } from "../../../lib/db/index.js";
 import { validateIntakeBatch, validSourceName } from "../../../lib/ingest/intake.js";
 import { typedTagsFrom } from "../../../lib/ingest/adapters/normalize.js";
+import { facetOf, FACET_NAMES } from "../../../lib/tagging/vocabulary.js";
 import { checkDomainProof } from "../../../lib/brands/verify.js";
 import { importShopifyInventory } from "../../../lib/brands/shopify.js";
 import { refundOrder } from "../../../lib/orders.js";
@@ -284,10 +286,25 @@ export async function POST(req) {
           items: normalized.map((p) => ({ id: p.id, title: p.title, price: p.price, currency: p.currency, availability_status: p.availability_status })),
         });
       }
-      case "tag.add":
+      case "tag.add": {
+        // NAME THE CAUSE, NOT THE SYMPTOM. `addProductTags` resolves the facet
+        // through lib/tagging/vocabulary.js and DROPS one nobody defined, which
+        // is right for a batch of ingest rows and useless for a person typing a
+        // single tag: they got `{added: 0}` and no reason. The facet a caller
+        // invented is the only thing worth telling them, so it is said here
+        // rather than counted as a silent no-op.
+        const facet = facetOf(body.tagType || "aesthetic");
+        if (!facet) {
+          return NextResponse.json({
+            error: `unknown facet "${String(body.tagType).slice(0, 40)}"`,
+            facets: FACET_NAMES,
+          }, { status: 400 });
+        }
         return NextResponse.json({
-          added: await addProductTags(body.productId, [{ tag: body.tag, tagType: body.tagType, confidence: body.confidence, source: "admin" }]),
+          added: await addProductTags(body.productId, [{ tag: body.tag, tagType: facet, confidence: body.confidence, source: "admin" }]),
+          facet,
         });
+      }
       case "tag.delete":
         return NextResponse.json({ deleted: await deleteProductTag(body.id) });
       case "tag.merge":
