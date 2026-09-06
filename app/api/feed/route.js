@@ -260,7 +260,13 @@ export async function GET(req) {
         // reports examination still accrues evidence here — otherwise a
         // JS-disabled or beacon-blocked user could never tune at all — but
         // that fallback is declared, and examinationCoverage reports it.
-        const served = markBridgeServed(markSeen(decayed, ids), bridgeCounts);
+        // Rotation memory sized to THE POOL WE JUST SERVED FROM. Remembering
+        // as many ids as there are items in it is exactly enough to keep the
+        // reader's world the whole pool; a fixed 200 confined them to a third
+        // of it (npm run feed:rotation). markSeen clamps to its own ceiling
+        // and byte budget, so a pool larger than a profile can hold degrades
+        // to the old behaviour rather than throwing.
+        const served = markBridgeServed(markSeen(decayed, ids, pool.length), bridgeCounts);
         if (!examinedImpressionsEnabled()) return markBridgeImpressions(served, bridgeCounts);
         // Remember what this serve WAS, so the examination beacon is
         // attributed from the server's record rather than the client's word.

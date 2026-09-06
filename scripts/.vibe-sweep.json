@@ -7322,18 +7322,18 @@
   "why": "season-filtered rack"
  },
  {
-  "q": "cherry",
-  "cls": "fruit",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "mango",
   "cls": "fruit",
   "n": 24,
   "out": "C",
   "why": "disclosed cultural read"
+ },
+ {
+  "q": "cherry",
+  "cls": "fruit",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
  },
  {
   "q": "apricot",
@@ -7378,14 +7378,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "papaya",
+  "q": "kiwi",
   "cls": "fruit",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "kiwi",
+  "q": "papaya",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7434,14 +7434,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "lychee",
+  "q": "persimmon",
   "cls": "fruit",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "persimmon",
+  "q": "lychee",
   "cls": "fruit",
   "n": 0,
   "out": "C",
@@ -7490,18 +7490,18 @@
   "why": "honestly empty"
  },
  {
-  "q": "chicago",
-  "cls": "city-other",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "houston",
   "cls": "city-other",
   "n": 24,
   "out": "C",
   "why": "disclosed cultural read"
+ },
+ {
+  "q": "chicago",
+  "cls": "city-other",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
  },
  {
   "q": "prague",
@@ -7707,18 +7707,18 @@
   "why": "honestly empty"
  },
  {
-  "q": "microscope",
-  "cls": "object",
-  "n": 0,
-  "out": "C",
-  "why": "honestly empty"
- },
- {
   "q": "umbrella stand",
   "cls": "object",
   "n": 24,
   "out": "C",
   "why": "disclosed category browse"
+ },
+ {
+  "q": "microscope",
+  "cls": "object",
+  "n": 0,
+  "out": "C",
+  "why": "honestly empty"
  },
  {
   "q": "surfboard",
@@ -7763,14 +7763,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "spatula",
+  "q": "lawnmower",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "lawnmower",
+  "q": "spatula",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7819,14 +7819,14 @@
   "why": "honestly empty"
  },
  {
-  "q": "piston",
+  "q": "compass",
   "cls": "object",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
  },
  {
-  "q": "compass",
+  "q": "piston",
   "cls": "object",
   "n": 0,
   "out": "C",
@@ -7994,18 +7994,18 @@
   "why": "disclosed compositional read"
  },
  {
-  "q": "david attenborough",
-  "cls": "celebrity-other",
-  "n": 24,
-  "out": "C",
-  "why": "disclosed compositional read"
- },
- {
   "q": "gordon ramsay",
   "cls": "celebrity-other",
   "n": 0,
   "out": "C",
   "why": "honestly empty"
+ },
+ {
+  "q": "david attenborough",
+  "cls": "celebrity-other",
+  "n": 24,
+  "out": "C",
+  "why": "disclosed compositional read"
  },
  {
   "q": "neil armstrong",

@@ -61,8 +61,17 @@ test("a shared population dissolves it — delta becomes a real ranking signal",
 
 // ---- 2. the #123 counting rule survives the shared world ---------------------
 
+// 12 pages used to be enough to guarantee a repeat, and it is not any more:
+// rotation memory is now sized to the pool it served (6 Sep), so a lone bot
+// gets ~720 DISTINCT items across 12 pages of 60 and no item is ever exposed
+// twice. That is the fix working — but this test needs a repeat to exist, or
+// its last assertion has nothing to observe. 24 pages is 1,440 slots against a
+// 915-item pool, so a repeat is arithmetic rather than luck.
+const REPEAT_IS_UNAVOIDABLE_PAGES = Math.ceil((POOL.length * 1.5) / 60);
+
 test("one identity across many pages is still one viewer and one engager", () => {
-  const [session] = simulatePopulation(makeBots(1, SEED), { pool: POOL, pages: 12 }).sessions;
+  const [session] = simulatePopulation(makeBots(1, SEED),
+    { pool: POOL, pages: REPEAT_IS_UNAVOIDABLE_PAGES }).sessions;
   const counts = Object.values(session.popularity);
   assert.equal(Math.max(...counts.map((c) => c.viewers)), 1);
   assert.ok(Math.max(...counts.map((c) => c.engagers)) <= 1);

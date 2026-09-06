@@ -82,7 +82,8 @@ function run(remember) {
   return rows;
 }
 
-const shipped = run((p, ids) => markSeen(p, ids));
+// Exactly what app/api/feed/route.js passes: the size of the pool it served.
+const shipped = run((p, ids) => markSeen(p, ids, CATALOG.length));
 const unbounded = run((p, ids) => {
   const next = migrateProfile(p);
   // markSeen without the .slice(0, SEEN_CAP) — that is the entire difference.

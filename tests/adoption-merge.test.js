@@ -107,3 +107,36 @@ test("#16 profiles with no bridge counters adopt cleanly (no fabricated keys bre
   await purgePersonalizationData(device).catch(() => {});
   await purgePersonalizationData(account).catch(() => {});
 });
+
+// SIGNING IN MUST NOT SHRINK THE READER'S WORLD.
+//
+// The merge caps each ring at what its canonical writer uses, and the `seen`
+// cap was a literal `200` copied from lib/brain. That copy went stale on
+// 6 September when rotation memory became pool-sized: a reader who had been
+// shown 900 pieces would have signed in and had 700 of them forgotten,
+// putting them straight back inside the ceiling that change removed — and
+// silently, since a smaller rotation ring produces a feed, just a repetitive
+// one. The cap is imported now. This is the test that says so.
+test("adoption keeps rotation memory beyond the old flat 200", async () => {
+  const device = "u-adopt-seen";
+  const account = "sb-adopt-seen";
+  await purgePersonalizationData(device).catch(() => {});
+  await purgePersonalizationData(account).catch(() => {});
+
+  const deviceSeen = Array.from({ length: 700 }, (_, i) => `dev-${i}`);
+  const accountSeen = Array.from({ length: 300 }, (_, i) => `acct-${i}`);
+  await saveProfile(device, { long: { TAILORED: 0.4 }, session: {}, _meta: { seen: deviceSeen } });
+  await saveProfile(account, { long: { TAILORED: 0.4 }, session: {}, _meta: { seen: accountSeen } });
+
+  await adoptAccountData(device, account);
+
+  const seen = (await getProfile(account))._meta.seen;
+  assert.equal(seen.length, 1000,
+    `both readers' rotation memory should survive the merge; kept ${seen.length} of 1000`);
+  assert.equal(new Set(seen).size, seen.length, "and each id once");
+  assert.ok(seen.includes("dev-699") && seen.includes("acct-299"),
+    "from both sides, not just the account's");
+
+  await purgePersonalizationData(device).catch(() => {});
+  await purgePersonalizationData(account).catch(() => {});
+});

@@ -269,36 +269,36 @@ item's rank, shifting its position under a reader mid-scroll.
 Filed separately on purpose. They exist **today**, they are unrelated to
 ingestion, and grouping them under "pagination" would bury them.
 
-- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`). ⚠ **MEASURED 6 September,
-      and it is much worse than this entry said.** The entry read "past ~200
-      pieces served, the oldest fall out and can reappear — a heavy scroller
-      loops." Run `node scripts/measure-feed-rotation.mjs`:
+- [x] ~~**`SEEN_CAP = 200`** is a hard ceiling on feed rotation.~~ **MEASURED
+      AND FIXED, 6 September.** The entry read "past ~200 pieces served, the
+      oldest fall out and can reappear — a heavy scroller loops." Measured
+      (`npm run feed:rotation`) it was much worse: the reader was **confined to
+      286 of 915 items permanently**, and never shown the other two thirds
+      however long they scrolled. Reach scaled almost linearly with the cap —
+      200→286, 400→482, 800→864, 1000→all 915 — so rotation memory is not a
+      threshold, it is **the size of the reader's world**.
 
-      | | shipped | unbounded memory |
-      | --- | ---: | ---: |
-      | distinct items reached in 40 pages | **285 / 915** | 915 / 915 |
-      | repeat rate | 88% | 62% |
-      | first page with nothing new | 12 | — |
+      `seen` is a score PENALTY (0.3×), not an exclusion, so once every
+      remembered item carries it the engine serves the next best 60, those
+      enter memory, 60 fall out with the penalty lifted, and the feed
+      oscillates over one taste-shaped neighbourhood forever.
 
-      The reader is not "shown repeats sooner". They are **permanently confined
-      to about a third of the catalog** — 279–293 items across four seeds — and
-      are never shown the other two thirds however long they scroll. The
-      unbounded control reaches all 915, so the engine will serve the whole
-      catalog if it can remember what it served; the memory is the binding
-      constraint, not taste concentration.
+      Fixed by sizing the ring from the caller: `app/api/feed/route.js` passes
+      the size of the pool it just served. Remembering as many ids as there are
+      items in the pool is exactly enough and needs no fitted constant. The
+      reader now reaches **915/915**. Also de-duped (a repeated id used to
+      occupy two slots) and bounded by BYTES as well as count, because the
+      profile has a 256 KiB limit that throws and a marketplace id is five
+      times a synthetic one.
 
-      The mechanism is that `seen` is a score PENALTY (`SEEN_PENALTY = 0.3`),
-      not an exclusion, and it saturates: 200 penalised items, serve the next
-      best 60, those enter memory, 60 fall out with the penalty lifted, and the
-      feed oscillates over one taste-shaped neighbourhood forever.
+      Account adoption carried its own copy of the `200` and would have thrown
+      most of the memory away at sign-in, silently. It imports the constant now
+      (`tests/adoption-merge.test.js`).
 
-      Pinned by `tests/feed-rotation.test.js`, which asserts the SHAPE (whole
-      catalog unbounded, under half capped) rather than the number.
-
-      Raising the cap fixes it at today's 915-item scale and does not scale to
-      ingestion: ids in profile JSON against a 256 KiB profile budget. The
-      real answer is a served-ledger table with a time window, or a bloom
-      filter. Both are still open.
+      **Still open, and this is the part ingestion needs:** the byte budget
+      caps the ring at a few thousand ids. A 100k-item catalog will exceed it
+      and the ceiling returns. A served-ledger table with a time window, or a
+      bloom filter, is the answer there — not a bigger number.
 - [x] ~~**Feed rotation mutates shared state.** Two tabs, or a double-fire,
       both write `_meta.seen` and can serve overlapping sets. Nothing guards
       it.~~ **This entry was wrong when it was written** (3 September). The
