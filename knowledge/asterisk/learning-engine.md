@@ -44,10 +44,12 @@ and ends with `exhausted: true` rather than wrapping. Hard filters
 
 Learning between chunks: every /api/interaction lands on the profile before
 the next /api/feed is built, so each chunk is generated from the reader's
-actions so far. The client (app/page.js) regenerates the UNEXAMINED tail
-after 3 deliberate actions (favourite/bag/share/skip/hide) — cards past the
-last one the reader looked at, when at least 8 remain — and otherwise lets the
-next scroll fetch a fresh chunk. `BRAIN_CATALOG_LANE=0` restores the legacy
+actions so far. The client (app/page.js, lib/feed/rechunk.js) regenerates
+the cards the reader has NOT reached after 3 deliberate actions
+(favourite/bag/share/skip/hide): cards entirely below the fold that were never
+examined — geometry, because the grid flows column-major and list position
+says nothing about reach — when at least 8 of them exist; otherwise the next
+scroll fetches a fresh chunk. `BRAIN_CATALOG_LANE=0` restores the legacy
 layout (discovery every 5th slot, 2 spread reaches, 5 when bored, no lane).
 
 ## Cross-user layer

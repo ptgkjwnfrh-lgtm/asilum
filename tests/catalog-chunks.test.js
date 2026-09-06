@@ -21,6 +21,7 @@ import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.j
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
+import { planRechunk, idsBelowFold, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
 
 const PROFILE = () => ({
   long: { MINIMAL: 0.9, TAILORED: 0.6, UTILITARIAN: 0.3 },
@@ -280,4 +281,44 @@ test("C16 buildFeed reports the lane beside the zones, and safe mode keeps it wh
   assert.equal(r.zones.catalog, 6);
   assert.equal(r.catalog.count, 6);
   assert.equal(typeof r.catalog.nextCursor, "string");
+});
+
+// ---- the client's re-chunk plan ---------------------------------------------------
+
+test("C17 a re-chunk replaces only cards below the fold that were never examined — geometry, not list position", () => {
+  const items = Array.from({ length: 30 }, (_, i) => ({ id: `i${i}` }));
+  // Column-major grid: i25..i29 sit at the TOP of the fourth column and were
+  // examined; i5..i24 are below the fold; i0..i4 on screen.
+  const examined = new Set(["i0", "i1", "i2", "i25", "i26", "i27", "i28", "i29"]);
+  const below = new Set(items.slice(5, 25).map((it) => it.id));
+  const plan = planRechunk(items, examined, below);
+  assert.ok(plan, "twenty replaceable cards is worth a re-chunk");
+  assert.deepEqual(plan.dropped, items.slice(5, 25).map((it) => it.id));
+  assert.deepEqual(plan.head.map((it) => it.id), ["i0", "i1", "i2", "i3", "i4", "i25", "i26", "i27", "i28", "i29"]);
+  // An examined card below the fold is never replaced.
+  const plan2 = planRechunk(items, new Set([...examined, "i10"]), below);
+  assert.ok(!plan2.dropped.includes("i10"));
+  assert.equal(plan2.head.some((it) => it.id === "i10"), true);
+  // Too few replaceable cards → leave it to the next scroll.
+  assert.equal(planRechunk(items, examined, new Set(["i5", "i6", "i7"])), null);
+  assert.equal(planRechunk([], examined, below), null);
+  assert.equal(RECHUNK_AFTER, 3);
+  assert.equal(RECHUNK_MIN_REPLACE, 8);
+  // The old rule, for the record: "after the last examined index" would have
+  // kept i5..i24 (index 29 was examined) and found nothing to replace.
+  let last = -1; items.forEach((it, i) => { if (examined.has(it.id)) last = i; });
+  assert.equal(last, 29);
+});
+
+test("C18 idsBelowFold reads the cards' geometry against the viewport", () => {
+  const fakeDoc = {
+    querySelectorAll: () => [
+      { getAttribute: () => "on", getBoundingClientRect: () => ({ top: 100 }) },
+      { getAttribute: () => "edge", getBoundingClientRect: () => ({ top: 950 }) },
+      { getAttribute: () => "below", getBoundingClientRect: () => ({ top: 1400 }) },
+    ],
+  };
+  assert.deepEqual([...idsBelowFold(fakeDoc, 900, 300)], ["below"]);
+  assert.deepEqual([...idsBelowFold(fakeDoc, 900, 0)], ["edge", "below"]);
+  assert.equal(idsBelowFold(null, 900).size, 0);
 });

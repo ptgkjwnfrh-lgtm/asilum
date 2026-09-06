@@ -14,6 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
+import { planRechunk, idsBelowFold, RECHUNK_AFTER } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -31,12 +32,10 @@ const MAX_RENDERED = 300;
 // chunk after it is smaller so the ranking re-reads the taste sooner, and the
 // catalog lane inside each chunk continues from the server's cursor.
 const CHUNK = 24;
-// After this many deliberate actions (favourite, bag, share, skip, hide) the
-// unexamined tail is regenerated from the taste as it now stands — the cards
-// the reader has not reached yet are the ones that can still change.
-const RECHUNK_AFTER = 3;
-const RECHUNK_KEEP_AHEAD = 4;   // cards kept below the last examined one
-const RECHUNK_MIN_TAIL = 8;     // a shorter tail is left to the next scroll
+// After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
+// the cards the reader has not reached — below the fold, never examined — are
+// regenerated from the taste as it now stands (lib/feed/rechunk.js).
+const RECHUNK_FOLD_MARGIN = 300; // px below the viewport that still counts as "reached"
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
@@ -342,20 +341,22 @@ export default function Home() {
 
   // A deliberate action moved the taste; once enough of them have landed, the
   // part of the feed the reader has NOT reached is rebuilt from the taste as it
-  // now stands. Nothing above or around the viewport moves: only cards past
-  // the last examined one (plus a small buffer) are replaced, and only when
-  // that tail is long enough to be worth replacing — otherwise the next scroll
-  // fetches a fresh chunk anyway, since every chunk is built at request time.
+  // now stands. Nothing on or above the screen moves: only cards entirely
+  // below the fold that were never examined are replaced (the grid flows
+  // column-major, so list position says nothing about reach — geometry does),
+  // and only when enough of them exist to be worth it — otherwise the next
+  // scroll fetches a fresh chunk anyway, since every chunk is built at request
+  // time.
   const rechunk = useCallback(async () => {
     const user = uidRef.current;
-    if (!user || loadingMoreRef.current) return;
-    const list = itemsRef.current;
-    if (!list.length) return;
-    const examined = serveRef.current.examined;
-    let last = -1;
-    list.forEach((it, index) => { if (examined.has(it.id)) last = index; });
-    const keep = Math.min(list.length, last + 1 + RECHUNK_KEEP_AHEAD);
-    if (list.length - keep < RECHUNK_MIN_TAIL) return;
+    if (!user || loadingMoreRef.current || typeof document === "undefined") return;
+    const plan = planRechunk(
+      itemsRef.current,
+      serveRef.current.examined,
+      idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN),
+    );
+    if (!plan) return;
+    const keepIds = new Set(plan.head.map((x) => x.id));
     loadingMoreRef.current = true;
     actionsSinceChunkRef.current = 0;
     const isCurrent = watchRequest(feedGenRef);
@@ -367,7 +368,9 @@ export default function Home() {
       if (data.chunk?.catalog?.nextCursor) cursorRef.current = data.chunk.catalog.nextCursor;
       if (data.items && data.items.length) {
         setItems((prev) => {
-          const head = prev.slice(0, keep);
+          // Re-derive from the live list: an interaction may have removed or
+          // inserted cards while the chunk was in flight.
+          const head = prev.filter((x) => keepIds.has(x.id) || serveRef.current.examined.has(x.id));
           const have = new Set(head.map((x) => x.id));
           return [...head, ...data.items.filter((x) => !have.has(x.id))];
         });
