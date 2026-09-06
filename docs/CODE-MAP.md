@@ -224,11 +224,10 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 8,707 lines*
+*9 files, 4,260 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `production.js` | 4503 ⚠️ | CRUD for the production-foundation tables (supabase/schema-v2.sql): product_tags, product_images, search_mappings, search_logs, purchase_tickets, |
 | `dm.js` | 1747 ⚠️ | The mail desk's store (schema v40). SERVER-ONLY. |
 | `index.js` | 1724 ⚠️ | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
@@ -236,7 +235,24 @@ Nothing here may import from `app/`.
 | `imageFingerprints.js` | 96 | Storage + collision scan for image fingerprints (schema-v33). SERVER-ONLY. The scan reads all rows (capped) and compares in JS — hamming distance has |
 | `accountAges.js` | 77 | account_ages (schema v39). SERVER-ONLY. |
 | `types.js` | 69 | Entity typedefs for the Alpha Learning Brain (JSDoc — this project is plain JS; no TS toolchain added). The LIVE store is lib/db/index.js |
+| `production.js` | 56 | THE DOOR, AND NOTHING ELSE. |
 | `booths.js` | 50 | booth_visits — THE separate attribution channel (owner's words, §6/P2): a reader reached a booth via THE WIRE's hotlist. Append-only; the 15% |
+
+### `lib/db/production/`
+*10 files, 4,685 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `interpretation.js` | 959 | HOW ASTERISK READS, and what it remembers about a person. |
+| `corrections.js` | 916 | WHEN A READER SAYS WE GOT IT WRONG. |
+| `privacy.js` | 623 | WHAT WE HOLD ABOUT YOU, AND HANDING IT BACK. |
+| `editorial.js` | 459 | THE WIRE, and what readers put on it. |
+| `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
+| `booths.js` | 440 | WHO GETS TO SELL HERE. |
+| `catalog.js` | 393 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
+| `tickets.js` | 259 | SOMEBODY WANTS TO BUY SOMETHING. |
+| `store.js` | 107 | THE SHARED IN-MEMORY STORE, and nothing else. |
+| `moderation.js` | 74 | THE QUEUE A HUMAN READS. |
 
 ### `lib/discover/`
 *3 files, 258 lines*
@@ -391,13 +407,13 @@ Nothing here may import from `app/`.
 | `multipart.js` | 72 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
 
 ### `lib/steward/`
-*6 files, 1,230 lines*
+*6 files, 1,239 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `checks.js` | 405 | what the Asterisk watches when nobody is looking. |
 | `index.js` | 330 | the Asterisk steward: one pass over the live machine, and — since 3 September 2026 — hands to act on what it finds. |
-| `actions.js` | 220 | the steward's hands. |
+| `actions.js` | 229 | the steward's hands. |
 | `decisions.js` | 164 | what the steward may decide on its own. |
 | `instruments.js` | 93 | the seven instruments, run as one movement. |
 | `cronGate.js` | 18 | who may fire the steward from outside. |
@@ -813,12 +829,12 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,297 lines*
+*7 files, 2,317 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `page.js` | 1115 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
-| `shell.js` | 703 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
+| `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
 | `layout.js` | 81 | Root layout: every page renders inside the magazine shell. |
@@ -1022,7 +1038,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*52 files, 7,229 lines*
+*54 files, 7,309 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1072,13 +1088,15 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `configure-database-role.mjs` | 61 | One-time local helper: activate the v11 asilum_app role with a strong secret. The owner URL and new password are read from the environment and never logged. |
 | `build-vector-neighbors.mjs` | 58 | precompute item-item vector neighbors for the feed (r18). Reads the catalog embeddings (text-v1, the space the |
 | `seed-mappings.mjs` | 52 | Idempotent: (1) upserts the curated search mappings into search_mappings, (2) backfills the typed product_tags layer + production source fields for |
+| `comment-attachment.mjs` | 51 | did the split move code without its comment? |
 | `seed-supabase.mjs` | 50 | Optional demo seeding after schema-v1 through schema-v10 have been applied. Upserts the synthetic catalog into items through the application DB path. |
 | `compile-culture-research.mjs` | 42 | Compile APPROVED culture-entity proposals (learned_facts) into lib/asterisk/culture.research.json — the ONLY way research reaches the |
 | `diag-rerank-sims.mjs` | 35 | one-off diagnostic for r5 tuning: what do voyage sims actually look like for the failing storm/hike probes, target |
 | `extract-fashionpedia.mjs` | 35 | reproducible extraction of the Fashionpedia ontology (r13). Reads an official annotation file |
 | `backfill-dense-tags.mjs` | 34 | Backfill dense per-piece tags (lib/tagging/dense.js) into product_tags. Idempotent: rows upsert on (product_id, tag, tag_type) with max-confidence |
+| `db-export-surface.mjs` | 29 | the public surface of lib/db/production.js. |
 | `setup-wardrobe-storage.mjs` | 28 | create the PRIVATE "wardrobe" Storage bucket (idempotent). Run once per environment before enabling |
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 27ce5b1 — 332 source files, 61,616 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ e27c301 — 344 source files, 61,963 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
