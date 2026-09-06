@@ -269,13 +269,50 @@ item's rank, shifting its position under a reader mid-scroll.
 Filed separately on purpose. They exist **today**, they are unrelated to
 ingestion, and grouping them under "pagination" would bury them.
 
-- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`) is a hard ceiling on feed
-      rotation. Past ~200 pieces served, the oldest fall out of `_meta.seen`
-      and can reappear — a heavy scroller loops. Raising the cap trades memory
-      per profile; the alternative is a bloom filter or a served-ledger table.
-- [ ] **Feed rotation mutates shared state.** Two tabs, or a double-fire, both
-      write `_meta.seen` and can serve overlapping sets. Nothing guards it.
-      `withUserLock` already exists in `lib/db/index.js` and is the likely fix.
+- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`). ⚠ **MEASURED 6 September,
+      and it is much worse than this entry said.** The entry read "past ~200
+      pieces served, the oldest fall out and can reappear — a heavy scroller
+      loops." Run `node scripts/measure-feed-rotation.mjs`:
+
+      | | shipped | unbounded memory |
+      | --- | ---: | ---: |
+      | distinct items reached in 40 pages | **285 / 915** | 915 / 915 |
+      | repeat rate | 88% | 62% |
+      | first page with nothing new | 12 | — |
+
+      The reader is not "shown repeats sooner". They are **permanently confined
+      to about a third of the catalog** — 279–293 items across four seeds — and
+      are never shown the other two thirds however long they scroll. The
+      unbounded control reaches all 915, so the engine will serve the whole
+      catalog if it can remember what it served; the memory is the binding
+      constraint, not taste concentration.
+
+      The mechanism is that `seen` is a score PENALTY (`SEEN_PENALTY = 0.3`),
+      not an exclusion, and it saturates: 200 penalised items, serve the next
+      best 60, those enter memory, 60 fall out with the penalty lifted, and the
+      feed oscillates over one taste-shaped neighbourhood forever.
+
+      Pinned by `tests/feed-rotation.test.js`, which asserts the SHAPE (whole
+      catalog unbounded, under half capped) rather than the number.
+
+      Raising the cap fixes it at today's 915-item scale and does not scale to
+      ingestion: ids in profile JSON against a 256 KiB profile budget. The
+      real answer is a served-ledger table with a time window, or a bloom
+      filter. Both are still open.
+- [x] ~~**Feed rotation mutates shared state.** Two tabs, or a double-fire,
+      both write `_meta.seen` and can serve overlapping sets. Nothing guards
+      it.~~ **This entry was wrong when it was written** (3 September). The
+      feed route's only profile write goes through `mutateProfile`, which has
+      taken a `pg_advisory_xact_lock` and a `SELECT … FOR UPDATE` since 14 July
+      (#18), and re-reads inside the transaction. There are no `saveProfile`
+      callers outside `lib/db/`. Lost updates are not possible.
+
+      What IS possible, and is a different and much smaller thing: two feed
+      requests can both READ the same rotation memory before either writes, and
+      serve overlapping items. The read is outside the transaction and only the
+      write is inside. Two tabs opened together see some of the same pieces
+      once. Not filed as work — the fix is holding the lock across a whole feed
+      build, which costs more than the wart.
 
 ### 4.6 Price intelligence — no guessing
 

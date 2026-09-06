@@ -213,12 +213,33 @@ shipped code, not only future work. Full detail and the ordering:
 | Issue | Present today? | Fixed by cursors? |
 | --- | --- | --- |
 | `offset` pagination in search and discover drifts once the pool changes | latent — the catalog is static | **yes** |
-| `SEEN_CAP = 200` caps feed rotation; a heavy scroller loops | **yes** | no |
-| Feed rotation mutates shared `_meta.seen` unguarded across tabs | **yes** | no |
+| `SEEN_CAP = 200` confines a reader to ~⅓ of the catalog, permanently | **yes, and worse than filed** | no |
+| ~~Feed rotation mutates `_meta.seen` unguarded across tabs~~ | **no — the entry was wrong** | — |
 
 The first is a **precondition of the Japanese ingestion work** and should be
-done before it runs at volume. The other two are independent and can be taken
-any time; `withUserLock` already exists for the third.
+done before it runs at volume.
+
+**The second was understated and is now measured** (6 September,
+`node scripts/measure-feed-rotation.mjs`, pinned by
+`tests/feed-rotation.test.js`). It was filed as "a heavy scroller loops". A
+reader is in fact never shown two thirds of the catalog — 285 distinct items of
+915 over 40 pages, 279–293 across four seeds — while the same reader with an
+unbounded rotation memory reaches all 915. The engine will serve the whole
+catalog if it can remember what it served; the 200-item memory is the binding
+constraint. `ROADMAP-WHEN-BILLING-RETURNS.md` §4.5d has the numbers and the
+mechanism.
+
+**The third was wrong when it was written.** The feed route's only profile
+write goes through `mutateProfile`, which has held a `pg_advisory_xact_lock`
+and a `SELECT … FOR UPDATE` since 14 July, and re-reads inside the transaction;
+there are no `saveProfile` callers outside `lib/db/`. A lost update is not
+possible. What is possible is that two simultaneous requests both READ the
+memory before either writes and serve overlapping items — a much smaller thing,
+and fixing it means holding the lock across a whole feed build.
+
+Two entries, both written from reading the code rather than running it, one too
+mild and one simply untrue. That is the argument for the harness, not against
+the register.
 
 Only `lib/dm.js` uses keyset cursors today, and it is the model to copy —
 including the `snapshot` component, which is the part that stops rows becoming

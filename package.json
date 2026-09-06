@@ -21,6 +21,7 @@
     "test:live-stripe": "STRIPE_SECRET_KEY=$(grep '^STRIPE_SECRET_KEY=' .env.local | cut -d= -f2-) node --test tests/stripe-live.test.js",
     "docs:codemap": "node scripts/generate-code-map.mjs",
     "audit:nav": "node scripts/audit-navigability.mjs",
+    "feed:rotation": "node scripts/measure-feed-rotation.mjs",
     "search:snapshot": "node scripts/search-identity-snapshot.mjs"
   },
   "dependencies": {
