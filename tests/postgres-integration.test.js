@@ -64,19 +64,25 @@ const databaseUrl = process.env.TEST_DATABASE_URL || "";
 // conflict target, a recompute that reads a pre-write snapshot) would ship
 // green. This drives the real transaction against a real database.
 //
-// EVERY TEST DOWN TO THE BOARD/TICKET ONE RUNS FIRST, ON PURPOSE, ON THE
-// DEFAULT MODULE INSTANCE.
-// The `?suffix=1` trick the later tests use gives each of them a private pool,
-// but production.js imports "./index.js" WITHOUT a query string — so a
-// suffixed production.js still reaches for the DEFAULT pool, which the
-// board/ticket test below ends in its cleanup. The tests that survive that do
-// it by injecting a live pool through `queryTarget`, and adoptAccountData
-// takes no such parameter (it owns its own BEGIN/COMMIT and advisory locks).
-// Running before anything calls pool.end() is the fix that needs no
-// testability seam in production code. None of them may end the pool.
-// CI caught this the first time these ran: "Cannot use a pool after calling
-// end on the pool", which is the failure this comment exists to stop someone
-// re-introducing by moving them below the board/ticket test.
+// THE ORDERING RULE THAT USED TO BE WRITTEN HERE IS GONE, AND THIS IS WHY.
+//
+// These tests once had to run BEFORE anything called pool.end(). The
+// `?suffix=1` trick below gives each later test a fresh module instance, and
+// that used to mean a private pool — but only because the pool state lived in
+// the file being suffixed. production.js imports "./index.js" without a query
+// string, so a suffixed production.js already reached for the DEFAULT pool,
+// which the board/ticket test ends in its cleanup. CI caught it the first
+// time these ran: "Cannot use a pool after calling end on the pool".
+//
+// The split of lib/db/index.js into ./core/ removed the trick entirely — the
+// suffixed barrels all share one core/pool.js — so the rule was fixed at the
+// source instead: getPool() now rebuilds an ended pool rather than handing
+// back a dead handle forever (lib/db/core/pool.js). Ending a pool is no
+// longer contagious, and no test's position in this file depends on another
+// test's cleanup.
+//
+// Keep them here anyway. Nothing breaks if they move, but they read as the
+// foundation the rest builds on.
 test("Postgres adoption rekeys the identity_hash ledgers", { skip: !databaseUrl }, async (t) => {
   process.env.DATABASE_URL = databaseUrl;
   const db = await import("../lib/db/index.js");
