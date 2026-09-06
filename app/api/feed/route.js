@@ -1,9 +1,18 @@
 // app/api/feed/route.js
-// GET /api/feed?user=<id>&epsilon=<0|1>&q=<prompt>&board=<boardId>
+// GET /api/feed?user=<id>&epsilon=<0|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque>
 // Returns a ranked feed. With Asterisk guidance active it uses the Passport
 // profile, optional prompt, and shared-board taste transfer; while paused it
 // uses general signals plus explicit fit/craving filters and does not update
 // taste-rotation memory. Impressions still feed global popularity.
+//
+// (6 Sep) A serve is a CHUNK: `limit` items (default 60, the client asks for
+// 24 as it scrolls) cut to the shares in lib/brain/chunk.js — a fixed 25%
+// CATALOG lane walking the listing in cursor order, the rest ranked on the
+// taste as it stands at the moment of the request. Every interaction the
+// reader makes lands on the profile before the next chunk is built, so each
+// chunk is generated from what the reader has done up to now. `cursor` is the
+// lane's opaque position from the previous response; `chunk.catalog.nextCursor`
+// continues it.
 
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -17,6 +26,7 @@ import { listEvents } from "../../../lib/db/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
+import { clampChunkLimit, listingOrder, CATALOG_SHARE, CURSOR_MAX_LEN } from "../../../lib/brain/chunk.js";
 import { whatArrived } from "../../../lib/waiting/index.js";
 import {
   getProfile, mutateProfile,
@@ -71,6 +81,8 @@ export async function GET(req) {
   // the feed still serves, it just remembers nothing.
   const observing = observationAllowed(consentState(req), "passive");
   const epsilonParam = searchParams.get("epsilon") === "1";
+  const limit = clampChunkLimit(searchParams.get("limit"));
+  const cursorParam = (searchParams.get("cursor") || "").slice(0, CURSOR_MAX_LEN) || null;
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
   const craving = parseCravingContext({
@@ -217,12 +229,17 @@ export async function GET(req) {
     } catch { tuned = null; }
   }
 
-  const { split, items, epsilonActive, epsilonAuto, safeMode, zones } = buildFeed(
+  const { split, items, epsilonActive, epsilonAuto, safeMode, zones, catalog } = buildFeed(
     {
       profile,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
       edges, popularity, boardVec, contextVec, crossUser, novelty: craving.novelty,
       tunedSplit: tuned,
+      limit,
+      // The lane walks the FILTERED pool in listing order, so a category or
+      // price filter narrows the listing the cursor pages through, not just
+      // the taste lanes around it.
+      catalog: { cursor: cursorParam, ordered: listingOrder(pool) },
     },
     pool
   );
@@ -296,6 +313,15 @@ export async function GET(req) {
     // (safety modes suppress it even when computed), and the tuned weights.
     tuning: { active: !!tuned && !epsilonActive && !safeMode, split: tuned },
     zones,
+    // (6 Sep) the chunk contract: what size was served, and where the catalog
+    // lane stands. A client continues the lane by sending nextCursor back;
+    // an exhausted lane says so rather than wrapping to the top.
+    chunk: {
+      limit,
+      catalog: catalog
+        ? { share: CATALOG_SHARE, quota: catalog.quota, count: catalog.count, cursor: catalog.cursor, nextCursor: catalog.nextCursor, exhausted: catalog.exhausted }
+        : null,
+    },
     count: items.length,
     items: items.map(publicProduct).filter(Boolean),
     // Absent entirely when nothing is answerable, so a reader with no answered

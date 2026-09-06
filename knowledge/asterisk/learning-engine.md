@@ -20,11 +20,35 @@ stronger negative than a slow skip. Client batches dwell time. The event
 layer (user_events) mirrors this with EVENT_WEIGHT: bag 2 / share 1.5 /
 board 1.3 / save 1.2 / fav 1 / view 0.2 / skip −0.5 / reject −1.
 
-## The feed contract
-Rotation (seen items down-ranked), max 2 items per brand per page, zoned:
-core (known taste) / discovery every 5th slot (one hop out via expandTaste,
-prefers bridge pieces) / 2 far-reach explorer slots (alpha sim < 0.15;
-5 slots when bored). Boredom = skip-fatigue threshold.
+## The feed contract (chunks, 6 Sep 2026)
+A serve is a CHUNK (`limit` 12–60, default 60; the client asks for 24 as it
+scrolls) cut to the shares in lib/brain/chunk.js. Rotation (seen items
+down-ranked) and max 2 items per brand per chunk still hold across every zone.
+
+| zone | share | what |
+| --- | --- | --- |
+| catalog | **25%, fixed** | the listing in listing order (created_at desc, id), continued by an opaque `cursor`; taste-free; a brand-capped listing is deferred to the next chunk (cursor resumes AT it, carrying the ids taken after it as `skip`), never dropped; served ids are skipped, never repeated |
+| core | 45% | the six-bridge ranking on the taste as it stands at request time |
+| discovery | 20% | one hop out via expandTaste, prefers bridge pieces (10% in safe mode) |
+| reach | 10% | far (alpha sim < 0.15), 15% when bored (skip fatigue), 0 in safe mode |
+
+Cold readers (no taste) get the lane plus core; discovery and reach need a
+taste to be adjacent to or far from. Every zone is spread through the chunk
+(floor(k·n/(q+1)), bumped past taken slots) so no zone is a block. The
+discovery + reach + catalog shares are the ANTI-MONOCULTURE CLAUSE: at least
+55% of a chunk with taste was not chosen by "more of what you just did"
+(tests/catalog-chunks.test.js C13 pins a hyper-concentrated taste at ≤75%
+one dominant tag). The lane's cursor comes back as `chunk.catalog.nextCursor`
+and ends with `exhausted: true` rather than wrapping. Hard filters
+(category/maxPrice/fit) narrow the listing the cursor pages through.
+
+Learning between chunks: every /api/interaction lands on the profile before
+the next /api/feed is built, so each chunk is generated from the reader's
+actions so far. The client (app/page.js) regenerates the UNEXAMINED tail
+after 3 deliberate actions (favourite/bag/share/skip/hide) — cards past the
+last one the reader looked at, when at least 8 remain — and otherwise lets the
+next scroll fetch a fresh chunk. `BRAIN_CATALOG_LANE=0` restores the legacy
+layout (discovery every 5th slot, 2 spread reaches, 5 when bored, no lane).
 
 ## Cross-user layer
 similarUsers: compute-on-read cosine over profiles (scan cap 500).

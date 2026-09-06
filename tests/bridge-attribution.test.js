@@ -25,7 +25,7 @@ test("every feed slot carries a whitelisted bridge attribution", () => {
   }
   const zoned = items.filter((it) => it._zone !== "core");
   for (const it of zoned) {
-    assert.ok(["discovery-adjacent", "discovery-crossuser", "reach"].includes(it._bridge),
+    assert.ok(["discovery-adjacent", "discovery-crossuser", "reach", "catalog"].includes(it._bridge),
       `${it._zone} slot must carry a pathway attribution, got "${it._bridge}"`);
   }
 });

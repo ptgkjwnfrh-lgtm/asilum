@@ -178,17 +178,18 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*17 files, 4,190 lines*
+*18 files, 4,491 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 666 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `index.js` | 670 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `bridges.js` | 556 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
-| `bridges.js` | 480 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `lexicon.js` | 368 | ASiLUM brain — LEXICON: maps non-clothing signals to aesthetic tag vectors. This is what lets the moodboard 'think' — turning a color, a music genre, a |
 | `sizing.js` | 309 | Asilum "size brain" — a normalization layer that maps any labeled size (mens / womens / luxury numeric) onto a common "fits like US __" scale, |
 | `popularity.js` | 276 | the popularity bridge's counters (Aug 6, 2026). |
+| `chunk.js` | 221 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
 | `stylist.js` | 176 | THE STYLIST — a branch of the brain that assembles full outfits. Consumes the same flat tag vectors as every bridge, plus category, era and |
 | `noise.js` | 173 | noise-floor estimators for the measurement batteries (r26, audit #26). |
 | `tuning.js` | 153 | bounded bridge self-tuning (r16). |
@@ -224,19 +225,36 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 4,260 lines*
+*9 files, 2,658 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `dm.js` | 1747 ⚠️ | The mail desk's store (schema v40). SERVER-ONLY. |
-| `index.js` | 1724 ⚠️ | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
 | `accountKinds.js` | 171 | account_kinds + account_kind_events (schema v37). SERVER-ONLY. |
+| `index.js` | 122 | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `imageFingerprints.js` | 96 | Storage + collision scan for image fingerprints (schema-v33). SERVER-ONLY. The scan reads all rows (capped) and compares in JS — hamming distance has |
 | `accountAges.js` | 77 | account_ages (schema v39). SERVER-ONLY. |
 | `types.js` | 69 | Entity typedefs for the Alpha Learning Brain (JSDoc — this project is plain JS; no TS toolchain added). The LIVE store is lib/db/index.js |
 | `production.js` | 56 | THE DOOR, AND NOTHING ELSE. |
 | `booths.js` | 50 | booth_visits — THE separate attribution channel (owner's words, §6/P2): a reader reached a booth via THE WIRE's hotlist. Append-only; the 15% |
+
+### `lib/db/core/`
+*11 files, 1,905 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `boards.js` | 280 | MOODBOARDS. |
+| `events.js` | 240 | THE CANONICAL HISTORY, AND MOVING IT TO AN ACCOUNT. |
+| `graph.js` | 237 | THE CO-ENGAGEMENT GRAPH. |
+| `popularity.js` | 229 | ENGAGEMENT AND EXPOSURE COUNTERS. |
+| `items.js` | 189 | THE CATALOG ROWS THIS LAYER OWNS. |
+| `pool.js` | 170 | THE CONNECTION, AND WHAT IT REFUSES TO OPEN. |
+| `interactions.js` | 135 | THE EVENT LOG, AND THE ONE ATOMIC COMMIT. |
+| `stats.js` | 131 | AGGREGATES FOR THE DASHBOARD. |
+| `embeddings.js` | 106 | THE VECTOR SEAM (v1). |
+| `profiles.js` | 100 | TASTE VECTORS. |
+| `store.js` | 88 | THE FALLBACK STORE, AND THE THREE THINGS EVERY MODULE HERE BORROWS FROM IT. |
 
 ### `lib/db/production/`
 *10 files, 4,685 lines*
@@ -604,11 +622,11 @@ request becomes trusted arguments.
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
 
 ### `app/api/feed/`
-*1 file, 306 lines*
+*1 file, 332 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 306 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId> Returns a ranked feed. With Asterisk guidance active it uses the Passport |
+| `route.js` | 332 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
 *1 file, 71 lines*
@@ -829,11 +847,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,317 lines*
+*7 files, 2,390 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1115 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1188 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -1099,4 +1117,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ e27c301 — 344 source files, 61,963 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ d2f8f76 — 356 source files, 62,666 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
