@@ -7,6 +7,7 @@
 // rather than implementing a second version of the law.
 
 import test from "node:test";
+import { dmStoreSource, dmFunctionSource } from "./helpers/dm-source.mjs";
 import assert from "node:assert/strict";
 
 import {
@@ -307,14 +308,13 @@ test("the activity payload is two booleans, so there is nothing to read off it",
   const { readFileSync } = await import("node:fs");
   const { fileURLToPath } = await import("node:url");
   const root = fileURLToPath(new URL("..", import.meta.url));
-  const store = readFileSync(root + "lib/db/dm.js", "utf8");
+  const store = dmStoreSource();
   const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
 
   // Every return from peerActivity must be booleans. A number was the oracle:
   // `Number(last_read_message_id) || 0` made "signals on, read nothing" into 0
   // while "signals off" stayed null.
-  const body = store.slice(store.indexOf("export async function peerActivity"));
-  const fn = body.slice(0, body.indexOf("\n}\n") + 2);
+  const fn = dmFunctionSource("peerActivity");
   assert.doesNotMatch(fn, /readUpTo/,
     "a read POSITION on the wire is a number only some peers produce");
   assert.match(fn, /readYours: Boolean\(/, "the answer is a yes/no about MY newest message");
