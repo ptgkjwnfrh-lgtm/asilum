@@ -295,6 +295,24 @@ ingestion, and grouping them under "pagination" would bury them.
       most of the memory away at sign-in, silently. It imports the constant now
       (`tests/adoption-merge.test.js`).
 
+      **Measured against production, 6 September** (read-only query), so the
+      storage cost is a number rather than a worry:
+
+      | | before | after, worst case |
+      | --- | ---: | ---: |
+      | catalog | 915 items, ids 8 chars | unchanged |
+      | `seen` per profile | 200 ids ≈ 2 KB | 915 ids ≈ 10 KB |
+      | largest profile | 4,909 B | ~14 KB |
+      | all 4,158 profiles | 5.0 MB | under 60 MB if every one maxed |
+
+      Most profiles are cold and will never approach it. The 48 KB byte budget
+      does not bind at all at this id length — it exists for the ingested
+      catalog, where ids are five times longer.
+
+      **`max(jsonb_array_length(seen))` in production was exactly 200**, which
+      is the confirmation that this was not a theoretical defect: real readers
+      were sitting on the ceiling.
+
       **Still open, and this is the part ingestion needs:** the byte budget
       caps the ring at a few thousand ids. A 100k-item catalog will exceed it
       and the ceiling returns. A served-ledger table with a time window, or a
