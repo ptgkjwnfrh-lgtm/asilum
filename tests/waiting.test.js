@@ -11,10 +11,25 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 import { answeredBy, wantsFor, whatArrived, channelStatus, CHANNELS } from "../lib/waiting/index.js";
 import { getProductPool } from "../lib/search/index.js";
+
+/** The file under lib/db that defines a given export. */
+function fileDefining(name) {
+  const stack = ["lib/db"];
+  while (stack.length) {
+    const at = stack.pop();
+    for (const entry of readdirSync(at, { withFileTypes: true })) {
+      const full = `${at}/${entry.name}`;
+      if (entry.isDirectory()) { stack.push(full); continue; }
+      if (entry.name.endsWith(".js")
+        && new RegExp(`export (async )?function ${name}\\b`).test(readFileSync(full, "utf8"))) return full;
+    }
+  }
+  throw new Error(`${name} is not defined anywhere under lib/db`);
+}
 
 test("IT SPEAKS — a want the catalog can answer comes back with pieces", async () => {
   // The test that would have caught the wrong-key bug. Without it, a broken
@@ -57,7 +72,9 @@ test("a want is an EMPTY search — the one signal that is a record of asking", 
   // Not the taste profile (what you tend to like), not saves (things you
   // found), not dwell (attention). An empty search is the person typing the
   // words and us answering nothing, and both halves are in the log.
-  const db = readFileSync("lib/db/production.js", "utf8");
+  // Located rather than hard-coded: lib/db is being split by table group, and
+  // the rule is about the QUERY, not about which file holds it.
+  const db = readFileSync(fileDefining("listEmptySearches"), "utf8");
   assert.match(db, /result_count = 0/, "only empty searches count as wants");
   assert.match(db, /WHERE user_id=\$1/, "and only this person's own");
 });
