@@ -269,13 +269,68 @@ item's rank, shifting its position under a reader mid-scroll.
 Filed separately on purpose. They exist **today**, they are unrelated to
 ingestion, and grouping them under "pagination" would bury them.
 
-- [ ] **`SEEN_CAP = 200`** (`lib/brain/index.js`) is a hard ceiling on feed
-      rotation. Past ~200 pieces served, the oldest fall out of `_meta.seen`
-      and can reappear — a heavy scroller loops. Raising the cap trades memory
-      per profile; the alternative is a bloom filter or a served-ledger table.
-- [ ] **Feed rotation mutates shared state.** Two tabs, or a double-fire, both
-      write `_meta.seen` and can serve overlapping sets. Nothing guards it.
-      `withUserLock` already exists in `lib/db/index.js` and is the likely fix.
+- [x] ~~**`SEEN_CAP = 200`** is a hard ceiling on feed rotation.~~ **MEASURED
+      AND FIXED, 6 September.** The entry read "past ~200 pieces served, the
+      oldest fall out and can reappear — a heavy scroller loops." Measured
+      (`npm run feed:rotation`) it was much worse: the reader was **confined to
+      286 of 915 items permanently**, and never shown the other two thirds
+      however long they scrolled. Reach scaled almost linearly with the cap —
+      200→286, 400→482, 800→864, 1000→all 915 — so rotation memory is not a
+      threshold, it is **the size of the reader's world**.
+
+      `seen` is a score PENALTY (0.3×), not an exclusion, so once every
+      remembered item carries it the engine serves the next best 60, those
+      enter memory, 60 fall out with the penalty lifted, and the feed
+      oscillates over one taste-shaped neighbourhood forever.
+
+      Fixed by sizing the ring from the caller: `app/api/feed/route.js` passes
+      the size of the pool it just served. Remembering as many ids as there are
+      items in the pool is exactly enough and needs no fitted constant. The
+      reader now reaches **915/915**. Also de-duped (a repeated id used to
+      occupy two slots) and bounded by BYTES as well as count, because the
+      profile has a 256 KiB limit that throws and a marketplace id is five
+      times a synthetic one.
+
+      Account adoption carried its own copy of the `200` and would have thrown
+      most of the memory away at sign-in, silently. It imports the constant now
+      (`tests/adoption-merge.test.js`).
+
+      **Measured against production, 6 September** (read-only query), so the
+      storage cost is a number rather than a worry:
+
+      | | before | after, worst case |
+      | --- | ---: | ---: |
+      | catalog | 915 items, ids 8 chars | unchanged |
+      | `seen` per profile | 200 ids ≈ 2 KB | 915 ids ≈ 10 KB |
+      | largest profile | 4,909 B | ~14 KB |
+      | all 4,158 profiles | 5.0 MB | under 60 MB if every one maxed |
+
+      Most profiles are cold and will never approach it. The 48 KB byte budget
+      does not bind at all at this id length — it exists for the ingested
+      catalog, where ids are five times longer.
+
+      **`max(jsonb_array_length(seen))` in production was exactly 200**, which
+      is the confirmation that this was not a theoretical defect: real readers
+      were sitting on the ceiling.
+
+      **Still open, and this is the part ingestion needs:** the byte budget
+      caps the ring at a few thousand ids. A 100k-item catalog will exceed it
+      and the ceiling returns. A served-ledger table with a time window, or a
+      bloom filter, is the answer there — not a bigger number.
+- [x] ~~**Feed rotation mutates shared state.** Two tabs, or a double-fire,
+      both write `_meta.seen` and can serve overlapping sets. Nothing guards
+      it.~~ **This entry was wrong when it was written** (3 September). The
+      feed route's only profile write goes through `mutateProfile`, which has
+      taken a `pg_advisory_xact_lock` and a `SELECT … FOR UPDATE` since 14 July
+      (#18), and re-reads inside the transaction. There are no `saveProfile`
+      callers outside `lib/db/`. Lost updates are not possible.
+
+      What IS possible, and is a different and much smaller thing: two feed
+      requests can both READ the same rotation memory before either writes, and
+      serve overlapping items. The read is outside the transaction and only the
+      write is inside. Two tabs opened together see some of the same pieces
+      once. Not filed as work — the fix is holding the lock across a whole feed
+      build, which costs more than the wart.
 
 ### 4.6 Price intelligence — no guessing
 

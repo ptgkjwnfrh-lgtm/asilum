@@ -178,11 +178,11 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*18 files, 4,509 lines*
+*18 files, 4,550 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 670 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `index.js` | 711 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
 | `bridges.js` | 574 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
@@ -225,14 +225,14 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 2,658 lines*
+*9 files, 1,019 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `dm.js` | 1747 ⚠️ | The mail desk's store (schema v40). SERVER-ONLY. |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
 | `accountKinds.js` | 171 | account_kinds + account_kind_events (schema v37). SERVER-ONLY. |
 | `index.js` | 122 | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
+| `dm.js` | 108 | THE MAIL DESK. SERVER-ONLY. (schema v40-v43) |
 | `imageFingerprints.js` | 96 | Storage + collision scan for image fingerprints (schema-v33). SERVER-ONLY. The scan reads all rows (capped) and compares in JS — hamming distance has |
 | `accountAges.js` | 77 | account_ages (schema v39). SERVER-ONLY. |
 | `types.js` | 69 | Entity typedefs for the Alpha Learning Brain (JSDoc — this project is plain JS; no TS toolchain added). The LIVE store is lib/db/index.js |
@@ -256,13 +256,28 @@ Nothing here may import from `app/`.
 | `profiles.js` | 100 | TASTE VECTORS. |
 | `store.js` | 88 | THE FALLBACK STORE, AND THE THREE THINGS EVERY MODULE HERE BORROWS FROM IT. |
 
+### `lib/db/dm/`
+*9 files, 1,884 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `threads.js` | 381 | A CONVERSATION. |
+| `consent.js` | 359 | WHO MAY REACH YOU. |
+| `people.js` | 251 | WHO IS ON THE OTHER END, AND WHO MAY BE ADDRESSED. |
+| `export.js` | 232 | HANDING SOMEONE THE RECORD OF THEIR OWN CONVERSATIONS (CONSTITUTION §6). |
+| `activity.js` | 218 | READ RECEIPTS AND TYPING. |
+| `settings.js` | 182 | A PERSON'S OWN CONTROLS. |
+| `reactions.js` | 159 | MARKS ON A MESSAGE, AND TAKING ONE BACK. |
+| `core.js` | 70 | WHAT EVERY MAIL-DESK MODULE STANDS ON. |
+| `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
+
 ### `lib/db/production/`
-*10 files, 4,685 lines*
+*10 files, 4,695 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `interpretation.js` | 959 | HOW ASTERISK READS, and what it remembers about a person. |
-| `corrections.js` | 916 | WHEN A READER SAYS WE GOT IT WRONG. |
+| `corrections.js` | 926 | WHEN A READER SAYS WE GOT IT WRONG. |
 | `privacy.js` | 623 | WHAT WE HOLD ABOUT YOU, AND HANDING IT BACK. |
 | `editorial.js` | 459 | THE WIRE, and what readers put on it. |
 | `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
@@ -623,11 +638,11 @@ request becomes trusted arguments.
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
 
 ### `app/api/feed/`
-*1 file, 332 lines*
+*1 file, 338 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 332 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
+| `route.js` | 338 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
 *1 file, 71 lines*
@@ -1057,7 +1072,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*54 files, 7,309 lines*
+*55 files, 7,459 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1079,6 +1094,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `backup-database.mjs` | 161 | Take a restorable backup of the ASILUM database (owner directive, HANDOVER-2026-08-14 backlog 6). |
 | `steward.mjs` | 157 | "is anything wrong?", and since 3 Sep 2026, "fix it". |
 | `measure-lexical-fidelity.mjs` | 155 | does the engine read the words a person actually types? |
+| `measure-feed-rotation.mjs` | 150 | DOES A HEAVY SCROLLER SEE THE SAME PIECES AGAIN, AND WOULD A BIGGER MEMORY STOP IT? |
 | `measure-assisted-interpretation.mjs` | 146 | the safety rails around a model-assisted read, measured before anyone turns one on. |
 | `generate-code-map.mjs` | 144 | regenerate docs/CODE-MAP.md from the tree. |
 | `verify-ebay.mjs` | 143 | prove the eBay path end to end the moment keys exist, and say plainly what is still missing when they do not. |
@@ -1118,4 +1134,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 5e45f05 — 357 source files, 62,735 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 664c7dd — 367 source files, 63,187 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

@@ -5,6 +5,7 @@
 // docs/dm-open-findings-2026-08-23.md, written from its Reproduce section.
 
 import test from "node:test";
+import { dmStoreSource } from "./helpers/dm-source.mjs";
 import assert from "node:assert/strict";
 
 import {
@@ -177,7 +178,7 @@ test("the panel is a thread that receives, and a desk that leads with the mail",
   const { fileURLToPath } = await import("node:url");
   const root = fileURLToPath(new URL("..", import.meta.url));
   const panel = readFileSync(root + "app/components/MailDesk.jsx", "utf8");
-  const store = readFileSync(root + "lib/db/dm.js", "utf8");
+  const store = dmStoreSource();
 
   // 1. AN OPEN THREAD NEVER RECEIVED A MESSAGE. Nothing refetched it: the
   // badge poll moved counts, the activity poll moved typing and read, and
