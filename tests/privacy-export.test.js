@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -26,14 +26,37 @@ async function fresh(...uids) {
   for (const uid of uids) await purgePersonalizationData(uid).catch(() => {});
 }
 
+// E1 and E2 read purge's OWN DELETE statements out of the source, so they have
+// to know which file that is. They used to name lib/db/production.js; the split
+// moved purge into lib/db/production/privacy.js, to sit with the export whose
+// mirror it is, and both tests went red on "must be findable" — loudly, which
+// is the right failure, but a test that has to be hand-repaired every time the
+// file moves will eventually be repaired by deleting it. So it SEARCHES.
+//
+// Exactly one definition must exist. Two would mean a duplicated erasure path,
+// which is the precise bug this pair of tests exists to prevent.
+const PURGE_DECL = "export async function purgePersonalizationData";
+function purgeSource() {
+  const dbDir = path.join(process.cwd(), "lib", "db");
+  const files = [
+    path.join(dbDir, "production.js"),
+    ...readdirSync(path.join(dbDir, "production")).filter((f) => f.endsWith(".js"))
+      .map((f) => path.join(dbDir, "production", f)),
+  ];
+  const found = files.filter((f) => readFileSync(f, "utf8").includes(PURGE_DECL));
+  assert.deepEqual(found.length, 1,
+    `purgePersonalizationData must be findable in exactly one file, saw ${found.length}: ${found.join(", ")}`);
+  const src = readFileSync(found[0], "utf8");
+  const start = src.indexOf(PURGE_DECL);
+  // The body runs to the next top-level export, or to the end of the file.
+  const end = src.indexOf("\nexport ", start + PURGE_DECL.length);
+  return src.slice(start, end === -1 ? src.length : end);
+}
+
 // The strong one. Reads purge's own DELETE statements out of the source and
 // requires every table to be declared in the manifest.
 test("E1 every table erasure deletes is declared in the export manifest", () => {
-  const src = readFileSync(path.join(process.cwd(), "lib", "db", "production.js"), "utf8");
-  const start = src.indexOf("export async function purgePersonalizationData");
-  assert.ok(start > 0, "purgePersonalizationData must be findable");
-  const end = src.indexOf("\n// ---- §6 export", start);
-  const body = src.slice(start, end === -1 ? src.length : end);
+  const body = purgeSource();
 
   const erased = [...new Set(
     [...body.matchAll(/DELETE FROM ([a-z_]+)/g)].map((m) => m[1])
@@ -49,10 +72,7 @@ test("E1 every table erasure deletes is declared in the export manifest", () => 
 
 // The manifest must not claim coverage it does not have either.
 test("E2 the manifest declares nothing erasure does not touch", () => {
-  const src = readFileSync(path.join(process.cwd(), "lib", "db", "production.js"), "utf8");
-  const start = src.indexOf("export async function purgePersonalizationData");
-  const end = src.indexOf("\n// ---- §6 export", start);
-  const body = src.slice(start, end === -1 ? src.length : end);
+  const body = purgeSource();
   const erased = new Set([...body.matchAll(/DELETE FROM ([a-z_]+)/g)].map((m) => m[1]));
 
   const phantom = Object.keys(EXPORT_MANIFEST).filter((t) => !erased.has(t));

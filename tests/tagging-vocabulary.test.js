@@ -8,7 +8,7 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -102,6 +102,30 @@ test("the search weight table is DERIVED from the vocabulary, not kept beside it
   assert.deepEqual(Object.keys(TYPE_WEIGHTS).sort(), [...FACET_NAMES].sort());
 });
 
+/**
+ * The file that DEFINES addProductTags, found rather than hard-coded.
+ *
+ * This test named lib/db/production.js directly and broke the day that file was
+ * split by table group — a true statement about a moved function, reported as a
+ * failure of the function. The rule being asserted is "the writer resolves its
+ * facet through the register", and that rule does not care which file the
+ * writer lives in.
+ */
+function writerFile() {
+  const dir = "lib/db";
+  const stack = [dir];
+  while (stack.length) {
+    const at = stack.pop();
+    for (const entry of readdirSync(at, { withFileTypes: true })) {
+      const full = `${at}/${entry.name}`;
+      if (entry.isDirectory()) { stack.push(full); continue; }
+      if (!entry.name.endsWith(".js")) continue;
+      if (/export async function addProductTags/.test(readFileSync(full, "utf8"))) return full;
+    }
+  }
+  throw new Error("addProductTags is not defined anywhere under lib/db");
+}
+
 test("every writer goes through the vocabulary", () => {
   // The two paths that put a tag on a piece. If a third appears, it has to
   // resolve its facet the same way or this fails.
@@ -113,7 +137,7 @@ test("every writer goes through the vocabulary", () => {
   for (const file of [
     "lib/tagging/dense.js",
     "lib/ingest/adapters/normalize.js",
-    "lib/db/production.js",
+    writerFile(),
   ]) {
     const src = read(file);
     assert.match(src, /facetOf\(/, `${file} must resolve its facet through the vocabulary`);
@@ -122,7 +146,7 @@ test("every writer goes through the vocabulary", () => {
     assert.match(read(file), /if \(!tagType\) return/,
       `${file} must DROP an unknown facet rather than write it`);
   }
-  assert.match(read("lib/db/production.js"), /filter\(\(t\) => t\.tag && t\.tagType\)/,
+  assert.match(read(writerFile()), /filter\(\(t\) => t\.tag && t\.tagType\)/,
     "and the third drops it in its filter");
 });
 
