@@ -1,7 +1,9 @@
 # Recommendation surfaces
 
-- / (CATALOG feed): the six-bridge zoned feed — see
-  asterisk/learning-engine.md for zones, caps, rotation.
+- / (CATALOG feed): served in CHUNKS — a fixed 25% catalog lane (the
+  listing in cursor order, `?cursor=` / `chunk.catalog.nextCursor`), the
+  rest the six-bridge zoned ranking on the taste at request time — see
+  asterisk/learning-engine.md for shares, caps, rotation, the cursor.
 - /discover: deliberately taste-free full index (source labels via
   sourceFor); honors ?q= and ?brands=a|b.
 - Stylist: full=1 → 5 base genres × 5 = 25 looks, match floor 75 of 99 — a

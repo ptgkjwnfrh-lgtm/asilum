@@ -14,6 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
+import { planRechunk, idsBelowFold, RECHUNK_AFTER } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -27,6 +28,14 @@ import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./c
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
 const MAX_RENDERED = 300;
+// (6 Sep) the feed is served in CHUNKS. The first load fills the folio; every
+// chunk after it is smaller so the ranking re-reads the taste sooner, and the
+// catalog lane inside each chunk continues from the server's cursor.
+const CHUNK = 24;
+// After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
+// the cards the reader has not reached — below the fold, never examined — are
+// regenerated from the taste as it now stands (lib/feed/rechunk.js).
+const RECHUNK_FOLD_MARGIN = 300; // px below the viewport that still counts as "reached"
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
@@ -44,6 +53,7 @@ function reasonFor(item) {
   if (item._contextMatch >= 0.2) return "matches what you're craving right now";
   if (item._zone === "reach") return "a far reach — break your pattern";
   if (item._zone === "discovery") return "you'll probably like this";
+  if (item._zone === "catalog") return "from the catalog, in listing order";
   if (item._via === "graph") return "saved together by others";
   if (item._via === "tags") return "a similar aesthetic";
   const parts = item && item._parts ? item._parts : null;
@@ -243,8 +253,16 @@ export default function Home() {
   }, []);
 
   // ---- Feed ----
-  const feedQS = useCallback((user) => {
+  // The catalog lane's position, as the server last reported it. Null means
+  // "from the top"; a reload resets it; an exhausted lane keeps its cursor so
+  // the next chunk says so instead of wrapping.
+  const cursorRef = useRef(null);
+  const actionsSinceChunkRef = useRef(0);
+
+  const feedQS = useCallback((user, { limit, cursor } = {}) => {
     const qs = new URLSearchParams({ user, epsilon: epsilon ? "1" : "0", q: promptRef.current });
+    if (limit) qs.set("limit", String(limit));
+    if (cursor) qs.set("cursor", cursor);
     if (boardParamRef.current) qs.set("board", boardParamRef.current);
     if (filters.category) qs.set("category", filters.category);
     if (filters.maxPrice) qs.set("maxPrice", filters.maxPrice);
@@ -263,11 +281,14 @@ export default function Home() {
     // overwrite the feed a newer request owns.
     const isCurrent = claimRequest(feedGenRef);
     setLoading(true);
+    cursorRef.current = null;
+    actionsSinceChunkRef.current = 0;
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       if (!isCurrent()) return;
       setItems(data.items || []);
+      cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
       else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
@@ -301,10 +322,13 @@ export default function Home() {
     // Appends observe the feed generation without claiming it: a page fetched
     // for a feed that has since reloaded must be dropped, not appended.
     const isCurrent = watchRequest(feedGenRef);
+    actionsSinceChunkRef.current = 0;
     try {
-      const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
+      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
+      if (data.chunk?.catalog?.nextCursor) cursorRef.current = data.chunk.catalog.nextCursor;
       if (data.items && data.items.length) {
         setItems((prev) => {
           const have = new Set(prev.map((x) => x.id));
@@ -314,6 +338,51 @@ export default function Home() {
     } catch (e) { console.error(e); }
     finally { loadingMoreRef.current = false; }
   }, [feedQS]);
+
+  // A deliberate action moved the taste; once enough of them have landed, the
+  // part of the feed the reader has NOT reached is rebuilt from the taste as it
+  // now stands. Nothing on or above the screen moves: only cards entirely
+  // below the fold that were never examined are replaced (the grid flows
+  // column-major, so list position says nothing about reach — geometry does),
+  // and only when enough of them exist to be worth it — otherwise the next
+  // scroll fetches a fresh chunk anyway, since every chunk is built at request
+  // time.
+  const rechunk = useCallback(async () => {
+    const user = uidRef.current;
+    if (!user || loadingMoreRef.current || typeof document === "undefined") return;
+    const plan = planRechunk(
+      itemsRef.current,
+      serveRef.current.examined,
+      idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN),
+    );
+    if (!plan) return;
+    const keepIds = new Set(plan.head.map((x) => x.id));
+    loadingMoreRef.current = true;
+    actionsSinceChunkRef.current = 0;
+    const isCurrent = watchRequest(feedGenRef);
+    try {
+      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const res = await authorizedFetch("/api/feed?" + qs.toString());
+      const data = await res.json();
+      if (!isCurrent()) return;
+      if (data.chunk?.catalog?.nextCursor) cursorRef.current = data.chunk.catalog.nextCursor;
+      if (data.items && data.items.length) {
+        setItems((prev) => {
+          // Re-derive from the live list: an interaction may have removed or
+          // inserted cards while the chunk was in flight.
+          const head = prev.filter((x) => keepIds.has(x.id) || serveRef.current.examined.has(x.id));
+          const have = new Set(head.map((x) => x.id));
+          return [...head, ...data.items.filter((x) => !have.has(x.id))];
+        });
+      }
+    } catch (e) { console.error(e); }
+    finally { loadingMoreRef.current = false; }
+  }, [feedQS]);
+
+  function noteDeliberateAction() {
+    actionsSinceChunkRef.current += 1;
+    if (actionsSinceChunkRef.current >= RECHUNK_AFTER) rechunk();
+  }
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined" || !sentinelRef.current) return;
@@ -472,11 +541,14 @@ export default function Home() {
     try {
       await postJSON("/api/interaction", { user: uidRef.current, item, action, dwellMs });
       if (action === "favorite") moreLikeThis(item);
+      // The profile has the action now; the next chunk can read it.
+      if (action !== "dwell") noteDeliberateAction();
     } catch (e) { console.error(e); }
   }
 
   function addToBag(item) {
     bagAdd(item);
+    noteDeliberateAction();
     setBaggedIds((prev) => new Set(prev).add(item.id));
     react(item, "bag");
   }
@@ -540,7 +612,8 @@ export default function Home() {
     // one that previews correctly.
     const url = window.location.origin + "/piece/" + encodeURIComponent(item.id);
     try { await navigator.clipboard.writeText(url); setNotice("item link copied — it carries its taste graph"); } catch {}
-    postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) }).catch(() => {});
+    postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) })
+      .then(() => noteDeliberateAction()).catch(() => {});
   }
 
   const [modalEvidence, setModalEvidence] = useState(null);
@@ -571,8 +644,11 @@ export default function Home() {
   // marginalia (magazine treatment, owner order Aug 13; every value is
   // real state).
   const zones = items.reduce(
-    (z, it) => { z[it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : "core"] += 1; return z; },
-    { core: 0, discovery: 0, reach: 0 },
+    (z, it) => {
+      z[it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
+      return z;
+    },
+    { core: 0, discovery: 0, reach: 0, catalog: 0 },
   );
 
   return (
@@ -613,7 +689,7 @@ export default function Home() {
       <>
           {items.length > 0 && (
             <span className="cvside ctside" aria-hidden="true">
-              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach}
+              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach} · CATALOG {zones.catalog}
             </span>
           )}
           <span className="cvside cvsider ctsider" aria-hidden="true">

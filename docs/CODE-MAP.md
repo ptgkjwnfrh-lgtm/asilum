@@ -178,17 +178,18 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*17 files, 4,190 lines*
+*18 files, 4,550 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 666 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `index.js` | 711 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `bridges.js` | 574 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
-| `bridges.js` | 480 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `lexicon.js` | 368 | ASiLUM brain — LEXICON: maps non-clothing signals to aesthetic tag vectors. This is what lets the moodboard 'think' — turning a color, a music genre, a |
 | `sizing.js` | 309 | Asilum "size brain" — a normalization layer that maps any labeled size (mens / womens / luxury numeric) onto a common "fits like US __" scale, |
 | `popularity.js` | 276 | the popularity bridge's counters (Aug 6, 2026). |
+| `chunk.js` | 221 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
 | `stylist.js` | 176 | THE STYLIST — a branch of the brain that assembles full outfits. Consumes the same flat tag vectors as every bridge, plus category, era and |
 | `noise.js` | 173 | noise-floor estimators for the measurement batteries (r26, audit #26). |
 | `tuning.js` | 153 | bounded bridge self-tuning (r16). |
@@ -271,12 +272,12 @@ Nothing here may import from `app/`.
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
 
 ### `lib/db/production/`
-*10 files, 4,685 lines*
+*10 files, 4,695 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `interpretation.js` | 959 | HOW ASTERISK READS, and what it remembers about a person. |
-| `corrections.js` | 916 | WHEN A READER SAYS WE GOT IT WRONG. |
+| `corrections.js` | 926 | WHEN A READER SAYS WE GOT IT WRONG. |
 | `privacy.js` | 623 | WHAT WE HOLD ABOUT YOU, AND HANDING IT BACK. |
 | `editorial.js` | 459 | THE WIRE, and what readers put on it. |
 | `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
@@ -318,10 +319,11 @@ Nothing here may import from `app/`.
 | `index.js` | 42 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
 
 ### `lib/feed/`
-*1 file, 40 lines*
+*2 files, 88 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
+| `rechunk.js` | 48 | which cards a re-chunk may replace. Pure; client-safe. |
 | `index.js` | 40 | Feed system foundation. The LIVE product feed is /api/feed (Alpha Learning Bridge): zoned core/discovery/reach, seen-item rotation, 2-per-brand cap, |
 
 ### `lib/images/`
@@ -636,11 +638,11 @@ request becomes trusted arguments.
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
 
 ### `app/api/feed/`
-*1 file, 306 lines*
+*1 file, 338 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 306 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId> Returns a ranked feed. With Asterisk guidance active it uses the Passport |
+| `route.js` | 338 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
 *1 file, 71 lines*
@@ -861,11 +863,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,317 lines*
+*7 files, 2,393 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1115 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1191 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -1070,7 +1072,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*54 files, 7,309 lines*
+*55 files, 7,459 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1092,6 +1094,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `backup-database.mjs` | 161 | Take a restorable backup of the ASILUM database (owner directive, HANDOVER-2026-08-14 backlog 6). |
 | `steward.mjs` | 157 | "is anything wrong?", and since 3 Sep 2026, "fix it". |
 | `measure-lexical-fidelity.mjs` | 155 | does the engine read the words a person actually types? |
+| `measure-feed-rotation.mjs` | 150 | DOES A HEAVY SCROLLER SEE THE SAME PIECES AGAIN, AND WOULD A BIGGER MEMORY STOP IT? |
 | `measure-assisted-interpretation.mjs` | 146 | the safety rails around a model-assisted read, measured before anyone turns one on. |
 | `generate-code-map.mjs` | 144 | regenerate docs/CODE-MAP.md from the tree. |
 | `verify-ebay.mjs` | 143 | prove the eBay path end to end the moment keys exist, and say plainly what is still missing when they do not. |
@@ -1131,4 +1134,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 4f68dbb — 364 source files, 62,511 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 664c7dd — 367 source files, 63,187 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

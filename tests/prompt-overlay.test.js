@@ -90,16 +90,25 @@ test("P5 a cold user's prompt still routes the feed — the overlay replaces the
   // TASTE_LONG on the way out, so the old seed arrived pre-aged, while a
   // current prompt arrives at full weight. Same direction, undamped.
   const promptVec = promptVector(PROMPT);
+  // (6 Sep) a chunk's catalog lane is the listing in cursor order — taste-free
+  // by law (lib/brain/chunk.js), so no prompt can or should route it. The
+  // routing claim is made over the slots the prompt is allowed to route.
+  const routed = (result) => result.items.filter((it) => it._zone !== "catalog");
   const alignment = (result) =>
-    result.items.reduce((sum, it) => sum + vecSim(it.tags || {}, promptVec), 0) /
-    result.items.length;
+    routed(result).reduce((sum, it) => sum + vecSim(it.tags || {}, promptVec), 0) /
+    routed(result).length;
 
   const unprompted = buildFeed({ profile: COLD }, CATALOG);        // no routing
   const seeded = buildFeed({ profile: coldStart(PROMPT).profile }, CATALOG); // old
   const overlaid = buildFeed({ profile: COLD, contextVec: promptVec }, CATALOG); // new
 
   assert.ok(overlaid.items.length > 0, "an empty feed would pass this vacuously");
-  assert.ok(alignment(overlaid) > alignment(unprompted) * 2,
+  // The unprompted baseline used to be the listing HEAD (a cold slate tied on
+  // every score and fell through to pool order — mostly outerwear, alignment
+  // ~0.2), which made 2x an artefact of that order rather than a law. Ties now
+  // break on an id hash (bridges.js), so the baseline is a fair sample of the
+  // catalog (~0.33) and the prompt's page sits at ~0.59: routed, by half again.
+  assert.ok(alignment(overlaid) > alignment(unprompted) * 1.5,
     `the prompt must dominate the page (${alignment(overlaid).toFixed(3)} vs ${alignment(unprompted).toFixed(3)} unprompted)`);
   assert.ok(alignment(overlaid) >= alignment(seeded) * 0.9,
     `and must not rank worse than the seed it replaced (${alignment(overlaid).toFixed(3)} vs ${alignment(seeded).toFixed(3)})`);
