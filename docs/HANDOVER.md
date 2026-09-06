@@ -61,16 +61,18 @@ app runs with no database at all.
 
 ## 3. Current state
 
-*Verified 3 September 2026 against the live database and a green CI run.
-Re-verify with §4 rather than trusting this block — that is why it lists them.*
+*Steward rows verified 6 September 2026 against the live database; the
+messaging block below was verified 3 September. Re-verify with §4 rather than
+trusting this block — that is why it lists them.*
 
 | | |
 | --- | --- |
-| `main` | `18233c2` (#420) |
-| Production | **current** at that merge |
+| `main` | `015cf4e` (#425) — plus the docs PR that carries `docs/HANDOVER-2026-09-03.md` |
+| Production | **current** at `015cf4e` (`npm run deploy:check`) |
 | Schema | **v50** applied — v49 verified present (`product_tags_facet_ck` includes `mood`) |
 | CI | **alive.** Billing fixed 3 Sep; the full Postgres suite runs again |
-| Open PRs | **none of mine.** All six merged |
+| Open PRs | **none** |
+| The steward | **has hands** since 3 Sep — acts inside a declared boundary, runs on two schedules, ledgers every repair first. Read `docs/HANDOVER-2026-09-03.md` and `docs/steward-boundary-2026-09-03.md`. One owner paste is open: `CRON_SECRET` on Vercel, then redeploy |
 
 ### What is open
 
@@ -95,13 +97,17 @@ from owner decision #2.
 ## 4. Verify all of the above yourself
 
 ```bash
-npm test                # 1,299 unit tests, no database needed
+npm test                # 1,413 tests (the seven search instruments included), no database needed
 npm run build           # production build
 npm run deploy:check    # is production actually serving main?
 npm run audit:nav       # navigability debt, measured
 npm run docs:codemap    # regenerate the code map
-npm run steward         # 12 read-only checks against the live database
+npm run steward         # the board: 12 checks against the live database (reads only)
+npm run steward -- --plan   # ...and what the hands WOULD do (still reads only)
 ```
+
+The hands themselves (`--act`, `--confirm=<id>`, `--revert=<id>`, `--ledger`)
+and the two schedules are in `docs/HANDOVER-2026-09-03.md` §5.
 
 `npm run steward` needs `DATABASE_URL` in the environment. **`npm test` does
 not load `.env.local` — only Next.js does.** That has hidden whole test arms
@@ -144,6 +150,7 @@ attention. Those remain true regardless of date, which is why the chain says
 | `HANDOVER-2026-08-20.md` | Consent moment (D4) ruled and specified |
 | `HANDOVER-2026-08-21.md` | Search comprehension rounds; the steward ships |
 | `HANDOVER-2026-08-23.md` | The account split, then the whole DM subsystem, then an adversarial review of it |
+| `HANDOVER-2026-09-03.md` | The steward gets hands; a `node_modules` symlink committed by mistake; two sessions in one working tree; verified by 24 agents on 6 Sep |
 
 **The house convention:** never create a second same-day handover — amend the
 existing one in place.

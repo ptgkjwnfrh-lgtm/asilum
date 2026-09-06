@@ -169,6 +169,10 @@ test("an act is one transaction: the ledger row, then the mutation, then commit"
   const act = txs[1];
   assert.match(act.statements[0].sql, /insert into steward_actions/, "the ledger row is the FIRST statement");
   assert.match(act.statements[1].sql, /^\s*delete from edges/, "the mutation comes after it");
+  // The delete re-checks what the plan selected on, not just the key. The
+  // stub honours any predicate, so this can only be asserted by text.
+  assert.match(act.statements[1].sql, /not exists \(select 1 from items i where i\.id = e\.a\)/,
+    "an edge whose item came back between plan and act must not be deleted");
   assert.equal(act.statements.length, 2);
   assert.equal(act.committed, true);
   const row = act.statements[0].params;
@@ -239,6 +243,8 @@ test("holding a piece under review guards on 'visible' and records the prior sta
   const upd = txs[1].statements[1];
   assert.match(upd.sql, /set moderation_status = 'under_review'/);
   assert.match(upd.sql, /and moderation_status = 'visible'/);
+  assert.match(upd.sql, /price is null or price <= 0 or title is null/,
+    "a piece someone priced between plan and act must not be held");
   assert.deepEqual(JSON.parse(txs[1].statements[0].params[9]), [{ id: "i9", moderation_status: "visible" }]);
 });
 
@@ -300,7 +306,7 @@ test("schemaVersionsFrom reads NAMED migrations — anchored on the real directo
   const files = readdirSync(ROOT + "supabase");
   const versions = schemaVersionsFrom(files);
   // The exact failure this closes: the old matcher saw one file (v2) in a
-  // directory of forty, and the ledger check compared production to nothing.
+  // directory of fifty, and the ledger check compared production to nothing.
   assert.ok(versions.length >= 40, `parsed ${versions.length} of ${files.length} files — the matcher is blind again`);
   assert.ok(versions.includes(49), "schema-v49-tag-facets.sql must be seen");
   assert.ok(versions.includes(50), "schema-v50-steward-ledger.sql must be seen");
