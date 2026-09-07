@@ -14,7 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -35,11 +35,10 @@ const CHUNK = 24;
 // After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
 // the cards the reader has not reached — below the fold, never examined — are
 // regenerated from the taste as it now stands (lib/feed/rechunk.js).
-// A card within one full screen below the viewport counts as reached: a
-// favourite inserts related cards above the fold and pushes what was on
-// screen a row down, and a card the reader was just looking at must never be
-// the one a re-chunk replaces (the examined set alone cannot promise that —
-// a card that was only half visible is never marked examined).
+// A card within one full screen below the viewport counts as reached: a card
+// the reader was just looking at, or is about to, must never be the one a
+// re-chunk replaces (the examined set alone cannot promise that — a card that
+// was only half visible is never marked examined).
 const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.innerHeight);
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
@@ -590,12 +589,18 @@ export default function Home() {
   // reader finds them where the feed continues. With nothing replaceable
   // (end of the list, everything seen) they append.
   function insertRelatedAfter(afterId, newItems, cap = 4) {
+    // Only for a favourite made ON the curated page: elsewhere the geometry
+    // read below is another tab's, and the curated list must not change
+    // unseen. A favourite on a card that is not in the list (the modal's
+    // related strip) adds nothing either.
+    if (tabRef.current !== "curated") return;
     const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, 0);
     setItems((prev) => {
       const have = new Set(prev.map((x) => x.id));
       const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
       if (!add.length) return prev;
       const idx = prev.findIndex((x) => x.id === afterId);
+      if (idx < 0) return prev;
       const dropped = [];
       for (let k = Math.max(0, idx + 1); k < prev.length && dropped.length < add.length; k++) {
         const id = prev[k].id;
@@ -736,10 +741,11 @@ export default function Home() {
   // real state).
   const zones = items.reduce(
     (z, it) => {
-      z[it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
+      // A related piece (after a favourite) is neither zone nor core.
+      z[it._via ? "related" : it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
       return z;
     },
-    { core: 0, discovery: 0, reach: 0, catalog: 0 },
+    { core: 0, discovery: 0, reach: 0, catalog: 0, related: 0 },
   );
 
   return (
@@ -780,7 +786,7 @@ export default function Home() {
       <>
           {items.length > 0 && (
             <span className="cvside ctside" aria-hidden="true">
-              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach} · CATALOG {zones.catalog}
+              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach} · CATALOG {zones.catalog}{zones.related ? ` · RELATED ${zones.related}` : ""}
             </span>
           )}
           <span className="cvside cvsider ctsider" aria-hidden="true">
@@ -1175,7 +1181,8 @@ export default function Home() {
 function useColumnCount() {
   const [count, setCount] = useState(4);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 729px)");
+    // The same breakpoint as the stylesheet's mobile rules (globals.css).
+    const mq = window.matchMedia("(max-width: 760px)");
     const sync = () => {
       if (mq.matches) { setCount(2); return; }
       const css = getComputedStyle(document.documentElement);
@@ -1203,12 +1210,16 @@ function useColumnCount() {
   return count;
 }
 
-// Explicit columns: item i in column i mod N. A card's column depends on
-// its index alone, so replacing a card below the fold moves nothing above
-// it (see .grid.gcols in globals.css).
+// Explicit columns with a memory: a card keeps the column it was first
+// placed in, a newcomer takes the shortest, and cards keep list order within
+// a column — so a replacement lands where the replaced card stood and a
+// removal (PASS) shortens only its own column (lib/feed/rechunk.js
+// placeInColumns; see .grid.gcols in globals.css).
 function Columns({ items, count, render, children }) {
-  const cols = Array.from({ length: Math.max(1, count) }, () => []);
-  items.forEach((it, i) => cols[i % cols.length].push(it));
+  const n = Math.max(1, count);
+  const memoRef = useRef({ count: n, map: new Map() });
+  if (memoRef.current.count !== n) memoRef.current = { count: n, map: new Map() };
+  const cols = placeInColumns(items, n, memoRef.current.map);
   return (
     <div className="grid gcols">
       {cols.map((col, c) => <div className="gcol" key={c}>{col.map(render)}</div>)}

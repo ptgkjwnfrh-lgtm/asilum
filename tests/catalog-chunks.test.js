@@ -22,7 +22,7 @@ import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.j
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
-import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
 
 const PROFILE = () => ({
   long: { MINIMAL: 0.9, TAILORED: 0.6, UTILITARIAN: 0.3 },
@@ -523,4 +523,32 @@ test("C25 applyRechunk replaces planned cards in place and touches nothing else"
   assert.deepEqual(many.slice(4).map((x) => x.id), prev.slice(4).map((x) => x.id));
   // Nothing planned → nothing moves, fresh items append up to the ceiling.
   assert.deepEqual(applyRechunk(prev.slice(0, 3), [], fresh.slice(0, 2), { max: 4 }).map((x) => x.id), ["p0", "p1", "p2", "f0"]);
+});
+
+test("C27 a column is a card's state: a removal shortens only its own column, a replacement lands where the old card stood", () => {
+  const items = Array.from({ length: 12 }, (_, i) => ({ id: `c${i}` }));
+  const memo = new Map();
+  const first = placeInColumns(items, 4, memo);
+  assert.deepEqual(first.map((col) => col.map((x) => x.id)), [
+    ["c0", "c4", "c8"], ["c1", "c5", "c9"], ["c2", "c6", "c10"], ["c3", "c7", "c11"],
+  ], "a fresh page is round-robin");
+  // PASS on c1 (column 1): the other three columns are byte-identical.
+  const afterPass = placeInColumns(items.filter((x) => x.id !== "c1"), 4, memo);
+  assert.deepEqual(afterPass[0].map((x) => x.id), ["c0", "c4", "c8"]);
+  assert.deepEqual(afterPass[1].map((x) => x.id), ["c5", "c9"]);
+  assert.deepEqual(afterPass[2].map((x) => x.id), ["c2", "c6", "c10"]);
+  assert.deepEqual(afterPass[3].map((x) => x.id), ["c3", "c7", "c11"]);
+  // A newcomer takes the shortest column, in list order within it.
+  const withNew = placeInColumns([...items.filter((x) => x.id !== "c1"), { id: "n1" }], 4, memo);
+  assert.deepEqual(withNew[1].map((x) => x.id), ["c5", "c9", "n1"]);
+  // An in-place replacement (applyRechunk) lands where the replaced card stood.
+  const replaced = applyRechunk(items, ["c6"], [{ id: "f1" }], { max: 300 });
+  const memo2 = new Map();
+  placeInColumns(items, 4, memo2);
+  const cols = placeInColumns(replaced, 4, memo2);
+  assert.deepEqual(cols[2].map((x) => x.id), ["c2", "f1", "c10"], "f1 sits exactly where c6 was");
+  assert.deepEqual(cols[0].map((x) => x.id), ["c0", "c4", "c8"]);
+  // A column-count change forgets the memory (the caller discards the map).
+  assert.equal(placeInColumns(items, 3, new Map()).length, 3);
+  assert.equal(placeInColumns([], 4, new Map()).every((c) => c.length === 0), true);
 });
