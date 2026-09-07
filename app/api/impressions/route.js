@@ -13,7 +13,7 @@
 // report per serve, ids capped, unknown ids dropped.
 
 import { NextResponse } from "next/server";
-import { applyExaminationReport, findServe } from "../../../lib/brain/index.js";
+import { applyExaminationReport, findServe, reportedIds } from "../../../lib/brain/index.js";
 import { examinedBridgeCounts, examinedImpressionsEnabled, MAX_EXAMINED_PER_SERVE } from "../../../lib/brain/attribution.js";
 import { mutateProfile, getProfile, bumpPopularity } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
@@ -68,23 +68,32 @@ export async function POST(req) {
     if (known && last.reported) {
       return NextResponse.json({ userId, applied: 0, dropped: 0, duplicate: true });
     }
-    const servedBridges = known ? (last.bridges || {}) : {};
-    const { counts, examined: n, dropped: d } = examinedBridgeCounts(examined, servedBridges);
-    applied = n; dropped = d;
+    // A serve the ring no longer holds is said so, not folded into "dropped".
+    if (!known) return NextResponse.json({ userId, applied: 0, dropped: examined.length, unknown: true });
+    const servedBridges = last.bridges || {};
+    // One eye counts once: an id another recorded serve already had examined
+    // is not counted again against this one (a card re-served under a filter
+    // is served twice and seen once).
+    const already = reportedIds(before);
+    const fresh = examined.filter((id) => !already.has(String(id)));
+    const { counts, examined: n, dropped: d } = examinedBridgeCounts(fresh, servedBridges);
+    applied = n; dropped = d + (examined.length - fresh.length);
     if (n > 0) {
-      await mutateProfile(userId, (current) => applyExaminationReport(current, serveId, counts));
+      const counted = fresh.filter((id) => servedBridges[String(id)]);
+      await mutateProfile(userId, (current) => applyExaminationReport(current, serveId, counts, counted));
       // (Aug 6) Global exposure is counted HERE, from slots this identity
       // actually examined and was actually served — one person counts once
       // per item, enforced by the ledger's primary key. The old rule counted
       // every served slot on a GET, which let one identity aim ~3600
       // impressions a minute at a chosen item and bury it for everyone.
-      const seenIds = [...new Set(examined.map(String))].filter((id) => servedBridges[id]);
+      const seenIds = [...new Set(fresh.map(String))].filter((id) => servedBridges[id]);
       if (seenIds.length) {
         await bumpPopularity(seenIds.map((id) => ({ id, imp: 1 })), userId).catch(() => {});
       }
     }
   } catch {
-    // A lost beacon must never fail the page — the fallback denominator holds.
+    // A lost beacon must never fail the page. It under-counts the examined
+    // denominator for this serve; nothing else falls back.
     return NextResponse.json({ userId, applied: 0, dropped: 0 });
   }
   return NextResponse.json({ userId, applied, dropped });

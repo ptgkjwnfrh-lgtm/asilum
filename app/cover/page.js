@@ -74,7 +74,9 @@ export default function CoverPage() {
     // person moved on fill slots; the rest stay VACANT (owner order,
     // Aug 13: the hotlist is held for designer accounts) — the caller's
     // own feed never stands in.
-    authorizedFetch("/api/feed?user=" + encodeURIComponent(user))
+    // The cover shows nine; a default 60-item serve would mark fifty-one
+    // never-shown cards seen and take a serve-ring entry no beacon reports.
+    authorizedFetch("/api/feed?user=" + encodeURIComponent(user) + "&limit=12")
       .then((r) => r.json())
       .then((d) => setFeed(((d && d.items) || []).slice(0, 9)))
       .catch(() => {});

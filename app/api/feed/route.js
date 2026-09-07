@@ -83,9 +83,6 @@ export async function GET(req) {
   const epsilonParam = searchParams.get("epsilon") === "1";
   const limit = clampChunkLimit(searchParams.get("limit"));
   const cursorParam = (searchParams.get("cursor") || "").slice(0, CURSOR_MAX_LEN) || null;
-  // A re-chunk: the reader acted, the taste moved, and the client wants the
-  // taste lanes ranked afresh from the top — the listing lane keeps its place.
-  const freshTaste = searchParams.get("rechunk") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
   const craving = parseCravingContext({
@@ -249,7 +246,6 @@ export async function GET(req) {
       // lane was consumed and the next chunk continues from there. Either way
       // a scroll moves forward; only WHERE the memory lives differs.
       rotation: guidanceEnabled && observing ? "memory" : "cursor",
-      freshTaste,
     },
     pool
   );
@@ -338,13 +334,12 @@ export async function GET(req) {
       // short of its quota fell back to core, and the reader can see that.
       quotas,
       catalog: catalog
-        ? { share: CATALOG_SHARE, quota: catalog.quota, count: catalog.count, cursor: catalog.cursor, nextCursor: catalog.nextCursor, exhausted: catalog.exhausted }
+        ? { share: CATALOG_SHARE, quota: catalog.quota, count: catalog.count, deferred: !!catalog.deferred, cursor: catalog.cursor, nextCursor: catalog.nextCursor, exhausted: catalog.exhausted }
         : null,
-      // Which memory rotated the taste lanes for this chunk, and (under cursor
-      // rotation) how far each lane now stands. Honest about the mechanism.
+      // Which memory rotated the taste lanes for this chunk: the server's own
+      // record ("memory", OBSERVE) or only the served filter the cursor
+      // carries ("cursor", GENERAL and anonymous). Honest about the mechanism.
       rotation: catalog ? catalog.rotation : "memory",
-      taste: catalog ? catalog.taste : null,
-      fresh: freshTaste,
     },
     count: items.length,
     items: items.map(publicProduct).filter(Boolean),

@@ -540,6 +540,14 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 /* ---- Masonry feed (Pinterest columns, Grailed skin) ---- */
 
 .grid { columns: var(--ed-grid-cols, 4) var(--ed-grid-colw, 240px); column-gap: var(--ed-grid-gap, 20px); }
+/* (7 Sep) The catalog grid is EXPLICIT columns: card i sits in column i mod N,
+   so a card's column depends on its index, never on the heights of the cards
+   before it. CSS multicol balanced by height, which meant replacing a card
+   below the fold re-flowed every column break and ~30% of the cards on
+   screen hopped a column (a verifier's measurement). Row order is now visual
+   order too: the reader reads left to right, top to bottom. */
+.grid.gcols { columns: auto; column-gap: 0; display: flex; align-items: flex-start; gap: var(--ed-grid-gap, 20px); }
+.grid.gcols .gcol { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
 .card {
   break-inside: avoid; margin: 0 0 var(--ed-card-gap, 26px); background: none;
   display: block;
@@ -727,6 +735,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 @media (max-width: 760px) {
   .main { padding: calc(var(--head-h) + 14px) 14px 90px; }
   .grid { columns: 2 150px; column-gap: 12px; }
+  .grid.gcols { gap: 12px; }
 }
 
 /* ---- The Stylist: outfit slates (de-bubbled Aug 12: rack-rule tops,

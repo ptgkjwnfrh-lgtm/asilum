@@ -22,7 +22,7 @@ import { readJsonRequest } from "../../../lib/security/json.js";
 
 export const dynamic = "force-dynamic";
 
-const VALID = new Set(["bag", "share", "save", "favorite", "dwell", "skip", "hide"]);
+const VALID = new Set(["bag", "share", "save", "favorite", "open", "dwell", "skip", "hide"]);
 const POSITIVE = new Set(["bag", "share", "save", "favorite"]);
 // Actions whose considered-time is a real signal: dwell strength, and the
 // fast-skip rejection multiplier for skip/hide (audit #3).

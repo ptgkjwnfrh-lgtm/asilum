@@ -178,18 +178,18 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*18 files, 4,724 lines*
+*18 files, 4,720 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 747 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
-| `bridges.js` | 682 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
+| `index.js` | 780 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `bridges.js` | 627 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
 | `lexicon.js` | 368 | ASiLUM brain — LEXICON: maps non-clothing signals to aesthetic tag vectors. This is what lets the moodboard 'think' — turning a color, a music genre, a |
 | `sizing.js` | 309 | Asilum "size brain" — a normalization layer that maps any labeled size (mens / womens / luxury numeric) onto a common "fits like US __" scale, |
 | `popularity.js` | 276 | the popularity bridge's counters (Aug 6, 2026). |
-| `chunk.js` | 251 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
+| `chunk.js` | 269 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
 | `stylist.js` | 176 | THE STYLIST — a branch of the brain that assembles full outfits. Consumes the same flat tag vectors as every bridge, plus category, era and |
 | `noise.js` | 173 | noise-floor estimators for the measurement batteries (r26, audit #26). |
 | `tuning.js` | 153 | bounded bridge self-tuning (r16). |
@@ -305,11 +305,11 @@ Nothing here may import from `app/`.
 | `provider.js` | 71 | the v1 provider adapter (asterisk-boost r4). Plain fetch against an embeddings REST API; NO new runtime dependencies |
 
 ### `lib/events/`
-*1 file, 112 lines*
+*1 file, 113 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 112 | Canonical user-event vocabulary for the Alpha Learning Brain. Pure module (no I/O) — safe to import from client or server. |
+| `index.js` | 113 | Canonical user-event vocabulary for the Alpha Learning Brain. Pure module (no I/O) — safe to import from client or server. |
 
 ### `lib/fashion-taxonomy/`
 *1 file, 42 lines*
@@ -319,11 +319,11 @@ Nothing here may import from `app/`.
 | `index.js` | 42 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
 
 ### `lib/feed/`
-*2 files, 121 lines*
+*2 files, 131 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `rechunk.js` | 81 | which cards a re-chunk may replace. Pure; client-safe. |
+| `rechunk.js` | 91 | which cards a re-chunk may replace. Pure; client-safe. |
 | `index.js` | 40 | Feed system foundation. The LIVE product feed is /api/feed (Alpha Learning Bridge): zoned core/discovery/reach, seen-item rotation, 2-per-brand cap, |
 
 ### `lib/images/`
@@ -638,11 +638,11 @@ request becomes trusted arguments.
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
 
 ### `app/api/feed/`
-*1 file, 356 lines*
+*1 file, 351 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 356 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
+| `route.js` | 351 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
 *1 file, 71 lines*
@@ -659,11 +659,11 @@ request becomes trusted arguments.
 | `route.js` | 66 | the public door to Feature G's impersonation track (gap 1, 18 Aug). |
 
 ### `app/api/impressions/`
-*1 file, 92 lines*
+*1 file, 101 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 92 | POST /api/impressions — the examined-slot beacon (r19). Body: { user, serveId, examined: [itemId, ...] } |
+| `route.js` | 101 | POST /api/impressions — the examined-slot beacon (r19). Body: { user, serveId, examined: [itemId, ...] } |
 
 ### `app/api/ingest/`
 *1 file, 47 lines*
@@ -863,11 +863,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,423 lines*
+*7 files, 2,506 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1221 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1304 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -948,11 +948,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `TransmissionText.jsx` | 32 | One transmission's body, with #hashtags and @mentions as live links (owner directive, HANDOVER-2026-08-14 backlog 3). Every surface that |
 
 ### `app/cover/`
-*3 files, 465 lines*
+*3 files, 467 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 397 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
+| `page.js` | 399 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
 | `ledger.js` | 43 | The FRONT COVER's system-ledger folio, as a pure function so it is testable without a browser (same reason /piece/[id]/handoff.js sits beside its page). |
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
@@ -1134,4 +1134,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 51b5e5e — 367 source files, 63,450 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 1ee6d0d — 367 source files, 63,546 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
