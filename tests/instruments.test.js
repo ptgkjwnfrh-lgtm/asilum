@@ -20,10 +20,10 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 test("every instrument the runner names exists", () => {
   for (const i of INSTRUMENTS) assert.ok(existsSync(ROOT + i.script), `${i.script} is missing`);
-  assert.equal(INSTRUMENTS.length, 7);
+  assert.equal(INSTRUMENTS.length, 8);
 });
 
-test("the seven instruments pass", { timeout: 600000 }, async () => {
+test("the instruments pass", { timeout: 600000 }, async () => {
   const run = await runInstruments({ root: ROOT });
   const failed = run.results.filter((r) => !r.ok);
   assert.deepEqual(

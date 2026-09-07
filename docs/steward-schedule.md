@@ -51,7 +51,7 @@ records. **This workflow does not use them.** Its `permissions: contents: read`
 is the outside proof, and `scripts/steward.mjs` never acts unless it is passed
 `--act`, which the workflow does not pass. What this schedule does that the
 CLI does not: in GitHub Actions (`GITHUB_ACTIONS=true`) the run records
-itself in `steward_runs` and runs the seven instruments, so movement between
+itself in `steward_runs` and runs the eight instruments, so movement between
 nights has a history to compare against. Recording a run is the one write it
 makes, and it is a write about the steward, not about the catalog.
 
