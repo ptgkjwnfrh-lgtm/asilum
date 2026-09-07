@@ -30,5 +30,5 @@ test("the instruments pass", { timeout: 600000 }, async () => {
     failed.map((r) => `${r.id} (exit ${r.code}${r.defects != null ? `, ${r.defects} defects` : ""}): ${r.last}`),
     [],
     "an instrument reported a defect — read its own output, it names the query");
-  assert.equal(run.pass, 7);
+  assert.equal(run.pass, INSTRUMENTS.length);
 });
