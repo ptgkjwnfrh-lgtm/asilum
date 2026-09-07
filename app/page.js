@@ -259,10 +259,13 @@ export default function Home() {
   const cursorRef = useRef(null);
   const actionsSinceChunkRef = useRef(0);
 
-  const feedQS = useCallback((user, { limit, cursor } = {}) => {
+  const feedQS = useCallback((user, { limit, cursor, rechunk } = {}) => {
     const qs = new URLSearchParams({ user, epsilon: epsilon ? "1" : "0", q: promptRef.current });
     if (limit) qs.set("limit", String(limit));
     if (cursor) qs.set("cursor", cursor);
+    // A re-chunk asks for the taste lanes ranked afresh; the listing lane
+    // continues from the cursor either way.
+    if (rechunk) qs.set("rechunk", "1");
     if (boardParamRef.current) qs.set("board", boardParamRef.current);
     if (filters.category) qs.set("category", filters.category);
     if (filters.maxPrice) qs.set("maxPrice", filters.maxPrice);
@@ -361,7 +364,7 @@ export default function Home() {
     actionsSinceChunkRef.current = 0;
     const isCurrent = watchRequest(feedGenRef);
     try {
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current, rechunk: true });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;

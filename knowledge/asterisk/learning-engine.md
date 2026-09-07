@@ -42,6 +42,19 @@ one dominant tag). The lane's cursor comes back as `chunk.catalog.nextCursor`
 and ends with `exhausted: true` rather than wrapping. Hard filters
 (category/maxPrice/fit) narrow the listing the cursor pages through.
 
+Rotation between chunks has two modes, reported as `chunk.rotation`:
+`memory` when the server persists served ids (OBSERVE consent — the seen
+penalty rotates the taste lanes, as always) and `cursor` when it persists
+nothing (GENERAL, anonymous — D4). Under `cursor` the SAME opaque cursor also
+carries how far each taste lane (core / discovery / reach) was consumed, plus
+a bounded list of candidates passed for the brand cap alone (retried first
+next chunk); everything earlier chunks walked past in any lane is excluded
+from every lane, so a scroll never repeats an item until the pool is dry —
+then, and only then, the page is filled with repeats. `?rechunk=1` (the
+client's re-chunk after actions) restarts the taste lanes at the top of the
+NEW ranking while the listing lane keeps its place. The server remembers
+nothing in either case that it did not before.
+
 Learning between chunks: every /api/interaction lands on the profile before
 the next /api/feed is built, so each chunk is generated from the reader's
 actions so far. The client (app/page.js, lib/feed/rechunk.js) regenerates

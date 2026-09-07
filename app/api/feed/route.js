@@ -83,6 +83,9 @@ export async function GET(req) {
   const epsilonParam = searchParams.get("epsilon") === "1";
   const limit = clampChunkLimit(searchParams.get("limit"));
   const cursorParam = (searchParams.get("cursor") || "").slice(0, CURSOR_MAX_LEN) || null;
+  // A re-chunk: the reader acted, the taste moved, and the client wants the
+  // taste lanes ranked afresh from the top — the listing lane keeps its place.
+  const freshTaste = searchParams.get("rechunk") === "1";
   const q = (searchParams.get("q") || "").slice(0, 400);
   const boardId = (searchParams.get("board") || "").slice(0, 80);
   const craving = parseCravingContext({
@@ -240,6 +243,13 @@ export async function GET(req) {
       // price filter narrows the listing the cursor pages through, not just
       // the taste lanes around it.
       catalog: { cursor: cursorParam, ordered: listingOrder(pool) },
+      // D4: with OBSERVE the server remembers what it served and the seen
+      // penalty rotates the taste lanes. Without it (GENERAL, anonymous) the
+      // server remembers nothing, so the cursor carries how far each taste
+      // lane was consumed and the next chunk continues from there. Either way
+      // a scroll moves forward; only WHERE the memory lives differs.
+      rotation: guidanceEnabled && observing ? "memory" : "cursor",
+      freshTaste,
     },
     pool
   );
@@ -327,6 +337,11 @@ export async function GET(req) {
       catalog: catalog
         ? { share: CATALOG_SHARE, quota: catalog.quota, count: catalog.count, cursor: catalog.cursor, nextCursor: catalog.nextCursor, exhausted: catalog.exhausted }
         : null,
+      // Which memory rotated the taste lanes for this chunk, and (under cursor
+      // rotation) how far each lane now stands. Honest about the mechanism.
+      rotation: catalog ? catalog.rotation : "memory",
+      taste: catalog ? catalog.taste : null,
+      fresh: freshTaste,
     },
     count: items.length,
     items: items.map(publicProduct).filter(Boolean),

@@ -15,6 +15,7 @@ import {
   CATALOG_SHARE, CHUNK_MIN, CHUNK_MAX, CHUNK_DEFAULT, CURSOR_MAX_LEN,
   chunkQuotas, chunkLayout, spreadSlots, clampChunkLimit,
   listingOrder, listingKey, compareKeys, encodeCursor, decodeCursor, catalogLane,
+  normalizeTaste, TASTE_OFFSET_MAX,
 } from "../lib/brain/chunk.js";
 import { assembleChunk, assembleFeed, vecSim } from "../lib/brain/bridges.js";
 import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.js";
@@ -134,7 +135,10 @@ test("C7 the cursor continues the lane without repeating and ends honestly", () 
   let chunks = 0;
   let exhaustedAt = null;
   while (chunks < 40) {
-    const { items, catalog } = assembleChunk(pool, taste, { limit: 24, popularity: {}, catalog: { cursor } });
+    // Memory rotation: the lane's own claims, independent of the taste lanes
+    // (under cursor rotation the lane also passes what the taste lanes served
+    // — C19 covers that).
+    const { items, catalog } = assembleChunk(pool, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "memory" });
     chunks++;
     assert.equal(items.length, 24, "the page is always full, lane or no lane");
     const lane = laneOf(items);
@@ -321,4 +325,107 @@ test("C18 idsBelowFold reads the cards' geometry against the viewport", () => {
   assert.deepEqual([...idsBelowFold(fakeDoc, 900, 300)], ["below"]);
   assert.deepEqual([...idsBelowFold(fakeDoc, 900, 0)], ["edge", "below"]);
   assert.equal(idsBelowFold(null, 900).size, 0);
+});
+
+// ---- cursor rotation: scrolling forward without server memory ------------------
+
+test("C19 under cursor rotation twelve chunks never repeat an item — no memory on the server, the cursor carries it", () => {
+  const taste = tasteVector(PROFILE());
+  for (const t of [taste, {}]) {
+    let cursor = null;
+    const served = new Set();
+    let total = 0;
+    for (let k = 0; k < 12; k++) {
+      const { items, catalog } = assembleChunk(CATALOG, t, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+      assert.equal(items.length, 24);
+      for (const it of items) {
+        assert.ok(!served.has(it.id), `${it.id} repeated at chunk ${k + 1} (${it._zone})`);
+        served.add(it.id);
+      }
+      total += items.length;
+      assert.equal(catalog.rotation, "cursor");
+      assert.ok(catalog.taste.core > 0, "the cursor carries how far core was consumed");
+      cursor = catalog.nextCursor;
+    }
+    assert.equal(served.size, total);
+    const c = decodeCursor(cursor);
+    // Core slots are also filled from the retry queue (brand-capped
+    // candidates an earlier chunk passed), so the pointer advances less than
+    // one per core slot — but it must advance, and the queue must stay bounded.
+    assert.ok(c.taste.core >= 60, `core offset advanced across chunks (${c.taste.core})`);
+    assert.ok(c.taste.passed.length <= 60);
+  }
+});
+
+test("C20 a re-chunk (freshTaste) restarts the taste lanes at the top while the lane keeps its place", () => {
+  const taste = tasteVector(PROFILE());
+  const first = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: null }, rotation: "cursor" });
+  const cursor = first.catalog.nextCursor;
+  const scrolled = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+  const fresh = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor", freshTaste: true });
+  const core = (r) => r.items.filter((it) => it._zone === "core").map((it) => it.id);
+  assert.notDeepEqual(core(scrolled), core(first), "a scroll continues down the ranking");
+  assert.deepEqual(core(fresh).slice(0, 5), core(first).slice(0, 5), "a re-chunk ranks from the top again");
+  assert.deepEqual(laneOf(fresh.items).map((it) => it.id), laneOf(scrolled.items).map((it) => it.id), "the listing lane continues from the cursor either way");
+  assert.deepEqual(decodeCursor(fresh.catalog.nextCursor).taste, fresh.catalog.taste);
+});
+
+test("C21 memory rotation ignores the cursor's taste offsets — the seen penalty is the rotation there", () => {
+  const taste = tasteVector(PROFILE());
+  const withOffsets = encodeCursor({ ...listingKey(listingOrder(CATALOG)[10]), taste: { core: 100, discovery: 40, reach: 9 } });
+  const mem = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: withOffsets }, rotation: "memory" });
+  const top = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: null }, rotation: "memory" });
+  const core = (r) => r.items.filter((it) => it._zone === "core").map((it) => it.id);
+  assert.deepEqual(core(mem).slice(0, 8), core(top).slice(0, 8));
+  assert.equal(mem.catalog.rotation, "memory");
+  assert.deepEqual(mem.catalog.taste, { core: 0, discovery: 0, reach: 0, passed: [] });
+  assert.deepEqual(decodeCursor(mem.catalog.nextCursor).taste, { core: 0, discovery: 0, reach: 0, passed: [] });
+});
+
+test("C22 a pool smaller than the scroll still fills every page — repeats only once everything new is gone", () => {
+  const tiny = CATALOG.slice(0, 30);
+  let cursor = null;
+  const served = new Set();
+  for (let k = 0; k < 3; k++) {
+    const { items, catalog } = assembleChunk(tiny, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+    assert.equal(items.length, 24, `chunk ${k + 1} is full`);
+    assert.equal(new Set(items.map((it) => it.id)).size, 24, "never the same id twice on one page");
+    if (k === 0) for (const it of items) served.add(it.id);
+    if (k === 1) {
+      const fresh = items.filter((it) => !served.has(it.id)).length;
+      assert.ok(fresh >= 5, `the six never-served items come first (${fresh} new)`);
+    }
+    cursor = catalog.nextCursor;
+  }
+});
+
+test("C23 taste offsets in a cursor are bounded and garbage-tolerant", () => {
+  assert.deepEqual(normalizeTaste(null), { core: 0, discovery: 0, reach: 0, passed: [] });
+  assert.deepEqual(normalizeTaste({ core: -5, discovery: "x", reach: Infinity, passed: "x" }), { core: 0, discovery: 0, reach: 0, passed: [] });
+  assert.deepEqual(normalizeTaste({ core: 1e9, passed: [1, "", "ok"] }), { core: TASTE_OFFSET_MAX, discovery: 0, reach: 0, passed: ["ok"] });
+  assert.equal(normalizeTaste({ passed: Array.from({ length: 500 }, (_, i) => `p${i}`) }).passed.length, 60, "the passed list is bounded");
+  const raw = Buffer.from(JSON.stringify({ v: 1, id: "syn-0001", t: 0, taste: "nope" })).toString("base64url");
+  assert.deepEqual(decodeCursor(raw).taste, { core: 0, discovery: 0, reach: 0, passed: [] });
+  const end = decodeCursor(encodeCursor({ end: true, taste: { core: 3 } }));
+  assert.equal(end.end, true);
+  assert.equal(end.taste.core, 3);
+  // An end cursor with huge offsets still serves a full page.
+  const { items } = assembleChunk(CATALOG, {}, { limit: 24, popularity: {}, catalog: { cursor: encodeCursor({ end: true, taste: { core: 4000, discovery: 4000, reach: 4000 } }) }, rotation: "cursor" });
+  assert.equal(items.length, 24);
+});
+
+test("C24 a maximal cursor — full skip and passed lists with long ids — survives the length ceiling", () => {
+  const id = (k) => `source:${"x".repeat(30)}:${String(k).padStart(6, "0")}`;
+  const pos = {
+    t: 1767225600000, id: id(0),
+    skip: Array.from({ length: 60 }, (_, k) => id(k + 1)),
+    taste: { core: 5000, discovery: 5000, reach: 5000, passed: Array.from({ length: 60 }, (_, k) => id(k + 100)) },
+  };
+  const raw = encodeCursor(pos);
+  assert.ok(raw.length < CURSOR_MAX_LEN, `${raw.length} < ${CURSOR_MAX_LEN}`);
+  const back = decodeCursor(raw);
+  assert.equal(back.id, id(0));
+  assert.equal(back.skip.length, 60);
+  assert.equal(back.taste.passed.length, 60);
+  assert.equal(back.taste.core, 5000);
 });
