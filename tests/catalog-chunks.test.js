@@ -18,7 +18,7 @@ import {
   ServedFilter,
 } from "../lib/brain/chunk.js";
 import { assembleChunk, assembleFeed, vecSim } from "../lib/brain/bridges.js";
-import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.js";
+import { buildFeed, learn, markSeen, tasteVector, SERVE_ZONES } from "../lib/brain/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
@@ -634,4 +634,25 @@ test("C31 placeInColumns: a duplicated id is one card, and a height weight balan
   const byHeight = placeInColumns(mix, 3, new Map(), tall);
   const heights = byHeight.map((col) => col.reduce((h, it) => h + tall(it), 0));
   assert.ok(Math.max(...heights) - Math.min(...heights) <= 1, `balanced by height: ${heights}`);
+});
+
+test("C32 a cursorless reader with rotation memory cycles the pool — the seen penalty is graded by recency, never flat", () => {
+  const pool = Array.from({ length: 100 }, (_, i) => ({ id: `w${String(i).padStart(3, "0")}`, brand: `B${i % 10}`, tags: { MINIMAL: 0.5 + (i % 7) / 20 } }));
+  let profile = { long: { MINIMAL: 0.9 }, session: {}, _meta: { recent: [], seen: [] } };
+  const visits = [];
+  const seenAll = new Set();
+  for (let v = 0; v < 12; v++) {
+    const r = buildFeed({ profile, limit: 24, rotation: "memory", catalog: { cursor: null } }, pool);
+    assert.equal(r.items.length, 20, "ten brands at two each: the page holds twenty, the cap is the law");
+    visits.push(r.items.map((it) => it.id).join(","));
+    r.items.forEach((it) => seenAll.add(it.id));
+    profile = markSeen(profile, r.items.map((it) => it.id), pool.length);
+  }
+  assert.equal(seenAll.size, 100, "every item is reached across visits");
+  const later = visits.slice(6);
+  assert.ok(new Set(later).size >= later.length - 1, "once the ring holds the pool, visits keep cycling — not one page forever");
+  assert.notEqual(visits[6], visits[0], "visit seven is not visit one again");
+  // A Set still means a flat penalty (older callers).
+  const flat = assembleChunk(pool, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, seen: new Set(pool.map((it) => it.id)), catalog: { cursor: null }, rotation: "memory" });
+  assert.equal(flat.items.length, 20, "the cap, again");
 });
