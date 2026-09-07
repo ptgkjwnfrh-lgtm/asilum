@@ -164,16 +164,25 @@ export default function Home() {
   // unmarks it for the next tick. A refused request (429, 503, or a 401 from
   // a bearer that expired while the tab idled) stays sent —
   // that serve's denominator is simply under-counted; nothing falls back.
-  const flushBeacons = (user, { immediate = false } = {}) => {
+  const SETTLE_IDLE_TICKS = 6; // ~30 s: a reader who stopped mid-serve still reports
+  const flushBeacons = (user, { immediate = false, final = false } = {}) => {
     for (const serve of servesRef.current) {
       if (serve.sent || !serve.examined.size) continue;
       // A serve is reported ONCE (the server refuses a second report as a
-      // duplicate), so it is reported when its examined set has stopped
-      // growing for a tick — not at the first tick after the first card,
-      // which reported the first viewport of a sixty-card page and nothing
-      // the reader looked at after. On pagehide, whatever there is goes.
-      if (!immediate) {
-        if (serve.examined.size !== serve.settled) { serve.settled = serve.examined.size; continue; }
+      // duplicate), so it is reported when the reader has LEFT it: its
+      // examined set has stopped growing AND none of its cards is on screen
+      // (the dwell map knows), or it has sat unchanged for a while. Reporting
+      // at the first tick reported one viewport of a sixty-card page; a
+      // reader who pauses on each viewport would lose most of the rest.
+      // `immediate` (pagehide) and `final` (the page is being replaced) send
+      // whatever there is.
+      if (!immediate && !final) {
+        if (serve.examined.size !== serve.settled) { serve.settled = serve.examined.size; serve.idle = 0; continue; }
+        serve.idle = (serve.idle || 0) + 1;
+        const vis = dwellRef.current.vis;
+        let onScreen = false;
+        for (const id of serve.ids) { const rec = vis.get(id); if (rec && rec.start != null) { onScreen = true; break; } }
+        if (onScreen && serve.idle < SETTLE_IDLE_TICKS) continue;
       }
       serve.sent = true;
       const body = { user, serveId: serve.id, examined: [...serve.examined] };
@@ -200,8 +209,12 @@ export default function Home() {
   // Which tab is on screen, for handlers that resolve after a switch.
   const tabRef = useRef("curated");
   useEffect(() => { tabRef.current = tab; }, [tab]);
+  // The brain switch reloads the feed when it is TOGGLED (the event), not
+  // when this mirror first reads it on mount — a paused reader used to pay a
+  // second cold-load request for the mirror catching up.
+  const loadFeedRef = useRef(null);
   useEffect(() => {
-    const sync = () => setGuideOn(brainEnabled());
+    const sync = (e) => { setGuideOn(brainEnabled()); if (e && loadFeedRef.current) loadFeedRef.current(); };
     sync();
     window.addEventListener("asilum:brain", sync);
     return () => window.removeEventListener("asilum:brain", sync);
@@ -311,6 +324,8 @@ export default function Home() {
   // the next chunk says so instead of wrapping.
   const cursorRef = useRef(null);
   const cursorKeyRef = useRef("");
+  // After a refused reload, the earliest moment a scroll may retry it.
+  const retryAtRef = useRef(0);
   const actionsSinceChunkRef = useRef(0);
   // A reload in flight: appends and re-chunks wait for it rather than racing
   // it (a plan made against the old list must never be applied to the new).
@@ -344,7 +359,7 @@ export default function Home() {
     reloadingRef.current = true;
     // What was examined on the page being replaced is reported now, not lost
     // to the reset below.
-    if (observationOn()) flushBeacons(user);
+    if (observationOn()) flushBeacons(user, { final: true });
     const previousCursor = cursorRef.current;
     const previousKey = cursorKeyRef.current;
     cursorRef.current = null;
@@ -362,6 +377,7 @@ export default function Home() {
       if (!res.ok || !Array.isArray(data.items)) {
         cursorRef.current = previousCursor;
         cursorKeyRef.current = previousKey;
+        retryAtRef.current = Date.now() + 1000 * (Number(res.headers.get("Retry-After")) || 10);
         setNotice(res.status === 429 ? "the feed is busy — kept what you had" : "could not refresh the feed — kept what you had");
         return;
       }
@@ -399,15 +415,20 @@ export default function Home() {
     const user = uidRef.current;
     if (!user) return;
     if (loadingMoreRef.current || reloadingRef.current) { wantMoreRef.current = true; return; }
+    // The cursor's filter key differs from the current filters only when the
+    // last reload was refused: the page shows old-filter cards under new
+    // chips (or nothing at all). A scroll then retries the reload — no
+    // sooner than the server's Retry-After — rather than appending a page
+    // that matches neither. Checked before the empty/ceiling returns so an
+    // empty or full page can recover too.
+    if (cursorKeyRef.current !== feedQS(user).toString()) {
+      if (Date.now() >= retryAtRef.current) loadFeed(user);
+      return;
+    }
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
     // Ask for what can still render: a served card that never renders is
     // struck from the reader's listing walk unseen.
     const room = Math.min(CHUNK, MAX_RENDERED - itemsRef.current.length);
-    // The cursor's filter key differs from the current filters only when the
-    // last reload was refused: the page shows old-filter cards under new
-    // chips. A scroll then retries the reload rather than appending a page
-    // that matches neither.
-    if (cursorKeyRef.current !== feedQS(user).toString()) { loadFeed(user); return; }
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
     // for a feed that has since reloaded must be dropped, not appended.
@@ -429,7 +450,8 @@ export default function Home() {
       }
     } catch (e) { console.error(e); }
     finally { loadingMoreRef.current = false; }
-  }, [feedQS]);
+  }, [feedQS, loadFeed]);
+  useEffect(() => { loadFeedRef.current = loadFeed; }, [loadFeed]);
 
   // A deliberate action moved the taste; once enough of them have landed, the
   // part of the feed the reader has NOT reached is rebuilt from the taste as it
@@ -450,9 +472,15 @@ export default function Home() {
     // that tab's, and the curated list must not be rearranged unseen.
     if (tabRef.current !== "curated") return;
     if (loadingMoreRef.current || reloadingRef.current) return;
+    // A favourite's "more like this" cards count as reached — they are the
+    // reader's own ask — for the gate, the request size AND the placement.
+    const reached = () => new Set([
+      ...examinedAllRef.current,
+      ...itemsRef.current.filter((x) => x && x._via).map((x) => String(x.id)),
+    ]);
     const plan = planRechunk(
       itemsRef.current,
-      examinedAllRef.current,
+      reached(),
       idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN()),
     );
     if (!plan) return;
@@ -484,12 +512,8 @@ export default function Home() {
           // Re-plan against the live list and the geometry NOW, with no
           // minimum: the chunk is already served, so whatever can be placed
           // replaces something rather than being discarded at the ceiling.
-          const fresh = planRechunk(prev, examinedAllRef.current, belowNow, 0);
-          // The favourite's "more like this" cards were placed a moment ago,
-          // right below the fold — exactly where a re-plan drops first. They
-          // are the reader's own ask; they stay.
-          const related = new Set(prev.filter((x) => x && x._via).map((x) => String(x.id)));
-          const dropped = fresh ? fresh.dropped.filter((id) => !related.has(String(id))).slice(0, data.items.length) : [];
+          const fresh = planRechunk(prev, reached(), belowNow, 0);
+          const dropped = fresh ? fresh.dropped.slice(0, data.items.length) : [];
           return applyRechunk(prev, dropped, data.items, { max: MAX_RENDERED });
         });
       }
@@ -566,7 +590,8 @@ export default function Home() {
   useEffect(() => {
     if (!reloadPrimedRef.current) { reloadPrimedRef.current = true; return; }
     if (uidRef.current) loadFeed();
-  }, [filters, epsilon, craving, guideOn, fit.usualSize]); // eslint-disable-line react-hooks/exhaustive-deps
+    // The fit size matters only while the FITS ME filter is on.
+  }, [filters, epsilon, craving, filters.fitsMe ? fit.usualSize : ""]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function markOnboarded() {
     try {
