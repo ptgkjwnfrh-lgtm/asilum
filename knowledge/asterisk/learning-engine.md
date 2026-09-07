@@ -53,7 +53,13 @@ consent state. `chunk.rotation` says whether the server ALSO remembers
 GENERAL and anonymous — D4). Ids, not positions: a taste that moves between
 chunks, a brand cap, a bigger pool or a consent switch cannot turn the memory
 into skipped-forever items or repeats (the first design, per-lane offsets into
-the ranking, failed on all four). Only a dry pool fills a page with repeats.
+the ranking, failed on all four). Only a dry pool fills a page with repeats,
+and that fill ROTATES (cursor field `f`) — a dry pool cycles through the whole
+ranking, and an item the filter wrongly calls served is reached there, late
+but never lost. The lane skips what THIS session served, never the profile's
+historical seen ring: a reader once served the whole pool still gets the 25%
+lane on every later visit. The seen ring is capped at the whole discoverable
+pool, not the request's filtered slice.
 A re-chunk after actions is an ordinary chunk request: ranked on the taste as
 it now stands, minus what the reader has seen.
 
@@ -75,11 +81,26 @@ legacy layout (discovery every 5th slot, 2 spread reaches, 5 when bored, no
 lane) — layout only; equal scores break on an id hash in both modes.
 
 A page is several serves: the first load and every chunk after it. The
-profile keeps a ring of the last 8 serves (`_meta.serves`, `lastServe` = the
-newest), `serveContextFor` finds a card in the newest serve that holds it,
-and the examination beacon reports each serve once against its own id —
-before the ring, one pointer meant the first serve's beacon met a stranger's
-id and every card outside the latest chunk lost its slot context.
+profile keeps a ring of recent serves (`_meta.serves`, `lastServe` = the
+newest) bounded by cards (the 300 rendered ceiling), entries (16) and bytes
+(64 KB); the page's first load (a request with no cursor) is PINNED and
+survives the card bound — on a full page the first re-chunk is the twelfth
+serve and used to evict it. `serveContextFor` finds a card in the newest
+serve that holds it; the examination beacon reports each serve once against
+its own id, decided inside the profile lock; per-bridge examination counts
+are per serve (a card served twice and seen twice is two impressions for the
+tuning denominator) while global exposure counts one person once per item.
+The client posts beacons with keepalive and flushes them on pagehide, since
+every destination is a full-page link. Chunk requests are sized to what can
+still render under the ceiling, so a served card is not struck from the
+reader's listing walk unseen.
+
+The catalog grid is explicit columns with a memory (placeInColumns): a card
+keeps the column it was first placed in, a newcomer takes the shortest, and
+cards keep list order within a column — a PASS shortens only its own column,
+a replacement lands where the old card stood. The column count follows the
+design console's `--ed-grid-cols` and `--ed-grid-colw` (at most N columns,
+each at least W wide, from the grid's width; two at ≤760px).
 
 ## Cross-user layer
 similarUsers: compute-on-read cosine over profiles (scan cap 500).

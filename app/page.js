@@ -14,7 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -27,19 +27,17 @@ import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./c
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
-const MAX_RENDERED = 300;
 // (6 Sep) the feed is served in CHUNKS. The first load fills the folio; every
 // chunk after it is smaller so the ranking re-reads the taste sooner, and the
 // catalog lane inside each chunk continues from the server's cursor.
-const CHUNK = 24;
+
 // After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
 // the cards the reader has not reached — below the fold, never examined — are
 // regenerated from the taste as it now stands (lib/feed/rechunk.js).
-// A card within one full screen below the viewport counts as reached: a
-// favourite inserts related cards above the fold and pushes what was on
-// screen a row down, and a card the reader was just looking at must never be
-// the one a re-chunk replaces (the examined set alone cannot promise that —
-// a card that was only half visible is never marked examined).
+// A card within one full screen below the viewport counts as reached: a card
+// the reader was just looking at, or is about to, must never be the one a
+// re-chunk replaces (the examined set alone cannot promise that — a card that
+// was only half visible is never marked examined).
 const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.innerHeight);
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
@@ -170,9 +168,11 @@ export default function Home() {
     for (const serve of servesRef.current) {
       if (serve.sent || !serve.examined.size) continue;
       serve.sent = true;
+      // keepalive: a full-page navigation (every destination is a plain link)
+      // aborts an ordinary fetch; this one is allowed to finish.
       postJSON("/api/impressions", {
         user, serveId: serve.id, examined: [...serve.examined],
-      }).catch(() => { serve.sent = false; });
+      }, { keepalive: true }).catch(() => { serve.sent = false; });
     }
   };
   const itemsRef = useRef([]);
@@ -280,7 +280,10 @@ export default function Home() {
       // settled.
       flushBeacons(user);
     }, DWELL_FLUSH_MS);
-    return () => clearInterval(iv);
+    // The page is leaving (a link, a close): report what was examined now.
+    const onHide = () => { const user = uidRef.current; if (user && observationOn()) flushBeacons(user); };
+    window.addEventListener("pagehide", onHide);
+    return () => { clearInterval(iv); window.removeEventListener("pagehide", onHide); };
   }, []);
 
   // ---- Feed ----
@@ -288,6 +291,7 @@ export default function Home() {
   // "from the top"; a reload resets it; an exhausted lane keeps its cursor so
   // the next chunk says so instead of wrapping.
   const cursorRef = useRef(null);
+  const cursorKeyRef = useRef("");
   const actionsSinceChunkRef = useRef(0);
   // A reload in flight: appends and re-chunks wait for it rather than racing
   // it (a plan made against the old list must never be applied to the new).
@@ -324,6 +328,10 @@ export default function Home() {
     if (observationOn()) flushBeacons(user);
     const previousCursor = cursorRef.current;
     cursorRef.current = null;
+    // A cursor belongs to the filter set it was made under: a listing key
+    // from one category sent with another can sit past that listing's end
+    // and kill the lane for the session.
+    cursorKeyRef.current = feedQS(user).toString();
     actionsSinceChunkRef.current = 0;
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
@@ -371,13 +379,17 @@ export default function Home() {
     if (!user) return;
     if (loadingMoreRef.current || reloadingRef.current) { wantMoreRef.current = true; return; }
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
+    // Ask for what can still render: a served card that never renders is
+    // struck from the reader's listing walk unseen.
+    const room = Math.min(CHUNK, MAX_RENDERED - itemsRef.current.length);
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
     // for a feed that has since reloaded must be dropped, not appended.
     const isCurrent = watchRequest(feedGenRef);
     actionsSinceChunkRef.current = 0;
     try {
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const sameFilters = cursorKeyRef.current === feedQS(user).toString();
+      const qs = feedQS(user, { limit: Math.max(CHUNK_MIN, room), cursor: sameFilters ? cursorRef.current : null });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
@@ -424,7 +436,12 @@ export default function Home() {
     try {
       // Every chunk is ranked on the taste as it stands and skips what the
       // cursor says was served, so a re-chunk is an ordinary chunk request.
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const sameFilters = cursorKeyRef.current === feedQS(user).toString();
+      // Sized to what can render: the planned replacements plus any room under
+      // the ceiling, never the full chunk for its own sake.
+      const room = Math.max(0, MAX_RENDERED - itemsRef.current.length);
+      const want = Math.max(CHUNK_MIN, Math.min(CHUNK, plan.dropped.length + room));
+      const qs = feedQS(user, { limit: want, cursor: sameFilters ? cursorRef.current : null });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
@@ -590,12 +607,18 @@ export default function Home() {
   // reader finds them where the feed continues. With nothing replaceable
   // (end of the list, everything seen) they append.
   function insertRelatedAfter(afterId, newItems, cap = 4) {
+    // Only for a favourite made ON the curated page: elsewhere the geometry
+    // read below is another tab's, and the curated list must not change
+    // unseen. A favourite on a card that is not in the list (the modal's
+    // related strip) adds nothing either.
+    if (tabRef.current !== "curated") return;
     const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, 0);
     setItems((prev) => {
       const have = new Set(prev.map((x) => x.id));
       const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
       if (!add.length) return prev;
       const idx = prev.findIndex((x) => x.id === afterId);
+      if (idx < 0) return prev;
       const dropped = [];
       for (let k = Math.max(0, idx + 1); k < prev.length && dropped.length < add.length; k++) {
         const id = prev[k].id;
@@ -736,10 +759,11 @@ export default function Home() {
   // real state).
   const zones = items.reduce(
     (z, it) => {
-      z[it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
+      // A related piece (after a favourite) is neither zone nor core.
+      z[it._via ? "related" : it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
       return z;
     },
-    { core: 0, discovery: 0, reach: 0, catalog: 0 },
+    { core: 0, discovery: 0, reach: 0, catalog: 0, related: 0 },
   );
 
   return (
@@ -780,7 +804,7 @@ export default function Home() {
       <>
           {items.length > 0 && (
             <span className="cvside ctside" aria-hidden="true">
-              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach} · CATALOG {zones.catalog}
+              ZONES — CORE {zones.core} · DISCOVERY {zones.discovery} · FAR REACH {zones.reach} · CATALOG {zones.catalog}{zones.related ? ` · RELATED ${zones.related}` : ""}
             </span>
           )}
           <span className="cvside cvsider ctsider" aria-hidden="true">
@@ -1167,31 +1191,53 @@ export default function Home() {
 // tiles that used to smoosh in after every 7th card are gone — Aug 12,
 // owner order: the catalog is pieces of clothing only; real posts live on
 // the POST sub-page.)
-// How many columns the catalog grid shows: the shell's --ed-grid-cols on
-// desktop (the settings rack sets it), two on a narrow screen.
+// How many columns the catalog grid shows. The old multicol rule was
+// `columns: <cols> <min width>` — at most --ed-grid-cols columns, each at
+// least --ed-grid-colw wide — so a narrow desktop window dropped to fewer
+// columns. The same contract, computed: the UI lab's variables (it announces
+// a change as `asilum:edition`), the grid's own width, two on a phone.
 function useColumnCount() {
   const [count, setCount] = useState(4);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 729px)");
+    // The same breakpoint as the stylesheet's mobile rules (globals.css).
+    const mq = window.matchMedia("(max-width: 760px)");
     const sync = () => {
       if (mq.matches) { setCount(2); return; }
-      const raw = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--ed-grid-cols"), 10);
-      setCount(Number.isFinite(raw) && raw > 0 ? raw : 4);
+      const css = getComputedStyle(document.documentElement);
+      const cols = parseInt(css.getPropertyValue("--ed-grid-cols"), 10);
+      const colw = parseInt(css.getPropertyValue("--ed-grid-colw"), 10);
+      const gap = parseInt(css.getPropertyValue("--ed-grid-gap"), 10);
+      const want = Number.isFinite(cols) && cols > 0 ? cols : 4;
+      const minW = Number.isFinite(colw) && colw > 0 ? colw : 240;
+      const g = Number.isFinite(gap) && gap >= 0 ? gap : 20;
+      const grid = document.querySelector(".grid.gcols");
+      const width = grid ? grid.clientWidth : window.innerWidth;
+      const fit = Math.max(1, Math.floor((width + g) / (minW + g)));
+      setCount(Math.max(1, Math.min(want, fit)));
     };
     sync();
     mq.addEventListener("change", sync);
+    window.addEventListener("resize", sync);
     window.addEventListener("asilum:edition", sync);
-    return () => { mq.removeEventListener("change", sync); window.removeEventListener("asilum:edition", sync); };
+    return () => {
+      mq.removeEventListener("change", sync);
+      window.removeEventListener("resize", sync);
+      window.removeEventListener("asilum:edition", sync);
+    };
   }, []);
   return count;
 }
 
-// Explicit columns: item i in column i mod N. A card's column depends on
-// its index alone, so replacing a card below the fold moves nothing above
-// it (see .grid.gcols in globals.css).
+// Explicit columns with a memory: a card keeps the column it was first
+// placed in, a newcomer takes the shortest, and cards keep list order within
+// a column — so a replacement lands where the replaced card stood and a
+// removal (PASS) shortens only its own column (lib/feed/rechunk.js
+// placeInColumns; see .grid.gcols in globals.css).
 function Columns({ items, count, render, children }) {
-  const cols = Array.from({ length: Math.max(1, count) }, () => []);
-  items.forEach((it, i) => cols[i % cols.length].push(it));
+  const n = Math.max(1, count);
+  const memoRef = useRef({ count: n, map: new Map() });
+  if (memoRef.current.count !== n) memoRef.current = { count: n, map: new Map() };
+  const cols = placeInColumns(items, n, memoRef.current.map);
   return (
     <div className="grid gcols">
       {cols.map((col, c) => <div className="gcol" key={c}>{col.map(render)}</div>)}

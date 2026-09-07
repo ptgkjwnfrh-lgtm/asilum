@@ -55,46 +55,51 @@ export async function POST(req) {
     });
   }
 
-  let applied = 0, dropped = 0;
+  let applied = 0, dropped = 0, already = 0, duplicate = false, unknown = false;
   try {
-    const before = await getProfile(userId);
-    // (6 Sep) the serve is looked up in the profile's ring of recent serves,
-    // not only the newest: a page is several serves once it scrolls.
-    const last = findServe(before, serveId);
-    const known = !!last;
-    // Say what actually happened: a replay of an already-reported serve
-    // applies nothing, and reporting "applied: 12" for it would be the same
-    // species of lie this round exists to remove.
-    if (known && last.reported) {
-      return NextResponse.json({ userId, applied: 0, dropped: 0, duplicate: true });
-    }
-    // A serve the ring no longer holds is said so, not folded into "dropped".
-    if (!known) return NextResponse.json({ userId, applied: 0, dropped: examined.length, unknown: true });
-    const servedBridges = last.bridges || {};
-    // One eye counts once: an id another recorded serve already had examined
-    // is not counted again against this one (a card re-served under a filter
-    // is served twice and seen once).
-    const already = reportedIds(before);
-    const fresh = examined.filter((id) => !already.has(String(id)));
-    const { counts, examined: n, dropped: d } = examinedBridgeCounts(fresh, servedBridges);
-    applied = n; dropped = d + (examined.length - fresh.length);
-    if (n > 0) {
-      const counted = fresh.filter((id) => servedBridges[String(id)]);
-      await mutateProfile(userId, (current) => applyExaminationReport(current, serveId, counts, counted));
+    let bumpIds = [];
+    // Everything is decided INSIDE the profile lock, from the profile as it
+    // is then — a stale read let two concurrent beacons count one eye twice.
+    await mutateProfile(userId, (current) => {
+      // (6 Sep) the serve is looked up in the profile's ring of recent serves,
+      // not only the newest: a page is several serves once it scrolls.
+      const serve = findServe(current, serveId);
+      if (!serve) { unknown = true; dropped = examined.length; return current; }
+      // Say what actually happened: a replay of an already-reported serve
+      // applies nothing, and reporting "applied: 12" for it would be the same
+      // species of lie this round exists to remove.
+      if (serve.reported) { duplicate = true; return current; }
+      const servedBridges = serve.bridges || {};
+      // The per-bridge examination counts are per SERVE: a card served twice
+      // (a reload under a filter) and examined twice was two impressions for
+      // the tuning denominator (lib/brain/attribution.js declares the bound as
+      // once per page serve). Global exposure, below, counts one person once.
+      const { counts, examined: n, dropped: d } = examinedBridgeCounts(examined, servedBridges);
+      applied = n; dropped = d;
+      const counted = examined.map(String).filter((id) => servedBridges[id]);
+      // One person counts once per item for popularity: ids another recorded
+      // serve already had examined are not bumped again.
+      const seenBefore = reportedIds(current);
+      bumpIds = [...new Set(counted)].filter((id) => !seenBefore.has(id));
+      already = counted.length - bumpIds.length;
+      if (n <= 0) return current;
+      return applyExaminationReport(current, serveId, counts, counted);
+    });
+    if (unknown) return NextResponse.json({ userId, applied: 0, dropped, unknown: true });
+    if (duplicate) return NextResponse.json({ userId, applied: 0, dropped: 0, duplicate: true });
+    if (bumpIds.length) {
       // (Aug 6) Global exposure is counted HERE, from slots this identity
       // actually examined and was actually served — one person counts once
       // per item, enforced by the ledger's primary key. The old rule counted
       // every served slot on a GET, which let one identity aim ~3600
       // impressions a minute at a chosen item and bury it for everyone.
-      const seenIds = [...new Set(fresh.map(String))].filter((id) => servedBridges[id]);
-      if (seenIds.length) {
-        await bumpPopularity(seenIds.map((id) => ({ id, imp: 1 })), userId).catch(() => {});
-      }
+      await bumpPopularity(bumpIds.map((id) => ({ id, imp: 1 })), userId).catch(() => {});
     }
   } catch {
     // A lost beacon must never fail the page. It under-counts the examined
     // denominator for this serve; nothing else falls back.
     return NextResponse.json({ userId, applied: 0, dropped: 0 });
   }
-  return NextResponse.json({ userId, applied, dropped });
+  // `already`: examined ids another serve had already counted for exposure.
+  return NextResponse.json({ userId, applied, dropped, already });
 }
