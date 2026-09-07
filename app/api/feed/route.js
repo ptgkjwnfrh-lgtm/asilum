@@ -111,6 +111,10 @@ export async function GET(req) {
 
   // Item pool: DB items if available, else the seed catalog.
   let pool = await getDiscoverablePool();
+  // The rotation ring is sized to the WHOLE discoverable pool, not to this
+  // request's filtered slice — one serve under a 40-item category must not
+  // truncate a 915-item memory to 40.
+  const poolSize = pool.length;
   // Dense tagging (Day 25): sharpen item vectors with the brain's own
   // affinity bleed before scoring — primaries untouched, kill switch below.
   if ((process.env.DENSE_FEED_ENABLED ?? "1") !== "0") {
@@ -289,11 +293,12 @@ export async function GET(req) {
         // of it (npm run feed:rotation). markSeen clamps to its own ceiling
         // and byte budget, so a pool larger than a profile can hold degrades
         // to the old behaviour rather than throwing.
-        const served = markBridgeServed(markSeen(decayed, ids, pool.length), bridgeCounts);
+        const served = markBridgeServed(markSeen(decayed, ids, poolSize), bridgeCounts);
         if (!examinedImpressionsEnabled()) return markBridgeImpressions(served, bridgeCounts);
         // Remember what this serve WAS, so the examination beacon is
         // attributed from the server's record rather than the client's word.
-        return recordServe(served, serveId, items);
+        // A request with no cursor is a page's first load: pinned in the ring.
+        return recordServe(served, serveId, items, { pin: !cursorParam });
       }));
     }
     await Promise.all(writes);

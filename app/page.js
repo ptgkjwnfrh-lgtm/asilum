@@ -14,7 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -27,11 +27,10 @@ import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./c
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
-const MAX_RENDERED = 300;
 // (6 Sep) the feed is served in CHUNKS. The first load fills the folio; every
 // chunk after it is smaller so the ranking re-reads the taste sooner, and the
 // catalog lane inside each chunk continues from the server's cursor.
-const CHUNK = 24;
+
 // After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
 // the cards the reader has not reached — below the fold, never examined — are
 // regenerated from the taste as it now stands (lib/feed/rechunk.js).
@@ -169,9 +168,11 @@ export default function Home() {
     for (const serve of servesRef.current) {
       if (serve.sent || !serve.examined.size) continue;
       serve.sent = true;
+      // keepalive: a full-page navigation (every destination is a plain link)
+      // aborts an ordinary fetch; this one is allowed to finish.
       postJSON("/api/impressions", {
         user, serveId: serve.id, examined: [...serve.examined],
-      }).catch(() => { serve.sent = false; });
+      }, { keepalive: true }).catch(() => { serve.sent = false; });
     }
   };
   const itemsRef = useRef([]);
@@ -279,7 +280,10 @@ export default function Home() {
       // settled.
       flushBeacons(user);
     }, DWELL_FLUSH_MS);
-    return () => clearInterval(iv);
+    // The page is leaving (a link, a close): report what was examined now.
+    const onHide = () => { const user = uidRef.current; if (user && observationOn()) flushBeacons(user); };
+    window.addEventListener("pagehide", onHide);
+    return () => { clearInterval(iv); window.removeEventListener("pagehide", onHide); };
   }, []);
 
   // ---- Feed ----
@@ -287,6 +291,7 @@ export default function Home() {
   // "from the top"; a reload resets it; an exhausted lane keeps its cursor so
   // the next chunk says so instead of wrapping.
   const cursorRef = useRef(null);
+  const cursorKeyRef = useRef("");
   const actionsSinceChunkRef = useRef(0);
   // A reload in flight: appends and re-chunks wait for it rather than racing
   // it (a plan made against the old list must never be applied to the new).
@@ -323,6 +328,10 @@ export default function Home() {
     if (observationOn()) flushBeacons(user);
     const previousCursor = cursorRef.current;
     cursorRef.current = null;
+    // A cursor belongs to the filter set it was made under: a listing key
+    // from one category sent with another can sit past that listing's end
+    // and kill the lane for the session.
+    cursorKeyRef.current = feedQS(user).toString();
     actionsSinceChunkRef.current = 0;
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
@@ -370,13 +379,17 @@ export default function Home() {
     if (!user) return;
     if (loadingMoreRef.current || reloadingRef.current) { wantMoreRef.current = true; return; }
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
+    // Ask for what can still render: a served card that never renders is
+    // struck from the reader's listing walk unseen.
+    const room = Math.min(CHUNK, MAX_RENDERED - itemsRef.current.length);
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
     // for a feed that has since reloaded must be dropped, not appended.
     const isCurrent = watchRequest(feedGenRef);
     actionsSinceChunkRef.current = 0;
     try {
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const sameFilters = cursorKeyRef.current === feedQS(user).toString();
+      const qs = feedQS(user, { limit: Math.max(CHUNK_MIN, room), cursor: sameFilters ? cursorRef.current : null });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
@@ -423,7 +436,12 @@ export default function Home() {
     try {
       // Every chunk is ranked on the taste as it stands and skips what the
       // cursor says was served, so a re-chunk is an ordinary chunk request.
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
+      const sameFilters = cursorKeyRef.current === feedQS(user).toString();
+      // Sized to what can render: the planned replacements plus any room under
+      // the ceiling, never the full chunk for its own sake.
+      const room = Math.max(0, MAX_RENDERED - itemsRef.current.length);
+      const want = Math.max(CHUNK_MIN, Math.min(CHUNK, plan.dropped.length + room));
+      const qs = feedQS(user, { limit: want, cursor: sameFilters ? cursorRef.current : null });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
