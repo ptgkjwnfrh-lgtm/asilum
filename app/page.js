@@ -17,8 +17,7 @@ import { fitPhrase } from "../lib/brain/sizing.js";
 import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
-  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
-} from "../lib/client.js";
+  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
 import {
   observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
@@ -164,20 +163,31 @@ export default function Home() {
   // before the request so a tick cannot post it twice; a network failure
   // unmarks it for the next tick. A refused request (429, 503) stays sent —
   // that serve's denominator is simply under-counted; nothing falls back.
-  const flushBeacons = (user) => {
+  const flushBeacons = (user, { immediate = false } = {}) => {
     for (const serve of servesRef.current) {
       if (serve.sent || !serve.examined.size) continue;
       serve.sent = true;
+      const body = { user, serveId: serve.id, examined: [...serve.examined] };
       // keepalive: a full-page navigation (every destination is a plain link)
-      // aborts an ordinary fetch; this one is allowed to finish.
-      postJSON("/api/impressions", {
-        user, serveId: serve.id, examined: [...serve.examined],
-      }, { keepalive: true }).catch(() => { serve.sent = false; });
+      // aborts an ordinary fetch; this one is allowed to finish. On pagehide
+      // the request must be ISSUED before the document goes — no awaiting the
+      // auth chain — so it goes out synchronously with the last known headers.
+      const req = immediate ? beaconJSON("/api/impressions", body) : postJSON("/api/impressions", body, { keepalive: true });
+      req.catch(() => { serve.sent = false; });
     }
   };
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
   const gridCols = useColumnCount();
+  // Column memories per list, kept across tab round-trips.
+  const curatedColsRef = useRef({ count: 0, map: new Map() });
+  const followingColsRef = useRef({ count: 0, map: new Map() });
+  const newColsRef = useRef({ count: 0, map: new Map() });
+  // A card's height in column widths: the tile aspect plus the caption.
+  const cardWeight = useCallback((it) => {
+    const [w, h] = String(aspectFor(it.id)).split("/").map((x) => Number(x));
+    return (Number.isFinite(w) && Number.isFinite(h) && w > 0 ? h / w : 1.2) + 0.45;
+  }, []);
   // Which tab is on screen, for handlers that resolve after a switch.
   const tabRef = useRef("curated");
   useEffect(() => { tabRef.current = tab; }, [tab]);
@@ -281,7 +291,7 @@ export default function Home() {
       flushBeacons(user);
     }, DWELL_FLUSH_MS);
     // The page is leaving (a link, a close): report what was examined now.
-    const onHide = () => { const user = uidRef.current; if (user && observationOn()) flushBeacons(user); };
+    const onHide = () => { const user = uidRef.current; if (user && observationOn()) flushBeacons(user, { immediate: true }); };
     window.addEventListener("pagehide", onHide);
     return () => { clearInterval(iv); window.removeEventListener("pagehide", onHide); };
   }, []);
@@ -327,6 +337,7 @@ export default function Home() {
     // to the reset below.
     if (observationOn()) flushBeacons(user);
     const previousCursor = cursorRef.current;
+    const previousKey = cursorKeyRef.current;
     cursorRef.current = null;
     // A cursor belongs to the filter set it was made under: a listing key
     // from one category sent with another can sit past that listing's end
@@ -341,6 +352,7 @@ export default function Home() {
       // cursor — rather than replacing it with "nothing matches", and says so.
       if (!res.ok || !Array.isArray(data.items)) {
         cursorRef.current = previousCursor;
+        cursorKeyRef.current = previousKey;
         setNotice(res.status === 429 ? "the feed is busy — kept what you had" : "could not refresh the feed — kept what you had");
         return;
       }
@@ -398,7 +410,7 @@ export default function Home() {
         noteServe(data, data.items.map((x) => x.id));
         setItems((prev) => {
           const have = new Set(prev.map((x) => x.id));
-          return [...prev, ...data.items.filter((x) => !have.has(x.id))];
+          return [...prev, ...data.items.filter((x) => !have.has(x.id))].slice(0, MAX_RENDERED);
         });
       }
     } catch (e) { console.error(e); }
@@ -454,8 +466,14 @@ export default function Home() {
         // scrolled a screen while the chunk was in flight — so a card that
         // came into view since is kept.
         const belowNow = idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN());
-        const dropped = plan.dropped.filter((id) => belowNow.has(id) && !examinedAllRef.current.has(id));
-        setItems((prev) => applyRechunk(prev, dropped, data.items, { max: MAX_RENDERED }));
+        setItems((prev) => {
+          // Re-plan against the live list and the geometry NOW, with no
+          // minimum: the chunk is already served, so whatever can be placed
+          // replaces something rather than being discarded at the ceiling.
+          const fresh = planRechunk(prev, examinedAllRef.current, belowNow, 0);
+          const dropped = fresh ? fresh.dropped.slice(0, data.items.length) : [];
+          return applyRechunk(prev, dropped, data.items, { max: MAX_RENDERED });
+        });
       }
     } catch (e) { console.error(e); }
     finally {
@@ -525,7 +543,7 @@ export default function Home() {
 
   useEffect(() => {
     if (uidRef.current) loadFeed();
-  }, [filters, epsilon, craving, guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filters, epsilon, craving, guideOn, fit.usualSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function markOnboarded() {
     try {
@@ -612,7 +630,7 @@ export default function Home() {
     // unseen. A favourite on a card that is not in the list (the modal's
     // related strip) adds nothing either.
     if (tabRef.current !== "curated") return;
-    const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, 0);
+    const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN());
     setItems((prev) => {
       const have = new Set(prev.map((x) => x.id));
       const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
@@ -759,7 +777,8 @@ export default function Home() {
   // real state).
   const zones = items.reduce(
     (z, it) => {
-      // A related piece (after a favourite) is neither zone nor core.
+      // A related piece (after a favourite, or a shared link's neighbours) is
+      // neither zone nor core.
       z[it._via ? "related" : it._zone === "reach" ? "reach" : it._zone === "discovery" ? "discovery" : it._zone === "catalog" ? "catalog" : "core"] += 1;
       return z;
     },
@@ -901,7 +920,7 @@ export default function Home() {
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
-              <Columns count={gridCols} items={items} render={(it) => (
+              <Columns count={gridCols} items={items} memo={curatedColsRef} weight={cardWeight} render={(it) => (
                   <FragmentCard
                     key={it.id}
                     it={it}
@@ -928,7 +947,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <Columns count={gridCols} items={tabItems} render={(it) => (
+                <Columns count={gridCols} items={tabItems} memo={followingColsRef} weight={cardWeight} render={(it) => (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -952,7 +971,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <Columns count={gridCols} items={tabItems} render={(it) => (
+                <Columns count={gridCols} items={tabItems} memo={newColsRef} weight={cardWeight} render={(it) => (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1233,11 +1252,15 @@ function useColumnCount() {
 // a column — so a replacement lands where the replaced card stood and a
 // removal (PASS) shortens only its own column (lib/feed/rechunk.js
 // placeInColumns; see .grid.gcols in globals.css).
-function Columns({ items, count, render, children }) {
+// `memo` is the page's map for this list (it must outlive a tab round-trip,
+// or every card re-buckets when the reader comes back); `weight` says how tall
+// a card is so columns balance by height.
+function Columns({ items, count, render, children, memo, weight }) {
   const n = Math.max(1, count);
-  const memoRef = useRef({ count: n, map: new Map() });
-  if (memoRef.current.count !== n) memoRef.current = { count: n, map: new Map() };
-  const cols = placeInColumns(items, n, memoRef.current.map);
+  const fallbackRef = useRef({ count: n, map: new Map() });
+  const store = memo || fallbackRef;
+  if (store.current.count !== n) store.current = { count: n, map: new Map() };
+  const cols = placeInColumns(items, n, store.current.map, weight);
   return (
     <div className="grid gcols">
       {cols.map((col, c) => <div className="gcol" key={c}>{col.map(render)}</div>)}

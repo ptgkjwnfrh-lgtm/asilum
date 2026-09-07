@@ -606,3 +606,32 @@ test("C29 sequential ids do not collide in the served filter", () => {
   const fp = nums.slice(300).filter((id) => f.has(id)).length;
   assert.ok(fp <= 2, `numeric ids at 300 held: ${fp} false positives in 1700`);
 });
+
+test("C30 the dry-pool fill resumes after its last take — a brand wall cycles instead of repeating one page", () => {
+  // 100 items in 10 brands: at most 20 cappable per page, chunk 24.
+  const pool = Array.from({ length: 100 }, (_, i) => ({ id: `w${String(i).padStart(3, "0")}`, brand: `B${i % 10}`, tags: { MINIMAL: 0.5 + (i % 7) / 20 } }));
+  let cursor = null;
+  const pages = [];
+  const served = new Set();
+  for (let k = 0; k < 12; k++) {
+    const r = assembleChunk(pool, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+    pages.push(r.items.map((it) => it.id).join(","));
+    r.items.forEach((it) => served.add(it.id));
+    cursor = r.catalog.nextCursor;
+  }
+  assert.equal(served.size, 100, `every item is reached across the cycle (${served.size}/100)`);
+  const dry = pages.slice(6);
+  assert.ok(new Set(dry).size >= dry.length - 1, "dry pages differ from one another");
+});
+
+test("C31 placeInColumns: a duplicated id is one card, and a height weight balances by height", () => {
+  const items = [{ id: "a" }, { id: "b" }, { id: "a" }, { id: "c" }];
+  const cols = placeInColumns(items, 2, new Map());
+  assert.equal(cols.flat().length, 3, "the second a is not a second card");
+  assert.equal(cols.flat().filter((x) => x.id === "a").length, 1);
+  const tall = (it) => (it.id.startsWith("t") ? 3 : 1);
+  const mix = [{ id: "t1" }, { id: "t2" }, { id: "s1" }, { id: "s2" }, { id: "s3" }, { id: "s4" }];
+  const byHeight = placeInColumns(mix, 3, new Map(), tall);
+  const heights = byHeight.map((col) => col.reduce((h, it) => h + tall(it), 0));
+  assert.ok(Math.max(...heights) - Math.min(...heights) <= 1, `balanced by height: ${heights}`);
+});
