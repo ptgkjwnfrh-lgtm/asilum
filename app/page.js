@@ -582,15 +582,26 @@ export default function Home() {
   }
 
   // ---- Signals ----
+  // "More like this" after a favourite. It used to SPLICE four cards into the
+  // list after the favourited one; under index-bucketed columns a splice
+  // re-buckets every card after it (the same shift a re-chunk avoids), so
+  // the related pieces now REPLACE the next cards after the favourite that
+  // are below the fold and never examined — same count, same geometry, the
+  // reader finds them where the feed continues. With nothing replaceable
+  // (end of the list, everything seen) they append.
   function insertRelatedAfter(afterId, newItems, cap = 4) {
+    const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, 0);
     setItems((prev) => {
       const have = new Set(prev.map((x) => x.id));
       const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
       if (!add.length) return prev;
       const idx = prev.findIndex((x) => x.id === afterId);
-      const out = prev.slice();
-      out.splice(idx + 1, 0, ...add);
-      return out;
+      const dropped = [];
+      for (let k = Math.max(0, idx + 1); k < prev.length && dropped.length < add.length; k++) {
+        const id = prev[k].id;
+        if (below.has(id) && !examinedAllRef.current.has(id)) dropped.push(id);
+      }
+      return applyRechunk(prev, dropped, add, { max: MAX_RENDERED });
     });
   }
 
