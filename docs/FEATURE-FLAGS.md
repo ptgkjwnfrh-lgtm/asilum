@@ -24,7 +24,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `WARDROBE_ENABLED` | private owned-piece collection + stylist anchors | on (`0` is the kill switch) | wardrobe API refuses with 503; wardrobe anchors refuse instead of silently dropping |
 | `DISCOVER_RAILS_ENABLED` (+ per-rail registry `enabled` rows) | D: cultural Discover rails | on (`0` is the kill switch) | rails API refuses with 503; Discover stays strip-only |
 | `PROFILE_THEMES_ENABLED` (+ per-theme registry `enabled` rows) | E: profile rooms | on (`0` is the kill switch) | rooms API refuses with 503; profile keeps the default skin; published rooms 404 |
-| `BRAIN_CATALOG_LANE` | the 25% catalog lane + chunk shares in /api/feed (lib/brain/chunk.js) | on (`0` is the kill switch) | legacy zoning: discovery every 5th slot, two spread reaches, no lane; `chunk.catalog` is null |
+| `BRAIN_CATALOG_LANE` | the 25% catalog lane + chunk shares in /api/feed (lib/brain/chunk.js) | on (`0` is the kill switch) | legacy zoning: discovery every 5th slot, two spread reaches, no lane; `chunk.catalog` is null. Layout only — equal scores break on an id hash in BOTH modes since #433, so the pre-#433 page order is not restored |
 
 ## Roadmap flags (reserve now, one per phase-1+ surface)
 

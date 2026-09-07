@@ -178,18 +178,18 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*18 files, 4,550 lines*
+*18 files, 4,724 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 711 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
-| `bridges.js` | 574 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
+| `index.js` | 747 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `bridges.js` | 682 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
 | `lexicon.js` | 368 | ASiLUM brain — LEXICON: maps non-clothing signals to aesthetic tag vectors. This is what lets the moodboard 'think' — turning a color, a music genre, a |
 | `sizing.js` | 309 | Asilum "size brain" — a normalization layer that maps any labeled size (mens / womens / luxury numeric) onto a common "fits like US __" scale, |
 | `popularity.js` | 276 | the popularity bridge's counters (Aug 6, 2026). |
-| `chunk.js` | 221 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
+| `chunk.js` | 251 | the CHUNK: how one served page of the catalog is divided, and the CATALOG LANE that walks the listing in cursor order. |
 | `stylist.js` | 176 | THE STYLIST — a branch of the brain that assembles full outfits. Consumes the same flat tag vectors as every bridge, plus category, era and |
 | `noise.js` | 173 | noise-floor estimators for the measurement batteries (r26, audit #26). |
 | `tuning.js` | 153 | bounded bridge self-tuning (r16). |
@@ -305,11 +305,11 @@ Nothing here may import from `app/`.
 | `provider.js` | 71 | the v1 provider adapter (asterisk-boost r4). Plain fetch against an embeddings REST API; NO new runtime dependencies |
 
 ### `lib/events/`
-*1 file, 107 lines*
+*1 file, 112 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 107 | Canonical user-event vocabulary for the Alpha Learning Brain. Pure module (no I/O) — safe to import from client or server. |
+| `index.js` | 112 | Canonical user-event vocabulary for the Alpha Learning Brain. Pure module (no I/O) — safe to import from client or server. |
 
 ### `lib/fashion-taxonomy/`
 *1 file, 42 lines*
@@ -319,11 +319,11 @@ Nothing here may import from `app/`.
 | `index.js` | 42 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
 
 ### `lib/feed/`
-*2 files, 88 lines*
+*2 files, 121 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `rechunk.js` | 48 | which cards a re-chunk may replace. Pure; client-safe. |
+| `rechunk.js` | 81 | which cards a re-chunk may replace. Pure; client-safe. |
 | `index.js` | 40 | Feed system foundation. The LIVE product feed is /api/feed (Alpha Learning Bridge): zoned core/discovery/reach, seen-item rotation, 2-per-brand cap, |
 
 ### `lib/images/`
@@ -638,11 +638,11 @@ request becomes trusted arguments.
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
 
 ### `app/api/feed/`
-*1 file, 338 lines*
+*1 file, 356 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 338 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
+| `route.js` | 356 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
 *1 file, 71 lines*
@@ -659,11 +659,11 @@ request becomes trusted arguments.
 | `route.js` | 66 | the public door to Feature G's impersonation track (gap 1, 18 Aug). |
 
 ### `app/api/impressions/`
-*1 file, 90 lines*
+*1 file, 92 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 90 | POST /api/impressions — the examined-slot beacon (r19). Body: { user, serveId, examined: [itemId, ...] } |
+| `route.js` | 92 | POST /api/impressions — the examined-slot beacon (r19). Body: { user, serveId, examined: [itemId, ...] } |
 
 ### `app/api/ingest/`
 *1 file, 47 lines*
@@ -863,11 +863,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,393 lines*
+*7 files, 2,423 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1191 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1221 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -1072,7 +1072,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*55 files, 7,459 lines*
+*55 files, 7,460 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1115,7 +1115,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `measure-ontology.mjs` | 94 | declared-criteria measurement for r13: the Fashionpedia-informed garment vocabulary (curated crosswalk, CC BY 4.0 |
 | `measure-typo.mjs` | 92 | declared-criteria measurement for r12: the literal-engine typo bridge (fastest-levenshtein at interpretation time). |
 | `measure-stems.mjs` | 91 | declared-criteria measurement for r11: the stem-indexed garment vocabulary (words/stemmer replaces the strip-s |
-| `measure-attribution.mjs` | 87 | declared-criteria measurement for r14: bridge attribution instrumentation. The whole point of this round is that |
+| `measure-attribution.mjs` | 88 | declared-criteria measurement for r14: bridge attribution instrumentation. The whole point of this round is that |
 | `verify-stripe-e2e.mjs` | 84 | Proves the checkout engine end to end against REAL Stripe (test mode), with zero UI and zero database: refuses to run if DATABASE_URL is set, seeds one |
 | `apply-schema.mjs` | 73 | Apply a SQL file to the database behind DATABASE_URL (.env.local or env). Usage: node scripts/apply-schema.mjs supabase/schema-v2.sql |
 | `embed-catalog.mjs` | 71 | backfill text-v1 embeddings for the catalog (asterisk-boost r4). Requires EMBEDDINGS_PROVIDER + EMBEDDINGS_API_KEY in |
@@ -1134,4 +1134,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 664c7dd — 367 source files, 63,187 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 51b5e5e — 367 source files, 63,450 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

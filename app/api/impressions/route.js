@@ -13,7 +13,7 @@
 // report per serve, ids capped, unknown ids dropped.
 
 import { NextResponse } from "next/server";
-import { applyExaminationReport } from "../../../lib/brain/index.js";
+import { applyExaminationReport, findServe } from "../../../lib/brain/index.js";
 import { examinedBridgeCounts, examinedImpressionsEnabled, MAX_EXAMINED_PER_SERVE } from "../../../lib/brain/attribution.js";
 import { mutateProfile, getProfile, bumpPopularity } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
@@ -58,8 +58,10 @@ export async function POST(req) {
   let applied = 0, dropped = 0;
   try {
     const before = await getProfile(userId);
-    const last = before?._meta?.lastServe;
-    const known = last && last.id === serveId;
+    // (6 Sep) the serve is looked up in the profile's ring of recent serves,
+    // not only the newest: a page is several serves once it scrolls.
+    const last = findServe(before, serveId);
+    const known = !!last;
     // Say what actually happened: a replay of an already-reported serve
     // applies nothing, and reporting "applied: 12" for it would be the same
     // species of lie this round exists to remove.
