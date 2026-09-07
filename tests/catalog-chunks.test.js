@@ -474,8 +474,14 @@ test("C25 applyRechunk replaces planned cards in place and touches nothing else"
   assert.deepEqual(out.map((x) => x.id), ["p0", "p1", "related-1", "p2", "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9"]);
   // A fresh item already on the page is not duplicated; the rendered ceiling holds.
   const dup = applyRechunk(live, dropped, [{ id: "p0" }, { id: "related-1" }, { id: "n1" }], { max: 6 });
-  assert.deepEqual(dup.map((x) => x.id), ["p0", "p1", "related-1", "p2", "n1"]);
+  assert.deepEqual(dup.map((x) => x.id), ["p0", "p1", "related-1", "p2", "n1", "p5", "p6", "p7", "p8", "p9", "p10", "p11"]);
   assert.equal(new Set(dup.map((x) => x.id)).size, dup.length);
+  // More planned than fresh: the unreplaced cards STAY — a chunk of n can
+  // only ever change n cards (the verifier's page lost 65 for 22 arrivals).
+  const many = applyRechunk(prev, prev.slice(2).map((x) => x.id), [{ id: "g0" }, { id: "g1" }], { max: 300 });
+  assert.equal(many.length, prev.length);
+  assert.deepEqual(many.slice(0, 4).map((x) => x.id), ["p0", "p1", "g0", "g1"]);
+  assert.deepEqual(many.slice(4).map((x) => x.id), prev.slice(4).map((x) => x.id));
   // Nothing planned → nothing moves, fresh items append up to the ceiling.
   assert.deepEqual(applyRechunk(prev.slice(0, 3), [], fresh.slice(0, 2), { max: 4 }).map((x) => x.id), ["p0", "p1", "p2", "f0"]);
 });

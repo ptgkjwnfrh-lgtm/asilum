@@ -35,7 +35,12 @@ const CHUNK = 24;
 // After RECHUNK_AFTER deliberate actions (favourite, bag, share, skip, hide)
 // the cards the reader has not reached — below the fold, never examined — are
 // regenerated from the taste as it now stands (lib/feed/rechunk.js).
-const RECHUNK_FOLD_MARGIN = 300; // px below the viewport that still counts as "reached"
+// A card within one full screen below the viewport counts as reached: a
+// favourite inserts related cards above the fold and pushes what was on
+// screen a row down, and a card the reader was just looking at must never be
+// the one a re-chunk replaces (the examined set alone cannot promise that —
+// a card that was only half visible is never marked examined).
+const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.innerHeight);
 
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
@@ -384,7 +389,7 @@ export default function Home() {
     const plan = planRechunk(
       itemsRef.current,
       examinedAllRef.current,
-      idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN),
+      idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN()),
     );
     if (!plan) return;
     loadingMoreRef.current = true;
