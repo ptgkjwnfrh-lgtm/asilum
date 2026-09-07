@@ -241,3 +241,14 @@ test("a pre-ring profile (lastServe only) still answers", () => {
   const applied = applyExaminationReport(p, "old", { alpha: 1 });
   assert.equal(applied._meta.lastServe.reported, true);
 });
+
+test("the two newest pinned serves stay pinned; a third pin unpins the oldest", () => {
+  let p = recordServe(blank(), "catalog-first", SLATE, { pin: true });
+  p = recordServe(p, "cover", [{ id: "cv", brand: "C", _bridge: "alpha", _zone: "core" }], { pin: true });
+  assert.equal(findServe(p, "catalog-first").pin, true, "a cover visit does not unpin the catalog's first load");
+  assert.equal(findServe(p, "cover").pin, true);
+  p = recordServe(p, "catalog-second", SLATE, { pin: true });
+  assert.equal(!!findServe(p, "catalog-first").pin, false, "the third pin unpins the oldest");
+  assert.equal(findServe(p, "cover").pin, true);
+  assert.equal(findServe(p, "catalog-second").pin, true);
+});
