@@ -1167,21 +1167,38 @@ export default function Home() {
 // tiles that used to smoosh in after every 7th card are gone — Aug 12,
 // owner order: the catalog is pieces of clothing only; real posts live on
 // the POST sub-page.)
-// How many columns the catalog grid shows: the shell's --ed-grid-cols on
-// desktop (the settings rack sets it), two on a narrow screen.
+// How many columns the catalog grid shows. The old multicol rule was
+// `columns: <cols> <min width>` — at most --ed-grid-cols columns, each at
+// least --ed-grid-colw wide — so a narrow desktop window dropped to fewer
+// columns. The same contract, computed: the UI lab's variables (it announces
+// a change as `asilum:edition`), the grid's own width, two on a phone.
 function useColumnCount() {
   const [count, setCount] = useState(4);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 729px)");
     const sync = () => {
       if (mq.matches) { setCount(2); return; }
-      const raw = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--ed-grid-cols"), 10);
-      setCount(Number.isFinite(raw) && raw > 0 ? raw : 4);
+      const css = getComputedStyle(document.documentElement);
+      const cols = parseInt(css.getPropertyValue("--ed-grid-cols"), 10);
+      const colw = parseInt(css.getPropertyValue("--ed-grid-colw"), 10);
+      const gap = parseInt(css.getPropertyValue("--ed-grid-gap"), 10);
+      const want = Number.isFinite(cols) && cols > 0 ? cols : 4;
+      const minW = Number.isFinite(colw) && colw > 0 ? colw : 240;
+      const g = Number.isFinite(gap) && gap >= 0 ? gap : 20;
+      const grid = document.querySelector(".grid.gcols");
+      const width = grid ? grid.clientWidth : window.innerWidth;
+      const fit = Math.max(1, Math.floor((width + g) / (minW + g)));
+      setCount(Math.max(1, Math.min(want, fit)));
     };
     sync();
     mq.addEventListener("change", sync);
+    window.addEventListener("resize", sync);
     window.addEventListener("asilum:edition", sync);
-    return () => { mq.removeEventListener("change", sync); window.removeEventListener("asilum:edition", sync); };
+    return () => {
+      mq.removeEventListener("change", sync);
+      window.removeEventListener("resize", sync);
+      window.removeEventListener("asilum:edition", sync);
+    };
   }, []);
   return count;
 }
