@@ -26,6 +26,9 @@
 //   clause       a hyper-concentrated taste never turns a chunk into one
 //                thing: at most 75% one dominant tag, several aesthetics
 //   fresh        a chunk after the taste moved is new — not the page again
+//   cycle        a dry pool with a brand wall (fewer cappable items than the
+//                chunk) cycles through everything instead of repeating one
+//                page — under cursor rotation AND a cursorless memory reader
 //   cursor       the cursor stays under 2 KB and a chunk assembles in < 40 ms
 //
 // Prints `N defects` and a VERDICT; exits non-zero on any defect.
@@ -150,6 +153,40 @@ for (const [label, pool, limit] of [
   if (align(next) <= align(first)) defect(`fresh: the core did not move toward what was bagged`);
 }
 
+// ---- cycle: a brand wall must not stall the feed ---------------------------------------
+{
+  const pool = Array.from({ length: 100 }, (_, i) => ({ id: `w${String(i).padStart(3, "0")}`, brand: `B${i % 10}`, tags: { MINIMAL: 0.5 + (i % 7) / 20 } }));
+  // Cursor rotation (GENERAL, anonymous): the rotating fill.
+  let cursor = null;
+  const pages = [];
+  const served = new Set();
+  for (let k = 0; k < 12; k++) {
+    const r = assembleChunk(pool, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+    pages.push(r.items.map((it) => it.id).join(","));
+    r.items.forEach((it) => served.add(it.id));
+    cursor = r.catalog.nextCursor;
+  }
+  const dry = new Set(pages.slice(6)).size;
+  console.log(`cycle   cursor: reached ${served.size}/100, dry pages distinct ${dry}/${pages.length - 6}`);
+  if (served.size < 100) defect(`cycle/cursor: ${served.size}/100 reached`);
+  if (dry < pages.length - 7) defect(`cycle/cursor: dry pages repeat (${dry} distinct of ${pages.length - 6})`);
+  // A cursorless memory reader (OBSERVE, a fresh visit each time): the graded
+  // seen penalty must cycle the ring, never serve the same first page forever.
+  let profile = { long: { MINIMAL: 0.9 }, session: {}, _meta: { recent: [], seen: [] } };
+  const visits = [];
+  const seenAll = new Set();
+  for (let v = 0; v < 12; v++) {
+    const r = buildFeed({ profile, limit: 24, rotation: "memory", catalog: { cursor: null } }, pool);
+    visits.push(r.items.map((it) => it.id).join(","));
+    r.items.forEach((it) => seenAll.add(it.id));
+    profile = markSeen(profile, r.items.map((it) => it.id), pool.length);
+  }
+  const later = new Set(visits.slice(6)).size;
+  console.log(`cycle   memory: reached ${seenAll.size}/100, later visits distinct ${later}/${visits.length - 6}`);
+  if (seenAll.size < 100) defect(`cycle/memory: ${seenAll.size}/100 reached`);
+  if (later < visits.length - 7) defect(`cycle/memory: later visits repeat (${later} distinct of ${visits.length - 6})`);
+}
+
 // ---- cursor + cost -----------------------------------------------------------------
 {
   const t0 = performance.now();
@@ -165,5 +202,5 @@ for (const [label, pool, limit] of [
 }
 
 console.log(`\n${defects.length} defects`);
-console.log(`VERDICT: ${defects.length === 0 ? "PASS" : "FAIL"} (share · repeats · full · cap · drain · clause · fresh · cursor)`);
+console.log(`VERDICT: ${defects.length === 0 ? "PASS" : "FAIL"} (share · repeats · full · cap · drain · clause · fresh · cycle · cursor)`);
 process.exit(defects.length === 0 ? 0 : 1);

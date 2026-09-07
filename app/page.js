@@ -155,17 +155,26 @@ export default function Home() {
     servesRef.current = [
       // A record born while observation is off is silent from the start —
       // not from the next five-second tick.
-      { id: data.serveId, ids: new Set(ids), examined: new Set(), sent: !observationOn() },
+      { id: data.serveId, ids: new Set(ids), examined: new Set(), sent: !observationOn(), settled: 0 },
       ...servesRef.current.filter((s) => s.id !== data.serveId),
     ].slice(0, SERVE_RING_MAX);
   };
   // Post every unsent examination record once. A record is marked sent
   // before the request so a tick cannot post it twice; a network failure
-  // unmarks it for the next tick. A refused request (429, 503) stays sent —
+  // unmarks it for the next tick. A refused request (429, 503, or a 401 from
+  // a bearer that expired while the tab idled) stays sent —
   // that serve's denominator is simply under-counted; nothing falls back.
   const flushBeacons = (user, { immediate = false } = {}) => {
     for (const serve of servesRef.current) {
       if (serve.sent || !serve.examined.size) continue;
+      // A serve is reported ONCE (the server refuses a second report as a
+      // duplicate), so it is reported when its examined set has stopped
+      // growing for a tick — not at the first tick after the first card,
+      // which reported the first viewport of a sixty-card page and nothing
+      // the reader looked at after. On pagehide, whatever there is goes.
+      if (!immediate) {
+        if (serve.examined.size !== serve.settled) { serve.settled = serve.examined.size; continue; }
+      }
       serve.sent = true;
       const body = { user, serveId: serve.id, examined: [...serve.examined] };
       // keepalive: a full-page navigation (every destination is a plain link)
@@ -394,6 +403,11 @@ export default function Home() {
     // Ask for what can still render: a served card that never renders is
     // struck from the reader's listing walk unseen.
     const room = Math.min(CHUNK, MAX_RENDERED - itemsRef.current.length);
+    // The cursor's filter key differs from the current filters only when the
+    // last reload was refused: the page shows old-filter cards under new
+    // chips. A scroll then retries the reload rather than appending a page
+    // that matches neither.
+    if (cursorKeyRef.current !== feedQS(user).toString()) { loadFeed(user); return; }
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
     // for a feed that has since reloaded must be dropped, not appended.
@@ -471,7 +485,11 @@ export default function Home() {
           // minimum: the chunk is already served, so whatever can be placed
           // replaces something rather than being discarded at the ceiling.
           const fresh = planRechunk(prev, examinedAllRef.current, belowNow, 0);
-          const dropped = fresh ? fresh.dropped.slice(0, data.items.length) : [];
+          // The favourite's "more like this" cards were placed a moment ago,
+          // right below the fold — exactly where a re-plan drops first. They
+          // are the reader's own ask; they stay.
+          const related = new Set(prev.filter((x) => x && x._via).map((x) => String(x.id)));
+          const dropped = fresh ? fresh.dropped.filter((id) => !related.has(String(id))).slice(0, data.items.length) : [];
           return applyRechunk(prev, dropped, data.items, { max: MAX_RENDERED });
         });
       }
@@ -541,7 +559,12 @@ export default function Home() {
     boot();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Reloads on a change of filters, craving, epsilon, guidance or fit size —
+  // not on mount, where the boot effect has already loaded (a cold load used
+  // to make two requests, the first discarded, both recorded as served).
+  const reloadPrimedRef = useRef(false);
   useEffect(() => {
+    if (!reloadPrimedRef.current) { reloadPrimedRef.current = true; return; }
     if (uidRef.current) loadFeed();
   }, [filters, epsilon, craving, guideOn, fit.usualSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
