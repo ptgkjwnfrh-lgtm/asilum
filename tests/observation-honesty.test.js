@@ -72,22 +72,34 @@ test("O2 the observation toggle actually gates the passive-signal senders", () =
   // my first draft sliced between "dwellRef.current" and "DWELL_FLUSH_MS",
   // but the constant is declared at the top of the file, so the window came
   // out backwards and empty. The test was wrong, not the gate.
+  // (7 Sep) the examination-report POST lives in a helper, flushBeacons, that
+  // the interval calls after the gate and loadFeed calls under the gate.
   const impressionAt = code.indexOf('"/api/impressions"');
   assert.ok(impressionAt > 0, "the examination-report POST must be findable");
-  const effectStart = code.lastIndexOf("setInterval(", impressionAt);
+  const helperStart = code.lastIndexOf("const flushBeacons", impressionAt);
+  assert.ok(helperStart > 0, "the POST must sit inside flushBeacons");
+  const callAt = code.indexOf("flushBeacons(user)", helperStart + 1);
+  assert.ok(callAt > 0, "the interval must call flushBeacons");
+  const effectStart = code.lastIndexOf("setInterval(", callAt);
   assert.ok(effectStart > 0, "its enclosing interval must be findable");
-  const flush = code.slice(effectStart, impressionAt + 40);
+  const flush = code.slice(effectStart, callAt + 30);
   assert.ok(flush.includes("observationOn()"),
     "the dwell/impression flush must check observationOn() — it did not, which is what " +
     "made the Settings switch decorative");
 
   const gateAt = flush.indexOf("observationOn()");
   const dwellPost = flush.indexOf('"/api/interaction"');
-  const impressionPost = flush.indexOf('"/api/impressions"');
+  const impressionPost = flush.indexOf("flushBeacons(user)");
   assert.ok(dwellPost === -1 || gateAt < dwellPost, "the gate must precede the dwell POST");
   assert.ok(impressionPost === -1 || gateAt < impressionPost,
-    "the gate must precede the examination-report POST — examination is a passive " +
+    "the gate must precede the examination-report flush — examination is a passive " +
     "attention signal too, not an explicit action");
+  // Every other call of the helper is guarded by the same preference.
+  let from = callAt + 1;
+  while ((from = code.indexOf("flushBeacons(user)", from + 1)) > 0) {
+    assert.ok(code.slice(from - 40, from).includes("observationOn()"),
+      "every flushBeacons call must sit behind observationOn()");
+  }
 });
 
 test("O3 placeholder aesthetics are never rendered as observations", () => {

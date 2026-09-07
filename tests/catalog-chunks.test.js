@@ -15,7 +15,7 @@ import {
   CATALOG_SHARE, CHUNK_MIN, CHUNK_MAX, CHUNK_DEFAULT, CURSOR_MAX_LEN,
   chunkQuotas, chunkLayout, spreadSlots, clampChunkLimit,
   listingOrder, listingKey, compareKeys, encodeCursor, decodeCursor, catalogLane,
-  normalizeTaste, TASTE_OFFSET_MAX,
+  ServedFilter,
 } from "../lib/brain/chunk.js";
 import { assembleChunk, assembleFeed, vecSim } from "../lib/brain/bridges.js";
 import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.js";
@@ -155,7 +155,13 @@ test("C7 the cursor continues the lane without repeating and ends honestly", () 
     cursor = catalog.nextCursor;
   }
   assert.ok(exhaustedAt, "a finite listing is eventually exhausted, and says so");
-  assert.equal(servedByLane.length, ordered.length, "every listing was served by the lane exactly once");
+  // The lane passes listings the taste lanes already served (the cursor's
+  // served filter is honoured in every mode), so it serves the listing MINUS
+  // those — in listing order, each at most once, nothing skipped for any
+  // other reason.
+  const laneIdx = servedByLane.map((id) => ordered.findIndex((it) => it.id === id));
+  assert.ok(laneIdx.every((v, k) => k === 0 || v > laneIdx[k - 1]), "the lane is a subsequence of the listing");
+  assert.ok(servedByLane.length >= ordered.length * 0.3, `the lane served a real share of the listing (${servedByLane.length}/${ordered.length})`);
   // Past the end the cursor stays at the end: no wrap to the top.
   const again = assembleChunk(pool, taste, { limit: 24, popularity: {}, catalog: { cursor } });
   assert.equal(again.catalog.exhausted, true);
@@ -359,57 +365,83 @@ test("C18 idsBelowFold reads the cards' geometry against the viewport", () => {
 
 // ---- cursor rotation: scrolling forward without server memory ------------------
 
-test("C19 under cursor rotation twelve chunks never repeat an item — no memory on the server, the cursor carries it", () => {
+test("C19 twelve chunks never repeat an item at 24 OR 60 — no memory on the server, the cursor's served filter carries it", () => {
   const taste = tasteVector(PROFILE());
-  for (const t of [taste, {}]) {
-    let cursor = null;
-    const served = new Set();
-    let total = 0;
-    for (let k = 0; k < 12; k++) {
-      const { items, catalog } = assembleChunk(CATALOG, t, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
-      assert.equal(items.length, 24);
-      for (const it of items) {
-        assert.ok(!served.has(it.id), `${it.id} repeated at chunk ${k + 1} (${it._zone})`);
-        served.add(it.id);
+  for (const t of [taste, {}, { STREETWEAR: 1 }]) {
+    for (const limit of [24, 60]) {
+      let cursor = null;
+      const served = new Set();
+      for (let k = 0; k < 12; k++) {
+        const { items, catalog } = assembleChunk(CATALOG, t, { limit, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+        assert.equal(items.length, limit);
+        for (const it of items) {
+          assert.ok(!served.has(it.id), `${it.id} repeated at chunk ${k + 1} limit ${limit} (${it._zone})`);
+          served.add(it.id);
+        }
+        assert.equal(catalog.rotation, "cursor");
+        cursor = catalog.nextCursor;
       }
-      total += items.length;
-      assert.equal(catalog.rotation, "cursor");
-      assert.ok(catalog.taste.core > 0, "the cursor carries how far core was consumed");
-      cursor = catalog.nextCursor;
+      assert.equal(served.size, 12 * limit);
+      assert.ok(cursor.length < CURSOR_MAX_LEN / 2, `cursor stays well under the ceiling (${cursor.length})`);
     }
-    assert.equal(served.size, total);
-    const c = decodeCursor(cursor);
-    // Core slots are also filled from the retry queue (brand-capped
-    // candidates an earlier chunk passed), so the pointer advances less than
-    // one per core slot — but it must advance, and the queue must stay bounded.
-    assert.ok(c.taste.core >= 60, `core offset advanced across chunks (${c.taste.core})`);
-    assert.ok(c.taste.passed.length <= 60);
   }
 });
 
-test("C20 a re-chunk (freshTaste) restarts the taste lanes at the top while the lane keeps its place", () => {
-  const taste = tasteVector(PROFILE());
-  const first = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: null }, rotation: "cursor" });
-  const cursor = first.catalog.nextCursor;
-  const scrolled = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
-  const fresh = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor", freshTaste: true });
-  const core = (r) => r.items.filter((it) => it._zone === "core").map((it) => it.id);
-  assert.notDeepEqual(core(scrolled), core(first), "a scroll continues down the ranking");
-  assert.deepEqual(core(fresh).slice(0, 5), core(first).slice(0, 5), "a re-chunk ranks from the top again");
-  assert.deepEqual(laneOf(fresh.items).map((it) => it.id), laneOf(scrolled.items).map((it) => it.id), "the listing lane continues from the cursor either way");
-  assert.deepEqual(decodeCursor(fresh.catalog.nextCursor).taste, fresh.catalog.taste);
+test("C20 a taste that moves between chunks changes the ranking, never the promise: no repeats, nothing lost, over a whole session", () => {
+  // One or two interactions per chunk WITHOUT a re-chunk is the ordinary
+  // path (the first design's per-lane offsets drifted into 115–257 items
+  // never served — a verifier's run, 7 Sep). Ids, not positions, cannot drift.
+  let profile = PROFILE();
+  let cursor = null;
+  const served = new Set();
+  let chunks = 0;
+  while (chunks < 40) {
+    const r = buildFeed({ profile, limit: 24, rotation: "cursor", catalog: { cursor } }, CATALOG);
+    chunks++;
+    const fresh = r.items.filter((it) => !served.has(it.id));
+    // Every card new while the catalog lasts — a false positive in the served
+    // filter (~1% once hundreds are held) may cost a card a turn, never more
+    // than a couple per chunk, and it is served later.
+    // ...and the brand cap: the unserved tail of a catalog clusters in a few
+    // brands, and a page holds two of each, so "possible" is bounded by that.
+    const byBrand = {};
+    for (const it of CATALOG) if (!served.has(it.id)) byBrand[it.brand] = (byBrand[it.brand] || 0) + 1;
+    const cappable = Object.values(byBrand).reduce((n, c) => n + Math.min(2, c), 0);
+    // ...and the filter's own false positives, measured from the cursor the
+    // chunk was built from (deterministic: the same few ids each time).
+    const filter = cursor ? decodeCursor(cursor).served : null;
+    const falsePositives = filter ? CATALOG.filter((it) => !served.has(it.id) && filter.has(it.id)).length : 0;
+    const expected = Math.min(24, CATALOG.length - served.size, cappable) - falsePositives;
+    assert.ok(fresh.length >= expected, `chunk ${chunks}: ${fresh.length} new of ${expected} possible (${falsePositives} false positives)`);
+    assert.ok(falsePositives <= 4, `false positives stay rare (${falsePositives} at ${served.size} held)`);
+    for (const it of r.items) served.add(it.id);
+    // The reader favourites the first two cards and skips the third — the
+    // taste moves every chunk.
+    profile = learn(profile, r.items[0], "favorite");
+    profile = learn(profile, r.items[1], "favorite");
+    profile = learn(profile, r.items[2], "skip", { dwellMs: 600 });
+    cursor = r.catalog.nextCursor;
+    if (r.catalog.exhausted && served.size >= CATALOG.length - 5) break;
+  }
+  assert.ok(served.size >= CATALOG.length - 5, `the whole catalog was served (${served.size}/${CATALOG.length})`);
 });
 
-test("C21 memory rotation ignores the cursor's taste offsets — the seen penalty is the rotation there", () => {
+test("C21 memory rotation honours the cursor's served filter too — a consent switch mid-session repeats nothing", () => {
   const taste = tasteVector(PROFILE());
-  const withOffsets = encodeCursor({ ...listingKey(listingOrder(CATALOG)[10]), taste: { core: 100, discovery: 40, reach: 9 } });
-  const mem = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: withOffsets }, rotation: "memory" });
-  const top = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: null }, rotation: "memory" });
-  const core = (r) => r.items.filter((it) => it._zone === "core").map((it) => it.id);
-  assert.deepEqual(core(mem).slice(0, 8), core(top).slice(0, 8));
+  let cursor = null;
+  const served = new Set();
+  for (let k = 0; k < 3; k++) {
+    const r = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
+    r.items.forEach((it) => served.add(it.id));
+    cursor = r.catalog.nextCursor;
+  }
+  const mem = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "memory" });
   assert.equal(mem.catalog.rotation, "memory");
-  assert.deepEqual(mem.catalog.taste, { core: 0, discovery: 0, reach: 0, passed: [] });
-  assert.deepEqual(decodeCursor(mem.catalog.nextCursor).taste, { core: 0, discovery: 0, reach: 0, passed: [] });
+  assert.equal(mem.items.filter((it) => served.has(it.id)).length, 0, "GENERAL → OBSERVE: the page already seen is not served again");
+  // And the reverse: memory-mode pages carry their served filter forward too.
+  const seen = new Set(mem.items.map((it) => it.id));
+  const back = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: mem.catalog.nextCursor }, seen, rotation: "cursor" });
+  assert.equal(back.items.filter((it) => served.has(it.id) || seen.has(it.id)).length, 0);
 });
 
 test("C22 a pool smaller than the scroll still fills every page — repeats only once everything new is gone", () => {
@@ -420,47 +452,54 @@ test("C22 a pool smaller than the scroll still fills every page — repeats only
     const { items, catalog } = assembleChunk(tiny, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, catalog: { cursor }, rotation: "cursor" });
     assert.equal(items.length, 24, `chunk ${k + 1} is full`);
     assert.equal(new Set(items.map((it) => it.id)).size, 24, "never the same id twice on one page");
-    if (k === 0) for (const it of items) served.add(it.id);
-    if (k === 1) {
-      const fresh = items.filter((it) => !served.has(it.id)).length;
-      assert.ok(fresh >= 5, `the six never-served items come first (${fresh} new)`);
-    }
+    const fresh = items.filter((it) => !served.has(it.id)).length;
+    if (k === 0) assert.equal(fresh, 24);
+    if (k === 1) assert.equal(fresh, 6, "the six never-served items come first");
+    if (k === 2) assert.equal(fresh, 0, "then, and only then, repeats");
+    for (const it of items) served.add(it.id);
     cursor = catalog.nextCursor;
   }
 });
 
-test("C23 taste offsets in a cursor are bounded and garbage-tolerant", () => {
-  assert.deepEqual(normalizeTaste(null), { core: 0, discovery: 0, reach: 0, passed: [] });
-  assert.deepEqual(normalizeTaste({ core: -5, discovery: "x", reach: Infinity, passed: "x" }), { core: 0, discovery: 0, reach: 0, passed: [] });
-  assert.deepEqual(normalizeTaste({ core: 1e9, passed: [1, "", "ok"] }), { core: TASTE_OFFSET_MAX, discovery: 0, reach: 0, passed: ["ok"] });
-  assert.equal(normalizeTaste({ passed: Array.from({ length: 500 }, (_, i) => `p${i}`) }).passed.length, 60, "the passed list is bounded");
-  const raw = Buffer.from(JSON.stringify({ v: 1, id: "syn-0001", t: 0, taste: "nope" })).toString("base64url");
-  assert.deepEqual(decodeCursor(raw).taste, { core: 0, discovery: 0, reach: 0, passed: [] });
-  const end = decodeCursor(encodeCursor({ end: true, taste: { core: 3 } }));
-  assert.equal(end.end, true);
-  assert.equal(end.taste.core, 3);
-  // An end cursor with huge offsets still serves a full page.
-  const { items } = assembleChunk(CATALOG, {}, { limit: 24, popularity: {}, catalog: { cursor: encodeCursor({ end: true, taste: { core: 4000, discovery: 4000, reach: 4000 } }) }, rotation: "cursor" });
-  assert.equal(items.length, 24);
-});
-
-test("C24 a maximal cursor — a long id and a full passed list — survives the length ceiling, and an old skip field is ignored", () => {
-  const id = (k) => `source:${"x".repeat(30)}:${String(k).padStart(6, "0")}`;
-  const pos = {
-    t: 1767225600000, id: id(0),
-    taste: { core: 5000, discovery: 5000, reach: 5000, passed: Array.from({ length: 60 }, (_, k) => id(k + 100)) },
-  };
-  const raw = encodeCursor(pos);
-  assert.ok(raw.length < CURSOR_MAX_LEN, `${raw.length} < ${CURSOR_MAX_LEN}`);
-  const back = decodeCursor(raw);
-  assert.equal(back.id, id(0));
-  assert.equal(back.taste.passed.length, 60);
-  assert.equal(back.taste.core, 5000);
-  assert.equal("skip" in back, false);
-  const old = Buffer.from(JSON.stringify({ v: 1, t: 0, id: "syn-0007", skip: ["syn-0008", "syn-0009"] })).toString("base64url");
+test("C23 the served filter is bounded, garbage-tolerant, and rarely wrong", () => {
+  const f = new ServedFilter();
+  assert.equal(f.empty, true);
+  const ids = CATALOG.slice(0, 300).map((it) => it.id);
+  for (const id of ids) f.add(id);
+  assert.ok(ids.every((id) => f.has(id)), "no false negatives, ever");
+  const others = CATALOG.slice(300).map((it) => it.id);
+  const fp = others.filter((id) => f.has(id)).length;
+  assert.ok(fp / others.length < 0.01, `false positives under 1% at 300 ids (${fp}/${others.length})`);
+  const g = new ServedFilter();
+  for (const it of CATALOG.slice(0, 900)) g.add(it.id);
+  const fp900 = CATALOG.slice(900).filter((it) => g.has(it.id)).length;
+  assert.ok(fp900 <= 1, `false positives stay rare at 900 ids (${fp900}/15)`);
+  const round = ServedFilter.fromString(f.toString());
+  assert.deepEqual([...round.bits], [...f.bits]);
+  assert.equal(f.toString().length, 1366);
+  // Garbage in the cursor's served field is an empty filter, never a throw.
+  for (const raw of ["", "!!!", "AAAA", "x".repeat(600), 5, null]) assert.equal(ServedFilter.fromString(raw).empty, true);
+  const bad = Buffer.from(JSON.stringify({ v: 1, id: "syn-0001", t: 0, s: "not-base64!" })).toString("base64url");
+  assert.equal(decodeCursor(bad).served.empty, true);
+  // An old cursor with taste offsets or a skip list decodes to a plain position.
+  const old = Buffer.from(JSON.stringify({ v: 1, t: 0, id: "syn-0007", skip: ["a"], taste: { c: 9 } })).toString("base64url");
   const dec = decodeCursor(old);
   assert.equal(dec.id, "syn-0007");
-  assert.equal("skip" in dec, false, "an old cursor's skip list is ignored, not honoured");
+  assert.equal(dec.served.empty, true);
+});
+
+test("C24 a full cursor — a long id and a full served filter — survives the length ceiling", () => {
+  const id = `source:${"x".repeat(60)}:000001`;
+  const served = new ServedFilter();
+  for (let k = 0; k < 400; k++) served.add(`some-id-${k}`);
+  const raw = encodeCursor({ t: 1767225600000, id, served });
+  assert.ok(raw.length < CURSOR_MAX_LEN, `${raw.length} < ${CURSOR_MAX_LEN}`);
+  const back = decodeCursor(raw);
+  assert.equal(back.id, id);
+  assert.equal(back.served.has("some-id-7"), true);
+  const end = decodeCursor(encodeCursor({ end: true, served }));
+  assert.equal(end.end, true);
+  assert.equal(end.served.has("some-id-399"), true);
 });
 
 test("C25 applyRechunk replaces planned cards in place and touches nothing else", () => {

@@ -14,7 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -153,16 +153,34 @@ export default function Home() {
   // server's ring. `examinedAllRef` is the union, for the re-chunk plan.
   const servesRef = useRef([]);
   const examinedAllRef = useRef(new Set());
-  const SERVES_KEPT = 8;
   const noteServe = (data, ids) => {
     if (!data || !data.serveId) return;
     servesRef.current = [
-      { id: data.serveId, ids: new Set(ids), examined: new Set(), sent: false },
+      // A record born while observation is off is silent from the start —
+      // not from the next five-second tick.
+      { id: data.serveId, ids: new Set(ids), examined: new Set(), sent: !observationOn() },
       ...servesRef.current.filter((s) => s.id !== data.serveId),
-    ].slice(0, SERVES_KEPT);
+    ].slice(0, SERVE_RING_MAX);
+  };
+  // Post every unsent examination record once. A record is marked sent
+  // before the request so a tick cannot post it twice; a network failure
+  // unmarks it for the next tick. A refused request (429, 503) stays sent —
+  // that serve's denominator is simply under-counted; nothing falls back.
+  const flushBeacons = (user) => {
+    for (const serve of servesRef.current) {
+      if (serve.sent || !serve.examined.size) continue;
+      serve.sent = true;
+      postJSON("/api/impressions", {
+        user, serveId: serve.id, examined: [...serve.examined],
+      }).catch(() => { serve.sent = false; });
+    }
   };
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
+  const gridCols = useColumnCount();
+  // Which tab is on screen, for handlers that resolve after a switch.
+  const tabRef = useRef("curated");
+  useEffect(() => { tabRef.current = tab; }, [tab]);
   useEffect(() => {
     const sync = () => setGuideOn(brainEnabled());
     sync();
@@ -225,9 +243,9 @@ export default function Home() {
       // a backlog collected while it was off.
       //
       // HONEST LIMIT: this is a client-side control. It genuinely stops this
-      // client sending, and the r19 path already treats a missing examination
-      // report as normal (the server falls back to served counts and says so
-      // through examinationCoverage). It is not a server-enforced consent
+      // client sending, and the r19 path treats a missing examination report
+      // as an under-counted denominator for that serve (there is no fallback
+      // to served counts under the default flag). It is not a server-enforced consent
       // record; a modified client could still post. Making it server-side
       // wants asterisk_memory_preferences and its own round.
       if (!observationOn()) {
@@ -259,15 +277,8 @@ export default function Home() {
         }
       }
       // (r19) one examination report per serve, sent once the page has
-      // settled. A lost beacon is harmless: the server falls back to served
-      // counts and says so through examinationCoverage.
-      for (const serve of servesRef.current) {
-        if (serve.sent || !serve.examined.size) continue;
-        serve.sent = true;
-        postJSON("/api/impressions", {
-          user, serveId: serve.id, examined: [...serve.examined],
-        }).catch(() => { serve.sent = false; });
-      }
+      // settled.
+      flushBeacons(user);
     }, DWELL_FLUSH_MS);
     return () => clearInterval(iv);
   }, []);
@@ -285,13 +296,10 @@ export default function Home() {
   // change re-chunks with the NEW filters, not the ones it was born under.
   const rechunkRef = useRef(null);
 
-  const feedQS = useCallback((user, { limit, cursor, rechunk } = {}) => {
+  const feedQS = useCallback((user, { limit, cursor } = {}) => {
     const qs = new URLSearchParams({ user, epsilon: epsilon ? "1" : "0", q: promptRef.current });
     if (limit) qs.set("limit", String(limit));
     if (cursor) qs.set("cursor", cursor);
-    // A re-chunk asks for the taste lanes ranked afresh; the listing lane
-    // continues from the cursor either way.
-    if (rechunk) qs.set("rechunk", "1");
     if (boardParamRef.current) qs.set("board", boardParamRef.current);
     if (filters.category) qs.set("category", filters.category);
     if (filters.maxPrice) qs.set("maxPrice", filters.maxPrice);
@@ -311,21 +319,30 @@ export default function Home() {
     const isCurrent = claimRequest(feedGenRef);
     setLoading(true);
     reloadingRef.current = true;
+    // What was examined on the page being replaced is reported now, not lost
+    // to the reset below.
+    if (observationOn()) flushBeacons(user);
+    const previousCursor = cursorRef.current;
     cursorRef.current = null;
     actionsSinceChunkRef.current = 0;
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       if (!isCurrent()) return;
-      // A refused reload (rate limit, outage) keeps the feed it has rather
-      // than replacing it with "nothing matches".
-      if (!res.ok || !Array.isArray(data.items)) return;
+      // A refused reload (rate limit, outage) keeps the feed it has — and its
+      // cursor — rather than replacing it with "nothing matches", and says so.
+      if (!res.ok || !Array.isArray(data.items)) {
+        cursorRef.current = previousCursor;
+        setNotice(res.status === 429 ? "the feed is busy — kept what you had" : "could not refresh the feed — kept what you had");
+        return;
+      }
       setItems(data.items || []);
       cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
       else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
       dwellRef.current = { vis: new Map(), sent: new Set() };
+      openedRef.current = new Set();
       // (r19) a new serve: report examined slots against THIS id, once.
       servesRef.current = [];
       examinedAllRef.current = new Set();
@@ -351,7 +368,8 @@ export default function Home() {
 
   const loadMore = useCallback(async () => {
     const user = uidRef.current;
-    if (!user || loadingMoreRef.current || reloadingRef.current) return;
+    if (!user) return;
+    if (loadingMoreRef.current || reloadingRef.current) { wantMoreRef.current = true; return; }
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
@@ -383,9 +401,17 @@ export default function Home() {
   // and only when enough of them exist to be worth it — otherwise the next
   // scroll fetches a fresh chunk anyway, since every chunk is built at request
   // time.
+  // A scroll that reached the sentinel while a chunk was in flight is
+  // remembered and served when that chunk lands: an in-place re-chunk does
+  // not move the sentinel, so the observer would never fire again.
+  const wantMoreRef = useRef(false);
   const rechunk = useCallback(async () => {
     const user = uidRef.current;
-    if (!user || loadingMoreRef.current || reloadingRef.current || typeof document === "undefined") return;
+    if (!user || typeof document === "undefined") return;
+    // The plan reads the curated grid's geometry; on another tab the DOM is
+    // that tab's, and the curated list must not be rearranged unseen.
+    if (tabRef.current !== "curated") return;
+    if (loadingMoreRef.current || reloadingRef.current) return;
     const plan = planRechunk(
       itemsRef.current,
       examinedAllRef.current,
@@ -396,7 +422,9 @@ export default function Home() {
     actionsSinceChunkRef.current = 0;
     const isCurrent = watchRequest(feedGenRef);
     try {
-      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current, rechunk: true });
+      // Every chunk is ranked on the taste as it stands and skips what the
+      // cursor says was served, so a re-chunk is an ordinary chunk request.
+      const qs = feedQS(user, { limit: CHUNK, cursor: cursorRef.current });
       const res = await authorizedFetch("/api/feed?" + qs.toString());
       const data = await res.json();
       if (!isCurrent()) return;
@@ -404,14 +432,21 @@ export default function Home() {
       if (data.items && data.items.length) {
         noteServe(data, data.items.map((x) => x.id));
         // Replace the planned cards IN PLACE and only those: anything that
-        // arrived or left while the chunk was in flight keeps its place, and
-        // the column breaks the reader is looking at do not move.
-        setItems((prev) => applyRechunk(prev, plan.dropped, data.items, { max: MAX_RENDERED }));
+        // arrived or left while the chunk was in flight keeps its place. The
+        // plan is re-checked against the geometry NOW — the reader may have
+        // scrolled a screen while the chunk was in flight — so a card that
+        // came into view since is kept.
+        const belowNow = idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN());
+        const dropped = plan.dropped.filter((id) => belowNow.has(id) && !examinedAllRef.current.has(id));
+        setItems((prev) => applyRechunk(prev, dropped, data.items, { max: MAX_RENDERED }));
       }
     } catch (e) { console.error(e); }
-    finally { loadingMoreRef.current = false; }
-  }, [feedQS]);
-  rechunkRef.current = rechunk;
+    finally {
+      loadingMoreRef.current = false;
+      if (wantMoreRef.current) { wantMoreRef.current = false; loadMore(); }
+    }
+  }, [feedQS, loadMore]);
+  useEffect(() => { rechunkRef.current = rechunk; }, [rechunk]);
 
   function noteDeliberateAction() {
     actionsSinceChunkRef.current += 1;
@@ -425,9 +460,10 @@ export default function Home() {
     }, { rootMargin: "700px" });
     obs.observe(sentinelRef.current);
     return () => obs.disconnect();
-    // (The POST sub-view is gone — owner overhaul, Aug 13 — so the
-    // sentinel node never remounts out from under the observer.)
-  }, [loadMore]);
+    // The sentinel node is mounted only on the curated tab, so the observer
+    // is re-attached when the reader comes back to it (it used to be dead
+    // after a tab round-trip — a verifier's finding, 7 Sep).
+  }, [loadMore, tab]);
 
   // ---- Boot: identity, search hand-off, shared links, first-visit connect ----
   useEffect(() => {
@@ -546,15 +582,26 @@ export default function Home() {
   }
 
   // ---- Signals ----
+  // "More like this" after a favourite. It used to SPLICE four cards into the
+  // list after the favourited one; under index-bucketed columns a splice
+  // re-buckets every card after it (the same shift a re-chunk avoids), so
+  // the related pieces now REPLACE the next cards after the favourite that
+  // are below the fold and never examined — same count, same geometry, the
+  // reader finds them where the feed continues. With nothing replaceable
+  // (end of the list, everything seen) they append.
   function insertRelatedAfter(afterId, newItems, cap = 4) {
+    const below = typeof document === "undefined" ? new Set() : idsBelowFold(document, window.innerHeight, 0);
     setItems((prev) => {
       const have = new Set(prev.map((x) => x.id));
       const add = newItems.filter((x) => !have.has(x.id)).slice(0, cap);
       if (!add.length) return prev;
       const idx = prev.findIndex((x) => x.id === afterId);
-      const out = prev.slice();
-      out.splice(idx + 1, 0, ...add);
-      return out;
+      const dropped = [];
+      for (let k = Math.max(0, idx + 1); k < prev.length && dropped.length < add.length; k++) {
+        const id = prev[k].id;
+        if (below.has(id) && !examinedAllRef.current.has(id)) dropped.push(id);
+      }
+      return applyRechunk(prev, dropped, add, { max: MAX_RENDERED });
     });
   }
 
@@ -626,7 +673,9 @@ export default function Home() {
   async function saveToBoard(item) {
     setSavedIds((prev) => new Set(prev).add(item.id));
     try {
-      await postJSON("/api/boards", { user: uidRef.current, item });
+      const res = await postJSON("/api/boards", { user: uidRef.current, item });
+      // A save is a deliberate action like a favourite; it counts.
+      if (res && res.ok) noteDeliberateAction();
     } catch (e) { console.error(e); }
   }
 
@@ -654,8 +703,15 @@ export default function Home() {
   const [modalEvidence, setModalEvidence] = useState(null);
   const [modalSameShot, setModalSameShot] = useState(null);
 
+  // Opening a record is a click the reader chose: it teaches (weight 0.1)
+  // and counts toward the re-chunk, once per piece per page.
+  const openedRef = useRef(new Set());
   function openModal(item) {
     setModal(item);
+    if (item && item.id && !openedRef.current.has(item.id)) {
+      openedRef.current.add(item.id);
+      react(item, "open");
+    }
     setModalRel([]);
     setModalEvidence(null);
     setModalSameShot(null);
@@ -821,8 +877,7 @@ export default function Home() {
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
-              <div className="grid">
-                {items.map((it) => (
+              <Columns count={gridCols} items={items} render={(it) => (
                   <FragmentCard
                     key={it.id}
                     it={it}
@@ -830,10 +885,10 @@ export default function Home() {
                     bagged={baggedIds.has(it.id)}
                     onOpen={() => openModal(it)}
                     onFavorite={() => react(it, "favorite")}
+                    onPass={() => react(it, "skip")}
                     onBag={() => addToBag(it)}
                   />
-                ))}
-              </div>
+                )} />
               <div ref={sentinelRef} className="sentinel" />
             </>
           )}
@@ -849,8 +904,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <div className="grid">
-                  {tabItems.map((it) => (
+                <Columns count={gridCols} items={tabItems} render={(it) => (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -858,10 +912,10 @@ export default function Home() {
                       bagged={baggedIds.has(it.id)}
                       onOpen={() => openModal(it)}
                       onFavorite={() => react(it, "favorite")}
+                    onPass={() => react(it, "skip")}
                       onBag={() => addToBag(it)}
                     />
-                  ))}
-                </div>
+                  )} />
               )}
             </>
           )}
@@ -874,8 +928,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <div className="grid">
-                  {tabItems.map((it) => (
+                <Columns count={gridCols} items={tabItems} render={(it) => (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -883,10 +936,10 @@ export default function Home() {
                       bagged={baggedIds.has(it.id)}
                       onOpen={() => openModal(it)}
                       onFavorite={() => react(it, "favorite")}
+                    onPass={() => react(it, "skip")}
                       onBag={() => addToBag(it)}
                     />
-                  ))}
-                </div>
+                  )} />
               )}
             </>
           )}
@@ -1114,7 +1167,40 @@ export default function Home() {
 // tiles that used to smoosh in after every 7th card are gone — Aug 12,
 // owner order: the catalog is pieces of clothing only; real posts live on
 // the POST sub-page.)
-function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
+// How many columns the catalog grid shows: the shell's --ed-grid-cols on
+// desktop (the settings rack sets it), two on a narrow screen.
+function useColumnCount() {
+  const [count, setCount] = useState(4);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 729px)");
+    const sync = () => {
+      if (mq.matches) { setCount(2); return; }
+      const raw = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--ed-grid-cols"), 10);
+      setCount(Number.isFinite(raw) && raw > 0 ? raw : 4);
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    window.addEventListener("asilum:edition", sync);
+    return () => { mq.removeEventListener("change", sync); window.removeEventListener("asilum:edition", sync); };
+  }, []);
+  return count;
+}
+
+// Explicit columns: item i in column i mod N. A card's column depends on
+// its index alone, so replacing a card below the fold moves nothing above
+// it (see .grid.gcols in globals.css).
+function Columns({ items, count, render, children }) {
+  const cols = Array.from({ length: Math.max(1, count) }, () => []);
+  items.forEach((it, i) => cols[i % cols.length].push(it));
+  return (
+    <div className="grid gcols">
+      {cols.map((col, c) => <div className="gcol" key={c}>{col.map(render)}</div>)}
+      {children}
+    </div>
+  );
+}
+
+function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, onPass }) {
   return (
     <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
       {/* ONE ACCESSIBLE NAME PER CARD (launch audit, Aug 16). The image and the
@@ -1141,6 +1227,9 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag }) {
         {fitLine ? <div className="fitline">{fitLine}</div> : null}
         <div className="cardacts">
           <button onClick={onFavorite}>Favorite</button>
+          {/* (7 Sep) the brief's third verb — a reader can pass on a piece
+              without opening it. Same signal the modal's Skip sends. */}
+          {onPass && <button className="pass" onClick={onPass}>Pass</button>}
           <button className={bagged ? "on" : ""} onClick={onBag}>
             {bagged ? "In bag ✓" : "Add to bag"}
           </button>

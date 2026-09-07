@@ -15,8 +15,10 @@ produces content in this app; if that ever changes, the surface will say so.
 | ad | sponsored slot | reserved; inert |
 
 ## Signals, strongest first
-bag 0.7 > share 0.6 > save > favorite > dwell; fast skip (< 1.2 s) is a
-stronger negative than a slow skip. Client batches dwell time. The event
+bag 0.7 > share 0.6 > save > favorite 0.4 > open 0.1 (the reader opened the
+record — once per piece per page) > dwell; fast skip (< 1.2 s) is a stronger
+negative than a slow skip. Every card carries Favorite / Pass / Add to bag,
+so the brief's like / pass / buy loop closes without opening the record. Client batches dwell time. The event
 layer (user_events) mirrors this with EVENT_WEIGHT: bag 2 / share 1.5 /
 board 1.3 / save 1.2 / fav 1 / view 0.2 / skip −0.5 / reject −1.
 
@@ -27,7 +29,7 @@ down-ranked) and max 2 items per brand per chunk still hold across every zone.
 
 | zone | share | what |
 | --- | --- | --- |
-| catalog | **25%, fixed** | the listing in listing order (created_at desc, id), continued by an opaque `cursor`; taste-free; a brand-capped listing is deferred to the next chunk (cursor resumes AT it, carrying the ids taken after it as `skip`), never dropped; served ids are skipped, never repeated |
+| catalog | **25%, fixed** | the listing in listing order (created_at desc, id), continued by an opaque `cursor`; taste-free; a brand-capped listing ENDS the lane for the chunk and is the resume key (`chunk.catalog.deferred`), never dropped, never repeated; served ids are skipped |
 | core | 45% | the six-bridge ranking on the taste as it stands at request time |
 | discovery | 20% | one hop out via expandTaste, prefers bridge pieces (10% in safe mode) |
 | reach | 10% | far (alpha sim < 0.15), 15% when bored (skip fatigue), 0 in safe mode |
@@ -42,18 +44,18 @@ one dominant tag). The lane's cursor comes back as `chunk.catalog.nextCursor`
 and ends with `exhausted: true` rather than wrapping. Hard filters
 (category/maxPrice/fit) narrow the listing the cursor pages through.
 
-Rotation between chunks has two modes, reported as `chunk.rotation`:
-`memory` when the server persists served ids (OBSERVE consent — the seen
-penalty rotates the taste lanes, as always) and `cursor` when it persists
-nothing (GENERAL, anonymous — D4). Under `cursor` the SAME opaque cursor also
-carries how far each taste lane (core / discovery / reach) was consumed, plus
-a bounded list of candidates passed for the brand cap alone (retried first
-next chunk); everything earlier chunks walked past in any lane is excluded
-from every lane, so a scroll never repeats an item until the pool is dry —
-then, and only then, the page is filled with repeats. `?rechunk=1` (the
-client's re-chunk after actions) restarts the taste lanes at the top of the
-NEW ranking while the listing lane keeps its place. The server remembers
-nothing in either case that it did not before.
+Rotation between chunks: the opaque cursor carries a SERVED FILTER — a
+Bloom filter of every id earlier chunks served (1 KB; false positives
+~0.01% at 300 ids, ~1.3% at 900; a false positive costs one item a turn,
+nothing is ever lost) — and every lane skips what it holds, in every
+consent state. `chunk.rotation` says whether the server ALSO remembers
+(`memory`, OBSERVE: the seen penalty) or only the cursor does (`cursor`,
+GENERAL and anonymous — D4). Ids, not positions: a taste that moves between
+chunks, a brand cap, a bigger pool or a consent switch cannot turn the memory
+into skipped-forever items or repeats (the first design, per-lane offsets into
+the ranking, failed on all four). Only a dry pool fills a page with repeats.
+A re-chunk after actions is an ordinary chunk request: ranked on the taste as
+it now stands, minus what the reader has seen.
 
 Learning between chunks: every /api/interaction lands on the profile before
 the next /api/feed is built, so each chunk is generated from the reader's
