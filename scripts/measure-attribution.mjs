@@ -30,7 +30,7 @@ import { getEdges } from "../lib/db/index.js";
 const ARM = process.argv[2];
 if (!["baseline", "after"].includes(ARM)) { console.error("usage: measure-attribution.mjs baseline|after"); process.exit(1); }
 
-const WHITELIST = new Set(["alpha", "beta", "gamma", "delta", "epsilon", "ad", "discovery-adjacent", "discovery-crossuser", "reach"]);
+const WHITELIST = new Set(["alpha", "beta", "gamma", "delta", "epsilon", "ad", "discovery-adjacent", "discovery-crossuser", "reach", "catalog"]);
 const CORE = new Set(["alpha", "beta", "gamma", "delta", "epsilon", "ad"]);
 
 const SCENARIOS = [
@@ -56,7 +56,8 @@ for (const s of SCENARIOS) {
   const sequence = items.map((it) => [it.id, it._score, it._zone]);
   const attributed = items.filter((it) => WHITELIST.has(it._bridge));
   const coreOk = items.filter((it) => it._zone === "core").every((it) => CORE.has(it._bridge));
-  const zonedOk = items.filter((it) => it._zone !== "core").every((it) => ["discovery-adjacent", "discovery-crossuser", "reach"].includes(it._bridge));
+  // (6 Sep) the catalog lane is a zone with its own pathway attribution.
+  const zonedOk = items.filter((it) => it._zone !== "core").every((it) => ["discovery-adjacent", "discovery-crossuser", "reach", "catalog"].includes(it._bridge));
   report.scenarios[s.name] = {
     served: items.length,
     attributed: attributed.length,

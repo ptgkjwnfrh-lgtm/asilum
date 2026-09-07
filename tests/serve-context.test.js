@@ -12,7 +12,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { recordServe, serveContextFor, SERVE_ZONES } from "../lib/brain/index.js";
+import { recordServe, serveContextFor, applyExaminationReport, findServe, SERVE_RING, SERVE_ZONES } from "../lib/brain/index.js";
 import { eventFromInteraction } from "../lib/events/index.js";
 import { logSearch, SERVED_IDS_CAP } from "../lib/search/index.js";
 import { listSearchLogs } from "../lib/db/production.js";
@@ -197,4 +197,47 @@ test("a search with no served ids records null, not an empty exposure", async ()
   const [row] = await listSearchLogs({ limit: 1 });
   assert.equal(row.servedIds, null,
     "an unrecorded exposure and an empty one are different facts");
+});
+
+// ---- (6 Sep) a page is several serves ----------------------------------------
+
+test("the profile remembers a ring of recent serves, newest first, bounded", () => {
+  let p = blank();
+  for (let k = 0; k < SERVE_RING + 3; k++) p = recordServe(p, `serve-${k}`, [{ id: `i${k}`, _bridge: "alpha", _zone: "core" }]);
+  assert.equal(p._meta.serves.length, SERVE_RING);
+  assert.equal(p._meta.serves[0].id, `serve-${SERVE_RING + 2}`);
+  assert.equal(p._meta.lastServe.id, `serve-${SERVE_RING + 2}`, "lastServe stays the newest for older readers");
+  assert.equal(findServe(p, "serve-0"), null, "the oldest fell off the ring");
+  assert.equal(findServe(p, "serve-4").id, "serve-4");
+});
+
+test("a card from an earlier chunk keeps its slot context after later chunks were served", () => {
+  let p = recordServe(blank(), "first", SLATE);
+  p = recordServe(p, "chunk-2", [{ id: "e", brand: "E", _bridge: "catalog", _zone: "catalog" }]);
+  p = recordServe(p, "chunk-3", [{ id: "f", brand: "F", _bridge: "reach", _zone: "reach" }]);
+  assert.deepEqual(serveContextFor(p, "c"), { slot: 2, zone: "discovery", bridge: "discovery-adjacent", serveId: "first" });
+  assert.deepEqual(serveContextFor(p, "e"), { slot: 0, zone: "catalog", bridge: "catalog", serveId: "chunk-2" });
+  assert.equal(serveContextFor(p, "zzz"), null);
+});
+
+test("an examination report lands on ITS serve — once — even after newer serves", () => {
+  let p = recordServe(blank(), "first", SLATE);
+  p = recordServe(p, "chunk-2", [{ id: "e", brand: "E", _bridge: "catalog", _zone: "catalog" }]);
+  const applied = applyExaminationReport(p, "first", { alpha: 2, "discovery-adjacent": 1 });
+  assert.equal(applied._meta.bridgeStats.alpha, 2);
+  assert.equal(findServe(applied, "first").reported, true);
+  assert.equal(findServe(applied, "chunk-2").reported, false);
+  const again = applyExaminationReport(applied, "first", { alpha: 2 });
+  assert.equal(again._meta.bridgeStats.alpha, 2, "a replay applies nothing");
+  const unknown = applyExaminationReport(applied, "never-served", { alpha: 9 });
+  assert.equal(unknown._meta.bridgeStats.alpha, 2, "a forged serve id applies nothing");
+});
+
+test("a pre-ring profile (lastServe only) still answers", () => {
+  const p = blank();
+  p._meta.lastServe = { id: "old", bridges: { a: "alpha" }, slots: { a: 0 }, zones: { a: "core" }, reported: false };
+  assert.deepEqual(serveContextFor(p, "a"), { slot: 0, zone: "core", bridge: "alpha", serveId: "old" });
+  assert.equal(findServe(p, "old").id, "old");
+  const applied = applyExaminationReport(p, "old", { alpha: 1 });
+  assert.equal(applied._meta.lastServe.reported, true);
 });

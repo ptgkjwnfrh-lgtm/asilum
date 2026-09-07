@@ -22,7 +22,7 @@ import { buildFeed, learn, tasteVector, SERVE_ZONES } from "../lib/brain/index.j
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
-import { planRechunk, idsBelowFold, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
 
 const PROFILE = () => ({
   long: { MINIMAL: 0.9, TAILORED: 0.6, UTILITARIAN: 0.3 },
@@ -148,7 +148,10 @@ test("C7 the cursor continues the lane without repeating and ends honestly", () 
     }
     // The chunk that reaches the end serves the listing's tail AND says so.
     if (catalog.exhausted) { exhaustedAt = chunks; assert.ok(lane.length <= 6); cursor = catalog.nextCursor; break; }
-    assert.equal(lane.length, 6, "a live lane fills its quota");
+    // A brand run ends the lane early for the chunks it takes to drain;
+    // otherwise the lane fills its quota.
+    if (catalog.deferred) assert.ok(lane.length >= 1 && lane.length < 6, "a deferred lane is short, not empty");
+    else assert.equal(lane.length, 6, "a live lane fills its quota");
     cursor = catalog.nextCursor;
   }
   assert.ok(exhaustedAt, "a finite listing is eventually exhausted, and says so");
@@ -160,22 +163,50 @@ test("C7 the cursor continues the lane without repeating and ends honestly", () 
   assert.equal(again.items.length, 24);
 });
 
-test("C8 a brand-capped listing is deferred to the next chunk, never dropped", () => {
+test("C8 a brand-capped listing ends the lane for the chunk and is served first by the next — through the real assembler", () => {
+  // Fifteen adjacent listings of one brand, then thirty of distinct brands.
   const listing = [
-    { id: "x1", brand: "X", tags: { MINIMAL: 0.9 } },
-    { id: "x2", brand: "X", tags: { MINIMAL: 0.9 } },
-    { id: "x3", brand: "X", tags: { MINIMAL: 0.9 } },
+    ...Array.from({ length: 15 }, (_, i) => ({ id: `x${String(i).padStart(2, "0")}`, brand: "X", tags: { MINIMAL: 0.9 } })),
     ...Array.from({ length: 30 }, (_, i) => ({ id: `y${String(i).padStart(2, "0")}`, brand: `B${i}`, tags: { STATEMENT: 0.8 } })),
   ];
-  const ordered = listingOrder(listing);
-  assert.deepEqual(ordered.slice(0, 3).map((it) => it.id), ["x1", "x2", "x3"], "ids break the created_at tie");
-  const first = catalogLane(ordered, null, 4, { defer: (it) => it.brand === "X" && it.id === "x3" });
-  assert.deepEqual(first.items.map((it) => it.id), ["x1", "x2", "y00", "y01"]);
-  const c = decodeCursor(first.nextCursor);
-  assert.equal(c.id, "x3", "resume AT the deferred listing");
-  assert.deepEqual(c.skip, ["y00", "y01"], "and skip what was taken after it");
-  const second = catalogLane(ordered, c, 4);
-  assert.deepEqual(second.items.map((it) => it.id), ["x3", "y02", "y03", "y04"], "x3 is served, y00/y01 are not repeated");
+  let cursor = null;
+  const laneServed = [];
+  for (let k = 0; k < 12; k++) {
+    const { items, catalog } = assembleChunk(listing, { MINIMAL: 0.9 }, { limit: 12, popularity: {}, catalog: { cursor }, rotation: "memory" });
+    const brands = {};
+    for (const it of items) brands[it.brand] = (brands[it.brand] || 0) + 1;
+    assert.ok(Object.values(brands).every((n) => n <= 2), `chunk ${k + 1}: brand cap holds on the whole page ${JSON.stringify(brands)}`);
+    const lane = laneOf(items);
+    for (const it of lane) {
+      assert.ok(!laneServed.includes(it.id), `lane never repeats (${it.id})`);
+      laneServed.push(it.id);
+    }
+    assert.equal(items.length, 12, "the page is full — core fills what the short lane leaves");
+    if (k < 7) {
+      assert.deepEqual(lane.map((it) => it.brand), ["X", "X"], `chunk ${k + 1}: two of the run per chunk`);
+      assert.equal(catalog.deferred, true);
+    }
+    cursor = catalog.nextCursor;
+  }
+  assert.deepEqual(laneServed.slice(0, 15), listing.slice(0, 15).map((it) => it.id), "the run drains in listing order, none dropped");
+  // The pure walk: a deferral stops the lane and becomes the resume key.
+  const first = catalogLane(listingOrder(listing), null, 4, { defer: (it) => it.id === "x02" });
+  assert.deepEqual(first.items.map((it) => it.id), ["x00", "x01"]);
+  assert.equal(first.deferred, true);
+  assert.equal(decodeCursor(first.nextCursor).id, "x02", "resume AT the deferred listing");
+  const second = catalogLane(listingOrder(listing), decodeCursor(first.nextCursor), 4);
+  assert.deepEqual(second.items.map((it) => it.id), ["x02", "x03", "x04", "x05"]);
+});
+
+test("C8b a pool smaller than the chunk still serves every item — never an empty page, never a lost listing", () => {
+  const pool = CATALOG.slice(0, 10);
+  const { items, catalog } = assembleChunk(pool, {}, { limit: 60, popularity: {}, catalog: { cursor: null }, rotation: "memory" });
+  assert.equal(items.length, 10, "a cold reader over ten items sees ten items, not none");
+  assert.equal(new Set(items.map((it) => it.id)).size, 10);
+  assert.equal(catalog.exhausted, true);
+  const oneBrand = Array.from({ length: 100 }, (_, i) => ({ id: `o${i}`, brand: "ONE", tags: { MINIMAL: 0.5 } }));
+  const r = assembleChunk(oneBrand, { MINIMAL: 0.9 }, { limit: 24, popularity: {}, catalog: { cursor: null }, rotation: "memory" });
+  assert.equal(r.items.length, 2, "one brand can never take more than two slots on a page");
 });
 
 test("C9 the lane skips what the reader was already served, and the cursor passes it", () => {
@@ -195,7 +226,6 @@ test("C10 a forged, oversized or foreign cursor starts the lane from the top ins
   assert.equal(decodeCursor("x".repeat(CURSOR_MAX_LEN + 1)), null);
   assert.equal(decodeCursor(Buffer.from('{"v":2,"id":"a"}').toString("base64url")), null, "an unknown version is not a position");
   assert.equal(decodeCursor(Buffer.from('{"v":1,"id":""}').toString("base64url")), null);
-  assert.equal(decodeCursor(Buffer.from('{"v":1,"id":"a","skip":"a"}').toString("base64url")).skip.length, 0, "skip must be a list");
   const taste = tasteVector(PROFILE());
   const top = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: null } });
   const forged = assembleChunk(CATALOG, taste, { limit: 24, popularity: {}, catalog: { cursor: "garbage!" } });
@@ -414,18 +444,38 @@ test("C23 taste offsets in a cursor are bounded and garbage-tolerant", () => {
   assert.equal(items.length, 24);
 });
 
-test("C24 a maximal cursor — full skip and passed lists with long ids — survives the length ceiling", () => {
+test("C24 a maximal cursor — a long id and a full passed list — survives the length ceiling, and an old skip field is ignored", () => {
   const id = (k) => `source:${"x".repeat(30)}:${String(k).padStart(6, "0")}`;
   const pos = {
     t: 1767225600000, id: id(0),
-    skip: Array.from({ length: 60 }, (_, k) => id(k + 1)),
     taste: { core: 5000, discovery: 5000, reach: 5000, passed: Array.from({ length: 60 }, (_, k) => id(k + 100)) },
   };
   const raw = encodeCursor(pos);
   assert.ok(raw.length < CURSOR_MAX_LEN, `${raw.length} < ${CURSOR_MAX_LEN}`);
   const back = decodeCursor(raw);
   assert.equal(back.id, id(0));
-  assert.equal(back.skip.length, 60);
   assert.equal(back.taste.passed.length, 60);
   assert.equal(back.taste.core, 5000);
+  assert.equal("skip" in back, false);
+  const old = Buffer.from(JSON.stringify({ v: 1, t: 0, id: "syn-0007", skip: ["syn-0008", "syn-0009"] })).toString("base64url");
+  const dec = decodeCursor(old);
+  assert.equal(dec.id, "syn-0007");
+  assert.equal("skip" in dec, false, "an old cursor's skip list is ignored, not honoured");
+});
+
+test("C25 applyRechunk replaces planned cards in place and touches nothing else", () => {
+  const prev = Array.from({ length: 12 }, (_, i) => ({ id: `p${i}` }));
+  const dropped = ["p4", "p5", "p6", "p7", "p8", "p9", "p10", "p11"];
+  // While the chunk was in flight: a related card was inserted after p1 and
+  // p3 was skipped away. Neither is in the plan; neither may move or vanish.
+  const live = [prev[0], prev[1], { id: "related-1" }, prev[2], ...prev.slice(4)];
+  const fresh = Array.from({ length: 10 }, (_, i) => ({ id: `f${i}` }));
+  const out = applyRechunk(live, dropped, fresh, { max: 300 });
+  assert.deepEqual(out.map((x) => x.id), ["p0", "p1", "related-1", "p2", "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9"]);
+  // A fresh item already on the page is not duplicated; the rendered ceiling holds.
+  const dup = applyRechunk(live, dropped, [{ id: "p0" }, { id: "related-1" }, { id: "n1" }], { max: 6 });
+  assert.deepEqual(dup.map((x) => x.id), ["p0", "p1", "related-1", "p2", "n1"]);
+  assert.equal(new Set(dup.map((x) => x.id)).size, dup.length);
+  // Nothing planned → nothing moves, fresh items append up to the ceiling.
+  assert.deepEqual(applyRechunk(prev.slice(0, 3), [], fresh.slice(0, 2), { max: 4 }).map((x) => x.id), ["p0", "p1", "p2", "f0"]);
 });

@@ -232,7 +232,7 @@ export async function GET(req) {
     } catch { tuned = null; }
   }
 
-  const { split, items, epsilonActive, epsilonAuto, safeMode, zones, catalog } = buildFeed(
+  const { split, items, epsilonActive, epsilonAuto, safeMode, zones, quotas, catalog } = buildFeed(
     {
       profile,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
@@ -334,6 +334,9 @@ export async function GET(req) {
     // an exhausted lane says so rather than wrapping to the top.
     chunk: {
       limit,
+      // What the layout asked for, beside `zones` (what was served): a zone
+      // short of its quota fell back to core, and the reader can see that.
+      quotas,
       catalog: catalog
         ? { share: CATALOG_SHARE, quota: catalog.quota, count: catalog.count, cursor: catalog.cursor, nextCursor: catalog.nextCursor, exhausted: catalog.exhausted }
         : null,

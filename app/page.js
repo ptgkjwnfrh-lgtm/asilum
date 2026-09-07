@@ -14,7 +14,7 @@ import { confidenceBand } from "../lib/asterisk/confidence.js";
 import Notice from "./components/Notice.jsx";
 import { useEscape, useFocusTrap, useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, RECHUNK_AFTER } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor,
@@ -50,10 +50,12 @@ const BRIDGE_REASON = {
 };
 
 function reasonFor(item) {
+  // The lane is taste-free by law, so it is explained BEFORE any taste line —
+  // a craving did not choose it however well it happens to match one.
+  if (item._zone === "catalog") return "from the catalog, in listing order";
   if (item._contextMatch >= 0.2) return "matches what you're craving right now";
   if (item._zone === "reach") return "a far reach — break your pattern";
   if (item._zone === "discovery") return "you'll probably like this";
-  if (item._zone === "catalog") return "from the catalog, in listing order";
   if (item._via === "graph") return "saved together by others";
   if (item._via === "tags") return "a similar aesthetic";
   const parts = item && item._parts ? item._parts : null;
@@ -141,7 +143,19 @@ export default function Home() {
   // tuning denominator used to be every slot the server sent — position bias
   // straight into the training signal. We report ids only; the server knows
   // which bridge each was.
-  const serveRef = useRef({ id: null, examined: new Set(), sent: false });
+  // (6 Sep) one record PER SERVE — the first load and every chunk after it —
+  // each reported once against its own id. Newest first, bounded like the
+  // server's ring. `examinedAllRef` is the union, for the re-chunk plan.
+  const servesRef = useRef([]);
+  const examinedAllRef = useRef(new Set());
+  const SERVES_KEPT = 8;
+  const noteServe = (data, ids) => {
+    if (!data || !data.serveId) return;
+    servesRef.current = [
+      { id: data.serveId, ids: new Set(ids), examined: new Set(), sent: false },
+      ...servesRef.current.filter((s) => s.id !== data.serveId),
+    ].slice(0, SERVES_KEPT);
+  };
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
   useEffect(() => {
@@ -162,7 +176,9 @@ export default function Home() {
         const rec = d.vis.get(id) || { start: null, total: 0 };
         if (en.isIntersecting) {
           if (rec.start == null) rec.start = now;
-          serveRef.current.examined.add(id);
+          examinedAllRef.current.add(id);
+          const owner = servesRef.current.find((s) => s.ids.has(id));
+          if (owner) owner.examined.add(id);
         } else if (rec.start != null) {
           rec.total += now - rec.start;
           rec.start = null;
@@ -214,8 +230,7 @@ export default function Home() {
           const t = rec.total + (rec.start != null ? performance.now() - rec.start : 0);
           if (t >= DWELL_MIN_MS) d.sent.add(id);
         }
-        const s = serveRef.current;
-        if (s.id) s.sent = true;
+        for (const s of servesRef.current) s.sent = true;
         return;
       }
       const now = performance.now();
@@ -241,8 +256,8 @@ export default function Home() {
       // (r19) one examination report per serve, sent once the page has
       // settled. A lost beacon is harmless: the server falls back to served
       // counts and says so through examinationCoverage.
-      const serve = serveRef.current;
-      if (serve.id && !serve.sent && serve.examined.size) {
+      for (const serve of servesRef.current) {
+        if (serve.sent || !serve.examined.size) continue;
         serve.sent = true;
         postJSON("/api/impressions", {
           user, serveId: serve.id, examined: [...serve.examined],
@@ -258,6 +273,12 @@ export default function Home() {
   // the next chunk says so instead of wrapping.
   const cursorRef = useRef(null);
   const actionsSinceChunkRef = useRef(0);
+  // A reload in flight: appends and re-chunks wait for it rather than racing
+  // it (a plan made against the old list must never be applied to the new).
+  const reloadingRef = useRef(false);
+  // The current re-chunk closure, so an action that resolves after a filter
+  // change re-chunks with the NEW filters, not the ones it was born under.
+  const rechunkRef = useRef(null);
 
   const feedQS = useCallback((user, { limit, cursor, rechunk } = {}) => {
     const qs = new URLSearchParams({ user, epsilon: epsilon ? "1" : "0", q: promptRef.current });
@@ -284,12 +305,16 @@ export default function Home() {
     // overwrite the feed a newer request owns.
     const isCurrent = claimRequest(feedGenRef);
     setLoading(true);
+    reloadingRef.current = true;
     cursorRef.current = null;
     actionsSinceChunkRef.current = 0;
     try {
       const res = await authorizedFetch("/api/feed?" + feedQS(user).toString());
       const data = await res.json();
       if (!isCurrent()) return;
+      // A refused reload (rate limit, outage) keeps the feed it has rather
+      // than replacing it with "nothing matches".
+      if (!res.ok || !Array.isArray(data.items)) return;
       setItems(data.items || []);
       cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
@@ -297,11 +322,13 @@ export default function Home() {
       else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
       dwellRef.current = { vis: new Map(), sent: new Set() };
       // (r19) a new serve: report examined slots against THIS id, once.
-      serveRef.current = { id: data.serveId || null, examined: new Set(), sent: false };
+      servesRef.current = [];
+      examinedAllRef.current = new Set();
+      noteServe(data, (data.items || []).map((x) => x.id));
     } catch (e) {
       console.error(e);
     } finally {
-      if (isCurrent()) setLoading(false);
+      if (isCurrent()) { setLoading(false); reloadingRef.current = false; }
     }
   }, [feedQS]);
 
@@ -319,7 +346,7 @@ export default function Home() {
 
   const loadMore = useCallback(async () => {
     const user = uidRef.current;
-    if (!user || loadingMoreRef.current) return;
+    if (!user || loadingMoreRef.current || reloadingRef.current) return;
     if (itemsRef.current.length === 0 || itemsRef.current.length >= MAX_RENDERED) return;
     loadingMoreRef.current = true;
     // Appends observe the feed generation without claiming it: a page fetched
@@ -333,6 +360,7 @@ export default function Home() {
       if (!isCurrent()) return;
       if (data.chunk?.catalog?.nextCursor) cursorRef.current = data.chunk.catalog.nextCursor;
       if (data.items && data.items.length) {
+        noteServe(data, data.items.map((x) => x.id));
         setItems((prev) => {
           const have = new Set(prev.map((x) => x.id));
           return [...prev, ...data.items.filter((x) => !have.has(x.id))];
@@ -352,14 +380,13 @@ export default function Home() {
   // time.
   const rechunk = useCallback(async () => {
     const user = uidRef.current;
-    if (!user || loadingMoreRef.current || typeof document === "undefined") return;
+    if (!user || loadingMoreRef.current || reloadingRef.current || typeof document === "undefined") return;
     const plan = planRechunk(
       itemsRef.current,
-      serveRef.current.examined,
+      examinedAllRef.current,
       idsBelowFold(document, window.innerHeight, RECHUNK_FOLD_MARGIN),
     );
     if (!plan) return;
-    const keepIds = new Set(plan.head.map((x) => x.id));
     loadingMoreRef.current = true;
     actionsSinceChunkRef.current = 0;
     const isCurrent = watchRequest(feedGenRef);
@@ -370,21 +397,20 @@ export default function Home() {
       if (!isCurrent()) return;
       if (data.chunk?.catalog?.nextCursor) cursorRef.current = data.chunk.catalog.nextCursor;
       if (data.items && data.items.length) {
-        setItems((prev) => {
-          // Re-derive from the live list: an interaction may have removed or
-          // inserted cards while the chunk was in flight.
-          const head = prev.filter((x) => keepIds.has(x.id) || serveRef.current.examined.has(x.id));
-          const have = new Set(head.map((x) => x.id));
-          return [...head, ...data.items.filter((x) => !have.has(x.id))];
-        });
+        noteServe(data, data.items.map((x) => x.id));
+        // Replace the planned cards IN PLACE and only those: anything that
+        // arrived or left while the chunk was in flight keeps its place, and
+        // the column breaks the reader is looking at do not move.
+        setItems((prev) => applyRechunk(prev, plan.dropped, data.items, { max: MAX_RENDERED }));
       }
     } catch (e) { console.error(e); }
     finally { loadingMoreRef.current = false; }
   }, [feedQS]);
+  rechunkRef.current = rechunk;
 
   function noteDeliberateAction() {
     actionsSinceChunkRef.current += 1;
-    if (actionsSinceChunkRef.current >= RECHUNK_AFTER) rechunk();
+    if (actionsSinceChunkRef.current >= RECHUNK_AFTER && rechunkRef.current) rechunkRef.current();
   }
 
   useEffect(() => {
@@ -542,17 +568,18 @@ export default function Home() {
       if (modal && modal.id === item.id) setModal(null);
     }
     try {
-      await postJSON("/api/interaction", { user: uidRef.current, item, action, dwellMs });
+      const res = await postJSON("/api/interaction", { user: uidRef.current, item, action, dwellMs });
       if (action === "favorite") moreLikeThis(item);
-      // The profile has the action now; the next chunk can read it.
-      if (action !== "dwell") noteDeliberateAction();
+      // The profile has the action now — only if the server took it — and
+      // the next chunk can read it.
+      if (res && res.ok && action !== "dwell") noteDeliberateAction();
     } catch (e) { console.error(e); }
   }
 
   function addToBag(item) {
     bagAdd(item);
-    noteDeliberateAction();
     setBaggedIds((prev) => new Set(prev).add(item.id));
+    // react() counts the bag once the server has it — never before, never twice.
     react(item, "bag");
   }
 
@@ -616,7 +643,7 @@ export default function Home() {
     const url = window.location.origin + "/piece/" + encodeURIComponent(item.id);
     try { await navigator.clipboard.writeText(url); setNotice("item link copied — it carries its taste graph"); } catch {}
     postJSON("/api/interaction", { user: uidRef.current, item, action: "share", dwellMs: dwellMsFor(item.id) })
-      .then(() => noteDeliberateAction()).catch(() => {});
+      .then((res) => { if (res && res.ok) noteDeliberateAction(); }).catch(() => {});
   }
 
   const [modalEvidence, setModalEvidence] = useState(null);
