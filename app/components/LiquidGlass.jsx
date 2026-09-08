@@ -188,10 +188,18 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
   let svg = null;
   const bent = new Map(); // element -> filter node
   const o = open || { top: true, right: true, bottom: true, left: true };
-  const chain = (() => {
+  // How the map reaches the filter differs by engine, and each engine
+  // renders only its own form. WebKit renders an element as NOTHING when its
+  // CSS filter carries an feImage with a data (or file) href — "the words
+  // delete themselves" on Safari, 8 Sep — but renders and bends when the
+  // feImage points by id at an <image> ELEMENT in the svg that carries the
+  // data URL (probed in Safari with eleven variants). Chromium is the
+  // reverse: the element reference places nothing, the data href bends.
+  const webkit = typeof navigator !== "undefined" && /Apple Computer/.test(navigator.vendor || "");
+  const chain = (imgId) => {
     const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
-      `<feImage preserveAspectRatio="none" result="pane"/>` +
+      (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
       `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
       `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
@@ -201,7 +209,7 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
       `<feColorMatrix in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
       `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
       `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>`;
-  })();
+  };
   let serial = 0;
   const crosses = (b, r) => {
     const d = BEZEL * 1.35;
@@ -268,17 +276,28 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
       under.add(node);
       let f = bent.get(node);
       if (!f) {
+        const n = serial++;
+        let img = null;
+        if (webkit) {
+          img = document.createElementNS(SVG, "image");
+          img.setAttribute("id", `${id}-m${n}`);
+          img.setAttribute("preserveAspectRatio", "none");
+          svg.appendChild(img);
+        }
         f = document.createElementNS(SVG, "filter");
-        f.setAttribute("id", `${id}-b${serial++}`);
+        f.setAttribute("id", `${id}-b${n}`);
         f.setAttribute("color-interpolation-filters", "sRGB");
         f.setAttribute("primitiveUnits", "userSpaceOnUse");
         f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
-        f.innerHTML = chain;
+        f.innerHTML = chain(img ? img.getAttribute("id") : "");
+        // the picture that carries the map: the <image> element (WebKit) or
+        // the feImage itself (everything else) — both take x/y/width/height
+        f.__img = img || f.querySelector("feImage");
         svg.appendChild(f);
         bent.set(node, f);
         node.style.filter = `url(#${f.getAttribute("id")})`;
       }
-      const img = f.querySelector("feImage");
+      const img = f.__img;
       if (img.getAttribute("href") !== href) img.setAttribute("href", href);
       img.setAttribute("x", (r.left - b.left).toFixed(1));
       img.setAttribute("y", (r.top - b.top).toFixed(1));
@@ -287,7 +306,7 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     }
     for (const [node, f] of bent) {
       if (under.has(node)) continue;
-      node.style.removeProperty("filter"); f.remove(); bent.delete(node);
+      node.style.removeProperty("filter"); if (f.__img !== f.querySelector("feImage")) f.__img.remove(); f.remove(); bent.delete(node);
     }
   };
   const dispose = () => {
