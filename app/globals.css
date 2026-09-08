@@ -2960,3 +2960,26 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .tophead { --glass-inset-y: 0px; --glass-inset-x: 0px; border-radius: 0; }
   .glass-light { border-radius: 0; }
 }
+
+
+/* ==== THE PASSPORT IN LIQUID GLASS (owner order, 8 Sep). The document is a
+   clear pane over the page — the same glass as the strip and the item
+   detail: no border, a Fresnel whisper at the lip, the four edges lensing
+   (--lg-filter from LiquidGlass.jsx), the gloss over its face with the
+   pointer's shine. The security strip, the hologram and the UV layers stay
+   inside it; the record keeps a 55% tint so the data page reads. ==== */
+.ppdoc.lg { border: 0; border-radius: 22px; background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip); isolation: isolate; }
+.ppdoc.lg[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.ppdoc.lg::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
+    var(--glass-sheen); }
+.ppdoc.lg .ppsec { background-color: color-mix(in srgb, var(--bg) 35%, transparent); }
+.ppdoc.lg .ppnation { background: transparent; }
+.ppdoc.lg .ppphoto { background: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .ppdoc.lg::before { background: var(--glass-sheen); } }

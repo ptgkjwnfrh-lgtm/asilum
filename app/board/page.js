@@ -19,6 +19,7 @@ import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 
 export default function BoardPage() {
   const fit = useFitBrain();
@@ -38,6 +39,13 @@ export default function BoardPage() {
   const [ticketCount, setTicketCount] = useState(0);
   const router = useRouter();
   const warpRef = useRef(null);
+  // THE PASSPORT IS LIQUID GLASS (owner order, 8 Sep): the document is a
+  // clear pane over the page, its four edges lensing, the hologram and the
+  // UV layers inside it, the gloss over its face. Same optics as the strip
+  // and the item detail (LiquidGlass.jsx); the page bends under it where the
+  // engine cannot bend a backdrop.
+  const ppRef = useRef(null);
+  const ppGlass = useLiquidGlass(ppRef, { id: "lg-passport", strength: 0.5, bend: ".ppwash-under" });
   const parisMap = useParisRoads();
   // pre-parse the road geometry while the bearer reads the passport, so
   // the UPLOAD click starts its build without a parse hitch
@@ -324,7 +332,8 @@ export default function BoardPage() {
       <hr className="rule" />
 
       {!shared && (
-        <div className="ppdoc" aria-label="passport document">
+        <div className="ppdoc lg" ref={ppRef} aria-label="passport document">
+          {ppGlass}
           <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
           <div className="ppnation">ASILUM MAGAZINE <b>*</b> FASHION PASSPORT</div>
           <div className="ppbody">
