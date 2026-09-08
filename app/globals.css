@@ -52,9 +52,9 @@
      tiled into a checkerboard (the owner saw it, 8 Sep). Fuchsia, soft purple,
      soft blue: big, blurred, breathing. */
   --wash:
-    radial-gradient(ellipse 62% 54% at 78% 16%, rgba(235, 70, 200, 0.10), transparent 70%),
-    radial-gradient(ellipse 58% 50% at 16% 84%, rgba(120, 110, 255, 0.11), transparent 70%),
-    radial-gradient(ellipse 48% 42% at 52% 60%, rgba(90, 140, 255, 0.07), transparent 72%);
+    radial-gradient(ellipse 62% 54% at 78% 16%, rgba(235, 70, 200, 0.05), transparent 70%),
+    radial-gradient(ellipse 58% 50% at 16% 84%, rgba(120, 110, 255, 0.055), transparent 70%),
+    radial-gradient(ellipse 48% 42% at 52% 60%, rgba(90, 140, 255, 0.035), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
   /* Filled controls carry no glow on phosphor — the fill is the light. */
   --glow-box-ink: none;
@@ -62,22 +62,27 @@
      pane that blurs and saturates what scrolls beneath it, with a specular
      sheen along its top edge and a highlight that follows the pointer. The
      words on it stay floating, un-boxed, glowing. Dark: a smoked pane. */
-  --glass: rgba(255, 255, 255, 0.17);
-  --glass-deep: rgba(255, 255, 255, 0.23);
-  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.28) 34%, rgba(255, 255, 255, 0.16) 62%, rgba(255, 255, 255, 0.60));
-  --glass-top: rgba(255, 255, 255, 0.55);
-  --glass-sheen: radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.28), transparent 58%);
-  --glass-spot: rgba(255, 255, 255, 0.16);
-  --glass-shadow: 0 22px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(0, 0, 0, 0.16);
-  --glass-pill: rgba(255, 255, 255, 0.18);
-  --glass-pill-rim: rgba(255, 255, 255, 0.42);
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass-deep: rgba(255, 255, 255, 0.085);
+  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.30) 30%, rgba(255, 255, 255, 0.14) 60%, rgba(255, 255, 255, 0.75));
+  --glass-top: rgba(255, 255, 255, 0.7);
+  /* GLOSS: a sharp specular band along the top of the pane, a lit lip along the
+     bottom, and a broad soft reflection from the top-left. */
+  --glass-sheen:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.10) 9%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 78%, rgba(255, 255, 255, 0.12) 100%),
+    radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.22), transparent 55%);
+  --glass-spot: rgba(255, 255, 255, 0.30);
+  --glass-shadow: 0 22px 60px rgba(0, 0, 0, 0.40), 0 0 0 1px rgba(0, 0, 0, 0.12);
+  --glass-pill: rgba(255, 255, 255, 0.12);
+  --glass-pill-rim: rgba(255, 255, 255, 0.55);
+  --glass-lens: rgba(255, 255, 255, 0.10);
 }
 [data-theme="light"] {
   /* THE INK IS BLUE (owner order, 8 Sep): "the black negative looking text and
      buttons should all be a nice blue and have a phosphor glow". #1c3fae —
      7.5:1 on --bg, 8.6:1 on white — is the reading colour, the filled control
      colour, and the colour that glows. */
-  --ink: #1c3fae;
+  --ink: #0a8494;
   --paper: #ffffff;
   --grey: #5d8794;
   --faint: #a5c2ca;
@@ -116,8 +121,8 @@
   --glow: 0 0 6px rgba(11, 117, 132, 0.3), 0 0 14px rgba(11, 117, 132, 0.1);
   --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
   --glow-p: 0 0 6px rgba(40, 109, 164, 0.28);
-  --glow-ink: 0 0 5px rgba(28, 63, 174, 0.30), 0 0 14px rgba(28, 63, 174, 0.11);
-  --glow-box-ink: 0 0 10px rgba(28, 63, 174, 0.34), 0 0 26px rgba(28, 63, 174, 0.14);
+  --glow-ink: 0 0 5px rgba(10, 132, 148, 0.34), 0 0 14px rgba(10, 132, 148, 0.13);
+  --glow-box-ink: 0 0 10px rgba(10, 132, 148, 0.36), 0 0 26px rgba(10, 132, 148, 0.15);
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
   --mag-glow:
@@ -131,17 +136,20 @@
   /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
   --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%);
   --wash:
-    radial-gradient(ellipse 60% 50% at 14% 20%, rgba(255, 165, 205, 0.24), transparent 70%),
-    radial-gradient(ellipse 58% 48% at 86% 78%, rgba(255, 226, 145, 0.26), transparent 70%),
-    radial-gradient(ellipse 46% 40% at 55% 52%, rgba(255, 205, 190, 0.12), transparent 72%);
+    radial-gradient(ellipse 60% 50% at 14% 20%, rgba(255, 165, 205, 0.12), transparent 70%),
+    radial-gradient(ellipse 58% 48% at 86% 78%, rgba(255, 226, 145, 0.13), transparent 70%),
+    radial-gradient(ellipse 46% 40% at 55% 52%, rgba(255, 205, 190, 0.06), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%);
-  --glass: rgba(255, 255, 255, 0.58);
-  --glass-deep: rgba(255, 255, 255, 0.72);
-  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.55) 38%, rgba(255, 255, 255, 0.35) 62%, rgba(255, 255, 255, 0.95));
+  --glass: rgba(255, 255, 255, 0.26);
+  --glass-deep: rgba(255, 255, 255, 0.38);
+  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 1));
   --glass-top: rgba(255, 255, 255, 1);
-  --glass-sheen: radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.75), transparent 58%);
-  --glass-spot: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 18px 50px rgba(28, 63, 174, 0.16), 0 0 0 1px rgba(28, 63, 174, 0.06);
+  --glass-sheen:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.25) 9%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 78%, rgba(255, 255, 255, 0.30) 100%),
+    radial-gradient(90% 60% at 12% 0%, rgba(255, 255, 255, 0.55), transparent 55%);
+  --glass-spot: rgba(255, 255, 255, 0.8);
+  --glass-lens: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 18px 50px rgba(10, 132, 148, 0.14), 0 0 0 1px rgba(10, 132, 148, 0.06);
   --glass-pill: rgba(255, 255, 255, 0.72);
   --glass-pill-rim: rgba(255, 255, 255, 1);
 }
@@ -181,8 +189,8 @@ button { font-family: var(--helv); }
   display: flex; flex-direction: column;
   border-radius: var(--ed-glass-rad, 30px);
   background: var(--glass);
-  -webkit-backdrop-filter: blur(44px) saturate(200%) brightness(1.08);
-  backdrop-filter: blur(44px) saturate(200%) brightness(1.08);
+  -webkit-backdrop-filter: blur(28px) saturate(210%) brightness(1.10) contrast(1.02);
+  backdrop-filter: blur(28px) saturate(210%) brightness(1.10) contrast(1.02);
   box-shadow: inset 0 1.5px 0 var(--glass-top), inset 0 -1px 0 rgba(255, 255, 255, 0.06), var(--glass-shadow);
   transition: background 0.4s ease, box-shadow 0.4s ease;
   overflow: hidden;
@@ -202,15 +210,28 @@ button { font-family: var(--helv); }
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
-/* the sheen and the pointer highlight, inside the rim */
+/* the sheen and the pointer shine, inside the rim */
 .tophead::before {
   background:
-    radial-gradient(260px 140px at var(--gx, 50%) var(--gy, 40%), var(--glass-spot), transparent 72%),
+    radial-gradient(200px 110px at var(--gx, 50%) var(--gy, 40%), var(--glass-spot), transparent 70%),
     var(--glass-sheen);
   opacity: 1;
   transition: opacity 0.5s ease;
 }
-.tophead:not(:hover)::before { opacity: 0.85; }
+.tophead:not(:hover)::before { opacity: 0.8; }
+/* the lens: the outer ten pixels of the pane bend what passes beneath them
+   brighter and sharper than the middle — the refraction that reads as glass */
+.tophead .glass-lens {
+  position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
+  -webkit-backdrop-filter: blur(3px) brightness(1.35) saturate(140%);
+  backdrop-filter: blur(3px) brightness(1.35) saturate(140%);
+  background: var(--glass-lens);
+  padding: 10px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tophead { transition: none; }
@@ -1374,7 +1395,8 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 [data-theme="light"] .os-crt::after { box-shadow: inset 0 0 80px rgba(110, 150, 165, 0.22), inset 0 0 8px rgba(110, 150, 165, 0.14); }
 .os-roll { position: absolute; left: 0; right: 0; height: 16vh;
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.045), transparent);
-  opacity: var(--ed-roll-op, 1);
+  /* 0.2 = the shipped strength less eighty percent — owner order, 8 Sep. */
+  opacity: var(--ed-roll-op, 0.2);
   animation: osroll var(--ed-roll-dur, 9s) linear infinite; }
 @keyframes osroll { from { top: -18vh; } to { top: 104vh; } }
 
@@ -1387,15 +1409,15 @@ body::before {
 .os-blob { position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; opacity: var(--ed-blob-op, 1); }
 /* Owner order, 8 Sep: a little more colour in the haze. Dark breathes
    fuchsia with softer purples and blues; ice carries faded pinks and yellows. */
-.os-blob.b1 { width: 44vw; height: 38vh; left: -8vw; top: -6vh; background: rgba(90, 130, 255, 0.11); animation: osdrift1 46s ease-in-out infinite alternate; }
-.os-blob.b2 { width: 36vw; height: 42vh; right: -6vw; top: 12vh; background: rgba(255, 70, 200, 0.09); animation: osdrift2 58s ease-in-out infinite alternate; }
-.os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(160, 110, 255, 0.11); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
-.os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(215, 95, 255, 0.06); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
-[data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.6); }
-[data-theme="light"] .os-blob.b1 { background: rgba(255, 150, 195, 0.17); }
-[data-theme="light"] .os-blob.b2 { background: rgba(255, 224, 130, 0.18); }
-[data-theme="light"] .os-blob.b3 { background: rgba(255, 190, 175, 0.14); }
-[data-theme="light"] .os-blob.b4 { background: rgba(255, 240, 175, 0.13); }
+.os-blob.b1 { width: 44vw; height: 38vh; left: -8vw; top: -6vh; background: rgba(90, 130, 255, 0.08); animation: osdrift1 46s ease-in-out infinite alternate; }
+.os-blob.b2 { width: 36vw; height: 42vh; right: -6vw; top: 12vh; background: rgba(255, 70, 200, 0.06); animation: osdrift2 58s ease-in-out infinite alternate; }
+.os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(160, 110, 255, 0.08); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
+.os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(215, 95, 255, 0.04); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
+[data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.3); }
+[data-theme="light"] .os-blob.b1 { background: rgba(255, 150, 195, 0.11); }
+[data-theme="light"] .os-blob.b2 { background: rgba(255, 224, 130, 0.12); }
+[data-theme="light"] .os-blob.b3 { background: rgba(255, 190, 175, 0.09); }
+[data-theme="light"] .os-blob.b4 { background: rgba(255, 240, 175, 0.08); }
 @keyframes osdrift1 { to { transform: translate(6vw, 4vh) scale(1.15); } }
 @keyframes osdrift2 { to { transform: translate(-5vw, -3vh) scale(0.9); } }
 

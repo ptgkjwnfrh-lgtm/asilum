@@ -479,6 +479,7 @@ export default function Shell({ children }) {
       <div className="os-frame" aria-hidden="true"><i /><i /><i /><i /></div>
 
       <header className="tophead" ref={headRef}>
+        <span className="glass-lens" aria-hidden="true" />
         <div className="thbar">
           {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
               order, 17 Aug) — one letter per span, spread by flex, so the line
