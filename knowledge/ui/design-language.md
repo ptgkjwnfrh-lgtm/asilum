@@ -103,7 +103,11 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   meniscus. THE ITEM DETAIL IS THE SAME GLASS (owner, 8 Sep): `.modal.lg`
   — a 22px-radius pane over the dimmed page, all four edges lensing
   (LiquidGlass.jsx, its own filter #lg-item), the same gloss; the pane
-  does not scroll, `.mscroll` does inside it. (Found on the way: `.ctr >
+  does not scroll, `.mscroll` does inside it. The scrim under it is LIGHT
+  and SHARP (34% bg, no blur — `.overlay:has(> .modal.lg)`): the cards and
+  their words pass under the pane's edges and bend there with the fringe;
+  the pane carries its own tint (46% bg dark / 58% ice) so the record
+  stays legible over a live page, and the picture stands on paper. (Found on the way: `.ctr >
   *` had been turning every overlay rendered in the centred column
   relative, so the item detail opened inline wherever the page was
   scrolled — an overlay is fixed now wherever it is rendered.) Tap the
