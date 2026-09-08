@@ -19,8 +19,8 @@
      shipped design; an owner override lands inline on <html>. */
   /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
      header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
-  --mq-h: var(--ed-mq-h, 58px);
-  --nav-h: 42px;
+  --mq-h: var(--ed-mq-h, 62px);
+  --nav-h: 46px;
   --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 0px) + 6px);
   /* OS tokens */
   --bg: #070b10;
@@ -2861,6 +2861,16 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    (the cascade: a later rule of equal specificity wins). ---- */
 .thbar { border-bottom-color: rgba(255, 255, 255, 0.08); }
 .topnav { border-bottom: none; }
+/* the header's words, respectively bolder (owner, 8 Sep). Michroma ships one
+   weight, so a faux bold would smear it; a hairline stroke thickens the
+   letter the way a heavier cut would. The mono meta and the big buttons
+   have weights to move to. The wordmark is a gradient clipped to text and a
+   stroke would paint over it — untouched. */
+.tophead .snav { -webkit-text-stroke: 0.4px currentColor; }
+.tophead .mq span, .tophead .mq a { -webkit-text-stroke: 0.3px currentColor; }
+.tophead .tbtn { font-weight: 800; }
+.tophead .snav .nmeta { font-weight: 600; -webkit-text-stroke: 0; }
+.tophead .snavsub a { font-weight: 600; }
 /* the current destination: a pill of the same glass, not a box */
 .snav.cur {
   background: var(--glass-pill); border-color: transparent; border-radius: 999px;

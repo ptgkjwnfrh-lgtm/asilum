@@ -784,9 +784,9 @@ export default function Shell({ children }) {
         <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
           <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
           <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="82" xChannelSelector="R" yChannelSelector="G" result="bentR" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="80" xChannelSelector="R" yChannelSelector="G" result="bentR" />
           <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="86" xChannelSelector="R" yChannelSelector="G" result="bentG" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="90" xChannelSelector="R" yChannelSelector="G" result="bentB" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="92" xChannelSelector="R" yChannelSelector="G" result="bentB" />
           <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
           <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
           <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
