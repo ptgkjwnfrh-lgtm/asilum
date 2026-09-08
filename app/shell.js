@@ -719,6 +719,7 @@ export default function Shell({ children }) {
         </filter>
       </svg>
       <header className="tophead" ref={headRef}>
+        <span className="glass-sweep" aria-hidden="true" />
         <div className="thbar">
           {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
               order, 17 Aug) — one letter per span, spread by flex, so the line
