@@ -61,7 +61,19 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   the strip only the bottom edge does), each colour a little differently
   (R/G/B displaced at 80/86/92 — the fringe on Apple's edges, "slightly
   more rainbow" on the owner's word; 24px at 50/56/62 then 44 at 58/64/70
-  were both "too subtle", a 16-wide spread at 56 was too much, 4 a hint), blended with the untouched backdrop by plain arithmetic (lens ×
+  were both "too subtle", a 16-wide spread at 56 was too much, 4 a hint).
+  The lens chain is CONFINED to the bottom band (restrictLens; primitive
+  subregions in the strip's own pixels) and has no blur, so the clear
+  middle costs nothing on a scroll frame. WHERE THE ENGINE CANNOT BEND A
+  BACKDROP — Safari, or a Chromium without GPU compositing: the owner's
+  recording of 8 Sep showed the cover letters passing under the strip
+  untouched and the whole page lagging — the PAGE BENDS INSTEAD
+  (createPageBend, LiquidGlass.jsx): what passes under the strip's bottom
+  edge (cards, cover letters, headlines, rows, paragraphs) takes the
+  strip's map in its own coordinates, re-placed every scroll frame,
+  removed when it leaves. `?lgpage=1` or `<html data-lg-page="1">` forces
+  that path in any engine — proven in Chrome: the FRONT COVER letters bend
+  and fringe under the strip with no backdrop filter at all, blended with the untouched backdrop by plain arithmetic (lens ×
   w + clear × (1 − w)), never an alpha mask; other engines get the
   saturation alone, no bezel. The edge is UNSEEN (the owner: "I shouldn't
   be able to see the bezel, it should still cause the distortion"): no
@@ -106,9 +118,11 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   the owner asked for 0.15, then saw "no rainbow warp at all"; 0.5 is the
   first setting that reads), the same gloss; the pane does not scroll,
   `.mscroll` does inside it. THE LEGIBILITY TRICK (owner, 8 Sep): the page
-  is lowered by 40% ONLY where the popup takes up space — the scrim is
-  clear and sharp (`.overlay:has(> .modal.lg)`), the pane carries the 40%
-  (both themes), the picture stands on paper. WHERE THERE IS NO BACKDROP
+  is lowered ONLY where the popup takes up space — the scrim is clear and
+  sharp (`.overlay:has(> .modal.lg)`), the pane carries the darkening
+  (75%, both themes; the owner's 40% left the catalog's words as bright as
+  the record's own — illegible in the recording), the picture stands on
+  paper. WHERE THERE IS NO BACKDROP
   REFRACTION (Safari — WebKit never runs an SVG filter as a
   backdrop-filter) the page itself bends: every `.card`/`.cvlook`/
   `.mrelitem` lying under the pane's edge gets its own SVG filter with

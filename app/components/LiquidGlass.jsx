@@ -13,9 +13,11 @@ import { useEffect, useRef } from "react";
 // everywhere and proves nothing.
 export function canRefract() {
   if (typeof window === "undefined") return false;
-  // the lab switch: <html data-lg-page="1"> takes the page-side path (what
-  // Safari gets) in any engine, so it can be seen and judged on a desktop
+  // the lab switch: <html data-lg-page="1"> or ?lgpage=1 takes the
+  // page-side path (what Safari gets) in any engine, so it can be seen and
+  // judged on a desktop
   if (document.documentElement.dataset.lgPage === "1") return false;
+  try { if (new URLSearchParams(window.location.search).get("lgpage") === "1") return false; } catch { /* no URL */ }
   const brands = navigator.userAgentData?.brands;
   if (Array.isArray(brands)) return brands.some((b) => /chromium/i.test(b.brand || ""));
   return !!window.chrome; // Chrome, Edge, Brave, Arc, Opera — all Blink
@@ -127,22 +129,25 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
     <filter id={id} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
       <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
-      <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
-      <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
-      <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
-      <feComposite in="chR" in2="chG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="chRG" />
-      <feComposite in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="bent" />
-      <feGaussianBlur in="bent" stdDeviation="1.2" result="lens" />
+      {/* the lens chain, data-lens: restrictLens() confines these to the
+          edge band when only one edge is open (the strip), so the clear
+          middle costs nothing — the blur that used to follow them is gone
+          for the same reason; the lens is crisp, as Apple's is. */}
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
+      <feColorMatrix data-lens="1" in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
+      <feColorMatrix data-lens="1" in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
+      <feColorMatrix data-lens="1" in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
+      <feComposite data-lens="1" in="chR" in2="chG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="chRG" />
+      <feComposite data-lens="1" in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens" />
       {/* lens × weight + clear × (1 − weight): the weight picture read
           into COLOUR at full alpha, and its complement, so the blend is
           plain arithmetic — no alpha mask, nothing premultiplied to
           darken the band. */}
       <feColorMatrix in="lgw" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="w" />
       <feColorMatrix in="lgw" type="matrix" values="-1 0 0 0 1  -1 0 0 0 1  -1 0 0 0 1  0 0 0 0 1" result="iw" />
-      <feComposite in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
+      <feComposite data-lens="1" in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
       <feComposite in="SourceGraphic" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
       <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
     </filter>
@@ -150,9 +155,114 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
   );
 }
 
-// Keep an element's refraction map in step with its size (Chromium only —
-// see canRefract), mark it data-refract="1" with --lg-filter pointing at its
-// filter, and carry the pointer's shine (--gx/--gy/--gs) for its gloss.
+// Confine the lens chain of a pane's filter to the band inside its one open
+// edge (the strip: the bottom), in the pane's own pixels — the clear middle
+// then costs nothing on every scroll frame. `band` null lifts it.
+export function restrictLens(filterEl, band) {
+  if (!filterEl) return;
+  for (const n of filterEl.querySelectorAll("[data-lens]")) {
+    if (!band) { n.removeAttribute("x"); n.removeAttribute("y"); n.removeAttribute("width"); n.removeAttribute("height"); continue; }
+    n.setAttribute("x", "0");
+    n.setAttribute("y", band.y.toFixed(1));
+    n.setAttribute("width", band.width.toFixed(1));
+    n.setAttribute("height", band.height.toFixed(1));
+  }
+}
+// The band a strip's lens needs: the bezel plus its easing, at the bottom.
+export function bottomBand(w, h) {
+  const deep = Math.min(h, Math.ceil(BEZEL * 1.35) + 2);
+  return { y: h - deep, width: w, height: deep };
+}
+
+// THE PAGE-SIDE BEND. Where there is no backdrop refraction — WebKit never
+// runs an SVG filter as a backdrop-filter, and a Chromium without GPU
+// compositing drops it too — the page itself is bent instead: every element
+// matching `selector` that lies under one of the pane's OPEN edges gets its
+// own SVG filter, the pane's map placed in that element's coordinates over a
+// flat 128 grey, so what passes under the edge bends the way a backdrop
+// would. Bounded: only the elements the edge crosses, each filtered within
+// its own box; nothing on the rest of the page pays. place(rect) on every
+// change of the pane or the scroll; dispose() takes it all back.
+export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null }) {
+  const SVG = "http://www.w3.org/2000/svg";
+  let svg = null;
+  const bent = new Map(); // element -> filter node
+  const o = open || { top: true, right: true, bottom: true, left: true };
+  const chain = (() => {
+    const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
+    return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
+      `<feImage preserveAspectRatio="none" result="pane"/>` +
+      `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
+      `<feColorMatrix in="bR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR"/>` +
+      `<feColorMatrix in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
+      `<feColorMatrix in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
+      `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
+      `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>`;
+  })();
+  let serial = 0;
+  const crosses = (b, r) => {
+    const d = BEZEL * 1.35;
+    if (o.bottom && b.bottom > r.bottom - d && b.top < r.bottom) return true;
+    if (o.top && b.top < r.top + d && b.bottom > r.top) return true;
+    if (o.left && b.left < r.left + d && b.right > r.left) return true;
+    if (o.right && b.right > r.right - d && b.left < r.right) return true;
+    return false;
+  };
+  const place = (r) => {
+    const href = mapRef.current && mapRef.current.getAttribute("href");
+    if (!href) return;
+    if (!svg) {
+      svg = document.createElementNS(SVG, "svg");
+      svg.setAttribute("class", "glass-defs");
+      svg.setAttribute("aria-hidden", "true");
+      document.body.appendChild(svg);
+    }
+    const under = new Set();
+    for (const node of document.querySelectorAll(selector)) {
+      if (el.contains(node)) continue;
+      const b = node.getBoundingClientRect();
+      if (b.width === 0 || b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) continue;
+      if (!crosses(b, r)) continue;
+      under.add(node);
+      let f = bent.get(node);
+      if (!f) {
+        f = document.createElementNS(SVG, "filter");
+        f.setAttribute("id", `${id}-b${serial++}`);
+        f.setAttribute("color-interpolation-filters", "sRGB");
+        f.setAttribute("primitiveUnits", "userSpaceOnUse");
+        f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
+        f.innerHTML = chain;
+        svg.appendChild(f);
+        bent.set(node, f);
+        node.style.filter = `url(#${f.getAttribute("id")})`;
+      }
+      const img = f.querySelector("feImage");
+      if (img.getAttribute("href") !== href) img.setAttribute("href", href);
+      img.setAttribute("x", (r.left - b.left).toFixed(1));
+      img.setAttribute("y", (r.top - b.top).toFixed(1));
+      img.setAttribute("width", r.width.toFixed(1));
+      img.setAttribute("height", r.height.toFixed(1));
+    }
+    for (const [node, f] of bent) {
+      if (under.has(node)) continue;
+      node.style.removeProperty("filter"); f.remove(); bent.delete(node);
+    }
+  };
+  const dispose = () => {
+    for (const [node] of bent) node.style.removeProperty("filter");
+    bent.clear();
+    if (svg) { svg.remove(); svg = null; }
+  };
+  return { place, dispose };
+}
+
+// Keep an element's refraction map in step with its size, mark it
+// data-refract="1" with --lg-filter pointing at its filter where the engine
+// bends backdrops (see canRefract) or bend the page under it where it does
+// not (createPageBend), and carry the pointer's shine (--gx/--gy/--gs).
 // `open` names the edges that lens (default all four; the header passes the
 // edges flush with the viewport as closed). Returns the defs to render.
 // `strength` scales the pull (the popups run at 0.5 of the header).
@@ -171,71 +281,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
-    const SVG = "http://www.w3.org/2000/svg";
-    // the page-side bend (WebKit): one hidden svg of per-element filters
-    let bendSvg = null;
-    const bent = new Map(); // element -> filter node
-    const unbend = () => {
-      for (const [node] of bent) node.style.removeProperty("filter");
-      bent.clear();
-      if (bendSvg) { bendSvg.remove(); bendSvg = null; }
-    };
-    const bendPage = (r) => {
-      if (refract || !bend || !mapRef.current) return;
-      const href = mapRef.current.getAttribute("href");
-      if (!href) return;
-      if (!bendSvg) {
-        bendSvg = document.createElementNS(SVG, "svg");
-        bendSvg.setAttribute("class", "glass-defs");
-        bendSvg.setAttribute("aria-hidden", "true");
-        document.body.appendChild(bendSvg);
-      }
-      const under = new Set();
-      for (const node of document.querySelectorAll(bend)) {
-        if (el.contains(node)) continue;
-        const b = node.getBoundingClientRect();
-        if (b.width === 0 || b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) continue;
-        // only the ones the EDGE crosses: the middle of the pane bends nothing
-        const inner = BEZEL;
-        const insideAll = b.left > r.left + inner && b.right < r.right - inner && b.top > r.top + inner && b.bottom < r.bottom - inner;
-        if (insideAll) continue;
-        under.add(node);
-        let f = bent.get(node);
-        if (!f) {
-          f = document.createElementNS(SVG, "filter");
-          f.setAttribute("id", `${id}-b${bent.size}-${Math.floor(Math.random() * 1e6)}`);
-          f.setAttribute("color-interpolation-filters", "sRGB");
-          f.setAttribute("primitiveUnits", "userSpaceOnUse");
-          f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
-          const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
-          f.innerHTML =
-            `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
-            `<feImage preserveAspectRatio="none" result="pane"/>` +
-            `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
-            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
-            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
-            `<feColorMatrix in="bR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR"/>` +
-            `<feColorMatrix in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
-            `<feColorMatrix in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
-            `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
-            `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>`;
-          bendSvg.appendChild(f);
-          bent.set(node, f);
-          node.style.filter = `url(#${f.getAttribute("id")})`;
-        }
-        const img = f.querySelector("feImage");
-        img.setAttribute("href", href);
-        img.setAttribute("x", (r.left - b.left).toFixed(1));
-        img.setAttribute("y", (r.top - b.top).toFixed(1));
-        img.setAttribute("width", r.width.toFixed(1));
-        img.setAttribute("height", r.height.toFixed(1));
-      }
-      for (const [node, f] of bent) {
-        if (under.has(node)) continue;
-        node.style.removeProperty("filter"); f.remove(); bent.delete(node);
-      }
-    };
+    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open }) : null;
     let raf = 0;
     const fit = () => {
       raf = 0;
@@ -246,8 +292,8 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
         if (refract) {
           el.style.setProperty("--lg-filter", `url(#${id})`);
           el.dataset.refract = "1";
-        } else {
-          bendPage(r);
+        } else if (pageBend) {
+          pageBend.place(r);
         }
       }
     };
@@ -255,8 +301,8 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     ro.observe(el);
     fit();
     // the page can still scroll under the pane on a phone: re-place the bend
-    const onScroll = () => { if (!refract && bend && !raf) raf = requestAnimationFrame(fit); };
-    if (!refract && bend) window.addEventListener("scroll", onScroll, { passive: true });
+    const onScroll = () => { if (pageBend && !raf) raf = requestAnimationFrame(fit); };
+    if (pageBend) window.addEventListener("scroll", onScroll, { passive: true });
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
       el.style.setProperty("--gx", `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`);
@@ -274,7 +320,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (raf) cancelAnimationFrame(raf);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
-      unbend();
+      if (pageBend) pageBend.dispose();
     };
   }, [elRef, id, active, open, strength, bend]);
   return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} />;

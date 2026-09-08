@@ -22,7 +22,7 @@ import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "./co
 import { AsteriskGuidanceToggle } from "./components/AsteriskMemory.jsx";
 import ConsentMoment from "./components/ConsentMoment.jsx";
 import { useClickAway, useEscape } from "./components/dismiss.js";
-import { canRefract, drawRefractionMap, LiquidGlassDefs } from "./components/LiquidGlass.jsx";
+import { canRefract, drawRefractionMap, LiquidGlassDefs, createPageBend, restrictLens, bottomBand } from "./components/LiquidGlass.jsx";
 import AccountSignup from "./components/AccountSignup.jsx";
 import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
@@ -153,7 +153,18 @@ export default function Shell({ children }) {
       const pic = domePicture(); // drawn here, not in render: the server has no canvas
       if (pic) domeRef.current.setAttribute("href", pic);
     }
+    // WHERE THE ENGINE CANNOT BEND A BACKDROP (Safari; a Chromium without GPU
+    // compositing) the page bends under the strip instead: what passes under
+    // its bottom edge — cards, cover letters, headlines, rows — takes the
+    // strip's map in its own coordinates (createPageBend), re-placed on
+    // every scroll frame. The strip's own map is drawn either way.
+    const STRIP_OPEN = { top: false, left: false, right: false, bottom: true };
+    const pageBend = refract ? null : createPageBend({
+      id: "lg-refract", el, mapRef, open: STRIP_OPEN,
+      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .cvcredit, h1, h2, h3, p, .grid > *",
+    });
     let raf = 0;
+    let lastSize = "";
     const fit = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
@@ -161,20 +172,27 @@ export default function Shell({ children }) {
       light.style.left = `${r.left}px`;
       light.style.width = `${r.width}px`;
       light.style.height = `${r.height}px`;
-      if (refract && mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
-        const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-        const open = {
-          top: r.top > 0.5, left: r.left > 0.5,
-          right: r.right < window.innerWidth - 0.5, bottom: true,
-        };
-        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open);
-        el.dataset.refract = "1";
+      if (mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
+        const w = Math.round(r.width), h = Math.round(r.height);
+        const size = `${w}x${h}`;
+        if (size !== lastSize) {
+          lastSize = size;
+          const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+          drawRefractionMap(mapRef.current, weightRef.current, w, h, radius, STRIP_OPEN);
+          // the lens chain works only in the bottom band — the clear middle
+          // costs nothing on every scroll frame
+          restrictLens(document.getElementById("lg-refract"), bottomBand(w, h));
+        }
+        if (refract) el.dataset.refract = "1";
+        else pageBend.place(r);
       }
       placeCurrent();
     };
     const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
     ro.observe(el);
     fit();
+    const onPageScroll = () => { if (pageBend && !raf) raf = requestAnimationFrame(fit); };
+    if (pageBend) window.addEventListener("scroll", onPageScroll, { passive: true });
 
     // THE MENISCUS on the hovered word: a shallow dome in the surface that
     // follows the pointer with lag and dies down on leave. One filter
@@ -269,6 +287,8 @@ export default function Shell({ children }) {
     return () => {
       window.removeEventListener("scroll", onScroll);
       ro.disconnect();
+      window.removeEventListener("scroll", onPageScroll);
+      if (pageBend) pageBend.dispose();
       if (raf) cancelAnimationFrame(raf);
       el.removeEventListener("pointerover", onOver);
       el.removeEventListener("pointerout", onOut);
