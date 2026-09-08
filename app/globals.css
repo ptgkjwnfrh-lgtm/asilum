@@ -824,16 +824,19 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
    and bend there, with the fringe — and the pane carries its own tint so the
    record stays legible over a live page. */
 .overlay:has(> .modal.lg) {
-  background: color-mix(in srgb, var(--bg) 34%, transparent);
+  background: transparent;
   -webkit-backdrop-filter: none; backdrop-filter: none;
 }
+/* THE LEGIBILITY TRICK (owner, 8 Sep): the page is lowered by 40% — but ONLY
+   where the popup takes up space. The scrim is clear; the pane carries the
+   40%. */
 .modal.lg {
-  background: color-mix(in srgb, var(--bg) 46%, transparent); border: none; border-radius: 22px;
+  background: color-mix(in srgb, var(--bg) 40%, transparent); border: none; border-radius: 22px;
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   box-shadow: var(--glass-shadow), var(--glass-lip);
   overflow: hidden; isolation: isolate;
 }
-[data-theme="light"] .modal.lg { background: color-mix(in srgb, var(--bg) 58%, transparent); }
+[data-theme="light"] .modal.lg { background: color-mix(in srgb, var(--bg) 40%, transparent); }
 .modal.lg[data-refract="1"] {
   -webkit-backdrop-filter: var(--lg-filter) saturate(160%);
   backdrop-filter: var(--lg-filter) saturate(160%);
