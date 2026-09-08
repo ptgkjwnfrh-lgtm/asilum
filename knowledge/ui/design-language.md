@@ -18,10 +18,16 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 - RED (--red) is the only accent voice: activity, alert, recording,
   selection, the ASTERISK identity. No second accent, ever.
 - Palettes (tokens in globals.css): phosphor dark NATIVE (blacks, phosphor
-  greens, purple, red) / ice light (near-white blue-green, teal, red).
+  greens, purple, red) / ice light (near-white, BLUE ink, teal, red).
   Legacy token names (--ink/--paper/--line/--grey/--faint) carry OS values.
+  Owner order, 8 Sep 2026: on ice the ink is a blue (#1c3fae, 7.5:1) that
+  GLOWS (--glow-ink), and every control that fills with the ink carries the
+  same glow around the fill (--glow-box-ink; `none` on phosphor). The hazes
+  gained a little colour: dark breathes fuchsia with softer purples and
+  blues, ice carries faded pinks and yellows (blobs + --backlight).
 - Layered depth: backlight → grid → haze blobs → content → glow →
-  scanline glass. Subtlety threshold: never reduce readability.
+  scanline glass. Subtlety threshold: never reduce readability. Scan lines
+  ship at 0.315 (30% under the August 0.45 — owner order, 8 Sep).
 - Seven destinations in a row directly under the top ticker (owner order,
   Aug 12 2026 — the left sidebar is GONE; header strip is thick enough that
   the wordmark keeps full size): FRONT COVER, CATALOG, THE WIRE (renamed
@@ -30,7 +36,13 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   the destination list only changes by owner decree.
 - Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
-  row (ASTERISK drawer trigger, seven buttons, compact dock). Theme toggle
+  row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
+  LIQUID GLASS (owner order, 8 Sep): translucent (--glass), blurred and
+  saturated, a specular sheen along its top edge, a highlight that follows
+  the pointer (--gx/--gy/--gs, set in shell.js), deepening once the page
+  scrolls under it (data-glass="deep"). The words on it stay floating,
+  un-boxed and glowing; reduced motion keeps the pane and drops the moving
+  highlight. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW
