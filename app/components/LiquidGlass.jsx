@@ -110,7 +110,7 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
 // The filter, once per pane (each pane needs its own id: its map is its own
 // size). Render it near the pane; it is 0×0 and paints nothing itself.
 // The pull at the edge, R/G/B (glass disperses: red bends least, blue most).
-// The header runs at 1; the owner set the popups at 0.15 of it.
+// The header runs at 1; the popups at 0.5 (0.15 read as nothing at all).
 export const PULL = [80, 86, 92];
 export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
   const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
@@ -155,7 +155,7 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
 // filter, and carry the pointer's shine (--gx/--gy/--gs) for its gloss.
 // `open` names the edges that lens (default all four; the header passes the
 // edges flush with the viewport as closed). Returns the defs to render.
-// `strength` scales the pull (the popups run at 0.15 of the header).
+// `strength` scales the pull (the popups run at 0.5 of the header).
 // `bend` is a selector: WHERE THERE IS NO BACKDROP REFRACTION (WebKit —
 // Safari never runs an SVG filter as a backdrop-filter) the page itself is
 // bent instead: every element matching `bend` that lies under the pane's
