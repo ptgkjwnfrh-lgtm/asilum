@@ -161,7 +161,7 @@ export default function Shell({ children }) {
     const STRIP_OPEN = { top: false, left: false, right: false, bottom: true };
     const pageBend = refract ? null : createPageBend({
       id: "lg-refract", el, mapRef, open: STRIP_OPEN,
-      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .cvcredit, h1, h2, h3, p, .grid > *",
+      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .deck, .cvkick, .cvstory",
     });
     let raf = 0;
     let lastSize = "";

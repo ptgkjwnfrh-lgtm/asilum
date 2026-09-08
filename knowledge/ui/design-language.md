@@ -69,9 +69,14 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   recording of 8 Sep showed the cover letters passing under the strip
   untouched and the whole page lagging — the PAGE BENDS INSTEAD
   (createPageBend, LiquidGlass.jsx): what passes under the strip's bottom
-  edge (cards, cover letters, headlines, rows, paragraphs) takes the
-  strip's map in its own coordinates, re-placed every scroll frame,
-  removed when it leaves. `?lgpage=1` or `<html data-lg-page="1">` forces
+  edge (cards, cover letters, headlines, rows) takes the strip's map in
+  its own coordinates, re-placed every scroll frame, removed when it
+  leaves. Found by SAMPLING the band with elementsFromPoint every 40px,
+  each hit resolved to the OUTERMOST match of the selector, and nothing
+  over 1600px on a side ever filtered — the first cut matched `.grid > *`,
+  i.e. the catalog's 9,000px columns, and re-filtered four of them plus
+  the cards inside every scroll frame: the "glitching and bugging" of 8
+  Sep. Both paths now hold 16.7ms a frame in Chrome. `?lgpage=1` or `<html data-lg-page="1">` forces
   that path in any engine — proven in Chrome: the FRONT COVER letters bend
   and fringe under the strip with no backdrop filter at all, blended with the untouched backdrop by plain arithmetic (lens ×
   w + clear × (1 − w)), never an alpha mask; other engines get the

@@ -211,6 +211,46 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     if (o.right && b.right > r.right - d && b.left < r.right) return true;
     return false;
   };
+  // What lies under the open edges, found by SAMPLING the bands with
+  // elementsFromPoint rather than measuring every candidate on the page:
+  // a point every STEP px along each open edge's band, the hit resolved to
+  // the OUTERMOST element matching the selector (a card, never the column
+  // that holds it, never the title inside it — one filter per thing), and
+  // nothing larger than BIG is ever filtered (the columns of the catalog
+  // are 9,000px tall; filtering one of those every scroll frame was the
+  // glitch and the lag of 8 Sep).
+  const STEP = 40, BIG = 1600;
+  const outermost = (hit) => {
+    let node = hit && hit.closest ? hit.closest(selector) : null;
+    while (node) {
+      const up = node.parentElement && node.parentElement.closest(selector);
+      if (!up) break;
+      node = up;
+    }
+    return node;
+  };
+  const sample = (r) => {
+    const found = new Set();
+    const d = BEZEL * 1.35;
+    const rows = [];
+    if (o.bottom) rows.push([r.left, r.right, r.bottom - d * 0.5, "x"], [r.left, r.right, r.bottom - 3, "x"]);
+    if (o.top) rows.push([r.left, r.right, r.top + d * 0.5, "x"], [r.left, r.right, r.top + 3, "x"]);
+    if (o.left) rows.push([r.top, r.bottom, r.left + d * 0.5, "y"], [r.top, r.bottom, r.left + 3, "y"]);
+    if (o.right) rows.push([r.top, r.bottom, r.right - d * 0.5, "y"], [r.top, r.bottom, r.right - 3, "y"]);
+    const W = window.innerWidth, H = window.innerHeight;
+    for (const [a, b, c, axis] of rows) {
+      for (let t = a + STEP / 2; t < b; t += STEP) {
+        const x = axis === "x" ? t : c, y = axis === "x" ? c : t;
+        if (x < 0 || y < 0 || x >= W || y >= H) continue;
+        for (const hit of document.elementsFromPoint(x, y)) {
+          if (el.contains(hit)) continue;
+          const node = outermost(hit);
+          if (node && !el.contains(node)) found.add(node);
+        }
+      }
+    }
+    return found;
+  };
   const place = (r) => {
     const href = mapRef.current && mapRef.current.getAttribute("href");
     if (!href) return;
@@ -221,10 +261,9 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
       document.body.appendChild(svg);
     }
     const under = new Set();
-    for (const node of document.querySelectorAll(selector)) {
-      if (el.contains(node)) continue;
+    for (const node of sample(r)) {
       const b = node.getBoundingClientRect();
-      if (b.width === 0 || b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) continue;
+      if (b.width === 0 || b.width > BIG || b.height > BIG) continue;
       if (!crosses(b, r)) continue;
       under.add(node);
       let f = bent.get(node);
