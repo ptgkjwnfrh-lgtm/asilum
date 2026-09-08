@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { discoveryPathwayLabel, assembleFeed } from "../lib/brain/bridges.js";
+import { discoveryPathwayLabel, assembleFeed, SEEN_PENALTY } from "../lib/brain/bridges.js";
 import { buildNoveltyIndex } from "../lib/brain/popularity.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 
@@ -11,7 +11,7 @@ import { CATALOG } from "../lib/ingest/catalog.js";
 // balance between the cross-user and adjacent-taste parts, not on the
 // seen-penalty. Labels are instrumentation — the feed order is unaffected.
 
-const SEEN_PENALTY = 0.3; // mirrors bridges.js
+// The law's own constant, imported — a copy that "mirrors" drifts.
 
 test("#24 the label depends on the xu-vs-adjacent balance, never on rotation", () => {
   // adjacent part 0.4 dominates the cross-user part 0.3 → 'adjacent'.

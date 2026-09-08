@@ -16,7 +16,7 @@
 //
 // It was written from reading the code. Reading the code is where the wrong
 // half comes from: `seen` is not an exclusion, it is a SCORE MULTIPLIER
-// (SEEN_PENALTY = 0.3 in lib/brain/bridges.js). A penalty can be outvoted by a
+// (SEEN_PENALTY in lib/brain/bridges.js: 0.3 for the newest-served item, graded to 0.4 for the oldest in the ring). A penalty can be outvoted by a
 // strong enough item on the very next page, entirely INSIDE the cap. So "a
 // heavy scroller loops" and "the cap is why" are two claims, and only the
 // first was ever argued.
@@ -26,7 +26,7 @@
 //
 //   FORGOTTEN  the item had fallen out of _meta.seen. Raising SEEN_CAP fixes
 //              exactly these and no others.
-//   OUTVOTED   the item was still in _meta.seen, carrying the 0.3 penalty, and
+//   OUTVOTED   the item was still in _meta.seen, carrying the seen penalty, and
 //              was served anyway. A bigger cap does nothing for these.
 //
 // ARMS. Both browse the identical bot through the identical catalog.
