@@ -116,9 +116,10 @@ export default function Home() {
   // One dismissal contract (synergy phase 1): Escape closes the open surface.
   const itemDialogRef = useRef(null);
   // the item detail is the same liquid glass as the header (owner, 8 Sep)
-  // the popup bends at 0.15 of the header (owner, 8 Sep); where the browser
-  // cannot bend a backdrop (Safari), the cards under its edge bend instead
-  const modalGlass = useLiquidGlass(itemDialogRef, { id: "lg-item", active: !!modal, strength: 0.15, bend: ".card, .cvlook, .mrelitem" });
+  // the popup bends at half the header (owner, 8 Sep: 0.15 read as "no
+  // rainbow at all"); where the browser cannot bend a backdrop (Safari), the
+  // cards under its edge bend instead
+  const modalGlass = useLiquidGlass(itemDialogRef, { id: "lg-item", active: !!modal, strength: 0.5, bend: ".card, .cvlook, .mrelitem" });
   useEscape(() => setModal(null), !!modal);
   // while the photograph floats (FloatView) the float owns Escape and the
   // focus trap; the detail behind it waits
