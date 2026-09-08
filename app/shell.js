@@ -59,15 +59,21 @@ function canRefract() {
 }
 
 // The displacement map: a picture of how far each pixel of the backdrop is
-// pulled, red for x and green for y, 128 meaning none, and in blue how much
-// of the pane is bezel (the lens ring) rather than frost. The bezel is the
+// pulled, red for x and green for y, 128 meaning none, blue held at 128 so
+// the still middle is a pure grey. A SECOND, greyscale picture carries how
+// much of the pane is bezel (the lens ring) rather than frost. Two pictures,
+// not one: Chromium colour-manages a feImage into the display's space, and
+// on a P3 screen a pixel of (128,128,0) comes back with blue near 0.2 — a
+// weight carried in one colour channel next to two others leaked a ghost of
+// the sharp lens through the whole frosted middle. Greys survive the
+// conversion; only greys are trusted here. The bezel is the
 // outer BEZEL px of the rounded rect (measured by a rounded-rect signed
 // distance); its profile is Apple's squircle, y = (1 - (1 - t)^4)^(1/4), and
 // the bend per point is Snell's law for glass (n = 1.5) on that slope,
 // pointing INWARD along the surface normal so no pixel ever samples beyond
 // the pane (Chromium's backdrop stops at the pane's edge). The very lip is
 // eased to nothing so the edge itself stays clean, the way Apple's does.
-const BEZEL = 20;
+const BEZEL = 24;
 const GLASS_N = 1.5;
 function bendProfile(t) {
   // t: 0 at the edge, 1 at the inner end of the bezel
@@ -79,13 +85,18 @@ function bendProfile(t) {
   const lip = Math.min(1, t / 0.12); // ease in over the outer 12% of the bezel
   return Math.tan(delta) * lip;
 }
-function drawRefractionMap(node, w, h, radius) {
+function drawRefractionMap(node, weightNode, w, h, radius) {
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
   const ctx = c.getContext("2d");
-  if (!ctx) return;
+  const cw = document.createElement("canvas");
+  cw.width = w; cw.height = h;
+  const ctxw = cw.getContext("2d");
+  if (!ctx || !ctxw) return;
   const img = ctx.createImageData(w, h);
   const d = img.data;
+  const imgw = ctxw.createImageData(w, h);
+  const dw = imgw.data;
   const r = Math.max(0, Math.min(radius, w / 2, h / 2));
   const hx = w / 2, hy = h / 2;
   // normalise the profile so the strongest bend uses the full channel
@@ -115,12 +126,16 @@ function drawRefractionMap(node, w, h, radius) {
       const i = (y * w + x) * 4;
       d[i] = Math.round(128 - nx * m * 127);      // pull inward along -normal
       d[i + 1] = Math.round(128 - ny * m * 127);
-      d[i + 2] = Math.round(255 * bw * bw * (3 - 2 * bw)); // smoothstep, in blue
+      d[i + 2] = 128;
       d[i + 3] = 255;
+      const wt = Math.round(255 * bw * bw * (3 - 2 * bw)); // smoothstep, as a grey
+      dw[i] = wt; dw[i + 1] = wt; dw[i + 2] = wt; dw[i + 3] = 255;
     }
   }
   ctx.putImageData(img, 0, 0);
+  ctxw.putImageData(imgw, 0, 0);
   node.setAttribute("href", c.toDataURL("image/png"));
+  weightNode.setAttribute("href", cw.toDataURL("image/png"));
 }
 
 export default function Shell({ children }) {
@@ -148,6 +163,7 @@ export default function Shell({ children }) {
   const headRef = useRef(null);
   const lightRef = useRef(null);
   const mapRef = useRef(null);
+  const weightRef = useRef(null);
   const placeCurrentRef = useRef(null);
   useEffect(() => {
     const el = headRef.current;
@@ -188,9 +204,9 @@ export default function Shell({ children }) {
       light.style.left = `${r.left}px`;
       light.style.width = `${r.width}px`;
       light.style.height = `${r.height}px`;
-      if (refract && mapRef.current && r.width > 0 && r.height > 0) {
+      if (refract && mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
         const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-        drawRefractionMap(mapRef.current, Math.round(r.width), Math.round(r.height), radius);
+        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius);
         el.dataset.refract = "1";
       }
       placeCurrent();
@@ -206,16 +222,20 @@ export default function Shell({ children }) {
       if (!word || !el.contains(word) || word === lit) return;
       lit = word;
       const c = centreOf(word);
-      light.dataset.lamp = word.classList.contains("wordmark") ? "red" : "";
-      light.style.setProperty("--lx", c.x);
-      light.style.setProperty("--ly", c.y);
-      light.style.setProperty("--ls", "1");
+      // the lamp sits under the pane; the pane's bezel reflects it, so both
+      // carry the word's place and colour
+      for (const n of [el, light]) {
+        n.dataset.lamp = word.classList.contains("wordmark") ? "red" : "";
+        n.style.setProperty("--lx", c.x);
+        n.style.setProperty("--ly", c.y);
+        n.style.setProperty("--ls", "1");
+      }
     };
     const onOut = (e) => {
       const to = e.relatedTarget;
       if (to && to.closest && to.closest("a, button") && el.contains(to)) return;
       lit = null;
-      light.style.setProperty("--ls", "0");
+      for (const n of [el, light]) n.style.setProperty("--ls", "0");
     };
     el.addEventListener("pointerover", onOver);
     el.addEventListener("pointerout", onOut);
@@ -648,18 +668,34 @@ export default function Shell({ children }) {
       <div className="glass-light" ref={lightRef} aria-hidden="true" />
       <svg className="glass-defs" aria-hidden="true" focusable="false">
         {/* THE OPTICS: the centre of the pane is frosted (a deep blur); the
-            bezel is a clear lens — the backdrop bent through the map, only
-            lightly softened — laid over the frost through the map's blue
-            channel, which carries the bezel's weight. That is Apple's glass:
-            a crisp refracting rim around a frosted middle. */}
+            bezel is a clear lens — the backdrop bent through the map, each
+            colour a little differently (glass disperses: red bends least,
+            blue most — the faint colour fringe on Apple's edges), only
+            lightly softened — blended with the frost by the weight picture,
+            a grey that says how much of each pixel is bezel. That is Apple's
+            glass: a crisp refracting rim around a frosted middle. */}
         <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
           <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
-          <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="frost" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="34" xChannelSelector="R" yChannelSelector="G" result="bent" />
-          <feGaussianBlur in="bent" stdDeviation="2.5" result="lens" />
-          <feColorMatrix in="lgmap" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 1 0 0" result="bezel" />
-          <feComposite in="lens" in2="bezel" operator="in" result="rim" />
-          <feComposite in="rim" in2="frost" operator="over" />
+          <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="frost" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="50" xChannelSelector="R" yChannelSelector="G" result="bentR" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="56" xChannelSelector="R" yChannelSelector="G" result="bentG" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="62" xChannelSelector="R" yChannelSelector="G" result="bentB" />
+          <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
+          <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
+          <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
+          <feComposite in="chR" in2="chG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="chRG" />
+          <feComposite in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="bent" />
+          <feGaussianBlur in="bent" stdDeviation="1.2" result="lens" />
+          {/* lens × weight + frost × (1 − weight): the weight picture read
+              into COLOUR at full alpha, and its complement, so the blend is
+              plain arithmetic — no alpha mask, nothing premultiplied to
+              darken the band. */}
+          <feColorMatrix in="lgw" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="w" />
+          <feColorMatrix in="lgw" type="matrix" values="-1 0 0 0 1  -1 0 0 0 1  -1 0 0 0 1  0 0 0 0 1" result="iw" />
+          <feComposite in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
+          <feComposite in="frost" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
+          <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
         </filter>
       </svg>
       <header className="tophead" ref={headRef}>

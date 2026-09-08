@@ -37,24 +37,42 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 - Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
   row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
-  LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"): a near-clear
-  pane (--glass, 0.025 dark / 0.10 ice) over a frosted centre and a CLEAR
-  REFRACTING BEZEL — in Chromium the backdrop passes through an SVG filter
-  (#lg-refract, shell.js) whose displacement map is drawn from the pane's
-  own size and corner radius (rounded-rect distance, Apple's squircle bezel
-  profile, Snell's law at n=1.5; R = x, G = y, B = bezel weight), so the
-  outer 20px bends what scrolls beneath it while the middle stays frosted;
-  other engines keep blur(22px) saturate(180%). No outline: the rim is a
-  partial specular (a conic ring masked to one pixel, bright at the
-  top-left lip and the far lip, gone between). The words float and their
-  glow is a LIGHT UNDER THE WATER: .glass-light, a sibling beneath the pane
-  kept to its rect, carries the current destination's lamp (--cx/--cy), the
-  hovered word's lamp gliding between words (--lx/--ly/--ls, registered
-  properties so they transition; the wordmark's lamp is red) and the
-  pointer's shine (--gx/--gy/--gs); the pane blurs and bends them. It
-  deepens once the page scrolls under it (data-glass="deep"). Reduced
-  motion keeps pane, lamps and refraction, drops the glide and the pointer
-  shine. Theme toggle
+  LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"; fifth pass):
+  a near-clear pane (--glass, 0.03 dark / 0.12 ice) over a frosted centre
+  and a CLEAR REFRACTING BEZEL — in Chromium the backdrop passes through an
+  SVG filter (#lg-refract, shell.js) fed by TWO pictures drawn from the
+  pane's own size and corner radius (rounded-rect distance, Apple's
+  squircle bezel profile, Snell's law at n=1.5): a displacement map (R = x,
+  G = y, blue held at 128) and a separate GREYSCALE weight picture saying
+  how much of each pixel is bezel. Two, because Chromium colour-manages a
+  feImage into the display's space and on a P3 screen (128,128,0) reads
+  back with blue near 0.2 — a weight in one colour channel leaked a ghost
+  of the sharp lens through the whole frosted middle; greys survive. The
+  outer 24px bends what scrolls beneath it, each colour a little
+  differently (R/G/B displaced at 50/56/62 — the faint fringe on Apple's
+  edges), blended with the frost by plain arithmetic (lens × w + frost ×
+  (1 − w)), never an alpha mask; other engines keep blur(22px)
+  saturate(180%). No outline: a one-pixel LIP (inset box-shadow, bright on
+  the top edge, a trace on the bottom) and a 7px BEZEL band (::after, a
+  conic ring masked to the band and blurred 3px — overflow clips it sharp
+  at the edge, so it fades inward like the thickness of the glass), bright
+  where light from the top-left strikes and on the far lip, gone between.
+  The bezel REFLECTS: the white of the pointer nearest it and the colour
+  of the lit word's lamp. The words float and their glow is a LIGHT UNDER
+  THE WATER: .glass-light, a sibling beneath the pane kept to its rect,
+  carries lamps that are each three lights (a small near-white core, the
+  coloured halo, a wide faint spill — a glow stick in water, never a flat
+  blob): the current destination's (--cx/--cy/--cs), the hovered word's
+  gliding between words (--lx/--ly/--ls; the wordmark's lamp is red) and
+  the pointer's trace (--gx/--gy/--gs); the pane blurs and bends them.
+  These properties are registered (so they transition) AND inherited —
+  a pseudo-element reads a custom property only when it is declared to
+  inherit, and the pane's ::before/::after need them. The pointer's shine
+  on the glass is a tight specular core (96×36, set 6px up-left of the
+  cursor, towards the light) inside a faint wide sheen; both fade on leave
+  (--gs). The pane deepens once the page scrolls under it
+  (data-glass="deep"). Reduced motion keeps pane, lamps and refraction,
+  drops the glide and the pointer shine. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW
