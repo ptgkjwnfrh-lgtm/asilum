@@ -100,7 +100,21 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   dome (feFlood) — colour management leaves greys alone. The pane deepens
   once the page scrolls under it (data-glass="deep"). Reduced motion keeps
   pane, lamps and refraction, drops the glide, the pointer shine and the
-  meniscus. Theme toggle
+  meniscus. THE ITEM DETAIL IS THE SAME GLASS (owner, 8 Sep): `.modal.lg`
+  — a 22px-radius pane over the dimmed page, all four edges lensing
+  (LiquidGlass.jsx, its own filter #lg-item), the same gloss; the pane
+  does not scroll, `.mscroll` does inside it. (Found on the way: `.ctr >
+  *` had been turning every overlay rendered in the centred column
+  relative, so the item detail opened inline wherever the page was
+  scrolled — an overlay is fixed now wherever it is rendered.) Tap the
+  photograph and it FLOATS (FloatView.jsx, the owner's Spotify reference):
+  black space, the picture as a rounded card that tilts with the phone —
+  the pose you opened it in is flat, and the card stays put in the world
+  as the phone moves — or with the cursor where there is no gyroscope; a
+  shadow sliding the other way, a glare crossing its face, a halo of its
+  own colour behind. iOS asks before sharing motion and only inside the
+  tap, so `askTilt` runs in the click that opens it. Reduced motion: the
+  card, still. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW
