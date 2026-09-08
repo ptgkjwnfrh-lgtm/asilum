@@ -23,6 +23,8 @@ import {
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import { useLiquidGlass } from "./components/LiquidGlass.jsx";
+import FloatView, { askTilt } from "./components/FloatView.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -108,15 +110,21 @@ export default function Home() {
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
+  // the photograph alone, floating (FloatView): { src, aspect, tilt }
+  const [float, setFloat] = useState(null);
   const [modalRel, setModalRel] = useState([]);
   // One dismissal contract (synergy phase 1): Escape closes the open surface.
   const itemDialogRef = useRef(null);
+  // the item detail is the same liquid glass as the header (owner, 8 Sep)
+  const modalGlass = useLiquidGlass(itemDialogRef, { id: "lg-item", active: !!modal });
   useEscape(() => setModal(null), !!modal);
-  const dismissItemModal = useOverlayDismiss(() => setModal(null), !!modal);
+  // while the photograph floats (FloatView) the float owns Escape and the
+  // focus trap; the detail behind it waits
+  const dismissItemModal = useOverlayDismiss(() => setModal(null), !!modal && !float);
   const dismissConnectSheet = useOverlayDismiss(useMoodboardInstead, connectOpen);
   // aria-modal="true" below is a promise that the page behind is inert.
   // This is what keeps it.
-  useFocusTrap(itemDialogRef, !!modal);
+  useFocusTrap(itemDialogRef, !!modal && !float);
   useEscape(() => { markOnboarded(); setConnectOpen(false); }, connectOpen);
   const [ticketItem, setTicketItem] = useState(null);
   const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
@@ -1077,7 +1085,7 @@ export default function Home() {
               is the honest name for this dialog. */}
           <div
             ref={itemDialogRef}
-            className="modal"
+            className="modal lg"
             role="dialog"
             aria-modal="true"
             aria-labelledby="item-detail-title"
@@ -1086,14 +1094,30 @@ export default function Home() {
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
           >
+            {modalGlass}
+            {/* the pane is the glass; this scrolls inside it (the gloss and the
+                edge stay put) */}
+            <div className="mscroll">
             <button className="mclose" aria-label="close item detail" onClick={() => setModal(null)}>×</button>
-            <div className="mimg" aria-hidden="true">
+            {/* tap the photograph: it floats alone (FloatView). askTilt runs
+                inside the tap — iOS answers the motion question only there. */}
+            <button
+              type="button"
+              className="mimg"
+              aria-label="see the photograph alone"
+              onClick={async () => {
+                const src = modal.img || thumbFor(modal);
+                const aspect = aspectFor(modal.id);
+                const tilt = await askTilt();
+                setFloat({ src, aspect, tilt });
+              }}
+            >
               <img
                 src={modal.img || thumbFor(modal)}
                 alt=""
                 style={{ aspectRatio: aspectFor(modal.id) }}
               />
-            </div>
+            </button>
             <div className="mbody">
               <h2 className="ttl" id="item-detail-title">{modal.title}</h2>
               <a
@@ -1245,8 +1269,12 @@ export default function Home() {
                 </div>
               ) : null}
             </div>
+            </div>
           </div>
         </div>
+      )}
+      {float && (
+        <FloatView src={float.src} aspect={float.aspect} tilt={float.tilt} onClose={() => setFloat(null)} />
       )}
 
       {ticketItem && <TicketFlow item={ticketItem} onClose={() => setTicketItem(null)} />}
