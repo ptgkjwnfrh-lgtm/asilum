@@ -19,7 +19,7 @@
      shipped design; an owner override lands inline on <html>. */
   --mq-h: var(--ed-mq-h, 64px);
   --nav-h: 48px;
-  --head-h: calc(var(--mq-h) + var(--nav-h));
+  --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 10px) + 6px);
   /* OS tokens */
   --bg: #070b10;
   --bg2: rgba(15, 23, 27, 0.85);
@@ -46,10 +46,15 @@
     -28px 0 34px rgba(70, 255, 150, 0.13);
   --grid-ln: rgba(120, 255, 190, 0.012);
   --scan: rgba(2, 8, 6, 0.11);
-  --backlight:
-    radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.07), transparent 68%),
-    radial-gradient(ellipse 60% 50% at 78% 18%, rgba(230, 80, 200, 0.06), transparent 70%),
-    radial-gradient(ellipse 55% 45% at 18% 82%, rgba(120, 110, 255, 0.07), transparent 70%);
+  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.07), transparent 68%);
+  /* The colour wash is its OWN fixed layer (body::before) — a second and third
+     gradient inside --backlight inherited the grid's 140px background-size and
+     tiled into a checkerboard (the owner saw it, 8 Sep). Fuchsia, soft purple,
+     soft blue: big, blurred, breathing. */
+  --wash:
+    radial-gradient(ellipse 62% 54% at 78% 16%, rgba(235, 70, 200, 0.10), transparent 70%),
+    radial-gradient(ellipse 58% 50% at 16% 84%, rgba(120, 110, 255, 0.11), transparent 70%),
+    radial-gradient(ellipse 48% 42% at 52% 60%, rgba(90, 140, 255, 0.07), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
   /* Filled controls carry no glow on phosphor — the fill is the light. */
   --glow-box-ink: none;
@@ -57,12 +62,15 @@
      pane that blurs and saturates what scrolls beneath it, with a specular
      sheen along its top edge and a highlight that follows the pointer. The
      words on it stay floating, un-boxed, glowing. Dark: a smoked pane. */
-  --glass: color-mix(in srgb, var(--bg) 54%, transparent);
-  --glass-deep: color-mix(in srgb, var(--bg) 72%, transparent);
-  --glass-edge: rgba(255, 255, 255, 0.14);
-  --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.025) 100%);
-  --glass-spot: rgba(255, 255, 255, 0.13);
-  --glass-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+  --glass: rgba(255, 255, 255, 0.17);
+  --glass-deep: rgba(255, 255, 255, 0.23);
+  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.28) 34%, rgba(255, 255, 255, 0.16) 62%, rgba(255, 255, 255, 0.60));
+  --glass-top: rgba(255, 255, 255, 0.55);
+  --glass-sheen: radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.28), transparent 58%);
+  --glass-spot: rgba(255, 255, 255, 0.16);
+  --glass-shadow: 0 22px 60px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(0, 0, 0, 0.16);
+  --glass-pill: rgba(255, 255, 255, 0.18);
+  --glass-pill-rim: rgba(255, 255, 255, 0.42);
 }
 [data-theme="light"] {
   /* THE INK IS BLUE (owner order, 8 Sep): "the black negative looking text and
@@ -121,17 +129,21 @@
   --grid-ln: rgba(23, 110, 125, 0.015);
   --scan: rgba(120, 160, 170, 0.05);
   /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
-  --backlight:
-    radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%),
-    radial-gradient(ellipse 58% 48% at 14% 20%, rgba(255, 170, 205, 0.20), transparent 70%),
-    radial-gradient(ellipse 56% 46% at 86% 78%, rgba(255, 228, 150, 0.22), transparent 70%);
+  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%);
+  --wash:
+    radial-gradient(ellipse 60% 50% at 14% 20%, rgba(255, 165, 205, 0.24), transparent 70%),
+    radial-gradient(ellipse 58% 48% at 86% 78%, rgba(255, 226, 145, 0.26), transparent 70%),
+    radial-gradient(ellipse 46% 40% at 55% 52%, rgba(255, 205, 190, 0.12), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%);
-  --glass: color-mix(in srgb, #ffffff 56%, transparent);
-  --glass-deep: color-mix(in srgb, #ffffff 74%, transparent);
-  --glass-edge: rgba(255, 255, 255, 0.85);
-  --glass-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 52%, rgba(255, 255, 255, 0.10) 100%);
-  --glass-spot: rgba(255, 255, 255, 0.55);
-  --glass-shadow: 0 12px 34px rgba(28, 63, 174, 0.12);
+  --glass: rgba(255, 255, 255, 0.58);
+  --glass-deep: rgba(255, 255, 255, 0.72);
+  --glass-rim: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.55) 38%, rgba(255, 255, 255, 0.35) 62%, rgba(255, 255, 255, 0.95));
+  --glass-top: rgba(255, 255, 255, 1);
+  --glass-sheen: radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.75), transparent 58%);
+  --glass-spot: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 18px 50px rgba(28, 63, 174, 0.16), 0 0 0 1px rgba(28, 63, 174, 0.06);
+  --glass-pill: rgba(255, 255, 255, 0.72);
+  --glass-pill-rim: rgba(255, 255, 255, 1);
 }
 
 * { box-sizing: border-box; }
@@ -156,33 +168,53 @@ button { font-family: var(--helv); }
 
 /* ---- Shell: one fixed top header — wordmark row + destination row ---- */
 
+/* LIQUID GLASS (owner order, 8 Sep — "like Apple's, to a T"). The header is
+   a pane of glass floated in from the edges: a milky fill over a deep blur
+   that leaves the page beneath legible as shapes, a thin bright rim that is
+   brightest along the top and at the corners (refraction), a soft sheen from
+   the top-left, a floating shadow, and continuous large corners. It deepens
+   once the page scrolls under it (data-glass="deep", shell.js) and carries a
+   soft highlight that follows the pointer (--gx/--gy/--gs). The words on it
+   float; the current destination sits in a small pill of the same glass. */
 .tophead {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 45;
+  position: fixed; top: var(--glass-inset-y, 10px); left: var(--glass-inset-x, 12px); right: var(--glass-inset-x, 12px); z-index: 45;
   display: flex; flex-direction: column;
-  /* liquid glass: see --glass in :root. The pane deepens as the page scrolls
-     under it (data-glass="deep", set in shell.js) and carries a pointer
-     highlight (--gx/--gy/--gs, same place). */
+  border-radius: var(--ed-glass-rad, 30px);
   background: var(--glass);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  backdrop-filter: blur(22px) saturate(180%);
-  box-shadow: inset 0 1px 0 var(--glass-edge), inset 0 -1px 0 rgba(255, 255, 255, 0.05), var(--glass-shadow);
+  -webkit-backdrop-filter: blur(44px) saturate(200%) brightness(1.08);
+  backdrop-filter: blur(44px) saturate(200%) brightness(1.08);
+  box-shadow: inset 0 1.5px 0 var(--glass-top), inset 0 -1px 0 rgba(255, 255, 255, 0.06), var(--glass-shadow);
   transition: background 0.4s ease, box-shadow 0.4s ease;
+  overflow: hidden;
+  isolation: isolate;
 }
 .tophead[data-glass="deep"] { background: var(--glass-deep); }
 .tophead::before, .tophead::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
 }
-/* the sheen: light caught along the top of the pane */
-.tophead::after { background: var(--glass-sheen); }
-/* the highlight: a soft spot of light that follows the pointer across the glass */
+/* the rim: a one-pixel ring of refracted light, brighter where the glass turns */
+.tophead::after {
+  padding: 1px;
+  background: var(--glass-rim), var(--glass-sheen);
+  background-clip: border-box, padding-box;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* the sheen and the pointer highlight, inside the rim */
 .tophead::before {
-  background: radial-gradient(260px 130px at var(--gx, 50%) var(--gy, 40%), var(--glass-spot), transparent 72%);
-  opacity: var(--gs, 0);
+  background:
+    radial-gradient(260px 140px at var(--gx, 50%) var(--gy, 40%), var(--glass-spot), transparent 72%),
+    var(--glass-sheen);
+  opacity: 1;
   transition: opacity 0.5s ease;
 }
+.tophead:not(:hover)::before { opacity: 0.85; }
+
 @media (prefers-reduced-motion: reduce) {
   .tophead { transition: none; }
-  .tophead::before { display: none; }
+  .tophead::before { background: var(--glass-sheen); }
 }
 .thbar {
   height: var(--mq-h); display: flex; align-items: center; gap: 18px;
@@ -1346,6 +1378,11 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
   animation: osroll var(--ed-roll-dur, 9s) linear infinite; }
 @keyframes osroll { from { top: -18vh; } to { top: 104vh; } }
 
+/* the colour wash: one fixed layer, never tiled */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--wash);
+}
 /* drifting hue haze under the content */
 .os-blob { position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; opacity: var(--ed-blob-op, 1); }
 /* Owner order, 8 Sep: a little more colour in the haze. Dark breathes
@@ -2706,4 +2743,18 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .fitbtn:hover, .fitbtn.active, .followbtn:hover, .chip.clickable.cur, .unitpick button.on,
 .sugopt:hover, .achip:hover, .apill:hover, .wchip.cur {
   box-shadow: var(--glow-box-ink);
+}
+
+/* ---- LIQUID GLASS, the parts that must come AFTER their base rules
+   (the cascade: a later rule of equal specificity wins). ---- */
+.thbar { border-bottom-color: rgba(255, 255, 255, 0.08); }
+.topnav { border-bottom: none; }
+/* the current destination: a pill of the same glass, not a box */
+.snav.cur {
+  background: var(--glass-pill); border-color: transparent; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--glass-pill-rim), inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.snav:hover { background: var(--glass-pill); border-color: transparent; border-radius: 999px; }
+@media (max-width: 760px) {
+  .tophead { --glass-inset-y: 6px; --glass-inset-x: 8px; border-radius: 22px; }
 }
