@@ -17,9 +17,11 @@
   --serif: "STM", ui-monospace, Menlo, monospace;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
-  --mq-h: var(--ed-mq-h, 64px);
-  --nav-h: 48px;
-  --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 10px) + 6px);
+  /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
+     header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
+  --mq-h: var(--ed-mq-h, 54px);
+  --nav-h: 38px;
+  --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 0px) + 6px);
   /* OS tokens */
   --bg: #070b10;
   --bg2: rgba(15, 23, 27, 0.85);
@@ -69,21 +71,20 @@
      lamp in .glass-light behind the pane that the pane blurs and bends. */
   --glass: rgba(255, 255, 255, 0.03);
   --glass-deep: rgba(255, 255, 255, 0.05);
-  /* the LIP: one crisp pixel of light along the top edge, a trace along the
-     bottom — the only hard line the glass has (Apple's edge highlight) */
-  --glass-lip: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.07), inset 1px 0 0 rgba(255, 255, 255, 0.05);
-  /* the BEZEL: a soft band inside the lip (blurred, clipped at the edge — sharp
-     outside, fading inward, the thickness of the glass), brightest where light
-     from the top-left strikes and again on the far lip, gone between */
-  --glass-rim: conic-gradient(from 0deg,
-    rgba(255, 255, 255, 0.30) 0deg, rgba(255, 255, 255, 0.10) 40deg, rgba(255, 255, 255, 0.02) 80deg,
-    rgba(255, 255, 255, 0.02) 110deg, rgba(255, 255, 255, 0.20) 145deg, rgba(255, 255, 255, 0.03) 200deg,
-    rgba(255, 255, 255, 0.03) 245deg, rgba(255, 255, 255, 0.20) 290deg, rgba(255, 255, 255, 0.30) 330deg,
-    rgba(255, 255, 255, 0.30) 360deg);
-  --glass-rim-catch: rgba(255, 255, 255, 0.16); /* the bezel nearest the pointer */
+  /* the edge is UNSEEN (owner, 8 Sep: "I shouldn't be able to see the bezel,
+     it should still cause the distortion"): no lip, no band — only a whisper
+     of light on the bottom edge where the glass ends (Fresnel) */
+  --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --glass-rim: none;
+  --glass-rim-catch: rgba(255, 255, 255, 0.12); /* the edge nearest the pointer */
+  /* the GLOSS, ever so slight and real (owner, 8 Sep): a thin specular along
+     the top where the sheet meets the light, and one soft diagonal
+     reflection band — a window in the glass — the way a real pane carries
+     the room. Not a wash. */
   --glass-sheen:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.01) 22%, rgba(255, 255, 255, 0) 55%),
-    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.03), transparent 60%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0px, rgba(255, 255, 255, 0.02) 3px, rgba(255, 255, 255, 0) 16px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.045) 50%, rgba(255, 255, 255, 0.02) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0) 8px);
   /* the pointer's shine: a tight specular core and a faint wide sheen —
      diluted (owner, 8 Sep: "all active glows caused by cursors should be
      greatly diluted, there's simply too much") */
@@ -167,16 +168,13 @@
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%);
   --glass: rgba(255, 255, 255, 0.12);
   --glass-deep: rgba(255, 255, 255, 0.18);
-  --glass-lip: inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(255, 255, 255, 0.35), inset 1px 0 0 rgba(255, 255, 255, 0.25);
-  --glass-rim: conic-gradient(from 0deg,
-    rgba(255, 255, 255, 0.85) 0deg, rgba(255, 255, 255, 0.35) 40deg, rgba(255, 255, 255, 0.08) 80deg,
-    rgba(255, 255, 255, 0.08) 110deg, rgba(255, 255, 255, 0.55) 145deg, rgba(255, 255, 255, 0.10) 200deg,
-    rgba(255, 255, 255, 0.10) 245deg, rgba(255, 255, 255, 0.55) 290deg, rgba(255, 255, 255, 0.85) 330deg,
-    rgba(255, 255, 255, 0.85) 360deg);
-  --glass-rim-catch: rgba(255, 255, 255, 0.45);
+  --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+  --glass-rim: none;
+  --glass-rim-catch: rgba(255, 255, 255, 0.35);
   --glass-sheen:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 55%),
-    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.10), transparent 60%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0px, rgba(255, 255, 255, 0.08) 3px, rgba(255, 255, 255, 0) 16px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.10) 45%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0.08) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
   --glass-spot: rgba(255, 255, 255, 0.22);
   --glass-spot-wide: rgba(255, 255, 255, 0.03);
   --glass-shadow: 0 16px 44px rgba(10, 132, 148, 0.13), 0 1px 2px rgba(10, 132, 148, 0.08);
@@ -235,9 +233,10 @@ button { font-family: var(--helv); }
 @property --cs { syntax: "<number>"; inherits: true; initial-value: 0; }
 @property --gs { syntax: "<number>"; inherits: true; initial-value: 0; }
 .tophead {
-  position: fixed; top: var(--glass-inset-y, 10px); left: var(--glass-inset-x, 12px); right: var(--glass-inset-x, 12px); z-index: 45;
+  /* a clean STRIP across the whole top, not a bubble (owner, 8 Sep) */
+  position: fixed; top: var(--glass-inset-y, 0px); left: var(--glass-inset-x, 0px); right: var(--glass-inset-x, 0px); z-index: 45;
   display: flex; flex-direction: column;
-  border-radius: var(--ed-glass-rad, 30px);
+  border-radius: var(--ed-glass-rad, 0px);
   background: var(--glass);
   /* CRYSTAL CLEAR in the middle (owner, 8 Sep: "the centre is oddly cloudy,
      it should fully be crystal clear") — no blur; only the bezel lenses */
@@ -258,11 +257,9 @@ button { font-family: var(--helv); }
 .tophead::before, .tophead::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
 }
-/* the bezel: a 7px band of partial specular, blurred so it is sharp at the
-   pane's edge (overflow clips the blur there) and fades inward — the thick
-   edge of the glass, not a border. Light from the top-left catches it, the
-   far lip catches it again, and it REFLECTS what is near it: the pointer's
-   white, the lit word's colour (the lamp seen in the lip). */
+/* the edge: no band of its own (unseen) — a 7px zone, blurred, sharp at the
+   pane's edge, that only REFLECTS what is near it: the pointer's white, the
+   lit word's colour (the lamp seen in the lip). */
 .tophead::after {
   padding: 7px;
   background:
@@ -295,7 +292,7 @@ button { font-family: var(--helv); }
    word, gliding. --gx/--gy/--gs: the pointer. */
 .glass-light {
   position: fixed; z-index: 44; pointer-events: none;
-  border-radius: var(--ed-glass-rad, 30px);
+  border-radius: var(--ed-glass-rad, 0px);
   overflow: hidden;
   /* the pane above is crystal clear, so the lamps soften themselves */
   filter: blur(14px);
@@ -389,7 +386,7 @@ button { font-family: var(--helv); }
    come after every base rule they override, or the cascade eats them. */
 .snav {
   display: grid; grid-template-columns: 16px 1fr auto; grid-template-rows: auto auto; gap: 0 6px;
-  align-items: center; align-content: center; padding: var(--ed-snav-pad-y, 5px) 10px;
+  align-items: center; align-content: center; padding: var(--ed-snav-pad-y, 3px) 10px;
   border: 1px solid transparent; border-radius: var(--ed-snav-rad, 10px); align-self: center;
   font-family: var(--mich); font-size: var(--ed-fs-nav, 10.5px); font-weight: 400; letter-spacing: 0.13em;
   background: none; cursor: pointer; text-align: left; position: relative; white-space: nowrap;
@@ -1537,7 +1534,9 @@ body::before {
    bordering the page (owner reference language, Aug 12: Aphex SAW poster /
    State 3.0 stills). Decoration only; never blocks a click. */
 /* under the header (45) and every panel, over page content */
-.os-frame { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+/* the frame starts BELOW the header strip (the strip is clear glass across
+   the whole top now, and the frame's corner squares showed through it) */
+.os-frame { position: fixed; inset: 0; top: var(--head-h); pointer-events: none; z-index: 40; }
 .os-frame::before { content: ""; position: absolute; inset: 7px;
   border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); }
 .os-frame::after { content: ""; position: absolute; top: 12px; left: 12px; bottom: 12px; width: 34%;
@@ -2436,7 +2435,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .snav .nled { display: none; }
 }
 @media (max-width: 760px) {
-  :root { --mq-h: 54px; --nav-h: 40px; }
+  :root { --mq-h: 54px; --nav-h: 36px; }
   .thbar { gap: 8px; padding: 0 10px; }
   /* MAGAZINE STAYS. The name is "*ASILUM magazine" and the word is never
      dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
@@ -2869,6 +2868,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 .snav:hover { background: var(--glass-pill); border-color: transparent; border-radius: 999px; }
 @media (max-width: 760px) {
-  .tophead { --glass-inset-y: 6px; --glass-inset-x: 8px; border-radius: 22px; }
-  .glass-light { border-radius: 22px; }
+  .tophead { --glass-inset-y: 0px; --glass-inset-x: 0px; border-radius: 0; }
+  .glass-light { border-radius: 0; }
 }

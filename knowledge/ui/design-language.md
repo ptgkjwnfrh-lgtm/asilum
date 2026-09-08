@@ -38,8 +38,12 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
   row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
   LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"; fifth pass):
-  a near-clear pane (--glass, 0.03 dark / 0.12 ice) over a CRYSTAL-CLEAR
-  centre (no blur at all — the owner found any frost "oddly cloudy"; the
+  a clean STRIP across the whole top — flush, square, no float, no radius
+  (the owner: "not a bubble at all"); 54px bar + 38px destination row + 6
+  = --head-h 98px (was 64 + 48 + a 10px float = 128; the divider and the
+  buttons moved up, the whole header smaller; the os-frame ornament now
+  starts below it). A near-clear pane (--glass, 0.03 dark / 0.12 ice)
+  over a CRYSTAL-CLEAR centre (no blur at all — the owner found any frost "oddly cloudy"; the
   backdrop is only saturated 160%) and a REFRACTING BEZEL — in Chromium the backdrop passes through an
   SVG filter (#lg-refract, shell.js) fed by TWO pictures drawn from the
   pane's own size and corner radius (rounded-rect distance, Apple's
@@ -49,17 +53,20 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   feImage into the display's space and on a P3 screen (128,128,0) reads
   back with blue near 0.2 — a weight in one colour channel leaked a ghost
   of the sharp lens through the whole frosted middle; greys survive. The
-  outer 24px bends what scrolls beneath it, each colour a little
-  differently (R/G/B displaced at 50/56/62 — the faint fringe on Apple's
-  edges), blended with the untouched backdrop by plain arithmetic (lens ×
+  outer 44px of every OPEN edge bends what scrolls beneath it (an edge
+  flush with the viewport has nothing beyond it and does not lens — for
+  the strip only the bottom edge does), each colour a little differently
+  (R/G/B displaced at 58/64/70 — the faint fringe on Apple's edges), blended with the untouched backdrop by plain arithmetic (lens ×
   w + clear × (1 − w)), never an alpha mask; other engines get the
-  saturation alone, no bezel. No outline: a one-pixel LIP (inset box-shadow, bright on
-  the top edge, a trace on the bottom) and a 7px BEZEL band (::after, a
-  conic ring masked to the band and blurred 3px — overflow clips it sharp
-  at the edge, so it fades inward like the thickness of the glass), bright
-  where light from the top-left strikes and on the far lip, gone between.
-  The bezel REFLECTS: the white of the pointer nearest it and the colour
-  of the lit word's lamp. The words float and their glow is a LIGHT UNDER
+  saturation alone, no bezel. The edge is UNSEEN (the owner: "I shouldn't
+  be able to see the bezel, it should still cause the distortion"): no
+  lip, no band — a whisper of light on the bottom edge (Fresnel, 0.05)
+  and a 7px edge zone (::after, blurred) that only REFLECTS what is near
+  it: the white of the pointer and the colour of the lit word's lamp. The
+  GLOSS is ever so slight and real (--glass-sheen): a thin specular along
+  the top where the sheet meets the light, one soft diagonal reflection
+  band (a window in the glass), a faint Fresnel at the bottom — never a
+  wash. The words float and their glow is a LIGHT UNDER
   THE WATER: .glass-light, a sibling beneath the pane kept to its rect,
   carries lamps that are each three lights (a small near-white core, the
   coloured halo, a wide faint spill — a glow stick in water, never a flat

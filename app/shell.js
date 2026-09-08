@@ -73,7 +73,7 @@ function canRefract() {
 // pointing INWARD along the surface normal so no pixel ever samples beyond
 // the pane (Chromium's backdrop stops at the pane's edge). The very lip is
 // eased to nothing so the edge itself stays clean, the way Apple's does.
-const BEZEL = 24;
+const BEZEL = 44; // lengthened (owner, 8 Sep: "more distortion") — 24 before
 const GLASS_N = 1.5;
 function bendProfile(t) {
   // t: 0 at the edge, 1 at the inner end of the bezel
@@ -85,7 +85,10 @@ function bendProfile(t) {
   const lip = Math.min(1, t / 0.12); // ease in over the outer 12% of the bezel
   return Math.tan(delta) * lip;
 }
-function drawRefractionMap(node, weightNode, w, h, radius) {
+// `open` says which edges are real edges of the glass: an edge flush with
+// the viewport (the strip's top, left and right) has nothing beyond it and
+// does not lens; only the edges the page passes under do.
+function drawRefractionMap(node, weightNode, w, h, radius, open) {
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
   const ctx = c.getContext("2d");
@@ -98,26 +101,28 @@ function drawRefractionMap(node, weightNode, w, h, radius) {
   const imgw = ctxw.createImageData(w, h);
   const dw = imgw.data;
   const r = Math.max(0, Math.min(radius, w / 2, h / 2));
-  const hx = w / 2, hy = h / 2;
+  const o = open || { top: true, right: true, bottom: true, left: true };
   // normalise the profile so the strongest bend uses the full channel
   let peak = 0;
   for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      const px = x + 0.5 - hx, py = y + 0.5 - hy;
-      const qx = Math.abs(px) - (hx - r), qy = Math.abs(py) - (hy - r);
+      // distance to each OPEN edge (a closed edge is infinitely far)
+      const dl = o.left ? x + 0.5 : Infinity, dr = o.right ? w - x - 0.5 : Infinity;
+      const dt = o.top ? y + 0.5 : Infinity, db = o.bottom ? h - y - 0.5 : Infinity;
+      const dx = Math.min(dl, dr), dy = Math.min(dt, db);
+      const sx = dl <= dr ? -1 : 1, sy = dt <= db ? -1 : 1; // outward signs
       let nx = 0, ny = 0, inside; // outward normal, distance to the edge
-      // rounded-rect signed distance: q is the offset past the corner
-      // centres; in the corner both are positive (radial), on a side one is
-      // (that side), inside neither (the nearer side, the larger q)
-      if (qx > 0 && qy > 0) {
-        const len = Math.hypot(qx, qy) || 1;
-        nx = (qx / len) * Math.sign(px); ny = (qy / len) * Math.sign(py);
+      if (r > 0 && dx < r && dy < r) {
+        // a rounded corner between two open edges: radial distance
+        const cx = r - dx, cy = r - dy;
+        const len = Math.hypot(cx, cy) || 1;
+        nx = (cx / len) * sx; ny = (cy / len) * sy;
         inside = r - len;
-      } else if (qx > qy) {
-        nx = Math.sign(px); inside = r - qx;
+      } else if (dx < dy) {
+        nx = sx; inside = dx;
       } else {
-        ny = Math.sign(py); inside = r - qy;
+        ny = sy; inside = dy;
       }
       let m = 0;
       if (inside >= 0 && inside < BEZEL) m = bendProfile(inside / BEZEL) / (peak || 1);
@@ -253,7 +258,11 @@ export default function Shell({ children }) {
       light.style.height = `${r.height}px`;
       if (refract && mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
         const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius);
+        const open = {
+          top: r.top > 0.5, left: r.left > 0.5,
+          right: r.right < window.innerWidth - 0.5, bottom: true,
+        };
+        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open);
         el.dataset.refract = "1";
       }
       placeCurrent();
@@ -775,9 +784,9 @@ export default function Shell({ children }) {
         <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
           <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
           <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="50" xChannelSelector="R" yChannelSelector="G" result="bentR" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="56" xChannelSelector="R" yChannelSelector="G" result="bentG" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="62" xChannelSelector="R" yChannelSelector="G" result="bentB" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="58" xChannelSelector="R" yChannelSelector="G" result="bentR" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="64" xChannelSelector="R" yChannelSelector="G" result="bentG" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="70" xChannelSelector="R" yChannelSelector="G" result="bentB" />
           <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
           <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
           <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
