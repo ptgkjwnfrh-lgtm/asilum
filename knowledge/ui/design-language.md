@@ -102,12 +102,21 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   pane, lamps and refraction, drops the glide, the pointer shine and the
   meniscus. THE ITEM DETAIL IS THE SAME GLASS (owner, 8 Sep): `.modal.lg`
   — a 22px-radius pane over the dimmed page, all four edges lensing
-  (LiquidGlass.jsx, its own filter #lg-item), the same gloss; the pane
-  does not scroll, `.mscroll` does inside it. The scrim under it is LIGHT
-  and SHARP (34% bg, no blur — `.overlay:has(> .modal.lg)`): the cards and
-  their words pass under the pane's edges and bend there with the fringe;
-  the pane carries its own tint (46% bg dark / 58% ice) so the record
-  stays legible over a live page, and the picture stands on paper. (Found on the way: `.ctr >
+  (LiquidGlass.jsx, its own filter #lg-item, at 0.15 of the header's pull
+  — the owner's number), the same gloss; the pane does not scroll,
+  `.mscroll` does inside it. THE LEGIBILITY TRICK (owner, 8 Sep): the page
+  is lowered by 40% ONLY where the popup takes up space — the scrim is
+  clear and sharp (`.overlay:has(> .modal.lg)`), the pane carries the 40%
+  (both themes), the picture stands on paper. WHERE THERE IS NO BACKDROP
+  REFRACTION (Safari — WebKit never runs an SVG filter as a
+  backdrop-filter) the page itself bends: every `.card`/`.cvlook`/
+  `.mrelitem` lying under the pane's edge gets its own SVG filter with
+  the pane's map placed in that element's coordinates over a flat 128
+  grey (`bend` in useLiquidGlass; re-placed on scroll; removed on close).
+  Bounded to the elements the edge crosses, each filtered within its own
+  box. `<html data-lg-page="1">` forces that path in any engine so it can
+  be judged on a desktop — proven in Chrome: at 6× the card text under the
+  edge shreds into colour bands, at 0.15 it carries the fringe. (Found on the way: `.ctr >
   *` had been turning every overlay rendered in the centred column
   relative, so the item detail opened inline wherever the page was
   scrolled — an overlay is fixed now wherever it is rendered.) Tap the

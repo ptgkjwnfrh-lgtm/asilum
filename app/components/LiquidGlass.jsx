@@ -13,6 +13,9 @@ import { useEffect, useRef } from "react";
 // everywhere and proves nothing.
 export function canRefract() {
   if (typeof window === "undefined") return false;
+  // the lab switch: <html data-lg-page="1"> takes the page-side path (what
+  // Safari gets) in any engine, so it can be seen and judged on a desktop
+  if (document.documentElement.dataset.lgPage === "1") return false;
   const brands = navigator.userAgentData?.brands;
   if (Array.isArray(brands)) return brands.some((b) => /chromium/i.test(b.brand || ""));
   return !!window.chrome; // Chrome, Edge, Brave, Arc, Opera — all Blink
@@ -106,7 +109,11 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
 
 // The filter, once per pane (each pane needs its own id: its map is its own
 // size). Render it near the pane; it is 0×0 and paints nothing itself.
-export function LiquidGlassDefs({ id, mapRef, weightRef }) {
+// The pull at the edge, R/G/B (glass disperses: red bends least, blue most).
+// The header runs at 1; the owner set the popups at 0.15 of it.
+export const PULL = [80, 86, 92];
+export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
+  const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
   return (
     <svg className="glass-defs" aria-hidden="true" focusable="false">
     {/* THE OPTICS: the centre of the pane is CRYSTAL CLEAR (the backdrop
@@ -120,9 +127,9 @@ export function LiquidGlassDefs({ id, mapRef, weightRef }) {
     <filter id={id} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
       <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="80" xChannelSelector="R" yChannelSelector="G" result="bentR" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="86" xChannelSelector="R" yChannelSelector="G" result="bentG" />
-      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="92" xChannelSelector="R" yChannelSelector="G" result="bentB" />
+      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
+      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
+      <feDisplacementMap in="SourceGraphic" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
       <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
       <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
       <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
@@ -148,7 +155,15 @@ export function LiquidGlassDefs({ id, mapRef, weightRef }) {
 // filter, and carry the pointer's shine (--gx/--gy/--gs) for its gloss.
 // `open` names the edges that lens (default all four; the header passes the
 // edges flush with the viewport as closed). Returns the defs to render.
-export function useLiquidGlass(elRef, { id, active = true, open = null } = {}) {
+// `strength` scales the pull (the popups run at 0.15 of the header).
+// `bend` is a selector: WHERE THERE IS NO BACKDROP REFRACTION (WebKit —
+// Safari never runs an SVG filter as a backdrop-filter) the page itself is
+// bent instead: every element matching `bend` that lies under the pane's
+// edge gets its own SVG filter — the pane's map placed in that element's
+// coordinates over a flat 128 grey — so what is under the edge bends the
+// way a backdrop would. Bounded: only the elements under the pane, each
+// filtered within its own box; nothing on the rest of the page pays.
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
   useEffect(() => {
@@ -156,20 +171,92 @@ export function useLiquidGlass(elRef, { id, active = true, open = null } = {}) {
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
+    const SVG = "http://www.w3.org/2000/svg";
+    // the page-side bend (WebKit): one hidden svg of per-element filters
+    let bendSvg = null;
+    const bent = new Map(); // element -> filter node
+    const unbend = () => {
+      for (const [node] of bent) node.style.removeProperty("filter");
+      bent.clear();
+      if (bendSvg) { bendSvg.remove(); bendSvg = null; }
+    };
+    const bendPage = (r) => {
+      if (refract || !bend || !mapRef.current) return;
+      const href = mapRef.current.getAttribute("href");
+      if (!href) return;
+      if (!bendSvg) {
+        bendSvg = document.createElementNS(SVG, "svg");
+        bendSvg.setAttribute("class", "glass-defs");
+        bendSvg.setAttribute("aria-hidden", "true");
+        document.body.appendChild(bendSvg);
+      }
+      const under = new Set();
+      for (const node of document.querySelectorAll(bend)) {
+        if (el.contains(node)) continue;
+        const b = node.getBoundingClientRect();
+        if (b.width === 0 || b.right < r.left || b.left > r.right || b.bottom < r.top || b.top > r.bottom) continue;
+        // only the ones the EDGE crosses: the middle of the pane bends nothing
+        const inner = BEZEL;
+        const insideAll = b.left > r.left + inner && b.right < r.right - inner && b.top > r.top + inner && b.bottom < r.bottom - inner;
+        if (insideAll) continue;
+        under.add(node);
+        let f = bent.get(node);
+        if (!f) {
+          f = document.createElementNS(SVG, "filter");
+          f.setAttribute("id", `${id}-b${bent.size}-${Math.floor(Math.random() * 1e6)}`);
+          f.setAttribute("color-interpolation-filters", "sRGB");
+          f.setAttribute("primitiveUnits", "userSpaceOnUse");
+          f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
+          const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
+          f.innerHTML =
+            `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
+            `<feImage preserveAspectRatio="none" result="pane"/>` +
+            `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
+            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
+            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
+            `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
+            `<feColorMatrix in="bR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR"/>` +
+            `<feColorMatrix in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
+            `<feColorMatrix in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
+            `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
+            `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>`;
+          bendSvg.appendChild(f);
+          bent.set(node, f);
+          node.style.filter = `url(#${f.getAttribute("id")})`;
+        }
+        const img = f.querySelector("feImage");
+        img.setAttribute("href", href);
+        img.setAttribute("x", (r.left - b.left).toFixed(1));
+        img.setAttribute("y", (r.top - b.top).toFixed(1));
+        img.setAttribute("width", r.width.toFixed(1));
+        img.setAttribute("height", r.height.toFixed(1));
+      }
+      for (const [node, f] of bent) {
+        if (under.has(node)) continue;
+        node.style.removeProperty("filter"); f.remove(); bent.delete(node);
+      }
+    };
     let raf = 0;
     const fit = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
-      if (refract && mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
+      if (mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
         const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
         drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open);
-        el.style.setProperty("--lg-filter", `url(#${id})`);
-        el.dataset.refract = "1";
+        if (refract) {
+          el.style.setProperty("--lg-filter", `url(#${id})`);
+          el.dataset.refract = "1";
+        } else {
+          bendPage(r);
+        }
       }
     };
     const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
     ro.observe(el);
     fit();
+    // the page can still scroll under the pane on a phone: re-place the bend
+    const onScroll = () => { if (!refract && bend && !raf) raf = requestAnimationFrame(fit); };
+    if (!refract && bend) window.addEventListener("scroll", onScroll, { passive: true });
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
       el.style.setProperty("--gx", `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`);
@@ -183,10 +270,12 @@ export function useLiquidGlass(elRef, { id, active = true, open = null } = {}) {
     }
     return () => {
       ro.disconnect();
+      window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
+      unbend();
     };
-  }, [elRef, id, active, open]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} />;
+  }, [elRef, id, active, open, strength, bend]);
+  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} />;
 }
