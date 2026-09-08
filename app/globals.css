@@ -816,12 +816,24 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
    its map in step; --lg-filter is its own filter), the same gloss on top.
    The pane itself does not scroll — .mscroll does, inside it — so the edge
    and the gloss stay where they are. */
+/* THE PAGE SHOWS THROUGH (owner, 8 Sep: "the liquid glass doesn't add
+   rainbow to the text and the popup doesn't have liquid glass properties"):
+   the scrim under the item detail had dimmed the page to 82% and blurred it,
+   so the pane's edges had nothing to bend. Under the detail the scrim is
+   light and sharp — the cards and their words pass under the pane's edges
+   and bend there, with the fringe — and the pane carries its own tint so the
+   record stays legible over a live page. */
+.overlay:has(> .modal.lg) {
+  background: color-mix(in srgb, var(--bg) 34%, transparent);
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
 .modal.lg {
-  background: var(--glass); border: none; border-radius: 22px;
+  background: color-mix(in srgb, var(--bg) 46%, transparent); border: none; border-radius: 22px;
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   box-shadow: var(--glass-shadow), var(--glass-lip);
   overflow: hidden; isolation: isolate;
 }
+[data-theme="light"] .modal.lg { background: color-mix(in srgb, var(--bg) 58%, transparent); }
 .modal.lg[data-refract="1"] {
   -webkit-backdrop-filter: var(--lg-filter) saturate(160%);
   backdrop-filter: var(--lg-filter) saturate(160%);
@@ -830,6 +842,9 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 /* the photograph is a button now: tap it and it floats alone */
 .modal.lg .mimg { padding: 0; background: none; border: 0; border-right: 1px solid var(--line); cursor: zoom-in; display: block; text-align: left; font: inherit; color: inherit; }
 .modal.lg .mimg:focus-visible { outline: 2px solid var(--sig); outline-offset: -2px; }
+/* the photograph stands on paper: a placeholder has clear ground, and the
+   live page must not show through the picture */
+.modal.lg .mimg { background: var(--paper); }
 /* the pane clips (overflow hidden) where the old modal scrolled sideways, so
    the body must be allowed to shrink to the pane */
 .modal.lg .mbody { min-width: 0; }
