@@ -70,9 +70,22 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   inherit, and the pane's ::before/::after need them. The pointer's shine
   on the glass is a tight specular core (96×36, set 6px up-left of the
   cursor, towards the light) inside a faint wide sheen; both fade on leave
-  (--gs). The pane deepens once the page scrolls under it
-  (data-glass="deep"). Reduced motion keeps pane, lamps and refraction,
-  drops the glide and the pointer shine. Theme toggle
+  (--gs). THE MENISCUS (owner order, 8 Sep: "the words refracting on the
+  liquid surface when I hover — an extremely subtle detail"): the hovered
+  word is seen through a shallow dome the cursor pulls in the surface
+  (#lg-ripple, shell.js; Chromium only, like the bezel). Rays through a
+  dome bend towards its centre, so the map pulls each sample towards the
+  middle linearly (a spherical cap's slope grows with radius), eased to
+  nothing at the rim; R/G/B pulled 3.2/3.7/4.2px at full strength (2.0 was
+  invisible, 5.0 obvious) so the glyph edges disperse a hair. The dome is
+  a 64px picture drawn once, placed in the word's own user space by
+  feImage x/y and trailing the pointer with lag; the pull ramps in on
+  enter and dies down on leave (data-ripple comes off at the end), all
+  from one rAF loop that stops when settled. Flat 128 grey outside the
+  dome (feFlood) — colour management leaves greys alone. The pane deepens
+  once the page scrolls under it (data-glass="deep"). Reduced motion keeps
+  pane, lamps and refraction, drops the glide, the pointer shine and the
+  meniscus. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW

@@ -138,6 +138,47 @@ function drawRefractionMap(node, weightNode, w, h, radius) {
   weightNode.setAttribute("href", cw.toDataURL("image/png"));
 }
 
+// THE MENISCUS (owner order, 8 Sep, fifth pass: "the words refracting on
+// the liquid surface when I hover — an extremely subtle detail"). The cursor
+// pulls a shallow dome in the surface over the word it rests on; rays
+// through a dome bend towards its centre, so the word beneath magnifies a
+// hair towards the cursor (the map pulls each sample towards the middle,
+// linearly — a spherical cap's slope grows with radius — eased to nothing
+// at the rim so there is no ring), each colour a touch differently. The
+// dome trails the pointer (liquid lag) and dies down when it leaves. The
+// picture is drawn once: R = x pull, G = y pull, 128 = none; outside the
+// dome the filter floods a flat 128 grey, which colour management leaves
+// alone (see drawRefractionMap).
+const DOME = 72; // px across
+let domeHref = null;
+function domePicture() {
+  if (domeHref) return domeHref;
+  const n = 64;
+  const c = document.createElement("canvas");
+  c.width = n; c.height = n;
+  const ctx = c.getContext("2d");
+  if (!ctx) return null;
+  const img = ctx.createImageData(n, n);
+  const d = img.data;
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
+      const dx = (x + 0.5) / n * 2 - 1, dy = (y + 0.5) / n * 2 - 1;
+      const r = Math.hypot(dx, dy);
+      // full pull to 55% of the radius, eased to 0 at the rim
+      const t = r >= 1 ? 0 : r <= 0.55 ? 1 : 1 - ((r - 0.55) / 0.45) ** 2 * (3 - 2 * ((r - 0.55) / 0.45));
+      const i = (y * n + x) * 4;
+      d[i] = Math.round(128 - dx * t * 127);
+      d[i + 1] = Math.round(128 - dy * t * 127);
+      d[i + 2] = 128;
+      d[i + 3] = r >= 1 ? 0 : 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  domeHref = c.toDataURL("image/png");
+  return domeHref;
+}
+const DOME_SCALES = [3.2, 3.7, 4.2]; // px of pull at full strength, R/G/B — 2.0 was invisible, 5.0 obvious
+
 export default function Shell({ children }) {
   const fit = useFitBrain();
   const pathname = usePathname();
@@ -164,6 +205,8 @@ export default function Shell({ children }) {
   const lightRef = useRef(null);
   const mapRef = useRef(null);
   const weightRef = useRef(null);
+  const domeRef = useRef(null);       // the feImage of the meniscus
+  const domeMapsRef = useRef([]);     // its three feDisplacementMaps
   const placeCurrentRef = useRef(null);
   useEffect(() => {
     const el = headRef.current;
@@ -196,6 +239,10 @@ export default function Shell({ children }) {
     // the lamp layer follows the pane's rect; the refraction map is redrawn
     // for the pane's size (Chromium only — see canRefract)
     const refract = canRefract();
+    if (refract && domeRef.current) {
+      const pic = domePicture(); // drawn here, not in render: the server has no canvas
+      if (pic) domeRef.current.setAttribute("href", pic);
+    }
     let raf = 0;
     const fit = () => {
       raf = 0;
@@ -215,12 +262,59 @@ export default function Shell({ children }) {
     ro.observe(el);
     fit();
 
+    // THE MENISCUS on the hovered word: a shallow dome in the surface that
+    // follows the pointer with lag and dies down on leave. One filter
+    // (#lg-ripple) serves whichever word is lit; its dome picture is moved
+    // by x/y in the word's own user space and its pull scaled by strength.
+    const dome = { word: null, x: 0, y: 0, tx: 0, ty: 0, k: 0, tk: 0, raf: 0 };
+    const domeTick = () => {
+      dome.raf = 0;
+      const img = domeRef.current;
+      if (!img || !dome.word) return;
+      dome.x += (dome.tx - dome.x) * 0.22;
+      dome.y += (dome.ty - dome.y) * 0.22;
+      dome.k += (dome.tk - dome.k) * 0.16;
+      img.setAttribute("x", (dome.x - DOME / 2).toFixed(1));
+      img.setAttribute("y", (dome.y - DOME / 2).toFixed(1));
+      domeMapsRef.current.forEach((m, i) => m && m.setAttribute("scale", (DOME_SCALES[i] * dome.k).toFixed(2)));
+      const settled = Math.abs(dome.tx - dome.x) < 0.2 && Math.abs(dome.ty - dome.y) < 0.2 && Math.abs(dome.tk - dome.k) < 0.01;
+      if (dome.tk === 0 && dome.k < 0.02) {
+        delete dome.word.dataset.ripple;
+        dome.word = null;
+        dome.k = 0;
+        return;
+      }
+      if (!settled) dome.raf = requestAnimationFrame(domeTick);
+    };
+    const domeWake = () => { if (!dome.raf) dome.raf = requestAnimationFrame(domeTick); };
+    const domeAim = (e) => {
+      if (!dome.word) return;
+      const b = dome.word.getBoundingClientRect();
+      dome.tx = e.clientX - b.left;
+      dome.ty = e.clientY - b.top;
+      domeWake();
+    };
+    const domeOn = (word, e) => {
+      if (still || !refract || !domeRef.current) return;
+      if (dome.word && dome.word !== word) delete dome.word.dataset.ripple;
+      dome.word = word;
+      const b = word.getBoundingClientRect();
+      dome.tx = e ? e.clientX - b.left : b.width / 2;
+      dome.ty = e ? e.clientY - b.top : b.height / 2;
+      if (dome.k < 0.02) { dome.x = dome.tx; dome.y = dome.ty; }
+      dome.tk = 1;
+      word.dataset.ripple = "1";
+      domeWake();
+    };
+    const domeOff = () => { if (dome.word) { dome.tk = 0; domeWake(); } };
+
     // the hovered word's lamp glides to it; the wordmark lights red
     let lit = null;
     const onOver = (e) => {
       const word = e.target.closest && e.target.closest("a, button");
       if (!word || !el.contains(word) || word === lit) return;
       lit = word;
+      domeOn(word, e);
       const c = centreOf(word);
       // the lamp sits under the pane; the pane's bezel reflects it, so both
       // carry the word's place and colour
@@ -235,6 +329,7 @@ export default function Shell({ children }) {
       const to = e.relatedTarget;
       if (to && to.closest && to.closest("a, button") && el.contains(to)) return;
       lit = null;
+      domeOff();
       for (const n of [el, light]) n.style.setProperty("--ls", "0");
     };
     el.addEventListener("pointerover", onOver);
@@ -242,6 +337,7 @@ export default function Shell({ children }) {
 
     // the pointer's shine, on the pane and in the water beneath it
     const onMove = (e) => {
+      domeAim(e);
       const r = el.getBoundingClientRect();
       const x = `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`;
       const y = `${((e.clientY - r.top) / Math.max(1, r.height)) * 100}%`;
@@ -264,6 +360,7 @@ export default function Shell({ children }) {
       el.removeEventListener("pointerout", onOut);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
+      if (dome.raf) cancelAnimationFrame(dome.raf);
       placeCurrentRef.current = null;
     };
   }, []);
@@ -696,6 +793,24 @@ export default function Shell({ children }) {
           <feComposite in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
           <feComposite in="frost" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
           <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
+        </filter>
+        {/* THE MENISCUS: the hovered word seen through a shallow dome the
+            cursor pulls in the surface (see domePicture). Flat grey outside
+            the dome = no pull; the dome's picture is placed at x/y in the
+            word's user space by shell.js; the three pulls differ a touch so
+            the glyph edges disperse. */}
+        <filter id="lg-ripple" colorInterpolationFilters="sRGB" primitiveUnits="userSpaceOnUse" x="-12%" y="-50%" width="124%" height="200%">
+          <feFlood floodColor="rgb(128,128,128)" result="flat" />
+          <feImage ref={domeRef} x="0" y="0" width={DOME} height={DOME} preserveAspectRatio="none" result="dome" />
+          <feComposite in="dome" in2="flat" operator="over" result="rmap" />
+          <feDisplacementMap ref={(n) => { domeMapsRef.current[0] = n; }} in="SourceGraphic" in2="rmap" scale="0" xChannelSelector="R" yChannelSelector="G" result="dR" />
+          <feDisplacementMap ref={(n) => { domeMapsRef.current[1] = n; }} in="SourceGraphic" in2="rmap" scale="0" xChannelSelector="R" yChannelSelector="G" result="dG" />
+          <feDisplacementMap ref={(n) => { domeMapsRef.current[2] = n; }} in="SourceGraphic" in2="rmap" scale="0" xChannelSelector="R" yChannelSelector="G" result="dB" />
+          <feColorMatrix in="dR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR" />
+          <feColorMatrix in="dG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG" />
+          <feColorMatrix in="dB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB" />
+          <feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG" />
+          <feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
         </filter>
       </svg>
       <header className="tophead" ref={headRef}>

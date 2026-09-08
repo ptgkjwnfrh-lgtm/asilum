@@ -309,6 +309,10 @@ button { font-family: var(--helv); }
 }
 .glass-light[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.8); --lamp-core: rgba(255, 200, 200, 0.9); }
 [data-theme="light"] .glass-light[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.5); --lamp-core: rgba(255, 214, 210, 0.85); }
+/* THE MENISCUS: the hovered word is seen through a shallow dome the cursor
+   pulls in the surface (#lg-ripple, shell.js) — Chromium only, like the
+   bezel; the pull is a pixel or two, eased, trailing the pointer */
+.tophead[data-refract="1"] [data-ripple="1"] { filter: url(#lg-ripple); }
 /* the words keep their own glow; the light under them is the lamp's */
 .tophead .snav:hover, .tophead .tbtn:hover, .tophead .mailbtn:hover { text-shadow: var(--glow); }
 
