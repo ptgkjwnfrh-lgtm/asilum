@@ -38,8 +38,9 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
   row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
   LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"; fifth pass):
-  a near-clear pane (--glass, 0.03 dark / 0.12 ice) over a frosted centre
-  and a CLEAR REFRACTING BEZEL — in Chromium the backdrop passes through an
+  a near-clear pane (--glass, 0.03 dark / 0.12 ice) over a CRYSTAL-CLEAR
+  centre (no blur at all — the owner found any frost "oddly cloudy"; the
+  backdrop is only saturated 160%) and a REFRACTING BEZEL — in Chromium the backdrop passes through an
   SVG filter (#lg-refract, shell.js) fed by TWO pictures drawn from the
   pane's own size and corner radius (rounded-rect distance, Apple's
   squircle bezel profile, Snell's law at n=1.5): a displacement map (R = x,
@@ -50,9 +51,9 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   of the sharp lens through the whole frosted middle; greys survive. The
   outer 24px bends what scrolls beneath it, each colour a little
   differently (R/G/B displaced at 50/56/62 — the faint fringe on Apple's
-  edges), blended with the frost by plain arithmetic (lens × w + frost ×
-  (1 − w)), never an alpha mask; other engines keep blur(22px)
-  saturate(180%). No outline: a one-pixel LIP (inset box-shadow, bright on
+  edges), blended with the untouched backdrop by plain arithmetic (lens ×
+  w + clear × (1 − w)), never an alpha mask; other engines get the
+  saturation alone, no bezel. No outline: a one-pixel LIP (inset box-shadow, bright on
   the top edge, a trace on the bottom) and a 7px BEZEL band (::after, a
   conic ring masked to the band and blurred 3px — overflow clips it sharp
   at the edge, so it fades inward like the thickness of the glass), bright
@@ -62,7 +63,9 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   THE WATER: .glass-light, a sibling beneath the pane kept to its rect,
   carries lamps that are each three lights (a small near-white core, the
   coloured halo, a wide faint spill — a glow stick in water, never a flat
-  blob): the current destination's (--cx/--cy/--cs), the hovered word's
+  blob; the layer blurs itself 14px since the clear pane no longer
+  diffuses it; every cursor-driven light was DILUTED to roughly a third
+  on the owner's word, 8 Sep: "there's simply too much"): the current destination's (--cx/--cy/--cs), the hovered word's
   gliding between words (--lx/--ly/--ls; the wordmark's lamp is red) and
   the pointer's trace (--gx/--gy/--gs); the pane blurs and bends them.
   These properties are registered (so they transition) AND inherited —

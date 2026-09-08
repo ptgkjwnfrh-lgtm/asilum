@@ -764,17 +764,17 @@ export default function Shell({ children }) {
       {/* the lamps under the glass, then the glass (see the effect above) */}
       <div className="glass-light" ref={lightRef} aria-hidden="true" />
       <svg className="glass-defs" aria-hidden="true" focusable="false">
-        {/* THE OPTICS: the centre of the pane is frosted (a deep blur); the
-            bezel is a clear lens — the backdrop bent through the map, each
+        {/* THE OPTICS: the centre of the pane is CRYSTAL CLEAR (the backdrop
+            untouched — the owner found any frost "oddly cloudy"); the
+            bezel is a lens — the backdrop bent through the map, each
             colour a little differently (glass disperses: red bends least,
             blue most — the faint colour fringe on Apple's edges), only
-            lightly softened — blended with the frost by the weight picture,
-            a grey that says how much of each pixel is bezel. That is Apple's
-            glass: a crisp refracting rim around a frosted middle. */}
+            lightly softened — blended with the clear backdrop by the weight
+            picture, a grey that says how much of each pixel is bezel. That is
+            Apple's clear glass: a refracting rim around an untouched middle. */}
         <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
           <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
           <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-          <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="frost" />
           <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="50" xChannelSelector="R" yChannelSelector="G" result="bentR" />
           <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="56" xChannelSelector="R" yChannelSelector="G" result="bentG" />
           <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="62" xChannelSelector="R" yChannelSelector="G" result="bentB" />
@@ -784,14 +784,14 @@ export default function Shell({ children }) {
           <feComposite in="chR" in2="chG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="chRG" />
           <feComposite in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="bent" />
           <feGaussianBlur in="bent" stdDeviation="1.2" result="lens" />
-          {/* lens × weight + frost × (1 − weight): the weight picture read
+          {/* lens × weight + clear × (1 − weight): the weight picture read
               into COLOUR at full alpha, and its complement, so the blend is
               plain arithmetic — no alpha mask, nothing premultiplied to
               darken the band. */}
           <feColorMatrix in="lgw" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="w" />
           <feColorMatrix in="lgw" type="matrix" values="-1 0 0 0 1  -1 0 0 0 1  -1 0 0 0 1  0 0 0 0 1" result="iw" />
           <feComposite in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
-          <feComposite in="frost" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
+          <feComposite in="SourceGraphic" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
           <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
         </filter>
         {/* THE MENISCUS: the hovered word seen through a shallow dome the

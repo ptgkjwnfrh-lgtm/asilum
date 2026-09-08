@@ -80,23 +80,25 @@
     rgba(255, 255, 255, 0.02) 110deg, rgba(255, 255, 255, 0.20) 145deg, rgba(255, 255, 255, 0.03) 200deg,
     rgba(255, 255, 255, 0.03) 245deg, rgba(255, 255, 255, 0.20) 290deg, rgba(255, 255, 255, 0.30) 330deg,
     rgba(255, 255, 255, 0.30) 360deg);
-  --glass-rim-catch: rgba(255, 255, 255, 0.50); /* the bezel nearest the pointer */
+  --glass-rim-catch: rgba(255, 255, 255, 0.16); /* the bezel nearest the pointer */
   --glass-sheen:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.025) 22%, rgba(255, 255, 255, 0) 55%),
-    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.08), transparent 60%);
-  /* the pointer's shine: a tight specular core and a faint wide sheen */
-  --glass-spot: rgba(255, 255, 255, 0.20);
-  --glass-spot-wide: rgba(255, 255, 255, 0.035);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.01) 22%, rgba(255, 255, 255, 0) 55%),
+    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.03), transparent 60%);
+  /* the pointer's shine: a tight specular core and a faint wide sheen —
+     diluted (owner, 8 Sep: "all active glows caused by cursors should be
+     greatly diluted, there's simply too much") */
+  --glass-spot: rgba(255, 255, 255, 0.07);
+  --glass-spot-wide: rgba(255, 255, 255, 0.012);
   --glass-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), 0 1px 2px rgba(0, 0, 0, 0.18);
   --glass-pill: rgba(255, 255, 255, 0.08);
   --glass-pill-rim: rgba(255, 255, 255, 0.16);
   /* the lamps under the glass — a glow stick in water: a near-white core, a
      coloured halo, a wide faint spill. --lamp is the current destination at
      rest, --lamp-hot the hovered word, --lamp-pointer the cursor's trace. */
-  --lamp-core: rgba(214, 255, 232, 0.9);
-  --lamp: rgba(70, 255, 150, 0.42);
-  --lamp-hot: rgba(70, 255, 150, 0.62);
-  --lamp-pointer: rgba(255, 255, 255, 0.08);
+  --lamp-core: rgba(214, 255, 232, 0.5);
+  --lamp: rgba(70, 255, 150, 0.3);
+  --lamp-hot: rgba(70, 255, 150, 0.3);
+  --lamp-pointer: rgba(255, 255, 255, 0.03);
 }
 [data-theme="light"] {
   /* THE INK IS TEAL (owner order, 8 Sep): "the black negative looking text
@@ -171,19 +173,19 @@
     rgba(255, 255, 255, 0.08) 110deg, rgba(255, 255, 255, 0.55) 145deg, rgba(255, 255, 255, 0.10) 200deg,
     rgba(255, 255, 255, 0.10) 245deg, rgba(255, 255, 255, 0.55) 290deg, rgba(255, 255, 255, 0.85) 330deg,
     rgba(255, 255, 255, 0.85) 360deg);
-  --glass-rim-catch: rgba(255, 255, 255, 1);
+  --glass-rim-catch: rgba(255, 255, 255, 0.45);
   --glass-sheen:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.08) 22%, rgba(255, 255, 255, 0) 55%),
-    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.26), transparent 60%);
-  --glass-spot: rgba(255, 255, 255, 0.55);
-  --glass-spot-wide: rgba(255, 255, 255, 0.10);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 55%),
+    radial-gradient(70% 90% at 8% 0%, rgba(255, 255, 255, 0.10), transparent 60%);
+  --glass-spot: rgba(255, 255, 255, 0.22);
+  --glass-spot-wide: rgba(255, 255, 255, 0.03);
   --glass-shadow: 0 16px 44px rgba(10, 132, 148, 0.13), 0 1px 2px rgba(10, 132, 148, 0.08);
   --glass-pill: rgba(255, 255, 255, 0.34);
   --glass-pill-rim: rgba(255, 255, 255, 0.55);
-  --lamp-core: rgba(200, 244, 248, 0.85);
-  --lamp: rgba(11, 117, 132, 0.30);
-  --lamp-hot: rgba(11, 117, 132, 0.48);
-  --lamp-pointer: rgba(255, 255, 255, 0.30);
+  --lamp-core: rgba(200, 244, 248, 0.5);
+  --lamp: rgba(11, 117, 132, 0.22);
+  --lamp-hot: rgba(11, 117, 132, 0.24);
+  --lamp-pointer: rgba(255, 255, 255, 0.10);
 }
 
 * { box-sizing: border-box; }
@@ -237,18 +239,20 @@ button { font-family: var(--helv); }
   display: flex; flex-direction: column;
   border-radius: var(--ed-glass-rad, 30px);
   background: var(--glass);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  backdrop-filter: blur(22px) saturate(180%);
+  /* CRYSTAL CLEAR in the middle (owner, 8 Sep: "the centre is oddly cloudy,
+     it should fully be crystal clear") — no blur; only the bezel lenses */
+  -webkit-backdrop-filter: saturate(160%);
+  backdrop-filter: saturate(160%);
   box-shadow: var(--glass-shadow), var(--glass-lip);
   transition: background 0.4s ease, --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
     --ls 0.45s ease, --gs 0.5s ease;
   overflow: hidden;
   isolation: isolate;
 }
-/* Chromium: frost and lens both live in the SVG filter (shell.js) */
+/* Chromium: the bezel lens lives in the SVG filter (shell.js) */
 .tophead[data-refract="1"] {
-  -webkit-backdrop-filter: url(#lg-refract) saturate(180%);
-  backdrop-filter: url(#lg-refract) saturate(180%);
+  -webkit-backdrop-filter: url(#lg-refract) saturate(160%);
+  backdrop-filter: url(#lg-refract) saturate(160%);
 }
 .tophead[data-glass="deep"] { background: var(--glass-deep); }
 .tophead::before, .tophead::after {
@@ -263,7 +267,7 @@ button { font-family: var(--helv); }
   padding: 7px;
   background:
     radial-gradient(300px 150px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--glass-rim-catch) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
-    radial-gradient(260px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 70%), transparent), transparent 70%),
+    radial-gradient(260px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 30%), transparent), transparent 70%),
     var(--glass-rim);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -282,8 +286,8 @@ button { font-family: var(--helv); }
     radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
     var(--glass-sheen);
 }
-.tophead[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.8); }
-[data-theme="light"] .tophead[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.5); }
+.tophead[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); }
+[data-theme="light"] .tophead[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 /* THE LAMPS under the glass. Same rect as the pane (shell.js keeps it in
    step), one layer below it, so the pane's backdrop-filter blurs and bends
@@ -293,22 +297,24 @@ button { font-family: var(--helv); }
   position: fixed; z-index: 44; pointer-events: none;
   border-radius: var(--ed-glass-rad, 30px);
   overflow: hidden;
+  /* the pane above is crystal clear, so the lamps soften themselves */
+  filter: blur(14px);
   /* each lamp is three lights: a small near-white core, the coloured halo,
      a wide faint spill — under the frost they fuse into one submerged glow */
   background:
     radial-gradient(90px 38px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--lamp-pointer) calc(var(--gs) * 100%), transparent), transparent 70%),
     radial-gradient(48px 18px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-core) calc(var(--ls) * 100%), transparent), transparent 70%),
     radial-gradient(150px 56px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 100%), transparent), transparent 70%),
-    radial-gradient(320px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 22%), transparent), transparent 70%),
+    radial-gradient(320px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 12%), transparent), transparent 70%),
     radial-gradient(44px 16px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp-core) calc(var(--cs) * 50%), transparent), transparent 70%),
     radial-gradient(140px 52px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 100%), transparent), transparent 70%),
-    radial-gradient(300px 120px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 22%), transparent), transparent 70%);
+    radial-gradient(300px 120px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 12%), transparent), transparent 70%);
   transition: --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
     --ls 0.45s ease, --cx 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cy 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
     --cs 0.6s ease, --gs 0.5s ease;
 }
-.glass-light[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.8); --lamp-core: rgba(255, 200, 200, 0.9); }
-[data-theme="light"] .glass-light[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.5); --lamp-core: rgba(255, 214, 210, 0.85); }
+.glass-light[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); --lamp-core: rgba(255, 200, 200, 0.5); }
+[data-theme="light"] .glass-light[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); --lamp-core: rgba(255, 214, 210, 0.5); }
 /* THE MENISCUS: the hovered word is seen through a shallow dome the cursor
    pulls in the surface (#lg-ripple, shell.js) — Chromium only, like the
    bezel; the pull is a pixel or two, eased, trailing the pointer */
