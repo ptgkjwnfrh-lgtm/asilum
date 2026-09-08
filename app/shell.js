@@ -54,6 +54,35 @@ export default function Shell({ children }) {
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [bagHow, setBagHow] = useState(false);
+  // LIQUID GLASS (owner order, 8 Sep): the header pane deepens once the page
+  // scrolls under it and carries a highlight that follows the pointer. Both
+  // are CSS variables on the element (see .tophead in globals.css); nothing
+  // re-renders. Reduced motion keeps the pane and drops the moving highlight.
+  const headRef = useRef(null);
+  useEffect(() => {
+    const el = headRef.current;
+    if (!el) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const onScroll = () => { el.dataset.glass = window.scrollY > 24 ? "deep" : ""; };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    const onMove = (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--gx", `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`);
+      el.style.setProperty("--gy", `${((e.clientY - r.top) / Math.max(1, r.height)) * 100}%`);
+      el.style.setProperty("--gs", "1");
+    };
+    const onLeave = () => el.style.setProperty("--gs", "0");
+    if (!still) {
+      el.addEventListener("pointermove", onMove);
+      el.addEventListener("pointerleave", onLeave);
+    }
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
+    };
+  }, []);
   const bagPanelRef = useRef(null);
   const bagToggleRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -449,7 +478,7 @@ export default function Shell({ children }) {
           bordering the page (owner reference language, Aug 12) */}
       <div className="os-frame" aria-hidden="true"><i /><i /><i /><i /></div>
 
-      <header className="tophead">
+      <header className="tophead" ref={headRef}>
         <div className="thbar">
           {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
               order, 17 Aug) — one letter per span, spread by flex, so the line
