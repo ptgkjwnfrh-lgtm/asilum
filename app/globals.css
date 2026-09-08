@@ -19,8 +19,8 @@
      shipped design; an owner override lands inline on <html>. */
   /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
      header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
-  --mq-h: var(--ed-mq-h, 54px);
-  --nav-h: 38px;
+  --mq-h: var(--ed-mq-h, 58px);
+  --nav-h: 42px;
   --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 0px) + 6px);
   /* OS tokens */
   --bg: #070b10;

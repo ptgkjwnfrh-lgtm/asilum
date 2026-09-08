@@ -73,7 +73,7 @@ function canRefract() {
 // pointing INWARD along the surface normal so no pixel ever samples beyond
 // the pane (Chromium's backdrop stops at the pane's edge). The very lip is
 // eased to nothing so the edge itself stays clean, the way Apple's does.
-const BEZEL = 44; // lengthened (owner, 8 Sep: "more distortion") — 24 before
+const BEZEL = 56; // lengthened twice (owner, 8 Sep: "more distortion", then "still too subtle, push it") — 24, then 44
 const GLASS_N = 1.5;
 function bendProfile(t) {
   // t: 0 at the edge, 1 at the inner end of the bezel
@@ -784,9 +784,9 @@ export default function Shell({ children }) {
         <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
           <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
           <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="58" xChannelSelector="R" yChannelSelector="G" result="bentR" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="64" xChannelSelector="R" yChannelSelector="G" result="bentG" />
-          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="70" xChannelSelector="R" yChannelSelector="G" result="bentB" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="82" xChannelSelector="R" yChannelSelector="G" result="bentR" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="86" xChannelSelector="R" yChannelSelector="G" result="bentG" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="90" xChannelSelector="R" yChannelSelector="G" result="bentB" />
           <feColorMatrix in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
           <feColorMatrix in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
           <feColorMatrix in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />

@@ -39,8 +39,9 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
   LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"; fifth pass):
   a clean STRIP across the whole top — flush, square, no float, no radius
-  (the owner: "not a bubble at all"); 54px bar + 38px destination row + 6
-  = --head-h 98px (was 64 + 48 + a 10px float = 128; the divider and the
+  (the owner: "not a bubble at all"); 58px bar + 42px destination row + 6
+  = --head-h 106px (was 64 + 48 + a 10px float = 128, then 98 — "a very
+  little" taller on the owner's word; the divider and the
   buttons moved up, the whole header smaller; the os-frame ornament now
   starts below it). A near-clear pane (--glass, 0.03 dark / 0.12 ice)
   over a CRYSTAL-CLEAR centre (no blur at all — the owner found any frost "oddly cloudy"; the
@@ -53,10 +54,12 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   feImage into the display's space and on a P3 screen (128,128,0) reads
   back with blue near 0.2 — a weight in one colour channel leaked a ghost
   of the sharp lens through the whole frosted middle; greys survive. The
-  outer 44px of every OPEN edge bends what scrolls beneath it (an edge
+  outer 56px of every OPEN edge bends what scrolls beneath it (an edge
   flush with the viewport has nothing beyond it and does not lens — for
   the strip only the bottom edge does), each colour a little differently
-  (R/G/B displaced at 58/64/70 — the faint fringe on Apple's edges), blended with the untouched backdrop by plain arithmetic (lens ×
+  (R/G/B displaced at 82/86/90 — the faint fringe on Apple's edges; 24px at
+  50/56/62 then 44 at 58/64/70 were both "too subtle", and a 16-wide
+  spread at 56 was a rainbow), blended with the untouched backdrop by plain arithmetic (lens ×
   w + clear × (1 − w)), never an alpha mask; other engines get the
   saturation alone, no bezel. The edge is UNSEEN (the owner: "I shouldn't
   be able to see the bezel, it should still cause the distortion"): no
