@@ -81,13 +81,13 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*23 files, 3,807 lines*
+*23 files, 3,840 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `orders.js` | 481 | The checkout engine (risk campaign §2, phase L2). SERVER-ONLY. |
+| `client.js` | 479 | Browser-side helpers: per-device identity, JSON POST, and deterministic SVG placeholder thumbnails so the moodboard is visual even for items whose |
 | `social.js` | 472 | Client-safe social + marketplace scaffolding: source labels, mock users and editorial stories, the community post store (local state until a posts |
-| `client.js` | 446 | Browser-side helpers: per-device identity, JSON POST, and deterministic SVG placeholder thumbnails so the moodboard is visual even for items whose |
 | `products.js` | 386 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
 | `dm.js` | 210 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
 | `uilab.js` | 205 | DESIGN CONSOLE registry + persistence (client-safe). |
@@ -178,12 +178,12 @@ Nothing here may import from `app/`.
 | `index.js` | 33 | Learning-job registry. There is NO job runner in this stack yet (no queue, no cron) — so these are contracts only, and every run() says so honestly. |
 
 ### `lib/brain/`
-*18 files, 4,771 lines*
+*18 files, 4,818 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 795 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
-| `bridges.js` | 649 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
+| `index.js` | 803 | The orchestrator. Ties tags + lexicon + knowledge base + bridges into a single "brain" that can resolve any token (word, designer, era, mood, or |
+| `bridges.js` | 688 | ASiLUM brain — THE SIX BRIDGES. Each bridge scores a catalog item for a user from a different angle, then |
 | `replay.js` | 504 | offline replay harness (r15, bot world r22). |
 | `kb.js` | 484 | ASiLUM brain — KNOWLEDGE BASE: the 'zenith of fashion knowledge' layer. Maps designers, genres/aesthetics, eras — and (asterisk-boost r1) style |
 | `lexicon.js` | 368 | ASiLUM brain — LEXICON: maps non-clothing signals to aesthetic tag vectors. This is what lets the moodboard 'think' — turning a color, a music genre, a |
@@ -319,11 +319,11 @@ Nothing here may import from `app/`.
 | `index.js` | 42 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
 
 ### `lib/feed/`
-*2 files, 176 lines*
+*2 files, 186 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `rechunk.js` | 136 | which cards a re-chunk may replace. Pure; client-safe. |
+| `rechunk.js` | 146 | which cards a re-chunk may replace. Pure; client-safe. |
 | `index.js` | 40 | Feed system foundation. The LIVE product feed is /api/feed (Alpha Learning Bridge): zoned core/discovery/reach, seen-item rotation, 2-per-brand cap, |
 
 ### `lib/images/`
@@ -863,12 +863,12 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 2,563 lines*
+*7 files, 2,847 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1361 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
-| `shell.js` | 723 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
+| `page.js` | 1432 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `shell.js` | 936 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
 | `layout.js` | 81 | Root layout: every page renders inside the magazine shell. |
@@ -1072,7 +1072,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*56 files, 7,630 lines*
+*56 files, 7,685 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1082,6 +1082,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `measure-noun-coverage.mjs` | 254 | before/after measurement for r8 (generic-noun coverage: knit → knitwear) and the GARMENT_CATEGORY |
 | `measure-disciples.mjs` | 236 | declared-criteria measurement for r10: the fan-tribe study (11 curated culture records from the owner-supplied |
 | `measure-tuning.mjs` | 226 | declared-criteria measurement for r16: bounded bridge self-tuning. Offline arms; the python 1000-bot stress |
+| `measure-feed-chunks.mjs` | 225 | the chunk laws, composed and measured on the real seed catalog and the real assembler. Runs as a steward instrument |
 | `measure-popularity-people.mjs` | 222 | the delta/epsilon counter battery. |
 | `backfill-edge-contributors.mjs` | 221 | rebuild the gamma corroboration ledger from the canonical event history. |
 | `measure-culture-guidance.mjs` | 219 | declared battery for the search-culture-guidance round (Aug 5, 2026). |
@@ -1089,7 +1090,6 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `check-deploy-drift.mjs` | 195 | Fails when `main` has moved ahead of what production is actually serving. |
 | `restore-drill.mjs` | 183 | Rehearse the restore (owner directive, HANDOVER-2026-08-14 backlog 6). |
 | `measure-slot-bias.mjs` | 182 | declared-criteria measurement for r24: server-stamped slot/zone on events (audit #27). |
-| `measure-feed-chunks.mjs` | 170 | the chunk laws, composed and measured on the real seed catalog and the real assembler. Runs as a steward instrument |
 | `measure-noise-stability.mjs` | 165 | declared-criteria measurement for r26: RESAMPLED NOISE FLOORS (audit #26). |
 | `measure-vector-feed.mjs` | 162 | declared-criteria measurement for r18: catalog vectors into the feed (gamma sparse-graph fallback + reach |
 | `backup-database.mjs` | 161 | Take a restorable backup of the ASILUM database (owner directive, HANDOVER-2026-08-14 backlog 6). |
@@ -1135,4 +1135,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ f3b75a9 — 368 source files, 63,889 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ a6cfbdf — 368 source files, 64,318 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

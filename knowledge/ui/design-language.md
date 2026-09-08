@@ -18,10 +18,16 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 - RED (--red) is the only accent voice: activity, alert, recording,
   selection, the ASTERISK identity. No second accent, ever.
 - Palettes (tokens in globals.css): phosphor dark NATIVE (blacks, phosphor
-  greens, purple, red) / ice light (near-white blue-green, teal, red).
+  greens, purple, red) / ice light (near-white, BLUE ink, teal, red).
   Legacy token names (--ink/--paper/--line/--grey/--faint) carry OS values.
+  Owner order, 8 Sep 2026: on ice the ink is a blue (#1c3fae, 7.5:1) that
+  GLOWS (--glow-ink), and every control that fills with the ink carries the
+  same glow around the fill (--glow-box-ink; `none` on phosphor). The hazes
+  gained a little colour: dark breathes fuchsia with softer purples and
+  blues, ice carries faded pinks and yellows (blobs + --backlight).
 - Layered depth: backlight → grid → haze blobs → content → glow →
-  scanline glass. Subtlety threshold: never reduce readability.
+  scanline glass. Subtlety threshold: never reduce readability. Scan lines
+  ship at 0.315 (30% under the August 0.45 — owner order, 8 Sep).
 - Seven destinations in a row directly under the top ticker (owner order,
   Aug 12 2026 — the left sidebar is GONE; header strip is thick enough that
   the wordmark keeps full size): FRONT COVER, CATALOG, THE WIRE (renamed
@@ -30,7 +36,71 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   the destination list only changes by owner decree.
 - Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
-  row (ASTERISK drawer trigger, seven buttons, compact dock). Theme toggle
+  row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
+  LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"; fifth pass):
+  a clean STRIP across the whole top — flush, square, no float, no radius
+  (the owner: "not a bubble at all"); 62px bar + 46px destination row + 6
+  = --head-h 114px (was 64 + 48 + a 10px float = 128, then 98, then 106
+  — taller twice on the owner's word; the header's words are bolder by a
+  0.4px text-stroke on the Michroma labels, 0.3 on the ticker, weight 800
+  on the big buttons, 600 on the meta — Michroma has one weight; the divider and the
+  buttons moved up, the whole header smaller; the os-frame ornament now
+  starts below it). A near-clear pane (--glass, 0.03 dark / 0.12 ice)
+  over a CRYSTAL-CLEAR centre (no blur at all — the owner found any frost "oddly cloudy"; the
+  backdrop is only saturated 160%) and a REFRACTING BEZEL — in Chromium the backdrop passes through an
+  SVG filter (#lg-refract, shell.js) fed by TWO pictures drawn from the
+  pane's own size and corner radius (rounded-rect distance, Apple's
+  squircle bezel profile, Snell's law at n=1.5): a displacement map (R = x,
+  G = y, blue held at 128) and a separate GREYSCALE weight picture saying
+  how much of each pixel is bezel. Two, because Chromium colour-manages a
+  feImage into the display's space and on a P3 screen (128,128,0) reads
+  back with blue near 0.2 — a weight in one colour channel leaked a ghost
+  of the sharp lens through the whole frosted middle; greys survive. The
+  outer 56px of every OPEN edge bends what scrolls beneath it (an edge
+  flush with the viewport has nothing beyond it and does not lens — for
+  the strip only the bottom edge does), each colour a little differently
+  (R/G/B displaced at 80/86/92 — the fringe on Apple's edges, "slightly
+  more rainbow" on the owner's word; 24px at 50/56/62 then 44 at 58/64/70
+  were both "too subtle", a 16-wide spread at 56 was too much, 4 a hint), blended with the untouched backdrop by plain arithmetic (lens ×
+  w + clear × (1 − w)), never an alpha mask; other engines get the
+  saturation alone, no bezel. The edge is UNSEEN (the owner: "I shouldn't
+  be able to see the bezel, it should still cause the distortion"): no
+  lip, no band — a whisper of light on the bottom edge (Fresnel, 0.05)
+  and a 7px edge zone (::after, blurred) that only REFLECTS what is near
+  it: the white of the pointer and the colour of the lit word's lamp. The
+  GLOSS is ever so slight and real (--glass-sheen): a thin specular along
+  the top where the sheet meets the light, one soft diagonal reflection
+  band (a window in the glass), a faint Fresnel at the bottom — never a
+  wash. The words float and their glow is a LIGHT UNDER
+  THE WATER: .glass-light, a sibling beneath the pane kept to its rect,
+  carries lamps that are each three lights (a small near-white core, the
+  coloured halo, a wide faint spill — a glow stick in water, never a flat
+  blob; the layer blurs itself 14px since the clear pane no longer
+  diffuses it; every cursor-driven light was DILUTED to roughly a third
+  on the owner's word, 8 Sep: "there's simply too much"): the current destination's (--cx/--cy/--cs), the hovered word's
+  gliding between words (--lx/--ly/--ls; the wordmark's lamp is red) and
+  the pointer's trace (--gx/--gy/--gs); the pane blurs and bends them.
+  These properties are registered (so they transition) AND inherited —
+  a pseudo-element reads a custom property only when it is declared to
+  inherit, and the pane's ::before/::after need them. The pointer's shine
+  on the glass is a tight specular core (96×36, set 6px up-left of the
+  cursor, towards the light) inside a faint wide sheen; both fade on leave
+  (--gs). THE MENISCUS (owner order, 8 Sep: "the words refracting on the
+  liquid surface when I hover — an extremely subtle detail"): the hovered
+  word is seen through a shallow dome the cursor pulls in the surface
+  (#lg-ripple, shell.js; Chromium only, like the bezel). Rays through a
+  dome bend towards its centre, so the map pulls each sample towards the
+  middle linearly (a spherical cap's slope grows with radius), eased to
+  nothing at the rim; R/G/B pulled 3.2/3.7/4.2px at full strength (2.0 was
+  invisible, 5.0 obvious) so the glyph edges disperse a hair. The dome is
+  a 64px picture drawn once, placed in the word's own user space by
+  feImage x/y and trailing the pointer with lag; the pull ramps in on
+  enter and dies down on leave (data-ripple comes off at the end), all
+  from one rAF loop that stops when settled. Flat 128 grey outside the
+  dome (feFlood) — colour management leaves greys alone. The pane deepens
+  once the page scrolls under it (data-glass="deep"). Reduced motion keeps
+  pane, lamps and refraction, drops the glide, the pointer shine and the
+  meniscus. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW

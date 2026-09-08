@@ -17,9 +17,11 @@
   --serif: "STM", ui-monospace, Menlo, monospace;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
-  --mq-h: var(--ed-mq-h, 64px);
-  --nav-h: 48px;
-  --head-h: calc(var(--mq-h) + var(--nav-h));
+  /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
+     header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
+  --mq-h: var(--ed-mq-h, 62px);
+  --nav-h: 46px;
+  --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 0px) + 6px);
   /* OS tokens */
   --bg: #070b10;
   --bg2: rgba(15, 23, 27, 0.85);
@@ -46,11 +48,67 @@
     -28px 0 34px rgba(70, 255, 150, 0.13);
   --grid-ln: rgba(120, 255, 190, 0.012);
   --scan: rgba(2, 8, 6, 0.11);
-  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.08), transparent 68%);
+  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.07), transparent 68%);
+  /* The colour wash is its OWN fixed layer (body::before) — a second and third
+     gradient inside --backlight inherited the grid's 140px background-size and
+     tiled into a checkerboard (the owner saw it, 8 Sep). Fuchsia, soft purple,
+     soft blue: big, blurred, breathing. */
+  --wash:
+    radial-gradient(ellipse 62% 54% at 78% 16%, rgba(235, 70, 200, 0.05), transparent 70%),
+    radial-gradient(ellipse 58% 50% at 16% 84%, rgba(120, 110, 255, 0.055), transparent 70%),
+    radial-gradient(ellipse 48% 42% at 52% 60%, rgba(90, 140, 255, 0.035), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
+  /* Filled controls carry no glow on phosphor — the fill is the light. */
+  --glow-box-ink: none;
+  /* THE GLASS (owner order, 8 Sep, fourth pass — "exactly like Apple's"):
+     the header is a pane of nearly clear glass. Almost no fill: what you see
+     IS the page beneath, blurred, saturated and BENT at the edges (the
+     refraction lives in shell.js as an SVG displacement map, Chromium only;
+     other engines get the blur). No ring, no outline — the rim is a partial
+     specular, brightest where light from the top-left catches the lip and
+     again on the far lip, gone in between (Apple's WWDC25 glass). The words
+     float on it and their glow is a LIGHT UNDER THE WATER: a coloured
+     lamp in .glass-light behind the pane that the pane blurs and bends. */
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-deep: rgba(255, 255, 255, 0.05);
+  /* the edge is UNSEEN (owner, 8 Sep: "I shouldn't be able to see the bezel,
+     it should still cause the distortion"): no lip, no band — only a whisper
+     of light on the bottom edge where the glass ends (Fresnel) */
+  --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --glass-rim: none;
+  --glass-rim-catch: rgba(255, 255, 255, 0.12); /* the edge nearest the pointer */
+  /* the GLOSS, ever so slight and real (owner, 8 Sep): a thin specular along
+     the top where the sheet meets the light, and one soft diagonal
+     reflection band — a window in the glass — the way a real pane carries
+     the room. Not a wash. */
+  --glass-sheen:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0px, rgba(255, 255, 255, 0.02) 3px, rgba(255, 255, 255, 0) 16px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.045) 50%, rgba(255, 255, 255, 0.02) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0) 8px);
+  /* the pointer's shine: a tight specular core and a faint wide sheen —
+     diluted (owner, 8 Sep: "all active glows caused by cursors should be
+     greatly diluted, there's simply too much") */
+  --glass-spot: rgba(255, 255, 255, 0.07);
+  --glass-spot-wide: rgba(255, 255, 255, 0.012);
+  --glass-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), 0 1px 2px rgba(0, 0, 0, 0.18);
+  --glass-pill: rgba(255, 255, 255, 0.08);
+  --glass-pill-rim: rgba(255, 255, 255, 0.16);
+  /* the lamps under the glass — a glow stick in water: a near-white core, a
+     coloured halo, a wide faint spill. --lamp is the current destination at
+     rest, --lamp-hot the hovered word, --lamp-pointer the cursor's trace. */
+  --lamp-core: rgba(214, 255, 232, 0.5);
+  --lamp: rgba(70, 255, 150, 0.3);
+  --lamp-hot: rgba(70, 255, 150, 0.3);
+  --lamp-pointer: rgba(255, 255, 255, 0.03);
 }
 [data-theme="light"] {
-  --ink: #0c262e;
+  /* THE INK IS TEAL (owner order, 8 Sep): "the black negative looking text
+     and buttons should all be a nice blue and have a phosphor glow", then
+     "more a bright teal". #08788a — 4.7:1 on --bg, 5.2:1 on white (the body
+     text law is 4.5; the first bright teal, #0a8494, read 4.02 and failed
+     it) — is the reading colour, the filled control colour, and the colour
+     that glows. */
+  --ink: #08788a;
   --paper: #ffffff;
   --grey: #5d8794;
   --faint: #a5c2ca;
@@ -89,7 +147,8 @@
   --glow: 0 0 6px rgba(11, 117, 132, 0.3), 0 0 14px rgba(11, 117, 132, 0.1);
   --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
   --glow-p: 0 0 6px rgba(40, 109, 164, 0.28);
-  --glow-ink: 0 0 4px rgba(12, 38, 46, 0.12);
+  --glow-ink: 0 0 5px rgba(10, 132, 148, 0.34), 0 0 14px rgba(10, 132, 148, 0.13);
+  --glow-box-ink: 0 0 10px rgba(10, 132, 148, 0.36), 0 0 26px rgba(10, 132, 148, 0.15);
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
   --mag-glow:
@@ -100,8 +159,31 @@
     -22px 0 28px rgba(11, 117, 132, 0.08);
   --grid-ln: rgba(23, 110, 125, 0.015);
   --scan: rgba(120, 160, 170, 0.05);
-  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 255, 255, 0.75), transparent 70%);
+  /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
+  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%);
+  --wash:
+    radial-gradient(ellipse 60% 50% at 14% 20%, rgba(255, 165, 205, 0.12), transparent 70%),
+    radial-gradient(ellipse 58% 48% at 86% 78%, rgba(255, 226, 145, 0.13), transparent 70%),
+    radial-gradient(ellipse 46% 40% at 55% 52%, rgba(255, 205, 190, 0.06), transparent 72%);
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%);
+  --glass: rgba(255, 255, 255, 0.12);
+  --glass-deep: rgba(255, 255, 255, 0.18);
+  --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+  --glass-rim: none;
+  --glass-rim-catch: rgba(255, 255, 255, 0.35);
+  --glass-sheen:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0px, rgba(255, 255, 255, 0.08) 3px, rgba(255, 255, 255, 0) 16px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.10) 45%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0.08) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
+  --glass-spot: rgba(255, 255, 255, 0.22);
+  --glass-spot-wide: rgba(255, 255, 255, 0.03);
+  --glass-shadow: 0 16px 44px rgba(10, 132, 148, 0.13), 0 1px 2px rgba(10, 132, 148, 0.08);
+  --glass-pill: rgba(255, 255, 255, 0.34);
+  --glass-pill-rim: rgba(255, 255, 255, 0.55);
+  --lamp-core: rgba(200, 244, 248, 0.5);
+  --lamp: rgba(11, 117, 132, 0.22);
+  --lamp-hot: rgba(11, 117, 132, 0.24);
+  --lamp-pointer: rgba(255, 255, 255, 0.10);
 }
 
 * { box-sizing: border-box; }
@@ -126,10 +208,122 @@ button { font-family: var(--helv); }
 
 /* ---- Shell: one fixed top header — wordmark row + destination row ---- */
 
+/* LIQUID GLASS (owner order, 8 Sep — "exactly like Apple's", fourth pass).
+   The pane: near-clear fill over a blur that keeps the page beneath legible
+   as shapes. In Chromium the backdrop also passes through an SVG
+   displacement map (shell.js builds it from the pane's own size and corner
+   radius: a squircle bezel profile, Snell's law, encoded R=x G=y) so the
+   outer bezel BENDS what scrolls under it — real refraction, not a painted
+   edge. No outline: the rim is a partial specular (conic, masked to one
+   pixel, softened) that reads as light catching the lip. It deepens once the
+   page scrolls under it (data-glass="deep", shell.js).
+   Beneath the pane sits .glass-light — a sibling, not a child, so the pane's
+   backdrop-filter sees it — carrying coloured lamps: the current
+   destination's, the hovered word's (which glides between words), the
+   pointer's. The glass blurs and bends them: a glow stick in water. */
+/* registered so they GLIDE (a transition needs a typed property), and
+   inherited so the pane's ::before/::after — the gloss and the bezel —
+   read the values set on the pane: a pseudo-element inherits a custom
+   property only when it is declared to inherit. */
+@property --lx { syntax: "<length-percentage>"; inherits: true; initial-value: 50%; }
+@property --ly { syntax: "<length-percentage>"; inherits: true; initial-value: 70%; }
+@property --ls { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --cx { syntax: "<length-percentage>"; inherits: true; initial-value: 50%; }
+@property --cy { syntax: "<length-percentage>"; inherits: true; initial-value: 70%; }
+@property --cs { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --gs { syntax: "<number>"; inherits: true; initial-value: 0; }
 .tophead {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 45;
+  /* a clean STRIP across the whole top, not a bubble (owner, 8 Sep) */
+  position: fixed; top: var(--glass-inset-y, 0px); left: var(--glass-inset-x, 0px); right: var(--glass-inset-x, 0px); z-index: 45;
   display: flex; flex-direction: column;
-  background: var(--bg2); backdrop-filter: blur(10px);
+  border-radius: var(--ed-glass-rad, 0px);
+  background: var(--glass);
+  /* CRYSTAL CLEAR in the middle (owner, 8 Sep: "the centre is oddly cloudy,
+     it should fully be crystal clear") — no blur; only the bezel lenses */
+  -webkit-backdrop-filter: saturate(160%);
+  backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  transition: background 0.4s ease, --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    --ls 0.45s ease, --gs 0.5s ease;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Chromium: the bezel lens lives in the SVG filter (shell.js) */
+.tophead[data-refract="1"] {
+  -webkit-backdrop-filter: url(#lg-refract) saturate(160%);
+  backdrop-filter: url(#lg-refract) saturate(160%);
+}
+.tophead[data-glass="deep"] { background: var(--glass-deep); }
+.tophead::before, .tophead::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
+}
+/* the edge: no band of its own (unseen) — a 7px zone, blurred, sharp at the
+   pane's edge, that only REFLECTS what is near it: the pointer's white, the
+   lit word's colour (the lamp seen in the lip). */
+.tophead::after {
+  padding: 7px;
+  background:
+    radial-gradient(300px 150px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--glass-rim-catch) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
+    radial-gradient(260px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 30%), transparent), transparent 70%),
+    var(--glass-rim);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(3px);
+}
+/* the gloss: a soft reflection from the top-left, and the pointer's shine —
+   a tight specular core set a little up and left of the cursor (towards the
+   light), a faint wide sheen around it; both fade when the pointer leaves */
+.tophead::before {
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
+    var(--glass-sheen);
+}
+.tophead[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); }
+[data-theme="light"] .tophead[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); }
+.glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+/* THE LAMPS under the glass. Same rect as the pane (shell.js keeps it in
+   step), one layer below it, so the pane's backdrop-filter blurs and bends
+   this light. --cx/--cy: the current destination. --lx/--ly/--ls: the hovered
+   word, gliding. --gx/--gy/--gs: the pointer. */
+.glass-light {
+  position: fixed; z-index: 44; pointer-events: none;
+  border-radius: var(--ed-glass-rad, 0px);
+  overflow: hidden;
+  /* the pane above is crystal clear, so the lamps soften themselves */
+  filter: blur(14px);
+  /* each lamp is three lights: a small near-white core, the coloured halo,
+     a wide faint spill — under the frost they fuse into one submerged glow */
+  background:
+    radial-gradient(90px 38px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--lamp-pointer) calc(var(--gs) * 100%), transparent), transparent 70%),
+    radial-gradient(48px 18px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-core) calc(var(--ls) * 100%), transparent), transparent 70%),
+    radial-gradient(150px 56px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 100%), transparent), transparent 70%),
+    radial-gradient(320px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 12%), transparent), transparent 70%),
+    radial-gradient(44px 16px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp-core) calc(var(--cs) * 50%), transparent), transparent 70%),
+    radial-gradient(140px 52px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 100%), transparent), transparent 70%),
+    radial-gradient(300px 120px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 12%), transparent), transparent 70%);
+  transition: --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    --ls 0.45s ease, --cx 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cy 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
+    --cs 0.6s ease, --gs 0.5s ease;
+}
+.glass-light[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); --lamp-core: rgba(255, 200, 200, 0.5); }
+[data-theme="light"] .glass-light[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); --lamp-core: rgba(255, 214, 210, 0.5); }
+/* THE MENISCUS: the hovered word is seen through a shallow dome the cursor
+   pulls in the surface (#lg-ripple, shell.js) — Chromium only, like the
+   bezel; the pull is a pixel or two, eased, trailing the pointer */
+.tophead[data-refract="1"] [data-ripple="1"] { filter: url(#lg-ripple); }
+/* the words keep their own glow; the light under them is the lamp's */
+.tophead .snav:hover, .tophead .tbtn:hover, .tophead .mailbtn:hover { text-shadow: var(--glow); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tophead { transition: none; }
+  .tophead::before { background: var(--glass-sheen); }
+  .tophead::after { background: var(--glass-rim); }
+  .glass-light { transition: --ls 0.3s ease, --cs 0.3s ease; }
 }
 .thbar {
   height: var(--mq-h); display: flex; align-items: center; gap: 18px;
@@ -192,7 +386,7 @@ button { font-family: var(--helv); }
    come after every base rule they override, or the cascade eats them. */
 .snav {
   display: grid; grid-template-columns: 16px 1fr auto; grid-template-rows: auto auto; gap: 0 6px;
-  align-items: center; align-content: center; padding: var(--ed-snav-pad-y, 5px) 10px;
+  align-items: center; align-content: center; padding: var(--ed-snav-pad-y, 3px) 10px;
   border: 1px solid transparent; border-radius: var(--ed-snav-rad, 10px); align-self: center;
   font-family: var(--mich); font-size: var(--ed-fs-nav, 10.5px); font-weight: 400; letter-spacing: 0.13em;
   background: none; cursor: pointer; text-align: left; position: relative; white-space: nowrap;
@@ -1282,23 +1476,36 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 /* looking through glass: scanlines + vignette above everything, never blocking */
 .os-crt { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
 .os-crt::before { content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent 0 2px, var(--scan) 2px 4px); opacity: var(--ed-scan-op, 0.45); }
+  /* 0.315 = the Aug shipping strength (0.45) less thirty percent — owner order, 8 Sep. */
+  background: repeating-linear-gradient(0deg, transparent 0 2px, var(--scan) 2px 4px); opacity: var(--ed-scan-op, 0.315); }
 .os-crt::after { content: ""; position: absolute; inset: 0; border-radius: 18px;
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.42), inset 0 0 8px rgba(0, 0, 0, 0.3); }
 [data-theme="light"] .os-crt::after { box-shadow: inset 0 0 80px rgba(110, 150, 165, 0.22), inset 0 0 8px rgba(110, 150, 165, 0.14); }
 .os-roll { position: absolute; left: 0; right: 0; height: 16vh;
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.045), transparent);
-  opacity: var(--ed-roll-op, 1);
+  /* 0.2 = the shipped strength less eighty percent — owner order, 8 Sep. */
+  opacity: var(--ed-roll-op, 0.2);
   animation: osroll var(--ed-roll-dur, 9s) linear infinite; }
 @keyframes osroll { from { top: -18vh; } to { top: 104vh; } }
 
+/* the colour wash: one fixed layer, never tiled */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: var(--wash);
+}
 /* drifting hue haze under the content */
 .os-blob { position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; opacity: var(--ed-blob-op, 1); }
-.os-blob.b1 { width: 44vw; height: 38vh; left: -8vw; top: -6vh; background: rgba(70, 150, 255, 0.10); animation: osdrift1 46s ease-in-out infinite alternate; }
-.os-blob.b2 { width: 36vw; height: 42vh; right: -6vw; top: 12vh; background: rgba(60, 220, 140, 0.10); animation: osdrift2 58s ease-in-out infinite alternate; }
-.os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(150, 90, 255, 0.09); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
-.os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(255, 70, 70, 0.05); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
-[data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.6); }
+/* Owner order, 8 Sep: a little more colour in the haze. Dark breathes
+   fuchsia with softer purples and blues; ice carries faded pinks and yellows. */
+.os-blob.b1 { width: 44vw; height: 38vh; left: -8vw; top: -6vh; background: rgba(90, 130, 255, 0.08); animation: osdrift1 46s ease-in-out infinite alternate; }
+.os-blob.b2 { width: 36vw; height: 42vh; right: -6vw; top: 12vh; background: rgba(255, 70, 200, 0.06); animation: osdrift2 58s ease-in-out infinite alternate; }
+.os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(160, 110, 255, 0.08); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
+.os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(215, 95, 255, 0.04); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
+[data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.3); }
+[data-theme="light"] .os-blob.b1 { background: rgba(255, 150, 195, 0.11); }
+[data-theme="light"] .os-blob.b2 { background: rgba(255, 224, 130, 0.12); }
+[data-theme="light"] .os-blob.b3 { background: rgba(255, 190, 175, 0.09); }
+[data-theme="light"] .os-blob.b4 { background: rgba(255, 240, 175, 0.08); }
 @keyframes osdrift1 { to { transform: translate(6vw, 4vh) scale(1.15); } }
 @keyframes osdrift2 { to { transform: translate(-5vw, -3vh) scale(0.9); } }
 
@@ -1327,7 +1534,9 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
    bordering the page (owner reference language, Aug 12: Aphex SAW poster /
    State 3.0 stills). Decoration only; never blocks a click. */
 /* under the header (45) and every panel, over page content */
-.os-frame { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+/* the frame starts BELOW the header strip (the strip is clear glass across
+   the whole top now, and the frame's corner squares showed through it) */
+.os-frame { position: fixed; inset: 0; top: var(--head-h); pointer-events: none; z-index: 40; }
 .os-frame::before { content: ""; position: absolute; inset: 7px;
   border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); }
 .os-frame::after { content: ""; position: absolute; top: 12px; left: 12px; bottom: 12px; width: 34%;
@@ -2226,7 +2435,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .snav .nled { display: none; }
 }
 @media (max-width: 760px) {
-  :root { --mq-h: 54px; --nav-h: 40px; }
+  :root { --mq-h: 54px; --nav-h: 36px; }
   .thbar { gap: 8px; padding: 0 10px; }
   /* MAGAZINE STAYS. The name is "*ASILUM magazine" and the word is never
      dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
@@ -2638,3 +2847,37 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   padding: 6px; margin: 6px 0; cursor: pointer; }
 .mailmore:hover:not(:disabled) { color: var(--ink); border-color: var(--ink); }
 .mailmore:disabled { cursor: default; opacity: .6; }
+
+/* ---- THE INK GLOWS (owner order, 8 Sep). Every control that fills with
+   --ink carries the ink's phosphor glow around the fill; on phosphor dark the
+   token is `none` (the fill is the light), on ice it is the blue glow. ---- */
+.btn, .btn.ghost:hover, .btn.ghost.active, .platform:hover, .outcomes button:hover, .outcomes button.on,
+.fitbtn:hover, .fitbtn.active, .followbtn:hover, .chip.clickable.cur, .unitpick button.on,
+.sugopt:hover, .achip:hover, .apill:hover, .wchip.cur {
+  box-shadow: var(--glow-box-ink);
+}
+
+/* ---- LIQUID GLASS, the parts that must come AFTER their base rules
+   (the cascade: a later rule of equal specificity wins). ---- */
+.thbar { border-bottom-color: rgba(255, 255, 255, 0.08); }
+.topnav { border-bottom: none; }
+/* the header's words, respectively bolder (owner, 8 Sep). Michroma ships one
+   weight, so a faux bold would smear it; a hairline stroke thickens the
+   letter the way a heavier cut would. The mono meta and the big buttons
+   have weights to move to. The wordmark is a gradient clipped to text and a
+   stroke would paint over it — untouched. */
+.tophead .snav { -webkit-text-stroke: 0.4px currentColor; }
+.tophead .mq span, .tophead .mq a { -webkit-text-stroke: 0.3px currentColor; }
+.tophead .tbtn { font-weight: 800; }
+.tophead .snav .nmeta { font-weight: 600; -webkit-text-stroke: 0; }
+.tophead .snavsub a { font-weight: 600; }
+/* the current destination: a pill of the same glass, not a box */
+.snav.cur {
+  background: var(--glass-pill); border-color: transparent; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--glass-pill-rim), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.snav:hover { background: var(--glass-pill); border-color: transparent; border-radius: 999px; }
+@media (max-width: 760px) {
+  .tophead { --glass-inset-y: 0px; --glass-inset-x: 0px; border-radius: 0; }
+  .glass-light { border-radius: 0; }
+}
