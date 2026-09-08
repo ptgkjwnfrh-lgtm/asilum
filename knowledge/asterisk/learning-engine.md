@@ -24,8 +24,9 @@ board 1.3 / save 1.2 / fav 1 / view 0.2 / skip −0.5 / reject −1.
 
 ## The feed contract (chunks, 6 Sep 2026)
 A serve is a CHUNK (`limit` 12–60, default 60; the client asks for 24 as it
-scrolls) cut to the shares in lib/brain/chunk.js. Rotation (seen items
-down-ranked) and max 2 items per brand per chunk still hold across every zone.
+scrolls) cut to the shares in lib/brain/chunk.js. Rotation (seen items down-ranked — GRADED by ring recency, 0.3 for the
+newest-served, 0.4 for the oldest, so a ring that holds the whole pool still
+cycles) and max 2 items per brand per chunk still hold across every zone.
 
 | zone | share | what |
 | --- | --- | --- |

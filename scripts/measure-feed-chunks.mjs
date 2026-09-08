@@ -185,6 +185,24 @@ for (const [label, pool, limit] of [
   console.log(`cycle   memory: reached ${seenAll.size}/100, later visits distinct ${later}/${visits.length - 6}`);
   if (seenAll.size < 100) defect(`cycle/memory: ${seenAll.size}/100 reached`);
   if (later < visits.length - 7) defect(`cycle/memory: later visits repeat (${later} distinct of ${visits.length - 6})`);
+  // Ring AND cursor together (a production OBSERVE scroll): the graded
+  // penalty re-ranks every chunk, so the fill must walk a stationary order or
+  // its resume position lands in a shuffled list and dry pages repeat.
+  profile = { long: { MINIMAL: 0.9 }, session: {}, _meta: { recent: [], seen: [] } };
+  cursor = null;
+  const scroll = [];
+  const scrollSeen = new Set();
+  for (let k = 0; k < 12; k++) {
+    const r = buildFeed({ profile, limit: 24, rotation: "memory", catalog: { cursor } }, pool);
+    scroll.push(r.items.map((it) => it.id).join(","));
+    r.items.forEach((it) => scrollSeen.add(it.id));
+    profile = markSeen(profile, r.items.map((it) => it.id), pool.length);
+    cursor = r.catalog.nextCursor;
+  }
+  const dryScroll = new Set(scroll.slice(6)).size;
+  console.log(`cycle   ring+cursor: reached ${scrollSeen.size}/100, dry pages distinct ${dryScroll}/${scroll.length - 6}`);
+  if (scrollSeen.size < 100) defect(`cycle/ring+cursor: ${scrollSeen.size}/100 reached`);
+  if (dryScroll < scroll.length - 7) defect(`cycle/ring+cursor: dry pages repeat (${dryScroll} distinct of ${scroll.length - 6})`);
 }
 
 // ---- cursor + cost -----------------------------------------------------------------
