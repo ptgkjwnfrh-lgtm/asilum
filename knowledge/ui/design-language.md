@@ -37,12 +37,24 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
 - Header (`.tophead` in shell.js): thbar (wordmark + ticker + big
   SEARCH/BAG/SIGN-IN with symbols on search and bag) over the destination
   row (ASTERISK drawer trigger, seven buttons, compact dock). The pane is
-  LIQUID GLASS (owner order, 8 Sep): translucent (--glass), blurred and
-  saturated, a specular sheen along its top edge, a highlight that follows
-  the pointer (--gx/--gy/--gs, set in shell.js), deepening once the page
-  scrolls under it (data-glass="deep"). The words on it stay floating,
-  un-boxed and glowing; reduced motion keeps the pane and drops the moving
-  highlight. Theme toggle
+  LIQUID GLASS (owner order, 8 Sep, "exactly like Apple's"): a near-clear
+  pane (--glass, 0.025 dark / 0.10 ice) over a frosted centre and a CLEAR
+  REFRACTING BEZEL — in Chromium the backdrop passes through an SVG filter
+  (#lg-refract, shell.js) whose displacement map is drawn from the pane's
+  own size and corner radius (rounded-rect distance, Apple's squircle bezel
+  profile, Snell's law at n=1.5; R = x, G = y, B = bezel weight), so the
+  outer 20px bends what scrolls beneath it while the middle stays frosted;
+  other engines keep blur(22px) saturate(180%). No outline: the rim is a
+  partial specular (a conic ring masked to one pixel, bright at the
+  top-left lip and the far lip, gone between). The words float and their
+  glow is a LIGHT UNDER THE WATER: .glass-light, a sibling beneath the pane
+  kept to its rect, carries the current destination's lamp (--cx/--cy), the
+  hovered word's lamp gliding between words (--lx/--ly/--ls, registered
+  properties so they transition; the wordmark's lamp is red) and the
+  pointer's shine (--gx/--gy/--gs); the pane blurs and bends them. It
+  deepens once the page scrolls under it (data-glass="deep"). Reduced
+  motion keeps pane, lamps and refraction, drops the glide and the pointer
+  shine. Theme toggle
   lives in SETTINGS only; the default follows the device preference
   (prefers-color-scheme) until the owner pins a theme.
 - Aug 12 reference language (owner pictures: Gen X Soft Club, Aphex SAW

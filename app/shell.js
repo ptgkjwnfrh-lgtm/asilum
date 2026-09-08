@@ -47,6 +47,82 @@ const TICKER_PLACEHOLDERS = [
 ];
 const TICKER = TICKER_PLACEHOLDERS.join(" — ") + " — ";
 
+// LIQUID GLASS, the optics. Only Chromium runs an SVG filter as a
+// backdrop-filter (WebKit parses it and paints nothing; Gecko drops it), so
+// the refraction is gated on the engine, not on CSS.supports — which is true
+// everywhere and proves nothing.
+function canRefract() {
+  if (typeof window === "undefined") return false;
+  const brands = navigator.userAgentData?.brands;
+  if (Array.isArray(brands)) return brands.some((b) => /chromium/i.test(b.brand || ""));
+  return !!window.chrome; // Chrome, Edge, Brave, Arc, Opera — all Blink
+}
+
+// The displacement map: a picture of how far each pixel of the backdrop is
+// pulled, red for x and green for y, 128 meaning none, and in blue how much
+// of the pane is bezel (the lens ring) rather than frost. The bezel is the
+// outer BEZEL px of the rounded rect (measured by a rounded-rect signed
+// distance); its profile is Apple's squircle, y = (1 - (1 - t)^4)^(1/4), and
+// the bend per point is Snell's law for glass (n = 1.5) on that slope,
+// pointing INWARD along the surface normal so no pixel ever samples beyond
+// the pane (Chromium's backdrop stops at the pane's edge). The very lip is
+// eased to nothing so the edge itself stays clean, the way Apple's does.
+const BEZEL = 20;
+const GLASS_N = 1.5;
+function bendProfile(t) {
+  // t: 0 at the edge, 1 at the inner end of the bezel
+  if (t <= 0 || t >= 1) return 0;
+  const u = 1 - t;
+  const slope = (u * u * u) / Math.pow(1 - u * u * u * u, 0.75); // dy/dt of the squircle
+  const theta = Math.atan(slope);
+  const delta = theta - Math.asin(Math.sin(theta) / GLASS_N);
+  const lip = Math.min(1, t / 0.12); // ease in over the outer 12% of the bezel
+  return Math.tan(delta) * lip;
+}
+function drawRefractionMap(node, w, h, radius) {
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const ctx = c.getContext("2d");
+  if (!ctx) return;
+  const img = ctx.createImageData(w, h);
+  const d = img.data;
+  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
+  const hx = w / 2, hy = h / 2;
+  // normalise the profile so the strongest bend uses the full channel
+  let peak = 0;
+  for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const px = x + 0.5 - hx, py = y + 0.5 - hy;
+      const qx = Math.abs(px) - (hx - r), qy = Math.abs(py) - (hy - r);
+      let nx = 0, ny = 0, inside; // outward normal, distance to the edge
+      // rounded-rect signed distance: q is the offset past the corner
+      // centres; in the corner both are positive (radial), on a side one is
+      // (that side), inside neither (the nearer side, the larger q)
+      if (qx > 0 && qy > 0) {
+        const len = Math.hypot(qx, qy) || 1;
+        nx = (qx / len) * Math.sign(px); ny = (qy / len) * Math.sign(py);
+        inside = r - len;
+      } else if (qx > qy) {
+        nx = Math.sign(px); inside = r - qx;
+      } else {
+        ny = Math.sign(py); inside = r - qy;
+      }
+      let m = 0;
+      if (inside >= 0 && inside < BEZEL) m = bendProfile(inside / BEZEL) / (peak || 1);
+      // the bezel's weight: 1 at the lip, easing to 0 a little past the bend
+      const bw = Math.max(0, Math.min(1, 1 - inside / (BEZEL * 1.35)));
+      const i = (y * w + x) * 4;
+      d[i] = Math.round(128 - nx * m * 127);      // pull inward along -normal
+      d[i + 1] = Math.round(128 - ny * m * 127);
+      d[i + 2] = Math.round(255 * bw * bw * (3 - 2 * bw)); // smoothstep, in blue
+      d[i + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  node.setAttribute("href", c.toDataURL("image/png"));
+}
+
 export default function Shell({ children }) {
   const fit = useFitBrain();
   const pathname = usePathname();
@@ -54,35 +130,125 @@ export default function Shell({ children }) {
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [bagHow, setBagHow] = useState(false);
-  // LIQUID GLASS (owner order, 8 Sep): the header pane deepens once the page
-  // scrolls under it and carries a highlight that follows the pointer. Both
-  // are CSS variables on the element (see .tophead in globals.css); nothing
-  // re-renders. Reduced motion keeps the pane and drops the moving highlight.
+  // LIQUID GLASS (owner order, 8 Sep, fourth pass — "exactly like Apple's").
+  // Three things live here, all as CSS variables and attributes so nothing
+  // re-renders:
+  //   1. the pane deepens once the page scrolls under it (data-glass="deep");
+  //   2. the REFRACTION — Chromium can run an SVG filter as a backdrop-filter,
+  //      so the pane's outer bezel bends what scrolls beneath it through a
+  //      displacement map drawn here from the pane's own size and corner
+  //      radius (squircle bezel + Snell's law; R = x shift, G = y shift, 128 =
+  //      none). Other engines keep the blur and never see the attribute;
+  //   3. the LAMPS — .glass-light is a sibling UNDER the pane, kept to the
+  //      pane's rect, carrying the current destination's coloured glow, the
+  //      hovered word's glow (it glides between words) and the pointer's
+  //      shine. The pane blurs and bends that light: a glow stick in water.
+  // Reduced motion keeps pane, lamps and refraction; only the gliding stops
+  // (globals.css) and the pointer shine is dropped.
   const headRef = useRef(null);
+  const lightRef = useRef(null);
+  const mapRef = useRef(null);
+  const placeCurrentRef = useRef(null);
   useEffect(() => {
     const el = headRef.current;
-    if (!el) return;
+    const light = lightRef.current;
+    if (!el || !light) return;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const onScroll = () => { el.dataset.glass = window.scrollY > 24 ? "deep" : ""; };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    // where a word sits, as a percentage of the pane
+    const centreOf = (node) => {
+      const r = el.getBoundingClientRect();
+      const b = node.getBoundingClientRect();
+      return {
+        x: `${((b.left + b.width / 2 - r.left) / Math.max(1, r.width)) * 100}%`,
+        y: `${((b.top + b.height / 2 - r.top) / Math.max(1, r.height)) * 100}%`,
+      };
+    };
+    const placeCurrent = () => {
+      const cur = el.querySelector(".snav.cur");
+      if (!cur) { light.style.setProperty("--cs", "0"); return; }
+      const c = centreOf(cur);
+      light.style.setProperty("--cx", c.x);
+      light.style.setProperty("--cy", c.y);
+      light.style.setProperty("--cs", "1");
+    };
+    placeCurrentRef.current = placeCurrent;
+
+    // the lamp layer follows the pane's rect; the refraction map is redrawn
+    // for the pane's size (Chromium only — see canRefract)
+    const refract = canRefract();
+    let raf = 0;
+    const fit = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      light.style.top = `${r.top}px`;
+      light.style.left = `${r.left}px`;
+      light.style.width = `${r.width}px`;
+      light.style.height = `${r.height}px`;
+      if (refract && mapRef.current && r.width > 0 && r.height > 0) {
+        const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+        drawRefractionMap(mapRef.current, Math.round(r.width), Math.round(r.height), radius);
+        el.dataset.refract = "1";
+      }
+      placeCurrent();
+    };
+    const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
+    ro.observe(el);
+    fit();
+
+    // the hovered word's lamp glides to it; the wordmark lights red
+    let lit = null;
+    const onOver = (e) => {
+      const word = e.target.closest && e.target.closest("a, button");
+      if (!word || !el.contains(word) || word === lit) return;
+      lit = word;
+      const c = centreOf(word);
+      light.dataset.lamp = word.classList.contains("wordmark") ? "red" : "";
+      light.style.setProperty("--lx", c.x);
+      light.style.setProperty("--ly", c.y);
+      light.style.setProperty("--ls", "1");
+    };
+    const onOut = (e) => {
+      const to = e.relatedTarget;
+      if (to && to.closest && to.closest("a, button") && el.contains(to)) return;
+      lit = null;
+      light.style.setProperty("--ls", "0");
+    };
+    el.addEventListener("pointerover", onOver);
+    el.addEventListener("pointerout", onOut);
+
+    // the pointer's shine, on the pane and in the water beneath it
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
-      el.style.setProperty("--gx", `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`);
-      el.style.setProperty("--gy", `${((e.clientY - r.top) / Math.max(1, r.height)) * 100}%`);
-      el.style.setProperty("--gs", "1");
+      const x = `${((e.clientX - r.left) / Math.max(1, r.width)) * 100}%`;
+      const y = `${((e.clientY - r.top) / Math.max(1, r.height)) * 100}%`;
+      for (const n of [el, light]) {
+        n.style.setProperty("--gx", x);
+        n.style.setProperty("--gy", y);
+        n.style.setProperty("--gs", "1");
+      }
     };
-    const onLeave = () => el.style.setProperty("--gs", "0");
+    const onLeave = () => { el.style.setProperty("--gs", "0"); light.style.setProperty("--gs", "0"); };
     if (!still) {
       el.addEventListener("pointermove", onMove);
       el.addEventListener("pointerleave", onLeave);
     }
     return () => {
       window.removeEventListener("scroll", onScroll);
+      ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+      el.removeEventListener("pointerover", onOver);
+      el.removeEventListener("pointerout", onOut);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
+      placeCurrentRef.current = null;
     };
   }, []);
+  // the current destination moved: move its lamp
+  useEffect(() => { placeCurrentRef.current?.(); }, [pathname]);
   const bagPanelRef = useRef(null);
   const bagToggleRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -478,8 +644,25 @@ export default function Shell({ children }) {
           bordering the page (owner reference language, Aug 12) */}
       <div className="os-frame" aria-hidden="true"><i /><i /><i /><i /></div>
 
+      {/* the lamps under the glass, then the glass (see the effect above) */}
+      <div className="glass-light" ref={lightRef} aria-hidden="true" />
+      <svg className="glass-defs" aria-hidden="true" focusable="false">
+        {/* THE OPTICS: the centre of the pane is frosted (a deep blur); the
+            bezel is a clear lens — the backdrop bent through the map, only
+            lightly softened — laid over the frost through the map's blue
+            channel, which carries the bezel's weight. That is Apple's glass:
+            a crisp refracting rim around a frosted middle. */}
+        <filter id="lg-refract" colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
+          <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="frost" />
+          <feDisplacementMap in="SourceGraphic" in2="lgmap" scale="34" xChannelSelector="R" yChannelSelector="G" result="bent" />
+          <feGaussianBlur in="bent" stdDeviation="2.5" result="lens" />
+          <feColorMatrix in="lgmap" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 1 0 0" result="bezel" />
+          <feComposite in="lens" in2="bezel" operator="in" result="rim" />
+          <feComposite in="rim" in2="frost" operator="over" />
+        </filter>
+      </svg>
       <header className="tophead" ref={headRef}>
-        <span className="glass-lens" aria-hidden="true" />
         <div className="thbar">
           {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
               order, 17 Aug) — one letter per span, spread by flex, so the line
