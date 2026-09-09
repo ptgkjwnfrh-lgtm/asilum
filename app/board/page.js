@@ -20,6 +20,7 @@ import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
+import PageMast from "../components/PageMast.jsx";
 
 export default function BoardPage() {
   const fit = useFitBrain();
@@ -323,7 +324,7 @@ export default function BoardPage() {
   return (
     <div className="wrap">
       <div className="ppwarp" ref={warpRef} aria-hidden="true" />
-      <h1 className="headline"><span className="red">*</span>YOUR PASSPORT</h1>
+      <PageMast word="YOUR PASSPORT" sub="TRAIN THE BRAIN" />
       <p className="deck">
         {shared
           ? "someone's taste passport. follow it and its route joins your own."

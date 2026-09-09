@@ -15,6 +15,21 @@
 // lexicon) and say what Asterisk read; unknown names are RECORDED to the
 // bearer's file (real mood_board_uploads rows) and said to be unmapped —
 // nothing pretends. Design: Gen X Soft Club (curves, haze, milky glass).
+//
+// THE STATION IN LIQUID GLASS (owner order, 9 Sep: "more visually pleasing,
+// easier to navigate, match the front cover's visual language, more liquid
+// glass, replace the asterisk figure with a moveable ASCII globe of the
+// places bought from"). The page now speaks the cover's language — a bold
+// masthead with a right-hand meta block, a hairline field behind the
+// content, numbered kickers, Warp-sleeve credit stacks, gutter marginalia
+// and a colophon whose every value is real state — and every card is the
+// same clear pane as the passport, the strip and the item detail
+// (LiquidGlass.jsx: no border, the edges lensing where the engine can bend
+// a backdrop, the gloss and the pointer's shine over its face). The rail's
+// ASTERISK dock is replaced by THE PURCHASE GLOBE (PurchaseGlobe.jsx): a
+// wireframe earth of ASCII lines, drag to turn, marking the houses' cities
+// behind the bearer's PAID orders and BOUGHT tickets (/api/orders?places=1)
+// — nothing bought, nothing marked, and the readout says so.
 
 import { useEffect, useRef, useState } from "react";
 import { getUid, postJSON, authorizedFetch } from "../../lib/client.js";
@@ -23,15 +38,20 @@ import { vizState } from "../../lib/brain/memory.js";
 import { TAGS } from "../../lib/brain/tags.js";
 import { mapArtist } from "../../lib/music-mapping/index.js";
 import { setFollowBrand, followedBrands } from "../../lib/social.js";
-import AsteriskDock from "../components/AsteriskDock.jsx";
+import PurchaseGlobe from "../components/PurchaseGlobe.jsx";
 import ParisMap, { useParisRoads } from "../components/ParisMap.jsx";
 import Notice from "../components/Notice.jsx";
+import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import { useEscape, useOverlayDismiss } from "../components/dismiss.js";
 
-const DOCK_WORDS = ["LISTENING", "LEARNING", "READING", "WEIGHING", "REMEMBERING"];
 const BOARD_KEY = "asilum-upload-board";
 const FAVS_KEY = "asilum-favorites";
 const EMPTY_FAVS = { celebrities: [], cities: [], movies: [], singers: [], styles: [] };
+
+// The hairline field (the cover's, in the station's proportions): a few
+// thick, most thin, most barely there. Hand-placed and deterministic —
+// print texture, not motion, so no random at render.
+const HAIRLINES = ["gxln-h1", "gxln-h2", "gxln-h3", "gxln-h4", "gxln-h5", "gxln-h6", "gxln-v1", "gxln-v2", "gxln-v3", "gxln-v4", "gxln-v5"];
 
 export default function UploadPage() {
   const [uid, setUid] = useState("");
@@ -43,6 +63,16 @@ export default function UploadPage() {
   const [tiles, setTiles] = useState([]);      // device-local moodboard
   const [favs, setFavs] = useState(EMPTY_FAVS);
   const [designers, setDesigners] = useState([]);
+  // THE PURCHASE GLOBE's fix: null = still reading; false = the server could
+  // not be reached (never rendered as "nothing bought"); else the record.
+  const [places, setPlaces] = useState(null);
+  const [stamp, setStamp] = useState("");
+  // THE MAP SETTLES BACK (owner, 9 Sep: "when a user opens the upload the
+  // background map should lower its current visible opacity by 45% — it's a
+  // little distracting"). The first frame keeps the warp's 0.5 so the
+  // hand-off from the passport stays pixel-continuous; then the map eases
+  // to 0.4 (the owner's number). A direct visit gets the same settle.
+  const [mapSettled, setMapSettled] = useState(false);
   const fileRef = useRef(null);
   const map = useParisRoads();
   // arriving from the passport build: reuse its exact fit so the
@@ -81,10 +111,14 @@ export default function UploadPage() {
   useEffect(() => {
     const user = getUid();
     setUid(user || "");
-    if (user) loadViz(user);
+    if (user) { loadViz(user); loadPlaces(user); } else setPlaces({ places: [], purchases: 0, placed: 0, unplaced: [] });
     try { setTiles(JSON.parse(window.localStorage.getItem(BOARD_KEY)) || []); } catch {}
     try { setFavs({ ...EMPTY_FAVS, ...(JSON.parse(window.localStorage.getItem(FAVS_KEY)) || {}) }); } catch {}
     setDesigners(followedBrands());
+    setStamp(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }).toUpperCase());
+    // one painted frame at the warp's opacity, then the settle
+    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setMapSettled(true)));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   function loadViz(user = uid || getUid()) {
@@ -92,6 +126,12 @@ export default function UploadPage() {
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (d) setViz({ state: vizState(d.profile), profile: d.profile }); })
       .catch(() => {});
+  }
+  function loadPlaces(user = uid || getUid()) {
+    authorizedFetch("/api/orders?places=1&user=" + encodeURIComponent(user))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setPlaces(d && Array.isArray(d.places) ? d : false))
+      .catch(() => setPlaces(false));
   }
   function convictions() {
     if (!viz) return [];
@@ -243,10 +283,13 @@ export default function UploadPage() {
     setDesigners(setFollowBrand(brand, false));
   }
 
+  const names = favs.celebrities.length + favs.singers.length + favs.cities.length + favs.movies.length;
+  const placeRows = places && places.places ? places.places : [];
+
   return (
-    <div className="wrap gx">
+    <div className="wrap gx gxv2">
       {map && (
-        <div className="gxmap" aria-hidden="true">
+        <div className={"gxmap" + (mapSettled ? " settled" : "")} aria-hidden="true">
           {warpFit ? (
             <div
               className="gxmapfit"
@@ -264,18 +307,31 @@ export default function UploadPage() {
       )}
       <div className="gxblob gxb1" aria-hidden="true" />
       <div className="gxblob gxb2" aria-hidden="true" />
+      <div className="gxlines" aria-hidden="true">
+        {HAIRLINES.map((c) => <i key={c} className={c} />)}
+      </div>
 
-      <header className="gxhero">
+      <header className="gxmast" aria-label="upload station masthead">
         <div className="locline"><a href="/board">← PASSPORT</a><span>/ TEACH ASTERISK</span></div>
-        <h1 className="headline"><span className="red">*</span>UPLOAD</h1>
-        <p className="deck">pin the vibe, name your people, follow your designers — asterisk answers on the right.</p>
+        <div className="gxmastrow">
+          <h1 className="gxmastblock">
+            <span className="gxmastline"><b className="red">*</b>UPLOAD</span>
+            <span className="gxmastline gxmastsub">STATION</span>
+          </h1>
+          <div className="gxmeta">
+            TRAINING ANNEX · {stamp}<br />PIN · NAME · FOLLOW — THE ASTERISK SYSTEM ANSWERS IN THE RAIL
+            <span className="gxledger">
+              THE RECORD — {tiles.length} PIN{tiles.length === 1 ? "" : "S"} · {names} NAME{names === 1 ? "" : "S"} · {designers.length} HOUSE{designers.length === 1 ? "" : "S"} FOLLOWED · {placeRows.length} CIT{placeRows.length === 1 ? "Y" : "IES"} BOUGHT FROM
+            </span>
+          </div>
+        </div>
+        <i className="gxthick" aria-hidden="true" />
       </header>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       <div className="gxlayout">
         <main className="gxmain">
-          <section className="gxcard">
-            <div className="gxlabel">01 · THE WALL — PIN ANYTHING THAT FEELS LIKE YOU</div>
+          <GlassCard id="wall" glass="lg-gx-wall" num="01" kick="THE WALL" note="pin anything that feels like you">
             <div
               className={"gxdrop slim" + (dragOver ? " over" : "") + (busy ? " busy" : "")}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -300,22 +356,20 @@ export default function UploadPage() {
                 ))}
               </div>
             )}
-          </section>
+          </GlassCard>
 
-          <section className="gxcard">
-            <div className="gxlabel">02 · YOUR PEOPLE & PLACES — NAME WHAT SHAPES YOU</div>
+          <GlassCard id="people" glass="lg-gx-people" num="02" kick="YOUR PEOPLE & PLACES" note="name what shapes you">
             <div className="gxfavgrid">
               <FavField kind="celebrities" label="FAVORITE CELEBRITIES" placeholder="whose style pulls you…" favs={favs} onAdd={addFav} onRemove={removeFav} />
               <FavField kind="singers" label="FAVORITE SINGERS" placeholder="the sound you dress like…" favs={favs} onAdd={addFav} onRemove={removeFav} />
               <FavField kind="cities" label="FAVORITE CITIES" placeholder="where you feel dressed right…" favs={favs} onAdd={addFav} onRemove={removeFav} />
               <FavField kind="movies" label="FAVORITE MOVIES" placeholder="films that look like your closet…" favs={favs} onAdd={addFav} onRemove={removeFav} />
             </div>
-            <em className="gxfoot">every name lands on your record. where the culture catalog knows them, asterisk trains — and tells you what it read.</em>
-          </section>
+            <em className="gxfoot">every name lands on your record. where the culture catalog knows them, the Asterisk system trains — and tells you what it read.</em>
+          </GlassCard>
 
-          <section className="gxcard">
-            <div className="gxlabel">03 · DESIGNERS & LEANINGS</div>
-            <FavInput label="FAVORITE DESIGNERS" placeholder="type a designer — asterisk learns their dominant tags…" onAdd={addDesigner} />
+          <GlassCard id="designers" glass="lg-gx-designers" num="03" kick="DESIGNERS & LEANINGS" note="the houses you follow, the words you lean toward">
+            <FavInput label="FAVORITE DESIGNERS" placeholder="type a designer — the Asterisk system learns their dominant tags…" onAdd={addDesigner} />
             {designers.length > 0 && (
               <div className="gxchips" style={{ marginBottom: 14 }}>
                 {designers.map((b) => (
@@ -336,13 +390,45 @@ export default function UploadPage() {
                 <button key={t} className="gxchip" onClick={() => addFav("styles", t.toLowerCase())}>{t.toLowerCase()}</button>
               ))}
             </div>
-          </section>
+          </GlassCard>
         </main>
 
         <aside className="gxside">
-          <section className="gxcard gxasterisk">
-            <AsteriskDock size={200} words={DOCK_WORDS} className="os-dock gxdock" />
-            <div className="gxlabel" style={{ margin: "14px 0" }}>WHAT THE ASTERISK SYSTEM HOLDS</div>
+          <GlassCard id="globe" glass="lg-gx-globe" num="04" kick="THE GLOBE" note="where your pieces came from" className="gxasterisk">
+            <span className="gxsidev" aria-hidden="true">THE HOUSES' CITIES BEHIND WHAT YOU BOUGHT</span>
+            <PurchaseGlobe places={placeRows} />
+
+            {places === false ? (
+              <em className="gxfoot">the purchase record could not be reached — the globe shows nothing until it can.</em>
+            ) : places && placeRows.length > 0 ? (
+              <div className="gxplaces">
+                {placeRows.slice(0, 6).map((p, i) => (
+                  <div className="gxplace" key={p.city}>
+                    <span className="gxpnum" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                    <b>{p.city.toUpperCase()}<i>{p.country.toUpperCase()} · {p.brands.join(" · ").toUpperCase()}</i></b>
+                    <em>{p.count}</em>
+                  </div>
+                ))}
+              </div>
+            ) : places ? (
+              <em className="gxfoot">no purchase on the record yet — a paid order, or a ticket you report as bought, puts its house&apos;s city on the globe.</em>
+            ) : null}
+            {places && places.unplaced && places.unplaced.length > 0 && (
+              <em className="gxfoot">
+                not placed — {places.unplaced.join(", ")}: the origin record does not hold a city for {places.unplaced.length === 1 ? "this house" : "these houses"}, so nothing is guessed.
+              </em>
+            )}
+
+            <div className="gxcred" aria-label="the record's credits">
+              <span className="cclbl">RECORD No.</span>
+              <span className="ccval">{uid ? uid.slice(0, 12).toUpperCase() : "—"}</span>
+              <span className="cclbl">PIECES PLACED</span>
+              <span className="ccval">{places && places.placed != null ? `${places.placed} OF ${places.purchases}` : "—"}</span>
+              <span className="cclbl">CONVICTIONS HELD</span>
+              <span className="ccval">{convictions().length}</span>
+            </div>
+
+            <div className="gxlabel" style={{ margin: "16px 0 12px" }}>WHAT THE ASTERISK SYSTEM HOLDS</div>
             {convictions().length === 0 ? (
               <em className="gxfoot">nothing yet — the record starts with your first pin.</em>
             ) : (
@@ -371,13 +457,18 @@ export default function UploadPage() {
             <div className="gxrow gxlinks">
               <a className="gxbtn ghost" href="/board">PASSPORT →</a>
               <a className="gxbtn ghost" href="/stats">FULL READ →</a>
+              <a className="gxbtn ghost" href="/orders">ORDERS →</a>
             </div>
             <button className="resetlink" onClick={() => setResetOpen(true)}>
               Reset Brain <b>[Full Amnesia]</b>
             </button>
-          </section>
+          </GlassCard>
         </aside>
       </div>
+
+      <footer className="gxcolo" aria-label="colophon">
+        *ASILUM MAGAZINE TRAINING ANNEX · {stamp} · {tiles.length} PIN{tiles.length === 1 ? "" : "S"} ON THIS DEVICE · {placeRows.length} CIT{placeRows.length === 1 ? "Y" : "IES"} ON THE GLOBE · EVERY VALUE ON THIS PAGE IS REAL STATE — NOTHING IS STAGED
+      </footer>
 
       {resetOpen && (
         <div className="overlay" onClick={dismissResetSheet}>
@@ -405,6 +496,28 @@ export default function UploadPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// A section of the station: a numbered kicker (the cover's) over a pane of
+// liquid glass (the passport's — LiquidGlass.jsx keeps its refraction map in
+// step with its size and carries the pointer's shine). One filter id per
+// pane, because each map is its own size.
+function GlassCard({ id, glass, num, kick, note, className = "", children }) {
+  const ref = useRef(null);
+  const defs = useLiquidGlass(ref, { id: glass, strength: 0.5 });
+  return (
+    <section className={"gxcard lg " + className} id={id} ref={ref} aria-label={`${num} ${kick.toLowerCase()}`}>
+      {defs}
+      <div className="gxhead">
+        <span className="gxnum" aria-hidden="true">{num}</span>
+        <div>
+          <div className="gxkick">{kick}</div>
+          {note && <div className="gxnote">{note}</div>}
+        </div>
+      </div>
+      {children}
+    </section>
   );
 }
 

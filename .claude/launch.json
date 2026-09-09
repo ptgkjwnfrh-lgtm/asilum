@@ -13,6 +13,17 @@
       "port": 3458
     },
     {
+      "name": "asilum-ui-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "next",
+        "dev",
+        "-p",
+        "3471"
+      ],
+      "port": 3471
+    },
+    {
       "name": "asilum-memmode-verify",
       "runtimeExecutable": "env",
       "runtimeArgs": [

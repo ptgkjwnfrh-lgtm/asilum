@@ -691,6 +691,8 @@ export default function Shell({ children }) {
       <div className="os-blob b2" aria-hidden="true" />
       <div className="os-blob b3" aria-hidden="true" />
       <div className="os-blob b4" aria-hidden="true" />
+      {/* the plus field: holographic pluses at 5%, both themes (owner, 9 Sep) */}
+      <div className="os-plus" aria-hidden="true" />
       {/* thin non-uniform hairlines + small outline squares slightly
           bordering the page (owner reference language, Aug 12) */}
       <div className="os-frame" aria-hidden="true"><i /><i /><i /><i /></div>

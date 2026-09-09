@@ -13,6 +13,7 @@ import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
+import PageMast from "../components/PageMast.jsx";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -292,7 +293,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="wrap">
-      <h1 className="headline"><span className="red">*</span>DISCOVER</h1>
+      <PageMast word="DISCOVER" sub="THE OPEN INDEX" />
       <p className="demobanner" role="note">
         <b>DEMO ARCHIVE.</b> synthetic sample records with placeholder imagery —
         nothing here is real inventory or for sale. the search is real; the

@@ -34,6 +34,7 @@ import {
 } from "../../lib/social.js";
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
+import PageMast from "../components/PageMast.jsx";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
 // your own to /profile, anyone else's to their /u/[handle] page — and a
@@ -281,7 +282,7 @@ export default function TheWirePage() {
       </span>
 
       <header className="cthead">
-        <h1 className="headline"><span className="red">*</span>THE WIRE</h1>
+        <PageMast word="THE WIRE" sub="POSTS + THE HOTLIST" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDITION · {stamp}

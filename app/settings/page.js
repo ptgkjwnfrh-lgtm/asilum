@@ -57,6 +57,7 @@ function SettingsAuthRow() {
   );
 }
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
+import PageMast from "../components/PageMast.jsx";
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
@@ -127,7 +128,7 @@ export default function SettingsPage() {
 
   return (
     <div className="wrap rkr">
-      <h1 className="headline"><span className="red">*</span>SETTINGS</h1>
+      <PageMast word="SETTINGS" sub="CONTROL PANEL" />
       <p className="deck">the rack — every control that fixes anything, in plain language.</p>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
