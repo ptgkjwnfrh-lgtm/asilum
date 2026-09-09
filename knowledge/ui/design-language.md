@@ -518,6 +518,13 @@ meniscus; the current destination keeps its red LED and red bar; the
 frosted selected controls carry no glow. Phosphor keeps all of it — every
 rule sits under `[data-theme="light"]` (the grouped block at the end of
 globals.css). "DO NOT CHANGE DARK MODE."
+Then "give the same header bar treatment to dark mode" (same day): the
+block is theme-agnostic now — no pill on a hovered or current header word,
+`.glass-light` hidden, pane spot / rim catch / lamp-hot transparent, the
+meniscus off, in BOTH themes; the current destination keeps its red LED and
+red bar. On phosphor a word's resting light (the teal law's smear, now the
+token `--word-smear`) stays and a hover changes nothing; on ice the header's
+words carry no glow at all.
 
 
 ## Copy law (17 August, owner directives)
