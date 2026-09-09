@@ -100,6 +100,13 @@
   --lamp: rgba(70, 255, 150, 0.3);
   --lamp-hot: rgba(70, 255, 150, 0.3);
   --lamp-pointer: rgba(255, 255, 255, 0.03);
+  /* the clickable word's resting light (the teal law, Aug 12): a horizontal
+     smear and the glow — a token, so a hovered header word can keep exactly
+     what it had at rest (owner, 9 Sep: the header's words are just words) */
+  --word-smear:
+    -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
+    4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
+    var(--glow);
   /* the plus field: a small plus, and the theme's holographic sweep —
      phosphor green, soft purple, the red, the blue of the wash, and round */
   /* one small plus (7 units wide, arms 1.2) centred in a 56-unit tile, so
@@ -2536,10 +2543,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
 .sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
   color: var(--sig);
-  text-shadow:
-    -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
-    4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
-    var(--glow);
+  text-shadow: var(--word-smear);
 }
 /* red hover states swap the WHOLE signal to red — never red text inside
    a teal blur */
@@ -3170,7 +3174,27 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   background: color-mix(in srgb, var(--sig) 13%, var(--paper));
   color: var(--ink);
   border-color: color-mix(in srgb, var(--sig) 40%, transparent);
-  box-shadow: var(--glow-box-ink), inset 0 1px 0 var(--paper);
-  text-shadow: var(--glow-ink);
+  box-shadow: inset 0 1px 0 var(--paper);
 }
-[data-theme="light"] .btn:disabled { box-shadow: none; text-shadow: none; }
+[data-theme="light"] .btn:disabled { box-shadow: none; }
+
+/* ==== THE HEADER'S WORDS ARE JUST WORDS — BOTH THEMES (owner, 9 Sep, from
+   a Safari recording of ice: "take away the glow when hovering — it looks
+   ugly and breaks the seamlessness of the header bar; the buttons themselves
+   should just be the words"; then "give the same header bar treatment to
+   dark mode"). No pill on a hovered or current header word, no lamps under
+   the glass, no pointer shine or rim catch on the pane, no meniscus. The
+   current destination keeps its red LED and red bar. On phosphor a word's
+   RESTING light (the teal law's smear) stays and a hover changes nothing;
+   on ice the header's words carry no glow at all. ==== */
+.snav:hover, .snav.cur, [data-model="02"] .snav.cur { background: transparent; border-color: transparent; box-shadow: none; }
+[data-model="02"] .snav { border-color: transparent; }
+.tophead .snav:hover, .snav.cur, .tophead .tbtn:hover, .tophead .mailbtn:hover, .tophead .mq a:hover { text-shadow: var(--word-smear); }
+.snav.cur, .snav:hover { color: var(--sig); }
+.glass-light { display: none; }
+.tophead { --glass-rim-catch: transparent; --glass-spot: transparent; --glass-spot-wide: transparent; --lamp-hot: transparent; }
+.tophead[data-refract="1"] [data-ripple="1"] { filter: none; }
+/* ice: no glow on the header's words at all — at rest or hovered */
+[data-theme="light"] .tophead .snav, [data-theme="light"] .tophead .tbtn, [data-theme="light"] .tophead .mailbtn,
+[data-theme="light"] .tophead .mq a, [data-theme="light"] .tophead .snavsub a, [data-theme="light"] .snav.cur { text-shadow: none; }
+[data-theme="light"] .snav.cur, [data-theme="light"] .snav:hover { color: var(--ink); }
