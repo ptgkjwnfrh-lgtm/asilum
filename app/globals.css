@@ -122,18 +122,27 @@
      #3075a6 (4.51:1), --p2 #3f73a6 (4.52:1). What made ice feel "negative"
      was mostly the FILLED controls — a selected button became a dark block
      with white text; in ice they are FROSTED now (the grouped rule at the
-     end of this file: a pale sky fill, blue text, the ink glow). */
+     end of this file: a pale sky fill, blue text, the ink glow).
+     THEN THE CYAN GLASS WORLD (owner, 9 Sep, three references: a Y2K chrome
+     figure in aqua light, a Tron cyan glow, the VAIO store of clear cyan
+     glass): ice is a cool cyan-white ground (#e6f4fa) with CYAN glass tints
+     (--glass, --glass-pill, --glass-shadow), cyan lamps and a brighter cyan
+     glow on every lit word (rgba 0,190,235), chrome sheens kept white; the
+     ink and the signal are the passing cyans (#0c7795 / #0d779e, 4.5:1+),
+     the secondary accent a soft PURPLE (#805ac1, 4.50:1) — the owner asked
+     to keep the slight purple and pink, so the wash carries two aqua hazes
+     plus a faint pink and a faint purple. */
   /* THE INK IS TEAL (owner order, 8 Sep): "the black negative looking text
      and buttons should all be a nice blue and have a phosphor glow", then
      "more a bright teal". #08788a — 4.7:1 on --bg, 5.2:1 on white (the body
      text law is 4.5; the first bright teal, #0a8494, read 4.02 and failed
      it) — is the reading colour, the filled control colour, and the colour
      that glows. */
-  --ink: #3c759d;
+  --ink: #0c7795;
   --paper: #ffffff;
-  --grey: #5d8794;
-  --faint: #a5c2ca;
-  --line: rgba(60, 117, 157, 0.3);
+  --grey: #4f8a9c;
+  --faint: #9ec9d6;
+  --line: rgba(13, 119, 158, 0.3);
   /* THE ALERT/IDENTITY ACCENT, DARKENED TO PASS (owner ruling, Aug 16).
      #e5342b measured 3.92:1 on --bg and 4.32:1 on white — under AA, and --red
      is not decoration: it carries alerts, selection, the ASTERISK mark, and
@@ -145,9 +154,9 @@
      old hue back it has to come with a lighter BACKGROUND, not a lighter red.
      Dark theme's #ff3838 already measures 5.52:1 and is untouched. */
   --red: #cc2219;
-  --bg: #eef5f8;
-  --bg2: rgba(255, 255, 255, 0.8);
-  --bg3: rgba(244, 250, 250, 0.92);
+  --bg: #e6f4fa;
+  --bg2: rgba(240, 250, 254, 0.8);
+  --bg3: rgba(236, 248, 253, 0.92);
   /* THE INTERACTION VOICE, DARKENED TO PASS (owner ruling, Aug 16, answering
      the launch audit's contrast finding). --sig paints every clickable word in
      the house, so it is body text in practice — and at #0e93a5 it measured
@@ -159,36 +168,37 @@
      4.90:1 on --bg, 5.40:1 on white, 5.16:1 on --bg3.
      The dark theme's --sig (#46ff96) already measures 15:1 and is untouched;
      this is a light-theme-only correction. */
-  --sig: #3075a6;
+  --sig: #0d779e;
   /* The secondary graphic accent — strokes, gradients, the dock label. It read
      as text in at least one place (.os-dock .t b), and at #3e8fd0 measured
      3.15:1 on --bg. #286da4, same hue and saturation, is 5.00:1. Dark theme's
      #b088ff already measures 7.34:1 and is untouched. */
-  --p2: #3f73a6;
-  --glow: 0 0 6px rgba(48, 117, 166, 0.28), 0 0 14px rgba(48, 117, 166, 0.09);
+  --p2: #805ac1;
+  --glow: 0 0 6px rgba(0, 190, 235, 0.42), 0 0 16px rgba(0, 190, 235, 0.16);
   --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
-  --glow-p: 0 0 6px rgba(63, 115, 166, 0.26);
-  --glow-ink: 0 0 5px rgba(60, 117, 157, 0.3), 0 0 14px rgba(60, 117, 157, 0.11);
-  --glow-box-ink: 0 0 10px rgba(60, 117, 157, 0.3), 0 0 26px rgba(60, 117, 157, 0.12);
+  --glow-p: 0 0 6px rgba(128, 90, 193, 0.3);
+  --glow-ink: 0 0 5px rgba(0, 190, 235, 0.38), 0 0 14px rgba(0, 190, 235, 0.14);
+  --glow-box-ink: 0 0 10px rgba(0, 190, 235, 0.36), 0 0 26px rgba(0, 190, 235, 0.14);
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
   --mag-glow:
-    0 0 4px rgba(48, 117, 166, 0.18),
-    9px 0 13px rgba(48, 117, 166, 0.14),
-    -9px 0 13px rgba(48, 117, 166, 0.14),
-    22px 0 28px rgba(48, 117, 166, 0.07),
-    -22px 0 28px rgba(48, 117, 166, 0.07);
-  --grid-ln: rgba(60, 117, 157, 0.015);
-  --scan: rgba(120, 160, 170, 0.05);
+    0 0 4px rgba(0, 190, 235, 0.26),
+    9px 0 13px rgba(0, 190, 235, 0.2),
+    -9px 0 13px rgba(0, 190, 235, 0.2),
+    22px 0 28px rgba(0, 190, 235, 0.1),
+    -22px 0 28px rgba(0, 190, 235, 0.1);
+  --grid-ln: rgba(13, 119, 158, 0.018);
+  --scan: rgba(90, 180, 210, 0.06);
   /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
-  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%);
+  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 255, 255, 0.7), transparent 70%);
   --wash:
-    radial-gradient(ellipse 60% 50% at 14% 20%, rgba(255, 165, 205, 0.12), transparent 70%),
-    radial-gradient(ellipse 58% 48% at 86% 78%, rgba(255, 226, 145, 0.13), transparent 70%),
-    radial-gradient(ellipse 46% 40% at 55% 52%, rgba(255, 205, 190, 0.06), transparent 72%);
-  --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 60%);
-  --glass: rgba(255, 255, 255, 0.12);
-  --glass-deep: rgba(255, 255, 255, 0.18);
+    radial-gradient(ellipse 64% 54% at 80% 18%, rgba(70, 205, 245, 0.22), transparent 70%),
+    radial-gradient(ellipse 58% 50% at 12% 78%, rgba(90, 215, 240, 0.18), transparent 70%),
+    radial-gradient(ellipse 50% 44% at 18% 18%, rgba(255, 165, 215, 0.09), transparent 70%),
+    radial-gradient(ellipse 44% 40% at 62% 60%, rgba(170, 140, 255, 0.07), transparent 72%);
+  --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 60%);
+  --glass: rgba(205, 240, 252, 0.22);
+  --glass-deep: rgba(205, 240, 252, 0.32);
   --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   --glass-rim: none;
   --glass-rim-catch: rgba(255, 255, 255, 0.35);
@@ -198,15 +208,15 @@
     linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
   --glass-spot: rgba(255, 255, 255, 0.22);
   --glass-spot-wide: rgba(255, 255, 255, 0.03);
-  --glass-shadow: 0 16px 44px rgba(60, 117, 157, 0.12), 0 1px 2px rgba(60, 117, 157, 0.07);
-  --glass-pill: rgba(255, 255, 255, 0.34);
-  --glass-pill-rim: rgba(255, 255, 255, 0.55);
-  --lamp-core: rgba(200, 244, 248, 0.5);
-  --lamp: rgba(48, 117, 166, 0.2);
-  --lamp-hot: rgba(48, 117, 166, 0.22);
+  --glass-shadow: 0 16px 44px rgba(0, 150, 200, 0.14), 0 1px 2px rgba(0, 150, 200, 0.08);
+  --glass-pill: rgba(225, 248, 255, 0.5);
+  --glass-pill-rim: rgba(255, 255, 255, 0.6);
+  --lamp-core: rgba(220, 250, 255, 0.55);
+  --lamp: rgba(0, 190, 235, 0.3);
+  --lamp-hot: rgba(0, 190, 235, 0.32);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
-  --holo: linear-gradient(118deg, #3075a6 0%, #ffa5cd 24%, #ffe291 46%, #3f73a6 64%, #ffcdbe 82%, #3075a6 100%);
+  --holo: linear-gradient(118deg, #0d779e 0%, #46cdf5 22%, #ffa5d7 44%, #805ac1 62%, #5ad7f0 82%, #0d779e 100%);
 }
 
 * { box-sizing: border-box; }
@@ -1577,7 +1587,7 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
   background: repeating-linear-gradient(0deg, transparent 0 2px, var(--scan) 2px 4px); opacity: var(--ed-scan-op, 0.315); }
 .os-crt::after { content: ""; position: absolute; inset: 0; border-radius: 18px;
   box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.42), inset 0 0 8px rgba(0, 0, 0, 0.3); }
-[data-theme="light"] .os-crt::after { box-shadow: inset 0 0 80px rgba(110, 150, 165, 0.22), inset 0 0 8px rgba(110, 150, 165, 0.14); }
+[data-theme="light"] .os-crt::after { box-shadow: inset 0 0 80px rgba(60, 170, 210, 0.2), inset 0 0 8px rgba(60, 170, 210, 0.12); }
 .os-roll { position: absolute; left: 0; right: 0; height: 16vh;
   background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.045), transparent);
   /* 0.2 = the shipped strength less eighty percent — owner order, 8 Sep. */
@@ -1617,8 +1627,10 @@ body::before {
 .os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(160, 110, 255, 0.08); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
 .os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(215, 95, 255, 0.04); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
 [data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.3); }
-[data-theme="light"] .os-blob.b1 { background: rgba(255, 150, 195, 0.11); }
-[data-theme="light"] .os-blob.b2 { background: rgba(255, 224, 130, 0.12); }
+[data-theme="light"] .os-blob.b1 { background: rgba(80, 210, 245, 0.16); }
+[data-theme="light"] .os-blob.b2 { background: rgba(255, 150, 205, 0.09); }
+[data-theme="light"] .os-blob.b3 { background: rgba(170, 140, 255, 0.07); }
+[data-theme="light"] .os-blob.b4 { background: rgba(90, 220, 245, 0.1); }
 [data-theme="light"] .os-blob.b3 { background: rgba(255, 190, 175, 0.09); }
 [data-theme="light"] .os-blob.b4 { background: rgba(255, 240, 175, 0.08); }
 @keyframes osdrift1 { to { transform: translate(6vw, 4vh) scale(1.15); } }
