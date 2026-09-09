@@ -161,7 +161,13 @@ export default function Shell({ children }) {
     const STRIP_OPEN = { top: false, left: false, right: false, bottom: true };
     const pageBend = refract ? null : createPageBend({
       id: "lg-refract", el, mapRef, open: STRIP_OPEN,
-      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .deck, .cvkick, .cvstory",
+      // (9 Sep) the masthead's second line, the upload station's masthead,
+      // thick rule and panes, the settings rack's rows and heads, the
+      // profile's sections, the stylist's rows and the passport's sections
+      // joined the list — on Safari the owner saw no warp at all on the new
+      // pages, because nothing on them was in it.
+      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .headsub, .deck, .cvkick, .cvstory, "
+        + ".gxmastblock, .gxthick, .gxcard, .rkhead, .rkrow, .pfsec, .otfrow, .ppsec, .demobanner",
     });
     let raf = 0;
     let lastSize = "";
