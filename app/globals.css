@@ -3170,7 +3170,24 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   background: color-mix(in srgb, var(--sig) 13%, var(--paper));
   color: var(--ink);
   border-color: color-mix(in srgb, var(--sig) 40%, transparent);
-  box-shadow: var(--glow-box-ink), inset 0 1px 0 var(--paper);
-  text-shadow: var(--glow-ink);
+  box-shadow: inset 0 1px 0 var(--paper);
 }
-[data-theme="light"] .btn:disabled { box-shadow: none; text-shadow: none; }
+[data-theme="light"] .btn:disabled { box-shadow: none; }
+
+/* ==== ICE: THE HEADER'S WORDS ARE JUST WORDS (owner, 9 Sep, from a Safari
+   recording: "take away the glow from ice light mode when hovering — it
+   looks ugly and breaks the seamlessness of the header bar; the buttons
+   themselves should just be the words. DO NOT CHANGE DARK MODE").
+   In ice, no pill and no glow on a hovered or current header word, no lamps
+   under the glass, no pointer shine or rim catch on the pane, no meniscus.
+   The current destination keeps its red LED and red bar. Phosphor keeps
+   everything. ==== */
+[data-theme="light"] .snav:hover, [data-theme="light"] .snav.cur,
+[data-theme="light"][data-model="02"] .snav.cur { background: transparent; border-color: transparent; box-shadow: none; }
+[data-theme="light"][data-model="02"] .snav { border-color: transparent; }
+[data-theme="light"] .tophead .snav:hover, [data-theme="light"] .tophead .tbtn:hover, [data-theme="light"] .tophead .mailbtn:hover,
+[data-theme="light"] .snav.cur, [data-theme="light"] .tophead .mq a:hover, [data-theme="light"] .tophead .snavsub a:hover { text-shadow: none; }
+[data-theme="light"] .snav.cur, [data-theme="light"] .snav:hover { color: var(--ink); }
+[data-theme="light"] .glass-light { display: none; }
+[data-theme="light"] .tophead { --glass-rim-catch: transparent; --glass-spot: transparent; --glass-spot-wide: transparent; --lamp-hot: transparent; }
+[data-theme="light"] .tophead[data-refract="1"] [data-ripple="1"] { filter: none; }
