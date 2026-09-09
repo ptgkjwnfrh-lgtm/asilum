@@ -2468,7 +2468,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
 .whandle, .wperma, .wfocusback, .bizapply, .wctl, .weng, .wtag, .wmention,
 .hlttl, .card .ttl, .actions button, .locline a, .otfttl,
-.sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
+.sugopt, .wchip, .legal a, .outcomes button, .searchguide a, .gxindex a {
   color: var(--sig);
   text-shadow:
     -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
@@ -2983,3 +2983,109 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppdoc.lg .ppnation { background: transparent; }
 .ppdoc.lg .ppphoto { background: var(--paper); }
 @media (prefers-reduced-motion: reduce) { .ppdoc.lg::before { background: var(--glass-sheen); } }
+
+/* ==== THE UPLOAD STATION IN LIQUID GLASS (owner order, 9 Sep: "more
+   visually pleasing, easier to navigate, the front cover's visual language,
+   more liquid glass, the asterisk figure replaced by a moveable ASCII globe
+   of the places bought from"). Scoped to .gxv2 — the station speaks the
+   cover's language (masthead + meta block, the hairline field, numbered
+   kickers, Warp-sleeve credit stacks via the shared .cclbl/.ccval, gutter
+   marginalia, a colophon) and every card is the passport's pane: no border,
+   a Fresnel whisper at the lip, the edges lensing (--lg-filter from
+   LiquidGlass.jsx), the gloss and the pointer's shine over its face. After
+   the base .gx rules on purpose: same specificity, later wins. ==== */
+.gxv2 .gxmast, .gxv2 .gxcolo, .gxv2 .gxlayout { position: relative; z-index: 1; }
+/* the hairline field, in the station's proportions — a few thick, most
+   thin, most barely there; sits under the cards, over the map */
+.gxlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.85; z-index: 0; }
+.gxlines i { position: absolute; display: block; height: 0; border-top: 1px solid var(--ink); }
+.gxlines .gxln-h1 { top: 11%; left: -3%; width: 42%; opacity: 0.22; }
+.gxlines .gxln-h2 { top: 36%; left: 50%; width: 52%; opacity: 0.06; }
+.gxlines .gxln-h3 { top: 60%; left: -2%; width: 30%; border-top-width: 4px; opacity: 0.09; }
+.gxlines .gxln-h4 { top: 84%; left: 28%; width: 48%; opacity: 0.1; }
+.gxlines .gxln-v1, .gxlines .gxln-v2, .gxlines .gxln-v3 { height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
+.gxlines .gxln-v1 { top: 7%; left: 65%; height: 30%; opacity: 0.18; }
+.gxlines .gxln-v2 { top: 40%; left: 31%; height: 40%; opacity: 0.05; }
+.gxlines .gxln-v3 { top: 54%; left: 91%; height: 36%; border-left-width: 3px; opacity: 0.07; }
+
+/* the masthead: the cover's, with the rail's width in mind */
+.gxv2 .gxmast { margin: 0 0 12px; }
+.gxmastrow { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.gxmastblock { display: grid; margin: 0; }
+.gxmastline { font-family: var(--mich); font-size: var(--ed-fs-gxmast, clamp(30px, 4.6vw, 60px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase; }
+.gxmastline .red { margin-right: 0.06em; }
+.gxmastsub { color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; }
+.gxmeta { font-size: 9px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
+.gxledger { display: block; margin-top: 6px; font-size: 7.5px; letter-spacing: 0.18em; opacity: 0.85; }
+/* the station index: the four sections as pills of the header's glass —
+   the words take the teal rule like every clickable word */
+.gxindex { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.gxindex a { font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.22em; padding: 7px 14px; border-radius: 999px;
+  background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); text-decoration: none; }
+.gxindex a b { font-weight: 400; margin-right: 7px; color: color-mix(in srgb, var(--ink) 42%, transparent); text-shadow: none; }
+.gxindex a:hover { box-shadow: inset 0 0 0 1px var(--sig); }
+.gxv2 .gxcard[id] { scroll-margin-top: calc(var(--head-h) + 20px); }
+
+/* the section head: the cover's big faint numeral and Michroma kicker */
+.gxhead { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; }
+.gxnum { font-family: var(--helv); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
+.gxkick { font-family: var(--mich); font-size: 10px; letter-spacing: 0.2em; }
+.gxnote { font-size: 10px; color: var(--grey); margin-top: 3px; }
+
+/* the pane: the passport's glass, card-sized */
+.gxcard.lg { border: 0; border-radius: 22px; padding: 22px 24px 24px;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip); isolation: isolate; }
+.gxcard.lg[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.gxcard.lg::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
+    var(--glass-sheen); }
+/* the controls inside the pane are the header's pill glass, not a filled box */
+.gxv2 .gxin, .gxv2 .gxbtn, .gxv2 .gxchip { background: var(--glass-pill); border-color: transparent; box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+.gxv2 .gxbtn.ghost { background: transparent; }
+.gxv2 .gxin:focus { box-shadow: inset 0 0 0 1px var(--sig); }
+.gxv2 .gxbtn:hover:not(:disabled), .gxv2 .gxchip:hover, .gxv2 .gxchip.on { box-shadow: inset 0 0 0 1px var(--sig); }
+.gxv2 .gxdrop { border: 1px dashed color-mix(in srgb, var(--ink) 30%, transparent); background: color-mix(in srgb, var(--glass-pill) 60%, transparent); }
+.gxv2 .gxdrop.over, .gxv2 .gxdrop:hover { border-color: var(--sig); background: var(--glass-pill); }
+.gxv2 .gxtile { border: 0; box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+.gxv2 .gxbar { border-color: transparent; box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+
+/* THE PURCHASE GLOBE (PurchaseGlobe.jsx): the canvas takes its size from the
+   design console; below it the Codec's readout — label, fix, status line */
+.gxglobe { display: grid; justify-items: center; gap: 8px; padding: 2px 0 6px; }
+.gxglobecv { width: var(--ed-gx-globe, 250px); height: var(--ed-gx-globe, 250px); max-width: 100%; cursor: grab; touch-action: none; border-radius: 50%; }
+.gxglobecv:active { cursor: grabbing; }
+/* keyboard focus keeps a ring: the outline is never removed, only drawn in the signal colour */
+.gxglobecv:focus-visible { outline: 2px solid var(--sig); outline-offset: 4px; }
+.gxgps { display: grid; gap: 2px; width: 100%; font-family: var(--helv); }
+.gxgpsl { font-size: 7.5px; letter-spacing: 0.24em; color: var(--grey); }
+.gxgpsfix { font-size: 12px; letter-spacing: 0.08em; color: var(--sig); text-shadow: var(--glow); }
+.gxgpss { font-size: 8.5px; letter-spacing: 0.18em; color: var(--grey); }
+/* the cities, as the cover's numbered rows */
+.gxplaces { display: grid; margin: 8px 0 2px; }
+.gxplace { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.gxplace:first-child { border-top: 0; }
+.gxplace .gxpnum { font-family: var(--helv); font-size: 18px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; width: 26px; flex: none; }
+.gxplace b { font-family: var(--mich); font-size: 10px; letter-spacing: 0.08em; font-weight: 400; min-width: 0; }
+.gxplace b i { display: block; font-style: normal; font-family: var(--helv); font-size: 9px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
+.gxplace em { margin-left: auto; font-style: normal; font-family: var(--helv); font-size: 13px; color: var(--red); text-shadow: var(--glow-r); flex: none; }
+/* the credit stack (the cover's .cclbl/.ccval) and the gutter marginalia */
+.gxcred { margin-top: 14px; padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.gxcred .cclbl:first-child { margin-top: 0; }
+.gxsidev { position: absolute; left: -20px; top: 28px; writing-mode: vertical-rl; font-size: 8px; letter-spacing: 0.3em; color: var(--grey); opacity: 0.8; white-space: nowrap; }
+.gxv2 .gxlinks { margin: 16px 0 0; }
+.gxv2 .gxlinks .gxbtn { padding: 9px 16px; }
+.gxcolo { margin: 26px 0 30px; font-size: 7.5px; letter-spacing: 0.22em; color: var(--grey); opacity: 0.8; line-height: 2.1; }
+
+@media (max-width: 900px) { .gxsidev { display: none; } }
+@media (max-width: 760px) {
+  .gxnum { font-size: 22px; width: 34px; }
+  .gxmeta { text-align: left; max-width: none; }
+  .gxcard.lg { padding: 18px 18px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .gxcard.lg::before { background: var(--glass-sheen); } }

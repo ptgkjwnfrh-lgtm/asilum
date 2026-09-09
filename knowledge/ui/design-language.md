@@ -430,6 +430,45 @@ LISTENING/LEARNING/…) above the BrainViz word-sphere, the live conviction read
 session heard-log, RECENTLY FORGOTTEN, and the two-step Reset Brain
 (full-amnesia) control — all relocated from /board. All signals are real training; nothing simulated.
 
+**THE STATION IN LIQUID GLASS (owner order, 9 Sep 2026).** /upload speaks
+the FRONT COVER's language now: a bold Michroma masthead (`*UPLOAD` /
+`STATION`, `--ed-fs-gxmast`) with the cover's right-hand meta block and a
+ledger line whose counts are the device's real state (pins, names, houses
+followed, cities bought from); a hairline field behind the content
+(.gxlines, hand-placed, deterministic); numbered kickers (a big faint
+numeral + a Michroma kicker + a note); Warp-sleeve credit stacks through the
+shared .cclbl/.ccval; gutter marginalia on the rail; a colophon. A STATION
+INDEX under the masthead — four pills of the header's glass — jumps to the
+sections (01 THE WALL / 02 PEOPLE & PLACES / 03 DESIGNERS & LEANINGS /
+04 THE GLOBE). Every card is the passport's pane (`.gxcard.lg`, one
+`useLiquidGlass` per card at strength 0.5, its own filter id): no border,
+55% tint, the edges lensing in Chromium, the gloss and the pointer's shine;
+the inputs, buttons and chips are the header's pill glass rather than
+filled boxes. No page-side bend on these cards: what lies under them is the
+fixed Paris map, and filtering a viewport-sized SVG per card per frame is
+the glitch of trap 151 — Safari gets the pane without the bend.
+THE ASTERISK DOCK IS GONE FROM THE RAIL. In its place THE PURCHASE GLOBE
+(app/components/PurchaseGlobe.jsx): a wireframe earth drawn entirely from
+characters — latitude rings and meridians as ASCII lines whose glyph follows
+the line's slope, the far hemisphere dimmed to a see-through cage, a dotted
+silhouette, a faint polar axis, the Codec's centre reticle (the owner's
+reference: the GPS globe of a 1998 Codec screen) — under the dock's
+hologram treatment (scanline banding, a flutter). Drag to spin, inertia on
+release, arrow keys turn it, off-screen it pauses, reduced motion gives one
+still frame. Sized by `--ed-gx-globe` (250px). MARKERS: one per city a
+piece on the bearer's record came from — `/api/orders?places=1` reads the
+caller's PAID sale orders and purchase tickets reported bought/kept/returned,
+each piece's house → its city through lib/asterisk/houses.js → a coordinate
+from lib/asterisk/places.js (curated, provenance-stamped, one row per city
+the origin record names; tests/purchase-places.test.js holds the two files
+together). The front-most marker is named on the canvas and the readout
+prints its fix in D.MM.SS (LAT 35.40.48N · LONG 139.41.24E); a house the
+record cannot place is listed as NOT PLACED, never guessed; nothing bought
+reads NO FIX — the globe still turns. Below it the cities as numbered rows,
+then the credit stack (RECORD No. / PIECES PLACED / CONVICTIONS HELD), then
+the conviction readback, heard-log, RECENTLY FORGOTTEN, the links (now with
+ORDERS →) and the Reset Brain control, unchanged.
+
 
 ## Copy law (17 August, owner directives)
 
