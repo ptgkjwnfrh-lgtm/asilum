@@ -448,12 +448,20 @@ filled boxes. No page-side bend on these cards: what lies under them is the
 fixed Paris map, and filtering a viewport-sized SVG per card per frame is
 the glitch of trap 151 — Safari gets the pane without the bend.
 THE ASTERISK DOCK IS GONE FROM THE RAIL. In its place THE PURCHASE GLOBE
-(app/components/PurchaseGlobe.jsx): a wireframe earth drawn entirely from
-characters — latitude rings and meridians as ASCII lines whose glyph follows
-the line's slope, the far hemisphere dimmed to a see-through cage, a dotted
-silhouette, a faint polar axis, the Codec's centre reticle (the owner's
-reference: the GPS globe of a 1998 Codec screen) — under the dock's
-hologram treatment (scanline banding, a flutter). Drag to spin, inertia on
+(app/components/PurchaseGlobe.jsx): a wireframe earth as A HOLOGRAM OF
+GLOWING LINES (9 Sep, later the same day — the owner: "get rid of the ASCII
+structure … a Star Wars hologram made of glowing lines"; the first cut was
+a cage of `- / | \` glyph chains after the Codec's GPS globe) — latitude
+rings every 22.5° and twelve meridians as stroked polylines, each a pale
+hot core (--ink) inside a soft bloom of the signal colour (three stroke
+passes per depth bucket, no canvas shadowBlur — trap 158), the far
+hemisphere dimmed to a see-through cage, a faint rim, a faint polar axis,
+the Codec's centre reticle drawn as a ring and a pointer — under the
+projector's treatment: a flutter, a slow band of light rolling down the
+picture (source-atop, so it lights only the lines), the odd horizontal tear
+where two or three slices slip sideways for a few frames with a brightness
+dropout, and the dock's scanline banding. Markers are drawn discs in a red
+bloom (near side) and dim rings (far side). Drag to spin, inertia on
 release, arrow keys turn it, off-screen it pauses, reduced motion gives one
 still frame. Sized by `--ed-gx-globe` (250px). MARKERS: one per city a
 piece on the bearer's record came from — `/api/orders?places=1` reads the
@@ -537,7 +545,17 @@ passes per placement), and placement runs on alternate scroll frames. THE
 LAG WAS THE GLOBE: a canvas shadowBlur on each of ~700 glyphs cost /upload
 37ms a frame at idle (16.7 elsewhere) — the cage draws with alpha alone
 now, at half rate (a drag draws every frame), and /upload idles at 17.9 /
-scrolls at 18.9 in Chrome. Safari itself unmeasured.
+scrolls at 18.9 in Chrome. Safari itself unmeasured. The hologram of lines
+that replaced the glyph cage the same day draws in 0.11 ms against the
+cage's 0.47 (200 draws of the 500px bitmap, headless Chrome, both themes).
+
+THE PASSPORT → /UPLOAD BUILD LANDS SOLID (9 Sep): the roads still assemble
+chunk by chunk from the document's edges in 90 ms pulses, but a fresh
+major/secondary chunk now lands as a HOT SOLID STROKE — the same polyline,
+a hair wider at full alpha on the transient canvas (`.ppbuild-hot`, which
+wears the roads' glow) for 80 ms before it settles into its layer. The
+ASCII dashes on the scanline grid are gone (app/components/roadBuilder.js).
+The red `*` stars are the brand's asterisks, not ASCII structure — kept.
 
 
 ## Copy law (17 August, owner directives)

@@ -3,9 +3,11 @@
 // of EXACTLY the passport's own map — same fit, same pixels, isolated
 // by a fast veil. That still is the base and it NEVER moves or rescales:
 // roads assemble outward from the document's edges chunk by chunk
-// (fresh major/secondary chunks flash as ASCII dashes riding the
-// .os-scan 4px scanline grid) until Paris fills the frame at the
-// passport's own scale, then the page hands off to /upload.
+// (a fresh major/secondary chunk lands HOT — a solid stroke, brighter
+// and a hair wider than its layer, for one beat before it settles into
+// the layer; no glyphs, no dashes — owner, 9 Sep: "solid lines") until
+// Paris fills the frame at the passport's own scale, then the page hands
+// off to /upload.
 //
 // Performance law (owner: "smooth, not heavy"): canvas, no shadowBlur
 // anywhere. Glow matches the passport hologram exactly by putting the
@@ -16,14 +18,14 @@
 
 const DURATION = 1500;
 const STILL_MS = 150; // the isolated passport-map beat before growth
-const ASCII_MS = 80; // how long a fresh chunk rides the scanlines
-const SCAN_PITCH = 4; // .os-scan: repeating 0 2px transparent / 2px 4px line
+const HOT_MS = 80; // how long a fresh chunk stays hot before it settles
+const HOT_EXTRA = 0.5; // a hot chunk is this much wider (map units) than its layer
 
 const LAYERS = {
-  buildings: { width: 0.35, alpha: 0.5, ascii: false },
-  minor: { width: 0.55, alpha: 0.6, ascii: false },
-  secondary: { width: 0.9, alpha: 0.8, ascii: true },
-  major: { width: 1.4, alpha: 0.95, ascii: true },
+  buildings: { width: 0.35, alpha: 0.5, hot: false },
+  minor: { width: 0.55, alpha: 0.6, hot: false },
+  secondary: { width: 0.9, alpha: 0.8, hot: true },
+  major: { width: 1.4, alpha: 0.95, hot: true },
 };
 const ROAD_DELAY = { major: 0, secondary: 60, minor: 120 };
 
@@ -125,6 +127,7 @@ export default function buildRoads(overlay, map, docRect, onDone) {
   const fxWrap = document.createElement("div");
   fxWrap.className = "ppbuildfx";
   const fx = document.createElement("canvas");
+  fx.className = "ppbuild-hot"; // the hot chunks glow like the roads they become
   fxWrap.appendChild(fx);
   const grad = document.createElement("div");
   grad.className = "ppbuildgrad";
@@ -151,8 +154,8 @@ export default function buildRoads(overlay, map, docRect, onDone) {
   fx.width = W;
   fx.height = H;
   const fctx = fx.getContext("2d");
-  fctx.textAlign = "center";
-  fctx.textBaseline = "middle";
+  fctx.lineCap = "round";
+  fctx.lineJoin = "round";
 
   const X = (p) => p[0] * s + tx;
   const Y = (p) => p[1] * s + ty;
@@ -189,7 +192,7 @@ export default function buildRoads(overlay, map, docRect, onDone) {
       );
       t0 = STILL_MS + Math.round((t0 - STILL_MS) / 90) * 90;
       let step = 55 + Math.random() * 70;
-      const budget = DURATION - 150 - ASCII_MS - t0;
+      const budget = DURATION - 150 - HOT_MS - t0;
       if (step * runs.length > budget) step = budget / runs.length;
       runs.forEach((run, i) => {
         events.push({ t: t0 + i * step, layer: key, pts: run });
@@ -262,30 +265,21 @@ export default function buildRoads(overlay, map, docRect, onDone) {
   }
   drawStill();
 
-  // fresh chunk as scanline ASCII: dashes snapped to the .os-scan 4px
-  // rows, sampled sparsely along the chunk — batched, capped, tiny font
-  function drawAsciiBatch(list) {
+  // fresh chunks as HOT solid strokes: the same polyline the layer will
+  // carry, drawn a hair wider at full alpha on the transient canvas (which
+  // wears the roads' glow), so a chunk's arrival reads as a bright pulse
+  // that settles — one batched path per frame, no glyphs
+  function drawHotBatch(list) {
     if (!list.length) return;
-    fctx.globalAlpha = 0.8;
-    fctx.fillStyle = SIG;
-    fctx.font = `8px ${OSD}`;
+    fctx.beginPath();
     for (const e of list) {
-      let drawn = 0;
-      for (let i = 1; i < e.pts.length && drawn < 8; i++) {
-        const x0 = X(e.pts[i - 1]);
-        const y0 = Y(e.pts[i - 1]);
-        const x1 = X(e.pts[i]);
-        const y1 = Y(e.pts[i]);
-        const len = Math.hypot(x1 - x0, y1 - y0);
-        const n = Math.min(2, Math.max(1, Math.round(len / 12)));
-        for (let j = 0; j <= n && drawn < 8; j++, drawn++) {
-          const px = x0 + ((x1 - x0) * j) / n;
-          const py = Math.round((y0 + ((y1 - y0) * j) / n) / SCAN_PITCH) * SCAN_PITCH;
-          fctx.fillText("-", px, py);
-        }
-      }
+      fctx.moveTo(X(e.pts[0]), Y(e.pts[0]));
+      for (let i = 1; i < e.pts.length; i++) fctx.lineTo(X(e.pts[i]), Y(e.pts[i]));
     }
+    fctx.strokeStyle = SIG;
+    fctx.lineWidth = (LAYERS.major.width + HOT_EXTRA) * s;
     fctx.globalAlpha = 1;
+    fctx.stroke();
   }
 
   let start;
@@ -337,19 +331,19 @@ export default function buildRoads(overlay, map, docRect, onDone) {
     while (idx < events.length && events[idx].t <= t) {
       const e = events[idx++];
       if (e.star) batch.star.push(e);
-      else if (LAYERS[e.layer].ascii) pending.push({ e, born: t });
+      else if (LAYERS[e.layer].hot) pending.push({ e, born: t });
       else batch[e.layer].push(e);
     }
     for (let i = pending.length - 1; i >= 0; i--) {
       const p = pending[i];
-      if (t - p.born >= ASCII_MS) {
+      if (t - p.born >= HOT_MS) {
         batch[p.e.layer].push(p.e);
         pending.splice(i, 1);
       }
     }
     flushBatch();
     fctx.clearRect(0, 0, W, H);
-    drawAsciiBatch(pending.map((p) => p.e));
+    drawHotBatch(pending.map((p) => p.e));
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);

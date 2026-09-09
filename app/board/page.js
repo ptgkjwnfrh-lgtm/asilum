@@ -54,8 +54,8 @@ export default function BoardPage() {
 
   // UPLOAD TO MOODBOARD (r5): the map never moves — the passport document
   // is the root, and a full-viewport Paris assembles around it, roads
-  // arriving in randomized chunks (nearest the document first) with a
-  // brief ASCII flash before each segment solidifies. 1.5s, landing
+  // arriving in randomized chunks (nearest the document first), each
+  // landing as a hot solid stroke that settles. 1.5s, landing
   // pixel-identical to /upload's background. Logic: roadBuilder.js.
   function warpToUpload() {
     const doc = document.querySelector(".ppdoc");

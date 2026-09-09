@@ -18,7 +18,7 @@
 //
 // THE STATION IN LIQUID GLASS (owner order, 9 Sep: "more visually pleasing,
 // easier to navigate, match the front cover's visual language, more liquid
-// glass, replace the asterisk figure with a moveable ASCII globe of the
+// glass, replace the asterisk figure with a moveable globe of the
 // places bought from"). The page now speaks the cover's language — a bold
 // masthead with a right-hand meta block, a hairline field behind the
 // content, numbered kickers, Warp-sleeve credit stacks, gutter marginalia
@@ -27,7 +27,7 @@
 // (LiquidGlass.jsx: no border, the edges lensing where the engine can bend
 // a backdrop, the gloss and the pointer's shine over its face). The rail's
 // ASTERISK dock is replaced by THE PURCHASE GLOBE (PurchaseGlobe.jsx): a
-// wireframe earth of ASCII lines, drag to turn, marking the houses' cities
+// wireframe earth of glowing lines (a hologram), drag to turn, marking the houses' cities
 // behind the bearer's PAID orders and BOUGHT tickets (/api/orders?places=1)
 // — nothing bought, nothing marked, and the readout says so.
 

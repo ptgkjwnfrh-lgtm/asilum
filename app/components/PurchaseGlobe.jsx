@@ -2,7 +2,9 @@
 
 // app/components/PurchaseGlobe.jsx — THE PURCHASE GLOBE (owner order, 9 Sep:
 // "replace the asterisk figure with a globe that shows all the places users
-// have bought clothes from — all ASCII with lines, 3D, moveable").
+// have bought clothes from — all ASCII with lines, 3D, moveable"; then,
+// the same day: "get rid of the ASCII structure … make the globe look like
+// a Star Wars hologram made of glowing lines").
 //
 // The drawing lives in lib/globe.js (pure canvas, no React) so it can be
 // judged with any list of cities outside the app; this component wires it
