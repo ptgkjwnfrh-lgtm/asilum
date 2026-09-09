@@ -114,21 +114,26 @@
      to a clean sky hue (192–204), saturation to the top. WHAT THE LAW CAPS:
      the AA text threshold (owner ruling, Aug 16; tests/theme-contrast.test.js)
      needs 4.5:1 on --bg and on white, and the LIGHTEST sky-teal that passes
-     sits near lightness 0.32 — a pastel sky blue cannot pass it. These are
-     the lightest values that do: --ink #007896 (4.62:1 on --bg), --sig
-     #0078a3 (4.52:1), --p2 #0a74bb (4.51:1). A lighter sky needs the law
-     relaxed, and that is the owner's call, not a token's. */
+     sits near lightness 0.32 — a pastel sky blue cannot pass it. SOFTENED
+     the same day (owner: "I need a softer blue — ice shouldn't feel so
+     negative, it should feel soft and icy and frosted"): the saturation came
+     DOWN instead of the lightness going up — a desaturated slate-sky at hue
+     205 reads soft and still passes: --ink #3c759d (4.51:1 on --bg), --sig
+     #3075a6 (4.51:1), --p2 #3f73a6 (4.52:1). What made ice feel "negative"
+     was mostly the FILLED controls — a selected button became a dark block
+     with white text; in ice they are FROSTED now (the grouped rule at the
+     end of this file: a pale sky fill, blue text, the ink glow). */
   /* THE INK IS TEAL (owner order, 8 Sep): "the black negative looking text
      and buttons should all be a nice blue and have a phosphor glow", then
      "more a bright teal". #08788a — 4.7:1 on --bg, 5.2:1 on white (the body
      text law is 4.5; the first bright teal, #0a8494, read 4.02 and failed
      it) — is the reading colour, the filled control colour, and the colour
      that glows. */
-  --ink: #007896;
+  --ink: #3c759d;
   --paper: #ffffff;
   --grey: #5d8794;
   --faint: #a5c2ca;
-  --line: rgba(0, 120, 163, 0.3);
+  --line: rgba(60, 117, 157, 0.3);
   /* THE ALERT/IDENTITY ACCENT, DARKENED TO PASS (owner ruling, Aug 16).
      #e5342b measured 3.92:1 on --bg and 4.32:1 on white — under AA, and --red
      is not decoration: it carries alerts, selection, the ASTERISK mark, and
@@ -154,26 +159,26 @@
      4.90:1 on --bg, 5.40:1 on white, 5.16:1 on --bg3.
      The dark theme's --sig (#46ff96) already measures 15:1 and is untouched;
      this is a light-theme-only correction. */
-  --sig: #0078a3;
+  --sig: #3075a6;
   /* The secondary graphic accent — strokes, gradients, the dock label. It read
      as text in at least one place (.os-dock .t b), and at #3e8fd0 measured
      3.15:1 on --bg. #286da4, same hue and saturation, is 5.00:1. Dark theme's
      #b088ff already measures 7.34:1 and is untouched. */
-  --p2: #0a74bb;
-  --glow: 0 0 6px rgba(0, 120, 163, 0.3), 0 0 14px rgba(0, 120, 163, 0.1);
+  --p2: #3f73a6;
+  --glow: 0 0 6px rgba(48, 117, 166, 0.28), 0 0 14px rgba(48, 117, 166, 0.09);
   --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
-  --glow-p: 0 0 6px rgba(10, 116, 187, 0.28);
-  --glow-ink: 0 0 5px rgba(0, 120, 150, 0.34), 0 0 14px rgba(0, 120, 150, 0.13);
-  --glow-box-ink: 0 0 10px rgba(0, 120, 150, 0.36), 0 0 26px rgba(0, 120, 150, 0.15);
+  --glow-p: 0 0 6px rgba(63, 115, 166, 0.26);
+  --glow-ink: 0 0 5px rgba(60, 117, 157, 0.3), 0 0 14px rgba(60, 117, 157, 0.11);
+  --glow-box-ink: 0 0 10px rgba(60, 117, 157, 0.3), 0 0 26px rgba(60, 117, 157, 0.12);
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
   --mag-glow:
-    0 0 4px rgba(0, 120, 163, 0.20),
-    9px 0 13px rgba(0, 120, 163, 0.16),
-    -9px 0 13px rgba(0, 120, 163, 0.16),
-    22px 0 28px rgba(0, 120, 163, 0.08),
-    -22px 0 28px rgba(0, 120, 163, 0.08);
-  --grid-ln: rgba(0, 120, 163, 0.015);
+    0 0 4px rgba(48, 117, 166, 0.18),
+    9px 0 13px rgba(48, 117, 166, 0.14),
+    -9px 0 13px rgba(48, 117, 166, 0.14),
+    22px 0 28px rgba(48, 117, 166, 0.07),
+    -22px 0 28px rgba(48, 117, 166, 0.07);
+  --grid-ln: rgba(60, 117, 157, 0.015);
   --scan: rgba(120, 160, 170, 0.05);
   /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
   --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 252, 246, 0.72), transparent 70%);
@@ -193,15 +198,15 @@
     linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
   --glass-spot: rgba(255, 255, 255, 0.22);
   --glass-spot-wide: rgba(255, 255, 255, 0.03);
-  --glass-shadow: 0 16px 44px rgba(0, 120, 163, 0.13), 0 1px 2px rgba(0, 120, 163, 0.08);
+  --glass-shadow: 0 16px 44px rgba(60, 117, 157, 0.12), 0 1px 2px rgba(60, 117, 157, 0.07);
   --glass-pill: rgba(255, 255, 255, 0.34);
   --glass-pill-rim: rgba(255, 255, 255, 0.55);
   --lamp-core: rgba(200, 244, 248, 0.5);
-  --lamp: rgba(0, 120, 163, 0.22);
-  --lamp-hot: rgba(0, 120, 163, 0.24);
+  --lamp: rgba(48, 117, 166, 0.2);
+  --lamp-hot: rgba(48, 117, 166, 0.22);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
-  --holo: linear-gradient(118deg, #0078a3 0%, #ffa5cd 24%, #ffe291 46%, #0a74bb 64%, #ffcdbe 82%, #0078a3 100%);
+  --holo: linear-gradient(118deg, #3075a6 0%, #ffa5cd 24%, #ffe291 46%, #3f73a6 64%, #ffcdbe 82%, #3075a6 100%);
 }
 
 * { box-sizing: border-box; }
@@ -1584,18 +1589,19 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
    signs scattered in the background, matching the light and dark colours, 5%
    opacity — I should hardly be able to see them"). One fixed layer: a
    holographic gradient in the theme's own hues (--holo), seen only through
-   a mask of small pluses — three tilings at different pitches and offsets, so
-   the field reads scattered rather than gridded. Opacity through the design
+   a mask of small pluses — two tilings at different pitches and offsets, so
+   the field reads scattered rather than gridded (three read as "too many",
+   owner, 9 Sep). Opacity through the design
    console (--ed-plus-op, shipped 0.05). Static: nothing moves, nothing to
    reduce. */
 .os-plus { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: var(--ed-plus-op, 0.05);
   background: var(--holo);
-  -webkit-mask-image: var(--plus), var(--plus), var(--plus);
-  mask-image: var(--plus), var(--plus), var(--plus);
-  -webkit-mask-size: 64px 64px, 89px 89px, 118px 118px;
-  mask-size: 64px 64px, 89px 89px, 118px 118px;
-  -webkit-mask-position: 0 0, 29px 41px, 71px 13px;
-  mask-position: 0 0, 29px 41px, 71px 13px;
+  -webkit-mask-image: var(--plus), var(--plus);
+  mask-image: var(--plus), var(--plus);
+  -webkit-mask-size: 96px 96px, 137px 137px;
+  mask-size: 96px 96px, 137px 137px;
+  -webkit-mask-position: 0 0, 41px 63px;
+  mask-position: 0 0, 41px 63px;
   -webkit-mask-repeat: repeat; mask-repeat: repeat; }
 /* the colour wash: one fixed layer, never tiled */
 body::before {
@@ -3137,3 +3143,22 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .gxcard.lg { padding: 18px 18px 20px; }
 }
 @media (prefers-reduced-motion: reduce) { .gxcard.lg::before { background: var(--glass-sheen); } }
+
+/* ==== ICE: A SELECTED CONTROL IS FROSTED, NOT DARK (owner, 9 Sep: "when I
+   select buttons they shouldn't turn dark — ice should feel soft and icy and
+   frosted"). Every filled / selected / hovered control that fills with the
+   ink on phosphor fills with a pale sky frost on ice: the ink stays the text,
+   the ink glow says "on". Same specificity family as the base rules, later
+   in the cascade, under the theme selector. ==== */
+[data-theme="light"] .btn, [data-theme="light"] .btn.ghost:hover, [data-theme="light"] .btn.ghost.active,
+[data-theme="light"] .platform:hover, [data-theme="light"] .outcomes button:hover, [data-theme="light"] .outcomes button.on,
+[data-theme="light"] .fitbtn:hover, [data-theme="light"] .fitbtn.active, [data-theme="light"] .followbtn:hover,
+[data-theme="light"] .chip.clickable.cur, [data-theme="light"] .unitpick button.on, [data-theme="light"] .wchip.cur,
+[data-theme="light"] .sugopt:hover, [data-theme="light"] .achip:hover, [data-theme="light"] .apill:hover {
+  background: color-mix(in srgb, var(--sig) 13%, var(--paper));
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--sig) 40%, transparent);
+  box-shadow: var(--glow-box-ink), inset 0 1px 0 var(--paper);
+  text-shadow: var(--glow-ink);
+}
+[data-theme="light"] .btn:disabled { box-shadow: none; text-shadow: none; }
