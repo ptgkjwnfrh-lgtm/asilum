@@ -115,6 +115,7 @@
   --holo: linear-gradient(118deg, #46ff96 0%, #5a8cff 22%, #b088ff 44%, #ff3838 62%, #eb46c8 80%, #46ff96 100%);
 }
 [data-theme="light"] {
+  --plus-k: 1;
   /* THE ICE ACCENT IS A COOL SKY-TEAL (owner, 9 Sep: "the opposite of the
      phosphorus green is this scary dark negative blue — change that to a cool
      tealish sky blue"). The family moved from a muddy blue-green (hue ~188)
@@ -1611,7 +1612,10 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
    owner, 9 Sep). Opacity through the design
    console (--ed-plus-op, shipped 0.05). Static: nothing moves, nothing to
    reduce. */
-.os-plus { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: var(--ed-plus-op, 0.05);
+.os-plus { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  /* phosphor takes 75% of the knob (owner, 9 Sep: "on dark mode lower the
+     opacity of the pluses by 25 percent"); ice takes it whole */
+  opacity: calc(var(--ed-plus-op, 0.05) * var(--plus-k, 0.75));
   background: var(--holo);
   -webkit-mask-image: var(--plus), var(--plus);
   mask-image: var(--plus), var(--plus);
