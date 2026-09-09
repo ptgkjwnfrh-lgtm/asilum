@@ -490,6 +490,15 @@ blue/purple/red/fuchsia; ice = sky-teal/pink/yellow/blue/peach) seen only
 through a mask of small pluses (--plus, an 8/11/15px plus at 64/89/118px
 tilings, offset so it reads scattered), opacity `--ed-plus-op` 0.05 —
 "hardly visible" by order. Static.
+**Softened the same day** (owner: "a softer blue — ice shouldn't feel so
+negative, it should feel soft and icy and frosted; selected buttons shouldn't
+turn dark"): the ice accents came DOWN in saturation rather than up in
+lightness — a desaturated slate-sky at hue 205: --ink #3c759d, --sig
+#3075a6, --p2 #3f73a6 (all ≥4.5:1 on --bg, the AA law kept). A selected,
+filled or hovered control on ice is FROSTED — pale sky fill, blue text, the
+ink glow (the grouped `[data-theme="light"]` rule at the end of globals.css
+over every `background: var(--ink)` state) — never a dark block. The plus
+field is two tilings (96/137px), not three.
 
 
 ## Copy law (17 August, owner directives)
