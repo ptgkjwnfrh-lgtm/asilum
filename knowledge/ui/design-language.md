@@ -525,6 +525,19 @@ meniscus off, in BOTH themes; the current destination keeps its red LED and
 red bar. On phosphor a word's resting light (the teal law's smear, now the
 token `--word-smear`) stays and a hover changes nothing; on ice the header's
 words carry no glow at all.
+**Safari, 9 Sep (owner: "no liquid glass rainbow or bezel warp, and it's
+laggy").** WHAT SAFARI CAN SHOW: never the header's own bezel (WebKit runs
+no SVG filter as a backdrop-filter — trap 150); only the PAGE-SIDE BEND,
+where content passes under the strip's bottom edge while scrolling. The
+bend's selector now reaches the new pages (`.headsub`, `.gxmastblock`,
+`.gxthick`, `.gxhead`, `.gxfoot`, `.rkhead`, `.rkrow`, `.pfsec`, `.otfrow`,
+`.ppsec`, `.demobanner`); an element over 260k px² (`BIG_AREA`) passes
+unbent (WebKit re-rasterises the whole element through three displacement
+passes per placement), and placement runs on alternate scroll frames. THE
+LAG WAS THE GLOBE: a canvas shadowBlur on each of ~700 glyphs cost /upload
+37ms a frame at idle (16.7 elsewhere) — the cage draws with alpha alone
+now, at half rate (a drag draws every frame), and /upload idles at 17.9 /
+scrolls at 18.9 in Chrome. Safari itself unmeasured.
 
 
 ## Copy law (17 August, owner directives)
