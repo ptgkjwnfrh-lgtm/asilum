@@ -510,6 +510,14 @@ accent a soft PURPLE (#805ac1, 4.50:1) so the purple voice stays; the wash
 is two aqua hazes plus a faint pink and a faint purple, the blobs aqua /
 pink / purple / aqua, the plus sweep cyan-aqua-pink-purple, the vignette
 cyan. The AA law is kept throughout.
+**Ice: the header's words are just words** (owner, 9 Sep, from a Safari
+recording where a hovered word grew a dark grey pill): in ice a hovered or
+current header word has NO pill and NO glow, the lamps under the glass are
+off (`.glass-light` hidden), no pointer shine or rim catch on the pane, no
+meniscus; the current destination keeps its red LED and red bar; the
+frosted selected controls carry no glow. Phosphor keeps all of it — every
+rule sits under `[data-theme="light"]` (the grouped block at the end of
+globals.css). "DO NOT CHANGE DARK MODE."
 
 
 ## Copy law (17 August, owner directives)
