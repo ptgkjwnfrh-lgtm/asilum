@@ -2326,6 +2326,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* upload-station r2: the warped map settles as the page background; the
    layout splits into a do-column and ASTERISK's watching rail. */
 .gxmap { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; overflow: hidden; }
+/* the map settles back once the page is open (owner, 9 Sep: 45% less of
+   what it showed — 0.5 → 0.275); the first frame keeps the warp's 0.5 so the
+   passport hand-off stays continuous */
+.gxmap { transition: opacity 1.1s ease; }
+.gxmap.settled { opacity: 0.275; }
+@media (prefers-reduced-motion: reduce) { .gxmap { transition: none; } }
 .gxmap svg { width: 100%; height: 100%; }
 /* warp hand-off: the map pinned at the passport build's exact fit; the
    wide road tiers live outside the viewBox, so let the svg paint them */

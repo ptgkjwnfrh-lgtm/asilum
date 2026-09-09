@@ -75,6 +75,12 @@ export default function UploadPage() {
   // not be reached (never rendered as "nothing bought"); else the record.
   const [places, setPlaces] = useState(null);
   const [stamp, setStamp] = useState("");
+  // THE MAP SETTLES BACK (owner, 9 Sep: "when a user opens the upload the
+  // background map should lower its current visible opacity by 45% — it's a
+  // little distracting"). The first frame keeps the warp's 0.5 so the
+  // hand-off from the passport stays pixel-continuous; then the map eases
+  // to 0.275 (55% of what it showed). A direct visit gets the same settle.
+  const [mapSettled, setMapSettled] = useState(false);
   const fileRef = useRef(null);
   const map = useParisRoads();
   // arriving from the passport build: reuse its exact fit so the
@@ -118,6 +124,9 @@ export default function UploadPage() {
     try { setFavs({ ...EMPTY_FAVS, ...(JSON.parse(window.localStorage.getItem(FAVS_KEY)) || {}) }); } catch {}
     setDesigners(followedBrands());
     setStamp(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }).toUpperCase());
+    // one painted frame at the warp's opacity, then the settle
+    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setMapSettled(true)));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   function loadViz(user = uid || getUid()) {
@@ -288,7 +297,7 @@ export default function UploadPage() {
   return (
     <div className="wrap gx gxv2">
       {map && (
-        <div className="gxmap" aria-hidden="true">
+        <div className={"gxmap" + (mapSettled ? " settled" : "")} aria-hidden="true">
           {warpFit ? (
             <div
               className="gxmapfit"
