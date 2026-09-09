@@ -227,7 +227,13 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
   // nothing larger than BIG is ever filtered (the columns of the catalog
   // are 9,000px tall; filtering one of those every scroll frame was the
   // glitch and the lag of 8 Sep).
-  const STEP = 40, BIG = 1600;
+  // BIG_AREA (9 Sep): WebKit rasterises the WHOLE filtered element through
+  // three displacement passes on every scroll frame, and the owner's Safari
+  // lagged once the page's big panes could bend — a 720×520 pane is 375k
+  // pixels a frame. Under 260k px² an element bends; over it, it passes
+  // under the edge unbent (the upload station's panes, the passport
+  // document) — the words and rows inside them still do.
+  const STEP = 40, BIG = 1600, BIG_AREA = 260000;
   const outermost = (hit) => {
     let node = hit && hit.closest ? hit.closest(selector) : null;
     while (node) {
@@ -271,7 +277,7 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     const under = new Set();
     for (const node of sample(r)) {
       const b = node.getBoundingClientRect();
-      if (b.width === 0 || b.width > BIG || b.height > BIG) continue;
+      if (b.width === 0 || b.width > BIG || b.height > BIG || b.width * b.height > BIG_AREA) continue;
       if (!crosses(b, r)) continue;
       under.add(node);
       let f = bent.get(node);
@@ -359,7 +365,10 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     ro.observe(el);
     fit();
     // the page can still scroll under the pane on a phone: re-place the bend
-    const onScroll = () => { if (pageBend && !raf) raf = requestAnimationFrame(fit); };
+    // — on alternate frames (9 Sep, the owner's Safari lag): the map trails
+    // the edge by at most one frame, and WebKit re-rasterises half as often
+    let skip = false;
+    const onScroll = () => { if (!pageBend || raf) return; skip = !skip; if (!skip) raf = requestAnimationFrame(fit); };
     if (pageBend) window.addEventListener("scroll", onScroll, { passive: true });
     const onMove = (e) => {
       const r = el.getBoundingClientRect();

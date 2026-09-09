@@ -161,7 +161,13 @@ export default function Shell({ children }) {
     const STRIP_OPEN = { top: false, left: false, right: false, bottom: true };
     const pageBend = refract ? null : createPageBend({
       id: "lg-refract", el, mapRef, open: STRIP_OPEN,
-      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .deck, .cvkick, .cvstory",
+      // (9 Sep) the masthead's second line, the upload station's masthead,
+      // thick rule and panes, the settings rack's rows and heads, the
+      // profile's sections, the stylist's rows and the passport's sections
+      // joined the list — on Safari the owner saw no warp at all on the new
+      // pages, because nothing on them was in it.
+      selector: ".card, .cvlook, .mrelitem, .cvmastline, .cvherobrand, .cvindex, .hlrow, .elrow, .headline, .headsub, .deck, .cvkick, .cvstory, "
+        + ".gxmastblock, .gxthick, .gxhead, .gxfoot, .rkhead, .rkrow, .pfsec, .otfrow, .ppsec, .demobanner",
     });
     let raf = 0;
     let lastSize = "";
@@ -191,7 +197,11 @@ export default function Shell({ children }) {
     const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
     ro.observe(el);
     fit();
-    const onPageScroll = () => { if (pageBend && !raf) raf = requestAnimationFrame(fit); };
+    // alternate frames (9 Sep, the owner's Safari lag): WebKit re-rasterises
+    // every bent element on each placement; trailing the edge by one frame
+    // halves that, and the strip's own map needs no re-draw on a scroll
+    let skipBend = false;
+    const onPageScroll = () => { if (!pageBend || raf) return; skipBend = !skipBend; if (!skipBend) raf = requestAnimationFrame(fit); };
     if (pageBend) window.addEventListener("scroll", onPageScroll, { passive: true });
 
     // THE MENISCUS on the hovered word: a shallow dome in the surface that
