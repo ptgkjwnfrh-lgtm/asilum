@@ -499,6 +499,17 @@ filled or hovered control on ice is FROSTED — pale sky fill, blue text, the
 ink glow (the grouped `[data-theme="light"]` rule at the end of globals.css
 over every `background: var(--ink)` state) — never a dark block. The plus
 field is two tilings (96/137px), not three.
+**Then THE CYAN GLASS WORLD** (owner, 9 Sep, three references: a Y2K
+chrome figure in aqua light, a Tron cyan glow, the VAIO store of clear cyan
+glass — "don't fully remove the slight accents of purple and pink"): ice is
+a cool cyan-white ground (`--bg` #e6f4fa) with CYAN glass tints (`--glass`,
+`--glass-pill`, `--glass-shadow`), cyan lamps, a brighter cyan glow on every
+lit word and frosted control (rgba 0,190,235), chrome sheens kept white; the
+ink and the signal are the passing cyans (#0c7795 / #0d779e), the secondary
+accent a soft PURPLE (#805ac1, 4.50:1) so the purple voice stays; the wash
+is two aqua hazes plus a faint pink and a faint purple, the blobs aqua /
+pink / purple / aqua, the plus sweep cyan-aqua-pink-purple, the vignette
+cyan. The AA law is kept throughout.
 
 
 ## Copy law (17 August, owner directives)
