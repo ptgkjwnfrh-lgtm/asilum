@@ -25,6 +25,7 @@ import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
+import PageMast from "./components/PageMast.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -850,7 +851,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
-        <h1 className="headline"><span className="red">*</span>THE FEED</h1>
+        <PageMast word="THE FEED" sub="YOUR CURATED EDIT" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}

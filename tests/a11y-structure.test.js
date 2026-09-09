@@ -25,10 +25,15 @@ const code = (p) => read(p).replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*
 test("every route that renders a masthead has exactly one page heading", () => {
   // /cover and /profile built their mastheads from styled spans and shipped no
   // h1 at all.
+  // The destinations set their masthead through PageMast.jsx (9 Sep), which
+  // renders the page's one h1 — so a <PageMast /> counts as that h1, and the
+  // component itself is held to exactly one.
+  const mast = code("app/components/PageMast.jsx").match(/<h1[\s>]/g) || [];
+  assert.equal(mast.length, 1, `PageMast.jsx: exactly one h1, found ${mast.length}`);
   for (const page of ["app/cover/page.js", "app/profile/page.js", "app/page.js"]) {
     const src = code(page);
-    const h1s = src.match(/<h1[\s>]/g) || [];
-    assert.equal(h1s.length, 1, `${page}: exactly one h1, found ${h1s.length}`);
+    const h1s = (src.match(/<h1[\s>]/g) || []).length + (src.match(/<PageMast[\s/]/g) || []).length;
+    assert.equal(h1s, 1, `${page}: exactly one h1, found ${h1s}`);
   }
 });
 

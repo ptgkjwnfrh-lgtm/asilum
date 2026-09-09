@@ -469,6 +469,28 @@ then the credit stack (RECORD No. / PIECES PLACED / CONVICTIONS HELD), then
 the conviction readback, heard-log, RECENTLY FORGOTTEN, the links (now with
 ORDERS →) and the Reset Brain control, unchanged.
 
+**Same day, the owner's second round.** The map settles to 0.4 (first 45%
+less, then "settle at 40%"); the station index is GONE ("they make no
+sense"); a solid 7px rule (.gxthick) under the masthead and two more thick
+hairlines + two verticals in the field. **THE MASTHEAD IS EVERYWHERE:** the
+shared `.headline` is set like the cover's masthead (Michroma 700, fluid
+38–84px via `--ed-fs-headline`, tracking 0.02em, line 0.94, uppercase) and
+the eight destinations render it through `app/components/PageMast.jsx`
+with a faint second line (`.headsub`) — the cover's own words for that
+subsystem (YOUR CURATED EDIT / POSTS + THE HOTLIST / TRAIN THE BRAIN / THE
+OPEN INDEX / CONTROL PANEL / TONIGHT'S LOOKS / FULL READ); ORDERS has none.
+**ICE IS A COOL SKY-TEAL** (owner: "the opposite of the phosphorus green is
+this scary dark negative blue — a cool tealish sky blue"): --ink #007896,
+--sig #0078a3, --p2 #0a74bb, every glow/lamp/line/shadow re-tinted to the
+same hue. The AA law (Aug 16; tests/theme-contrast.test.js) caps lightness
+near 0.32 at this hue — a pastel sky cannot pass it; relaxing the law is the
+owner's call. **THE PLUS FIELD** (.os-plus in shell.js): a fixed layer
+carrying a holographic sweep in the theme's own hues (--holo: dark = green/
+blue/purple/red/fuchsia; ice = sky-teal/pink/yellow/blue/peach) seen only
+through a mask of small pluses (--plus, an 8/11/15px plus at 64/89/118px
+tilings, offset so it reads scattered), opacity `--ed-plus-op` 0.05 —
+"hardly visible" by order. Static.
+
 
 ## Copy law (17 August, owner directives)
 

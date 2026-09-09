@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Notice from "../components/Notice.jsx";
 import { getUid, authorizedFetch, thumbFor, sendJSON, postJSON } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
+import PageMast from "../components/PageMast.jsx";
 
 export default function OrdersPage() {
   const [bagHistory, setBagHistory] = useState(null);
@@ -97,7 +98,7 @@ export default function OrdersPage() {
   return (
     <div className="wrap">
       <div className="locline"><a href="/profile">← PROFILE</a><span>/ ORDERS &amp; TICKETS</span></div>
-      <h1 className="headline"><span className="red">*</span>ORDERS & TICKETS</h1>
+      <PageMast word="ORDERS & TICKETS" />
       <p className="deck">
         purchase tickets are handled with the original marketplace — they
         confirm, ship, track, and take returns. bag history rides below.

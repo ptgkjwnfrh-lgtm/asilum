@@ -62,9 +62,10 @@ test("the control registry is internally consistent", () => {
   assert.equal(GROUPS.length, 5);
   // 53 -> 54 on 17 Aug: --ed-fs-wordmark-mobile. 54 -> 56 on 9 Sep: the
   // upload station's masthead (--ed-fs-gxmast) and the purchase globe's size
-  // (--ed-gx-globe). This count is pinned on purpose — a control added
+  // (--ed-gx-globe); 56 -> 57 the same day: the plus field's opacity
+  // (--ed-plus-op). This count is pinned on purpose — a control added
   // without a decision changes this line first.
-  assert.equal(ALL_CONTROLS.length, 56);
+  assert.equal(ALL_CONTROLS.length, 57);
 
   const keys = ALL_CONTROLS.map((c) => c.key);
   // A duplicated key is the copy-paste failure this file invites: ALLOWED_KEYS

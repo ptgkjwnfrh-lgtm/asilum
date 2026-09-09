@@ -18,6 +18,7 @@ import { sourceFor } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
 import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
+import PageMast from "../components/PageMast.jsx";
 
 export default function StylistPage() {
   const [groups, setGroups] = useState(null);
@@ -150,7 +151,7 @@ export default function StylistPage() {
   return (
     <div className="wrap">
       <div className="locline"><a href="/discover">← DISCOVER</a><span>/ THE STYLIST</span></div>
-      <h1 className="headline"><span className="red">*</span>THE STYLIST</h1>
+      <PageMast word="THE STYLIST" sub="TONIGHT'S LOOKS" />
       {/* The stylist cuts its looks from the same synthetic catalog, so it
           carries the same disclosure. It has no Buy control to strip — bagging
           a look is a taste signal, which is exactly what a demo catalog is

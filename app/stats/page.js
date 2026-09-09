@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import AsteriskDock from "../components/AsteriskDock.jsx";
 import { vizState } from "../../lib/brain/memory.js";
 import { getUid, authorizedFetch } from "../../lib/client.js";
+import PageMast from "../components/PageMast.jsx";
 
 export default function StatsPage() {
   const [stats, setStats] = useState(null);
@@ -76,7 +77,7 @@ export default function StatsPage() {
   return (
     <div className="wrap">
       <div className="locline"><a href="/board">← PASSPORT</a><span>/ BRAIN DASHBOARD</span></div>
-      <h1 className="headline"><span className="red">*</span>STATS</h1>
+      <PageMast word="STATS" sub="FULL READ" />
       <p className="deck">what the brain has learned so far.</p>
       {mix ? <p className="areadnote"><b className="red">*</b> {mix.line}</p> : null}
       <hr className="rule" />

@@ -25,8 +25,7 @@
 // and a colophon whose every value is real state — and every card is the
 // same clear pane as the passport, the strip and the item detail
 // (LiquidGlass.jsx: no border, the edges lensing where the engine can bend
-// a backdrop, the gloss and the pointer's shine over its face). A station
-// index under the masthead jumps to the four numbered sections. The rail's
+// a backdrop, the gloss and the pointer's shine over its face). The rail's
 // ASTERISK dock is replaced by THE PURCHASE GLOBE (PurchaseGlobe.jsx): a
 // wireframe earth of ASCII lines, drag to turn, marking the houses' cities
 // behind the bearer's PAID orders and BOUGHT tickets (/api/orders?places=1)
@@ -52,14 +51,7 @@ const EMPTY_FAVS = { celebrities: [], cities: [], movies: [], singers: [], style
 // The hairline field (the cover's, in the station's proportions): a few
 // thick, most thin, most barely there. Hand-placed and deterministic —
 // print texture, not motion, so no random at render.
-const HAIRLINES = ["gxln-h1", "gxln-h2", "gxln-h3", "gxln-h4", "gxln-v1", "gxln-v2", "gxln-v3"];
-
-const SECTIONS = [
-  { id: "wall", num: "01", label: "THE WALL" },
-  { id: "people", num: "02", label: "PEOPLE & PLACES" },
-  { id: "designers", num: "03", label: "DESIGNERS & LEANINGS" },
-  { id: "globe", num: "04", label: "THE GLOBE" },
-];
+const HAIRLINES = ["gxln-h1", "gxln-h2", "gxln-h3", "gxln-h4", "gxln-h5", "gxln-h6", "gxln-v1", "gxln-v2", "gxln-v3", "gxln-v4", "gxln-v5"];
 
 export default function UploadPage() {
   const [uid, setUid] = useState("");
@@ -79,7 +71,7 @@ export default function UploadPage() {
   // background map should lower its current visible opacity by 45% — it's a
   // little distracting"). The first frame keeps the warp's 0.5 so the
   // hand-off from the passport stays pixel-continuous; then the map eases
-  // to 0.275 (55% of what it showed). A direct visit gets the same settle.
+  // to 0.4 (the owner's number). A direct visit gets the same settle.
   const [mapSettled, setMapSettled] = useState(false);
   const fileRef = useRef(null);
   const map = useParisRoads();
@@ -333,9 +325,7 @@ export default function UploadPage() {
             </span>
           </div>
         </div>
-        <nav className="gxindex" aria-label="station index">
-          {SECTIONS.map((s) => <a key={s.id} href={"#" + s.id}><b>{s.num}</b>{s.label}</a>)}
-        </nav>
+        <i className="gxthick" aria-hidden="true" />
       </header>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
