@@ -34,6 +34,8 @@ if (fs.existsSync(envFile)) {
 }
 
 const { searchEbay } = await import("../lib/ingest/ebay.js");
+const { processQuery, streamStatus } = await import("../lib/asterisk/stream/index.js");
+const DEEP = process.argv.includes("--deep");
 
 const DEFAULT_QUERIES = [
   "helmut lang archive",
@@ -47,7 +49,8 @@ const DEFAULT_QUERIES = [
   "undercover jun takahashi",
   "rick owens drkshdw",
 ];
-const queries = process.argv.slice(2).length ? process.argv.slice(2) : DEFAULT_QUERIES;
+const argQueries = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const queries = argQueries.length ? argQueries : DEFAULT_QUERIES;
 const limit = Math.max(1, Math.min(50, Number(process.env.EBAY_LIMIT) || 12));
 const env = process.env.EBAY_ENV === "PRODUCTION" ? "PRODUCTION" : "SANDBOX";
 
@@ -61,11 +64,18 @@ const tagFreq = new Map();
 let seen = 0, tagged = 0, sized = 0, priced = 0;
 const untagged = [];
 
-console.log(`eBay FIRST LIGHT · ${env} · ${queries.length} queries × ${limit}\n`);
+let identified = 0, detailRead = 0, totalCost = 0;
+const status = streamStatus();
+console.log(`eBay FIRST LIGHT · ${env} · ${queries.length} queries × ${limit}${DEEP ? ` · DEEP (detail + decode${status.identify.enabled ? ` + identify ${status.identify.model}/${status.identify.effort}${status.identify.search ? "+search" : ""}` : " · identify OFF: no ANTHROPIC_API_KEY"})` : ""}\n`);
 for (const q of queries) {
-  let items;
+  let items, results = null;
   try {
-    items = await searchEbay(q, { limit, verifyColors: false });
+    if (DEEP) {
+      results = await processQuery(q, { limit, concurrency: 3 });
+      items = results.map((r) => r.product);
+    } else {
+      items = await searchEbay(q, { limit, verifyColors: false });
+    }
   } catch (e) {
     console.log(`▌ ${q}\n  FAILED: ${String(e.message).slice(0, 300)}\n`);
     continue;
@@ -82,15 +92,36 @@ for (const q of queries) {
     if (it.size?.label) sized += 1;
     if (it.price != null) priced += 1;
     for (const [t] of tags) tagFreq.set(t, (tagFreq.get(t) || 0) + 1);
+    const canonical = tags.filter(([t]) => t === t.toUpperCase());
+    const descriptors = tags.filter(([t]) => t !== t.toUpperCase());
     console.log("  " + pad(it.title, 46) + pad(it.brand, 16) + pad(it.category, 11) + pad(it.era?.decade, 6) + pad(it.size?.label ?? "—", 7)
-      + pad(it.price != null ? `${it.currency} ${it.price}` : "—", 9) + (tags.slice(0, 4).map(([t, w]) => (w == null ? t : `${t} ${w.toFixed(2)}`)).join(" · ") || "∅ NO TAGS"));
+      + pad(it.price != null ? `${it.currency} ${it.price}` : "—", 9) + (canonical.slice(0, 4).map(([t, w]) => (w == null ? t : `${t} ${w.toFixed(2)}`)).join(" · ") || "∅ NO TAGS"));
+    if (DEEP) {
+      const r = results[items.indexOf(it)];
+      const rec = r?.identification?.record;
+      if (r?.summary?.detail === "read") detailRead += 1;
+      if (rec) {
+        identified += 1;
+        const y = rec.identification.year;
+        console.log("      ↳ " + [rec.identification.house, rec.identification.line, rec.identification.garment, rec.identification.collection,
+          y.value ? `${y.value} (${y.confidence})` : y.low || y.high ? `${y.low ?? "?"}–${y.high ?? "?"}` : null].filter(Boolean).join(" · ")
+          + ` · conf ${rec.confidence}` + (r.identification.searched ? " · searched" : "") + ` · $${r.identification.costUsd}`);
+        console.log("      ↳ " + rec.identification.what_it_is.slice(0, 140));
+      } else if (r?.identification) {
+        console.log(`      ↳ identify ${r.identification.status}${r.identification.error ? ": " + r.identification.error.slice(0, 120) : ""}`);
+      }
+      totalCost += r?.summary?.costUsd || 0;
+      if (descriptors.length) console.log("      ↳ " + descriptors.slice(0, 10).map(([t, w]) => `${t} ${w.toFixed(2)}`).join(" · "));
+      if (r?.summary?.aspects) console.log(`      ↳ seller tags ${r.summary.aspects} · brand from ${it.brandSource}` + (r.readings?.length ? ` · ${r.readings.length} readings` : ""));
+    }
   }
   console.log();
 }
 
 const top = [...tagFreq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 24);
 console.log("═══ what Asterisk saw");
-console.log(`  listings ${seen} · tagged ${tagged} (${seen ? Math.round((100 * tagged) / seen) : 0}%) · size read ${sized} · priced ${priced}`);
+console.log(`  listings ${seen} · tagged ${tagged} (${seen ? Math.round((100 * tagged) / seen) : 0}%) · size read ${sized} · priced ${priced}`
+  + (DEEP ? ` · detail read ${detailRead} · identified ${identified} · cost $${totalCost.toFixed(3)}` : ""));
 console.log("  top tags: " + (top.map(([t, n]) => `${t}×${n}`).join("  ") || "none"));
 if (untagged.length) {
   console.log(`\n═══ ${untagged.length} listings Asterisk could NOT tag (lexicon holes — the useful part)`);

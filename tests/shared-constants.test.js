@@ -109,6 +109,7 @@ test("the copies that agree today are named, so a new one is noticed", () => {
     "CO_ENGAGE_SPAN=5 in 2 files",
     "FETCH_TIMEOUT_MS=10000 in 3 files",
     "MAX_SLOT=999 in 2 files",
+    "SESSION_RATE=2.5 in 2 files",
     "TASTE_LONG=0.6 in 2 files",
     "TASTE_SESSION=0.4 in 2 files",
   ], "the set of duplicated constants changed — import it instead, or record it here");

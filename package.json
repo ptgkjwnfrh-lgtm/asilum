@@ -19,6 +19,7 @@
     "floor:check": "node scripts/measure-match-floor.mjs",
     "steward": "node scripts/steward.mjs",
     "ebay:first-light": "node scripts/ebay-first-light.mjs",
+    "test:live-asterisk": "ANTHROPIC_API_KEY=$(grep '^ANTHROPIC_API_KEY=' .env.local | cut -d= -f2-) node --test tests/asterisk-identify-live.test.js",
     "test:live-stripe": "STRIPE_SECRET_KEY=$(grep '^STRIPE_SECRET_KEY=' .env.local | cut -d= -f2-) node --test tests/stripe-live.test.js",
     "docs:codemap": "node scripts/generate-code-map.mjs",
     "audit:nav": "node scripts/audit-navigability.mjs",
@@ -27,6 +28,7 @@
     "search:snapshot": "node scripts/search-identity-snapshot.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@supabase/supabase-js": "2.110.5",
     "fastest-levenshtein": "^1.0.16",
     "next": "16.2.10",
@@ -34,7 +36,8 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "sharp": "0.34.5",
-    "stemmer": "^2.0.1"
+    "stemmer": "^2.0.1",
+    "zod": "^4.6.1"
   },
   "overrides": {
     "postcss": "8.5.10"
