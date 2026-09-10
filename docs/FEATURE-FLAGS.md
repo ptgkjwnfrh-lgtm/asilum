@@ -17,6 +17,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `AI_USER_HOURLY_LIMIT` / `AI_GLOBAL_HOURLY_LIMIT` | paid-call ceilings | 12 / 200 | 429-style refusal |
 | `INGEST_ALLOWED_HOSTS` | research/in-app fetch allowlist | deny-all | fetch refused with named reason |
 | `EBAY_CLIENT_ID/SECRET` (+ approval) | eBay adapter | unset | adapter reports disabled |
+| `EBAY_DELETION_VERIFICATION_TOKEN` (+ optional `EBAY_DELETION_ENDPOINT`) | eBay account-deletion notification endpoint | unset | honest 503 (eBay's portal verification fails until set) |
 | `WOOCOMMERCE_STORE_APPROVED` + `WOOCOMMERCE_STORE_URL` | WooCommerce adapter | off | adapter reports disabled |
 | `DEVICE_COOKIE_SECRET` | identity issuing | required (503 if unset in prod) | honest 503 |
 | `ADMIN_TOKEN` | admin surface | disabled if unset | honest 503 |

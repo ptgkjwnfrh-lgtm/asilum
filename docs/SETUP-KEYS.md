@@ -29,14 +29,58 @@ gains a "semantic match" recall channel and the backfill script works.
 
 ## 2. eBay Browse API (live marketplace listings)
 
-1. Register at https://developer.ebay.com → create an application →
-   production keyset. eBay approves Browse API access — note the use case as
-   product search/display with affiliate-style linking out.
-2. Set env vars: `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`, `EBAY_ENV=PRODUCTION`
-   (unset = sandbox), and flip `EBAY_PARTNERSHIP_APPROVED=1` only when you
-   are comfortable presenting the integration as live.
-3. Sync runs through `/api/admin` (needs `ADMIN_TOKEN`, 16+ chars). Rate
-   guards already exist (`EBAY_USER_MINUTE_LIMIT` / `EBAY_GLOBAL_MINUTE_LIMIT`).
+State 10 Sep 2026: Asilummagazine LLC exists; the adapter
+(`lib/ingest/ebay.js`, `lib/ingest/adapters/ebayAdapter.js`) and the
+account-deletion endpoint (`app/api/ebay/account-deletion/route.js`) are
+built and tested. What remains is the owner's account, the keys, and one
+ruling.
+
+**⚖ Read first.** The eBay API License Agreement (read 10 Sep 2026,
+developer.ebay.com/join/api-license-agreement) forbids using eBay Content
+"to train algorithms, conduct machine learning, develop synthetic data sets,
+train large learning models, and/or train artificial intelligence systems."
+Ingested eBay listings take the seed pipeline — `inferTags()` into the
+brain vector — and the taste profile learns from what people do with them.
+Whether a deterministic tag-and-graph recommender is "training algorithms"
+on eBay Content is counsel's question (the same one
+`docs/epn-terms-check-2026-08-22.md` raised for EPN). Keying the adapter is
+the owner's ruling that it is not, or that the risk is accepted.
+
+Sequence (owner + agent):
+
+1. **Owner** signs up at https://developer.ebay.com/signin (an eBay account
+   for the LLC; the developer program asks for a legal name, address and a
+   use case — "marketplace listing search and display with links out to
+   eBay"). Account creation and sign-in are the owner's; nothing here is
+   automated.
+2. **Owner** creates an application keyset: My Account → Application Keys →
+   Production. This yields an **App ID (Client ID)** and a **Cert ID
+   (Client Secret)**. The Cert ID is the secret: reveal → clipboard → Vercel
+   `EBAY_CLIENT_SECRET`, never through a transcript. The App ID is not a
+   secret and can be pasted anywhere.
+3. **Account deletion notifications** (the production gate). In the portal,
+   Alerts & Notifications → Marketplace Account Deletion: enter the
+   endpoint `https://www.asilummagazine.com/api/ebay/account-deletion` and
+   a verification token. The token must ALREADY be live on Vercel as
+   `EBAY_DELETION_VERIFICATION_TOKEN` (32–80 chars of letters, digits, `_`,
+   `-`) with a redeploy done, because eBay sends the challenge the moment
+   the form is saved. The agent generates the token, sets it on Vercel and
+   hands the same value to whoever fills the portal form. (The opt-out path
+   exists for developers that "do not store any eBay data" — ASILUM stores
+   listings, so subscribe rather than claim the exemption.)
+4. **Env on Vercel (production):** `EBAY_CLIENT_ID`, `EBAY_CLIENT_SECRET`,
+   `EBAY_ENV=PRODUCTION`, `EBAY_PARTNERSHIP_APPROVED=1`,
+   `EBAY_DELETION_VERIFICATION_TOKEN`; redeploy (an env var does nothing
+   until a redeploy — trap 109).
+5. **Sync** runs through `/api/admin` `sync.run { query, limit }` (needs
+   `ADMIN_TOKEN`); the default query is "designer archive fashion", 48
+   items; run it per house / era query to build the catalog. Rate guards
+   exist (`EBAY_USER_MINUTE_LIMIT` / `EBAY_GLOBAL_MINUTE_LIMIT`); eBay's own
+   default Browse limit is per-day per keyset (raise via the portal's
+   application growth check when it binds).
+6. **Affiliate links** (`X-EBAY-C-ENDUSERCTX: affiliateCampaignId=…`) are
+   NOT sent — EPN enrolment is a separate programme with its own ⚖ (the
+   22 Aug brief). Listings link out plain until that is ruled.
 
 ## 3. Shopify Storefront (brand/boutique catalogs)
 
