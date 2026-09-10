@@ -2,11 +2,17 @@
 
 // app/profile/page.js — PROFILE.
 // Standard social format (owner order, Aug 12: Grailed × Twitter ×
-// MySpace, legibility first): banner, overlapping avatar, name/handle/bio,
-// a member-since line, one plain counts row, then ONE tab row holding
-// everything — posts, brands, bag, wardrobe, the room (MySpace
-// personality), sizing, and account. Identity is local until real accounts
-// exist; all displayed counts are derived from real local/server state.
+// MySpace, legibility first), rebuilt in liquid glass on 9 Sep (owner: "the
+// account page looks a little empty — instagram mixed with myspace mixed
+// with grailed"): the identity header as one glass pane (banner, the avatar
+// over its edge, name/handle/bio, the counts as big numbers — Instagram), a
+// rail of the person's own page (ABOUT ME, TOP HOUSES, PEOPLE, THE FIT ON
+// FILE — MySpace), and ONE tab row on a glass sheet holding everything —
+// posts as a square grid, the CLOSET as a grid of pieces with brand and
+// price (Grailed), brands, wardrobe, the room, sizing, and account.
+// Identity is local until real accounts exist; every displayed count is
+// derived from real local/server state, and "—" stands where nothing is
+// measured.
 
 import { useEffect, useState } from "react";
 import {
@@ -23,6 +29,7 @@ import {
 } from "../../lib/social.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import GlassPane from "../components/GlassPane.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
@@ -181,6 +188,25 @@ export default function ProfilePage() {
     input.click();
   }
 
+  // THE RAIL's records (9 Sep): the houses and people followed (the same
+  // follow event BRANDS and ACCOUNT fire), and the fit on file (the same
+  // asilum:fit event SIZING fires). Read once, then kept in step.
+  const [houses, setHouses] = useState([]);
+  const [people, setPeople] = useState([]);
+  const [fitOnFile, setFitOnFile] = useState(EMPTY_FIT);
+  useEffect(() => {
+    const follows = () => { setHouses(followedBrands()); setPeople(followedUsers()); };
+    const fitSync = (event) => setFitOnFile(event?.detail ? { ...event.detail } : loadFitProfile());
+    follows();
+    fitSync();
+    window.addEventListener("asilum:follow", follows);
+    window.addEventListener("asilum:fit", fitSync);
+    return () => {
+      window.removeEventListener("asilum:follow", follows);
+      window.removeEventListener("asilum:fit", fitSync);
+    };
+  }, []);
+
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
   // Brands seen in bag history. These are the BRANDS tab's *candidates* to
@@ -193,131 +219,208 @@ export default function ProfilePage() {
   const followingCount = followedUsers().length + boardFollows;
 
   return (
-    <div className="wrap">
+    <div className="wrap pf2">
       {/* PROFILE had no page heading of any kind. The person's name is the
           honest h1 for their own profile; it falls back to the destination
           name before the profile has loaded one. */}
       <h1 className="a11yhead">{info.name ? `${info.name} — Profile` : "Profile"}</h1>
-      <div
-        className="pbanner"
-        style={info.bannerImg ? { backgroundImage: `url(${info.bannerImg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-      >
-        <span>*</span>
-        {editing && (
-          <div className="pbannerctl">
-            <button className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
-            <button className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
-          </div>
-        )}
-      </div>
-      <div className="phead2">
-        <div className="pavatar">
-          {info.avatarImg
-            ? <img className="pavimg" src={info.avatarImg} alt={info.name || "avatar"} />
-            : <Avatar name={info.name} />}
-        </div>
-        <div className="pident">
-          {editing ? (
-            <>
-              <input className="pedit" aria-label="display name" value={info.name} onChange={(e) => save("name", e.target.value)} />
-              <input className="pedit small" aria-label="handle" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
-              <textarea className="pedit small" aria-label="bio" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
-            </>
-          ) : (
-            <>
-              <div className="pname">{info.name}</div>
-              <div className="uhandle">{info.handle}</div>
-              <p className="pbio">{info.bio}</p>
-            </>
-          )}
-          {since && <div className="pmeta">MEMBER SINCE {since}</div>}
-          {/* FOLLOWERS prints "—", not 0 (metric-definition audit, Aug 17).
-              There is no follower state anywhere in lib/ or app/api — the word
-              does not appear in either — so a literal 0 was a measurement of a
-              thing nobody measures, and it read as "nobody follows you". This
-              is the /stats rule applied here: anything not measurable prints
-              "—" rather than a zero that would read as a fact. */}
-          <div className="pcounts">
-            <span><b>{posts.length}</b> POSTS</span>
-            <span><b>{followingCount}</b> FOLLOWING</span>
-            <span><b>{brandFollows}</b> BRANDS</span>
-            <span><b title="ASILUM does not track followers yet">—</b> FOLLOWERS</span>
-          </div>
-        </div>
-        <button className="btn ghost" onClick={() => setEditing((e) => !e)}>
-          {editing ? "DONE" : "EDIT PROFILE"}
-        </button>
-      </div>
 
-      <div className="tabs">
-        {[
-          ["posts", "POSTS"], ["brands", "BRANDS"], ["bag", "BAG"],
-          ["wardrobe", "WARDROBE"], ["room", "ROOM"], ["sizing", "SIZING"],
-          ["account", "ACCOUNT"],
-        ].map(([k, label]) => (
-          <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {tab === "posts" && (
-        <>
-          {posts.length === 0 && (
-            <div className="empty">no transmissions yet — the composer lives on THE WIRE.</div>
-          )}
-          {posts.map((p) => (
-            <div className="fpost wpost" key={p.id}>
-              {p.title ? <div className="wposthead">{p.title}</div> : null}
-              <TransmissionText text={p.text} />
-              <span className="fposthandle">
-                {p.handle} ·{" "}
-                {p.serverId != null
-                  ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
-                  : <>{timeAgo(p.at)} · saved on this device — pending or held</>}
-                {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
-              </span>
+      {/* THE IDENTITY PANE (Instagram's header in the passport's glass, 9 Sep):
+          the banner, the avatar over its edge, name / handle / bio, then the
+          counts as big numbers. Every count is real. FOLLOWERS prints "—",
+          not 0 (metric-definition audit, Aug 17): there is no follower state
+          anywhere in lib/ or app/api, so a literal 0 would be a measurement
+          of a thing nobody measures — the /stats rule applied here. */}
+      <GlassPane glass="lg-pf-head" className="pfhead" aria-label="identity">
+        <div
+          className="pbanner"
+          style={info.bannerImg ? { backgroundImage: `url(${info.bannerImg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+        >
+          <span>*</span>
+          {editing && (
+            <div className="pbannerctl">
+              <button className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
+              <button className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
             </div>
-          ))}
-        </>
-      )}
-
-      {tab === "brands" && <BrandsTab bagBrands={brands} />}
-      {tab === "wardrobe" && <WardrobeTab />}
-      {tab === "room" && <RoomEditor />}
-      {tab === "sizing" && <MeasurementsEditor />}
-      {tab === "account" && (
-        <>
-          <ProfileAccess />
-          <BusinessAccountPanel />
-          <h3 className="statshead">FIND PEOPLE</h3>
-          <div style={{ maxWidth: 420 }}>
-            <UserSearch placeholder="search users to follow…" />
+          )}
+        </div>
+        <div className="phead2">
+          <div className="pavatar">
+            {info.avatarImg
+              ? <img className="pavimg" src={info.avatarImg} alt={info.name || "avatar"} />
+              : <Avatar name={info.name} />}
           </div>
-        </>
-      )}
+          <div className="pident">
+            {editing ? (
+              <>
+                <input className="pedit" aria-label="display name" value={info.name} onChange={(e) => save("name", e.target.value)} />
+                <input className="pedit small" aria-label="handle" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
+                <textarea className="pedit small" aria-label="bio" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
+              </>
+            ) : (
+              <>
+                <div className="pname">{info.name}</div>
+                <div className="uhandle">{info.handle}</div>
+                <p className="pbio">{info.bio}</p>
+              </>
+            )}
+            {since && <div className="pmeta">MEMBER SINCE {since}</div>}
+            <div className="pcounts">
+              <span><b>{posts.length}</b> POSTS</span>
+              <span><b>{followingCount}</b> FOLLOWING</span>
+              <span><b>{brandFollows}</b> BRANDS</span>
+              <span><b title="ASILUM does not track followers yet">—</b> FOLLOWERS</span>
+            </div>
+          </div>
+          <button className="btn ghost" onClick={() => setEditing((e) => !e)}>
+            {editing ? "DONE" : "EDIT PROFILE"}
+          </button>
+        </div>
+      </GlassPane>
 
-      {tab === "bag" && (
-        <>
-          {bagHistory.length === 0 && <div className="empty">nothing in bag history yet.</div>}
-          {bagHistory.slice(0, 12).map((o, i) => (
-            <a className="hlrow" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
-              <img src={o.img || thumbFor(o)} alt="" />
-              <div className="hlinfo">
-                <div className="hlttl" style={{ fontSize: 15 }}>{o.title}</div>
-                <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
-                <ColorEvidenceLine item={o} />
-                <OriginLine item={o} />
-                <ProductFitLine item={o} fit={fit} />
+      <div className="pflayout">
+        {/* THE RAIL — the MySpace column, a page of the person's own: ABOUT
+            ME, the TOP HOUSES eight-up, the PEOPLE they follow, THE FIT ON
+            FILE. Every line is a real record; an empty one says where the
+            record is made rather than inventing a row. */}
+        <aside className="pfrail" aria-label="about this profile">
+          <GlassPane glass="lg-pf-about" className="pfpane pfabout">
+            <div className="pfk"><i aria-hidden="true">01</i>ABOUT ME</div>
+            <p>{info.bio || "taste under construction."}</p>
+            <div className="pfline"><span>HANDLE</span><b>{info.handle || "—"}</b></div>
+            <div className="pfline"><span>MEMBER SINCE</span><b>{since || "—"}</b></div>
+            <div className="pfline"><span>PIECES IN THE CLOSET</span><b>{bagHistory.length}</b></div>
+            <div className="pfline"><span>YOUR ROOM</span><b><button type="button" className="wperma" onClick={() => setTab("room")}>OPEN →</button></b></div>
+          </GlassPane>
+          <GlassPane glass="lg-pf-top" className="pfpane">
+            <div className="pfk"><i aria-hidden="true">02</i>TOP HOUSES</div>
+            {houses.length === 0 ? (
+              <p className="pempty">no houses followed yet — follow one from any piece, or under BRANDS.</p>
+            ) : (
+              <div className="pftop8">
+                {houses.slice(0, 8).map((b) => (
+                  <a key={b} href={"/discover?q=" + encodeURIComponent(b)}>{b}</a>
+                ))}
               </div>
-              <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>
-            </a>
-          ))}
-          <a className="btn ghost" href="/orders" style={{ display: "inline-block", marginTop: 10 }}>
-            ALL ORDERS & TICKETS →
-          </a>
-        </>
-      )}
+            )}
+          </GlassPane>
+          <GlassPane glass="lg-pf-people" className="pfpane">
+            <div className="pfk"><i aria-hidden="true">03</i>PEOPLE</div>
+            {people.length === 0 ? (
+              <p className="pempty">no one followed yet — find people under ACCOUNT.</p>
+            ) : (
+              <div className="pfpeople">
+                {people.map((h) => (
+                  <div className="urow" key={h}>
+                    <a href={"/u/" + encodeURIComponent(h)}><Avatar name={h} /></a>
+                    <a className="uinfo" href={"/u/" + encodeURIComponent(h)}><div className="uhandle">{h}</div></a>
+                  </div>
+                ))}
+              </div>
+            )}
+          </GlassPane>
+          <GlassPane glass="lg-pf-fit" className="pfpane">
+            <div className="pfk"><i aria-hidden="true">04</i>THE FIT ON FILE</div>
+            <div className="pfline"><span>USUAL SIZE</span><b>{fitOnFile.usualSize || "—"}</b></div>
+            {MEASUREMENT_KEYS.filter((k) => fitOnFile[k]).map((k) => (
+              <div className="pfline" key={k}><span>{k.toUpperCase()}</span><b>{fitOnFile[k]} {fitOnFile.unit}</b></div>
+            ))}
+            {!hasMeasurementProfile(fitOnFile) && (
+              <p className="pempty">nothing measured yet — SIZING keeps it private to this identity.</p>
+            )}
+          </GlassPane>
+        </aside>
+
+        <main className="pfmain">
+          <div className="tabs">
+            {[
+              ["posts", "POSTS"], ["bag", "CLOSET"], ["brands", "BRANDS"],
+              ["wardrobe", "WARDROBE"], ["room", "ROOM"], ["sizing", "SIZING"],
+              ["account", "ACCOUNT"],
+            ].map(([k, label]) => (
+              <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <GlassPane glass="lg-pf-sheet" className="pfsheet" aria-live="polite">
+            {tab === "posts" && (
+              <>
+                {posts.length === 0 && (
+                  <div className="empty">no transmissions yet — the composer lives on <a className="wperma" href="/hotlist">THE WIRE →</a></div>
+                )}
+                {/* the grid (Instagram): one square per transmission — the
+                    caption header, the text clamped, the time. A server post's
+                    square is its permalink; a device-only copy stays a still
+                    square, labeled, until the server holds it. */}
+                {posts.length > 0 && (
+                  <div className="pfgrid">
+                    {posts.map((p) => {
+                      const inner = (
+                        <>
+                          {p.title ? <div className="wposthead">{p.title}</div> : null}
+                          <TransmissionText text={p.text} />
+                          <span className="pftime">
+                            {timeAgo(p.at)}
+                            {p.serverId == null && " · on this device — pending or held"}
+                            {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
+                          </span>
+                        </>
+                      );
+                      return p.serverId != null
+                        ? <a className="pftile" key={p.id} href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{inner}</a>
+                        : <div className="pftile" key={p.id}>{inner}</div>;
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "brands" && <BrandsTab bagBrands={brands} />}
+            {tab === "wardrobe" && <WardrobeTab />}
+            {tab === "room" && <RoomEditor />}
+            {tab === "sizing" && <MeasurementsEditor />}
+            {tab === "account" && (
+              <>
+                <ProfileAccess />
+                <BusinessAccountPanel />
+                <h3 className="statshead">FIND PEOPLE</h3>
+                <div style={{ maxWidth: 420 }}>
+                  <UserSearch placeholder="search users to follow…" />
+                </div>
+              </>
+            )}
+
+            {/* THE CLOSET (Grailed): the pieces from the bag's history as a
+                grid — the picture, the title, the house and source, the
+                colour / origin / fit lines, the price. */}
+            {tab === "bag" && (
+              <>
+                {bagHistory.length === 0 && <div className="empty">nothing in the closet yet — the bag's history lands here.</div>}
+                {bagHistory.length > 0 && (
+                  <div className="pfcloset">
+                    {bagHistory.slice(0, 24).map((o, i) => (
+                      <a className="pfpiece" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
+                        <img src={o.img || thumbFor(o)} alt="" />
+                        <div className="hlttl">{o.title}</div>
+                        <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
+                        <ColorEvidenceLine item={o} />
+                        <OriginLine item={o} />
+                        <ProductFitLine item={o} fit={fit} />
+                        <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <a className="btn ghost" href="/orders" style={{ display: "inline-block", marginTop: 16 }}>
+                  ALL ORDERS & TICKETS →
+                </a>
+              </>
+            )}
+          </GlassPane>
+        </main>
+      </div>
     </div>
   );
 }

@@ -3205,3 +3205,168 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 [data-theme="light"] .tophead .snav, [data-theme="light"] .tophead .tbtn, [data-theme="light"] .tophead .mailbtn,
 [data-theme="light"] .tophead .mq a, [data-theme="light"] .tophead .snavsub a, [data-theme="light"] .snav.cur { text-shadow: none; }
 [data-theme="light"] .snav.cur, [data-theme="light"] .snav:hover { color: var(--ink); }
+
+/* ==== PHOSPHOR: THE HEADER IS WORDS, ALWAYS LIT (owner, 9 Sep evening: "on
+   dark phosphorus instead of each button lighting up when I hover over it,
+   all the buttons should be reduced to only the words and they should all
+   always glow"). Dark only — ice keeps its 9 Sep words-without-glow
+   treatment. The icons, the LEDs and the meta line leave the destination
+   row; the big buttons drop their glyphs; the sub-pills (ORDERS →, STATS →)
+   are words; every word carries the full glow at rest and a hover changes
+   nothing. The current destination is the one word in RED — the tab rule's
+   own marker (.tab.cur), the red law's "you are here" — so no bar, no LED. ==== */
+:root:not([data-theme="light"]) .tophead .snav .nic,
+:root:not([data-theme="light"]) .tophead .snav .nled,
+:root:not([data-theme="light"]) .tophead .snav .nmeta,
+:root:not([data-theme="light"]) .tophead .tbtn svg { display: none; }
+:root:not([data-theme="light"]) .tophead .snav { grid-template-columns: 1fr; gap: 0; padding-left: 8px; padding-right: 8px; }
+:root:not([data-theme="light"]) .tophead .snav.cur::before { display: none; }
+/* ORB HUB (data-model lives on <html> itself, so the model attribute joins
+   the root selector rather than following it) */
+:root:not([data-theme="light"])[data-model="02"] .tophead .snav, :root:not([data-theme="light"])[data-model="02"] .tophead .snav.cur { background: none; box-shadow: none; }
+:root:not([data-theme="light"]) .tophead .snav, :root:not([data-theme="light"]) .tophead .snav:hover,
+:root:not([data-theme="light"]) .tophead .tbtn, :root:not([data-theme="light"]) .tophead .tbtn:hover,
+:root:not([data-theme="light"]) .tophead .snavsub a, :root:not([data-theme="light"]) .tophead .snavsub a:hover {
+  color: var(--sig); text-shadow: var(--glow); }
+:root:not([data-theme="light"]) .tophead .snavsub a { border: 0; padding: 2px 0; font-family: var(--mich); }
+:root:not([data-theme="light"]) .tophead .snav.cur, :root:not([data-theme="light"]) .tophead .snav.cur:hover,
+:root:not([data-theme="light"]) .tophead .snavsub a.cur { color: var(--red); text-shadow: var(--glow-r); }
+
+/* ==== THE GLASS PANE, FOR ANY PAGE (GlassPane.jsx; owner, 9 Sep evening).
+   The passport's pane and the upload card's recipe under one class: no
+   border, 55% tint, the edges lensing in Chromium (--lg-filter), the Fresnel
+   whisper at the lip, the gloss and the pointer's shine over the face. ==== */
+.lgpane { position: relative; z-index: 1; border: 0; border-radius: 22px; padding: 20px 22px;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip); isolation: isolate; }
+.lgpane[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.lgpane::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
+    var(--glass-sheen); }
+[data-theme="light"] .lgpane { box-shadow: 0 18px 50px rgba(110, 150, 165, 0.16), var(--glass-lip); }
+@media (prefers-reduced-motion: reduce) { .lgpane::before { background: var(--glass-sheen); } }
+/* the controls inside a pane are the header's pill glass, as on /upload */
+.lgpane input:not([type="checkbox"]):not([type="radio"]), .lgpane select, .lgpane textarea, .lgpane .btn, .lgpane .followbtn, .lgpane .fitbtn, .lgpane .unitpick, .lgpane .platform {
+  background: var(--glass-pill); border-color: transparent; box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+.lgpane .btn.ghost, .lgpane .unitpick button { background: transparent; box-shadow: none; }
+.lgpane .unitpick button.on { background: var(--ink); }
+.lgpane input:focus, .lgpane select:focus, .lgpane textarea:focus { box-shadow: inset 0 0 0 1px var(--sig); border-color: transparent; }
+.lgpane .accountgrid > div { border-top-color: color-mix(in srgb, var(--ink) 12%, transparent); }
+.lgpane .roomcard { border: 0; padding: 0; margin: 0; }
+
+/* ==== PROFILE v2 — INSTAGRAM × MYSPACE × GRAILED, IN LIQUID GLASS (owner,
+   9 Sep evening: "the account page looks a little empty"). Instagram: the
+   identity header as one pane — banner, the avatar over its edge, the counts
+   as big numbers — and the posts as a square grid. MySpace: a rail of the
+   person's own page — ABOUT ME, the TOP HOUSES eight-up, the PEOPLE they
+   follow, THE FIT ON FILE (every line a real record, "—" where nothing is
+   measured). Grailed: the CLOSET as a grid of pieces with brand and price.
+   The tab row keeps every record it held (posts, closet, brands, wardrobe,
+   room, sizing, account) on one glass sheet. ==== */
+.pf2 .pfhead { padding: 0; overflow: hidden; margin: 0 0 18px; }
+.pf2 .pbanner { height: 190px; border-radius: 22px 22px 0 0; }
+.pf2 .phead2 { margin: -46px 0 0; padding: 0 24px 20px; align-items: flex-end; }
+.pf2 .pavatar .uavatar { width: 96px; height: 96px; font-size: 30px; border: 3px solid color-mix(in srgb, var(--bg) 82%, transparent); box-shadow: var(--glass-shadow); }
+.pf2 .pident { padding-top: 0; }
+.pf2 .pname { font-family: var(--mich); font-size: clamp(22px, 3vw, 34px); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
+.pf2 .pbio { margin: 8px 0 4px; }
+.pf2 .pmeta { display: none; }
+.pf2 .pcounts { gap: 34px; margin-top: 12px; }
+.pf2 .pcounts span { display: grid; gap: 3px; font-size: 8.5px; letter-spacing: 0.22em; }
+.pf2 .pcounts b { font-size: 24px; margin: 0; line-height: 1; }
+.pf2 .phead2 > .btn { margin: 0 0 6px; }
+.pflayout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 18px; align-items: start; }
+.pfrail { display: grid; gap: 16px; align-content: start; }
+.pfline button.wperma { border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
+.pfmain { min-width: 0; }
+.pfk { font-family: var(--mich); font-size: 10px; letter-spacing: 0.22em; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
+.pfk i { font-family: var(--helv); font-style: normal; font-size: 22px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; }
+.pfabout p { font-family: var(--serif); font-style: italic; font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
+.pfline { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 8.5px; letter-spacing: 0.18em; color: var(--grey); padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.pfline b { font-family: var(--helv); font-weight: 400; font-size: 12px; color: var(--ink); letter-spacing: 0.06em; text-align: right; }
+.pftop8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pftop8 a { aspect-ratio: 1; display: grid; place-items: center; text-align: center; padding: 6px; font-family: var(--mich); font-size: 7.5px; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.3;
+  background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); border-radius: 12px; overflow: hidden; overflow-wrap: anywhere; text-decoration: none; }
+.pftop8 a:hover { box-shadow: inset 0 0 0 1px var(--sig); }
+.pfpeople .urow { border-bottom-color: color-mix(in srgb, var(--ink) 10%, transparent); }
+.pfpeople .urow:last-child { border-bottom: 0; }
+.pf2 .tabs { border: 0; margin: 0 0 16px; gap: 22px; flex-wrap: wrap; padding: 0 4px; }
+.pf2 .tab { border: 0; padding: 6px 0; font-family: var(--mich); font-weight: 400; font-size: 10.5px; letter-spacing: 0.2em; }
+.pfsheet { min-height: 320px; }
+.pfgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.pftile { display: grid; align-content: start; gap: 6px; aspect-ratio: 1; padding: 16px; text-decoration: none; color: inherit; overflow: hidden; border-radius: 14px;
+  background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
+.pftile .wposthead { font-size: 11.5px; margin: 0; }
+.pftile .fposttext { font-size: 12.5px; line-height: 1.5; max-width: none; margin: 0; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.pftile .pftime { margin-top: auto; font-family: var(--helv); font-size: 9.5px; color: var(--grey); letter-spacing: 0.1em; }
+.pfcloset { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
+.pfpiece { display: grid; gap: 5px; text-decoration: none; color: inherit; align-content: start; }
+.pfpiece img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; border-radius: 14px; background: var(--paper); }
+.pfpiece .hlttl { font-size: 13px; }
+.pfpiece .hlbrand { font-size: 11px; margin: 0; }
+.pfpiece .hlstat { text-align: left; }
+.pfsheet .empty { padding: 40px 0; }
+@media (max-width: 900px) {
+  .pflayout { grid-template-columns: 1fr; }
+  .pfgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pf2 .pbanner { height: 140px; }
+  .pf2 .pcounts { gap: 22px; }
+}
+
+/* ==== THE WIRE v2 — A FOR-YOU HUB IN TWITTER'S FORMAT, THE HOTLIST IN A
+   GLASS STRIP TO THE SIDE (owner, 9 Sep evening: "it doesn't really scream
+   for-you page … the same format as twitter, videos, pictures and
+   transmissions all live in one hub, and the hotlist lives in a liquid glass
+   strip to the side"). Left: one feed column — the composer, then every post
+   as a card (avatar, handle, time, the caption header, the text, the action
+   row). Right: the rail — THE HOTLIST's ten booths in a pane, WHO TO FOLLOW,
+   the house, the open placements, the reading room, the report form. Images
+   and video take the same card the day the media pipeline lands; until
+   then the composer's modes stay honestly coming-soon. ==== */
+.wlayout { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 26px; align-items: start; }
+.wfeed { min-width: 0; display: grid; gap: 14px; align-content: start; }
+.wfeed > * { max-width: 760px; width: 100%; }
+.wrail { display: grid; gap: 16px; min-width: 0; }
+.wire2 .wcomposer { margin: 0; }
+.wire2 .wmodes { margin-bottom: 10px; }
+.wire2 .wfloor { margin: 0; max-width: none; display: grid; gap: 12px; }
+.wire2 .wfocus { margin: 0; }
+.wcard { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; padding: 16px 18px 14px; border-radius: 18px;
+  background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
+.wcard .uavatar { width: 40px; height: 40px; font-size: 12px; }
+.wcbody { min-width: 0; display: grid; gap: 5px; }
+.wctop { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.wctop .fposthandle { font-size: 11px; }
+.wctop .whandle { font-family: var(--mich); font-size: 11px; letter-spacing: 0.1em; }
+.wire2 .wpost { margin: 0; }
+.wcard .wposthead { font-size: 14px; margin: 2px 0 0; }
+.wcard .fposttext { max-width: none; font-size: 14.5px; margin: 0; }
+.wacts { display: flex; gap: 22px; align-items: baseline; margin-top: 6px; flex-wrap: wrap; }
+.wire2 .wengage, .wire2 .wctls { margin-left: 0; }
+.wire2 .wfloor .empty { padding: 30px 0; }
+.whot .elmast { font-size: clamp(22px, 2.4vw, 30px); margin: 0 0 4px; }
+.whot .elnote { font-size: 9.5px; margin-bottom: 10px; line-height: 1.6; }
+.whot .booth { gap: 12px; padding: 7px 0; }
+.whot .booth .elnum { font-size: 20px; width: 1.4em; }
+.whot .boothbody b { font-size: 10.5px; }
+.whot .boothbody span { font-size: 9px; }
+.whot .boothtag { display: none; }
+.whot .elsubmit { margin-top: 14px; }
+.whot .paidrail { margin-bottom: 8px; }
+.wire2 .fwho { margin: 0; max-width: none; }
+.wire2 .elhouse, .wire2 .elads, .wire2 .elext, .wire2 .elhot { margin: 0; }
+.wire2 .eladrow { flex-direction: column; gap: 10px; }
+.wire2 .elad { min-height: 84px; min-width: 0; }
+.wire2 .elext { border-top: 0; padding-top: 0; }
+.wire2 .elextpub { width: 84px; }
+.wire2 .elextrow { flex-wrap: wrap; }
+.wire2 .bizform input { width: 100%; }
+.wire2 .cvcolo { margin-top: 30px; }
+.wire2 .deck { margin-bottom: 14px; }
+@media (max-width: 960px) { .wlayout { grid-template-columns: 1fr; } }
