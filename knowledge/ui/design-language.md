@@ -603,6 +603,51 @@ rule's own marker (`.tab.cur`), the red law's "you are here" — so the red
 bar and LED are gone with the icons. The block sits at the END of
 globals.css under `:root:not([data-theme="light"])`.
 
+## The words are the buttons — every button, every page, both themes (10 September, MODEL)
+
+Owner: "the header buttons should all match. take away the little symbols,
+only keep the word; however when I hover over the word the little
+description should appear. I want the spacing to match ice light. all the
+buttons in every tab should be treated with the same (font glows, only the
+words are the buttons) rule." Built as a model on `ui/words-are-the-buttons`;
+the owner judges.
+
+**The law.** A button is a WORD in the signal colour carrying the site's
+word smear — no pill, no border, no fill, no glyph, no LED. Hover: the word
+brightens to the ink and keeps its light. Selected / current / on
+(`.active`, `.on`, `.cur`, `aria-pressed`): the word is RED with the red
+smear (`--word-smear-r`) — the tab rule's "you are here". Disabled: grey,
+unlit. The red-law words (BUY, HOME, coming-soon `.soon`, the clear pill)
+stay red. Ice runs the same rule through its own tokens (the blue smear).
+
+**The header, both themes.** The seven destinations, SEARCH / BAG / SIGN
+IN, MAIL and the sub-words (ORDERS →, STATS →) share one voice: Michroma at
+the destination size, the 0.4px stroke, `--sig` with the full `--glow` on
+phosphor and NO glow on ice (the owner's ruling from the Safari recording).
+Icons, LEDs, the red bar and the corner glyphs are gone in both themes; the
+current destination is the one red word. **The spacing is ice's**: 26px of
+padding a side puts the words where ice's icon + LED + word sat, a ~56px
+word-to-word gap at 1440 (measured: FRONT COVER 204/177 against ice's
+197/179 before). **The description** (`.nmeta` — LIVE EDITION, OPEN INDEX…)
+rises under the hovered word: absolutely positioned, out of the flow, 7.5px
+grey, fading in over 180 ms; the compression rules' `display: none` is
+outranked so it appears at every desktop width; it is off under 760px.
+The 9 Sep evening PHOSPHOR block was retired (its comment stays in place).
+
+**Everywhere else** one `[data-theme] :is(…)` list at the END of globals.css
+names every button family (`.btn` and its ghost/active/wide/soon, `.fitbtn`,
+`.followbtn`, `.platform`, `.chip.clickable`, `.outcomes button`,
+`.unitpick button`, `.achip`, `.apill`, `.wchip`, `.gxbtn`, `.gxchip`,
+`.ppupl`, `.ppupload`, `.dhint`, `.mailmore`, the tab strip, the card and
+post action rows, the text buttons…) and strips the box — `:is()` takes the
+specificity of `.btn.ghost.active`, so the list outranks the frost rule of
+ice, the glass-pill rule of `.lgpane`, and the ink-glow box rule by cascade
+order. The segmented rows (unit picker, card actions, tabs) lose their
+dividers with the boxes. Verified by a computed-style probe over ten pages
+in both themes: no button outside the header keeps a background, a visible
+border or a shadow (the passport photo frame, the passport preview tile
+and the drop zone are not buttons and keep theirs).
+
 ## Copy law (17 August, owner directives)
 
 - **The app is a PERSONALIZED FASHION TERMINAL.** "Fashion intelligence OS" is
