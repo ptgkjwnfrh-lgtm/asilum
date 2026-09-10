@@ -71,16 +71,19 @@ for (const q of queries) {
     continue;
   }
   console.log(`▌ ${q} — ${items.length} listings`);
-  console.log("  " + pad("TITLE", 46) + pad("BRAND", 16) + pad("CAT", 11) + pad("ERA", 6) + pad("SIZE", 7) + pad("PRICE", 9) + "TAGS");
+  console.log("  " + pad("TITLE", 46) + pad("BRAND", 16) + pad("CAT", 11) + pad("ERA", 6) + pad("SIZE", 7) + pad("PRICE", 9) + "TASTE (strongest first)");
   for (const it of items) {
     seen += 1;
-    const tags = Array.isArray(it.tags) ? it.tags : [];
+    // inferTags returns the brain's PROFILE — a tag → weight object, the cold
+    // start vector — not a list. Show the strongest first, weight to 2 places.
+    const tags = Array.isArray(it.tags) ? it.tags.map((t) => [t, null])
+      : Object.entries(it.tags || {}).filter(([, w]) => w > 0).sort((a, b) => b[1] - a[1]);
     if (tags.length) tagged += 1; else untagged.push(it.title);
     if (it.size?.label) sized += 1;
     if (it.price != null) priced += 1;
-    for (const t of tags) tagFreq.set(t, (tagFreq.get(t) || 0) + 1);
+    for (const [t] of tags) tagFreq.set(t, (tagFreq.get(t) || 0) + 1);
     console.log("  " + pad(it.title, 46) + pad(it.brand, 16) + pad(it.category, 11) + pad(it.era?.decade, 6) + pad(it.size?.label ?? "—", 7)
-      + pad(it.price != null ? `${it.currency} ${it.price}` : "—", 9) + (tags.join(" ") || "∅ NO TAGS"));
+      + pad(it.price != null ? `${it.currency} ${it.price}` : "—", 9) + (tags.slice(0, 4).map(([t, w]) => (w == null ? t : `${t} ${w.toFixed(2)}`)).join(" · ") || "∅ NO TAGS"));
   }
   console.log();
 }
