@@ -6,8 +6,8 @@
 // account page looks a little empty — instagram mixed with myspace mixed
 // with grailed"): the identity header as one glass pane (banner, the avatar
 // over its edge, name/handle/bio, the counts as big numbers — Instagram), a
-// rail of the person's own page (ABOUT ME, TOP HOUSES, PEOPLE, THE FIT ON
-// FILE — MySpace), and ONE tab row on a glass sheet holding everything —
+// rail of the person's own page (ABOUT ME with the passport in preview —
+// MySpace), and ONE tab row on a glass sheet holding everything —
 // posts as a square grid, the CLOSET as a grid of pieces with brand and
 // price (Grailed), brands, wardrobe, the room, sizing, and account.
 // Identity is local until real accounts exist; every displayed count is
@@ -30,6 +30,7 @@ import {
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
 import GlassPane from "../components/GlassPane.jsx";
+import PassportPreview from "../components/PassportPreview.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
@@ -188,25 +189,6 @@ export default function ProfilePage() {
     input.click();
   }
 
-  // THE RAIL's records (9 Sep): the houses and people followed (the same
-  // follow event BRANDS and ACCOUNT fire), and the fit on file (the same
-  // asilum:fit event SIZING fires). Read once, then kept in step.
-  const [houses, setHouses] = useState([]);
-  const [people, setPeople] = useState([]);
-  const [fitOnFile, setFitOnFile] = useState(EMPTY_FIT);
-  useEffect(() => {
-    const follows = () => { setHouses(followedBrands()); setPeople(followedUsers()); };
-    const fitSync = (event) => setFitOnFile(event?.detail ? { ...event.detail } : loadFitProfile());
-    follows();
-    fitSync();
-    window.addEventListener("asilum:follow", follows);
-    window.addEventListener("asilum:fit", fitSync);
-    return () => {
-      window.removeEventListener("asilum:follow", follows);
-      window.removeEventListener("asilum:fit", fitSync);
-    };
-  }, []);
-
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
   // Brands seen in bag history. These are the BRANDS tab's *candidates* to
@@ -284,50 +266,20 @@ export default function ProfilePage() {
             FILE. Every line is a real record; an empty one says where the
             record is made rather than inventing a row. */}
         <aside className="pfrail" aria-label="about this profile">
+          {/* THE RAIL — ABOUT ME alone (owner, 9 Sep evening: "remove the
+              left side bars and just leave the about me, and in the about
+              me there should be a preview of the user's passport"): the
+              bio, the passport in preview (PassportPreview.jsx — the same
+              real state the document on /board reads), then the record's
+              lines and the room link. */}
           <GlassPane glass="lg-pf-about" className="pfpane pfabout">
             <div className="pfk"><i aria-hidden="true">01</i>ABOUT ME</div>
             <p>{info.bio || "taste under construction."}</p>
+            <PassportPreview />
             <div className="pfline"><span>HANDLE</span><b>{info.handle || "—"}</b></div>
             <div className="pfline"><span>MEMBER SINCE</span><b>{since || "—"}</b></div>
             <div className="pfline"><span>PIECES IN THE CLOSET</span><b>{bagHistory.length}</b></div>
             <div className="pfline"><span>YOUR ROOM</span><b><button type="button" className="wperma" onClick={() => setTab("room")}>OPEN →</button></b></div>
-          </GlassPane>
-          <GlassPane glass="lg-pf-top" className="pfpane">
-            <div className="pfk"><i aria-hidden="true">02</i>TOP HOUSES</div>
-            {houses.length === 0 ? (
-              <p className="pempty">no houses followed yet — follow one from any piece, or under BRANDS.</p>
-            ) : (
-              <div className="pftop8">
-                {houses.slice(0, 8).map((b) => (
-                  <a key={b} href={"/discover?q=" + encodeURIComponent(b)}>{b}</a>
-                ))}
-              </div>
-            )}
-          </GlassPane>
-          <GlassPane glass="lg-pf-people" className="pfpane">
-            <div className="pfk"><i aria-hidden="true">03</i>PEOPLE</div>
-            {people.length === 0 ? (
-              <p className="pempty">no one followed yet — find people under ACCOUNT.</p>
-            ) : (
-              <div className="pfpeople">
-                {people.map((h) => (
-                  <div className="urow" key={h}>
-                    <a href={"/u/" + encodeURIComponent(h)}><Avatar name={h} /></a>
-                    <a className="uinfo" href={"/u/" + encodeURIComponent(h)}><div className="uhandle">{h}</div></a>
-                  </div>
-                ))}
-              </div>
-            )}
-          </GlassPane>
-          <GlassPane glass="lg-pf-fit" className="pfpane">
-            <div className="pfk"><i aria-hidden="true">04</i>THE FIT ON FILE</div>
-            <div className="pfline"><span>USUAL SIZE</span><b>{fitOnFile.usualSize || "—"}</b></div>
-            {MEASUREMENT_KEYS.filter((k) => fitOnFile[k]).map((k) => (
-              <div className="pfline" key={k}><span>{k.toUpperCase()}</span><b>{fitOnFile[k]} {fitOnFile.unit}</b></div>
-            ))}
-            {!hasMeasurementProfile(fitOnFile) && (
-              <p className="pempty">nothing measured yet — SIZING keeps it private to this identity.</p>
-            )}
           </GlassPane>
         </aside>
 

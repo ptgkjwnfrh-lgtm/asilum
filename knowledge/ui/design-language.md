@@ -357,20 +357,25 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   `.lgpane` recipe of the passport's pane): the IDENTITY PANE (Instagram —
   banner, the avatar over its edge, name in Michroma / handle / bio, the
   counts as big numbers: posts / following / brands, FOLLOWERS "—" because
-  nothing measures it) → a two-column layout: THE RAIL (MySpace — 01 ABOUT
-  ME with handle / member since / pieces in the closet / a room link, 02
-  TOP HOUSES eight-up from the brands followed, 03 PEOPLE followed, 04 THE
-  FIT ON FILE from the fit profile; each line a real record and an empty
-  pane says where the record is made) and THE SHEET — ONE tab row (Michroma
+  nothing measures it) → a two-column layout: THE RAIL (MySpace — ONE pane,
+  01 ABOUT ME: the bio, THE PASSPORT IN PREVIEW, then handle / member since
+  / pieces in the closet / a room link. The owner cut the TOP HOUSES,
+  PEOPLE and FIT ON FILE panes the same evening: "remove the left side bars
+  and just leave the about me, and in the about me there should be a
+  preview of the user's passport". The preview is PassportPreview.jsx — a
+  miniature of the /board document in the document's own classes (strip,
+  nation line, photo, the data page's key fields, the machine zone, the
+  Paris hologram beneath) drawn from the SAME real state, the strings built
+  by lib/passport/document.js for both surfaces so they can never disagree;
+  one link to /board) and THE SHEET — ONE tab row (Michroma
   words, the current one red) over a glass pane holding everything: POSTS
   as a square grid (a server post's square is its permalink; a device-only
   copy is labeled pending or held) / CLOSET (Grailed — the bag's history as
   a grid of pieces with picture, title, house and source, the colour /
   origin / fit lines, price; the ORDERS link below) / BRANDS / WARDROBE /
   ROOM (the MySpace personality editor) / SIZING / ACCOUNT (sign-in,
-  connections, follows, people search; /profile#access opens it). The rail
-  keeps in step through the same asilum:follow and asilum:fit events the
-  tabs fire. Controls inside a pane are the header's pill glass.
+  connections, follows, people search; /profile#access opens it). Controls
+  inside a pane are the header's pill glass.
 - SETTINGS is the rack (owner order, Aug 12: old music-making software):
   numbered hardware modules — 01 APPEARANCE / 02 ASTERISK / 03 IDENTITY /
   04 DATA / 05 LEGAL — heavy top rule + hairline channel rows, engraved
