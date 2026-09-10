@@ -622,6 +622,7 @@ request becomes trusted arguments.
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `route.js` | 61 | GET /api/ebay?q=<query>&limit=<n> Live listings from the OFFICIAL eBay Browse API, normalized to the catalog |
+| `account-deletion/route.js` | 70 | GET challenge handshake (sha256 of challengeCode + verificationToken + endpoint) and POST acknowledgement for eBay marketplace account deletion notifications — the production-keyset gate; idle 503 without `EBAY_DELETION_VERIFICATION_TOKEN` |
 
 ### `app/api/editorial/`
 *1 file, 255 lines*
