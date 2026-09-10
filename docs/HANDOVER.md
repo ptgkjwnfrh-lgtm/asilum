@@ -68,12 +68,12 @@ against the live database and the messaging block 3 September. Re-verify with
 
 | | |
 | --- | --- |
-| `main` | `ecf16f6` (#457) — plus the docs PR that carries `docs/HANDOVER-2026-09-09.md` |
-| Production | **current** at `ecf16f6` (`npm run deploy:check`, 9 Sep) |
+| `main` | `4de95fa` (#460, 9 Sep evening) — plus the docs PR that amends `docs/HANDOVER-2026-09-09.md` |
+| Production | **current** at `4de95fa` (`npm run deploy:check`, 9 Sep evening) |
 | Schema | **v50** applied — v49 verified present (`product_tags_facet_ck` includes `mood`) |
 | CI | **alive.** Billing fixed 3 Sep; the full Postgres suite runs again |
 | Open PRs | **zero** |
-| The UI | **the glass round is merged** (#443, #453–#457): liquid-glass header, passport and upload station; the ASCII purchase globe; the cover's masthead on every page; ice light as the cyan glass world; the 5% plus field; the header's words are just words. Read `docs/HANDOVER-2026-09-09.md` §2 and the UPLOAD section onward of `knowledge/ui/design-language.md`. **Safari unverified today** — §4 there |
+| The UI | **the glass round is merged** (#443, #453–#460): liquid-glass header, passport and upload station; the purchase globe as a hologram of glowing lines; the cover's masthead on every page; ice light as the cyan glass world; the 5% plus field; on phosphor the header is lit words with the current one red; PROFILE in glass with the passport in preview; THE WIRE as a for-you hub with the hotlist in a glass strip. Read `docs/HANDOVER-2026-09-09.md` §2 + §2b and the UPLOAD section onward of `knowledge/ui/design-language.md`. **Safari unverified all day** — §4 there |
 | The feed | **served in chunks** since 6 Sep (#433–#442): a fixed 25% catalog lane in cursor order, core/discovery/reach shares, a re-chunk after three deliberate actions, the served set carried in the cursor. The chunk laws are the eighth steward instrument (`npm run feed:chunks`). Read `docs/HANDOVER-2026-09-08.md` §2 |
 | The steward | **has hands** since 3 Sep — acts inside a declared boundary, runs on two schedules, ledgers every repair first. Read `docs/HANDOVER-2026-09-03.md` and `docs/steward-boundary-2026-09-03.md`. One owner paste is open: `CRON_SECRET` on Vercel, then redeploy |
 
@@ -155,7 +155,7 @@ attention. Those remain true regardless of date, which is why the chain says
 | `HANDOVER-2026-08-23.md` | The account split, then the whole DM subsystem, then an adversarial review of it |
 | `HANDOVER-2026-09-03.md` | The steward gets hands; a `node_modules` symlink committed by mistake; two sessions in one working tree; verified by 24 agents on 6 Sep |
 | `HANDOVER-2026-09-08.md` | The feed served in chunks (ten PRs, eight verifier rounds, traps 119–138); the `lib/db` split; the owner's UI round open on #443 (liquid glass with real refraction, traps 139–141); two taste dials measured for the owner |
-| `HANDOVER-2026-09-09.md` | 4 PRs — the upload station in glass, the ASCII purchase globe, the masthead everywhere, ice as the cyan glass world, the plus field, Safari's bend reach; traps 153–159 |
+| `HANDOVER-2026-09-09.md` | 6 PRs — the upload station in glass, the purchase globe (ASCII, then a hologram of lines), the masthead everywhere, ice as the cyan glass world, the plus field, Safari's bend reach; the evening: the header's lit words, PROFILE in glass with the passport preview, THE WIRE as a for-you hub; traps 153–161 |
 
 **The house convention:** never create a second same-day handover — amend the
 existing one in place.
