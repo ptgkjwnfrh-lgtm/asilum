@@ -326,25 +326,56 @@ the machine: curves, haze, milky glass — atmosphere over nostalgia.
   permission model is unchanged: the server decides every request, a bad
   token relocks the desk, and an unset ADMIN_TOKEN leaves it dark and
   says so. /admin is disallowed in robots.js (keep that list in step).
-  - Page order: masthead + live folio → composer → the floor (every
-    post, caption headers on transmissions, no fabricated counters) →
-    WHO TO FOLLOW → THE HOTLIST booths → ASILUM MAGAZINE (house
-    dispatches, honest empty) → AD SPACE (dashed = honestly open,
-    disclosure line) → EXTERNAL DISPATCHES quietest (grey title-only
-    links out — deliberately excluded from the teal clickable rule).
+  - THE FOR-YOU HUB (owner, 9 Sep evening: "the same format as twitter —
+    videos, pictures and transmissions all live in one hub, and the
+    hotlist lives in a liquid glass strip to the side"): the masthead reads
+    THE WIRE / FOR YOU; under the deck a two-column layout. THE FEED (left,
+    up to 760px): the permalink focus and the composer as glass panes
+    (GlassPane.jsx), then every post as a CARD — avatar · handle · time
+    (the permalink) · the caption header · the text · the action row
+    (LIKE / SAVE, EDIT / DELETE for the author). The cards are the
+    header's pill glass, NOT refracting panes: sixty lensing panes in one
+    column would be a scroll cost. Pictures and video take the same card
+    the day the media pipeline lands; the composer's IMAGES / VIDEO modes
+    stay honestly coming-soon. THE RAIL (right, 300–380px): THE HOTLIST's
+    ten booths in their own glass pane (compact rows, the same links and
+    the same booth-visit attribution, the APPLY line), then WHO TO FOLLOW
+    (pane), ASILUM MAGAZINE (pane), AD SPACE (two dashed slots stacked),
+    THE READING ROOM (quietest, no pane), REPORT AN IMPERSONATION (pane).
+    Under 960px the rail stacks beneath the feed. The old page order —
+    masthead + live folio → composer → the floor → WHO TO FOLLOW → THE
+    HOTLIST → ASILUM MAGAZINE → AD SPACE → EXTERNAL DISPATCHES — survives
+    as the reading order of feed-then-rail.
     The graded descent by TYPE SCALE survives (.elmast masthead;
     .elh2 21px → .elh5 9.5px grey), as does the magazine furniture at
     zero height cost (field, folio, gutters, colophon of live
     counters).
 - PROFILE is standard social format (owner order, Aug 12: Grailed ×
-  Twitter × MySpace, legibility first): banner → overlapping avatar →
-  name/handle/bio → MEMBER SINCE (same once-stamped device date the
-  passport uses) → one plain counts row (posts/following/brands/
-  followers, all real) → ONE tab row holding everything: POSTS (floating,
-  no fabricated counters) / BRANDS / BAG / WARDROBE / ROOM (the MySpace
-  personality editor) / SIZING / ACCOUNT (sign-in, connections, follows,
-  people search; /profile#access opens it). No boxed cards — the red
-  offset-shadow measure card is gone.
+  Twitter × MySpace, legibility first), REBUILT IN LIQUID GLASS on 9 Sep
+  (owner: "the account page looks a little empty — instagram mixed with
+  myspace mixed with grailed"; every pane is GlassPane.jsx, the shared
+  `.lgpane` recipe of the passport's pane): the IDENTITY PANE (Instagram —
+  banner, the avatar over its edge, name in Michroma / handle / bio, the
+  counts as big numbers: posts / following / brands, FOLLOWERS "—" because
+  nothing measures it) → a two-column layout: THE RAIL (MySpace — ONE pane,
+  01 ABOUT ME: the bio, THE PASSPORT IN PREVIEW, then handle / member since
+  / pieces in the closet / a room link. The owner cut the TOP HOUSES,
+  PEOPLE and FIT ON FILE panes the same evening: "remove the left side bars
+  and just leave the about me, and in the about me there should be a
+  preview of the user's passport". The preview is PassportPreview.jsx — a
+  miniature of the /board document in the document's own classes (strip,
+  nation line, photo, the data page's key fields, the machine zone, the
+  Paris hologram beneath) drawn from the SAME real state, the strings built
+  by lib/passport/document.js for both surfaces so they can never disagree;
+  one link to /board) and THE SHEET — ONE tab row (Michroma
+  words, the current one red) over a glass pane holding everything: POSTS
+  as a square grid (a server post's square is its permalink; a device-only
+  copy is labeled pending or held) / CLOSET (Grailed — the bag's history as
+  a grid of pieces with picture, title, house and source, the colour /
+  origin / fit lines, price; the ORDERS link below) / BRANDS / WARDROBE /
+  ROOM (the MySpace personality editor) / SIZING / ACCOUNT (sign-in,
+  connections, follows, people search; /profile#access opens it). Controls
+  inside a pane are the header's pill glass.
 - SETTINGS is the rack (owner order, Aug 12: old music-making software):
   numbered hardware modules — 01 APPEARANCE / 02 ASTERISK / 03 IDENTITY /
   04 DATA / 05 LEGAL — heavy top rule + hairline channel rows, engraved
@@ -557,6 +588,20 @@ wears the roads' glow) for 80 ms before it settles into its layer. The
 ASCII dashes on the scanline grid are gone (app/components/roadBuilder.js).
 The red `*` stars are the brand's asterisks, not ASCII structure — kept.
 
+
+## The header on phosphor: words, always lit (9 September evening)
+
+Owner: "on dark phosphorus instead of each button lighting up when I hover
+over it, all the buttons should be reduced to only the words and they
+should all always glow." Dark only — ice keeps the 9 Sep words-without-glow
+treatment. The destination row carries no icons, no LEDs, no meta line;
+SEARCH / BAG / SIGN IN drop their glyphs; the sub-pills (ORDERS →, STATS →)
+are plain Michroma words; every word carries the full `--glow` at rest and a
+hover changes nothing; ORB HUB's pills are transparent behind the words. The
+current destination is the one word in RED with the red glow — the tab
+rule's own marker (`.tab.cur`), the red law's "you are here" — so the red
+bar and LED are gone with the icons. The block sits at the END of
+globals.css under `:root:not([data-theme="light"])`.
 
 ## Copy law (17 August, owner directives)
 

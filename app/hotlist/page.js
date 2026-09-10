@@ -4,6 +4,15 @@
 // EDITORIAL — the destination renamed by owner decree).
 // This is where ALL user posts live, and where the hotlist stands.
 //
+// THE FOR-YOU HUB (owner, 9 Sep evening: "the same format as twitter —
+// videos, pictures and transmissions all live in one hub, and the hotlist
+// lives in a liquid glass strip to the side"): one feed column — the
+// composer in a glass pane, then every post as a glass card (avatar,
+// handle, time, the caption header, the text, the action row) — and a
+// rail beside it: THE HOTLIST's ten booths in their own pane, then the
+// ladder's quieter rungs. Pictures and video take the same card the day the
+// media pipeline lands; nothing is staged before it.
+//
 // The posting law (owner order, Aug 13) — three ways to post:
 //   TRANSMISSIONS (live): text capped at 5000 characters; the caption
 //     acts as the transmission's HEADER (≤200, the server's title).
@@ -35,6 +44,7 @@ import {
 import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import PageMast from "../components/PageMast.jsx";
+import GlassPane from "../components/GlassPane.jsx";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
 // your own to /profile, anyone else's to their /u/[handle] page — and a
@@ -263,8 +273,54 @@ export default function TheWirePage() {
       .catch(() => setWireNote("the shared wire could not be reached — nothing was published"));
   }
 
+  // THE HOTLIST's ten booths — the rail's pane (9 Sep). Same roster, same
+  // links, same attribution click as before; the row is compact.
+  const boothRows = BOOTHS.map((n) => {
+    const holder = booths ? booths[n - 1] : null;
+    return (
+      <div className="booth" key={n}>
+        <div className="elnum" aria-hidden="true">{String(n).padStart(2, "0")}</div>
+        {holder ? (
+          <div className="boothbody">
+            <b>{holder.brandName}</b>
+            <span>
+              verified independent brand ·{" "}
+              <a
+                className="boothsite"
+                href={holder.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => noteBoothVisit(holder.sourceName)}
+              >
+                their site ↗
+              </a>
+              {holder.sourceName && (
+                <>
+                  {" · "}
+                  <a
+                    className="boothsite"
+                    href={"/discover?q=" + encodeURIComponent(holder.brandName)}
+                    onClick={() => noteBoothVisit(holder.sourceName)}
+                  >
+                    their pieces →
+                  </a>
+                </>
+              )}
+            </span>
+          </div>
+        ) : (
+          <div className="boothbody">
+            <b>BOOTH OPEN</b>
+            <span>held for a verified independent brand</span>
+          </div>
+        )}
+        <span className="boothtag">{holder ? "VERIFIED BUSINESS" : "BUSINESS ACCOUNTS ONLY"}</span>
+      </div>
+    );
+  });
+
   return (
-    <div className="wrap elr ctr">
+    <div className="wrap elr ctr wire2">
       <div className="cvlines ellines" aria-hidden="true">
         {EL_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
@@ -282,7 +338,7 @@ export default function TheWirePage() {
       </span>
 
       <header className="cthead">
-        <PageMast word="THE WIRE" sub="POSTS + THE HOTLIST" />
+        <PageMast word="THE WIRE" sub="FOR YOU" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDITION · {stamp}
@@ -296,376 +352,359 @@ export default function TheWirePage() {
         )}
       </header>
       <p className="deck">
-        every post lives here — transmissions, and in time images and video.
-        under the floor, the hotlist&apos;s ten booths.
+        every post lives here — transmissions, and in time images and video,
+        one hub. beside it, the hotlist&apos;s ten booths.
       </p>
 
-      {/* ---- Permalink focus: ?post=<id> pins one transmission ---- */}
-      {focus !== undefined && (
-        <section className="wfocus" aria-label="pinned transmission">
-          <a className="wfocusback" href="/hotlist">← BACK TO THE FULL WIRE</a>
-          {focus === null && <div className="empty">pulling the transmission…</div>}
-          {focus === false && (
-            <div className="empty">
-              this transmission is not on the wire — it may be held for
-              review, or it may be gone.
-            </div>
+      <div className="wlayout">
+        {/* ---- THE FEED — the composer, then every post as a card ---- */}
+        <main className="wfeed" aria-label="the wire's feed">
+          {/* ---- Permalink focus: ?post=<id> pins one transmission ---- */}
+          {focus !== undefined && (
+            <GlassPane glass="lg-w-focus" className="wfocus" aria-label="pinned transmission">
+              <a className="wfocusback" href="/hotlist">← BACK TO THE FULL WIRE</a>
+              {focus === null && <div className="empty">pulling the transmission…</div>}
+              {focus === false && (
+                <div className="empty">
+                  this transmission is not on the wire — it may be held for
+                  review, or it may be gone.
+                </div>
+              )}
+              {focus && (
+                <div className="fpost wpost wfocuspost">
+                  {focus.title ? <div className="wposthead">{focus.title}</div> : null}
+                  <TransmissionText text={focus.text} />
+                  <PostByline p={focus} />
+                </div>
+              )}
+            </GlassPane>
           )}
-          {focus && (
-            <div className="fpost wpost wfocuspost">
-              {focus.title ? <div className="wposthead">{focus.title}</div> : null}
-              <TransmissionText text={focus.text} />
-              <PostByline p={focus} />
+
+          {/* ---- THE COMPOSER — three ways of posting (owner law, Aug 13) ---- */}
+          <GlassPane glass="lg-w-compose" className="wcomposer" aria-label="post to the wire">
+            <div className="wmodes">
+              <button className={"fmode" + (mode === "transmission" ? " cur" : "")} onClick={() => setMode("transmission")}>
+                TRANSMISSION
+              </button>
+              <button className={"fmode" + (mode === "images" ? " cur" : "")} onClick={() => setMode("images")}>
+                IMAGES ×6
+              </button>
+              <button className={"fmode" + (mode === "video" ? " cur" : "")} onClick={() => setMode("video")}>
+                VIDEO ≤3:00
+              </button>
             </div>
-          )}
-        </section>
-      )}
+            {anonPoster && (
+              <p className="pempty">
+                transmissions ride on a signed-in account — reading is open,
+                posting is named.{" "}
+                <a className="bizapply" href="/profile#access">sign in on your passport →</a>
+              </p>
+            )}
 
-      {/* ---- THE COMPOSER — three ways of posting (owner law, Aug 13) ---- */}
-      <section className="wcomposer" aria-label="post to the wire">
-        <div className="wmodes">
-          <button className={"fmode" + (mode === "transmission" ? " cur" : "")} onClick={() => setMode("transmission")}>
-            TRANSMISSION
-          </button>
-          <button className={"fmode" + (mode === "images" ? " cur" : "")} onClick={() => setMode("images")}>
-            IMAGES ×6
-          </button>
-          <button className={"fmode" + (mode === "video" ? " cur" : "")} onClick={() => setMode("video")}>
-            VIDEO ≤3:00
-          </button>
-        </div>
-        {anonPoster && (
-          <p className="pempty">
-            transmissions ride on a signed-in account — reading is open,
-            posting is named.{" "}
-            <a className="bizapply" href="/profile#access">sign in on your passport →</a>
-          </p>
-        )}
-
-        {mode === "transmission" && (
-          <div className="wcompose">
-            <Avatar name={getProfileInfo().name} />
-            <div className="wcright">
-              <input aria-label="caption"
-                className="wcap"
-                type="text"
-                maxLength={200}
-                placeholder="caption — becomes the transmission's header"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-              />
-              <textarea aria-label="the transmission"
-                rows={4}
-                maxLength={5000}
-                placeholder="the transmission — today's uniform, tonight's find, the whole account of it…"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <div className="cvcomposerow">
-                <span className="ccount">{text.length}/5000</span>
-                <button className="btn postbtn" onClick={publish} disabled={!text.trim()}>POST</button>
-              </div>
-            </div>
-          </div>
-        )}
-        {mode === "images" && (
-          <div className="wsoonpanel">
-            <b>IMAGES</b> — up to SIX images in one carousel, caption allowed.
-            the media pipeline (storage, moderation, playback) requires setup;
-            nothing here is faked in the meantime. <em>coming soon</em>
-          </div>
-        )}
-        {mode === "video" && (
-          <div className="wsoonpanel">
-            <b>VIDEO</b> — one video, capped at THREE MINUTES, caption allowed.
-            arrives with the same media pipeline. <em>coming soon</em>
-          </div>
-        )}
-        {wireNote && <div className="pempty">{wireNote}</div>}
-      </section>
-
-      {/* ---- THE FLOOR — every post, newest first ---- */}
-      <section className="elfloor wfloor" aria-label="the wire's posts">
-        {posts === null && <div className="empty">pulling the wire…</div>}
-        {posts && !postsLive && (
-          <div className="empty">
-            the shared wire could not be reached — showing this device&apos;s
-            posts only.
-          </div>
-        )}
-        {posts && postsLive && posts.length === 0 && (
-          <div className="empty">no transmissions yet — yours opens the wire.</div>
-        )}
-        {(posts || []).map((p) => {
-          const own = p.serverId != null && mineIds !== null && mineIds.has(String(p.serverId));
-          const inEdit = own && editing === p.serverId;
-          return (
-            <div className="fpost wpost" key={p.id}>
-              {inEdit ? (
-                <div className="wedit">
-                  <input aria-label="edit the caption"
+            {mode === "transmission" && (
+              <div className="wcompose">
+                <Avatar name={getProfileInfo().name} />
+                <div className="wcright">
+                  <input aria-label="caption"
                     className="wcap"
                     type="text"
                     maxLength={200}
                     placeholder="caption — becomes the transmission's header"
-                    value={editCaption}
-                    onChange={(e) => setEditCaption(e.target.value)}
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
                   />
-                  <textarea aria-label="edit the transmission"
+                  <textarea aria-label="the transmission"
                     rows={4}
                     maxLength={5000}
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
+                    placeholder="the transmission — today's uniform, tonight's find, the whole account of it…"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
                   />
                   <div className="cvcomposerow">
-                    <span className="ccount">{editText.length}/5000</span>
-                    <button className="wctl" onClick={() => setEditing(null)}>CANCEL</button>
-                    <button className="btn postbtn" onClick={saveEdit} disabled={!editText.trim()}>SAVE</button>
+                    <span className="ccount">{text.length}/5000</span>
+                    <button className="btn postbtn" onClick={publish} disabled={!text.trim()}>POST</button>
                   </div>
                 </div>
-              ) : (
-                <>
-                  {p.title ? <div className="wposthead">{p.title}</div> : null}
-                  <TransmissionText text={p.text} />
-                </>
-              )}
-              <PostByline p={p} />
-              {own && !inEdit && (
-                <span className="wctls">
-                  <button className="wctl" onClick={() => beginEdit(p)}>EDIT</button>
-                  {confirmDel === p.serverId
-                    ? <button className="wctl warn" onClick={() => doDelete(p)}>SURE? DELETE</button>
-                    : <button className="wctl" onClick={() => setConfirmDel(p.serverId)}>DELETE</button>}
-                </span>
-              )}
-              {/* Real counters or none. A count renders only once the ledger
-                  has answered for this transmission; a number nobody has
-                  earned yet stays silent rather than printing 0. */}
-              {p.serverId != null && engagement[String(p.serverId)] && (
-                <span className="wengage">
-                  <button
-                    className={"weng" + (engagement[String(p.serverId)].youLike ? " on" : "")}
-                    onClick={() => engage(p, "like")}
-                  >
-                    LIKE
-                    {engagement[String(p.serverId)].likes > 0 && (
-                      <b>{engagement[String(p.serverId)].likes}</b>
-                    )}
-                  </button>
-                  <button
-                    className={"weng" + (engagement[String(p.serverId)].youSave ? " on" : "")}
-                    onClick={() => engage(p, "save")}
-                  >
-                    SAVE
-                    {engagement[String(p.serverId)].saves > 0 && (
-                      <b>{engagement[String(p.serverId)].saves}</b>
-                    )}
-                  </button>
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="fwho" aria-label="who to follow">
-        <div className="elh elh4">WHO TO FOLLOW</div>
-        <WhoToFollowList compact withSearch />
-      </section>
-
-      {/* ---- THE HOTLIST — ten booths, business accounts only ---- */}
-      <section className="elhot" aria-label="the hotlist">
-        <div className="elmast">THE HOTLIST</div>
-        <p className="elnote">
-          <span className="pulse" />
-          ten booths, held for verified independent brands. a passport account
-          becomes a BUSINESS account by verifying itself, connecting its
-          Shopify, and connecting its personal website — only business
-          accounts get a chance at a booth. nothing stands in.
-        </p>
-        {paidBooths.length > 0 && (
-          <div className="paidrail" aria-label="paid placements">
-            <p className="elnote">
-              PAID PLACEMENT — these booths pay for the spot, and they reach
-              you only because your Passport already points at their work.
-              taste gates the door; rent never buys the wrong audience.
-            </p>
-            {paidBooths.map((b) => (
-              <div className="booth" key={"paid-" + b.sourceName}>
-                <div className="elnum" aria-hidden="true">★</div>
-                <div className="boothbody">
-                  <b>{b.brandName}</b>
-                  <span>
-                    matched to your Passport ·{" "}
-                    <a
-                      className="boothsite"
-                      href={b.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => noteBoothVisit(b.sourceName)}
-                    >
-                      their site ↗
-                    </a>
-                    {" · "}
-                    <a
-                      className="boothsite"
-                      href={"/discover?q=" + encodeURIComponent(b.brandName)}
-                      onClick={() => noteBoothVisit(b.sourceName)}
-                    >
-                      their pieces →
-                    </a>
-                  </span>
-                </div>
-                <span className="boothtag">PAID PLACEMENT</span>
               </div>
-            ))}
-          </div>
-        )}
-        {BOOTHS.map((n) => {
-          const holder = booths ? booths[n - 1] : null;
-          return (
-            <div className="booth" key={n}>
-              <div className="elnum" aria-hidden="true">{String(n).padStart(2, "0")}</div>
-              {holder ? (
-                <div className="boothbody">
-                  <b>{holder.brandName}</b>
-                  <span>
-                    verified independent brand ·{" "}
-                    <a
-                      className="boothsite"
-                      href={holder.websiteUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => noteBoothVisit(holder.sourceName)}
-                    >
-                      their site ↗
-                    </a>
-                    {holder.sourceName && (
+            )}
+            {mode === "images" && (
+              <div className="wsoonpanel">
+                <b>IMAGES</b> — up to SIX images in one carousel, caption allowed.
+                the media pipeline (storage, moderation, playback) requires setup;
+                nothing here is faked in the meantime. <em>coming soon</em>
+              </div>
+            )}
+            {mode === "video" && (
+              <div className="wsoonpanel">
+                <b>VIDEO</b> — one video, capped at THREE MINUTES, caption allowed.
+                arrives with the same media pipeline. <em>coming soon</em>
+              </div>
+            )}
+            {wireNote && <div className="pempty">{wireNote}</div>}
+          </GlassPane>
+
+          {/* ---- THE FLOOR — every post, newest first, each a card:
+               avatar · handle · time · the caption header · the text ·
+               the action row. The cards are the header's pill glass, not
+               refracting panes — sixty lensing panes in one column is a
+               scroll cost (trap 151's cousin); the composer and the rail
+               carry the real glass. Pictures and video take this same
+               card when the pipeline lands. ---- */}
+          <section className="elfloor wfloor" aria-label="the wire's posts">
+            {posts === null && <div className="empty">pulling the wire…</div>}
+            {posts && !postsLive && (
+              <div className="empty">
+                the shared wire could not be reached — showing this device&apos;s
+                posts only.
+              </div>
+            )}
+            {posts && postsLive && posts.length === 0 && (
+              <div className="empty">no transmissions yet — yours opens the wire.</div>
+            )}
+            {(posts || []).map((p) => {
+              const own = p.serverId != null && mineIds !== null && mineIds.has(String(p.serverId));
+              const inEdit = own && editing === p.serverId;
+              return (
+                <article className="wcard fpost wpost" key={p.id}>
+                  {p.mine
+                    ? <a href="/profile"><Avatar name={p.name || p.handle} /></a>
+                    : <a href={"/u/" + encodeURIComponent(p.handle)}><Avatar name={p.name || p.handle} /></a>}
+                  <div className="wcbody">
+                    <div className="wctop"><PostByline p={p} /></div>
+                    {inEdit ? (
+                      <div className="wedit">
+                        <input aria-label="edit the caption"
+                          className="wcap"
+                          type="text"
+                          maxLength={200}
+                          placeholder="caption — becomes the transmission's header"
+                          value={editCaption}
+                          onChange={(e) => setEditCaption(e.target.value)}
+                        />
+                        <textarea aria-label="edit the transmission"
+                          rows={4}
+                          maxLength={5000}
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                        />
+                        <div className="cvcomposerow">
+                          <span className="ccount">{editText.length}/5000</span>
+                          <button className="wctl" onClick={() => setEditing(null)}>CANCEL</button>
+                          <button className="btn postbtn" onClick={saveEdit} disabled={!editText.trim()}>SAVE</button>
+                        </div>
+                      </div>
+                    ) : (
                       <>
+                        {p.title ? <div className="wposthead">{p.title}</div> : null}
+                        <TransmissionText text={p.text} />
+                      </>
+                    )}
+                    <div className="wacts">
+                      {/* Real counters or none. A count renders only once the ledger
+                          has answered for this transmission; a number nobody has
+                          earned yet stays silent rather than printing 0. */}
+                      {p.serverId != null && engagement[String(p.serverId)] && (
+                        <span className="wengage">
+                          <button
+                            className={"weng" + (engagement[String(p.serverId)].youLike ? " on" : "")}
+                            onClick={() => engage(p, "like")}
+                          >
+                            LIKE
+                            {engagement[String(p.serverId)].likes > 0 && (
+                              <b>{engagement[String(p.serverId)].likes}</b>
+                            )}
+                          </button>
+                          <button
+                            className={"weng" + (engagement[String(p.serverId)].youSave ? " on" : "")}
+                            onClick={() => engage(p, "save")}
+                          >
+                            SAVE
+                            {engagement[String(p.serverId)].saves > 0 && (
+                              <b>{engagement[String(p.serverId)].saves}</b>
+                            )}
+                          </button>
+                        </span>
+                      )}
+                      {own && !inEdit && (
+                        <span className="wctls">
+                          <button className="wctl" onClick={() => beginEdit(p)}>EDIT</button>
+                          {confirmDel === p.serverId
+                            ? <button className="wctl warn" onClick={() => doDelete(p)}>SURE? DELETE</button>
+                            : <button className="wctl" onClick={() => setConfirmDel(p.serverId)}>DELETE</button>}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        </main>
+
+        {/* ---- THE RAIL — the hotlist in its glass strip, then the quieter
+             rungs of the ladder: who to follow, the house, the open
+             placements, the reading room, the report form ---- */}
+        <aside className="wrail" aria-label="the hotlist and the rail">
+          {/* ---- THE HOTLIST — ten booths, business accounts only ---- */}
+          <GlassPane glass="lg-w-hot" className="whot elhot" aria-label="the hotlist">
+            <div className="elmast">THE HOTLIST</div>
+            <p className="elnote">
+              <span className="pulse" />
+              ten booths, held for verified independent brands. a passport account
+              becomes a BUSINESS account by verifying itself, connecting its
+              Shopify, and connecting its personal website — only business
+              accounts get a chance at a booth. nothing stands in.
+            </p>
+            {paidBooths.length > 0 && (
+              <div className="paidrail" aria-label="paid placements">
+                <p className="elnote">
+                  PAID PLACEMENT — these booths pay for the spot, and they reach
+                  you only because your Passport already points at their work.
+                  taste gates the door; rent never buys the wrong audience.
+                </p>
+                {paidBooths.map((b) => (
+                  <div className="booth" key={"paid-" + b.sourceName}>
+                    <div className="elnum" aria-hidden="true">★</div>
+                    <div className="boothbody">
+                      <b>{b.brandName}</b>
+                      <span>
+                        matched to your Passport ·{" "}
+                        <a
+                          className="boothsite"
+                          href={b.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => noteBoothVisit(b.sourceName)}
+                        >
+                          their site ↗
+                        </a>
                         {" · "}
                         <a
                           className="boothsite"
-                          href={"/discover?q=" + encodeURIComponent(holder.brandName)}
-                          onClick={() => noteBoothVisit(holder.sourceName)}
+                          href={"/discover?q=" + encodeURIComponent(b.brandName)}
+                          onClick={() => noteBoothVisit(b.sourceName)}
                         >
                           their pieces →
                         </a>
-                      </>
-                    )}
-                  </span>
-                </div>
-              ) : (
-                <div className="boothbody">
-                  <b>BOOTH OPEN</b>
-                  <span>held for a verified independent brand</span>
-                </div>
-              )}
-              <span className="boothtag">{holder ? "VERIFIED BUSINESS" : "BUSINESS ACCOUNTS ONLY"}</span>
+                      </span>
+                    </div>
+                    <span className="boothtag">PAID PLACEMENT</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {boothRows}
+            <div className="elsubmit">
+              <span className="adstar" aria-hidden="true">*</span>
+              <span>
+                RAISE YOUR PASSPORT TO BUSINESS — verify your brand, your Shopify
+                storefront, and your own site; a human reviews every application.{" "}
+                <a className="bizapply" href="/profile#access">APPLY ON YOUR ACCOUNT →</a>
+              </span>
             </div>
-          );
-        })}
-        <div className="elsubmit">
-          <span className="adstar" aria-hidden="true">*</span>
-          <span>
-            RAISE YOUR PASSPORT TO BUSINESS — verify your brand, your Shopify
-            storefront, and your own site; a human reviews every application.{" "}
-            <a className="bizapply" href="/profile#access">APPLY ON YOUR ACCOUNT →</a>
-          </span>
-        </div>
+          </GlassPane>
 
-        {/* Impersonation reports (18 Aug): the public door to the case
-            machinery. Signed-in only — the server enforces it and the
-            refusal is shown honestly; a report is a named accusation. */}
-        <div className="elh elh4">REPORT AN IMPERSONATION</div>
-        <p className="elnote">
-          see a brand being copied on the terminal? file it — the case ledger
-          records every step and a named human adjudicates. false reports are
-          themselves on the ledger.
-        </p>
-        <div className="bizform">
-          <input aria-label="the brand being impersonated"
-            type="text" maxLength={80} placeholder="the brand being impersonated"
-            value={reportBrand} onChange={(e) => setReportBrand(e.target.value)}
-          />
-          <input aria-label="link to the real work"
-            type="url" maxLength={300} placeholder="https:// link to the REAL work"
-            value={reportReal} onChange={(e) => setReportReal(e.target.value)}
-          />
-          <input aria-label="link to the fake (optional)"
-            type="url" maxLength={300} placeholder="https:// link to the fake (optional)"
-            value={reportFake} onChange={(e) => setReportFake(e.target.value)}
-          />
-          <div className="bizrow">
-            <button className="btn" disabled={reportBusy || !reportBrand.trim() || !reportReal.trim()}
-              onClick={fileImpersonationReport}>
-              {reportBusy ? "FILING…" : "FILE REPORT"}
-            </button>
-          </div>
-          {reportMsg && <p className="pempty">{reportMsg}</p>}
-        </div>
-      </section>
+          <GlassPane glass="lg-w-who" className="fwho" aria-label="who to follow">
+            <div className="elh elh4">WHO TO FOLLOW</div>
+            <WhoToFollowList compact withSearch />
+          </GlassPane>
 
-      {/* ---- ASILUM MAGAZINE — the house's own dispatches ---- */}
-      <section className="elhouse" aria-label="asilum magazine">
-        <div className="elh elh2">ASILUM MAGAZINE</div>
-        {house === null && <div className="empty">opening the house pages…</div>}
-        {house && !houseLive && (
-          <p className="elhousenote">the house pages could not be reached — try again in a moment.</p>
-        )}
-        {house && houseLive && house.length === 0 && (
-          <p className="elhousenote">
-            the first ASILUM dispatch is on the cutting table — the house
-            writes here, under its own byline, when there is something worth
-            saying.
-          </p>
-        )}
-        {(house || []).map((p) => (
-          <article className="elpiece" key={p.id}>
-            <div className="elpiecettl">{p.title || p.text.slice(0, 80)}</div>
-            <p className="elpiecesum">{p.excerpt || p.text}</p>
-            <span className="elpiecedate">{timeAgo(p.at)}</span>
-          </article>
-        ))}
-        <div className="elsubmit">
-          <span className="adstar" aria-hidden="true">*</span>
-          <span>EDITORIAL SUBMISSIONS — submission intake requires setup. <em>coming soon</em></span>
-        </div>
-      </section>
+          {/* ---- ASILUM MAGAZINE — the house's own dispatches ---- */}
+          <GlassPane glass="lg-w-house" className="elhouse" aria-label="asilum magazine">
+            <div className="elh elh2">ASILUM MAGAZINE</div>
+            {house === null && <div className="empty">opening the house pages…</div>}
+            {house && !houseLive && (
+              <p className="elhousenote">the house pages could not be reached — try again in a moment.</p>
+            )}
+            {house && houseLive && house.length === 0 && (
+              <p className="elhousenote">
+                the first ASILUM dispatch is on the cutting table — the house
+                writes here, under its own byline, when there is something worth
+                saying.
+              </p>
+            )}
+            {(house || []).map((p) => (
+              <article className="elpiece" key={p.id}>
+                <div className="elpiecettl">{p.title || p.text.slice(0, 80)}</div>
+                <p className="elpiecesum">{p.excerpt || p.text}</p>
+                <span className="elpiecedate">{timeAgo(p.at)}</span>
+              </article>
+            ))}
+            <div className="elsubmit">
+              <span className="adstar" aria-hidden="true">*</span>
+              <span>EDITORIAL SUBMISSIONS — submission intake requires setup. <em>coming soon</em></span>
+            </div>
+          </GlassPane>
 
-      {/* ---- AD SPACE — open placements, always labeled ---- */}
-      <section className="elads" aria-label="ad space">
-        <div className="elh elh3">AD SPACE</div>
-        <div className="eladrow">
-          <div className="elad">
-            <span className="adstar" aria-hidden="true">*</span>
-            <b>THIS PLACEMENT IS OPEN</b>
-            <em>space for taste.</em>
-          </div>
-          <div className="elad">
-            <span className="adstar" aria-hidden="true">*</span>
-            <b>THIS PLACEMENT IS OPEN</b>
-            <em>sponsored placements are always disclosed.</em>
-          </div>
-        </div>
-      </section>
+          {/* ---- AD SPACE — open placements, always labeled ---- */}
+          <section className="elads" aria-label="ad space">
+            <div className="elh elh3">AD SPACE</div>
+            <div className="eladrow">
+              <div className="elad">
+                <span className="adstar" aria-hidden="true">*</span>
+                <b>THIS PLACEMENT IS OPEN</b>
+                <em>space for taste.</em>
+              </div>
+              <div className="elad">
+                <span className="adstar" aria-hidden="true">*</span>
+                <b>THIS PLACEMENT IS OPEN</b>
+                <em>sponsored placements are always disclosed.</em>
+              </div>
+            </div>
+          </section>
 
-      {/* ---- THE READING ROOM — quietest ----
-           Was EXTERNAL DISPATCHES, printing headlines ASILUM invented under
-           real mastheads. It is a reading list now: the publication, what it
-           actually covers, and a link to its front page. */}
-      <section className="elext" aria-label="the reading room">
-        <div className="elh elh5">THE READING ROOM</div>
-        {READING_ROOM.map((s) => (
-          <a className="elextrow" key={s.pub} href={s.url} target="_blank" rel="noopener noreferrer">
-            <span className="elextpub">{s.pub.toUpperCase()}</span>
-            <span className="elextttl">{s.beat} ↗</span>
-          </a>
-        ))}
-        <p className="elextnote">
-          mastheads ASILUM reads. the lines are ours, describing their beat — not
-          their headlines. each link goes to their front page.
-        </p>
-      </section>
+          {/* ---- THE READING ROOM — quietest ----
+               Was EXTERNAL DISPATCHES, printing headlines ASILUM invented under
+               real mastheads. It is a reading list now: the publication, what it
+               actually covers, and a link to its front page. */}
+          <section className="elext" aria-label="the reading room">
+            <div className="elh elh5">THE READING ROOM</div>
+            {READING_ROOM.map((s) => (
+              <a className="elextrow" key={s.pub} href={s.url} target="_blank" rel="noopener noreferrer">
+                <span className="elextpub">{s.pub.toUpperCase()}</span>
+                <span className="elextttl">{s.beat} ↗</span>
+              </a>
+            ))}
+            <p className="elextnote">
+              mastheads ASILUM reads. the lines are ours, describing their beat — not
+              their headlines. each link goes to their front page.
+            </p>
+          </section>
+
+          {/* Impersonation reports (18 Aug): the public door to the case
+              machinery. Signed-in only — the server enforces it and the
+              refusal is shown honestly; a report is a named accusation. */}
+          <GlassPane glass="lg-w-report" className="wreport" aria-label="report an impersonation">
+            <div className="elh elh4">REPORT AN IMPERSONATION</div>
+            <p className="elnote">
+              see a brand being copied on the terminal? file it — the case ledger
+              records every step and a named human adjudicates. false reports are
+              themselves on the ledger.
+            </p>
+            <div className="bizform">
+              <input aria-label="the brand being impersonated"
+                type="text" maxLength={80} placeholder="the brand being impersonated"
+                value={reportBrand} onChange={(e) => setReportBrand(e.target.value)}
+              />
+              <input aria-label="link to the real work"
+                type="url" maxLength={300} placeholder="https:// link to the REAL work"
+                value={reportReal} onChange={(e) => setReportReal(e.target.value)}
+              />
+              <input aria-label="link to the fake (optional)"
+                type="url" maxLength={300} placeholder="https:// link to the fake (optional)"
+                value={reportFake} onChange={(e) => setReportFake(e.target.value)}
+              />
+              <div className="bizrow">
+                <button className="btn" disabled={reportBusy || !reportBrand.trim() || !reportReal.trim()}
+                  onClick={fileImpersonationReport}>
+                  {reportBusy ? "FILING…" : "FILE REPORT"}
+                </button>
+              </div>
+              {reportMsg && <p className="pempty">{reportMsg}</p>}
+            </div>
+          </GlassPane>
+        </aside>
+      </div>
 
       <footer className="cvcolo" aria-label="colophon">
         *ASILUM MAGAZINE — THE WIRE · {stamp}

@@ -18,6 +18,8 @@ import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
+import { convictionsOf, mrzLines, sinceDisplay as formatSince } from "../../lib/passport/document.js";
+import { MrzTint } from "../components/PassportPreview.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
@@ -255,11 +257,7 @@ export default function BoardPage() {
   }
 
   function convictions() {
-    if (!viz) return [];
-    return Object.entries(viz.state.weights)
-      .filter(([, w]) => Math.abs(w) > 0.01)
-      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
-      .slice(0, 10);
+    return viz ? convictionsOf(viz.state.weights) : [];
   }
   async function toggleFollow(board) {
     const next = !following;
@@ -292,34 +290,16 @@ export default function BoardPage() {
   // stamped once on this device's first passport view, COUNTRY OF ORIGIN is
   // the device locale region, SEX is X until the product ever collects one
   // (it doesn't today — never invent it), and the machine zone encodes the
-  // bearer's REAL database account number (the uid) in the document-number
-  // and personal-number fields, TD3-style.
-  const mrzId = (uid || "UNISSUED").replace(/[^a-z0-9]/gi, "").toUpperCase();
-  const mrzName = (pinfo.name || "UNNAMED READER").replace(/[^a-z0-9 ]/gi, "")
-    .trim().toUpperCase().replace(/ +/g, "<");
-  // Date-only strings parse as UTC midnight — anchor to local time so the
-  // stamped day never shifts back a day in western timezones.
-  const sinceDate = pinfo.since ? new Date(pinfo.since + "T00:00:00") : null;
-  const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  const sinceDisplay = sinceDate
-    ? `${String(sinceDate.getDate()).padStart(2, "0")} ${MONTHS[sinceDate.getMonth()]} ${sinceDate.getFullYear()}`
-    : "—";
-  const sinceMrz = sinceDate
-    ? `${String(sinceDate.getFullYear()).slice(2)}${String(sinceDate.getMonth() + 1).padStart(2, "0")}${String(sinceDate.getDate()).padStart(2, "0")}`
-    : "000000";
-  // Machine-zone counters, all real: P = pins linked (items across the
-  // bearer's boards), B = purchases raised through the app (tickets),
-  // A = the device's area code in time (UTC offset, minutes).
+  // bearer's REAL database account number (the uid). The strings are built
+  // by lib/passport/document.js — the same code the profile's passport
+  // preview reads, so the two can never disagree (9 Sep).
+  const sinceDisplay = formatSince(pinfo.since);
   const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
-  const pad3 = (n) => String(Math.min(999, Math.abs(n))).padStart(3, "0");
-  const areaCode = pinfo.area || 0;
-  const mrzTop = ("P<ASM" + mrzName + "<<FASHION<MEMBER").padEnd(52, "<").slice(0, 52);
-  const mrzBot = (mrzId.slice(0, 9).padEnd(9, "<") + "0ASM" + sinceMrz + "0X<" +
-    "P" + pad3(pinCount) + "B" + pad3(ticketCount) + "A" + pad3(areaCode) + "<<" +
-    mrzId.slice(9, 21)).padEnd(52, "<").slice(0, 52);
+  const { top: mrzTop, bottom: mrzBot } = mrzLines({
+    uid, name: pinfo.name, since: pinfo.since, pinCount, ticketCount, areaCode: pinfo.area || 0,
+  });
   // UV tinting: data runs glow green, chevron filler reads as the red thread.
-  const mrzTint = (line) => line.split(/(<+)/).map((seg, i) =>
-    seg.startsWith("<") ? <i key={i}>{seg}</i> : seg && <b key={i}>{seg}</b>);
+  const mrzTint = (line) => <MrzTint line={line} />;
 
   return (
     <div className="wrap">
