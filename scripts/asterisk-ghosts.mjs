@@ -36,6 +36,10 @@ const WRITE = args.includes("--write");
 const JSON_OUT = opt("json");
 const ONLY = opt("only") ? new Set(opt("only").split(",").map(Number)) : null;
 const CANDIDATES = Math.max(1, Math.min(4, Number(opt("candidates")) || 2));
+const BASE = opt("base");   // a previous run's JSON: its chosen pieces stand unless re-run here
+const FROM = opt("from");   // write straight from a JSON, no reading at all
+// never a ghost: fakes by the seller's own word, lots, sets, reproductions
+const AVOID_ALWAYS = ["bootleg", "not real", "replica", "inspired by", "lot of", "lot ", "reproduction", "reprint", "custom made", "handmade by me", "set of", "+ tie", "bundle"];
 
 const { searchEbayRaw } = await import("../lib/ingest/ebay.js");
 const { processListing, streamStatus } = await import("../lib/asterisk/stream/index.js");
@@ -49,10 +53,10 @@ export const SPECS = [
   { n: 2, q: "undercover jun takahashi archive", house: "undercover", need: [["jacket", "shirt", "coat", "knit", "sweater", "tee", "pants", "trousers"]], avoid: ["gu x", "nike", "uniqlo"] },
   { n: 3, q: "helmut lang 1998 archive", house: "helmut lang", need: [["jacket", "coat", "trousers", "pants", "shirt", "jeans", "denim"]] },
   { n: 4, q: "saint laurent paris hedi slimane archive", house: "saint laurent", need: [["jacket", "blazer", "boots", "shirt", "jeans", "coat"]] },
-  { n: 5, q: "comme des garcons archive 90s", house: "comme des garcons", need: [["jacket", "coat", "shirt", "skirt", "blazer", "trousers", "dress"]], avoid: ["nike", "converse", "play "] },
-  { n: 6, q: "tom ford archive jacket", house: "tom ford", need: [["jacket", "blazer", "suit", "coat", "shirt"]] },
+  { n: 5, q: "comme des garcons homme plus jacket archive", house: "comme des garcons", aliases: ["cdg", "comme des garçons"], need: [["jacket", "coat", "shirt", "skirt", "blazer", "trousers", "dress"]], avoid: ["nike", "converse", "play ", "junya", "wallet"] },
+  { n: 6, q: "tom ford blazer jacket men", house: "tom ford", need: [["jacket", "blazer", "suit", "coat", "shirt"]], avoid: ["sunglass", "fragrance", "eyewear", "cologne"] },
   { n: 7, q: "gucci tom ford era 90s archive", house: "gucci", need: [["jacket", "blazer", "shirt", "trousers", "pants", "coat", "dress", "boots"]], avoid: ["belt", "wallet", "sunglass"] },
-  { n: 8, q: "vetements archive demna", house: "vetements", need: [["hoodie", "jacket", "coat", "jeans", "shirt", "sweater", "tee"]] },
+  { n: 8, q: "vetements hoodie oversized archive", house: "vetements", need: [["hoodie", "jacket", "coat", "jeans", "shirt", "sweater", "tee", "sweatshirt"]] },
   { n: 9, q: "lgb le grand bleu japan archive", house: "l.g.b.", aliases: ["lgb", "le grand bleu", "l.g.b"], need: [["jacket", "shirt", "pants", "denim", "leather", "boots", "coat", "knit"]] },
   { n: 10, q: "the row archive", house: "the row", need: [["coat", "jacket", "trousers", "pants", "knit", "sweater", "dress", "shirt", "boots"]] },
   { n: 11, q: "marc jacobs archive 90s grunge", house: "marc jacobs", need: [["jacket", "dress", "coat", "shirt", "skirt", "sweater", "cardigan"]] },
@@ -63,12 +67,12 @@ export const SPECS = [
   // ---- ten named pieces ----------------------------------------------------
   { n: 16, q: "vintage 70s cropped leather jacket spread collar", need: [["jacket"], ["leather"]], want: ["dagger collar", "spread collar", "cropped", "1970s"], avoid: ["faux", "pleather"] },
   { n: 17, q: "baby blue capri pants slim", need: [["capri", "capris", "cropped pants", "pedal pushers"]], want: ["baby blue", "light blue", "slim"] },
-  { n: 18, q: "vintage low rise light wash bootcut jeans men", need: [["jeans", "denim"]], want: ["bootcut", "boot cut", "low rise", "light wash"] },
-  { n: 19, q: "french cuff dress shirt spread collar men", need: [["shirt"]], want: ["french cuff", "double cuff", "spread collar", "full collar"] },
+  { n: 18, q: "vintage low rise light wash bootcut jeans men", need: [["jeans", "denim"]], want: ["bootcut", "boot cut", "low rise", "light wash"], men: true },
+  { n: 19, q: "vintage french cuff dress shirt cotton spread collar", need: [["shirt"]], want: ["french cuff", "double cuff", "spread collar", "full collar", "cotton"], avoid: ["polyester", "tie", "set"], men: true },
   { n: 20, q: "100% cashmere sweater crewneck", need: [["sweater", "jumper", "pullover", "knit"], ["cashmere"]] },
-  { n: 21, q: "mens cuban heel boots 2 inch heel leather", need: [["boots", "boot"]], want: ["cuban heel", "2 inch heel", "stacked heel", "chelsea"] },
+  { n: 21, q: "mens vintage leather chelsea boots cuban heel", need: [["boots", "boot"]], want: ["cuban heel", "2 inch heel", "stacked heel", "chelsea", "leather"], avoid: ["women", "faux", "vegan", "synthetic"], men: true },
   { n: 22, q: "vintage led zeppelin t-shirt original 1970s", need: [["led zeppelin"], ["shirt", "tee", "t-shirt"]], want: ["vintage", "1970s", "single stitch", "original"], avoid: ["reprint", "reproduction", "bootleg", "lot of", "new with tags", "nwt"] },
-  { n: 23, q: "vintage 70s maxi dress", need: [["maxi", "dress"]], want: ["1970s", "vintage", "maxi"] },
+  { n: 23, q: "vintage 1970s maxi dress floral prairie", need: [["maxi", "dress"]], want: ["1970s", "vintage", "maxi", "prairie", "floral"] },
   { n: 24, q: "vintage brown leather slouchy oversized hobo bag", need: [["bag", "hobo", "tote"], ["leather"]], want: ["slouch", "slouchy", "oversized", "brown"] },
   { n: 25, q: "red kitten heels leather", need: [["heels", "pumps", "slingback", "mules"]], want: ["kitten heel", "red", "low heel"] },
 ];
@@ -78,7 +82,7 @@ const has = (hay, needle) => norm(hay).includes(norm(needle));
 
 function titleScore(spec, summary) {
   const title = norm(summary.title);
-  if ((spec.avoid || []).some((w) => title.includes(norm(w)))) return -1;
+  if ([...AVOID_ALWAYS, ...(spec.avoid || [])].some((w) => title.includes(norm(w)))) return -1;
   let score = 0;
   for (const group of spec.need || []) if (group.some((w) => title.includes(norm(w)))) score += 2; else return -1;
   for (const w of spec.want || []) if (title.includes(norm(w))) score += 1;
@@ -108,7 +112,8 @@ function specMatch(spec, result) {
     if (group.some((w) => has(words, w))) score += 1; else { notes.push(`missing: ${group.join("/")}`); return { score: -1, notes }; }
   }
   for (const w of spec.want || []) if (has(words, w)) { score += 0.75; notes.push(`has ${w}`); }
-  if ((spec.avoid || []).some((w) => has(words, w))) { notes.push("avoid word present"); score -= 2; }
+  if ([...AVOID_ALWAYS, ...(spec.avoid || [])].some((w) => has(words, w))) { notes.push("avoid word present"); score -= 3; }
+  if (spec.men && /\b(women'?s|womens|ladies|girls)\b/i.test(`${p.title} ${rec?.identification?.what_it_is || ""}`) && !/\bmen'?s\b/i.test(p.title)) { notes.push("women's, spec is men's"); return { score: -1, notes }; }
   if (rec) score += rec.confidence;
   return { score, notes };
 }
@@ -132,9 +137,18 @@ const status = streamStatus();
 console.log(`ASTERISK GHOSTS · ${WRITE ? "WRITE" : "dry run"} · identify ${status.identify.enabled ? `${status.identify.model}/${status.identify.effort}${status.identify.search ? "+search" : ""}` : "OFF"} · candidates ${CANDIDATES}\n`);
 if (!process.env.EBAY_CLIENT_ID || !process.env.EBAY_CLIENT_SECRET) { console.error("no eBay keys in .env.local"); process.exit(2); }
 
-const chosen = [];
+let chosen = [];
 let cost = 0, reads = 0;
-for (const spec of SPECS) {
+if (BASE) {
+  const prior = JSON.parse(fs.readFileSync(BASE, "utf8"));
+  chosen = (prior.chosen || []).filter((c) => !ONLY || !ONLY.has(c.spec.n));
+  console.log(`base: ${chosen.length} pieces kept from ${BASE}\n`);
+}
+if (FROM) {
+  chosen = JSON.parse(fs.readFileSync(FROM, "utf8")).chosen || [];
+  console.log(`from: ${chosen.length} pieces in ${FROM}`);
+}
+for (const spec of FROM ? [] : SPECS) {
   if (ONLY && !ONLY.has(spec.n)) continue;
   let pick;
   try { pick = await chooseFor(spec); } catch (e) { console.log(`${pad(spec.n, 3)} ${pad(spec.q, 44)} FAILED: ${String(e.message).slice(0, 160)}\n`); continue; }
@@ -152,7 +166,8 @@ for (const spec of SPECS) {
   chosen.push({ spec: { n: spec.n, q: spec.q, house: spec.house || null }, match, product: { ...p, listing_kind: "ghost" }, decoded: result.decoded, readings: result.readings, identification: result.identification });
 }
 
-console.log(`═══ ${chosen.length}/${ONLY ? ONLY.size : SPECS.length} chosen · ${reads} reads · $${cost.toFixed(2)}`);
+chosen.sort((a, b) => a.spec.n - b.spec.n);
+console.log(`═══ ${chosen.length}/${SPECS.length} chosen · ${reads} reads this run · $${cost.toFixed(2)}`);
 if (JSON_OUT) { fs.writeFileSync(JSON_OUT, JSON.stringify({ at: new Date().toISOString(), cost, chosen }, null, 1)); console.log(`wrote ${JSON_OUT}`); }
 
 if (WRITE && chosen.length) {

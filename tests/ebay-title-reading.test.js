@@ -42,3 +42,11 @@ test("short sleeve is not shorts; sneaker collabs are footwear", () => {
   assert.equal(guessCategory("Air Jordan 11 Retro Comme des Garcons Homme Plus"), "footwear");
   assert.equal(guessCategory("MAISON MARTIN MARGIELA Artisanal Paint Tabi Boots"), "footwear");
 });
+
+test("shoes named without the word shoe are footwear; a dress shirt is a top", () => {
+  assert.equal(guessCategory("Vtg Salvatore Ferragamo Brown Leather Pumps w/horseshoe emblem 9M"), "footwear");
+  assert.equal(guessCategory("Women's Red Patent Leather Pointed Toe Slingback Bow kitten Heels Size 6.5"), "footwear");
+  assert.equal(guessCategory("Mid Cuban Heel Ankle Boots Lace Up Leather Brogue"), "footwear");
+  assert.equal(guessCategory("New Men's French Cuff Dress Shirt Spread Collar"), "tops");
+  assert.equal(guessCategory("Vintage 70s Maxi Dress"), "dresses");
+});
