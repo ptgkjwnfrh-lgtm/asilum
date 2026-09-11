@@ -19,7 +19,7 @@ import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
 import {
-  observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
+  observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE, isGhostItem, GHOST_LABEL, GHOST_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
@@ -1209,6 +1209,13 @@ export default function Home() {
                     is part of the sample record, but the row says what it is. */}
                 {isDemoItem(modal) ? (
                   <span className="demoflag">{DEMO_NOTE}</span>
+                ) : isGhostItem(modal) ? (
+                  <>
+                    <span className="demoflag">{GHOST_NOTE}</span>
+                    {safeExternalUrl(modal.url) ? (
+                      <a className="buy" href={safeExternalUrl(modal.url)} target="_blank" rel="noopener noreferrer">view source ↗</a>
+                    ) : null}
+                  </>
                 ) : (
                   <>
                     <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}
@@ -1233,7 +1240,7 @@ export default function Home() {
                 ))}
               </div>
               <div className="actions">
-                {modal.purchasable && (
+                {modal.purchasable && !isGhostItem(modal) && (
                   <button className="buybtn" onClick={() => startPurchase(modal)}>Buy ↗</button>
                 )}
                 <button onClick={() => react(modal, "favorite")}>Favorite</button>
@@ -1369,7 +1376,9 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, onPass }
             source, no "just in". Both would be claims it cannot support. */}
         {isDemoItem(it)
           ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
-          : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
+          : isGhostItem(it)
+            ? <div className="fitline demoflag"><b>{GHOST_LABEL}</b> · read by asterisk · lives at its source</div>
+            : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
         {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
         <ColorEvidenceLine item={it} />
         <OriginLine item={it} />

@@ -22,6 +22,9 @@ import { popularityDedupEnabled } from "../../../lib/brain/popularity.js";
 import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { tunedSplit, tuningEnabled, bridgeEngagementFromEvents } from "../../../lib/brain/tuning.js";
 import { baseSplit } from "../../../lib/brain/bridges.js";
+import { tasteVector } from "../../../lib/brain/index.js";
+import { TAGS } from "../../../lib/brain/tags.js";
+import { getStreamPriors, itemStreamPrior } from "../../../lib/db/production.js";
 import { listEvents } from "../../../lib/db/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
@@ -233,11 +236,34 @@ export async function GET(req) {
     } catch { tuned = null; }
   }
 
+  // THE STREAM'S PRIOR (schema v51): for this reader's two strongest
+  // aesthetics, what people with those aesthetics did with pieces carrying
+  // each descriptor; per item, the mean over its descriptors with evidence.
+  // Best effort — the feed never fails because of it; cold readers get none.
+  let streamPrior = null;
+  if (guidanceEnabled && hasProfile && process.env.BRAIN_STREAM !== "0") {
+    try {
+      const taste = tasteVector(profile);
+      const top = TAGS.filter((t) => (taste[t] || 0) > 0.15).sort((a, b) => taste[b] - taste[a]).slice(0, 2);
+      if (top.length) {
+        const priors = await getStreamPriors(top);
+        if (priors.size) {
+          streamPrior = new Map();
+          for (const it of pool) {
+            const prior = itemStreamPrior(it, priors);
+            if (prior) streamPrior.set(it.id, prior);
+          }
+        }
+      }
+    } catch { streamPrior = null; }
+  }
+
   const { split, items, epsilonActive, epsilonAuto, safeMode, zones, quotas, catalog } = buildFeed(
     {
       profile,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
       edges, popularity, boardVec, contextVec, crossUser, novelty: craving.novelty,
+      streamPrior,
       tunedSplit: tuned,
       limit,
       // The lane walks the FILTERED pool in listing order, so a category or

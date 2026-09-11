@@ -236,6 +236,32 @@ Answer sheet at the bottom — ten lines, fill and return.
   hunt for a green tick stops noticing anything; the point is that its
   **absence** is legible where it matters.
 
+## 12. eBay ingest under the API License's training clause — ✅ RULED 10 September 2026
+
+- **Question:** the eBay API License Agreement forbids using eBay Content
+  "to train algorithms, conduct machine learning, develop synthetic data
+  sets, train large learning models, and/or train artificial intelligence
+  systems." Ingested eBay listings take the seed pipeline (`inferTags` into
+  the brain vector) and per-person taste profiles update from what people
+  do with them. Does keying the adapter cross that line? (Raised for EPN on
+  22 Aug in `docs/epn-terms-check-2026-08-22.md`; the same clause was found
+  in the developer licence on 10 Sep.)
+- **Reading offered:** the tagger is fixed rules over a title (use, not
+  training); the profile learns the person, and would learn the same from
+  any source's listing with the same title; nothing in the brain is a
+  fitted model. `EMBEDDINGS_PROVIDER` over catalog items WOULD be the thing
+  the clause names, and it never runs over catalog items today.
+- **Ruling (owner, verbatim):** "we gotta take the risk, its been months
+  i need to see if the anything ive built works. i need to see if asterisk
+  can properly see items and then add internal tags to them."
+- **Consequences:** `EBAY_PARTNERSHIP_APPROVED=1` and the keys go on
+  Vercel; `scripts/ebay-first-light.mjs` is the first instrument (real
+  Browse search → real normalizer → printed tags, nothing stored); the
+  catalog sync follows. Standing guard: embeddings over catalog items stay
+  OFF for eBay-sourced rows until eBay's written consent exists (clause 2
+  of the same section). Reversible by unsetting the keys and deleting
+  `source = 'ebay'` rows.
+
 ## Answer sheet
 
 Reply with ten lines (any format):
