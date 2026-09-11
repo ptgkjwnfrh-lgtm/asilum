@@ -70,7 +70,7 @@ export const SPECS = [
   { n: 18, q: "vintage low rise light wash bootcut jeans men", need: [["jeans", "denim"]], want: ["bootcut", "boot cut", "low rise", "light wash"], men: true },
   { n: 19, q: "vintage french cuff dress shirt cotton spread collar", need: [["shirt"]], want: ["french cuff", "double cuff", "spread collar", "full collar", "cotton"], avoid: ["polyester", "tie", "set"], men: true },
   { n: 20, q: "100% cashmere sweater crewneck", need: [["sweater", "jumper", "pullover", "knit"], ["cashmere"]] },
-  { n: 21, q: "mens vintage leather chelsea boots cuban heel", need: [["boots", "boot"]], want: ["cuban heel", "2 inch heel", "stacked heel", "chelsea", "leather"], avoid: ["women", "faux", "vegan", "synthetic"], men: true },
+  { n: 21, q: "vintage 1970s mens leather boots cuban heel beatle boots", need: [["boots", "boot"]], want: ["cuban heel", "2 inch heel", "stacked heel", "chelsea", "beatle", "leather", "1970s", "vintage"], avoid: ["women", "faux", "vegan", "synthetic", "made in china"], men: true },
   { n: 22, q: "vintage led zeppelin t-shirt original 1970s", need: [["led zeppelin"], ["shirt", "tee", "t-shirt"]], want: ["vintage", "1970s", "single stitch", "original"], avoid: ["reprint", "reproduction", "bootleg", "lot of", "new with tags", "nwt"] },
   { n: 23, q: "vintage 1970s maxi dress floral prairie", need: [["maxi", "dress"]], want: ["1970s", "vintage", "maxi", "prairie", "floral"] },
   { n: 24, q: "vintage brown leather slouchy oversized hobo bag", need: [["bag", "hobo", "tote"], ["leather"]], want: ["slouch", "slouchy", "oversized", "brown"] },
