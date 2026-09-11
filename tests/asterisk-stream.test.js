@@ -143,6 +143,13 @@ test("step 1+4 together: processListing reads the detail, decodes, composes — 
   assert.equal(r2.product.era.year, 2019);
   assert.ok(r2.product.tags.astroworld > 0);
   assert.equal(r2.product.identification.identification.house, "Helmut Lang");
+  assert.equal(r2.product.brand, "HELMUT LANG", "the seller's Brand tag agrees with the house — kept as the seller wrote it");
+  // the seller's Brand tag names a shop; a confident identification names the house
+  const shop = async (id) => ({ ...(await detail(id)), localizedAspects: ASPECTS.map((a) => (a.name === "Brand" ? { name: "Brand", value: "M & M" } : a)) });
+  const r4 = await processListing(summary, { detail: shop, deep: true, identify: async () => ({ record: capIdentification(fakeRecord({ confidence: 0.8 })), status: "ok", costUsd: 0, usage: {} }) });
+  assert.equal(r4.product.brand, "Helmut Lang"); assert.equal(r4.product.sellerBrand, "M & M"); assert.equal(r4.product.brandSource, "asterisk");
+  const r5 = await processListing(summary, { detail: shop, deep: true, identify: async () => ({ record: capIdentification(fakeRecord({ confidence: 0.5 })), status: "ok", costUsd: 0, usage: {} }) });
+  assert.equal(r5.product.brand, "M & M", "an unsure identification does not overrule the seller's tag");
   // a model failure never loses the deterministic read
   const r3 = await processListing(summary, { detail, deep: true, identify: async () => { throw new Error("boom"); } });
   assert.equal(r3.summary.identifyStatus, "error");
