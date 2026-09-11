@@ -1,0 +1,6397 @@
+{
+ "provenance": {
+  "method": "curated-web-informed",
+  "curatedAt": "2026-09-11",
+  "note": "read:true concepts had their definition read from the page in `source` (Wikipedia glossary articles, Heddels, Permanent Style and other menswear references) on 11 Sep 2026; read:false concepts are the ordinary garment, fibre, closure and pattern words, editorial with the reference article as a pointer. Synonym groupings are editorial and reviewable per row. Never derived from marketplace listings."
+ },
+ "concepts": [
+  {
+   "canonical": "1970s",
+   "kind": "decade",
+   "family": "era",
+   "synonyms": [
+    "70s",
+    "seventies"
+   ],
+   "meaning": "Fashion associated with the 1970s, marked by wide lapels, flares, and earth tones.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "1980s",
+   "kind": "decade",
+   "family": "era",
+   "synonyms": [
+    "80s",
+    "eighties"
+   ],
+   "meaning": "Fashion associated with the 1980s, marked by power shoulders and acid wash denim.",
+   "era": "1980s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "1990s",
+   "kind": "decade",
+   "family": "era",
+   "synonyms": [
+    "90s",
+    "nineties"
+   ],
+   "meaning": "Fashion associated with the 1990s, marked by minimalism, grunge, and slip dresses.",
+   "era": "1990s",
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "2000s",
+   "kind": "decade",
+   "family": "era",
+   "synonyms": [
+    "00s",
+    "noughties"
+   ],
+   "meaning": "Fashion associated with the 2000s, marked by low-rise jeans and logo-heavy branding.",
+   "era": "2000s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "a-line silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "a line silhouette",
+    "a-line shape"
+   ],
+   "meaning": "A silhouette narrow at the shoulders that flares gradually outward toward the hem.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "accordion pleat",
+   "kind": "detail",
+   "family": "pleat",
+   "synonyms": [
+    "accordion pleats",
+    "sunray pleat"
+   ],
+   "meaning": "A series of narrow, uniform pleats that fold like the bellows of an accordion.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "acid wash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "acid washed denim"
+   ],
+   "meaning": "Denim treated with chlorine-soaked pumice for a high-contrast, marbled bleach effect.",
+   "era": "1980s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "acrylic",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "acrylic blend",
+    "acrylic knit"
+   ],
+   "meaning": "Synthetic wool substitute used in knitwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Acrylic_fiber",
+   "read": false
+  },
+  {
+   "canonical": "adjustable tab cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "adjuster tab",
+    "cuff tab"
+   ],
+   "meaning": "A cuff or waist tab with multiple button positions that lets the wearer adjust the fit.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "all season",
+   "kind": "detail",
+   "family": "condition",
+   "synonyms": [
+    "4 season",
+    "all seasons",
+    "four season",
+    "year round"
+   ],
+   "meaning": "Wearable in any season.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Season",
+   "read": false
+  },
+  {
+   "canonical": "almond toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "almond-toe"
+   ],
+   "meaning": "A shoe toe rounded to a soft point, resembling an almond shape.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "alpaca",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "alpaca wool"
+   ],
+   "meaning": "A soft, warm fiber shorn from alpacas, lighter and often silkier than sheep's wool.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "ankle length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "ankle-length hem"
+   ],
+   "meaning": "A garment length ending at the ankle.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "apron toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "apron front toe"
+   ],
+   "meaning": "A shoe toe with a separate panel stitched across the top, resembling an apron.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "aran knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "aran cable knit",
+    "aran sweater"
+   ],
+   "meaning": "An Irish cable-knit style named for the Aran Islands, combining braided and honeycomb patterns.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "archive piece",
+   "kind": "reference",
+   "family": "era",
+   "synonyms": [
+    "archival piece"
+   ],
+   "meaning": "A garment sourced from a brand's or collector's historical holdings rather than current stock.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "arm pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "bicep pocket",
+    "sleeve pocket"
+   ],
+   "meaning": "A pocket positioned on the sleeve of a jacket, common on military and utility outerwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "articulated knee",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "articulated knees"
+   ],
+   "meaning": "A pre-curved knee panel with extra seaming that allows the leg to bend without pulling.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "articulated sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "pre-curved sleeve"
+   ],
+   "meaning": "A sleeve pre-curved and paneled at the elbow to move naturally with a bent arm.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "asymmetric hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "asymmetric cut",
+    "handkerchief hem"
+   ],
+   "meaning": "A hemline or garment edge deliberately uneven rather than level all the way around.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "asymmetric zip",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "off-center zipper",
+    "off-centre zip"
+   ],
+   "meaning": "A front zipper placed off-center rather than running down the garment's midline.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "athletic",
+   "kind": "mood",
+   "family": "mood",
+   "synonyms": [
+    "activewear",
+    "athleisure",
+    "gym",
+    "sport",
+    "sportswear",
+    "sporty"
+   ],
+   "meaning": "Made for or styled after sport.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sportswear",
+   "read": false
+  },
+  {
+   "canonical": "bag",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "bags",
+    "handbag",
+    "purse"
+   ],
+   "meaning": "A carried container; handbags, totes, hobos, crossbodies.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Handbag",
+   "read": false
+  },
+  {
+   "canonical": "baggy fit",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "baggy jeans",
+    "baggy trousers"
+   ],
+   "meaning": "A very loose, oversized trouser fit through both the seat and legs.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "ballistic nylon",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "ballistic weave"
+   ],
+   "meaning": "A thick, tightly woven nylon fabric originally developed for military flak vests, prized for abrasion resistance.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "balloon silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "balloon shape"
+   ],
+   "meaning": "A silhouette that billows out full through the body and gathers in tightly at the hem.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "balloon sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "balloon shape sleeve"
+   ],
+   "meaning": "An exaggeratedly rounded, voluminous sleeve gathered tightly at the wrist or above the elbow.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "band collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "cadet collar",
+    "grandad collar",
+    "granddad collar",
+    "mandarin collar",
+    "nehru collar"
+   ],
+   "meaning": "A short standing collar with no fold-over point, buttoned at the front.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "bar tack",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "bar tack reinforcement",
+    "bartack"
+   ],
+   "meaning": "A short, dense zigzag of stitches used to reinforce a stress point such as a pocket corner.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "barrel cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "button cuff"
+   ],
+   "meaning": "A single-layer shirt cuff that closes with one or more buttons, the standard everyday cuff.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "batik print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "batik pattern"
+   ],
+   "meaning": "A dyed fabric pattern made using a wax-resist technique originating in Indonesia.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "beanie",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "beanies",
+    "knit cap",
+    "knit hat",
+    "toque"
+   ],
+   "meaning": "A brimless knitted cap.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knit_cap",
+   "read": false
+  },
+  {
+   "canonical": "bell bottom",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "bell bottoms",
+    "bellbottoms"
+   ],
+   "meaning": "An extreme flare that widens sharply below the knee into a bell shape at the hem.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "bell sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "flared sleeve"
+   ],
+   "meaning": "A sleeve fitted through the upper arm that flares gently outward from the elbow down.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "bellows pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "cargo pocket",
+    "expandable pocket"
+   ],
+   "meaning": "A patch pocket with pleated side panels that expand outward to hold bulky items.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "belt",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "belts",
+    "leather belt"
+   ],
+   "meaning": "A strap worn around the waist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Belt_(clothing)",
+   "read": false
+  },
+  {
+   "canonical": "belted closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "belted waist"
+   ],
+   "meaning": "A garment cinched at the waist with a fabric belt threaded through loops or a self-tie.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "bias cut",
+   "kind": "detail",
+   "family": "cut",
+   "synonyms": [
+    "cut on the bias"
+   ],
+   "meaning": "A garment cut diagonally across the fabric grain so it drapes and clings with natural stretch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "biker jacket",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "biker",
+    "double rider",
+    "moto jacket",
+    "motorcycle jacket",
+    "perfecto"
+   ],
+   "meaning": "An asymmetric-zip leather jacket with lapels, from motorcycle wear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather_jacket",
+   "read": false
+  },
+  {
+   "canonical": "birdseye weave",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "bird's eye weave",
+    "birdseye"
+   ],
+   "meaning": "A woven pattern of small diamond shapes with a center dot, resembling a bird's eye.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "bishop sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "bishop cuff sleeve"
+   ],
+   "meaning": "A long sleeve that is fuller at the bottom than the top and gathered into a cuff.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "blake rapid",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "blake rapid construction"
+   ],
+   "meaning": "A shoe construction adding a protective midsole layer to a Blake stitch for extra durability.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "blake stitch",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "blake construction",
+    "blake stitched"
+   ],
+   "meaning": "A shoe construction stitching the upper directly to the sole through a single seam, giving a sleeker profile.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "blazer",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "blazers",
+    "sport coat",
+    "sportcoat",
+    "sports jacket"
+   ],
+   "meaning": "A tailored jacket worn without matching trousers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Blazer",
+   "read": false
+  },
+  {
+   "canonical": "blind hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "invisible hem"
+   ],
+   "meaning": "A hem stitched so the thread is hidden inside the fold and barely visible from the outside.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "blistered leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "blister grain leather"
+   ],
+   "meaning": "Leather with an exaggerated, raised pebbled grain that looks like blisters across the surface.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "block heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "chunky heel"
+   ],
+   "meaning": "A thick, sturdy heel of uniform width from top to bottom.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "blouse",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "blouses"
+   ],
+   "meaning": "A loose woven top, usually women's.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Blouse",
+   "read": false
+  },
+  {
+   "canonical": "boat neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "bateau neck",
+    "bateau neckline"
+   ],
+   "meaning": "A wide, shallow neckline that runs almost straight across the front from shoulder to shoulder.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "boiled wool",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "boiled wool jersey"
+   ],
+   "meaning": "Knitted wool felted through heat and agitation into a dense, springy fabric.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "bomber",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "bomber jacket",
+    "flight jacket",
+    "ma 1",
+    "ma-1",
+    "ma1"
+   ],
+   "meaning": "A waist-length jacket with ribbed hem and cuffs, from military flight jackets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Flight_jacket",
+   "read": false
+  },
+  {
+   "canonical": "bootcut",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "boot cut",
+    "boot cut leg"
+   ],
+   "meaning": "A trouser leg that stays slim through the knee and flares slightly at the hem to clear a boot.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "boots",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "ankle boots",
+    "boot",
+    "leather boots"
+   ],
+   "meaning": "Footwear covering the foot and ankle or more.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Boot",
+   "read": false
+  },
+  {
+   "canonical": "boucle",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "boucle fabric"
+   ],
+   "meaning": "A fabric woven or knitted from looped, curled yarn, giving a nubby textured surface.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "bound seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "bound edge seam"
+   ],
+   "meaning": "A seam whose raw edges are enclosed in a folded strip of binding fabric or tape.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "box pleat",
+   "kind": "detail",
+   "family": "pleat",
+   "synonyms": [
+    "boxed pleat"
+   ],
+   "meaning": "A pleat formed by two folds turned away from each other, creating a flat panel between them.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "boxy fit",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "boxy",
+    "boxy cut",
+    "boxy silhouette"
+   ],
+   "meaning": "A fit that is squared off and roomy through the body, with little shaping at the waist.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "buckle closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "belt buckle fastening"
+   ],
+   "meaning": "A closure where a frame and prong hold a strap in place, as on belts and boots.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "butterfly collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "wide spread point collar",
+    "wide-point collar"
+   ],
+   "meaning": "An exaggerated spread collar with very wide, long points that fan out like wings.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "button fly",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "buttoned fly"
+   ],
+   "meaning": "A trouser fly that closes with a row of buttons instead of a zipper.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "button front",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "button",
+    "button closure",
+    "button down front",
+    "button up",
+    "button-up",
+    "buttoned",
+    "buttons"
+   ],
+   "meaning": "A front opening closed by buttons.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Button",
+   "read": false
+  },
+  {
+   "canonical": "button-down collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "buttondown collar",
+    "polo collar buttoned"
+   ],
+   "meaning": "A collar with buttonholes on the points that fasten the collar down to the shirt body.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "cable knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "cable stitch knit"
+   ],
+   "meaning": "A knit with raised, twisted rope-like columns formed by crossing stitches over each other.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "calfskin",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "calf leather"
+   ],
+   "meaning": "A fine-grained leather from young cattle, softer and smoother than adult cowhide.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "camp collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "camp collars",
+    "cuban collar",
+    "johnny collar open",
+    "open collar",
+    "revere collar"
+   ],
+   "meaning": "An open, unstructured collar that lies flat against the shirt with no button at the throat.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "canvas",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "cotton canvas"
+   ],
+   "meaning": "A heavy, tightly woven plain-weave cotton or linen cloth prized for durability.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "cap",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "baseball cap",
+    "caps",
+    "dad cap",
+    "fitted cap",
+    "snapback"
+   ],
+   "meaning": "A soft, brimmed or peaked hat.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Cap",
+   "read": false
+  },
+  {
+   "canonical": "cap sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "capped sleeve"
+   ],
+   "meaning": "A very short sleeve that covers only the top of the shoulder without extending past the armpit.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "cap toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "cap-toe",
+    "captoe"
+   ],
+   "meaning": "A shoe with a separate leather panel stitched across the toe box.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "cardigan",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "button cardigan",
+    "cardigans",
+    "knit cardigan"
+   ],
+   "meaning": "A knitted top that opens down the front.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Cardigan_(sweater)",
+   "read": false
+  },
+  {
+   "canonical": "cargo pants",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "cargo pant",
+    "cargo trousers",
+    "cargos"
+   ],
+   "meaning": "Trousers with large bellows pockets on the legs.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Cargo_pants",
+   "read": false
+  },
+  {
+   "canonical": "carpenter pants",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "carpenter jeans",
+    "carpenter trousers"
+   ],
+   "meaning": "Sturdy workwear trousers with a hammer loop and a wide tool pocket on one thigh.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "carrot fit",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "carrot leg",
+    "carrot trousers"
+   ],
+   "meaning": "A trouser leg cut full at the hip and thigh that tapers sharply to a narrow ankle.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "cashmere",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "cashmere wool"
+   ],
+   "meaning": "A fine, soft fiber combed from the undercoat of cashmere goats.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "casual",
+   "kind": "mood",
+   "family": "mood",
+   "synonyms": [
+    "casual wear",
+    "daily wear",
+    "everyday",
+    "weekend"
+   ],
+   "meaning": "Informal, everyday dressing.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Casual_wear",
+   "read": false
+  },
+  {
+   "canonical": "cemented construction",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "cement construction",
+    "glued construction"
+   ],
+   "meaning": "A shoe construction bonding the upper to the sole with adhesive rather than stitching.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "chain stitch",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "chainstitch"
+   ],
+   "meaning": "A looped stitch formed by one thread that produces a decorative, slightly stretchy seam.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/09/the-essential-raw-denim-breakdown-our-100th-article/",
+   "read": true
+  },
+  {
+   "canonical": "chain-stitched hem",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "chainstitch hem",
+    "roping hem"
+   ],
+   "meaning": "A hem sewn on a chain-stitch machine that produces a rope-like puckered edge as it ages.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/09/the-essential-raw-denim-breakdown-our-100th-article/",
+   "read": true
+  },
+  {
+   "canonical": "chalkstripe",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "chalk stripe"
+   ],
+   "meaning": "A pattern of soft, slightly blurred vertical stripes resembling chalk lines on a suiting cloth.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "chambray",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "chambray cotton"
+   ],
+   "meaning": "A lightweight plain-weave fabric with a colored warp and white weft, resembling light denim.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "checked",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "check",
+    "check pattern",
+    "checkered",
+    "checks",
+    "chequered",
+    "plaid"
+   ],
+   "meaning": "Patterned with crossing lines.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Check_(pattern)",
+   "read": false
+  },
+  {
+   "canonical": "chelsea boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "chelsea boots"
+   ],
+   "meaning": "An ankle boot with elastic side gussets and no laces, easy to slip on.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "chenille",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "chenille fabric"
+   ],
+   "meaning": "A fabric woven with a fuzzy, caterpillar-like pile yarn, soft and dimensional to the touch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "chest pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "breast pocket"
+   ],
+   "meaning": "A small pocket positioned on the upper chest of a jacket or shirt.",
+   "era": null,
+   "source": "https://www.bondsuits.com/a-guide-to-suit-pocket-styles/",
+   "read": true
+  },
+  {
+   "canonical": "chiffon",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "chiffon fabric"
+   ],
+   "meaning": "A lightweight, sheer, plain-weave fabric with a slightly rough, matte feel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "chino",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "chino pants",
+    "chino trousers",
+    "chinos",
+    "khakis"
+   ],
+   "meaning": "Cotton twill trousers, flat or pleated.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Chino_cloth",
+   "read": false
+  },
+  {
+   "canonical": "chisel toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "chisel-toe"
+   ],
+   "meaning": "A shoe toe squared off with flat, angled sides, resembling a chisel tip.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "chrome-tanned leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "chrome tanned leather",
+    "wet blue leather"
+   ],
+   "meaning": "Leather tanned with chromium salts, faster to produce and softer than vegetable tanning.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "chukka boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "chukka boots",
+    "desert boot"
+   ],
+   "meaning": "An ankle-high leather or suede boot with open lacing, typically two or three eyelets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "cinch back",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "buckle back",
+    "cinch waist back"
+   ],
+   "meaning": "An adjustable strap or elastic panel at the center back waist that draws the garment in.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "cloverleaf lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "clover lapel",
+    "rounded peak lapel"
+   ],
+   "meaning": "A peak lapel with the point rounded off into a soft clover-like curve.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "club collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "eton collar",
+    "penny collar",
+    "rounded collar"
+   ],
+   "meaning": "A shirt collar with rounded, curved points instead of sharp corners.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "coat",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "coats",
+    "long coat"
+   ],
+   "meaning": "A knee-length or longer outer layer.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": false
+  },
+  {
+   "canonical": "cocoon silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "cocoon shape"
+   ],
+   "meaning": "A rounded silhouette full through the middle and tapered at both the shoulders and hem.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "coin pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "fob pocket",
+    "watch pocket"
+   ],
+   "meaning": "A small compartment set inside a larger pocket, originally sized for a pocket watch or coins.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Pocket",
+   "read": true
+  },
+  {
+   "canonical": "collared",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "collar",
+    "collars",
+    "with collar"
+   ],
+   "meaning": "Has a collar.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": false
+  },
+  {
+   "canonical": "collarless",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "no collar",
+    "without collar"
+   ],
+   "meaning": "Has no collar.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": false
+  },
+  {
+   "canonical": "colorblock",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "color block",
+    "color-block",
+    "colorblocked",
+    "colour block",
+    "colourblock"
+   ],
+   "meaning": "Solid blocks of contrasting colour.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Color_blocking",
+   "read": false
+  },
+  {
+   "canonical": "column silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "sheath silhouette"
+   ],
+   "meaning": "A slim, straight silhouette running the same width from shoulder to hem.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "contrast stitching",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "contrast stitch"
+   ],
+   "meaning": "Topstitching sewn in a thread color that deliberately contrasts with the base fabric.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "cordovan",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "shell cordovan"
+   ],
+   "meaning": "A dense, non-porous leather from the fibrous shell layer of a horse's hindquarters.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "corduroy",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "cord fabric",
+    "cords"
+   ],
+   "meaning": "A ribbed pile fabric with raised parallel cords called wales running its length.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Corduroy",
+   "read": true
+  },
+  {
+   "canonical": "cork footbed",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "cork midsole",
+    "cork sole"
+   ],
+   "meaning": "A footbed layer of compressed cork that molds slightly to the foot over time.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "corozo button",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "tagua nut button",
+    "vegetable ivory button"
+   ],
+   "meaning": "A button carved from the corozo palm nut, prized for its natural grain and sheen.",
+   "era": null,
+   "source": "https://www.buttonologyinc.com/blogs/guides/corozo-vs-horn-vs-shell-buttons-which-natural-button-is-right-for-your-garment",
+   "read": true
+  },
+  {
+   "canonical": "cotton",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "100 cotton",
+    "cotton blend",
+    "cotton fabric"
+   ],
+   "meaning": "Plant fibre fabric; the default shirt, tee, denim and chino cloth.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Cotton",
+   "read": false
+  },
+  {
+   "canonical": "cowboy boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "western boot"
+   ],
+   "meaning": "A pull-on boot with a pointed toe and underslung heel, originally designed for riding.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "cowhide",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "cattle hide",
+    "cow leather",
+    "soft cowhide"
+   ],
+   "meaning": "The most common leather, from adult cattle, valued for its durability and abundance.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "cowl neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "cowl neckline",
+    "draped cowl collar"
+   ],
+   "meaning": "A loosely draped, soft fold of fabric at the neckline that hangs in folds rather than standing.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "crepe sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "crepe rubber sole"
+   ],
+   "meaning": "A soft, textured natural rubber sole with a light, springy feel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "crew neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "crewneck"
+   ],
+   "meaning": "A round, close-fitting neckline that sits at the base of the neck without a collar.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "crinkle leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "crackle leather",
+    "crackled leather"
+   ],
+   "meaning": "Leather finished or treated so the surface wrinkles into a fine crinkled texture.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "cropped fit",
+   "kind": "fit",
+   "family": "length",
+   "synonyms": [
+    "crop",
+    "cropped",
+    "cropped cut",
+    "cropped hem",
+    "cropped length"
+   ],
+   "meaning": "A garment cut shorter than standard, ending above the natural hip or waist.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "cuban heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "2 inch heel",
+    "cuban heel shoe",
+    "cuban heels"
+   ],
+   "meaning": "A medium-height heel with straight sides that does not curve inward like a stiletto.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "d-ring closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "d ring buckle"
+   ],
+   "meaning": "A belt or strap closure using two D-shaped metal rings that the strap threads through and back.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "dagger collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "dagger lapel",
+    "dagger lapels",
+    "dagger point collar",
+    "dagger point collars",
+    "exaggerated collar",
+    "long point collar",
+    "spear point collar",
+    "spearpoint collar"
+   ],
+   "meaning": "An extra-long, sharply pointed shirt collar that reads as a 1970s disco-era statement piece.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "dainite sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "dainite studded sole"
+   ],
+   "meaning": "A studded rubber sole brand favored on British dress and country shoes for grip in wet weather.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "dark wash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "dark rinse"
+   ],
+   "meaning": "Denim finished with minimal fading, retaining deep, nearly raw-looking indigo color.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "dart",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "shaping dart"
+   ],
+   "meaning": "A stitched, wedge-shaped fold that removes fabric fullness to shape a garment to the body.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "deadstock",
+   "kind": "reference",
+   "family": "condition",
+   "synonyms": [
+    "dead stock"
+   ],
+   "meaning": "Unsold, unused merchandise that has sat in inventory since its original release.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "deconstructed",
+   "kind": "detail",
+   "family": "construction",
+   "synonyms": [
+    "deconstructed design"
+   ],
+   "meaning": "A garment left with exposed seams, raw edges, or unfinished elements as a design choice.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "deerskin",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "buckskin",
+    "deer leather"
+   ],
+   "meaning": "A soft, supple leather from deer, traditionally used in gloves and moccasins.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "cotton denim",
+    "denim fabric",
+    "jean fabric"
+   ],
+   "meaning": "Sturdy warp-faced cotton twill, usually indigo; the cloth of jeans and truckers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": false
+  },
+  {
+   "canonical": "derby shoe",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "blucher",
+    "derby shoes"
+   ],
+   "meaning": "A shoe with open lacing, where the eyelet tabs are sewn on top of the vamp.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "diffusion line",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "diffusion label"
+   ],
+   "meaning": "A designer's secondary, more affordable collection sold under a related label name.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "distressed leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "aged leather",
+    "worn-in leather"
+   ],
+   "meaning": "Leather deliberately treated to look aged, scuffed, or weathered before sale.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "dolman sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "batwing sleeve"
+   ],
+   "meaning": "A sleeve with a very deep armhole cut in one with the bodice, tapering narrow at the wrist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "donegal tweed",
+   "kind": "material",
+   "family": "tweed",
+   "synonyms": [
+    "donegal cloth"
+   ],
+   "meaning": "An Irish tweed with flecks of contrasting color, historically dyed with local plant dyes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "double knee",
+   "kind": "detail",
+   "family": "denim",
+   "synonyms": [
+    "double-knee construction",
+    "reinforced knee"
+   ],
+   "meaning": "A workwear trouser construction with a second layer of fabric stitched over each knee for durability.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "double needle stitch",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "double needle hem",
+    "twin needle stitch"
+   ],
+   "meaning": "A hem or seam sewn with two parallel lines of stitching using a double-needle machine.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "double vent",
+   "kind": "detail",
+   "family": "vent",
+   "synonyms": [
+    "double back vent",
+    "side vents"
+   ],
+   "meaning": "Two slits cut at either side of a jacket's back hem, favored in British tailoring.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "double-breasted",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "db closure",
+    "double breasted"
+   ],
+   "meaning": "A jacket or coat front with two parallel columns of buttons and overlapping fronts.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "down fill",
+   "kind": "material",
+   "family": "lining",
+   "synonyms": [
+    "down",
+    "down filled",
+    "down insulation",
+    "duck down",
+    "goose down"
+   ],
+   "meaning": "Insulated with bird down.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Down_feather",
+   "read": false
+  },
+  {
+   "canonical": "dpm camo",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "disruptive pattern material"
+   ],
+   "meaning": "A British four-color disruptive camouflage pattern using irregular blotches.",
+   "era": null,
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "draped",
+   "kind": "detail",
+   "family": "silhouette",
+   "synonyms": [
+    "draping"
+   ],
+   "meaning": "Fabric arranged in soft, loose folds rather than tailored flat against the body.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "drawcord",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "drawstring"
+   ],
+   "meaning": "A cord run through a channel at a hem, hood, or waist that cinches the opening when pulled.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "dress",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "dresses",
+    "frock"
+   ],
+   "meaning": "A one-piece garment covering the torso and hanging over the legs.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Dress",
+   "read": false
+  },
+  {
+   "canonical": "drop shoulder",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "dropped shoulder seam"
+   ],
+   "meaning": "A construction where the shoulder seam sits below the natural shoulder line, giving a relaxed hang.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "drop waist",
+   "kind": "silhouette",
+   "family": "waist",
+   "synonyms": [
+    "dropped waist"
+   ],
+   "meaning": "A silhouette with the waistline seam lowered to sit at or below the hip.",
+   "era": "1920s",
+   "source": "https://en.wikipedia.org/wiki/Waistline_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "duck camo",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "duck hunter camo",
+    "frog skin camo"
+   ],
+   "meaning": "A mottled brown and green camouflage pattern originally issued to US paratroopers in WWII.",
+   "era": "1940s",
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "duck cloth",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "cotton duck"
+   ],
+   "meaning": "A very tightly woven, heavyweight plain-weave cotton fabric, sturdier than canvas.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "dungarees",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "dungaree overalls"
+   ],
+   "meaning": "A British term for denim bib overalls or, informally, for jeans generally.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "elastane",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "lycra",
+    "spandex",
+    "stretch blend",
+    "stretch fabric"
+   ],
+   "meaning": "Elastic fibre blended in for stretch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Spandex",
+   "read": false
+  },
+  {
+   "canonical": "embroidered",
+   "kind": "detail",
+   "family": "print",
+   "synonyms": [
+    "embroidered detail",
+    "embroidered logo",
+    "embroidery",
+    "stitched logo"
+   ],
+   "meaning": "Decorated with needlework.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Embroidery",
+   "read": false
+  },
+  {
+   "canonical": "empire waist",
+   "kind": "silhouette",
+   "family": "waist",
+   "synonyms": [
+    "empire line",
+    "empire silhouette"
+   ],
+   "meaning": "A silhouette with a raised waistline sitting just below the bust, falling loosely to the hem.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Empire_silhouette",
+   "read": true
+  },
+  {
+   "canonical": "engineer boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "engineer boots"
+   ],
+   "meaning": "A pull-on leather work boot with a strap and buckle at the ankle and calf instead of laces.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "enzyme wash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "bio wash",
+    "enzyme washed denim"
+   ],
+   "meaning": "Denim softened using cellulase enzymes that gently break down surface fibers instead of stones.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "exposed zip",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "exposed zipper trim",
+    "visible zipper"
+   ],
+   "meaning": "A zipper sewn so its teeth and tape show on the garment's face rather than being concealed.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "fades",
+   "kind": "detail",
+   "family": "fade",
+   "synonyms": [
+    "denim fading",
+    "indigo fading"
+   ],
+   "meaning": "The pattern of lightened indigo that develops across raw denim through wear.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/05/fade-types-whiskershige-honeycombs/",
+   "read": true
+  },
+  {
+   "canonical": "fair isle",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "fair isle knit"
+   ],
+   "meaning": "A stranded colorwork knitting technique using multiple yarns floated across the back of the row.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "faux fur",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "fake fur",
+    "fun fur",
+    "synthetic fur"
+   ],
+   "meaning": "Pile fabric imitating fur.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Fake_fur",
+   "read": false
+  },
+  {
+   "canonical": "faux leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "fake leather",
+    "leatherette",
+    "pleather",
+    "pu leather",
+    "synthetic leather",
+    "vegan leather"
+   ],
+   "meaning": "Plastic-coated fabric imitating leather.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Artificial_leather",
+   "read": false
+  },
+  {
+   "canonical": "fisherman knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "fisherman sweater",
+    "guernsey knit"
+   ],
+   "meaning": "A dense, textured wool knit traditionally worn by fishermen, often combining cables and seed stitch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "fishmouth lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "fish mouth notch",
+    "fishmouth notch lapel"
+   ],
+   "meaning": "A notch lapel variant with an exaggeratedly wide, rounded notch resembling an open fish mouth.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "flannel",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "brushed flannel",
+    "flannel cloth"
+   ],
+   "meaning": "A soft, brushed woven fabric, usually wool or cotton, with a slightly fuzzy nap.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "flap pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "flap chest pocket",
+    "flap chest pockets",
+    "flap patch pocket",
+    "flap pockets",
+    "flapped pocket",
+    "snap flap pocket",
+    "snap flap pockets"
+   ],
+   "meaning": "A jetted or welt pocket finished with a rectangular flap of fabric covering the opening.",
+   "era": null,
+   "source": "https://www.bondsuits.com/a-guide-to-suit-pocket-styles/",
+   "read": true
+  },
+  {
+   "canonical": "flare",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "flared leg",
+    "flares"
+   ],
+   "meaning": "A trouser leg that widens gradually from the knee to a wide hem.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "flat-felled seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "felled seam",
+    "flat felled seam"
+   ],
+   "meaning": "A durable, fully enclosed seam folded twice and stitched flat, classic on jeans inseams.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "flatform",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "flat platform"
+   ],
+   "meaning": "A platform sole of even thickness from heel to toe, with no heel elevation.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "flatlock seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "flat-lock seam",
+    "flatlocked seam"
+   ],
+   "meaning": "A seam stitched so the two fabric edges lie flat side by side rather than overlapping.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "fleece",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "polar fleece"
+   ],
+   "meaning": "A brushed synthetic knit napped on both faces for warmth without weight.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "floor length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "floor-length hem"
+   ],
+   "meaning": "A hem falling all the way to the floor.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "floral",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "botanical print",
+    "floral print",
+    "flower print",
+    "flowers"
+   ],
+   "meaning": "Patterned with flowers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Floral_design",
+   "read": false
+  },
+  {
+   "canonical": "formal",
+   "kind": "mood",
+   "family": "mood",
+   "synonyms": [
+    "black tie",
+    "dressy",
+    "evening wear",
+    "eveningwear",
+    "occasion wear"
+   ],
+   "meaning": "For formal occasions.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Formal_wear",
+   "read": false
+  },
+  {
+   "canonical": "french cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "double cuff"
+   ],
+   "meaning": "A long shirt cuff folded back on itself and fastened with cufflinks rather than buttons.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "french seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "frenched seam"
+   ],
+   "meaning": "A seam sewn twice to fully enclose the raw edges inside a narrow fold, leaving no exposed edge.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "french terry",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "french terry cloth"
+   ],
+   "meaning": "A knit fabric with uncut loops on the reverse, lighter and less fuzzy than fleece.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "full canvas",
+   "kind": "detail",
+   "family": "construction",
+   "synonyms": [
+    "full-canvas construction"
+   ],
+   "meaning": "A jacket construction with a floating canvas interlining running through the entire front.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "full-grain leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "full grain leather"
+   ],
+   "meaning": "Leather that retains the entire natural grain layer, developing a patina as it ages.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "fully lined",
+   "kind": "detail",
+   "family": "lining",
+   "synonyms": [
+    "full lining",
+    "lined",
+    "rust satin lining",
+    "satin lined",
+    "satin liner",
+    "silk lined",
+    "with lining"
+   ],
+   "meaning": "A garment lined completely on the inside, concealing all interior seams.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "funnel collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "funnel neck"
+   ],
+   "meaning": "A tall, straight standing collar that flares slightly like a funnel, common on outerwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "fused construction",
+   "kind": "detail",
+   "family": "construction",
+   "synonyms": [
+    "fused interlining",
+    "glued canvas"
+   ],
+   "meaning": "A jacket construction where interlining is heat-bonded to the shell fabric rather than sewn in.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "gabardine",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "gaberdine"
+   ],
+   "meaning": "A tightly woven, warp-faced twill fabric with a smooth face and durable hand.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "garment-dyed",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "garment dye",
+    "garment dyed",
+    "piece dyed"
+   ],
+   "meaning": "A piece dyed whole after being fully sewn, giving mottled, worn-in color variation.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "gathered",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "gathering"
+   ],
+   "meaning": "Fabric drawn up along a line of stitching to create soft fullness.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "gauntlet cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "gauntlet button cuff"
+   ],
+   "meaning": "A wide cuff with an extra button placed above the main closure to control fabric fullness at the wrist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "glen check",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "glen plaid",
+    "prince of wales check"
+   ],
+   "meaning": "A woven check of small and large checks alternating, popularized as the Prince of Wales pattern.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "goatskin",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "goat leather",
+    "kid leather",
+    "kidskin"
+   ],
+   "meaning": "A durable, flexible leather from goats with a distinctive pebbled grain.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "goodyear welt",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "goodyear welted"
+   ],
+   "meaning": "A shoe construction stitching the upper, welt, and sole together so the shoe can be resoled.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "gore-tex",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "gore tex membrane",
+    "goretex"
+   ],
+   "meaning": "A waterproof, breathable membrane laminated into outerwear fabric.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "graphic",
+   "kind": "detail",
+   "family": "print",
+   "synonyms": [
+    "artwork",
+    "graphic design",
+    "graphic print tee",
+    "graphic tee",
+    "graphics"
+   ],
+   "meaning": "A pictorial or text design on the piece.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/T-shirt",
+   "read": false
+  },
+  {
+   "canonical": "gum sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "gum rubber",
+    "gum rubber sole"
+   ],
+   "meaning": "A natural, honey-colored rubber sole common on desert boots and casual shoes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "gusset",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "reinforcement gusset",
+    "underarm gusset"
+   ],
+   "meaning": "A triangular or diamond piece of fabric inserted into a seam to add ease and reduce strain.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "gusseted crotch",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "diamond gusset crotch"
+   ],
+   "meaning": "A diamond-shaped fabric insert at the crotch seam that adds range of motion and reduces blowouts.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "half canvas",
+   "kind": "detail",
+   "family": "construction",
+   "synonyms": [
+    "half-canvas construction"
+   ],
+   "meaning": "A jacket construction with a floating canvas interlining in the chest only, fused elsewhere.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "half-belt",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "action back belt",
+    "half belt back"
+   ],
+   "meaning": "A short belt sewn only across the back of a jacket or coat rather than running all the way around.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "half-lined",
+   "kind": "detail",
+   "family": "lining",
+   "synonyms": [
+    "half lined jacket"
+   ],
+   "meaning": "A garment lined only in part, typically the shoulders and chest, for a lighter feel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "halter neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "halter top",
+    "halterneck"
+   ],
+   "meaning": "A neckline held up by a strap around the back of the neck, leaving the shoulders and back bare.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "hand-warmer pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "handwarmer pocket",
+    "muff pocket"
+   ],
+   "meaning": "A large horizontal or slanted pocket sized to warm both hands, common on coats and outerwear.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "handmade",
+   "kind": "detail",
+   "family": "construction",
+   "synonyms": [
+    "artisanal",
+    "hand crafted",
+    "hand made",
+    "hand sewn",
+    "hand-made",
+    "hand-sewn",
+    "handcrafted"
+   ],
+   "meaning": "Made by hand rather than in a factory line.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Handicraft",
+   "read": false
+  },
+  {
+   "canonical": "harness boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "harness boots"
+   ],
+   "meaning": "A pull-on boot decorated with a metal-ringed leather strap, or harness, across the ankle.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "harris tweed",
+   "kind": "material",
+   "family": "tweed",
+   "synonyms": [
+    "harris tweed cloth"
+   ],
+   "meaning": "A handwoven wool tweed made in the Outer Hebrides of Scotland under a protected trademark.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "heels",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "heel",
+    "high heels",
+    "pump",
+    "pumps"
+   ],
+   "meaning": "Shoes with a raised heel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_shoe",
+   "read": false
+  },
+  {
+   "canonical": "herringbone",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "herringbone twill",
+    "herringbone weave"
+   ],
+   "meaning": "A twill weave variant that reverses direction in a zigzag pattern resembling fish bones.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "hidden rivets",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "covered rivets"
+   ],
+   "meaning": "Metal pocket rivets sewn over with fabric to prevent scratching furniture, per a 1930s Levi's change.",
+   "era": "1930s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "high rise",
+   "kind": "fit",
+   "family": "rise",
+   "synonyms": [
+    "high rise cut",
+    "high waist",
+    "high waisted",
+    "high-rise"
+   ],
+   "meaning": "A trouser or jean waistband that sits at or above the natural waist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "high-low hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "high low hem",
+    "mullet hem"
+   ],
+   "meaning": "A hemline cut shorter at the front and longer at the back.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "hip length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "hip-length hem"
+   ],
+   "meaning": "A garment length ending at or just below the hip bone.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "honeycombs",
+   "kind": "detail",
+   "family": "fade",
+   "synonyms": [
+    "honeycomb fades"
+   ],
+   "meaning": "Overlapping crease fades that form behind the knee from repeated bending.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/05/fade-types-whiskershige-honeycombs/",
+   "read": true
+  },
+  {
+   "canonical": "hood",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "attached hood",
+    "hooded collar"
+   ],
+   "meaning": "A fabric covering for the head and neck, often drawstring-adjustable, attached at the collar.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "hoodie",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "hooded sweater",
+    "hooded sweatshirt",
+    "hoodies",
+    "pullover hoodie",
+    "zip hoodie"
+   ],
+   "meaning": "A sweatshirt with a hood.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Hoodie",
+   "read": false
+  },
+  {
+   "canonical": "hook and eye",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "hook-and-eye closure"
+   ],
+   "meaning": "A two-part fastener of a metal hook and matching loop, used at waistbands and necklines.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "horn button",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "buffalo horn button"
+   ],
+   "meaning": "A button made from animal horn, valued for its warm tone and marbled texture on tailoring.",
+   "era": null,
+   "source": "https://www.buttonologyinc.com/blogs/guides/corozo-vs-horn-vs-shell-buttons-which-natural-button-is-right-for-your-garment",
+   "read": true
+  },
+  {
+   "canonical": "horsebit loafer",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "gucci loafer",
+    "horsebit loafers"
+   ],
+   "meaning": "A loafer decorated with a metal snaffle-bit ornament across the vamp.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "horsehide",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "horse hide",
+    "horse leather"
+   ],
+   "meaning": "A dense, durable leather from horses, historically used for work gloves and jackets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "houndstooth",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "dogtooth check",
+    "hounds tooth"
+   ],
+   "meaning": "A broken check pattern of jagged four-pointed shapes, developed from gamekeeper's tweed.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "hourglass silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "hourglass shape"
+   ],
+   "meaning": "A silhouette with a fitted waist between a fuller bust and hip, echoing an hourglass form.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "ikat print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "ikat pattern",
+    "ikat weave"
+   ],
+   "meaning": "A pattern created by resist-dyeing yarns before weaving, giving the motifs a slightly blurred edge.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "intarsia",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "intarsia knit"
+   ],
+   "meaning": "A colorwork knitting technique using separate yarn bobbins for each color block, with no floats.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "interior pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "hidden pocket",
+    "inside pocket"
+   ],
+   "meaning": "A pocket sewn into the lining, concealed from the outside of the garment.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "inverted pleat",
+   "kind": "detail",
+   "family": "pleat",
+   "synonyms": [
+    "inverted box pleat"
+   ],
+   "meaning": "A pleat formed by two folds turned toward each other, meeting at a center seam.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "jacket",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "jackets",
+    "jkt"
+   ],
+   "meaning": "A hip-to-thigh-length outer layer with a front opening.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": false
+  },
+  {
+   "canonical": "jacquard knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "jacquard fabric"
+   ],
+   "meaning": "A knit or weave with an intricate pattern built into the structure via a jacquard mechanism.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "jeans",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "denim jeans",
+    "denim pants",
+    "denim trousers",
+    "jean"
+   ],
+   "meaning": "Trousers made of denim.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jeans",
+   "read": false
+  },
+  {
+   "canonical": "jetted pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "besom pocket",
+    "double welt pocket",
+    "double-jetted pocket"
+   ],
+   "meaning": "A pocket set into a slit finished with two narrow fabric strips, one above and one below the opening.",
+   "era": null,
+   "source": "https://www.bondsuits.com/a-guide-to-suit-pocket-styles/",
+   "read": true
+  },
+  {
+   "canonical": "jodhpur boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "jodhpurs boot"
+   ],
+   "meaning": "A laceless ankle boot with an ankle strap and buckle, originally for horse riding.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "jorts",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "denim shorts",
+    "jean shorts"
+   ],
+   "meaning": "Shorts cut from denim, typically knee length or above.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "jump boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "paratrooper boot"
+   ],
+   "meaning": "A lace-up combat boot originally issued to paratroopers, with a rounded toe cap.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "jumpsuit",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "boiler suit",
+    "boilersuit",
+    "jumpsuits"
+   ],
+   "meaning": "A one-piece garment of top and trousers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jumpsuit",
+   "read": false
+  },
+  {
+   "canonical": "kangaroo leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "roo leather"
+   ],
+   "meaning": "A thin, exceptionally strong leather from kangaroo hide, used in performance boots and gloves.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "kangaroo pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "muff pouch pocket",
+    "pouch pocket"
+   ],
+   "meaning": "A single large pocket sewn across the front of a hoodie or sweatshirt, open at both sides.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "keyhole neckline",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "cutout neckline",
+    "keyhole neck"
+   ],
+   "meaning": "A neckline with a small cutout, usually teardrop or oval shaped, at the throat.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "kimono sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "kimono cut sleeve"
+   ],
+   "meaning": "A sleeve cut in one piece with the bodice in a wide, sloping shape based on the Japanese kimono.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "kitten heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "kitten-heel"
+   ],
+   "meaning": "A short, slender heel of about one to two inches with a slight curve.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "knee length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "knee-length hem"
+   ],
+   "meaning": "A garment length ending at the knee.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "knife pleat",
+   "kind": "detail",
+   "family": "pleat",
+   "synonyms": [
+    "knife pleats"
+   ],
+   "meaning": "A series of narrow, sharp pleats all folded in the same direction.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "knit fabric",
+    "knitted",
+    "knitting",
+    "knitwear"
+   ],
+   "meaning": "Fabric made by interlooping yarn.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitted_fabric",
+   "read": false
+  },
+  {
+   "canonical": "lace up",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "lace up closure",
+    "lace-up",
+    "lace-up front",
+    "laced",
+    "laces"
+   ],
+   "meaning": "Closed by laces threaded through eyelets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoelaces",
+   "read": false
+  },
+  {
+   "canonical": "lace-to-toe boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "lace to toe"
+   ],
+   "meaning": "A boot with lacing that runs all the way down to the toe box for a snug, adjustable fit.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "lambskin",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "lamb leather",
+    "lamb skin"
+   ],
+   "meaning": "A soft, lightweight leather from young sheep, prized for a fine, smooth grain.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "lambswool",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "lambs wool"
+   ],
+   "meaning": "A soft wool shorn from a lamb's first shearing, finer than adult sheep wool.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "lampo zipper",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "lampo zip"
+   ],
+   "meaning": "An Italian zipper brand favored in high-fashion apparel for its finish and durability.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "100 leather",
+    "genuine leather",
+    "leather shell",
+    "real leather"
+   ],
+   "meaning": "Tanned animal hide; the material of jackets, boots and bags.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": false
+  },
+  {
+   "canonical": "leather jacket",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "leather blouson",
+    "leather jackets"
+   ],
+   "meaning": "A jacket cut in leather.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather_jacket",
+   "read": false
+  },
+  {
+   "canonical": "leather sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "leather outsole"
+   ],
+   "meaning": "A sole cut from tanned leather, traditional on dress shoes for its sleek profile.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "leather-covered button",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "leather covered button",
+    "leather-wrapped button"
+   ],
+   "meaning": "A button whose surface is wrapped in leather rather than left as bare plastic or metal.",
+   "era": null,
+   "source": "https://www.permanentstyle.com/2019/09/suit-style-6-buttons.html",
+   "read": true
+  },
+  {
+   "canonical": "leg-of-mutton sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "gigot sleeve",
+    "mutton sleeve"
+   ],
+   "meaning": "A sleeve extremely full over the upper arm that narrows sharply from elbow to wrist.",
+   "era": "1890s",
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "leopard print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "leopard spot print"
+   ],
+   "meaning": "A print imitating leopard fur, with irregular dark rosette spots on a tan ground.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "lettuce hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "lettuce edge hem"
+   ],
+   "meaning": "A stretchy knit hem overstretched while sewing so it ripples like a lettuce leaf edge.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "light wash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "light rinse"
+   ],
+   "meaning": "Denim finished with heavy fading toward pale blue.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "linen",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "linen cloth"
+   ],
+   "meaning": "A breathable fabric woven from flax fiber, known for its crisp hand and characteristic wrinkling.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "loafer",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "slip-on shoe"
+   ],
+   "meaning": "A low, laceless slip-on shoe with a moccasin-style construction.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "loden",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "loden cloth",
+    "loden wool"
+   ],
+   "meaning": "A dense, water-resistant felted wool cloth, traditionally forest green, from the Austrian Alps.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "logo",
+   "kind": "detail",
+   "family": "print",
+   "synonyms": [
+    "big logo",
+    "brand logo",
+    "branded",
+    "logo patch",
+    "logo print",
+    "logos"
+   ],
+   "meaning": "Carries the maker's mark visibly.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Logo",
+   "read": false
+  },
+  {
+   "canonical": "long sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "long sleeved",
+    "long sleeves",
+    "long-sleeve",
+    "ls"
+   ],
+   "meaning": "Sleeves reaching the wrist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": false
+  },
+  {
+   "canonical": "longline",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "elongated length",
+    "longline cut"
+   ],
+   "meaning": "A garment cut noticeably longer than the standard proportion for its type.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "loopwheel knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "loopwheeled jersey"
+   ],
+   "meaning": "A jersey knit made slowly on vintage loopwheel machines with no tension, giving a soft, dense hand.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "loose fit",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "loose cut"
+   ],
+   "meaning": "A relaxed trouser fit with extra room through the hip and thigh, less extreme than baggy.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "low rise",
+   "kind": "fit",
+   "family": "rise",
+   "synonyms": [
+    "hipster fit",
+    "low rise cut",
+    "low waist",
+    "low waisted",
+    "low-rise"
+   ],
+   "meaning": "A trouser or jean waistband that sits well below the natural waist, near the hip bones.",
+   "era": "2000s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "lug sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "commando sole"
+   ],
+   "meaning": "A thick, deeply treaded rubber sole designed for grip and durability.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "made in england",
+   "kind": "origin",
+   "family": "era",
+   "synonyms": [
+    "english made",
+    "made in britain"
+   ],
+   "meaning": "A country-of-origin label indicating manufacture in England, notable in tailoring and shoemaking.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "made in france",
+   "kind": "origin",
+   "family": "era",
+   "synonyms": [
+    "french made"
+   ],
+   "meaning": "A country-of-origin label indicating manufacture in France.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "made in italy",
+   "kind": "origin",
+   "family": "era",
+   "synonyms": [
+    "italian made",
+    "italy made"
+   ],
+   "meaning": "A country-of-origin label indicating manufacture in Italy, often signaling tailoring or leather goods.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "made in japan",
+   "kind": "origin",
+   "family": "era",
+   "synonyms": [
+    "japan made",
+    "japanese made"
+   ],
+   "meaning": "A country-of-origin label indicating manufacture in Japan, notable in premium denim and workwear.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/09/the-essential-raw-denim-breakdown-our-100th-article/",
+   "read": true
+  },
+  {
+   "canonical": "made in usa",
+   "kind": "origin",
+   "family": "era",
+   "synonyms": [
+    "made in the usa",
+    "usa made"
+   ],
+   "meaning": "A country-of-origin label indicating manufacture in the United States.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "madras",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "madras plaid"
+   ],
+   "meaning": "A lightweight, plain-weave cotton fabric woven in vividly colored plaid or check patterns.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "mainline",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "main line collection"
+   ],
+   "meaning": "A designer's primary, full-price collection line, as distinct from a diffusion label.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "map pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "field jacket map pocket"
+   ],
+   "meaning": "A large flat pocket, often on the sleeve or lower coat front, sized to hold a folded map.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "maxi length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "maxi"
+   ],
+   "meaning": "A hem length falling all the way to the ankle or floor.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "melton",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "melton cloth",
+    "melton wool"
+   ],
+   "meaning": "A dense, felted wool fabric with a smooth, brushed face and no visible weave, used in coats.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "merino wool",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "merino"
+   ],
+   "meaning": "A fine, soft wool from merino sheep, prized for being less itchy than coarser wools.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "mesh",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "athletic mesh",
+    "mesh fabric"
+   ],
+   "meaning": "An open, net-like fabric structure with visible holes, used for ventilation.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "metal button",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "brass button",
+    "military button"
+   ],
+   "meaning": "A button stamped or cast from metal, often embossed, common on blazers and military coats.",
+   "era": null,
+   "source": "https://www.permanentstyle.com/2019/09/suit-style-6-buttons.html",
+   "read": true
+  },
+  {
+   "canonical": "micro length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "micro mini"
+   ],
+   "meaning": "An extremely short hem length, shorter than a standard mini.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "mid rise",
+   "kind": "fit",
+   "family": "rise",
+   "synonyms": [
+    "mid-rise",
+    "regular rise"
+   ],
+   "meaning": "A trouser or jean waistband that sits at or just below the natural waist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "mid wash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "medium wash"
+   ],
+   "meaning": "Denim finished with a moderate, even fade between dark and light indigo.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "midi length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "midi"
+   ],
+   "meaning": "A hem length falling between the knee and the ankle, roughly mid-calf.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "mini length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "mini"
+   ],
+   "meaning": "A hem length ending well above the knee.",
+   "era": "1960s",
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "moccasin construction",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "moc construction",
+    "moc toe",
+    "moc-toe construction",
+    "moccasin apron seam",
+    "moccasin toe"
+   ],
+   "meaning": "A shoe built from a single wrapped piece of leather forming the vamp, stitched with a visible seam at the toe.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "mock collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "mock neck",
+    "mock turtleneck",
+    "mockneck"
+   ],
+   "meaning": "A short knitted standing collar resembling a turtleneck but without the fold-over.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "modal",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "micromodal",
+    "modal blend",
+    "modal jersey"
+   ],
+   "meaning": "Beech-derived rayon with a soft, fluid hand; jersey dresses and tees.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Modal_(textile)",
+   "read": false
+  },
+  {
+   "canonical": "mohair",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "mohair wool"
+   ],
+   "meaning": "A lustrous, resilient fiber from the Angora goat, often blended into suiting cloth for sheen.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "moleskin fabric",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "moleskin cloth"
+   ],
+   "meaning": "A heavy cotton twill brushed on the face to a suede-like nap, unrelated to the animal fur.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Corduroy",
+   "read": true
+  },
+  {
+   "canonical": "monk strap",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "monk shoe",
+    "monkstrap"
+   ],
+   "meaning": "A shoe closed with one or two buckled straps instead of laces.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "multicam",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "multicam camouflage"
+   ],
+   "meaning": "A commercial camouflage pattern with a soft, blended palette designed to work across varied terrain.",
+   "era": null,
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "napa leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "nappa leather"
+   ],
+   "meaning": "A soft, supple, full-grain leather originally tanned in Napa, California, used in gloves and upholstery.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "narrow lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "skinny lapel",
+    "slim lapel"
+   ],
+   "meaning": "A lapel cut noticeably narrower than standard, associated with mod tailoring and slim revivals.",
+   "era": "1960s",
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "needlecord",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "pincord",
+    "pinwale corduroy"
+   ],
+   "meaning": "Corduroy with very fine, closely spaced ridges, above roughly 16 wales per inch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Corduroy",
+   "read": true
+  },
+  {
+   "canonical": "nipped waist",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "cinched waist"
+   ],
+   "meaning": "A silhouette shaped to draw in sharply at the natural waist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Waistline_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "norwegian welt",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "norvegese construction"
+   ],
+   "meaning": "A rugged, visible welt construction stitching the upper, welt, and sole in a decorative outward seam.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "nos",
+   "kind": "reference",
+   "family": "condition",
+   "synonyms": [
+    "new old stock"
+   ],
+   "meaning": "New old stock: an item made long ago that was never sold or used.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "notch lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "notched lapel",
+    "step collar",
+    "step lapel"
+   ],
+   "meaning": "The most common lapel, sewn to the collar at an angle to form a visible step or notch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "notched collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "notch collar"
+   ],
+   "meaning": "A collar sewn to meet the lapel at an angle, forming a visible notch or step.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "nubuck",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "nubuck leather"
+   ],
+   "meaning": "Top-grain leather sanded on the grain side to a slight nap, sturdier than suede.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "nwt",
+   "kind": "reference",
+   "family": "condition",
+   "synonyms": [
+    "new with tags"
+   ],
+   "meaning": "A condition marker meaning an item is unworn with its original tags still attached.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "nylon",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "nylon blend",
+    "nylon shell",
+    "polyamide"
+   ],
+   "meaning": "Synthetic fibre used for bombers, shells, parachute pants and bags.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Nylon",
+   "read": false
+  },
+  {
+   "canonical": "object-dyed leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "drum-dyed leather",
+    "object dyed",
+    "object dyed leather"
+   ],
+   "meaning": "Leather dyed all the way through in the tanning drum so color remains consistent as it wears.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "off-shoulder neckline",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "bardot neckline",
+    "off the shoulder"
+   ],
+   "meaning": "A neckline that sits below the shoulders, baring both shoulders while covering the upper arms.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "oilcloth",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "oiled cloth"
+   ],
+   "meaning": "Cotton cloth treated with oil for waterproofing, a precursor to modern waxed cotton.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "oiled leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "oil-tanned leather",
+    "pull-up leather"
+   ],
+   "meaning": "Leather infused with oils that lighten in color where the surface is flexed or scuffed.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "one-shoulder neckline",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "asymmetric shoulder neckline"
+   ],
+   "meaning": "A neckline covering only one shoulder, leaving the other bare.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "organza",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "silk organza"
+   ],
+   "meaning": "A thin, sheer, crisp plain-weave fabric that holds its shape stiffly.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "overalls",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "bib overalls",
+    "coveralls"
+   ],
+   "meaning": "A one-piece garment with trousers and a front bib held up by shoulder straps.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "overcoat",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "overcoats",
+    "topcoat",
+    "wool overcoat"
+   ],
+   "meaning": "A long, heavy coat worn over tailoring.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Overcoat",
+   "read": false
+  },
+  {
+   "canonical": "overlock seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "exposed overlock",
+    "overlock seams",
+    "overlocked",
+    "overlocked edge",
+    "serged seam"
+   ],
+   "meaning": "A seam finished by an overlock machine that trims and encases the raw edge in thread loops.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "oversized fit",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "oversize fit"
+   ],
+   "meaning": "A fit intentionally cut larger than the body for a loose, exaggerated drape.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "oxford cloth",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "oxford weave"
+   ],
+   "meaning": "A basket-weave cotton shirting fabric with a soft, slightly nubby texture.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "oxford shoe",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "balmoral shoe",
+    "oxfords"
+   ],
+   "meaning": "A formal shoe with closed lacing, where the eyelet tabs are stitched under the vamp.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "padded",
+   "kind": "detail",
+   "family": "lining",
+   "synonyms": [
+    "insulated",
+    "padding",
+    "thermal",
+    "wadded"
+   ],
+   "meaning": "Insulated with a filling layer.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Padding",
+   "read": false
+  },
+  {
+   "canonical": "painter pants",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "painters pants"
+   ],
+   "meaning": "Loose workwear trousers, often white or off-white canvas, with multiple utility loops and pockets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "paisley print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "paisley pattern"
+   ],
+   "meaning": "A print of curved, teardrop-shaped motifs derived from Persian and South Asian textile traditions.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "paneled construction",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "panelled construction"
+   ],
+   "meaning": "A garment built from multiple shaped fabric panels rather than simple front and back pieces.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "pants",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "pant",
+    "slacks",
+    "trouser",
+    "trousers"
+   ],
+   "meaning": "A two-legged lower-body garment.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": false
+  },
+  {
+   "canonical": "paper tag",
+   "kind": "reference",
+   "family": "era",
+   "synonyms": [
+    "original paper tag"
+   ],
+   "meaning": "An original cardboard or paper price tag still attached, signaling unworn vintage stock.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "parka",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "hooded parka",
+    "parkas"
+   ],
+   "meaning": "A hooded, usually insulated, hip-to-knee-length coat.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Parka",
+   "read": false
+  },
+  {
+   "canonical": "patch pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "flap patch pockets",
+    "patch pockets",
+    "patched pocket"
+   ],
+   "meaning": "A pocket made from a separate piece of fabric sewn directly onto the outside of the garment.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Pocket",
+   "read": true
+  },
+  {
+   "canonical": "patent leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "patent finish leather"
+   ],
+   "meaning": "Leather finished with a high-gloss coating that gives a mirror-like shine.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "peak lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "peaked lapel",
+    "pointed lapel"
+   ],
+   "meaning": "A lapel with a point angled upward toward the shoulder, read as the most formal lapel style.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "pebbled leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "pebble grain leather"
+   ],
+   "meaning": "Leather embossed or naturally grained with a small, bumpy pebble texture.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "penny loafer",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "penny loafers"
+   ],
+   "meaning": "A loafer with a strip of leather across the vamp featuring a diamond-shaped cutout.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "peplum",
+   "kind": "detail",
+   "family": "silhouette",
+   "synonyms": [
+    "peplum flare",
+    "peplum hem"
+   ],
+   "meaning": "A short flared ruffle attached at the waist of a jacket, blouse, or dress.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "peter pan collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "peterpan collar"
+   ],
+   "meaning": "A flat collar with rounded corners, traditionally associated with children's and girlish dresses.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "pin collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "collar pin style",
+    "eyelet collar"
+   ],
+   "meaning": "A shirt collar with small eyelets designed to hold a collar pin beneath the tie knot.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "pinstripe",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "pin stripe"
+   ],
+   "meaning": "A pattern of very fine, evenly spaced vertical stripes on a solid ground.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "plain toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "plain-toe"
+   ],
+   "meaning": "A shoe toe cut from a single piece of leather with no cap seam or decoration.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "platform sole",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "platform shoe"
+   ],
+   "meaning": "A thick sole raising the entire foot, often paired with a separate heel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "pockets",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "four pockets",
+    "pocket",
+    "pocketed",
+    "side pockets",
+    "two pockets",
+    "with pockets"
+   ],
+   "meaning": "Has pockets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Pocket",
+   "read": false
+  },
+  {
+   "canonical": "pointed toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "pointed-toe"
+   ],
+   "meaning": "A shoe toe tapering to a sharp point.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "polka dot",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "dots",
+    "dotted",
+    "polka dots",
+    "spotted"
+   ],
+   "meaning": "Patterned with regular dots.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Polka_dot",
+   "read": false
+  },
+  {
+   "canonical": "polo collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "johnny collar knit"
+   ],
+   "meaning": "A soft, unstructured knit collar with a placket of two or three buttons, as on a polo shirt.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "polo shirt",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "pique polo",
+    "polo",
+    "polo shirts",
+    "polos"
+   ],
+   "meaning": "A collared knit shirt with a short placket.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Polo_shirt",
+   "read": false
+  },
+  {
+   "canonical": "polyester",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "poly",
+    "poly blend",
+    "polyester blend"
+   ],
+   "meaning": "Synthetic fibre; the standard for track jackets, linings and technical shells.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Polyester",
+   "read": false
+  },
+  {
+   "canonical": "poplin",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "cotton poplin"
+   ],
+   "meaning": "A closely woven plain-weave fabric with a fine crosswise rib, crisp and smooth.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "princess seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "princess line seam",
+    "princess panel",
+    "princess seamed",
+    "princess seams"
+   ],
+   "meaning": "A vertical shaping seam running from shoulder or armhole to hem that curves through the waist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "printed",
+   "kind": "detail",
+   "family": "print",
+   "synonyms": [
+    "all over print",
+    "aop",
+    "graphic print",
+    "print",
+    "screen print",
+    "screen printed"
+   ],
+   "meaning": "Carries a printed design.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Textile_printing",
+   "read": false
+  },
+  {
+   "canonical": "puff sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "gathered puff sleeve",
+    "puffed sleeve"
+   ],
+   "meaning": "A short or elbow-length sleeve gathered at both the shoulder and the hem to create volume.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "puffer",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "down jacket",
+    "puffa",
+    "puffer coat",
+    "puffer jacket",
+    "quilted jacket"
+   ],
+   "meaning": "A quilted, insulated jacket with visible baffles.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Down_jacket",
+   "read": false
+  },
+  {
+   "canonical": "quilted",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "diamond quilted",
+    "quilt stitched",
+    "quilted panels",
+    "quilting"
+   ],
+   "meaning": "Layers stitched through in a pattern.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Quilting",
+   "read": false
+  },
+  {
+   "canonical": "quilted lining",
+   "kind": "detail",
+   "family": "lining",
+   "synonyms": [
+    "quilt lined",
+    "quilted liner"
+   ],
+   "meaning": "An insulating lining stitched in a diamond or channel pattern to hold fill in place.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "raglan sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "raglan",
+    "raglan cut",
+    "raglan shoulder",
+    "raglan sleeves"
+   ],
+   "meaning": "A sleeve with a diagonal seam running from the underarm to the neckline instead of a shoulder seam.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "raw denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "dry denim",
+    "unwashed denim"
+   ],
+   "meaning": "Denim that has not been washed or treated after dyeing, left stiff with its original indigo.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/09/the-essential-raw-denim-breakdown-our-100th-article/",
+   "read": true
+  },
+  {
+   "canonical": "raw edge",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "unfinished edge"
+   ],
+   "meaning": "A fabric edge left uncut and unsewn, deliberately exposed for a deconstructed look.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "rayon",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "viscose",
+    "viscose rayon"
+   ],
+   "meaning": "Regenerated cellulose fibre with a silky drape; camp shirts and dresses.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Rayon",
+   "read": false
+  },
+  {
+   "canonical": "re-edition",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "reedition"
+   ],
+   "meaning": "A garment reproduced from a past design, often updated slightly for current production.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "realtree camo",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "realtree camouflage"
+   ],
+   "meaning": "A photorealistic camouflage pattern of leaves, twigs, and bark used in hunting apparel.",
+   "era": null,
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "redline selvedge",
+   "kind": "detail",
+   "family": "denim",
+   "synonyms": [
+    "red line selvedge",
+    "redline denim"
+   ],
+   "meaning": "Selvedge denim with a red ID thread woven into the edge band, the most common selvedge color.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/05/fade-types-whiskershige-honeycombs/",
+   "read": true
+  },
+  {
+   "canonical": "reissue",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "re-issue"
+   ],
+   "meaning": "A garment remanufactured from an archival design, generally using original patterns.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "relaxed fit",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "relaxed cut"
+   ],
+   "meaning": "A fit with extra ease through the body, more casual than a tailored or slim cut.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "rib knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "rib knit trim",
+    "rib trim",
+    "ribbed trim",
+    "ribbing"
+   ],
+   "meaning": "A knit alternating columns of knit and purl stitches, producing a stretchy vertical ridge texture.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "ribbed cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "rib knit cuff"
+   ],
+   "meaning": "A stretch knit cuff, usually ribbed, that hugs the wrist on jackets and sweatshirts.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "rigid denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "rigid jeans"
+   ],
+   "meaning": "Denim with no stretch fiber content, holding a stiff, structured hand.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "ripstop",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "ripstop nylon"
+   ],
+   "meaning": "A woven fabric with reinforcing threads in a grid pattern that stop small tears from spreading.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "riri zipper",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "riri zip"
+   ],
+   "meaning": "A Swiss-made zipper brand known for smooth, minimal-tooth pulls used in luxury outerwear.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "rolled hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "rolled edge hem"
+   ],
+   "meaning": "A narrow hem formed by rolling the raw edge over on itself before stitching.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "roper boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "ropers"
+   ],
+   "meaning": "A low-heeled, rounded-toe western boot designed for working around livestock.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "roughout leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "reverse leather",
+    "rough-out leather"
+   ],
+   "meaning": "Leather worn with the flesh side facing out, giving a suede-like texture with more durability.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "round toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "round-toe"
+   ],
+   "meaning": "A shoe toe with a smoothly rounded, softly curved tip.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "ruched",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "ruching"
+   ],
+   "meaning": "Fabric gathered or pleated in a controlled pattern to create texture and shape.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "runway",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "runway piece",
+    "runway sample"
+   ],
+   "meaning": "A garment made specifically for a fashion show rather than commercial production.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "sailor collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "middy collar"
+   ],
+   "meaning": "A large, flat collar with a deep V at the front and a square back, based on naval uniforms.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "sample",
+   "kind": "collection",
+   "family": "era",
+   "synonyms": [
+    "salesman sample",
+    "sample garment"
+   ],
+   "meaning": "A pre-production garment made for fitting, buyers, or press rather than retail sale.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "sandals",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "sandal",
+    "slide sandals",
+    "slides"
+   ],
+   "meaning": "Open footwear held by straps.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sandal",
+   "read": false
+  },
+  {
+   "canonical": "sanforized denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "sanforised denim"
+   ],
+   "meaning": "Denim pre-shrunk mechanically before cutting so the finished garment will not shrink further.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "satin weave",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "satin"
+   ],
+   "meaning": "A weave with long floats over the surface, producing a smooth, glossy face and dull back.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "scarf",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "neck scarf",
+    "scarves"
+   ],
+   "meaning": "A length of cloth worn around the neck or head.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Scarf",
+   "read": false
+  },
+  {
+   "canonical": "scoop neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "scoopneck",
+    "u-neck"
+   ],
+   "meaning": "A wide, deep, rounded neckline shaped like a scooped U.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "scovill fastener",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "scovill snap",
+    "scovill zipper"
+   ],
+   "meaning": "An American snap-fastener and zipper brand common on vintage denim and workwear.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "seersucker",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "seersucker cotton"
+   ],
+   "meaning": "A thin, puckered cotton weave with alternating flat and crinkled stripes, worn for warm weather.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "self-belt",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "matching fabric belt",
+    "self belt"
+   ],
+   "meaning": "A belt made from the same fabric as the garment rather than a separate leather belt.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "selvedge denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "self edge",
+    "self-edge denim",
+    "selvage",
+    "selvage denim",
+    "selvedge"
+   ],
+   "meaning": "Denim woven on a narrow shuttle loom that seals its own edge with a tight, clean band.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "service boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "service boots"
+   ],
+   "meaning": "A rugged lace-up military boot design used broadly for utility footwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "set-in sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "set in sleeve",
+    "tailored sleeve"
+   ],
+   "meaning": "A sleeve cut separately and sewn into a fitted armhole at the shoulder seam.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "sharkskin",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "sharkskin cloth"
+   ],
+   "meaning": "A smooth, tightly woven twill cloth with a subtle two-tone crosshatch sheen.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "shawl collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "shawl neckline"
+   ],
+   "meaning": "A round, continuously curved collar extended down the front as lapels, with no notch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "shawl lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "roll collar lapel",
+    "shawl collar jacket"
+   ],
+   "meaning": "A rounded, continuously curved lapel with no notch, traditional on tuxedos and smoking jackets.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "sheepskin",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "shearling",
+    "shearling lined",
+    "sheepskin lining"
+   ],
+   "meaning": "A pelt tanned with the wool still attached, worn wool-side in for warmth.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "shell button",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "mop button",
+    "mother of pearl button",
+    "mother-of-pearl button"
+   ],
+   "meaning": "A button cut from iridescent oyster or abalone shell, favored on shirts and summer jackets.",
+   "era": null,
+   "source": "https://www.permanentstyle.com/2019/09/suit-style-6-buttons.html",
+   "read": true
+  },
+  {
+   "canonical": "sherpa",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "faux shearling",
+    "sherpa fleece"
+   ],
+   "meaning": "A thick, curly-piled synthetic fabric styled to imitate sheepskin shearling.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "shetland wool",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "shetland"
+   ],
+   "meaning": "A textured, slightly hairy wool from Shetland sheep, traditional in fair isle knitwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "shirred",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "shirring"
+   ],
+   "meaning": "Fabric gathered by multiple parallel rows of stitching, often elasticized.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "shirt",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "button shirt",
+    "dress shirt",
+    "shirts",
+    "woven shirt"
+   ],
+   "meaning": "A collared woven top with a front opening.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shirt",
+   "read": false
+  },
+  {
+   "canonical": "shirttail hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "curved hem",
+    "curved shirttail hem"
+   ],
+   "meaning": "A hem curved higher at the sides than the center front and back, like a dress shirt bottom.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "short sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "short sleeved",
+    "short sleeves",
+    "short-sleeve",
+    "ss"
+   ],
+   "meaning": "Sleeves ending above the elbow.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": false
+  },
+  {
+   "canonical": "shorts",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "short",
+    "short pants"
+   ],
+   "meaning": "Trousers ending above the knee.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shorts",
+   "read": false
+  },
+  {
+   "canonical": "shrunken fit",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "shrunken cut"
+   ],
+   "meaning": "A garment deliberately cut short and close, as if outgrown, for a cropped, tight look.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "side zip boot",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "side-zip boot"
+   ],
+   "meaning": "A boot with a zipper running up the side instead of laces for quick on and off.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "silk",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "100 silk",
+    "pure silk",
+    "silk blend"
+   ],
+   "meaning": "Protein fibre from the silkworm; blouses, scarves, linings and eveningwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Silk",
+   "read": false
+  },
+  {
+   "canonical": "silk charmeuse",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "charmeuse"
+   ],
+   "meaning": "A lightweight silk satin with a glossy front and matte back, known for its fluid drape.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "single stitch",
+   "kind": "reference",
+   "family": "seam",
+   "synonyms": [
+    "single stitch hem",
+    "single stitched",
+    "single-stitch hem",
+    "single-stitch tee"
+   ],
+   "meaning": "A t-shirt hem sewn with one line of stitching on older single-needle machines, now read as a vintage marker.",
+   "era": "1990s",
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "single vent",
+   "kind": "detail",
+   "family": "vent",
+   "synonyms": [
+    "center vent",
+    "single back vent"
+   ],
+   "meaning": "One slit cut at the center back hem of a jacket to allow movement.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "single-breasted",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "sb closure",
+    "single breasted"
+   ],
+   "meaning": "A jacket or coat front with a single column of buttons and fronts that just meet.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "skinny fit",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "skinny cut",
+    "skinny jeans"
+   ],
+   "meaning": "A trouser leg cut very close to the body from waist to ankle.",
+   "era": "2000s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "skirt",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "skirts"
+   ],
+   "meaning": "A lower-body garment hanging from the waist without legs.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Skirt",
+   "read": false
+  },
+  {
+   "canonical": "slash pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "on-seam pocket",
+    "side seam pocket"
+   ],
+   "meaning": "A pocket entered through a diagonal or vertical slit, often hidden within a side seam.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "sleeveless",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "cut off sleeves",
+    "no sleeves"
+   ],
+   "meaning": "Without sleeves.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeveless_shirt",
+   "read": false
+  },
+  {
+   "canonical": "slim fit",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "slim cut",
+    "slim leg"
+   ],
+   "meaning": "A trouser leg fitted close to the leg but with slightly more room than skinny.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "slouchy fit",
+   "kind": "fit",
+   "family": "silhouette",
+   "synonyms": [
+    "slouch fit"
+   ],
+   "meaning": "A loose, unstructured fit that hangs and gathers softly on the body.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "smocked",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "smocking"
+   ],
+   "meaning": "Fabric gathered and embroidered over the gathers in a decorative honeycomb stitch pattern.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "snakeskin print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "python print",
+    "snake print"
+   ],
+   "meaning": "A print imitating reptile skin's scaled texture, typically in a diamond or scale grid.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "snap cuff",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "snap-button cuff"
+   ],
+   "meaning": "A sleeve cuff that fastens with a metal snap or press stud instead of a sewn button.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "snap fastener",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "popper",
+    "press stud",
+    "snap button"
+   ],
+   "meaning": "A two-part metal or plastic fastener that clicks shut, used in place of a sewn button.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "sneakers",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "athletic shoes",
+    "kicks",
+    "running shoes",
+    "sneaker",
+    "trainer",
+    "trainers"
+   ],
+   "meaning": "Rubber-soled athletic or casual shoes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sneakers",
+   "read": false
+  },
+  {
+   "canonical": "solid",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "no pattern",
+    "one colour",
+    "plain",
+    "plain colour",
+    "solid color",
+    "solid colour"
+   ],
+   "meaning": "A single colour, no pattern.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Pattern",
+   "read": false
+  },
+  {
+   "canonical": "speed hooks",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "speed lacing hooks"
+   ],
+   "meaning": "Open metal hooks placed at the top of a boot's lacing for faster lacing and unlacing.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "split toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "split-toe"
+   ],
+   "meaning": "A shoe toe with a center seam dividing the apron into two panels.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "spread collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "cutaway collar",
+    "full collar",
+    "wide spread collar"
+   ],
+   "meaning": "A shirt collar with a wide gap between the points, accommodating a full necktie knot.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "square neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "square neckline"
+   ],
+   "meaning": "A neckline with straight lines forming a squared-off shape at the front of the chest.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "square toe",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "square-toe"
+   ],
+   "meaning": "A shoe toe cut flat and squared off at the tip.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "stacked heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "stack heel",
+    "stacked",
+    "stacked leather heel"
+   ],
+   "meaning": "A heel built from layered leather lifts trimmed to shape, sometimes called a block heel.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "stiletto heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "stiletto"
+   ],
+   "meaning": "A very tall, thin heel named for its resemblance to a slim knife blade.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "stitchdown construction",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "stitch down construction"
+   ],
+   "meaning": "A shoe construction where the upper is flared outward and stitched directly to the sole.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "stonewash",
+   "kind": "material",
+   "family": "wash",
+   "synonyms": [
+    "stone-washed denim",
+    "stonewashed denim"
+   ],
+   "meaning": "Denim washed with pumice stones to soften the fabric and fade the indigo unevenly.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "storm collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "convertible storm collar",
+    "storm flap collar"
+   ],
+   "meaning": "A tall, close-fitting collar on outerwear designed to stand up and shield the neck from wind.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "storm flap",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "storm placket",
+    "wind flap"
+   ],
+   "meaning": "A fabric flap covering a zip or button placket to block wind and rain from entering.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "straight leg",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "straight cut",
+    "straight fit"
+   ],
+   "meaning": "A trouser leg of consistent width from thigh to hem with no taper or flare.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "stretch",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "elasticated",
+    "stretch fit",
+    "stretchy",
+    "with stretch"
+   ],
+   "meaning": "Fabric with give, usually from elastane.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Spandex",
+   "read": false
+  },
+  {
+   "canonical": "striped",
+   "kind": "detail",
+   "family": "pattern",
+   "synonyms": [
+    "breton stripe",
+    "pinstriped",
+    "stripe",
+    "striped pattern",
+    "stripes"
+   ],
+   "meaning": "Patterned with stripes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Stripe_(pattern)",
+   "read": false
+  },
+  {
+   "canonical": "suede",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "suede leather"
+   ],
+   "meaning": "Leather made from the underside of a hide split, buffed to a soft, napped finish.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "suit",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "suit set",
+    "suiting",
+    "suits",
+    "two piece suit"
+   ],
+   "meaning": "A matched jacket and trousers (or skirt).",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Suit",
+   "read": false
+  },
+  {
+   "canonical": "sunglasses",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "eyewear",
+    "glasses",
+    "shades",
+    "sunnies"
+   ],
+   "meaning": "Tinted protective eyewear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sunglasses",
+   "read": false
+  },
+  {
+   "canonical": "suspender buttons",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "braces buttons"
+   ],
+   "meaning": "Buttons sewn inside a trouser waistband for attaching suspenders or braces.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "sweater",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "jumper",
+    "knit sweater",
+    "pullover",
+    "pullover sweater",
+    "sweaters"
+   ],
+   "meaning": "A knitted top pulled on over the head.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sweater",
+   "read": false
+  },
+  {
+   "canonical": "sweatshirt",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "crew sweatshirt",
+    "crewneck sweatshirt",
+    "sweat",
+    "sweatshirts"
+   ],
+   "meaning": "A heavy cotton jersey pullover, usually fleece-backed.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sweater",
+   "read": false
+  },
+  {
+   "canonical": "sweetheart neckline",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "sweetheart neck"
+   ],
+   "meaning": "A neckline shaped like the top curves of a heart, dipping to a point at the center front.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "tab collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "tab-point collar"
+   ],
+   "meaning": "A shirt collar with a small fabric tab that snaps or buttons the two points together beneath the tie.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "tabi shoe",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "split-toe tabi",
+    "tabi boot"
+   ],
+   "meaning": "A shoe or boot with a split toe separating the big toe, based on traditional Japanese tabi socks.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "talon zipper",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "hookless fastener",
+    "talon zip"
+   ],
+   "meaning": "An early American zipper brand, originally the Hookless Fastener Company, common on vintage garments.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "tank top",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "singlet",
+    "tank",
+    "tanks",
+    "vest top"
+   ],
+   "meaning": "A sleeveless knit top.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeveless_shirt",
+   "read": false
+  },
+  {
+   "canonical": "taped seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "seam tape",
+    "taped seams"
+   ],
+   "meaning": "A seam reinforced or sealed with a strip of tape sewn or heat-bonded over the stitch line.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "tapered leg",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "tapered cut",
+    "tapered fit"
+   ],
+   "meaning": "A trouser leg that narrows gradually from the thigh down to the ankle.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "tartan",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "plaid tartan"
+   ],
+   "meaning": "A pattern of crossing horizontal and vertical bands in multiple colors, associated with Scottish clans.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "taslan nylon",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "taslan"
+   ],
+   "meaning": "A textured, air-bulked nylon fabric with a matte, slightly fuzzy surface.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "tassel loafer",
+   "kind": "garment",
+   "family": "shoe",
+   "synonyms": [
+    "tassel loafers"
+   ],
+   "meaning": "A loafer decorated with hanging leather tassels laced through the vamp.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "tea length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "tea-length hem"
+   ],
+   "meaning": "A hem falling between the knee and the ankle, traditionally associated with 1950s daywear.",
+   "era": "1950s",
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "tee",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "t shirt",
+    "t-shirt",
+    "t-shirts",
+    "tee shirt",
+    "tees",
+    "tshirt"
+   ],
+   "meaning": "A collarless knit cotton top; the T-shirt.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/T-shirt",
+   "read": false
+  },
+  {
+   "canonical": "tent silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "tent dress",
+    "tent shape"
+   ],
+   "meaning": "A silhouette that hangs loosely from the shoulders in a wide, unfitted triangle.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "thigh length",
+   "kind": "detail",
+   "family": "length",
+   "synonyms": [
+    "thigh-length hem"
+   ],
+   "meaning": "A garment length ending mid-thigh.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "three quarter sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "3 4 sleeve",
+    "34 sleeve",
+    "bracelet sleeve"
+   ],
+   "meaning": "Sleeves ending between elbow and wrist.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": false
+  },
+  {
+   "canonical": "thumbhole sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "thumb hole cuff"
+   ],
+   "meaning": "A sleeve cuff with a small opening that the wearer's thumb passes through to anchor the sleeve.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Sleeve",
+   "read": true
+  },
+  {
+   "canonical": "ticket pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "ticket pouch pocket"
+   ],
+   "meaning": "A small extra pocket above the right hip pocket on a jacket, originally for a train ticket.",
+   "era": null,
+   "source": "https://www.bondsuits.com/a-guide-to-suit-pocket-styles/",
+   "read": true
+  },
+  {
+   "canonical": "tiered",
+   "kind": "detail",
+   "family": "silhouette",
+   "synonyms": [
+    "tiered hem",
+    "tiered skirt"
+   ],
+   "meaning": "A garment built from stacked horizontal panels, each gathered onto the one above.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "tiger stripe camo",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "tiger stripe camouflage"
+   ],
+   "meaning": "A camouflage pattern of bold, wavy stripes, popularized during the Vietnam War.",
+   "era": "1960s",
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "toggle closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "duffle toggle",
+    "toggle fastening"
+   ],
+   "meaning": "A closure of a wooden or horn peg looped through a rope or braid eye, classic on duffle coats.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "top-grain leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "top grain leather"
+   ],
+   "meaning": "Leather with the outermost split layer retained, sanded for a more uniform finish than full-grain.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "topstitch",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "contrast topstitch",
+    "top stitch",
+    "top stitching",
+    "topstitched",
+    "topstitched seams"
+   ],
+   "meaning": "A line of visible stitching sewn on the outside of a finished seam or edge, often decorative.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "tote bag",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "shopper bag",
+    "tote",
+    "tote bags"
+   ],
+   "meaning": "A large open-top bag with two handles.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tote_bag",
+   "read": false
+  },
+  {
+   "canonical": "track jacket",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "track jackets",
+    "track top",
+    "tracksuit top"
+   ],
+   "meaning": "A zip-front sportswear jacket, often striped.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tracksuit",
+   "read": false
+  },
+  {
+   "canonical": "track pants",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "jogger pants",
+    "joggers",
+    "sweat pants",
+    "sweatpants",
+    "track pant",
+    "tracksuit bottoms"
+   ],
+   "meaning": "Elastic-waist sportswear trousers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tracksuit",
+   "read": false
+  },
+  {
+   "canonical": "trapeze silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "trapeze shape"
+   ],
+   "meaning": "A silhouette narrow at the shoulders and very wide at the hem, more exaggerated than an a-line.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "trench coat",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "trench",
+    "trench coats",
+    "trenchcoat"
+   ],
+   "meaning": "A belted, double-breasted raincoat with storm flaps and epaulettes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trench_coat",
+   "read": false
+  },
+  {
+   "canonical": "tulle",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "tulle netting"
+   ],
+   "meaning": "A fine, lightweight netting fabric used for veils, tutus, and sheer overlays.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "turtleneck collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "polo neck",
+    "roll neck",
+    "rollneck",
+    "skivvy neck"
+   ],
+   "meaning": "A tall, close-fitting knitted collar that folds over to cover the neck.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "twill weave",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "twill"
+   ],
+   "meaning": "A weave structure with diagonal parallel ribs, forming the base of denim, gabardine, and chino.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Twill",
+   "read": true
+  },
+  {
+   "canonical": "two-piece sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "two piece tailored sleeve"
+   ],
+   "meaning": "A tailored jacket sleeve cut from two panels to create a slight forward curve at the elbow.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "two-way zip",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "double zip",
+    "dual zip",
+    "two way zipper",
+    "two-way metal zip"
+   ],
+   "meaning": "A zipper with two sliders that can be opened from either the top or the bottom.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "type i jacket",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "type 1",
+    "type 1 jacket",
+    "type i",
+    "type one",
+    "type one jacket"
+   ],
+   "meaning": "The earliest denim jacket silhouette, with a single chest pocket and cinch-back buckle straps.",
+   "era": "1900s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "type ii jacket",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "type 2",
+    "type 2 jacket",
+    "type ii",
+    "type two",
+    "type two jacket"
+   ],
+   "meaning": "A denim jacket silhouette with two pointed chest pockets and a buttoned waist, no cinch back.",
+   "era": "1950s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "type iii jacket",
+   "kind": "garment",
+   "family": "denim",
+   "synonyms": [
+    "denim trucker",
+    "denim trucker jacket",
+    "trucker jacket",
+    "type 3",
+    "type 3 jacket",
+    "type iii",
+    "type three",
+    "type three jacket"
+   ],
+   "meaning": "The classic denim jacket silhouette with V-shaped front seams, two flap chest pockets, and a button front.",
+   "era": "1960s",
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "ulster collar",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "ulster lapel"
+   ],
+   "meaning": "A wide lapel-and-collar combination on an ulster overcoat, designed to close high against the neck.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Coat_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "unbranded",
+   "kind": "origin",
+   "family": "condition",
+   "synonyms": [
+    "label removed",
+    "labels removed",
+    "no brand",
+    "no label",
+    "unlabeled",
+    "unlabelled",
+    "untagged"
+   ],
+   "meaning": "No maker's label present or legible.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Brand",
+   "read": false
+  },
+  {
+   "canonical": "unfinished hem",
+   "kind": "detail",
+   "family": "hem",
+   "synonyms": [
+    "raw hem"
+   ],
+   "meaning": "A hem left without a folded or stitched finish so the fabric edge remains visible.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "union label",
+   "kind": "reference",
+   "family": "era",
+   "synonyms": [
+    "union made label"
+   ],
+   "meaning": "A garment label certifying manufacture by unionized labor, useful for dating vintage US-made pieces.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Denim",
+   "read": true
+  },
+  {
+   "canonical": "unisex",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "for men and women",
+    "gender neutral",
+    "genderless"
+   ],
+   "meaning": "Cut and sized for anyone.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Unisex_clothing",
+   "read": false
+  },
+  {
+   "canonical": "unlined",
+   "kind": "detail",
+   "family": "lining",
+   "synonyms": [
+    "unlined jacket"
+   ],
+   "meaning": "A garment made with no separate interior lining fabric, showing the seams inside.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "unsanforized denim",
+   "kind": "material",
+   "family": "denim",
+   "synonyms": [
+    "shrink-to-fit denim"
+   ],
+   "meaning": "Denim left untreated for shrinkage, meant to be soaked and shrunk to fit by the wearer.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/09/the-essential-raw-denim-breakdown-our-100th-article/",
+   "read": true
+  },
+  {
+   "canonical": "v-neck",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "v neckline",
+    "vee neck"
+   ],
+   "meaning": "A neckline that forms a V-shape, meeting in a point at the center front.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "vegetable-tanned leather",
+   "kind": "material",
+   "family": "leather",
+   "synonyms": [
+    "veg-tan leather",
+    "vegetable tanned leather"
+   ],
+   "meaning": "Leather tanned using plant tannins, producing a firm hide that ages with a rich patina.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "velcro closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "hook and loop closure"
+   ],
+   "meaning": "A closure of mating hook and loop fabric strips that press together to fasten.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "velvet",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "velvet pile"
+   ],
+   "meaning": "A woven pile fabric with a dense, soft, upright nap that catches light richly.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "ventile",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "ventile cotton"
+   ],
+   "meaning": "A tightly woven cotton fabric that swells when wet to become naturally water-resistant.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "vest",
+   "kind": "garment",
+   "family": "garment",
+   "synonyms": [
+    "gilet",
+    "sleeveless jacket",
+    "vests",
+    "waistcoat"
+   ],
+   "meaning": "A sleeveless upper-body garment.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Vest",
+   "read": false
+  },
+  {
+   "canonical": "vibram sole",
+   "kind": "detail",
+   "family": "shoe-construction",
+   "synonyms": [
+    "vibram outsole"
+   ],
+   "meaning": "A branded rubber lug outsole known for traction, common on boots and hiking shoes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "vintage",
+   "kind": "reference",
+   "family": "era",
+   "synonyms": [
+    "vintage piece"
+   ],
+   "meaning": "A garment made in a previous era, generally at least twenty years old, and no longer in production.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "waffle knit",
+   "kind": "material",
+   "family": "knit",
+   "synonyms": [
+    "thermal knit",
+    "waffle weave"
+   ],
+   "meaning": "A knit or weave with a raised grid texture resembling a waffle, used for thermal layers.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Knitting",
+   "read": true
+  },
+  {
+   "canonical": "waxed cotton",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "waxed canvas",
+    "waxed jacket cloth"
+   ],
+   "meaning": "Cotton cloth impregnated with wax for water resistance, developing a patina with wear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "waxed leather",
+   "kind": "material",
+   "family": "finish",
+   "synonyms": [
+    "wax-finished leather"
+   ],
+   "meaning": "Leather coated or dressed with wax for water resistance and a pulled, two-tone sheen.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Leather",
+   "read": true
+  },
+  {
+   "canonical": "wedge heel",
+   "kind": "detail",
+   "family": "heel",
+   "synonyms": [
+    "wedge sole"
+   ],
+   "meaning": "A heel formed as a single solid triangular wedge running from heel to toe.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/High-heeled_footwear",
+   "read": true
+  },
+  {
+   "canonical": "welded seam",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "bonded seam",
+    "heat-welded seam"
+   ],
+   "meaning": "A seam joined by heat or ultrasonic bonding rather than stitching, used for waterproofing.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  },
+  {
+   "canonical": "welt pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "single welt pocket",
+    "welt pockets",
+    "welted pocket"
+   ],
+   "meaning": "A pocket set into a slit opening finished with a single narrow strip of fabric, the welt.",
+   "era": null,
+   "source": "https://www.bondsuits.com/a-guide-to-suit-pocket-styles/",
+   "read": true
+  },
+  {
+   "canonical": "western yoke",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "cowboy yoke",
+    "pointed western yoke"
+   ],
+   "meaning": "A pointed or curved front-and-back yoke associated with western shirts.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "whiskering",
+   "kind": "detail",
+   "family": "fade",
+   "synonyms": [
+    "hige",
+    "whiskers"
+   ],
+   "meaning": "Horizontal crease fades across the upper thigh formed by repeated sitting and movement.",
+   "era": null,
+   "source": "https://www.heddels.com/2011/05/fade-types-whiskershige-honeycombs/",
+   "read": true
+  },
+  {
+   "canonical": "wide lapel",
+   "kind": "detail",
+   "family": "lapel",
+   "synonyms": [
+    "broad lapel"
+   ],
+   "meaning": "A lapel cut noticeably wider than the era's default, reading strongly as a 1970s silhouette.",
+   "era": "1970s",
+   "source": "https://en.wikipedia.org/wiki/Lapel",
+   "read": true
+  },
+  {
+   "canonical": "wide leg",
+   "kind": "fit",
+   "family": "cut",
+   "synonyms": [
+    "wide fit",
+    "wide-leg trousers"
+   ],
+   "meaning": "A trouser leg with a roomy, consistent width from hip to hem.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "wide wale corduroy",
+   "kind": "material",
+   "family": "weave",
+   "synonyms": [
+    "chunky cord",
+    "wide-wale cord"
+   ],
+   "meaning": "Corduroy with thick, widely spaced ridges, lower than 8 wales per inch.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Corduroy",
+   "read": true
+  },
+  {
+   "canonical": "windowpane check",
+   "kind": "material",
+   "family": "pattern",
+   "synonyms": [
+    "windowpane"
+   ],
+   "meaning": "A large-scale check pattern of thin lines forming square grids like window panes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "wing collar",
+   "kind": "detail",
+   "family": "collar",
+   "synonyms": [
+    "winged collar",
+    "wingtip collar"
+   ],
+   "meaning": "A small standing collar with points folded down and pressed to stick out like wings, worn with formalwear.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Collar_(clothing)",
+   "read": true
+  },
+  {
+   "canonical": "wingtip",
+   "kind": "detail",
+   "family": "toe",
+   "synonyms": [
+    "brogue toe",
+    "wing tip"
+   ],
+   "meaning": "A cap toe extended into a W or M shape across the toe, usually finished with perforated brogueing.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Shoe",
+   "read": true
+  },
+  {
+   "canonical": "woodland camo",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "m81 woodland",
+    "woodland camouflage"
+   ],
+   "meaning": "A four-color green, brown, and black camouflage pattern used widely by militaries from the 1980s.",
+   "era": "1980s",
+   "source": "https://camopedia.org/index.php?title=Commercial_camouflage_patterns",
+   "read": true
+  },
+  {
+   "canonical": "wool",
+   "kind": "material",
+   "family": "fiber",
+   "synonyms": [
+    "100 wool",
+    "pure wool",
+    "virgin wool",
+    "wool blend"
+   ],
+   "meaning": "Animal fibre cloth for coats, tailoring and knits.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Wool",
+   "read": false
+  },
+  {
+   "canonical": "worsted wool",
+   "kind": "material",
+   "family": "wool",
+   "synonyms": [
+    "worsted"
+   ],
+   "meaning": "A wool fabric spun from long, combed fibers into a smooth, tightly woven cloth with a crisp finish.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Tweed",
+   "read": true
+  },
+  {
+   "canonical": "wrap closure",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "wrap front",
+    "wrap tie closure"
+   ],
+   "meaning": "A garment front that overlaps and is secured with a tie or sash rather than buttons.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "wrap silhouette",
+   "kind": "silhouette",
+   "family": "silhouette",
+   "synonyms": [
+    "wrap dress",
+    "wrap style"
+   ],
+   "meaning": "A silhouette formed by one side of the garment crossing over the other and tying at the waist.",
+   "era": null,
+   "source": "https://blog.moodfabrics.com/all-about-dress-silhouettes/",
+   "read": true
+  },
+  {
+   "canonical": "y2k",
+   "kind": "decade",
+   "family": "era",
+   "synonyms": [
+    "y2k fashion",
+    "y2k style"
+   ],
+   "meaning": "Fashion associated with the years around 2000, marked by low-rise cuts and metallic finishes.",
+   "era": "2000s",
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "ykk zipper",
+   "kind": "detail",
+   "family": "hardware",
+   "synonyms": [
+    "ykk zip"
+   ],
+   "meaning": "A Japanese-made zipper brand and the largest global zipper manufacturer, standard on workwear and denim.",
+   "era": null,
+   "source": "https://www.selvane.co/blogs/knowledge/ykk-vs-riri-vs-lampo-a-guide-to-zipper-quality",
+   "read": true
+  },
+  {
+   "canonical": "yoke",
+   "kind": "detail",
+   "family": "seam",
+   "synonyms": [
+    "back yoke",
+    "shoulder yoke"
+   ],
+   "meaning": "A fitted panel, usually across the shoulders or hips, that other fabric is gathered or seamed onto.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "zebra print",
+   "kind": "material",
+   "family": "print",
+   "synonyms": [
+    "zebra stripe print"
+   ],
+   "meaning": "A print imitating zebra hide, with bold black and white stripes.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Glossary_of_sewing_terms",
+   "read": true
+  },
+  {
+   "canonical": "zip fly",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "zipper fly"
+   ],
+   "meaning": "A trouser fly that closes with a zipper rather than buttons.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Trousers",
+   "read": true
+  },
+  {
+   "canonical": "zip front",
+   "kind": "detail",
+   "family": "closure",
+   "synonyms": [
+    "front zip",
+    "full zip",
+    "zip",
+    "zip closure",
+    "zip up",
+    "zip-up",
+    "zipper",
+    "zipper front"
+   ],
+   "meaning": "A front opening closed by a zipper.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Zipper",
+   "read": false
+  },
+  {
+   "canonical": "zip pocket",
+   "kind": "detail",
+   "family": "pocket",
+   "synonyms": [
+    "zippered pocket"
+   ],
+   "meaning": "A pocket secured with a zipper closure rather than an open or buttoned edge.",
+   "era": null,
+   "source": "https://www.heddels.com/2019/06/types-pockets-pocket-dictionary/",
+   "read": true
+  },
+  {
+   "canonical": "zip sleeve",
+   "kind": "detail",
+   "family": "sleeve",
+   "synonyms": [
+    "zippered sleeve cuff"
+   ],
+   "meaning": "A sleeve with a zip running up the forearm or at the cuff for a tighter close or styling detail.",
+   "era": null,
+   "source": "https://en.wikipedia.org/wiki/Jacket",
+   "read": true
+  }
+ ]
+}
