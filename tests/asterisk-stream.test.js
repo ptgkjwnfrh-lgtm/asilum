@@ -253,3 +253,45 @@ test("step 3: the Italian and German seller-tag names read like the English ones
   assert.equal(s.size, "US 10"); assert.deepEqual(s.shoeSizes, { us: "10", eu: "43" }); assert.equal(s.material, "Leather");
   assert.equal(s.measurements.inseam, "32 in"); assert.deepEqual(s.features, ["round"]); assert.equal(s.madeIn, "Italy");
 });
+
+// ---- ghosts and the actors' breakdowns (owner, 10 Sep: 25 ghost listings, five actors)
+
+test("a ghost listing is discoverable, marked, and never sells here", async () => {
+  const { isGhostItem, isDemoItem, GHOST_LABEL } = await import("../lib/social.js");
+  const { upsertItems } = await import("../lib/db/index.js");
+  const { callRoute, newDevice, loadRoute } = await import("./helpers/route.js");
+  const ghost = { id: "ebay-ghost-1", title: "Ghost", brand: "X", price: 10, currency: "USD", tags: { ARCHIVAL: 0.5 }, source_name: "ebay", source: "ebay",
+    source_product_url: "https://www.ebay.com/itm/1", url: "https://www.ebay.com/itm/1", img: "https://i.ebayimg.com/x.jpg", listing_kind: "ghost", is_available: true, availability_status: "available" };
+  assert.equal(isGhostItem(ghost), true);
+  assert.equal(isDemoItem(ghost), false, "a ghost is a real listing, not a demo record");
+  assert.equal(GHOST_LABEL, "GHOST");
+  await upsertItems([ghost]);
+  const tickets = await loadRoute("app/api/tickets/route.js");
+  const me = newDevice();
+  const res = await callRoute(tickets.POST, { path: "/api/tickets", cookies: me.cookies, json: { user: me.uid, itemId: "ebay-ghost-1" } });
+  assert.equal(res.status, 409);
+  assert.match(res.body.error, /ghost listing/);
+});
+
+test("an outfit breakdown validates: pieces with descriptors, capped; the five actors load with theirs", async () => {
+  const { normalizeCultureProposal } = await import("../lib/asterisk/cultureSchema.js");
+  const { CULTURE, lookupCulture } = await import("../lib/asterisk/culture.js");
+  const base = { kind: "figure", name: "test actor", interpretations: [{ id: "test actor/look", label: "L", summary: "s", tags: ["tailored"], confidence: 0.6,
+    pieces: [{ piece: "Leather Jacket", descriptors: ["Dagger Collar", "brown leather"], year: 1997 }] }] };
+  const ok = normalizeCultureProposal(base, { allowedKinds: new Set(["figure"]), takenNames: new Set() });
+  assert.equal(ok.ok, true, ok.error);
+  assert.deepEqual(ok.proposal.interpretations[0].pieces, [{ piece: "leather jacket", descriptors: ["dagger collar", "brown leather"], year: 1997 }]);
+  const tooMany = { ...base, interpretations: [{ ...base.interpretations[0], pieces: Array.from({ length: 9 }, (_, i) => ({ piece: `p${i}`, descriptors: [] })) }] };
+  assert.equal(normalizeCultureProposal(tooMany, { allowedKinds: new Set(["figure"]), takenNames: new Set() }).ok, false);
+  const badYear = { ...base, interpretations: [{ ...base.interpretations[0], pieces: [{ piece: "x", descriptors: [], year: 1850 }] }] };
+  assert.equal(normalizeCultureProposal(badYear, { allowedKinds: new Set(["figure"]), takenNames: new Set() }).ok, false);
+  for (const name of ["al pacino", "robert de niro", "tom cruise", "jake gyllenhaal", "jacob elordi"]) {
+    const rec = CULTURE.find((r) => r.name === name);
+    assert.ok(rec, `${name} in the catalog`);
+    assert.ok(rec.interpretations.some((i) => i.pieces?.length >= 2), `${name} carries an outfit breakdown`);
+    assert.ok(rec.interpretations.every((i) => i.tags.every((t) => TAGS.includes(t.toUpperCase()))));
+  }
+  const hit = lookupCulture("donnie brasco");
+  assert.equal(hit?.name, "al pacino");
+  assert.ok(hit.interpretations[0].pieces.find((p) => p.descriptors.includes("dagger collar")));
+});

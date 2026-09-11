@@ -84,6 +84,29 @@ earlier rules had to move.
   §12). The model reads eBay Content to describe it; nothing trains on it.
   Embeddings over eBay rows stay off.
 
+## Addendum, the same evening — ghosts and the actors
+
+- **Ghost listings.** The app is in demo and the owner wants real pieces on
+  the site rather than placeholder images. A ghost is a real listing read by
+  Asterisk and shown for demonstration: `items.listing_kind = 'ghost'` (v51),
+  real photographs, a real link to the source, marked GHOST on the card and
+  in the detail, and refused by `/api/tickets` (409) like seed inventory.
+  `scripts/asterisk-ghosts.mjs` finds the twenty-five (fifteen archival
+  houses, ten named pieces), reads them through the stream, chooses the one
+  whose identification matches the spec, and writes them with `--write`.
+- **Outfit breakdowns.** A culture interpretation may now carry `pieces`
+  (≤ 8, each with ≤ 8 descriptors and a year): five actors across thirty
+  years — Al Pacino (Donnie Brasco 1997, Carlito's Way), Robert De Niro
+  (Taxi Driver 1976, Heat 1995), Tom Cruise (Top Gun 1986, Collateral 2004),
+  Jake Gyllenhaal (Zodiac 2007), Jacob Elordi (Saltburn 2023, the 2024–25
+  carpet). Their descriptors are the stream's words, so a reference and a
+  listing meet on "dagger collar". Brad Pitt and Ryan Gosling already had
+  research records and were not duplicated.
+- **A rule found dead.** `productSnapshot` kept the ten aesthetics and
+  dropped every other tag key, so `/api/interaction` learned from pieces
+  with their descriptors stripped — the stream could be written but never
+  learned. It now keeps the descriptor layer (capped, shape-checked).
+
 ## Consequences
 
 - Cost is a dial and is measured: every identification stores tokens and

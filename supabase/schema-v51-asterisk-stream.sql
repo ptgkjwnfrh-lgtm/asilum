@@ -89,6 +89,15 @@ CREATE TABLE IF NOT EXISTS asterisk_reflections (
 );
 CREATE INDEX IF NOT EXISTS asterisk_reflections_user ON asterisk_reflections (user_id, created_at DESC);
 
+-- GHOST LISTINGS (owner, 10 Sep: "the app is still in demo, I just need ghost
+-- listings so there aren't just random images"). A ghost is a REAL listing
+-- read by Asterisk and shown for demonstration: real photographs, a real
+-- link to the source, no purchase ticket (tickets/route.js answers 409).
+-- The seed catalog stays 'live' by default and is demo by its source name.
+ALTER TABLE items ADD COLUMN IF NOT EXISTS listing_kind TEXT NOT NULL DEFAULT 'live';
+ALTER TABLE items DROP CONSTRAINT IF EXISTS items_listing_kind_ck;
+ALTER TABLE items ADD CONSTRAINT items_listing_kind_ck CHECK (listing_kind IN ('live', 'ghost'));
+
 -- the two new facets (lib/tagging/vocabulary.js is the source of this list)
 ALTER TABLE product_tags DROP CONSTRAINT IF EXISTS product_tags_facet_ck;
 ALTER TABLE product_tags ADD CONSTRAINT product_tags_facet_ck CHECK (
