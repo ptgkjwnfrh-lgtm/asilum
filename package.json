@@ -23,7 +23,9 @@
     "audit:nav": "node scripts/audit-navigability.mjs",
     "feed:rotation": "node scripts/measure-feed-rotation.mjs",
     "feed:chunks": "node scripts/measure-feed-chunks.mjs",
-    "search:snapshot": "node scripts/search-identity-snapshot.mjs"
+    "search:snapshot": "node scripts/search-identity-snapshot.mjs",
+    "houses:reading": "node scripts/measure-house-reading.mjs",
+    "descriptors:audit": "node scripts/audit-descriptors.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.110.5",
