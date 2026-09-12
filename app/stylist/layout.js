@@ -6,12 +6,12 @@ import { siteUrl } from "../../lib/site.js";
 export const metadata = {
   title: "STYLIST",
   description:
-    "Looks cut from synthetic sample records. The reasoning is real; the garments are placeholders.",
+    "Whole looks cut across sources and your own wardrobe. Records shown for demonstration are labelled on the piece.",
   alternates: { canonical: "/stylist" },
   openGraph: {
     title: "STYLIST · *ASILUM magazine",
     description:
-      "Looks cut from synthetic sample records. The reasoning is real; the garments are placeholders.",
+      "Whole looks cut across sources and your own wardrobe. Records shown for demonstration are labelled on the piece.",
     url: siteUrl("/stylist"),
     siteName: "*ASILUM magazine",
     type: "website",

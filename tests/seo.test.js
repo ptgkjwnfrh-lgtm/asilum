@@ -1,10 +1,12 @@
 // tests/seo.test.js — what the site tells a crawler must match what it tells a reader.
 //
-// The catalog is a demo: every piece is a synthetic sample record, not real
-// inventory (owner ruling, #212), and the page says so in a red-bordered banner.
-// Search metadata is the same promise made to a machine, so it is held to the
-// same standard. See docs/seo-notes.md for the reasoning; these tests are that
-// document made executable.
+// The catalog is real source listings as of 12 September 2026 (the 915 seeded
+// rows were deleted; 897 eBay listings stand in their place). A demo record can
+// still appear — in memory mode, or from the in-repo catalog.json — so the
+// disclosure is per-record and per-page, never a blanket claim in static
+// metadata, which cannot see the shelf. Search metadata is a promise made to a
+// machine and is held to the same standard. See docs/seo-notes.md for the
+// reasoning; these tests are that document made executable.
 //
 // The sharpest rule here is a NEGATIVE one: no Product JSON-LD. Structured
 // product data is what puts a price and an availability into a search result and
@@ -112,10 +114,15 @@ test("no Product JSON-LD anywhere while the catalog is synthetic", () => {
     const src = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
     if (!/application\/ld\+json/.test(src)) continue;
     // Any structured data at all is fine — Organization and WebSite are honest.
-    // Product, Offer and AggregateRating are not, because the products are not real.
+    // Product, Offer and AggregateRating are not. The reason changed on 12 Sep
+    // 2026 and the rule did not: it used to be that the products were invented,
+    // and now it is that they belong to somebody else. ASILUM is not the
+    // merchant (lib/tickets.js: the source platform sells, ships and services),
+    // the price and availability live at the source and move without us, and a
+    // rich result carries no banner to explain either fact.
     for (const forbidden of ['"@type": "Product"', '"@type":"Product"', '"@type": "Offer"', '"@type":"Offer"', "AggregateRating"]) {
       assert.equal(src.includes(forbidden), false,
-        `${file.slice(ROOT.length)} emits ${forbidden} — the catalog is synthetic sample data`);
+        `${file.slice(ROOT.length)} emits ${forbidden} — ASILUM is not the merchant of these pieces`);
     }
   }
 });
@@ -152,11 +159,35 @@ test("no metadata promises an image the repo cannot serve", () => {
   }
 });
 
-test("the public descriptions say the catalog is synthetic", () => {
-  // The banner on the page and the sentence in a search result must agree.
-  assert.match(read("app/layout.js"), /synthetic sample records/);
-  assert.match(read("app/discover/layout.js"), /synthetic sample records/);
-  assert.match(read("app/stylist/layout.js"), /synthetic sample records/);
+test("no static description claims the catalog is synthetic — it cannot know", () => {
+  // THIS TEST USED TO ASSERT THE OPPOSITE, and that is the point of it.
+  //
+  // Until 12 September 2026 every row in the catalog was a seeded record, so
+  // the metadata said "a demo archive of synthetic sample records" and this
+  // test held that sentence in place. Then the seed was deleted and 897 real
+  // eBay listings stood in its place — and the sentence went on telling every
+  // search result, link preview and shared card that real, linkable,
+  // purchasable pieces were fake. The suite stayed green the whole time,
+  // because it was asserting the SENTENCE and not the FACT.
+  //
+  // Static metadata cannot see the shelf. So it may describe what the site
+  // does, and it may not characterise what the catalog is. The disclosure
+  // lives where something can actually look: the per-record DEMO flag and the
+  // page banner gated on lib/social.js anyDemoRecord.
+  for (const file of ["app/layout.js", "app/discover/layout.js", "app/stylist/layout.js", "app/opengraph-image.js"]) {
+    const meta = read(file).replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    for (const claim of ["synthetic sample", "demo archive", "the clothes are not", "garments are placeholders"]) {
+      assert.equal(meta.toLowerCase().includes(claim), false,
+        `${file} still tells a stranger the catalog is fake — it cannot know that`);
+    }
+  }
+  // and it still must not claim the opposite either
+  for (const file of ["app/layout.js", "app/discover/layout.js", "app/stylist/layout.js"]) {
+    const meta = read(file);
+    for (const claim of ["in stock", "shop now", "buy now", "free shipping", "verified authentic"]) {
+      assert.equal(meta.toLowerCase().includes(claim), false, `${file} promises "${claim}"`);
+    }
+  }
 });
 
 test("search verification tags are env-gated, never hardcoded", () => {

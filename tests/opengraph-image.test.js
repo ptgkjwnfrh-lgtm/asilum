@@ -66,7 +66,15 @@ test("the card carries the same honesty the catalog page does", () => {
   // "taste engine is real" line with the DISCOVERY/COMMERCE/COMMUNITY strip but
   // kept this one — so this is the line that is load-bearing, and if it ever has
   // to go, docs/seo-notes.md changes in the same commit.
-  assert.match(src, /A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS/);
+  // Until 12 Sep 2026 this asserted "A DEMO ARCHIVE OF SYNTHETIC SAMPLE
+  // RECORDS". The seed was deleted that day and the line became a lie told to
+  // everyone who saw a shared link, with this assertion holding it in place.
+  // The card now says what the site does; it must not characterise the shelf,
+  // which it cannot see.
+  assert.match(src, /ARCHIVE LISTINGS READ FROM ACROSS THE INTERNET/);
+  for (const gone of ["SYNTHETIC SAMPLE", "DEMO ARCHIVE"]) {
+    assert.ok(!src.toUpperCase().includes(gone), `the card still says "${gone}" — it cannot know that`);
+  }
   // And it must not claim inventory. `real` appears in the honest sentence, so
   // the check is for the specific promises, not for a bare word.
   for (const claim of ["shop now", "buy now", "in stock", "free shipping"]) {

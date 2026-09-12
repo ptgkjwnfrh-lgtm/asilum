@@ -15,6 +15,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
+import { readFileSync } from "node:fs";
 import { isDemoItem } from "../lib/social.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { callRoute, newDevice, loadRoute } from "./helpers/route.js";
@@ -85,4 +86,52 @@ test("the client's demo rule and the server's ticket refusal agree", async () =>
       `${item.id}: the client calls it demo, so the server must refuse the ticket — a 200 here means Buy would have worked on a record the UI hid`);
     assert.match(res.body.error, /demo inventory/i);
   }
+});
+
+// ---- the page-level disclosure, after the seed was deleted (12 Sep 2026) ----
+//
+// Three pages carried an unconditional banner — "every piece here is synthetic
+// sample data". True on 16 August, when the catalog was 915 seeded rows. False
+// from 12 September, when they were deleted and 897 real eBay listings stood in
+// their place, and the banner went on telling visitors that real, linkable,
+// purchasable pieces were fake. Four test files held the sentences green. The
+// banner asks the shelf now.
+
+test("anyDemoRecord answers about the shelf, not about the assumption", async () => {
+  const { anyDemoRecord } = await import("../lib/social.js");
+  const real = { id: "ebay-1", source_name: "ebay", url: "https://www.ebay.com/itm/1" };
+  const demo = { id: "syn-1", source_name: "seed", url: "" };
+  assert.equal(anyDemoRecord([]), false, "an empty page claims nothing");
+  assert.equal(anyDemoRecord([real, real]), false, "a real shelf is not announced as demo");
+  assert.equal(anyDemoRecord([real, demo]), true, "one demo record earns the banner");
+  assert.equal(anyDemoRecord([demo]), true);
+  assert.equal(anyDemoRecord(null), false, "no items, no claim");
+  // A wardrobe piece is the bearer's own garment, not catalog, and has no url —
+  // isDemoItem calls it demo by its conservative default. It must not drag a
+  // real shelf into a false disclosure.
+  assert.equal(anyDemoRecord([real, { id: "w-1", owned: true }]), false,
+    "an owned piece is not a catalog record");
+});
+
+test("every page-level demo banner is gated on the data", () => {
+  for (const page of ["app/page.js", "app/discover/page.js", "app/stylist/page.js"]) {
+    const src = readFileSync(new URL("../" + page, import.meta.url), "utf8");
+    const banner = src.indexOf("demobanner");
+    assert.ok(banner > -1, `${page} lost its banner entirely`);
+    // the gate must sit within the JSX expression that produces the banner
+    const before = src.slice(Math.max(0, banner - 400), banner);
+    assert.match(before, /anyDemoRecord\(/,
+      `${page} states the demo disclosure unconditionally — it must ask the items`);
+  }
+});
+
+test("the file catalog is a floor for having no database, never for an empty one", () => {
+  const products = readFileSync(new URL("../lib/products.js", import.meta.url), "utf8");
+  assert.match(products, /const live = !!process\.env\.DATABASE_URL/,
+    "getDiscoverablePool must distinguish no-database from empty-database");
+  assert.equal(/rows\.length \? rows : fallback \? CATALOG/.test(products), false,
+    "an empty live catalog must not be refilled with synthetic pieces");
+  const explain = readFileSync(new URL("../lib/asterisk/explain.js", import.meta.url), "utf8");
+  assert.equal(/getItem\(productId\) \|\| getCatalogItem\(productId\)/.test(explain), false,
+    "Asterisk must not explain a piece the catalog no longer holds");
 });

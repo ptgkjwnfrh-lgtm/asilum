@@ -9,8 +9,17 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 // og:url below resolve; without it Next emits them relative and they are
 // worthless to a crawler.
 //
-// The description says "synthetic sample records" because they are. The
-// catalog is a demo (owner ruling, #212) and every piece carries a DEMO label
+// THE DESCRIPTION MAKES NO CLAIM ABOUT THE CATALOG'S NATURE, and that is
+// deliberate. It used to say "a demo archive of synthetic sample records"
+// (owner ruling #212), which was true of the 915 seeded rows and became false
+// the moment they were deleted and 897 real eBay listings stood in their place
+// — at which point every search result, link preview and shared card was
+// telling strangers that real inventory was fake. Static metadata cannot see
+// the shelf, so it describes what the site DOES, which is true in either
+// state. The per-record DEMO flag and the page banner (lib/social.js
+// anyDemoRecord) carry the disclosure, because they can actually look.
+// (superseded note, kept for history) The description said "synthetic sample
+// records" because they were; every piece carries a DEMO label
 // on the page — so the sentence a search result shows must not promise
 // inventory the site does not have. "The taste engine is real; the clothes are
 // not" is the same claim the catalog makes to a reader's face.
@@ -25,12 +34,12 @@ export const metadata = {
     template: "%s · *ASILUM magazine",
   },
   description:
-    "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records — the learning is real; the clothes are not.",
+    "A personalized fashion terminal that learns what you wear and what you are looking for, and reads archive listings across the internet. Records shown for demonstration are labelled as such on the piece.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "*ASILUM magazine — personalized fashion terminal",
     description:
-      "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records.",
+      "A personalized fashion terminal that learns what you wear and what you are looking for, and reads archive listings across the internet.",
     url: siteUrl("/"),
     siteName: "*ASILUM magazine",
     type: "website",

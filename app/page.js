@@ -19,7 +19,7 @@ import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
 import {
-  observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE, isGhostItem, GHOST_LABEL, GHOST_NOTE,
+  observationOn, followedBrands, setFollowBrand, isDemoItem, anyDemoRecord, DEMO_LABEL, DEMO_NOTE, isGhostItem, GHOST_LABEL, GHOST_NOTE,
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
@@ -866,12 +866,14 @@ export default function Home() {
           laid-out row — dropped in there it fought the headline for the same
           space. A per-card DEMO flag tells you about one record; only a
           page-level statement tells you the whole shelf is sample data. */}
-      <p className="demobanner" role="note">
-        <b>DEMO CATALOG.</b> every piece here is synthetic sample data with
-        placeholder imagery — not real inventory, not for sale, and no prices,
-        sizes or availability shown are real. taste learning is genuine; the
-        clothes are not.
-      </p>
+      {anyDemoRecord(items) && (
+        <p className="demobanner" role="note">
+          <b>DEMO RECORDS ON THIS PAGE.</b> some pieces here are synthetic sample
+          data with placeholder imagery — not real inventory, not for sale, and
+          no prices, sizes or availability on those are real. every one of them
+          carries a {DEMO_LABEL} flag. taste learning is genuine either way.
+        </p>
+      )}
       <p className="deck">
         {guideOn
           ? "The Asterisk system routed this edit through your Passport — no reruns."
