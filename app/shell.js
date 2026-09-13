@@ -878,7 +878,7 @@ export default function Shell({ children }) {
               <div className="psub">PIECES</div>
               {results.items.map((it) => (
                 <a className="shit item" key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
-                  <img src={it.img || thumbFor(it)} alt="" />
+                  <img src={it.img || thumbFor(it)} alt="" data-iso={it.isolated ? "1" : undefined} />
                   <span>{it.title}</span>
                   <em>{it.src}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}</em>
                   <ColorEvidenceLine item={it} />
@@ -929,7 +929,7 @@ export default function Shell({ children }) {
             <>
               {bag.map((x) => (
                 <div className="bagrow" key={x.id}>
-                  <img src={x.img || thumbFor(x)} alt="" />
+                  <img src={x.img || thumbFor(x)} alt="" data-iso={x.isolated ? "1" : undefined} />
                   <div className="baginfo">
                     <div className="bagttl">{x.title}</div>
                     <div className="bagprice">{sourceFor(x)} · {x.currency || "USD"} {x.price}</div>

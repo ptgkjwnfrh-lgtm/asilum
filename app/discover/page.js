@@ -538,7 +538,7 @@ export default function DiscoverPage() {
           >
             <div className="imgwrap" aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
               <OriginSticker item={it} />
-              <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+              <img src={it.img || thumbFor(it)} alt="" loading="lazy" data-iso={it.isolated ? "1" : undefined} />
             </div>
             <div className="body">
               <div className="brand2">{it.brand}</div>

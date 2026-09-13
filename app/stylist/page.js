@@ -241,7 +241,7 @@ export default function StylistPage() {
                         href={it.owned ? "/profile" : "/?item=" + encodeURIComponent(it.id)}
                       >
                         {hl && <i className="tdrf tdrfs" aria-hidden="true" />}
-                        <img src={it.img || thumbFor(it)} alt={it.title} />
+                        <img src={it.img || thumbFor(it)} alt={it.title} data-iso={it.isolated ? "1" : undefined} />
                         <span className="otfttl">{it.title}</span>
                         <span className="otfprice">
                           {it.owned ? "YOUR WARDROBE" : sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}

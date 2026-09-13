@@ -354,7 +354,7 @@ export default function ProfilePage() {
                   <div className="pfcloset">
                     {bagHistory.slice(0, 24).map((o, i) => (
                       <a className="pfpiece" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
-                        <img src={o.img || thumbFor(o)} alt="" />
+                        <img src={o.img || thumbFor(o)} alt="" data-iso={o.isolated ? "1" : undefined} />
                         <div className="hlttl">{o.title}</div>
                         <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
                         <ColorEvidenceLine item={o} />

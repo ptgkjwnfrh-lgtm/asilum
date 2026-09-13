@@ -1121,6 +1121,7 @@ export default function Home() {
               <img
                 src={modal.img || thumbFor(modal)}
                 alt=""
+                data-iso={modal.isolated ? "1" : undefined}
                 style={{ aspectRatio: aspectFor(modal.id) }}
               />
             </button>
@@ -1274,7 +1275,7 @@ export default function Home() {
                   <div className="mrel">
                     {modalRel.map((r) => (
                       <button key={r.id} className="mrelitem" onClick={() => openModal(r)}>
-                        <img src={r.img || thumbFor(r)} alt={r.title} />
+                        <img src={r.img || thumbFor(r)} alt={r.title} data-iso={r.isolated ? "1" : undefined} />
                         <span>{r.brand}</span>
                       </button>
                     ))}
@@ -1370,7 +1371,7 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, onPass }
           once rather than twice. */}
       <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
         <OriginSticker item={it} />
-        <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+        <img src={it.img || thumbFor(it)} alt="" loading="lazy" data-iso={it.isolated ? "1" : undefined} />
       </div>
       <div className="body">
         <button type="button" className="ttl" onClick={onOpen}>{it.title}</button>
