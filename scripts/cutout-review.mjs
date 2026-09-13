@@ -7,7 +7,8 @@
 // space. This reads back what was actually STORED and judges the alpha channel
 // itself, which is the only thing a reader will see.
 //
-//   npm run cutouts:review              # score every stored cutout, worst first
+//   npm run cutouts:review              # the catalog covers
+//   npm run cutouts:review -- --extras  # the gallery images too
 //   npm run cutouts:review -- --json out.json
 //   npm run cutouts:review -- --limit 200
 //
@@ -54,7 +55,8 @@ for (const line of fs.existsSync(path.join(ROOT, ".env.local")) ? fs.readFileSyn
 
 const args = process.argv.slice(2);
 const opt = (k) => { const i = args.indexOf("--" + k); return i > -1 ? args[i + 1] : null; };
-const LIMIT = Math.max(1, Math.min(20000, Number(opt("limit")) || 20000));
+const LIMIT = Math.max(1, Math.min(40000, Number(opt("limit")) || 40000));
+const EXTRAS = args.includes("--extras");
 const JSON_OUT = opt("json");
 const CONCURRENCY = Math.max(1, Math.min(12, Number(opt("concurrency")) || 6));
 
@@ -108,14 +110,26 @@ const { getPool } = await import(path.join(ROOT, "lib/db/core/pool.js"));
 const pool = await getPool();
 if (!pool) { console.error("no database behind DATABASE_URL"); process.exit(1); }
 
-const { rows } = await pool.query(
-  `SELECT id, title, brand, img, cutout_url, cutout_status, cutout_coverage
+const { rows: coverRows } = await pool.query(
+  `SELECT id, title, brand, img, cutout_url, cutout_status, cutout_coverage, 'cover' AS kind
    FROM items WHERE cutout_url IS NOT NULL ORDER BY id LIMIT $1`, [LIMIT]);
+// The gallery is judged by the same laws — a second angle of a garment is still
+// a product picture, and the owner asked for every one of them.
+const { rows: galleryRows } = EXTRAS ? await pool.query(
+  `SELECT g.id::text AS id, i.title, i.brand, g.image_url AS img, g.cutout_url,
+          g.cutout_status, g.cutout_coverage, 'gallery' AS kind
+   FROM product_images g JOIN items i ON i.id = g.product_id
+   WHERE g.cutout_url IS NOT NULL ORDER BY g.product_id, g.id LIMIT $1`, [LIMIT]) : { rows: [] };
+const rows = [...coverRows, ...galleryRows];
 const { rows: notCut } = await pool.query(
-  `SELECT id, title, cutout_status FROM items
-   WHERE cutout_url IS NULL AND cutout_status IS NOT NULL ORDER BY id`);
+  `SELECT id, title, cutout_status, 'cover' AS kind FROM items
+   WHERE cutout_url IS NULL AND cutout_status IS NOT NULL
+   ${EXTRAS ? `UNION ALL
+   SELECT g.id::text, i.title, g.cutout_status, 'gallery'
+   FROM product_images g JOIN items i ON i.id = g.product_id
+   WHERE g.cutout_url IS NULL AND g.cutout_status IS NOT NULL` : ""}`);
 
-console.log(`\nreviewing ${rows.length} stored cutouts (${notCut.length} listings were not isolated)\n`);
+console.log(`\nreviewing ${coverRows.length} covers${EXTRAS ? ` + ${galleryRows.length} gallery images` : ""} (${notCut.length} pictures were not isolated)\n`);
 
 async function review(row) {
   try {
@@ -161,6 +175,15 @@ process.stdout.write("\r");
 const flagged = out.filter((r) => r.faults.length).sort((a, b) => b.score - a.score);
 const clean = out.length - flagged.length;
 console.log(`\n${clean}/${out.length} clean · ${flagged.length} flagged for a look\n`);
+if (EXTRAS) {
+  for (const kind of ["cover", "gallery"]) {
+    const set = out.filter((r) => r.kind === kind);
+    if (!set.length) continue;
+    const bad = set.filter((r) => r.faults.length).length;
+    console.log(`  ${kind.padEnd(8)} ${set.length - bad}/${set.length} clean`);
+  }
+  console.log("");
+}
 const byFault = new Map();
 for (const r of flagged) for (const f of r.faults) {
   const k = f.split(":")[0];
@@ -175,11 +198,11 @@ if (notCut.length) {
 }
 console.log(`\nworst twenty:`);
 for (const r of flagged.slice(0, 20)) {
-  console.log(`  ${String(r.score).padStart(5)}  ${r.faults.join(" ").padEnd(24)} ${(r.brand || "").slice(0, 18).padEnd(19)} ${r.title.slice(0, 46)}`);
+  console.log(`  ${String(r.score).padStart(5)}  ${(r.kind || "cover").padEnd(8)} ${r.faults.join(" ").padEnd(22)} ${(r.brand || "").slice(0, 16).padEnd(17)} ${r.title.slice(0, 40)}`);
 }
 if (JSON_OUT) {
   fs.writeFileSync(JSON_OUT, JSON.stringify({ reviewed: out.length, clean, flagged: flagged.length,
-    items: out.map((r) => ({ id: r.id, title: r.title, brand: r.brand, photograph: r.img, cutout: r.cutout_url,
+    items: out.map((r) => ({ id: r.id, kind: r.kind, title: r.title, brand: r.brand, photograph: r.img, cutout: r.cutout_url,
       coverage: r.cutout_coverage, faults: r.faults, score: r.score, subjects: r.subjects, speckles: r.speckles, boxFill: r.boxFill })),
     notIsolated: notCut }, null, 1));
   console.log(`\nwrote ${JSON_OUT}`);

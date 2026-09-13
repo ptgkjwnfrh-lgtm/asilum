@@ -60,12 +60,25 @@ const REDO = args.includes("--redo");
 const SHEET = opt("sheet");
 const LIMIT = Math.max(1, Math.min(20000, Number(opt("limit")) || 20000));
 const CHUNK = Math.max(1, Math.min(80, Number(opt("chunk")) || 40));
-const FETCH_CONCURRENCY = Math.max(1, Math.min(12, Number(opt("fetch")) || 6));
+// The source fetch is the whole wall clock — Vision lifts an image in ~0.12s
+// and eBay's CDN answers in whatever it answers in. 897 covers at six in
+// flight took forty-five minutes; the gallery is nine times that.
+const FETCH_CONCURRENCY = Math.max(1, Math.min(32, Number(opt("fetch")) || 6));
 
 // The long edge of a stored cutout. 1400 is the largest the catalog card, the
 // piece page and a retina lightbox can actually use; beyond it the file grows
 // and nothing looks better.
-const MAX_EDGE = 1400;
+//
+// A GALLERY IMAGE IS NOT A COVER. The cover is the piece's face — it carries
+// the card, the modal and the float view. The other eight photographs of the
+// same garment are a second angle, a label, a flaw: looked at, not lived with.
+// They default smaller because the whole catalog's gallery at cover settings is
+// 1.08 GB and the Supabase tier is 1 GB — and because a tier you have silently
+// filled is a failure that arrives later, wearing someone else's clothes.
+const MAX_EDGE = Math.max(320, Math.min(2000, Number(opt("max-edge")) || (EXTRAS ? 1000 : 1400)));
+const QUALITY = Math.max(40, Math.min(95, Number(opt("quality")) || (EXTRAS ? 74 : 82)));
+// Stop cleanly before the storage tier is full rather than failing mid-upload.
+const BUDGET_MB = Math.max(1, Number(opt("budget-mb")) || 850);
 // A piece that touches the frame does not read as floating. After the matte is
 // trimmed to the subject, the frame is opened back up by this fraction.
 const FLOAT_PAD = 0.06;
@@ -171,8 +184,37 @@ const work = [...covers, ...extras].slice(0, LIMIT);
 console.log(`\n*ASILUM — the piece, isolated`);
 console.log(`lifter    : Apple Vision foreground-instance mask (on-device)`);
 console.log(`work      : ${covers.length} cover image${covers.length === 1 ? "" : "s"}${EXTRAS ? ` + ${extras.length} gallery image${extras.length === 1 ? "" : "s"}` : ""}`);
+console.log(`shape     : long edge ${MAX_EDGE}px, webp q${QUALITY}`);
 console.log(`mode      : ${WRITE ? `WRITE — upload to ${BUCKET}/ and record on the row` : "DRY RUN — nothing uploaded, nothing recorded"}\n`);
 if (!work.length) { console.log("nothing to do.\n"); process.exit(0); }
+
+/** What the bucket already holds, in bytes — the budget starts from here. */
+async function bucketBytes() {
+  let total = 0, offset = 0;
+  for (const prefix of ["item/", "image/"]) {
+    offset = 0;
+    for (;;) {
+      const res = await fetch(`${SUPABASE}/storage/v1/object/list/${BUCKET}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${SERVICE_KEY}`, apikey: SERVICE_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ prefix, limit: 1000, offset }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      const rows = await res.json().catch(() => []);
+      if (!Array.isArray(rows) || !rows.length) break;
+      for (const f of rows) total += f.metadata?.size || 0;
+      offset += rows.length;
+      if (rows.length < 1000) break;
+    }
+  }
+  return total;
+}
+
+const startingBytes = WRITE ? await bucketBytes() : 0;
+if (WRITE) {
+  console.log(`storage   : ${(startingBytes / 1048576).toFixed(0)} MB already stored, budget ${BUDGET_MB} MB\n`);
+}
+let stoppedForBudget = false;
 
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), "asilum-cut-"));
 const tally = new Map();
@@ -190,6 +232,7 @@ async function pool_(list, width, work_) {
 }
 
 for (let start = 0; start < work.length; start += CHUNK) {
+  if (WRITE && (startingBytes + bytesOut) / 1048576 > BUDGET_MB) { stoppedForBudget = true; break; }
   const batch = work.slice(start, start + CHUNK);
   // 1. fetch the source photographs
   const fetched = await pool_(batch, FETCH_CONCURRENCY, async (row) => {
@@ -232,7 +275,7 @@ for (let start = 0; start < work.length; start += CHUNK) {
       const webp = await sharp(meta.data)
         .extend({ top: pad, bottom: pad, left: pad, right: pad, background: { r: 0, g: 0, b: 0, alpha: 0 } })
         .resize(MAX_EDGE, MAX_EDGE, { fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 82, alphaQuality: 90, effort: 4 })
+        .webp({ quality: QUALITY, alphaQuality: 90, effort: 4 })
         .toBuffer();
       bytesOut += webp.length;
       const url = WRITE ? await upload(`${row.kind}/${row.id}.webp`, webp) : publicUrl(`${row.kind}/${row.id}.webp`);
@@ -262,7 +305,11 @@ async function record(row, { status, coverage, url }) {
 }
 
 const ok = tally.get("ok") || 0;
-console.log(`\n${ok}/${work.length} isolated (${(100 * ok / work.length).toFixed(1)}%)`);
+if (stoppedForBudget) {
+  console.log(`\nSTOPPED AT THE STORAGE BUDGET — ${(( startingBytes + bytesOut) / 1048576).toFixed(0)} MB of ${BUDGET_MB} MB used.`);
+  console.log(`${work.length - done} images were not processed. Raise --budget-mb, lower --max-edge, or add storage.`);
+}
+console.log(`\n${ok}/${done || work.length} isolated (${(100 * ok / (done || work.length)).toFixed(1)}%)`);
 console.log(`source ${(bytesIn / 1048576).toFixed(0)} MB in → ${(bytesOut / 1048576).toFixed(0)} MB of webp out`);
 const failures = [...tally].filter(([k]) => k !== "ok").sort((a, b) => b[1] - a[1]);
 if (failures.length) {
