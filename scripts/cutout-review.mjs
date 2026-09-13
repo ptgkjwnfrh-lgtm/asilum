@@ -65,7 +65,15 @@ const CONCURRENCY = Math.max(1, Math.min(12, Number(opt("concurrency")) || 6));
 const GRID = 320;             // enough resolution that real debris survives the resize
 const SECOND_SUBJECT = 0.2;   // an island this fraction of the largest is another subject
 const SPECKLE = 0.0008;       // an island smaller than this fraction of the frame is debris
-const FULL_FRAME = 0.88;      // a subject filling this much of its own box is worth a look
+// A COVER AND A GALLERY IMAGE ARE HELD TO DIFFERENT BARS HERE, because the
+// normal case differs. A cover is the piece's face: a garment silhouette that
+// fills its own bounding box is unusual and worth a look. A gallery image is a
+// label, a waistband, a sole, a folded flat-lay — filling the frame IS the
+// normal case, and at the cover's bar this fault fired on 994 of 7,224 gallery
+// images, nearly all of them correct. A fault that fires on the normal case is
+// noise wearing a warning's clothes, so the gallery bar is set where only an
+// edge-to-edge rectangle trips it.
+const FULL_FRAME = { cover: 0.88, gallery: 0.995 };
 
 /** Connected components over the alpha channel, largest first. */
 export function islands(alpha, w, h, threshold = 24) {
@@ -90,18 +98,19 @@ export function islands(alpha, w, h, threshold = 24) {
   return sizes.sort((a, b) => b - a);
 }
 
-export function judge({ sizes, boxFill, area }) {
+export function judge({ sizes, boxFill, area, kind = "cover" }) {
+  const fullFrameBar = FULL_FRAME[kind] ?? FULL_FRAME.cover;
   const faults = [];
   const largest = sizes[0] || 0;
   const subjects = sizes.filter((n) => n >= largest * SECOND_SUBJECT).length;
   const speckles = sizes.filter((n) => n < area * SPECKLE).length;
   if (!largest) faults.push("empty");
   if (subjects > 2) faults.push(`fragments:${subjects}`);
-  if (boxFill >= FULL_FRAME) faults.push(`full-frame:${(boxFill * 100).toFixed(0)}%`);
+  if (boxFill >= fullFrameBar) faults.push(`full-frame:${(boxFill * 100).toFixed(0)}%`);
   if (speckles > 8) faults.push(`speckle:${speckles}`);
   // the score a person sorts by: 0 is perfect, higher is worse
   const score = (subjects > 2 ? subjects - 2 : 0) * 2
-    + Math.max(0, boxFill - FULL_FRAME) * 25
+    + Math.max(0, boxFill - fullFrameBar) * 25
     + Math.min(2, speckles / 8);
   return { faults, score: +score.toFixed(2), subjects, speckles, boxFill: +(boxFill * 100).toFixed(1) };
 }
@@ -154,7 +163,7 @@ async function review(row) {
     const boxArea = maxX < 0 ? 0 : (maxX - minX + 1) * (maxY - minY + 1);
     const boxFill = boxArea ? opaque / boxArea : 0;
     const sizes = islands(data, w, h);
-    const verdict = judge({ sizes, boxFill, area: w * h });
+    const verdict = judge({ sizes, boxFill, area: w * h, kind: row.kind });
     return { ...row, ...verdict, bytes: buf.length };
   } catch (e) {
     return { ...row, faults: ["review-failed"], score: 9, error: String(e.message).slice(0, 80) };
