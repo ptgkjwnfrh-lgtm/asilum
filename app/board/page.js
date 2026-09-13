@@ -403,7 +403,7 @@ export default function BoardPage() {
                   <a key={it.id} className="stampknow-piece"
                      href={"/?item=" + encodeURIComponent(it.id)}
                      title={[it.brand, it.title].filter(Boolean).join(" — ")}>
-                    <img src={it.img || thumbFor(it)} alt={it.title || "piece"} loading="lazy" />
+                    <img src={it.img || thumbFor(it)} alt={it.title || "piece"} loading="lazy" data-iso={it.isolated ? "1" : undefined} />
                   </a>
                 ))}
               </span>
@@ -483,7 +483,7 @@ export default function BoardPage() {
                 <div className="card" key={it.id}>
                   <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
                     <OriginSticker item={it} />
-                    <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" />
+                    <img src={it.img || thumbFor(it)} alt={it.alt || it.title} loading="lazy" data-iso={it.isolated ? "1" : undefined} />
                   </div>
                   <div className="body">
                     <div className="ttl">{it.title}</div>

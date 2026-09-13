@@ -24,9 +24,14 @@ import { aggregatePlaces } from "../../../lib/asterisk/places.js";
 
 const BOUGHT_OUTCOMES = new Set(["bought", "kept", "returned"]);
 
-// The catalog by id: the seed plus whatever the discoverable pool holds.
+// The catalog by id. THE LIVE POOL FIRST, and the file catalog only where there
+// is no database to hold one — the same rule getDiscoverablePool applies, for
+// the same reason. Seeding this map from the file unconditionally meant a piece
+// deleted from the catalog kept resolving here: after the 12 September seed
+// delete, every order line and the purchase globe would still have plotted
+// synthetic pieces that no longer existed anywhere else in the app.
 async function itemIndex() {
-  const byId = new Map(CATALOG.map((it) => [it.id, it]));
+  const byId = new Map(process.env.DATABASE_URL ? [] : CATALOG.map((it) => [it.id, it]));
   try {
     for (const it of await getDiscoverablePool({ fallback: false })) byId.set(it.id, it);
   } catch {}

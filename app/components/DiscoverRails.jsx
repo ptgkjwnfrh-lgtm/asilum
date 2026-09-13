@@ -122,7 +122,7 @@ export function DiscoverRails({ onPickTags }) {
             <div className="railrow">
               {rail.items.map((item) => (
                 <a className="railitem" key={item.id} href={"/?item=" + encodeURIComponent(item.id)}>
-                  <img src={item.img || thumbFor(item)} alt={item.title} />
+                  <img src={item.img || thumbFor(item)} alt={item.title} data-iso={item.isolated ? "1" : undefined} />
                   <span>{item.title}</span>
                   <em>{item.brand}</em>
                 </a>

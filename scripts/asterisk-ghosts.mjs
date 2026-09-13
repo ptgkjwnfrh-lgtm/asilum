@@ -171,18 +171,18 @@ console.log(`═══ ${chosen.length}/${SPECS.length} chosen · ${reads} reads
 if (JSON_OUT) { fs.writeFileSync(JSON_OUT, JSON.stringify({ at: new Date().toISOString(), cost, chosen }, null, 1)); console.log(`wrote ${JSON_OUT}`); }
 
 if (WRITE && chosen.length) {
-  const { upsertItems } = await import("../lib/db/index.js");
-  const { addProductTags, addProductImages, saveIdentification, recordSyncLog } = await import("../lib/db/production.js");
-  const { normalizeSourceProduct, typedTagsFrom } = await import("../lib/ingest/adapters/normalize.js");
+  // ONE WRITER. This used to inline the upsert, the tag rows, the images and
+  // the identification — the same four writes lib/ingest/adapters/sync.js
+  // performs, in a second dialect that would drift from the first. It calls
+  // persistProducts now (the catalog ingest calls it too); the only thing
+  // peculiar to a ghost is the listing_kind it carries in.
+  const { persistProducts } = await import("../lib/ingest/adapters/sync.js");
+  const { recordSyncLog } = await import("../lib/db/production.js");
+  const { normalizeSourceProduct } = await import("../lib/ingest/adapters/normalize.js");
   const { verifyProductColors } = await import("../lib/ingest/colorEvidence.js");
   const products = await verifyProductColors(chosen.map((c) => ({ ...normalizeSourceProduct({ ...c.product, source_product_id: c.product.source_product_id || c.product.id, source_product_url: c.product.url }, "ebay"), listing_kind: "ghost" })));
-  const upserted = await upsertItems(products.map((p) => ({ ...p, source: p.source_name })));
-  for (let i = 0; i < products.length; i++) {
-    const p = products[i], c = chosen[i];
-    await addProductTags(p.id, typedTagsFrom(p));
-    if (p.images?.length > 1) await addProductImages(p.id, p.images.map((u) => ({ imageUrl: u })));
-    if (c.identification) await saveIdentification(p.id, { source: "ebay", record: c.identification.record, status: c.identification.status, model: c.identification.model, promptVersion: c.identification.promptVersion, usage: c.identification.usage, costUsd: c.identification.costUsd, searched: c.identification.searched, decoded: c.decoded, readings: c.readings });
-  }
+  const results = chosen.map((c, i) => ({ product: products[i], identification: c.identification, decoded: c.decoded, readings: c.readings }));
+  const upserted = await persistProducts(products, { sourceName: "ebay", results });
   await recordSyncLog({ sourceName: "ebay", enabled: true, itemsSeen: chosen.length, itemsUpserted: upserted, status: "ok", note: "asterisk ghosts" }).catch(() => {});
   console.log(`wrote ${upserted} ghost listings`);
 }

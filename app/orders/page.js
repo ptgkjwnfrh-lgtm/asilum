@@ -197,7 +197,7 @@ export default function OrdersPage() {
       {bagHistory && bagHistory.map((o, i) => (
           <a className="hlrow" key={o.id + ":" + i} href={"/?item=" + encodeURIComponent(o.id)}>
             <div className="hlnum">{String(i + 1).padStart(2, "0")}</div>
-            <img src={o.img || thumbFor(o)} alt="" />
+            <img src={o.img || thumbFor(o)} alt="" data-iso={o.isolated ? "1" : undefined} />
             <div className="hlinfo">
               <div className="hlttl">{o.title}</div>
               <div className="hlbrand">

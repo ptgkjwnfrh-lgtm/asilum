@@ -6,12 +6,12 @@ import { siteUrl } from "../../lib/site.js";
 export const metadata = {
   title: "DISCOVER",
   description:
-    "The open index. A demo archive of synthetic sample records — the search is real; the clothes are not.",
+    "The open index. Search the archive by house, era, garment and aesthetic. Records shown for demonstration are labelled on the piece.",
   alternates: { canonical: "/discover" },
   openGraph: {
     title: "DISCOVER · *ASILUM magazine",
     description:
-      "The open index. A demo archive of synthetic sample records — the search is real; the clothes are not.",
+      "The open index. Search the archive by house, era, garment and aesthetic. Records shown for demonstration are labelled on the piece.",
     url: siteUrl("/discover"),
     siteName: "*ASILUM magazine",
     type: "website",

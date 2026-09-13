@@ -245,7 +245,7 @@ export function PublicRoom({ room, handle }) {
           <div className="roomrow roompieces">
             {pieces.map((item) => (
               <a className="roompiece" key={item.id} href={"/?item=" + encodeURIComponent(item.id)}>
-                <img src={item.img || thumbFor(item)} alt={item.title} />
+                <img src={item.img || thumbFor(item)} alt={item.title} data-iso={item.isolated ? "1" : undefined} />
                 <span>{item.title}</span>
               </a>
             ))}

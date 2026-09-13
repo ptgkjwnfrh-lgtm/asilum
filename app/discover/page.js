@@ -7,7 +7,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { confidenceBand } from "../../lib/asterisk/confidence.js";
 import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
-import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../lib/social.js";
+import { followedBrands, setFollowBrand, isDemoItem, anyDemoRecord, DEMO_LABEL } from "../../lib/social.js";
 import { readConstraints, releaseConstraint } from "../../lib/search/constraints.js";
 import TicketFlow from "../components/TicketFlow.jsx";
 import { DiscoverRails } from "../components/DiscoverRails.jsx";
@@ -294,11 +294,13 @@ export default function DiscoverPage() {
   return (
     <div className="wrap">
       <PageMast word="DISCOVER" sub="THE OPEN INDEX" />
-      <p className="demobanner" role="note">
-        <b>DEMO ARCHIVE.</b> synthetic sample records with placeholder imagery —
-        nothing here is real inventory or for sale. the search is real; the
-        clothes are not.
-      </p>
+      {anyDemoRecord(items) && (
+        <p className="demobanner" role="note">
+          <b>DEMO RECORDS IN THIS INDEX.</b> some records here are synthetic sample
+          data with placeholder imagery — those are not real inventory and not for
+          sale, and each carries a {DEMO_LABEL} flag. the search is real either way.
+        </p>
+      )}
       <p className="deck">
         explore the full archive. {guideOn
           ? "The Asterisk system is using your Passport to route every search toward your style."
@@ -536,7 +538,7 @@ export default function DiscoverPage() {
           >
             <div className="imgwrap" aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
               <OriginSticker item={it} />
-              <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+              <img src={it.img || thumbFor(it)} alt="" loading="lazy" data-iso={it.isolated ? "1" : undefined} />
             </div>
             <div className="body">
               <div className="brand2">{it.brand}</div>

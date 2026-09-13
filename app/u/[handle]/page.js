@@ -170,7 +170,7 @@ export default function UserPage({ params }) {
           <a className="card" key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
             <div className="imgwrap" style={{ aspectRatio: aspectFor(it.id) }}>
               <OriginSticker item={it} />
-              <img src={it.img || thumbFor(it)} alt={it.title} loading="lazy" />
+              <img src={it.img || thumbFor(it)} alt={it.title} loading="lazy" data-iso={it.isolated ? "1" : undefined} />
             </div>
             <div className="body">
               <div className="ttl">{it.title}</div>

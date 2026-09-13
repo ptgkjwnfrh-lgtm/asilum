@@ -66,7 +66,7 @@ export default function TitleCardPage() {
         </div>
 
         <div className="e4-status">
-          <p>A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS</p>
+          <p>ARCHIVE LISTINGS READ FROM ACROSS THE INTERNET</p>
         </div>
 
         <div className="e4-foot" aria-hidden="true">DISCOVERY - COMMERCE - COMMUNITY</div>

@@ -192,7 +192,7 @@ export default function CoverPage() {
           >
             <span className="cvvert" aria-hidden="true">TONIGHT THE MACHINE RECOMMENDS</span>
             <div className="cvheroimg">
-              <img src={pick.img || thumbFor(pick)} alt={pick.title || "front cover piece"} />
+              <img src={pick.img || thumbFor(pick)} alt={pick.title || "front cover piece"} data-iso={pick.isolated ? "1" : undefined} />
             </div>
             {/* Warp-sleeve credit stack — labels float, values are real */}
             <div className="cvcred" aria-hidden="true">
@@ -231,7 +231,7 @@ export default function CoverPage() {
             <span className="cvfilmlbl">NEXT IN YOUR RANKING</span>
             {film.map((it, i) => (
               <a key={it.id} href={"/?item=" + encodeURIComponent(it.id)}>
-                <img src={it.img || thumbFor(it)} alt={it.title} />
+                <img src={it.img || thumbFor(it)} alt={it.title} data-iso={it.isolated ? "1" : undefined} />
                 <b>{String(i + 2).padStart(2, "0")} · {(it.brand || "").toUpperCase()}</b>
               </a>
             ))}
@@ -285,7 +285,7 @@ export default function CoverPage() {
                 <i className={"tdrf " + (i === 0 ? "tdrfa" : "tdrfb")} aria-hidden="true" />
                 {i === 1 && <i className="tdrf tdrfb2" aria-hidden="true" />}
                 {(lk.items || []).slice(0, 4).map((it) => (
-                  <img key={it.id} src={it.img || thumbFor(it)} alt="" />
+                  <img key={it.id} src={it.img || thumbFor(it)} alt="" data-iso={it.isolated ? "1" : undefined} />
                 ))}
               </div>
               <div className="cvcredit">

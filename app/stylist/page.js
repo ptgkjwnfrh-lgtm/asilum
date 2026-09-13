@@ -14,7 +14,7 @@ import {
   getUid, postJSON, thumbFor, bagAdd,
   loadFitProfile, authorizedFetch, brainEnabled, claimRequest,
 } from "../../lib/client.js";
-import { sourceFor } from "../../lib/social.js";
+import { sourceFor, anyDemoRecord } from "../../lib/social.js";
 import { purchasableLookItems } from "../../lib/wardrobe/purchase.js";
 import { ColorEvidenceLine, OriginLine, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
@@ -152,15 +152,16 @@ export default function StylistPage() {
     <div className="wrap">
       <div className="locline"><a href="/discover">← DISCOVER</a><span>/ THE STYLIST</span></div>
       <PageMast word="THE STYLIST" sub="TONIGHT'S LOOKS" />
-      {/* The stylist cuts its looks from the same synthetic catalog, so it
-          carries the same disclosure. It has no Buy control to strip — bagging
-          a look is a taste signal, which is exactly what a demo catalog is
-          for — but the pieces in every look are sample records. */}
-      <p className="demobanner" role="note">
-        <b>DEMO CATALOG.</b> these looks are cut from synthetic sample records
-        with placeholder imagery — the styling logic is real, the garments are
-        not, and none of them can be bought.
-      </p>
+      {/* The stylist cuts its looks from whatever the catalog holds, so its
+          disclosure asks the looks rather than assuming them (lib/social.js
+          anyDemoRecord). A wardrobe piece is the bearer's own and is skipped. */}
+      {anyDemoRecord(visibleGroups.flatMap((g) => g.looks.flatMap((l) => l.items || []))) && (
+        <p className="demobanner" role="note">
+          <b>DEMO RECORDS IN THESE LOOKS.</b> some pieces cut into these looks are
+          synthetic sample records with placeholder imagery — the styling logic is
+          real, those garments are not, and they cannot be bought.
+        </p>
+      )}
       <p className="deck">
         whole looks cut across sources. {guideOn
           ? "The Asterisk system is styling through your Passport,"
@@ -240,7 +241,7 @@ export default function StylistPage() {
                         href={it.owned ? "/profile" : "/?item=" + encodeURIComponent(it.id)}
                       >
                         {hl && <i className="tdrf tdrfs" aria-hidden="true" />}
-                        <img src={it.img || thumbFor(it)} alt={it.title} />
+                        <img src={it.img || thumbFor(it)} alt={it.title} data-iso={it.isolated ? "1" : undefined} />
                         <span className="otfttl">{it.title}</span>
                         <span className="otfprice">
                           {it.owned ? "YOUR WARDROBE" : sourceFor(it)}{it.price ? ` · ${it.currency || "USD"} ${it.price}` : ""}

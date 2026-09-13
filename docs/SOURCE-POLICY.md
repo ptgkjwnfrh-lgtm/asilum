@@ -6,9 +6,13 @@ treated as permission to scrape, copy, cache, or combine its content.
 
 ## Activation gates
 
-- **eBay:** stays disabled until both API credentials and
-  `EBAY_PARTNERSHIP_APPROVED=1` are present. Approval must cover ASILUM's
-  intended display, caching, source labeling, and multi-source experience.
+- **eBay:** requires both API credentials and `EBAY_PARTNERSHIP_APPROVED=1`.
+  Both are set, and real listings are in the catalog since 12 September 2026
+  (`docs/ebay-catalog-ingest-2026-09-12.md`). The approval that gate stands for
+  — covering ASILUM's intended display, caching, source labeling and
+  multi-source experience, and the Prohibited AI Uses question in
+  `docs/epn-terms-check-2026-08-22.md` — is an OWNER RULING, not a grant from
+  eBay. The flag is the kill switch; the brief is the risk.
 - **Shopify:** stays disabled until each merchant grants Storefront access.
 - **WooCommerce:** may connect through the documented public Store API only
   after that store's owner approves ASILUM and its exact HTTPS origin is set in
