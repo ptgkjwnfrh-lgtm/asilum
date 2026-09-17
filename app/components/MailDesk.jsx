@@ -48,7 +48,7 @@ import { authorizedFetch, getUid } from "../../lib/client.js";
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
   composerKey, mergeFolderItems, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity,
+  shouldPollActivity, startSummaryPolling,
 } from "../../lib/dm-desk.js";
 
 const POLL_MS = 45000;
@@ -168,13 +168,7 @@ export default function MailDesk() {
   // just to say "nothing happened".
   const countsMoved = useRef(false);
 
-  useEffect(() => {
-    poll();
-    const timer = setInterval(poll, POLL_MS);
-    const onIdentity = () => poll();
-    window.addEventListener("asilum:identity", onIdentity);
-    return () => { clearInterval(timer); window.removeEventListener("asilum:identity", onIdentity); };
-  }, [poll]);
+  useEffect(() => startSummaryPolling(poll, { intervalMs: POLL_MS }), [poll]);
 
   const loadFolder = useCallback(async (which, more = "") => {
     // Every request carries a token, and only the CURRENT one may be applied.
