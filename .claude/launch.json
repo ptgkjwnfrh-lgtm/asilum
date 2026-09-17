@@ -77,26 +77,6 @@
         "3463"
       ],
       "port": 3463
-    },
-    {
-      "name": "v2-reference",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "/private/tmp/claude-501/-Users-noemosallowed/56c3d08e-1471-4c0b-b882-455bb11aa2e6/scratchpad/v2/serve.mjs",
-        "4589"
-      ],
-      "port": 4589
-    },
-    {
-      "name": "v2-dev",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "next",
-        "dev",
-        "-p",
-        "3477"
-      ],
-      "port": 3477
     }
   ]
 }
