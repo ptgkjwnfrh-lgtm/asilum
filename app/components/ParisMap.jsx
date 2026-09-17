@@ -41,6 +41,33 @@ export function useParisRoads() {
   return map;
 }
 
+// V.2: THE READER'S OWN STREETS. Given a centre (rounded coordinates), the
+// hook reads /api/roads for that area — the same document shape, drawn by
+// the same component — and falls back to Paris when there is no centre or
+// the streets cannot be read. One promise per centre for the page.
+const roadsByCentre = new Map();
+export function useRoads(centre) {
+  const paris = useParisRoads();
+  const [own, setOwn] = useState(null);
+  const [failed, setFailed] = useState(false);
+  const key = centre && Number.isFinite(centre.lat) && Number.isFinite(centre.lng) ? `${(+centre.lat).toFixed(2)},${(+centre.lng).toFixed(2)}` : null;
+  useEffect(() => {
+    let live = true;
+    setOwn(null); setFailed(false);
+    if (!key) return undefined;
+    if (!roadsByCentre.has(key)) {
+      roadsByCentre.set(key, fetch(`/api/roads?lat=${key.split(",")[0]}&lng=${key.split(",")[1]}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => (d && d.major ? d : null))
+        .catch(() => null)
+        .then((d) => { if (!d) roadsByCentre.delete(key); return d; }));
+    }
+    roadsByCentre.get(key).then((d) => { if (!live) return; if (d) setOwn(d); else setFailed(true); });
+    return () => { live = false; };
+  }, [key]);
+  return { map: own || (key && !failed ? null : paris), own: !!own, loading: !!key && !own && !failed, failed, paris };
+}
+
 export default function ParisMap({ map, hot }) {
   return (
     <svg viewBox={`0 0 ${map.w} ${map.h}`} preserveAspectRatio="xMidYMid slice">

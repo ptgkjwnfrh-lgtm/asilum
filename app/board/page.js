@@ -20,7 +20,7 @@ import { readStamps } from "../../lib/vision/stampReading.js";
 import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
 import buildRoads, { primeRoads } from "../components/roadBuilder.js";
-import { useParisRoads } from "../components/ParisMap.jsx";
+import { useParisRoads, useRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
 import { convictionsOf, mrzLines, sinceDisplay as formatSince } from "../../lib/passport/document.js";
@@ -33,7 +33,7 @@ import PlacesPanel from "../components/PlacesPanel.jsx";
 import Studio from "../components/Studio.jsx";
 import ModelTag from "../components/ModelTag.jsx";
 import { listSaves, unsave, saveCounts } from "../../lib/save.js";
-import { getLocation, basedInLine } from "../../lib/location.js";
+import { getLocation, basedInLine, confirmBaseCity, setLocation } from "../../lib/location.js";
 
 const TABS = [
   { id: "collection", label: "COLLECTION" },
@@ -69,14 +69,51 @@ export default function BoardPage() {
   const ppRef = useRef(null);
   const ppGlass = useLiquidGlass(ppRef, { id: "lg-passport", strength: 0.5, bend: ".ppwash-under" });
   const parisMap = useParisRoads();
-  useEffect(() => { if (parisMap) primeRoads(parisMap); }, [parisMap]);
+  // THE READER'S OWN STREETS (V.2 round two): the document's map is the
+  // area around the confirmed base city — first suggested from the
+  // connection's address (/api/geo), the browser's own location as the
+  // fallback, a city picker after that. Paris stands in only until a
+  // centre exists.
+  const centre = loc && loc.baseCity && Number.isFinite(loc.baseCity.lat) ? { lat: loc.baseCity.lat, lng: loc.baseCity.lng, label: loc.baseCity.name } : null;
+  const roads = useRoads(centre);
+  const docMap = roads.map;
+  const [geoNote, setGeoNote] = useState("");
+  useEffect(() => { if (docMap) primeRoads(docMap); }, [docMap]);
+  useEffect(() => {
+    // one suggestion per device: the connection's city area, confirmed by
+    // being shown (CHANGE sits beside it); never a street, never stored raw
+    const current = getLocation();
+    if (current.baseCity) return;
+    let asked = false;
+    try { asked = window.localStorage.getItem("asilum-geo-asked") === "1"; } catch {}
+    if (asked) return;
+    fetch("/api/geo").then((r) => (r.ok ? r.json() : null)).then((g) => {
+      try { window.localStorage.setItem("asilum-geo-asked", "1"); } catch {}
+      if (g && g.located) {
+        const name = [g.city, g.region].filter(Boolean).join(", ") || "your area";
+        setLocation({ baseCity: { name, lat: g.lat, lng: g.lng, country: g.country || "", region: g.region || null, tz: null, detected: true }, confirmedAt: new Date().toISOString() });
+        setGeoNote(`your base city was read from this connection's address — ${name}. change it below if that is wrong.`);
+      } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = +pos.coords.latitude.toFixed(2), lng = +pos.coords.longitude.toFixed(2);
+            setLocation({ baseCity: { name: "your area", lat, lng, country: "", region: null, tz: null, detected: true }, confirmedAt: new Date().toISOString() });
+            setGeoNote("your base city was read from this device's location (about a kilometre). change it below if that is wrong.");
+          },
+          () => setGeoNote("no location could be read — choose a base city under PLACES and your streets appear here."),
+          { enableHighAccuracy: false, maximumAge: 600000, timeout: 8000 },
+        );
+      } else setGeoNote("no location could be read — choose a base city under PLACES and your streets appear here.");
+    }).catch(() => {});
+  }, []);
 
   function warpToUpload() {
     const doc = document.querySelector(".ppdoc");
     const overlay = warpRef.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!doc || !overlay || !parisMap || reduced) { router.push("/upload"); return; }
-    buildRoads(overlay, parisMap, doc.getBoundingClientRect(), () => router.push("/upload"));
+    const m = docMap || parisMap;
+    if (!doc || !overlay || !m || reduced) { router.push("/upload"); return; }
+    buildRoads(overlay, m, doc.getBoundingClientRect(), () => router.push("/upload"));
   }
 
   function switchTab(id) {
@@ -311,17 +348,32 @@ export default function BoardPage() {
             </dl>
           </div>
           <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
-          <PassportSecurity topTag={convictions()[0]?.[0]} topWeight={convictions()[0]?.[1] || 0} roads={!loc || !loc.baseCity || loc.baseCity.name === "Paris"} />
-          <button className="ppupload" onClick={warpToUpload}>⇪ TEACH THE PASSPORT →</button>
+          <PassportSecurity topTag={convictions()[0]?.[0]} topWeight={convictions()[0]?.[1] || 0} map={docMap} />
+          <div className="ppdocacts">
+            <button className="ppbtn" onClick={() => switchTab("places")}>OPEN MAP</button>
+            <button className="ppbtn primary" onClick={warpToUpload}>STAMP PASSPORT</button>
+          </div>
         </div>
       )}
+      {geoNote && !shared && <p className="ppgeonote">{geoNote} <button className="txtbtn" onClick={() => { setGeoNote(""); switchTab("places"); }}>CHANGE →</button></p>}
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 
       {!shared && (
         <>
-          {/* A WORLD YOU'RE BUILDING — the ledger and the stamps */}
-          <section className="ppworld" aria-label="what you have built">
+          <nav className="pptabs seg" aria-label="passport sections">
+            {TABS.map((t) => (
+              <button key={t.id} className={"tab" + (tab === t.id ? " cur" : "")} aria-pressed={tab === t.id} onClick={() => switchTab(t.id)}>{t.label}</button>
+            ))}
+          </nav>
+        </>
+      )}
+
+      {/* ================= COLLECTION ================= */}
+      {(shared || tab === "collection") && (
+        <>
+          {!shared && (
+          <section className="ppworld card" aria-label="what you have built">
             <div className="ppledger">
               <span><b>{String(pinCount + (counts.total - counts.piece)).padStart(2, "0")}</b>saved</span>
               <span><b>{String(convictions().length).padStart(2, "0")}</b>taste branches</span>
@@ -337,22 +389,10 @@ export default function BoardPage() {
               <span className="ppstampnote">stamps mark things you make and keep. no timer, no streak to lose.</span>
             </div>
           </section>
-
-          <nav className="pptabs" aria-label="passport sections">
-            {TABS.map((t) => (
-              <button key={t.id} className={"tab" + (tab === t.id ? " cur" : "")} aria-pressed={tab === t.id} onClick={() => switchTab(t.id)}>{t.label}</button>
-            ))}
-            <a className="tab" href="/upload">UPLOAD ⇪</a>
-          </nav>
-        </>
-      )}
-
-      {/* ================= COLLECTION ================= */}
-      {(shared || tab === "collection") && (
-        <>
+          )}
           {!shared && (
             <>
-              <div className="fmodes ppfilters">
+              <div className="fmodes ppfilters seg">
                 {SAVE_FILTERS.map(([k, l]) => (
                   <button key={k} className={"fmode" + (saveFilter === k ? " cur" : "")} onClick={() => setSaveFilter(k)}>
                     {l}{k !== "all" && counts[k] + (k === "piece" ? pinCount : 0) > 0 ? ` ${counts[k] + (k === "piece" ? pinCount - counts.piece : 0)}` : ""}

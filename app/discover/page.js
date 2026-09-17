@@ -17,7 +17,7 @@ import PageMast from "../components/PageMast.jsx";
 import DiscoverTabs from "../components/DiscoverTabs.jsx";
 import PersonOverview from "../components/PersonOverview.jsx";
 import PlacesPanel from "../components/PlacesPanel.jsx";
-import { findOverview, OVERVIEWS } from "../../lib/people/overviews.js";
+import { findOverview } from "../../lib/people/overviews.js";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -137,7 +137,7 @@ export default function DiscoverPage() {
   useEffect(() => {
     try {
       const t = new URLSearchParams(window.location.search).get("tab");
-      if (t === "places" || t === "people") setDtab(t);
+      if (t === "places") setDtab(t);
     } catch {}
   }, []);
   useEffect(() => {
@@ -326,19 +326,12 @@ export default function DiscoverPage() {
 
   return (
     <div className="wrap">
-      <PageMast word="DISCOVER" sub={dtab === "places" ? "AROUND YOU" : dtab === "people" ? "PEOPLE" : "SEARCH · THE OPEN INDEX"} />
+      <PageMast word="DISCOVER" sub={dtab === "places" ? "AROUND YOU" : "SEARCH · THE OPEN INDEX"} />
       <DiscoverTabs current={dtab} />
       {dtab === "places" && (
         <>
           <p className="deck">what is happening in fashion near you and around the world — events and permanent places, sourced or plainly labelled fixtures.</p>
           <PlacesPanel />
-        </>
-      )}
-      {dtab === "people" && (
-        <>
-          <p className="deck">sourced overviews of designers and creators who qualify — a face, a role, the facts and where each one comes from. smaller creators stay searchable without one.</p>
-          {OVERVIEWS.map((o) => <PersonOverview key={o.id} person={o} />)}
-          <p className="deck faint">creators qualify at an average of 250,000 views per post sustained for five consecutive months; missing history reads “not yet verified”. designers qualify through a sourced body of work. popularity is not merit, identity or endorsement.</p>
         </>
       )}
       {dtab === "search" && (<>

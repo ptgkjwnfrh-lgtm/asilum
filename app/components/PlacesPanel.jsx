@@ -13,6 +13,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import FashionMap from "./FashionMap.jsx";
+import StreetMap from "./StreetMap.jsx";
+import { useRoads } from "./ParisMap.jsx";
 import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
 import { CITIES, PLACE_KINDS } from "../../lib/places/registry.js";
@@ -56,6 +58,10 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
   }, []);
 
   const center = useMemo(() => (loc ? discoveryCenter() : null), [loc, area]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the reader's own streets under the local map — the same document the
+  // passport draws; the radar stands in only while they load or when they
+  // cannot be read
+  const roads = useRoads(center);
 
   useEffect(() => {
     const qs = new URLSearchParams();
@@ -110,14 +116,14 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
       )}
 
       <div className="pltop">
-        <div className="fmodes">
+        <div className="fmodes seg">
           <button className={"fmode" + (mode === "local" ? " cur" : "")} onClick={() => setMode("local")} disabled={!center}>LOCAL{center ? ` · ${center.label.toUpperCase()}` : ""}</button>
           <button className={"fmode" + (mode === "world" ? " cur" : "")} onClick={() => setMode("world")}>WORLD</button>
           <span className="plsep" aria-hidden="true">·</span>
           <button className={"fmode" + (view === "map" ? " cur" : "")} onClick={() => setView("map")}>MAP</button>
           <button className={"fmode" + (view === "list" ? " cur" : "")} onClick={() => setView("list")}>LIST</button>
         </div>
-        <div className="fmodes">
+        <div className="fmodes seg">
           {[["all", "ALL"], ["events", "EVENTS"], ["places", "PLACES"]].map(([k, l]) => (
             <button key={k} className={"fmode" + (dated === k ? " cur" : "")} onClick={() => setDated(k)}>{l}</button>
           ))}
@@ -130,7 +136,9 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
 
       {view === "map" && (
         <div className="plmapwrap">
-          <FashionMap mode={center ? mode : "world"} center={center} km={mode === "local" ? 40 : 80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />
+          {center && mode === "local" && (roads.own || roads.loading)
+            ? <StreetMap map={roads.own ? roads.map : null} centre={center} places={places} selectedId={sel} onSelect={setSel} height={compact ? 320 : 460} />
+            : <FashionMap mode={center ? mode : "world"} center={center} km={mode === "local" ? 40 : 80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />}
           {!center && mode === "local" && <p className="deck">confirm a base city above to centre the local map.</p>}
         </div>
       )}

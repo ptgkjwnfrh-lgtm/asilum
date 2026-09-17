@@ -428,7 +428,7 @@ export default function TheWirePage() {
                 VIDEO ≤3:00
               </button>
             </div>
-            <div className="wintents" role="group" aria-label="what kind of post">
+            <div className="wintents seg" role="group" aria-label="what kind of post">
               {WIRE_INTENTS.map((i) => (
                 <button key={i.id} className={"fmode" + (intent === i.id ? " cur" : "")} title={i.means} aria-pressed={intent === i.id} onClick={() => setIntent(i.id)}>{i.label}</button>
               ))}
@@ -496,7 +496,7 @@ export default function TheWirePage() {
                scroll cost (trap 151's cousin); the composer and the rail
                carry the real glass. Pictures and video take this same
                card when the pipeline lands. ---- */}
-          <nav className="wlanes" aria-label="lanes">
+          <nav className="wlanes seg" aria-label="lanes">
             <button className={"tab" + (lane === "foryou" ? " cur" : "")} onClick={() => setLane("foryou")}>FOR YOU</button>
             {WIRE_CATEGORIES.map((c) => (
               <button key={c.id} className={"tab" + (lane === c.id ? " cur" : "")} onClick={() => setLane(c.id)}>{c.label}</button>
