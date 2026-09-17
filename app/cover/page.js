@@ -22,6 +22,10 @@ import {
 import { Avatar } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import { systemLedger } from "./ledger.js";
+import SaveButton from "../components/SaveButton.jsx";
+import ModelTag from "../components/ModelTag.jsx";
+import { SAMPLE_POSTS } from "../../lib/model/media.js";
+import { discoveryCenter } from "../../lib/location.js";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
@@ -55,6 +59,10 @@ export default function CoverPage() {
   const pick = feed[0] || null;
   const film = feed.slice(1, 7);
   const [booths, setBooths] = useState(null);
+  // V.2: nearby events and places when a base city is confirmed; the
+  // sample editorial lead that gives the cover a story before the first post.
+  const [near, setNear] = useState(null);
+  const lead = SAMPLE_POSTS[0];
 
   function loadCoverWire() {
     fetchWire()
@@ -117,6 +125,15 @@ export default function CoverPage() {
         .then((s) => { if (s) setSys(s); })
         .catch(() => {});
     }
+    try {
+      const c = discoveryCenter();
+      if (c) {
+        fetch(`/api/places?lat=${c.lat}&lng=${c.lng}&km=80`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => { if (d) setNear({ label: c.label, places: (d.places || []).slice(0, 4) }); })
+          .catch(() => {});
+      } else setNear({ label: null, places: [] });
+    } catch {}
     fetch("/api/business?booths=1")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (d) setBooths(Array.isArray(d.booths) ? d.booths : []); })
@@ -183,6 +200,23 @@ export default function CoverPage() {
         </div>
       </header>
 
+      {/* THE LEAD (V.2): a story first — sample editorial with its credit
+          until people post — beside tonight's piece and the ranked strip. */}
+      <section className="cvlead" aria-label="the cover story">
+        <a className="cvleadimg" href="/hotlist">
+          <img src={lead.image.src} alt={lead.image.alt} />
+        </a>
+        <div className="cvleadtext">
+          <span className="cvkick">THE COVER STORY · {lead.category.toUpperCase()} <ModelTag kind="sample">SAMPLE EDITORIAL</ModelTag></span>
+          <a className="cvleadttl" href="/hotlist">{lead.title}</a>
+          <p className="cvleaddek">{lead.text.split("\n")[0]}</p>
+          <span className="cvleadcred"><a href={lead.image.url} target="_blank" rel="noreferrer">{lead.image.credit} · {lead.image.license}</a></span>
+          <div className="cvleadacts">
+            <SaveButton kind="post" id={lead.id} title={lead.title} image={lead.image.src} href="/hotlist" meta={lead.name} tags={lead.tags} />
+            <a className="txtbtn" href="/hotlist">READ ON THE WIRE →</a>
+          </div>
+        </div>
+      </section>
       <div className="cvherorow">
         {pick ? (
           <a
@@ -239,6 +273,23 @@ export default function CoverPage() {
         )}
       </div>
 
+      {/* NEAR YOU (V.2): only when a base city is confirmed; a fixture says so */}
+      <section className="cvnear" aria-label="near you">
+        <div className="cvkick">NEAR YOU{near && near.label ? ` · ${near.label.toUpperCase()}` : ""}</div>
+        {near && near.label && near.places.length > 0 ? (
+          <ul className="cvnearlist">
+            {near.places.map((p) => (
+              <li key={p.id}>
+                <span className="cvnearkind">{p.kind.toUpperCase()}{p.dated && p.startsAt ? ` · ${p.startsAt}` : ""}{p.distanceKm != null ? ` · ${p.distanceKm} KM` : ""}</span>
+                <a href="/discover?tab=places" className="cvnearname">{p.name}</a>
+                {p.sample ? <ModelTag kind="sample">FIXTURE</ModelTag> : <span className="modeltag">SOURCED</span>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="cvnote">confirm a base city on your <a href="/board?tab=places">PASSPORT</a> and the cover shows what is on near it — events and places, nothing detected, nothing published.</p>
+        )}
+      </section>
       <div className="cvband">
         <section className="cvhot" aria-label="hotlist preview">
           <div className="cvkick">THE HOTLIST</div>

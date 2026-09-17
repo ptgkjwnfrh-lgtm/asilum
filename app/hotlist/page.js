@@ -45,6 +45,10 @@ import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import PageMast from "../components/PageMast.jsx";
 import GlassPane from "../components/GlassPane.jsx";
+import SaveButton from "../components/SaveButton.jsx";
+import ModelTag from "../components/ModelTag.jsx";
+import { thumbFor } from "../../lib/client.js";
+import { SAMPLE_POSTS, WIRE_CATEGORIES, WIRE_INTENTS, readWireRefs } from "../../lib/model/media.js";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
 // your own to /profile, anyone else's to their /u/[handle] page — and a
@@ -86,6 +90,13 @@ export default function TheWirePage() {
   const [houseLive, setHouseLive] = useState(true);
   const [stamp, setStamp] = useState("");
   const [mode, setMode] = useState("transmission"); // transmission | images | video
+  // V.2 — CREATE / CURATE / INTERPRET and the category ride as hashtags on
+  // the transmission (the refs the wire already parses), so no schema moves.
+  const [intent, setIntent] = useState("create");
+  const [category, setCategory] = useState("style");
+  const [lane, setLane] = useState("foryou");  // foryou | mine | <category id>
+  // purchasable pieces braided into the stream, from the feed engine
+  const [pieces, setPieces] = useState([]);
   const [caption, setCaption] = useState("");
   const [text, setText] = useState("");
   const [wireNote, setWireNote] = useState("");
@@ -143,6 +154,10 @@ export default function TheWirePage() {
   }
 
   function loadWire() {
+    authorizedFetch("/api/feed?user=" + encodeURIComponent(getUid() || "guest") + "&limit=12")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setPieces(((d && d.items) || []).slice(0, 8)))
+      .catch(() => {});
     fetchWire("user")
       .then((w) => {
         setPosts(w.posts);
@@ -252,9 +267,11 @@ export default function TheWirePage() {
     // outcome: a signed-out visitor saw their transmission appear on their own
     // wire, with no error, having published nothing. The honesty contract says
     // a refusal must look like a refusal.
+    const refs = `#${intent} #${category}`;
+    const body = t.includes(refs) ? t : `${t}\n\n${refs}`;
     postJSON("/api/editorial", {
       user: getUid(), handle: info.handle || info.name,
-      text: t, title: cap || undefined,
+      text: body, title: cap || undefined,
     })
       .then(async (res) => {
         const d = await res.json().catch(() => null);
@@ -275,6 +292,24 @@ export default function TheWirePage() {
 
   // THE HOTLIST's ten booths — the rail's pane (9 Sep). Same roster, same
   // links, same attribution click as before; the row is compact.
+  // THE STREAM (V.2): the floor's posts in the chosen lane, sample editorial
+  // filling in when the lane is thin, and a purchasable piece braided in
+  // after every third entry — so browsing is never only scrolling and a
+  // film edit never has to be shoppable to belong.
+  const lanePosts = (posts || []).filter((p) => {
+    if (lane === "mine") return !!p.mine;
+    if (lane === "foryou") return true;
+    return readWireRefs(p.tags || []).category === lane;
+  });
+  const samples = lane === "mine" ? [] : SAMPLE_POSTS.filter((sp) => lane === "foryou" || sp.category === lane);
+  const stream = [];
+  const laneEntries = [...lanePosts.map((post) => ({ post })), ...(lanePosts.length < 3 ? samples.map((sample) => ({ sample })) : [])];
+  let pi = 0;
+  laneEntries.forEach((e, i) => {
+    stream.push(e);
+    if ((i + 1) % 3 === 0 && pieces[pi] && lane !== "mine") stream.push({ piece: pieces[pi++] });
+  });
+
   const boothRows = BOOTHS.map((n) => {
     const holder = booths ? booths[n - 1] : null;
     return (
@@ -338,7 +373,7 @@ export default function TheWirePage() {
       </span>
 
       <header className="cthead">
-        <PageMast word="THE WIRE" sub="FOR YOU" />
+        <PageMast word="THE WIRE" sub="PURCHASABLE CULTURE · CREATE / CURATE / INTERPRET" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDITION · {stamp}
@@ -352,8 +387,8 @@ export default function TheWirePage() {
         )}
       </header>
       <p className="deck">
-        every post lives here — transmissions, and in time images and video,
-        one hub. beside it, the hotlist&apos;s ten booths.
+        a continuous stream: pieces you can buy, and the culture around them —
+        outfits, film, food, movement, commentary, runway. a post makes, selects with credit, or adds context.
       </p>
 
       <div className="wlayout">
@@ -392,6 +427,17 @@ export default function TheWirePage() {
               <button className={"fmode" + (mode === "video" ? " cur" : "")} onClick={() => setMode("video")}>
                 VIDEO ≤3:00
               </button>
+            </div>
+            <div className="wintents" role="group" aria-label="what kind of post">
+              {WIRE_INTENTS.map((i) => (
+                <button key={i.id} className={"fmode" + (intent === i.id ? " cur" : "")} title={i.means} aria-pressed={intent === i.id} onClick={() => setIntent(i.id)}>{i.label}</button>
+              ))}
+              <span className="wintentmeans">{(WIRE_INTENTS.find((i) => i.id === intent) || {}).means}</span>
+            </div>
+            <div className="wcats" role="group" aria-label="category">
+              {WIRE_CATEGORIES.map((c) => (
+                <button key={c.id} className={"wchip" + (category === c.id ? " on" : "")} aria-pressed={category === c.id} onClick={() => setCategory(c.id)}>{c.label}</button>
+              ))}
             </div>
             {anonPoster && (
               <p className="pempty">
@@ -450,6 +496,13 @@ export default function TheWirePage() {
                scroll cost (trap 151's cousin); the composer and the rail
                carry the real glass. Pictures and video take this same
                card when the pipeline lands. ---- */}
+          <nav className="wlanes" aria-label="lanes">
+            <button className={"tab" + (lane === "foryou" ? " cur" : "")} onClick={() => setLane("foryou")}>FOR YOU</button>
+            {WIRE_CATEGORIES.map((c) => (
+              <button key={c.id} className={"tab" + (lane === c.id ? " cur" : "")} onClick={() => setLane(c.id)}>{c.label}</button>
+            ))}
+            <button className={"tab" + (lane === "mine" ? " cur" : "")} onClick={() => setLane("mine")}>MINE</button>
+          </nav>
           <section className="elfloor wfloor" aria-label="the wire's posts">
             {posts === null && <div className="empty">pulling the wire…</div>}
             {posts && !postsLive && (
@@ -458,10 +511,54 @@ export default function TheWirePage() {
                 posts only.
               </div>
             )}
-            {posts && postsLive && posts.length === 0 && (
-              <div className="empty">no transmissions yet — yours opens the wire.</div>
+            {posts && postsLive && posts.length === 0 && lane !== "mine" && (
+              <div className="empty">no transmissions yet — yours opens the wire. until then, the sample editorial below shows the shape.</div>
             )}
-            {(posts || []).map((p) => {
+            {posts && lane === "mine" && !(posts || []).some((p) => p.mine) && (
+              <div className="empty">nothing of yours yet — the composer above is the door.</div>
+            )}
+            {stream.map((entry) => {
+              if (entry.piece) {
+                const it = entry.piece;
+                return (
+                  <article className="wcard wpiece" key={"piece-" + it.id} aria-label={"piece: " + (it.title || "")}>
+                    <a className="wpieceimg" href={"/?item=" + encodeURIComponent(it.id)}>
+                      <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+                    </a>
+                    <div className="wcbody">
+                      <div className="cclbl">A PIECE IN THE STREAM{it._zone ? ` · ${String(it._zone).toUpperCase()}` : ""}</div>
+                      <a className="wpiecettl" href={"/?item=" + encodeURIComponent(it.id)}>{it.brand ? it.brand + " — " : ""}{it.title}</a>
+                      <div className="wpiecemeta">{it.price ? `${it.currency || "USD"} ${it.price}` : ""}{it.source ? ` · ${it.source}` : ""}</div>
+                      <div className="wacts">
+                        <SaveButton kind="piece" id={it.id} title={[it.brand, it.title].filter(Boolean).join(" — ")} image={it.img || ""} href={"/?item=" + encodeURIComponent(it.id)} meta={it.price ? `${it.currency || "USD"} ${it.price}` : ""} tags={Object.keys(it.tags || {})} item={it} />
+                        <a className="txtbtn" href={"/?item=" + encodeURIComponent(it.id)}>OPEN →</a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              }
+              if (entry.sample) {
+                const sp = entry.sample;
+                return (
+                  <article className="wcard fpost wpost wsample" key={sp.id} aria-label={"sample editorial: " + sp.title}>
+                    <Avatar name={sp.name} />
+                    <div className="wcbody">
+                      <div className="wctop"><span className="wby"><b>{sp.name}</b> · {sp.intent.toUpperCase()} · {(WIRE_CATEGORIES.find((c) => c.id === sp.category) || {}).label}</span> <ModelTag kind="sample">SAMPLE EDITORIAL</ModelTag></div>
+                      <figure className="wfig">
+                        <img src={sp.image.src} alt={sp.image.alt} loading="lazy" />
+                        <figcaption><a href={sp.image.url} target="_blank" rel="noreferrer">{sp.image.credit} · {sp.image.license}</a></figcaption>
+                      </figure>
+                      <div className="wposthead">{sp.title}</div>
+                      <TransmissionText text={sp.text} />
+                      <div className="wacts">
+                        <SaveButton kind="post" id={sp.id} title={sp.title} image={sp.image.src} href="/hotlist" meta={sp.name} tags={sp.tags} />
+                        {sp.tags.map((t) => <a key={t} className="txtbtn" href={"/discover?q=" + encodeURIComponent(t.toLowerCase())}>{t}</a>)}
+                      </div>
+                    </div>
+                  </article>
+                );
+              }
+              const p = entry.post;
               const own = p.serverId != null && mineIds !== null && mineIds.has(String(p.serverId));
               const inEdit = own && editing === p.serverId;
               return (

@@ -26,6 +26,8 @@ import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./c
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
 import PageMast from "./components/PageMast.jsx";
+import DiscoverTabs from "./components/DiscoverTabs.jsx";
+import SaveButton from "./components/SaveButton.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -565,7 +567,11 @@ export default function Home() {
     const onboarded = (() => {
       try { return !!window.localStorage.getItem("asilum-onboarded"); } catch { return true; }
     })();
-    if (!onboarded && !boardParamRef.current && !sharedItem && !q) setConnectOpen(true);
+    // V.2 (owner brief, 17 Sep): no sheet before the first reward. The
+    // connect sheet is reachable from the Passport's imports line instead;
+    // the device is marked onboarded so nothing else waits on it.
+    if (!onboarded) { try { window.localStorage.setItem("asilum-onboarded", "1"); } catch {} }
+    void sharedItem;
 
     const boot = async () => {
       if (q) {
@@ -851,7 +857,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
-        <PageMast word="THE FEED" sub="YOUR CURATED EDIT" />
+        <PageMast word="DISCOVER" sub="PIECES · YOUR CURATED EDIT" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}
@@ -866,16 +872,10 @@ export default function Home() {
           laid-out row — dropped in there it fought the headline for the same
           space. A per-card DEMO flag tells you about one record; only a
           page-level statement tells you the whole shelf is sample data. */}
-      <p className="demobanner" role="note">
-        <b>DEMO CATALOG.</b> every piece here is synthetic sample data with
-        placeholder imagery — not real inventory, not for sale, and no prices,
-        sizes or availability shown are real. taste learning is genuine; the
-        clothes are not.
-      </p>
-      <p className="deck">
-        {guideOn
-          ? "The Asterisk system routed this edit through your Passport — no reruns."
-          : "The Asterisk system is paused — this is a general edit. Your Passport is still waiting when you return."}
+      <DiscoverTabs current="pieces" />
+      <p className="demoline" role="note">
+        <b>DEMO CATALOG</b> — synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not.
+        {" "}{guideOn ? "The Asterisk system routed this edit through your Passport." : "The Asterisk system is paused — a general edit."}
       </p>
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
@@ -1240,9 +1240,7 @@ export default function Home() {
                 <button className={baggedIds.has(modal.id) ? "on" : ""} onClick={() => addToBag(modal)}>
                   {baggedIds.has(modal.id) ? "In bag ✓" : "Add to bag"}
                 </button>
-                <button className={savedIds.has(modal.id) ? "on" : ""} onClick={() => saveToBoard(modal)}>
-                  {savedIds.has(modal.id) ? "Saved ✓" : "Save"}
-                </button>
+                <SaveButton kind="piece" id={modal.id} title={[modal.brand, modal.title].filter(Boolean).join(" — ")} image={modal.img || ""} href={"/?item=" + encodeURIComponent(modal.id)} meta={modal.price ? `${modal.currency || "USD"} ${modal.price}` : ""} tags={Object.keys(modal.tags || {})} item={modal} labels={["Save", "Saved ✓"]} />
                 <button onClick={() => react(modal, "skip")}>Skip</button>
               </div>
               <div className="actions2">
