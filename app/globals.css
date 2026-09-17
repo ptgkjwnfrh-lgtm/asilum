@@ -3457,3 +3457,84 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
    dividers with the boxes — the words are spaced by their own padding */
 [data-theme] :is(.unitpick, .tabs) { border-color: transparent; }
 [data-theme] :is(.unitpick button, .cardacts button, .actions button, .tab) { border-right-color: transparent; }
+
+/* =====================================================================
+   LIVE LAUNCH V.2 (owner brief, 17 Sep 2026) — the simplification pass.
+   Four destinations, readable controls (14–16px), a compact masthead so
+   useful media sits above the fold, the thumb bar on phones, the account
+   circle, ONE save. This block stays LAST: it overrides the compression
+   rules and the words block by cascade order, on purpose.
+   ===================================================================== */
+:root {
+  --ed-fs-nav: 13.5px; --ed-fs-tbtn: 13.5px; --ed-fs-navmeta: 9px;
+  --ed-fs-deck: 14px; --ed-fs-btn: 14px; --ed-fs-chip: 13px;
+  --ed-fs-headline: clamp(24px, 2.6vw, 34px); --ed-fs-cardttl: 15px; --ed-fs-cardprice: 15px;
+  --ed-fs-covermast: clamp(34px, 4.6vw, 64px);
+  --tabbar-h: 62px;
+}
+body { font-size: 14px; }
+/* the masthead, compact: the word and its faint second line on ONE row, so
+   the first screen belongs to the media (the brief: "do not let the logo
+   occupy the whole first experience") */
+.headline { display: inline-block; margin: 0 0 4px; vertical-align: baseline; line-height: 1; }
+.headsub { display: inline-block; font-size: 10.5px; letter-spacing: 0.24em; color: var(--grey); margin: 0 0 4px 14px; vertical-align: baseline; line-height: 1; }
+@media (max-width: 760px) { .headsub { font-size: 9px; margin-left: 10px; } }
+.cthead { margin-bottom: 4px; }
+.deck { margin: 0 0 10px; }
+/* the cover's masthead: one line — *FRONT COVER 2026 — half its old height */
+.cvmastblock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.28em; }
+.cvmast { margin-bottom: 2px; }
+.cvherorow { margin: 8px 0 28px; }
+/* the header words at a readable size, the way the brief measured them */
+.tophead .snav { padding: 3px 22px; }
+.tophead .tbtn { font-size: var(--ed-fs-tbtn, 13.5px); -webkit-text-stroke: 0.3px currentColor; }
+.tophead .tbtn.tbav .tbavatar { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); font-family: var(--mich); font-size: 12px; -webkit-text-stroke: 0; }
+.tophead .tbtn.tbav.on .tbavatar { border-color: var(--red); color: var(--red); box-shadow: 0 0 10px color-mix(in srgb, var(--red) 40%, transparent); }
+/* the account circle's drawers */
+.acctpanel { top: calc(var(--head-h) + 8px); right: 10px; width: 300px; padding: 10px 0 6px; }
+.acctpanel .phead { padding: 6px 16px 10px; font-size: 10px; color: var(--grey); letter-spacing: 0.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acctrow { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 10px 16px; background: none; border: 0; border-top: 1px solid var(--line); cursor: pointer; color: var(--ink); }
+.acctrow b { font-family: var(--mich); font-weight: 400; font-size: 13px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--word-smear); }
+.acctrow span { font-size: 11px; letter-spacing: 0.14em; color: var(--grey); }
+.acctrow:hover b { color: var(--ink); }
+.acctrow.cur b { color: var(--red); text-shadow: var(--word-smear-r); }
+[data-theme="light"] .acctrow b { text-shadow: none; }
+/* the thumb bar */
+.tabbar { display: none; }
+@media (max-width: 760px) {
+  .topnav { display: none; }
+  :root { --nav-h: 0px; }
+  .tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 66; height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg3); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-top: 1px solid var(--line); }
+  .tabbar .tabl { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 44px;
+    font-family: var(--mich); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--word-smear); text-decoration: none; }
+  .tabbar .tbi { font-family: var(--helv); font-size: 17px; line-height: 1; }
+  .tabbar .tabl.cur { color: var(--red); text-shadow: var(--word-smear-r); }
+  [data-theme="light"] .tabbar .tabl { text-shadow: none; }
+  .main { padding-bottom: calc(var(--tabbar-h) + 40px); }
+  .os-frame { bottom: var(--tabbar-h); }
+}
+/* ONE SAVE — the word, and the first-save moment */
+.savew { background: none; border: 0; cursor: pointer; font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--word-smear); padding: 4px 6px; }
+.savew:hover:not(:disabled) { color: var(--ink); }
+.savew.on, .savew.on:hover { color: var(--red); text-shadow: var(--word-smear-r); }
+.savew:disabled { opacity: 0.7; }
+[data-theme="light"] .savew { text-shadow: none; }
+.saveprompt { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--status-h) + 14px); z-index: 80; max-width: min(92vw, 640px);
+  background: var(--bg3); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; font-size: 13px; letter-spacing: 0.04em; color: var(--ink);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; box-shadow: 0 14px 40px rgba(0,0,0,0.35); backdrop-filter: blur(12px); }
+.saveprompt .savepromptacts { display: flex; gap: 14px; margin-left: auto; }
+.saveprompt .txtbtn { font-family: var(--mich); font-size: 11px; letter-spacing: 0.16em; }
+@media (max-width: 760px) {
+  .saveprompt { bottom: calc(var(--tabbar-h) + 12px); }
+  :root { --ed-fs-covermast: clamp(22px, 7vw, 30px); }
+  .tophead .tbtn { font-size: 9.5px; padding: 8px 5px; letter-spacing: 0.08em; }
+  .tophead .tbtn.tbsignin { display: none; }
+  .tophead .tbtn.tbav .tbavatar { width: 26px; height: 26px; font-size: 11px; }
+  .tabbar .tabl { font-size: 8.5px; letter-spacing: 0.06em; white-space: nowrap; }
+}
+/* MODEL labels: the honest tag on anything simulated or device-only */
+.modeltag { display: inline-block; font-family: var(--helv); font-size: 9px; letter-spacing: 0.22em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 1px 7px; vertical-align: middle; margin-left: 6px; }
+.modeltag.warn { color: var(--red); border-color: var(--red); }

@@ -206,10 +206,10 @@ test("a passport's navigation is untouched by the split", async () => {
   assert.deepEqual(navFor("nonsense").map((n) => n.label), labels);
 });
 
-test("the swap keeps SEVEN slots in the same order — it is a swap, not a subtraction", async () => {
+test("the swap keeps FOUR slots in the same order — it is a swap, not a subtraction", async () => {
   const { navFor } = await import("../lib/nav.js");
   const passport = navFor("passport"), business = navFor("business");
-  assert.equal(passport.length, 7);
+  assert.equal(passport.length, 4, "Live Launch V.2: four destinations");
   assert.equal(business.length, passport.length,
     "a business must not simply lose destinations");
   // The shared slots must sit in identical positions, so the OS is the same
