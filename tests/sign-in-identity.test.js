@@ -27,6 +27,7 @@ import { readFileSync } from "node:fs";
 
 const SHELL = readFileSync("app/shell.js", "utf8");
 const MAILDESK = readFileSync("app/components/MailDesk.jsx", "utf8");
+const DESK_POLLING = readFileSync("lib/dm-desk.js", "utf8");
 
 /** The sign-in effect, from the adoption attempt to the end of its promise. */
 function adoptionBlock() {
@@ -73,6 +74,8 @@ test("sign-in records the identity before anything can depend on it", () => {
   // setUid fires the `asilum:identity` event that MailDesk listens for, so the
   // ordering is what lets the desk appear without a reload.
   assert.match(SHELL, /setUid\(account\)/);
-  assert.match(MAILDESK, /addEventListener\("asilum:identity"/,
+  assert.match(MAILDESK, /useEffect\(\(\) => startSummaryPolling\(poll,/,
+    "MailDesk must use the summary polling lifecycle");
+  assert.match(DESK_POLLING, /addEventListener\("asilum:identity"/,
     "MailDesk must react to the identity changing");
 });

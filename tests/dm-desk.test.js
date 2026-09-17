@@ -10,8 +10,87 @@ import assert from "node:assert/strict";
 
 import {
   composerKey, mergeFolderItems, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity,
+  shouldPollActivity, startSummaryPolling,
 } from "../lib/dm-desk.js";
+
+function pollingBrowser(visibility = "visible") {
+  const page = new EventTarget();
+  const host = new EventTarget();
+  const timers = new Map();
+  let nextTimer = 0;
+  page.visibilityState = visibility;
+  host.setInterval = (callback, intervalMs) => {
+    const id = ++nextTimer;
+    timers.set(id, { callback, intervalMs });
+    return id;
+  };
+  host.clearInterval = (id) => timers.delete(id);
+  return {
+    page, host, timers,
+    tick: () => [...timers.values()].forEach(({ callback }) => callback()),
+    visibility: (state) => {
+      page.visibilityState = state;
+      page.dispatchEvent(new Event("visibilitychange"));
+    },
+    identity: () => host.dispatchEvent(new Event("asilum:identity")),
+  };
+}
+
+test("inbox summaries wait until a background tab becomes visible", () => {
+  const browser = pollingBrowser("hidden");
+  let requests = 0;
+  const stop = startSummaryPolling(() => requests++, browser);
+  assert.equal(requests, 0);
+  assert.equal(browser.timers.size, 0);
+  browser.tick();
+  browser.identity();
+  assert.equal(requests, 0);
+  browser.visibility("visible");
+  assert.equal(requests, 1, "returning refreshes immediately");
+  assert.equal(browser.timers.size, 1);
+  stop();
+});
+
+test("inbox polling pauses while hidden and keeps the visible cadence", () => {
+  const browser = pollingBrowser();
+  let requests = 0;
+  const stop = startSummaryPolling(() => requests++, { ...browser, intervalMs: 45000 });
+  assert.equal(requests, 1);
+  assert.equal([...browser.timers.values()][0].intervalMs, 45000);
+  browser.tick();
+  assert.equal(requests, 2);
+  browser.visibility("hidden");
+  assert.equal(browser.timers.size, 0);
+  for (let i = 0; i < 80; i++) browser.tick();
+  browser.identity();
+  assert.equal(requests, 2, "an hour hidden creates no summary requests");
+  browser.visibility("visible");
+  assert.equal(requests, 3);
+  browser.identity();
+  assert.equal(requests, 4, "visible account changes still refresh");
+  assert.equal(browser.timers.size, 1);
+  stop();
+});
+
+test("inbox polling does not accumulate timers or survive cleanup", () => {
+  const browser = pollingBrowser();
+  let requests = 0;
+  const stop = startSummaryPolling(() => requests++, browser);
+  for (let i = 0; i < 3; i++) {
+    browser.visibility("hidden");
+    browser.visibility("visible");
+    assert.equal(browser.timers.size, 1);
+  }
+  assert.equal(requests, 4);
+  stop();
+  stop();
+  browser.tick();
+  browser.identity();
+  browser.visibility("hidden");
+  browser.visibility("visible");
+  assert.equal(requests, 4);
+  assert.equal(browser.timers.size, 0);
+});
 
 test("a draft cannot reach a composer it was not written for", () => {
   // The register's scenario: type "the invoice is wrong, can you refund the
@@ -152,6 +231,11 @@ test("the panel routes every thread change through one door", async () => {
   const { fileURLToPath } = await import("node:url");
   const panel = readFileSync(
     fileURLToPath(new URL("../app/components/MailDesk.jsx", import.meta.url)), "utf8");
+
+  assert.match(panel, /useEffect\(\(\) => startSummaryPolling\(poll,/,
+    "the mounted desk uses the visibility-aware scheduler exercised above");
+  assert.doesNotMatch(panel, /setInterval\(poll,/,
+    "no independent summary interval can bypass the scheduler");
 
   const raw = [...panel.matchAll(/setThreadId\(/g)].length;
   assert.equal(raw, 1,
