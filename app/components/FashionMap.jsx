@@ -65,7 +65,7 @@ export default function FashionMap({ mode = "local", center = null, km = 30, pla
              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect && onSelect(p.id); } }}>
             <circle cx={at.x} cy={at.y} r={sel ? 14 : 11} className="fmapdot" />
             <text x={at.x} y={at.y + 4} textAnchor="middle" className="fmapglyph">{GLYPH[p.kind] || "•"}</text>
-            {(sel || pins.length <= 12) && <text x={at.x + 16} y={at.y + 4} className="fmapname">{p.name}</text>}
+            {(sel || pins.length <= 5) && <text x={at.x + 16} y={at.y + 4} className="fmapname">{p.name}</text>}
           </g>
         );
       })}

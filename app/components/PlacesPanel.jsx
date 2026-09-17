@@ -130,7 +130,7 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
 
       {view === "map" && (
         <div className="plmapwrap">
-          <FashionMap mode={center ? mode : "world"} center={center} km={80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />
+          <FashionMap mode={center ? mode : "world"} center={center} km={mode === "local" ? 40 : 80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />
           {!center && mode === "local" && <p className="deck">confirm a base city above to centre the local map.</p>}
         </div>
       )}
