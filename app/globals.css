@@ -3868,3 +3868,14 @@ body { font-size: 14px; }
 .hotstriprows .boothsite { font-family: var(--mich); font-size: 11px; letter-spacing: 0.12em; }
 .wlayout.hotlistonly { grid-template-columns: minmax(0, 760px); }
 .wfocus { margin: 0 0 16px; max-width: 520px; }
+/* the stream's head on a phone: media in the first screen (owner: "a
+   constant stream of media") — one scrolling row per control, a two-line
+   demo note, the piece filters folded away (SEARCH keeps them) */
+@media (max-width: 760px) {
+  .ctr .seg { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; margin: 4px 0 6px; }
+  .ctr .seg::-webkit-scrollbar { display: none; }
+  .ctr .seg > .fmode, .ctr .seg > .tab { white-space: nowrap; padding: 6px 11px; font-size: 10px; }
+  .ctr .demoline { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 6px; }
+  .ctr .filters { display: none; }
+  .ctr .streamcompose { margin: 2px 0 10px; }
+}
