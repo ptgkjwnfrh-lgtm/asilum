@@ -18,17 +18,32 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { HOUSES } from "../lib/asterisk/houses.js";
+import { CATALOG } from "../lib/ingest/catalog.js";
 import { PLACES, PLACE_PROVENANCE, placeFor, placeCoverage, aggregatePlaces } from "../lib/asterisk/places.js";
 import { callRoute, newDevice, loadRoute } from "./helpers/route.js";
 import { createOrderWithEvent, applyOrderEvent } from "../lib/db/orders.js";
 
 const { GET: ordersGET } = await loadRoute("app/api/orders/route.js");
 
-test("every city the origin record names is placed, and the provenance is stamped", () => {
-  const cov = placeCoverage();
-  assert.deepEqual(cov.missing, [], `cities named in HOUSES with no coordinates: ${cov.missing.join(", ")}`);
+// AMENDED 11 Sep 2026. The original contract was "every city in HOUSES has a
+// row", which the origin record's growth from 63 houses to the archive canon
+// made unkeepable without inventing coordinates for towns this file cannot
+// place — a fabricated marker being strictly worse than a reported hole. The
+// contract is now the one the globe actually needs, and it is stronger where
+// it matters: a purchase can only come from stocked inventory, so every
+// STOCKED house's city must be placed, exactly, with no exceptions.
+test("every city a STOCKED house names is placed, and the rest are reported", () => {
+  const stocked = [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))];
+  const cov = placeCoverage(stocked);
+  assert.deepEqual(cov.missing, [], `stocked houses whose city has no coordinates: ${cov.missing.join(", ")}`);
   assert.equal(cov.placed, cov.total);
-  assert.ok(cov.total >= 20, "the record names at least twenty cities");
+  assert.ok(cov.total >= 20, "the stocked houses name at least twenty cities");
+
+  // The wider record's holes are REPORTED, never silent and never guessed.
+  const all = placeCoverage();
+  assert.ok(all.total >= cov.total);
+  assert.ok(Array.isArray(all.missing));
+  for (const city of all.missing) assert.equal(PLACES[city], undefined, city);
   for (const k of ["compiledOn", "method", "precision", "standard"]) assert.ok(PLACE_PROVENANCE[k], k);
 });
 
@@ -44,7 +59,11 @@ test("every coordinate is a place on the earth and the country matches the house
 });
 
 test("placeFor never guesses: an unknown house, or a house without a city, is null", () => {
-  assert.equal(placeFor("Namacheko"), null, "absent from the origin record on purpose");
+  // Namacheko was this assertion's example of an absent house until the
+  // 11 Sep verification pass read its Antwerp base; the RULE is what matters,
+  // so it is pinned on a house nobody has recorded rather than on whichever
+  // house happens to be missing today.
+  assert.equal(placeFor("Atelier Nobody"), null, "a house the origin record does not know");
   assert.equal(placeFor("Carhartt WIP"), null, "known by country only — no city, no marker");
   assert.equal(placeFor(""), null);
   const tokyo = placeFor("comme des garçons");

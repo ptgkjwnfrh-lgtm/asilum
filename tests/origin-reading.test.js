@@ -43,10 +43,15 @@ test("coverage is reported, and the hole is named rather than filled", () => {
   const brands = [...new Set(CATALOG.map((it) => it.brand))];
   const cov = originCoverage(brands);
   assert.ok(cov.known / cov.total >= 0.95, `coverage ${cov.known}/${cov.total}`);
-  // Namacheko is deliberately absent — see the comment at the end of HOUSES.
-  assert.equal(houseOrigin("Namacheko"), null);
-  assert.equal(houseIsFrom("Namacheko", "Belgium"), false);
+  // Namacheko was the named hole from 21 Aug until the 11 Sep verification
+  // pass read its Antwerp base — see the comment at the end of HOUSES. The
+  // hole rule itself is pinned on a house nobody has recorded.
+  assert.equal(houseOrigin("Namacheko").country, "Belgium");
+  assert.equal(houseIsFrom("Namacheko", "Belgium"), true);
   assert.equal(houseIsFrom("Namacheko", "Sweden"), false);
+  assert.equal(houseOrigin("Atelier Nobody"), null);
+  assert.equal(houseIsFrom("Atelier Nobody", "Belgium"), false);
+  assert.deepEqual(originCoverage(["Sacai", "Atelier Nobody"]).missing, ["atelier nobody"]);
 });
 
 test("a house that moved answers to both countries", () => {
@@ -92,12 +97,12 @@ test("london stays a place, not a passport", () => {
 test("an unknown house cannot pass, and a null constraint is a no-op", () => {
   const items = [
     { id: "a", brand: "Sacai" }, { id: "b", brand: "Prada" },
-    { id: "c", brand: "Namacheko" }, { id: "d", brand: null },
+    { id: "c", brand: "Atelier Nobody" }, { id: "d", brand: null },
   ];
   const jp = parse("japanese knit").origin;
   assert.deepEqual(applyOriginConstraint(items, jp).map((it) => it.id), ["a"]);
   assert.equal(applyOriginConstraint(items, null).length, 4);
-  assert.equal(itemMatchesOrigin({ brand: "Namacheko" }, jp), false);
+  assert.equal(itemMatchesOrigin({ brand: "Atelier Nobody" }, jp), false);
   assert.equal(itemMatchesOrigin({ brand: "Sacai" }, null), true);
 });
 
