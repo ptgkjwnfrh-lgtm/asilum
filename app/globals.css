@@ -3828,3 +3828,43 @@ body { font-size: 14px; }
 .pllist { gap: 8px; }
 .plcardhead { padding: 12px 16px; }
 @media (max-width: 760px) { .ppdocacts { justify-content: stretch; } .ppbtn { flex: 1; text-align: center; } .ppworld.card { grid-template-columns: 1fr; } }
+
+/* =====================================================================
+   V.2 ROUND THREE — THE STREAM: the wire and the feed as one masonry at
+   "/", the composer at its head, the hotlist strip beside it.
+   ===================================================================== */
+.streamlayout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; align-items: start; }
+@media (min-width: 1200px) { .streamlayout.withrail { grid-template-columns: minmax(0, 1fr) 300px; } }
+.streamrail { position: sticky; top: calc(var(--head-h) + 18px); display: grid; gap: 14px; }
+@media (max-width: 1199px) { .streamrail { display: none; } }
+.streamcompose { margin: 4px 0 14px; padding: 12px 16px; }
+.streamcompose.closed { padding: 8px 14px; }
+.streamopen { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: 0; cursor: pointer; color: var(--grey); font: inherit; text-align: left; padding: 4px 0; }
+.streamopen span { flex: 1; font-size: 13px; letter-spacing: 0.02em; }
+.streamopen b { font-family: var(--mich); font-weight: 400; font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); }
+.streamcompose .wcright textarea { font-size: 14px; }
+.streamlanes { margin: 2px 0 8px; }
+/* a transmission in the masonry */
+.card.wpostcard { display: flex; flex-direction: column; }
+.card.wpostcard .wpcfig { margin: 0; }
+.card.wpostcard .wpcfig img { width: 100%; display: block; aspect-ratio: 4 / 5; object-fit: cover; }
+.card.wpostcard .wpcfig figcaption { font-size: 9px; letter-spacing: 0.1em; color: var(--grey); padding: 4px 12px 0; }
+.card.wpostcard .wpcfig figcaption a { color: inherit; text-decoration: none; }
+.wpcby { display: flex; align-items: center; gap: 10px; margin: 2px 0 8px; }
+.wpcby .avatar, .wpcby .av { width: 28px; height: 28px; }
+.wpcwho { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.wpcwho b { font-family: var(--mich); font-weight: 400; font-size: 11px; letter-spacing: 0.14em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wpcwho span { font-size: 9.5px; letter-spacing: 0.16em; color: var(--grey); }
+.wpcttl { display: block; color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.2; margin: 2px 0 6px; }
+.wpctext { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; margin: 0 0 8px; }
+.card.wpostcard .cardacts { flex-wrap: wrap; }
+/* the hotlist strip */
+.hotstrip { padding: 14px 16px; }
+.hotstripmast { font-size: 20px; margin: 0 0 4px; }
+.hotstriprows { list-style: none; margin: 8px 0; padding: 0; }
+.hotstriprows li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline; padding: 6px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); font-size: 12px; }
+.hotstriprows .elnum { font-family: var(--mich); font-size: 10px; color: var(--grey); }
+.hotstriprows .boothopen { font-family: var(--mich); font-size: 10px; letter-spacing: 0.18em; color: var(--grey); }
+.hotstriprows .boothsite { font-family: var(--mich); font-size: 11px; letter-spacing: 0.12em; }
+.wlayout.hotlistonly { grid-template-columns: minmax(0, 760px); }
+.wfocus { margin: 0 0 16px; max-width: 520px; }

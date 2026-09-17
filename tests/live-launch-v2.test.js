@@ -22,7 +22,8 @@ test("four destinations, and the account drawers are not destinations", async ()
   // the routes that folded in still light their parent
   assert.equal(currentDestination("passport", "/stats").label, "PASSPORT");
   assert.equal(currentDestination("passport", "/upload").label, "PASSPORT");
-  assert.equal(currentDestination("passport", "/").label, "DISCOVER");
+  assert.equal(currentDestination("passport", "/").label, "THE WIRE", "the stream is home");
+  assert.equal(currentDestination("passport", "/hotlist").label, "THE WIRE");
   assert.equal(currentDestination("passport", "/discover?tab=places".split("?")[0]).label, "DISCOVER");
   assert.equal(currentDestination("passport", "/stylist").label, "DISCOVER");
   assert.equal(currentDestination("passport", "/checkout"), null);

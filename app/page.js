@@ -26,8 +26,12 @@ import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./c
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
 import PageMast from "./components/PageMast.jsx";
-import DiscoverTabs from "./components/DiscoverTabs.jsx";
 import SaveButton from "./components/SaveButton.jsx";
+import WireComposer from "./components/WireComposer.jsx";
+import WireCard from "./components/WireCard.jsx";
+import HotlistStrip from "./components/HotlistStrip.jsx";
+import { SAMPLE_POSTS, WIRE_CATEGORIES, readWireRefs } from "../lib/model/media.js";
+import { fetchWire, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -220,6 +224,54 @@ export default function Home() {
     const [w, h] = String(aspectFor(it.id)).split("/").map((x) => Number(x));
     return (Number.isFinite(w) && Number.isFinite(h) && w > 0 ? h / w : 1.2) + 0.45;
   }, []);
+  // ---- THE STREAM (V.2 round three): the wire's transmissions braided into
+  // the feed's masonry — one card after every third piece — so culture and
+  // commerce are one flow. Sample editorial fills a lane that is thin; a
+  // category lane filters the transmissions and leaves the pieces alone.
+  const [posts, setPosts] = useState(null);
+  const [engagement, setEngagement] = useState({});
+  const [lane, setLane] = useState("all"); // all | mine | <category id>
+  const [pinned, setPinned] = useState(null); // ?post=<id>
+  const loadPosts = useCallback(() => {
+    fetchWire("user")
+      .then((w) => {
+        setPosts(w.posts || []);
+        const ids = (w.posts || []).map((x) => x.serverId).filter((v) => v != null);
+        if (ids.length) fetchEngagement(ids).then((e) => setEngagement((prev) => ({ ...prev, ...e }))).catch(() => {});
+      })
+      .catch(() => setPosts([]));
+  }, []);
+  useEffect(() => { loadPosts(); }, [loadPosts]);
+  function engage(p, kind) {
+    const now = engagement[String(p.serverId)];
+    const on = !(kind === "like" ? now?.youLike : now?.youSave);
+    toggleEngagement(p.serverId, kind, on).then((r) => { if (r.ok) setEngagement((prev) => ({ ...prev, [String(p.serverId)]: r.counts })); }).catch(() => {});
+  }
+  const lanePosts = (() => {
+    const real = (posts || []).filter((x) => {
+      if (lane === "mine") return !!x.mine;
+      if (lane === "all") return true;
+      return readWireRefs(x.tags || []).category === lane;
+    });
+    if (lane === "mine" || real.length >= 3) return real;
+    return [...real, ...SAMPLE_POSTS.filter((sp) => lane === "all" || sp.category === lane)];
+  })();
+  const mixedCache = useRef(new WeakMap());
+  function mixed(list) {
+    if (!list) return list;
+    const hit = mixedCache.current.get(list);
+    if (hit && hit.posts === posts && hit.lane === lane) return hit.out;
+    const out = [];
+    let pi = 0;
+    list.forEach((it, i) => {
+      out.push(it);
+      if ((i + 1) % 3 === 0 && lanePosts[pi]) { const x = lanePosts[pi++]; out.push({ id: "post:" + (x.serverId ?? x.id), __post: x }); }
+    });
+    if (list.length < 3) for (const x of lanePosts.slice(pi, pi + 2)) out.push({ id: "post:" + (x.serverId ?? x.id), __post: x });
+    mixedCache.current.set(list, { posts, lane, out });
+    return out;
+  }
+  const weightOf = useCallback((it) => (it.__post ? ((it.__post.image || it.__post.imageUrl) ? 1.95 : 0.85) : cardWeight(it)), [cardWeight]);
   // Which tab is on screen, for handlers that resolve after a switch.
   const tabRef = useRef("curated");
   useEffect(() => { tabRef.current = tab; }, [tab]);
@@ -564,6 +616,8 @@ export default function Home() {
     boardParamRef.current = sp.get("board") || "";
     const q = sp.get("q") || "";
     const sharedItem = sp.get("item");
+    const pinnedId = sp.get("post");
+    if (pinnedId) fetchPost(pinnedId).then((pp) => { if (pp) setPinned(pp); }).catch(() => {});
     const onboarded = (() => {
       try { return !!window.localStorage.getItem("asilum-onboarded"); } catch { return true; }
     })();
@@ -857,7 +911,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
-        <PageMast word="DISCOVER" sub="PIECES · YOUR CURATED EDIT" />
+        <PageMast word="THE WIRE" sub="ONE STREAM · PIECES AND CULTURE" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}
@@ -872,9 +926,8 @@ export default function Home() {
           laid-out row — dropped in there it fought the headline for the same
           space. A per-card DEMO flag tells you about one record; only a
           page-level statement tells you the whole shelf is sample data. */}
-      <DiscoverTabs current="pieces" />
       <p className="demoline" role="note">
-        <b>DEMO CATALOG</b> — synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not.
+        <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
         {" "}{guideOn ? "The Asterisk system routed this edit through your Passport." : "The Asterisk system is paused — a general edit."}
       </p>
 
@@ -889,8 +942,8 @@ export default function Home() {
           <span className="cvside cvsider ctsider" aria-hidden="true">
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
-          <div className="fmodes">
-            {[["curated", "CURATED"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
+          <div className="fmodes seg">
+            {[["curated", "FOR YOU"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
                 {label}
               </button>
@@ -902,6 +955,20 @@ export default function Home() {
               <button className="txtbtn" onClick={clearCraving}>CLEAR CRAVING</button>
             )}
           </div>
+          <div className="fmodes seg streamlanes" role="group" aria-label="media lanes">
+            <button className={"fmode" + (lane === "all" ? " cur" : "")} onClick={() => setLane("all")}>EVERY LANE</button>
+            {WIRE_CATEGORIES.map((c) => (
+              <button key={c.id} className={"fmode" + (lane === c.id ? " cur" : "")} onClick={() => setLane(c.id)}>{c.label}</button>
+            ))}
+            <button className={"fmode" + (lane === "mine" ? " cur" : "")} onClick={() => setLane("mine")}>MINE</button>
+          </div>
+          <WireComposer compact onPublished={loadPosts} />
+          {pinned && (
+            <section className="wfocus" aria-label="pinned transmission">
+              <div className="cclbl">PINNED TRANSMISSION · <a className="txtbtn" href="/">BACK TO THE STREAM</a></div>
+              <WireCard post={pinned} engagement={engagement} onEngage={engage} />
+            </section>
+          )}
 
           {cravingOpen && (
             <section className="cravingline" aria-label="current craving">
@@ -974,13 +1041,14 @@ export default function Home() {
             <Notice variant="banner">trying something different — you seemed in a rut</Notice>
           )}
 
+          <div className="streamlayout withrail"><div className="streamfeed">
           {tab === "curated" && (
             <>
               {loading && <div className="empty">thinking…</div>}
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
-              <Columns count={gridCols} items={items} memo={curatedColsRef} weight={cardWeight} render={(it) => (
+              <Columns count={gridCols} items={mixed(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                   <FragmentCard
                     key={it.id}
                     it={it}
@@ -1007,7 +1075,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <Columns count={gridCols} items={tabItems} memo={followingColsRef} weight={cardWeight} render={(it) => (
+                <Columns count={gridCols} items={mixed(tabItems)} memo={followingColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1031,7 +1099,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <Columns count={gridCols} items={tabItems} memo={newColsRef} weight={cardWeight} render={(it) => (
+                <Columns count={gridCols} items={mixed(tabItems)} memo={newColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1046,6 +1114,7 @@ export default function Home() {
               )}
             </>
           )}
+          </div><aside className="streamrail"><HotlistStrip /></aside></div>
         </>
 
       {/* ---- First visit: buyer-history scan (always escapable) ---- */}

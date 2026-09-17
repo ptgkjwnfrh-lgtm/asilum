@@ -29,7 +29,7 @@ import { discoveryCenter } from "../../lib/location.js";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
-  { href: "/hotlist", label: "THE WIRE", meta: "posts + the hotlist" },
+  { href: "/", label: "THE WIRE", meta: "posts + the hotlist" },
   { href: "/board", label: "PASSPORT", meta: "train the brain" },
   { href: "/discover", label: "DISCOVER", meta: "the open index" },
   { href: "/profile", label: "PROFILE", meta: "your public record" },
@@ -203,17 +203,17 @@ export default function CoverPage() {
       {/* THE LEAD (V.2): a story first — sample editorial with its credit
           until people post — beside tonight's piece and the ranked strip. */}
       <section className="cvlead" aria-label="the cover story">
-        <a className="cvleadimg" href="/hotlist">
+        <a className="cvleadimg" href="/">
           <img src={lead.image.src} alt={lead.image.alt} />
         </a>
         <div className="cvleadtext">
           <span className="cvkick">THE COVER STORY · {lead.category.toUpperCase()} <ModelTag kind="sample">SAMPLE EDITORIAL</ModelTag></span>
-          <a className="cvleadttl" href="/hotlist">{lead.title}</a>
+          <a className="cvleadttl" href="/">{lead.title}</a>
           <p className="cvleaddek">{lead.text.split("\n")[0]}</p>
           <span className="cvleadcred"><a href={lead.image.url} target="_blank" rel="noreferrer">{lead.image.credit} · {lead.image.license}</a></span>
           <div className="cvleadacts">
-            <SaveButton kind="post" id={lead.id} title={lead.title} image={lead.image.src} href="/hotlist" meta={lead.name} tags={lead.tags} />
-            <a className="txtbtn" href="/hotlist">READ ON THE WIRE →</a>
+            <SaveButton kind="post" id={lead.id} title={lead.title} image={lead.image.src} href="/" meta={lead.name} tags={lead.tags} />
+            <a className="txtbtn" href="/">READ ON THE WIRE →</a>
           </div>
         </div>
       </section>
@@ -311,7 +311,7 @@ export default function CoverPage() {
               </div>
             );
           })}
-          <a className="cvlink cvmore" href="/hotlist">ALL TEN BOOTHS — THE WIRE →</a>
+          <a className="cvlink cvmore" href="/">ALL TEN BOOTHS — THE WIRE →</a>
         </section>
 
         <section className="cvlooks" aria-label="tonight's looks">
@@ -394,7 +394,7 @@ export default function CoverPage() {
                 {p.mine ? <i className="cmine">you</i> : null}
                 {" · "}
                 {p.serverId != null
-                  ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+                  ? <a className="wperma" href={"/?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
                   : timeAgo(p.at)}
               </span>
             </div>
@@ -426,7 +426,7 @@ export default function CoverPage() {
               <span className="cvstoryttl">{st.beat} ↗</span>
             </a>
           ))}
-          <a className="cvlink cvmore" href="/hotlist">THE FULL WIRE →</a>
+          <a className="cvlink cvmore" href="/">THE FULL WIRE →</a>
         </section>
       </div>
 

@@ -1,16 +1,15 @@
 // app/components/DiscoverTabs.jsx — DISCOVER's inner row (V.2).
-// One destination, five doors: the ranked grid (PIECES), the open index
+// One destination, three doors: the open index
 // (SEARCH), the map (AROUND YOU), and the
 // looks engine (STYLIST). Plain links — the URL is the state.
 
 const TABS = [
-  { id: "pieces", href: "/", label: "PIECES" },
   { id: "search", href: "/discover", label: "SEARCH" },
   { id: "places", href: "/discover?tab=places", label: "AROUND YOU" },
   { id: "stylist", href: "/stylist", label: "STYLIST" },
 ];
 
-export default function DiscoverTabs({ current = "pieces" }) {
+export default function DiscoverTabs({ current = "search" }) {
   return (
     <nav className="dtabs seg" aria-label="discover">
       {TABS.map((t) => (
