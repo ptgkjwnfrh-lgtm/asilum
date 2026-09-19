@@ -15,7 +15,8 @@
       },
       "measurementSource": "estimated-size-model",
       "evidence": "estimated",
-      "category": "tops"
+      "category": "tops",
+      "brand": null
     },
     "assessment": {
       "status": "match",
@@ -54,7 +55,8 @@
       },
       "measurementSource": "listing",
       "evidence": "measured",
-      "category": "tops"
+      "category": "tops",
+      "brand": null
     },
     "assessment": {
       "status": "match",
@@ -93,7 +95,8 @@
       },
       "measurementSource": "listing-unverified",
       "evidence": "estimated",
-      "category": "tops"
+      "category": "tops",
+      "brand": null
     },
     "assessment": {
       "status": "match",

@@ -27,6 +27,7 @@ import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
 import { poolWithFitHints } from "../../../lib/brain/fitHints.js";
+import { POLICY_VERSION } from "../../../lib/brain/policy.js";
 import { clampChunkLimit, listingOrder, CATALOG_SHARE, CURSOR_MAX_LEN } from "../../../lib/brain/chunk.js";
 import { whatArrived } from "../../../lib/waiting/index.js";
 import {
@@ -318,6 +319,7 @@ export async function GET(req) {
 
   return NextResponse.json({
     userId,
+    policyVersion: POLICY_VERSION,
     serveId,
     epsilonActive,
     epsilonAuto,

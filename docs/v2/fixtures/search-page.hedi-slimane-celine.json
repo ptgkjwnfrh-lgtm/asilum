@@ -3,8 +3,9 @@
   "status": 200,
   "body": {
     "contractVersion": 1,
-    "requestId": "7e6a6538-5c82-46bb-b459-b51f50ada7f4",
+    "requestId": "1abff46b-f07b-4a66-b1e4-367083daceb9",
     "outcome": "ok",
+    "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
     "brands": [],
     "items": [
@@ -60,6 +61,10 @@
     "aesthetics": [],
     "total": 7,
     "totalIsExact": true,
+    "offset": 0,
+    "limit": 48,
+    "nextCursor": null,
+    "snapshotId": "156455dc36e9e7357b93462c",
     "candidatesTruncated": false,
     "overview": {
       "id": "hedi-slimane",
