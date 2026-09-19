@@ -4,7 +4,7 @@
 
 Owner instruction recorded 19 Sep: **external provider connections (eBay / Shopify / Stripe / Pinterest / OAuth wiring, any live third-party API call) are Codex's.** This branch touches no provider. Where an engine needs one, it exposes the seam and the typed `unavailable` state.
 
-## Delivered on this branch (six commits)
+## Delivered on this branch
 
 | Slice | What is real now | Files | Proof |
 |---|---|---|---|
@@ -22,7 +22,7 @@ Gates on the branch head: `npm test` 1,525 total · 1,448 pass · 76 skip · 0 f
 
 1. **Vogue-sourced overview prose — OPEN.** vogue.com refused both the research crawler and the built-in browser (domain-level policy in this session). The registry's overview prose is sourced from official house/parent press pages (Estée Lauder, Kering, LVMH), Britannica and dated trade press; each entity carries `vogueSourceIds: []` and `CAREER_PROVENANCE.vogueCoverage` says so. **Owner:** allow vogue.com for a browser session (or supply article URLs); the registry then takes them as additional `sources` without a schema change.
 2. **v53 migration — APPLIED to production 19 Sep (owner's word).** Ledger: 53 user-records over 52 cutouts / 51 asterisk-stream (both applied earlier from other branches — this file was renumbered from 52 to 53 after that collision surfaced in the ledger). `user_records` exists with the asilum_app grants and policy; `user_corrections.scope` / `undone_at` exist.
-3. **Fit hints are recorded, not yet consumed by the ladder.** `too-small` / `too-large` produce a hint on the exclusions and the memory facade; the feed's ±1 ladder filter and `fitPhrase` do not read it yet. Bounded follow-up in my lane.
+3. **Fit hints reach the ladder (19 Sep, later).** `too-small` / `too-large` for a house read that house's pieces one size smaller / larger for the reader in the feed's ladder filter and served size, the stylist's fit score and sentence, and `fitAssessment` / `fitPhrase` when the profile carries `fitHints` (`GET /api/measurements` now returns them for the client fit profile). Label untouched; hint reported on the record. `lib/brain/fitHints.js`, `tests/fit-hints.test.js`.
 4. **DM two-account proof.** The operations, retry id (`clientOperationId`), cursor tie-breaker and block laws already exist and are covered by 60 Postgres integration tests that run in CI only; no local Postgres in this session. **Next:** read the CI run on this PR; if the owner wants a live two-account demonstration on the authorized database, it needs `MESSAGING_ENABLED=1` and two accounts — Codex's client, my routes.
 5. **Ticket / search failure copy.** `TicketFlow.jsx` renders `d.error` as a string; on the (rare) typed 500 it now receives an object. **Codex:** `d.error?.message || d.error`. Same for any client reading `error` on `/api/search`.
 6. Shopify / eBay / Stripe / Pinterest connections — **Codex's** per the owner; nothing on this branch pretends to be connected.

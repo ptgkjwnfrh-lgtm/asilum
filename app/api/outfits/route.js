@@ -171,8 +171,11 @@ async function generate(req, input, { persistSeen = true } = {}) {
 
   const savedMeasurements = await getUserMeasurements(userId).catch(() => null);
   const savedFit = savedMeasurements ? measurementProfileForBrain(savedMeasurements) : null;
-  const fitProfile = savedFit && (savedFit.usualSize || Object.keys(savedFit.measurements).length)
+  const baseFitProfile = savedFit && (savedFit.usualSize || Object.keys(savedFit.measurements).length)
     ? savedFit : fitProfileFromBody(input.fit);
+  // the reader's own fit hints ride with the profile (lib/brain/fitHints.js)
+  const fitProfile = baseFitProfile && exclusions?.fitHints?.length
+    ? { ...baseFitProfile, fitHints: exclusions.fitHints } : baseFitProfile;
 
   // ---- quick mode (anchored slate) ----
   if (!full) {
