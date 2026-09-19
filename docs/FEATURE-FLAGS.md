@@ -18,6 +18,8 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `INGEST_ALLOWED_HOSTS` | research/in-app fetch allowlist | deny-all | fetch refused with named reason |
 | `EBAY_CLIENT_ID/SECRET` (+ approval) | eBay adapter | unset | adapter reports disabled |
 | `EBAY_DELETION_VERIFICATION_TOKEN` (+ optional `EBAY_DELETION_ENDPOINT`) | eBay account-deletion notification endpoint | unset | honest 503 (eBay's portal verification fails until set) |
+| `ANTHROPIC_API_KEY` (+ `ASTERISK_IDENTIFY`, `_MODEL`, `_EFFORT`, `_SEARCH`, `_IMAGES`) | Asterisk's identification step — vision + search per synced listing (ADR-008) | unset | deterministic read only; `identifyStatus: off` |
+| `BRAIN_STREAM` | the shared stream map's prior bending alpha in the feed | on | `0` leaves alpha untouched |
 | `WOOCOMMERCE_STORE_APPROVED` + `WOOCOMMERCE_STORE_URL` | WooCommerce adapter | off | adapter reports disabled |
 | `DEVICE_COOKIE_SECRET` | identity issuing | required (503 if unset in prod) | honest 503 |
 | `ADMIN_TOKEN` | admin surface | disabled if unset | honest 503 |

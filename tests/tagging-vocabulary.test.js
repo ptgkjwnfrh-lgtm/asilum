@@ -154,10 +154,17 @@ test("the database fence lists exactly the vocabulary", () => {
   // v49 is the same rule one layer down: the column takes a name from the
   // register or it takes nothing. Two lists that must agree, so a test that
   // reads both — the v2 comment claimed nineteen facets and enforced none.
-  const sql = read("supabase/schema-v49-tag-facets.sql");
-  const inCheck = [...sql.matchAll(/'([a-z-]+)'/g)]
-    .map((m) => m[1])
-    .filter((v) => v !== "tag-facets");
+  // The fence is re-cut whenever a facet joins (v49 cut it; v51 added
+  // `detail` and `reference` for the stream) — read the LATEST file that
+  // carries the constraint, so the test follows the vocabulary rather than
+  // pinning the day the fence was first built.
+  const fenceFiles = readdirSync(path.join(root, "supabase"))
+    .filter((f) => /^schema-v\d+.*\.sql$/.test(f) && /product_tags_facet_ck/.test(read(`supabase/${f}`)))
+    .sort((a, b) => Number(/^schema-v(\d+)/.exec(a)[1]) - Number(/^schema-v(\d+)/.exec(b)[1]));
+  const latest = fenceFiles.at(-1);
+  const sql = read(`supabase/${latest}`);
+  const checkBlock = sql.slice(sql.indexOf("ADD CONSTRAINT product_tags_facet_ck"), sql.indexOf(");", sql.indexOf("ADD CONSTRAINT product_tags_facet_ck")));
+  const inCheck = [...checkBlock.matchAll(/'([a-z-]+)'/g)].map((m) => m[1]);
   assert.deepEqual([...new Set(inCheck)].sort(), [...FACET_NAMES].sort(),
     "the CHECK and the vocabulary have drifted");
 });

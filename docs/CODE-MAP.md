@@ -616,6 +616,18 @@ request becomes trusted arguments.
 | --- | ---: | --- |
 | `route.js` | 486 | The mail desk. One route, op-dispatched. |
 
+### `lib/asterisk/stream/` — THE STREAM (ADR-008, 10 Sep 2026)
+
+| File | Role |
+| --- | --- |
+| `index.js` | `processListing` / `processQuery`: detail → decode → identify → compose; the deterministic read is the floor |
+| `decode.js` | step three: eBay item specifics (English, Italian, German names; shoe fields) → canonical fields + readings |
+| `identify.js` | step two/four: the vision model (official SDK, `claude-opus-5`, web search ≤3) → schema-validated record; cost measured |
+| `schema.js` | the zod shape and the caps (confidence ≤ 0.95, descriptor weight ≤ 0.9, 32 descriptors) |
+| `tags.js` | step four: `item.tags` = ten UPPERCASE aesthetics + lowercase descriptors; typed `product_tags` rows |
+
+`lib/brain/reflect.js` is step five (blame / credit / the profile's reflection ring); `lib/db/production/stream.js` holds identifications, the shared outcome map and the per-person reflections (schema v51).
+
 ### `app/api/ebay/`
 *1 file, 61 lines*
 

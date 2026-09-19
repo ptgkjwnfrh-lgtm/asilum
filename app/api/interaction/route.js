@@ -9,6 +9,8 @@
 
 import { NextResponse } from "next/server";
 import { learn, serveContextFor } from "../../../lib/brain/index.js";
+import { reflectOn, applyReflection, streamOutcomeRows } from "../../../lib/brain/reflect.js";
+import { bumpStreamOutcomes, recordReflection } from "../../../lib/db/production.js";
 import { applyTimeDecay, noteActivity } from "../../../lib/brain/memory.js";
 import {
   commitInteractionBatch, getProfile,
@@ -133,6 +135,13 @@ export async function POST(req) {
     for (const id of resolved.keys()) anchors.add(id);
   }
 
+  // STEP FIVE (lib/brain/reflect.js): before each event is learned, the
+  // system records what it BELIEVED about the piece and which tags carried
+  // that belief; a dislike blames them, a surprise like credits them. The
+  // reflections and the descriptor outcomes are collected inside reduce()
+  // and written after the commit — best effort, never part of the batch.
+  let reflections = [];
+  let outcomeRows = [];
   const commit = await commitInteractionBatch({
     userId,
     operationId: body.operationId,
@@ -143,9 +152,16 @@ export async function POST(req) {
       let prof = applyTimeDecay(current || {}).profile;
       const edgePairs = [];
       const popularity = [];
+      reflections = [];
+      outcomeRows = [];
       for (const { item, action, dwellMs } of valid) {
         const recentBefore = prof?._meta?.recent || [];
-        prof = noteActivity(learn(prof, item, action, { dwellMs }), item, action);
+        const reflection = reflectOn(prof, item, action, { dwellMs });
+        outcomeRows.push(...streamOutcomeRows(prof, item, action));
+        prof = noteActivity(applyReflection(learn(prof, item, action, { dwellMs }), reflection), item, action);
+        if (reflection.blamed.length || reflection.credited.length) {
+          reflections.push({ userId, itemId: item.id, ...reflection });
+        }
         // AD FIREWALL (audit #19): a user's OWN taste may learn from a
         // sponsored engagement (it's their private profile), but the item must
         // never enter the ORGANIC cross-user ranking surfaces — the
@@ -178,7 +194,16 @@ export async function POST(req) {
     },
   });
 
+  if (!commit.duplicate && (reflections.length || outcomeRows.length)) {
+    await Promise.all([
+      outcomeRows.length ? bumpStreamOutcomes(outcomeRows) : null,
+      ...reflections.map((r) => recordReflection(r)),
+    ]).catch(() => {});
+  }
+
   return NextResponse.json({
     userId, applied: commit.duplicate ? 0 : valid.length, duplicate: commit.duplicate, profile: commit.profile,
+    reflections: reflections.map((r) => ({ itemId: r.itemId, action: r.action, expectation: r.expectation, note: r.note,
+      blamed: r.blamed.map((b) => b.tag), credited: r.credited.map((b) => b.tag) })),
   });
 }

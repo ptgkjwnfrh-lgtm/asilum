@@ -44,6 +44,12 @@ async function handlePOST(req) {
       { status: 409 }
     );
   }
+  if (item.listing_kind === "ghost") {
+    return NextResponse.json(
+      { error: "a ghost listing is shown for demonstration and cannot create a purchase ticket; it lives at its source" },
+      { status: 409 }
+    );
+  }
   const quota = await consumeRateLimit({ scope: "tickets", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) {
     return NextResponse.json(rateLimitResponse(quota), {
