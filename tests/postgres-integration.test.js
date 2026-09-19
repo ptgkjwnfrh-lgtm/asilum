@@ -3927,3 +3927,53 @@ test("Postgres catalog connections isolate stores, replay-proof OAuth, lease job
   assert.equal(withdrawn.rows[0].is_available, false);
   assert.equal(withdrawn.rows[0].availability_status, "removed");
 });
+
+// ---- v53: user_records ------------------------------------------------------
+// The device-only V.2 records (saves of people/places/events/articles, the
+// base city, corrections, studio drafts) as real rows. The mem twin is in
+// tests/user-records.test.js; this is the Postgres half of the differential:
+// the unique key, the no-clobber adoption, erasure, and the app role's grants.
+test("v53: user_records adopt without clobbering, erase, export, and the app role can write them", { skip: !databaseUrl }, async () => {
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const pool = await db.getPool();
+  const device = `u-${randomUUID()}`;
+  const account = `sb-${randomUUID()}`;
+  const first = await production.putUserRecord(device, { kind: "save", recordId: "place:pg-fashion-week", payload: { from: "device" } });
+  assert.equal(first.created, true);
+  assert.equal(first.record.persistent, true);
+  const upsert = await production.putUserRecord(device, { kind: "save", recordId: "place:pg-fashion-week", payload: { from: "device", edited: true } });
+  assert.equal(upsert.created, false, "the unique key makes a second write an update");
+  await production.putUserRecord(device, { kind: "location", recordId: "base", payload: { from: "device" } });
+  await production.putUserRecord(device, { kind: "save", recordId: "person:x", payload: { from: "device" } });
+  await production.putUserRecord(account, { kind: "save", recordId: "person:x", payload: { from: "account" } });
+  await assert.rejects(production.putUserRecord(device, { kind: "wishes", recordId: "a", payload: {} }), /unknown record kind/);
+
+  await production.adoptAccountData(device, account);
+  const saves = await production.listUserRecords(account, { kind: "save" });
+  assert.equal(saves.length, 2);
+  assert.equal(saves.find((r) => r.recordId === "person:x").payload.from, "account", "no-clobber");
+  assert.equal(saves.find((r) => r.recordId === "place:pg-fashion-week").payload.edited, true);
+  assert.equal((await production.listUserRecords(account, { kind: "location" })).length, 1);
+  assert.equal((await production.listUserRecords(device)).length, 0);
+
+  const exported = await production.exportPersonalizationData(account);
+  assert.equal(exported.data.records.rows.length, 3);
+
+  await production.purgePersonalizationData(account);
+  assert.equal((await production.listUserRecords(account)).length, 0);
+  const left = await pool.query("SELECT count(*)::int AS n FROM user_records WHERE user_id = ANY($1)", [[device, account]]);
+  assert.equal(left.rows[0].n, 0, "erasure reaches the table");
+
+  const grants = await pool.query(
+    `SELECT privilege_type FROM information_schema.role_table_grants
+     WHERE table_name='user_records' AND grantee='asilum_app' ORDER BY privilege_type`);
+  if (grants.rows.length) {
+    assert.deepEqual(grants.rows.map((r) => r.privilege_type), ["DELETE", "INSERT", "SELECT", "UPDATE"]);
+  }
+  const policy = await pool.query("SELECT policyname FROM pg_policies WHERE tablename='user_records'");
+  assert.ok(policy.rows.some((r) => r.policyname === "asilum_app_server_access"), "RLS policy for the app role");
+  const scopeCol = await pool.query(
+    "SELECT column_name FROM information_schema.columns WHERE table_name='user_corrections' AND column_name IN ('scope','undone_at')");
+  assert.equal(scopeCol.rows.length, 2, "v53 also gave user_corrections scope + undone_at");
+});

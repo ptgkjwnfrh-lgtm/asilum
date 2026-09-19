@@ -1,0 +1,172 @@
+{
+  "law": "provenance is earned by supplied numbers; evidence is a property of what was compared; null never becomes zero",
+  "estimatedDespiteMerchantWord": {
+    "record": {
+      "label": "M",
+      "system": null,
+      "gender": null,
+      "fitsLikeUS": "M",
+      "runsBias": 0,
+      "measurements": {
+        "chest": 42,
+        "waist": 40,
+        "shoulder": 18.5,
+        "length": 28
+      },
+      "measurementSource": "estimated-size-model",
+      "evidence": "estimated",
+      "category": "tops"
+    },
+    "assessment": {
+      "status": "match",
+      "score": 1,
+      "exact": false,
+      "compared": [
+        {
+          "key": "chest",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        },
+        {
+          "key": "waist",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        }
+      ],
+      "evidence": "estimated",
+      "missingDimensions": [],
+      "confidenceBand": "medium"
+    },
+    "phrase": "likely matches · estimated from listed size"
+  },
+  "measured": {
+    "record": {
+      "label": "M",
+      "system": null,
+      "gender": null,
+      "fitsLikeUS": "M",
+      "runsBias": 0,
+      "measurements": {
+        "chest": 42,
+        "waist": 40
+      },
+      "measurementSource": "listing",
+      "evidence": "measured",
+      "category": "tops"
+    },
+    "assessment": {
+      "status": "match",
+      "score": 1,
+      "exact": true,
+      "compared": [
+        {
+          "key": "chest",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        },
+        {
+          "key": "waist",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        }
+      ],
+      "evidence": "measured",
+      "missingDimensions": [],
+      "confidenceBand": "high"
+    },
+    "phrase": "✓ matches your measurements"
+  },
+  "unknownProvenanceWord": {
+    "record": {
+      "label": "M",
+      "system": null,
+      "gender": null,
+      "fitsLikeUS": "M",
+      "runsBias": 0,
+      "measurements": {
+        "chest": 42,
+        "waist": 40
+      },
+      "measurementSource": "listing-unverified",
+      "evidence": "estimated",
+      "category": "tops"
+    },
+    "assessment": {
+      "status": "match",
+      "score": 1,
+      "exact": false,
+      "compared": [
+        {
+          "key": "chest",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        },
+        {
+          "key": "waist",
+          "difference": 4,
+          "match": true,
+          "score": 1
+        }
+      ],
+      "evidence": "estimated",
+      "missingDimensions": [],
+      "confidenceBand": "medium"
+    },
+    "phrase": "likely matches · estimated from listed size"
+  },
+  "noProfile": {
+    "assessment": {
+      "status": "unknown",
+      "score": 0.5,
+      "exact": false,
+      "compared": [],
+      "evidence": "unknown",
+      "missingDimensions": [
+        "chest",
+        "waist"
+      ],
+      "confidenceBand": "none"
+    }
+  },
+  "sizeOnlyProfile": {
+    "assessment": {
+      "status": "size-match",
+      "score": 1,
+      "exact": false,
+      "compared": [],
+      "evidence": "unknown",
+      "missingDimensions": [
+        "chest",
+        "waist"
+      ],
+      "confidenceBand": "none"
+    }
+  },
+  "measurementsDisplay": {
+    "storage": {
+      "usualSize": "M",
+      "preferredUnit": "cm",
+      "inches": {
+        "chest": null,
+        "waist": null,
+        "hips": null,
+        "inseam": null,
+        "height": null
+      }
+    },
+    "display": {
+      "usualSize": "M",
+      "unit": "cm",
+      "chest": "",
+      "waist": "",
+      "hips": "",
+      "inseam": "",
+      "height": ""
+    }
+  }
+}

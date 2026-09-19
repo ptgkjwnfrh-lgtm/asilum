@@ -1,0 +1,53 @@
+{
+  "emptyIsNotUnavailable": {
+    "request": "GET /api/tickets (a reader with no tickets)",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "eb1fea41-cb5d-47e1-91f7-ca1333200591",
+      "outcome": "empty",
+      "tickets": []
+    }
+  },
+  "unauthorized": {
+    "request": "GET /api/records?kind=save (no identity)",
+    "status": 401,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "1976450c-9eec-48a1-ba98-2f7f3365c5aa",
+      "outcome": "unauthorized",
+      "error": {
+        "code": "authentication_required",
+        "message": "authentication required",
+        "retryable": false
+      }
+    }
+  },
+  "unavailable": {
+    "request": "GET /api/search when the engine throws (shape; cannot be forced in mem mode)",
+    "status": 503,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "<uuid>",
+      "outcome": "unavailable",
+      "error": {
+        "code": "search_engine_failed",
+        "message": "the search engine could not answer — retry",
+        "retryable": true
+      },
+      "q": "<query>",
+      "results": [],
+      "total": null
+    }
+  },
+  "outcomes": [
+    "ok",
+    "empty",
+    "unavailable",
+    "unauthorized",
+    "invalid",
+    "stale_cursor",
+    "rate_limited",
+    "not_found"
+  ]
+}

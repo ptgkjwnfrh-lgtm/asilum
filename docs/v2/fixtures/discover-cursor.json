@@ -1,0 +1,416 @@
+{
+  "pageOne": {
+    "request": "GET /api/discover?q=jacket&limit=5",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "edd645d9-f722-47ae-91f8-8418f30da396",
+      "outcome": "ok",
+      "total": 185,
+      "totalIsExact": true,
+      "candidatesTruncated": false,
+      "offset": 0,
+      "nextCursor": "eyJ2IjoxLCJvIjo1LCJzIjoiOGFlMWEwNWRlMzk2YTQwZDBmMjhkZjMzIiwiYiI6ImQ2ZDE3N2RhN2Y1ZDc0YTEwNjlmZWMxYiJ9.BfP7bjp8MOvkV9LvQuGoq64tjhe",
+      "snapshotId": "8ae1a05de396a40d0f28df33",
+      "demo": true,
+      "sources": [
+        "ASILUM Vault"
+      ],
+      "guidanceEnabled": false,
+      "assumption": null,
+      "overview": null,
+      "related": [],
+      "entities": {
+        "designer": null,
+        "house": null
+      },
+      "query": {
+        "text": "jacket",
+        "designerId": null,
+        "houseId": null
+      },
+      "note": null,
+      "unmatchedTokens": [],
+      "interpreted": {
+        "intent": "text",
+        "brand": null,
+        "mappedTags": [],
+        "relatedTerms": [],
+        "mappingHits": [],
+        "personalized": false,
+        "typoCorrections": [],
+        "brandSpelling": null,
+        "designerCredit": null,
+        "pair": null,
+        "assist": null,
+        "exclusions": [],
+        "priceSort": null,
+        "size": null,
+        "origin": null,
+        "era": null
+      },
+      "cultural": {
+        "engaged": false,
+        "entity": null,
+        "interpretationId": null,
+        "label": null,
+        "personalized": false,
+        "method": null
+      },
+      "items": [
+        {
+          "id": "syn-0001",
+          "title": "Willy Chavarria — varsity jacket",
+          "brand": "Willy Chavarria",
+          "price": 970,
+          "currency": "USD",
+          "tags": {
+            "STREETWEAR": 0.7,
+            "STATEMENT": 0.5,
+            "UTILITARIAN": 0.35
+          },
+          "img": null,
+          "alt": null,
+          "source": "Asilum synthetic seed",
+          "source_name": "Asilum synthetic seed",
+          "source_product_url": null,
+          "url": null,
+          "designers": [
+            "Willy Chavarria"
+          ],
+          "category": "outerwear",
+          "subcategory": null,
+          "color": null,
+          "colors": [],
+          "colorEvidence": null,
+          "material": null,
+          "fit": null,
+          "silhouette": null,
+          "condition": null,
+          "decade": null,
+          "era": {
+            "year": 2015,
+            "season": "Fall/Winter",
+            "decade": "2010s",
+            "raw": "Fall/Winter 2015"
+          },
+          "size": {
+            "label": "XL",
+            "system": "US",
+            "gender": "mens",
+            "fitsLikeUS": "XL",
+            "runsBias": 0,
+            "measurements": {
+              "chest": 50,
+              "waist": 48,
+              "shoulder": 20.7,
+              "length": 32
+            },
+            "measurementSource": "listing-unverified"
+          },
+          "is_available": true,
+          "availability_status": "unknown",
+          "confidenceScore": 0.71,
+          "matchReason": "product name match",
+          "matchedTags": [],
+          "purchasable": false,
+          "originEvidence": {
+            "status": "demo",
+            "sourceLabel": null,
+            "brandIsClaim": true,
+            "note": "sample record — not real inventory, not for sale"
+          },
+          "src": "ASILUM Vault"
+        },
+        {
+          "id": "syn-0002",
+          "title": "Bode — varsity jacket",
+          "brand": "Bode",
+          "price": 855,
+          "currency": "USD",
+          "tags": {
+            "INDEPENDENT": 0.7,
+            "ARCHIVAL": 0.5,
+            "GORP": 0.35
+          },
+          "img": null,
+          "alt": null,
+          "source": "Asilum synthetic seed",
+          "source_name": "Asilum synthetic seed",
+          "source_product_url": null,
+          "url": null,
+          "designers": [
+            "Emily Adams Bode Aujla",
+            "Bode"
+          ],
+          "category": "outerwear",
+          "subcategory": null,
+          "color": null,
+          "colors": [],
+          "colorEvidence": null,
+          "material": null,
+          "fit": null,
+          "silhouette": null,
+          "condition": null,
+          "decade": null,
+          "era": {
+            "year": 2020,
+            "season": "Resort",
+            "decade": "2020s",
+            "raw": "Resort 2020"
+          },
+          "size": {
+            "label": "L",
+            "system": "US",
+            "gender": "mens",
+            "fitsLikeUS": "XL",
+            "runsBias": -1,
+            "measurements": {
+              "chest": 50,
+              "waist": 48,
+              "shoulder": 20.7,
+              "length": 32
+            },
+            "measurementSource": "listing-unverified"
+          },
+          "is_available": true,
+          "availability_status": "unknown",
+          "confidenceScore": 0.71,
+          "matchReason": "product name match",
+          "matchedTags": [],
+          "purchasable": false,
+          "originEvidence": {
+            "status": "demo",
+            "sourceLabel": null,
+            "brandIsClaim": true,
+            "note": "sample record — not real inventory, not for sale"
+          },
+          "src": "ASILUM Vault"
+        }
+      ],
+      "itemsShown": "2 of 5 on this page"
+    }
+  },
+  "pageTwo": {
+    "request": "GET /api/discover?q=jacket&limit=5&cursor=<pageOne.nextCursor>",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "ca3c1c25-0e5a-4cfc-b1ca-776f9e60062b",
+      "outcome": "ok",
+      "total": 185,
+      "totalIsExact": true,
+      "candidatesTruncated": false,
+      "offset": 5,
+      "nextCursor": "eyJ2IjoxLCJvIjoxMCwicyI6IjhhZTFhMDVkZTM5NmE0MGQwZjI4ZGYzMyIsImIiOiJkNmQxNzdkYTdmNWQ3NGExMDY5ZmVjMWIifQ.9ajdoZddgNRc063HmqiurLtwMmv",
+      "snapshotId": "8ae1a05de396a40d0f28df33",
+      "demo": true,
+      "sources": [
+        "ASILUM Vault"
+      ],
+      "guidanceEnabled": false,
+      "assumption": null,
+      "overview": null,
+      "related": [],
+      "entities": {
+        "designer": null,
+        "house": null
+      },
+      "query": {
+        "text": "jacket",
+        "designerId": null,
+        "houseId": null
+      },
+      "note": null,
+      "unmatchedTokens": [],
+      "interpreted": {
+        "intent": "text",
+        "brand": null,
+        "mappedTags": [],
+        "relatedTerms": [],
+        "mappingHits": [],
+        "personalized": false,
+        "typoCorrections": [],
+        "brandSpelling": null,
+        "designerCredit": null,
+        "pair": null,
+        "assist": null,
+        "exclusions": [],
+        "priceSort": null,
+        "size": null,
+        "origin": null,
+        "era": null
+      },
+      "cultural": {
+        "engaged": false,
+        "entity": null,
+        "interpretationId": null,
+        "label": null,
+        "personalized": false,
+        "method": null
+      },
+      "items": [
+        {
+          "id": "syn-0010",
+          "title": "Off-White — coach jacket",
+          "brand": "Off-White",
+          "price": 845,
+          "currency": "USD",
+          "tags": {
+            "STREETWEAR": 0.7,
+            "STATEMENT": 0.5,
+            "UTILITARIAN": 0.35
+          },
+          "img": null,
+          "alt": null,
+          "source": "Asilum synthetic seed",
+          "source_name": "Asilum synthetic seed",
+          "source_product_url": null,
+          "url": null,
+          "designers": [
+            "Virgil Abloh",
+            "Off-White"
+          ],
+          "category": "outerwear",
+          "subcategory": null,
+          "color": null,
+          "colors": [],
+          "colorEvidence": null,
+          "material": null,
+          "fit": null,
+          "silhouette": null,
+          "condition": null,
+          "decade": null,
+          "era": {
+            "year": 2018,
+            "season": "Fall/Winter",
+            "decade": "2010s",
+            "raw": "Fall/Winter 2018"
+          },
+          "size": {
+            "label": "M",
+            "system": "US",
+            "gender": "mens",
+            "fitsLikeUS": "M",
+            "runsBias": 0,
+            "measurements": {
+              "chest": 46,
+              "waist": 44,
+              "shoulder": 19.5,
+              "length": 30
+            },
+            "measurementSource": "listing-unverified"
+          },
+          "is_available": true,
+          "availability_status": "unknown",
+          "confidenceScore": 0.71,
+          "matchReason": "product name match",
+          "matchedTags": [],
+          "purchasable": false,
+          "originEvidence": {
+            "status": "demo",
+            "sourceLabel": null,
+            "brandIsClaim": true,
+            "note": "sample record — not real inventory, not for sale"
+          },
+          "src": "ASILUM Vault"
+        },
+        {
+          "id": "syn-0013",
+          "title": "Acne Studios — field jacket",
+          "brand": "Acne Studios",
+          "price": 1600,
+          "currency": "USD",
+          "tags": {
+            "MINIMAL": 0.7,
+            "STREETWEAR": 0.5,
+            "UTILITARIAN": 0.35
+          },
+          "img": null,
+          "alt": null,
+          "source": "Asilum synthetic seed",
+          "source_name": "Asilum synthetic seed",
+          "source_product_url": null,
+          "url": null,
+          "designers": [
+            "Jonny Johansson",
+            "Acne Studios"
+          ],
+          "category": "outerwear",
+          "subcategory": null,
+          "color": null,
+          "colors": [],
+          "colorEvidence": null,
+          "material": null,
+          "fit": null,
+          "silhouette": null,
+          "condition": null,
+          "decade": null,
+          "era": {
+            "year": 2022,
+            "season": "Fall/Winter",
+            "decade": "2020s",
+            "raw": "Fall/Winter 2022"
+          },
+          "size": {
+            "label": "XL",
+            "system": "US",
+            "gender": "mens",
+            "fitsLikeUS": "XL",
+            "runsBias": 0,
+            "measurements": {
+              "chest": 50,
+              "waist": 48,
+              "shoulder": 20.7,
+              "length": 32
+            },
+            "measurementSource": "listing-unverified"
+          },
+          "is_available": true,
+          "availability_status": "unknown",
+          "confidenceScore": 0.71,
+          "matchReason": "product name match",
+          "matchedTags": [],
+          "purchasable": false,
+          "originEvidence": {
+            "status": "demo",
+            "sourceLabel": null,
+            "brandIsClaim": true,
+            "note": "sample record — not real inventory, not for sale"
+          },
+          "src": "ASILUM Vault"
+        }
+      ],
+      "itemsShown": "2 of 5 on this page"
+    }
+  },
+  "staleCursor": {
+    "request": "GET /api/discover?q=coat&limit=5&cursor=<pageOne.nextCursor>",
+    "status": 409,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "68bce63c-1d10-4f3b-ab5b-d176072081ff",
+      "outcome": "stale_cursor",
+      "error": {
+        "code": "cursor_context",
+        "message": "this page no longer exists — restart from the first page",
+        "retryable": false
+      }
+    }
+  },
+  "invalidCursor": {
+    "request": "GET /api/discover?q=jacket&limit=5&cursor=zzz.zzz",
+    "status": 400,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "9eb3d430-69c1-4220-95d2-ac292bfd7dd7",
+      "outcome": "invalid",
+      "error": {
+        "code": "cursor_signature",
+        "message": "the cursor could not be read",
+        "retryable": false
+      }
+    }
+  },
+  "law": "a cursor is bound to query + filters + eligibility + a snapshot of the ordered ids; 409 stale_cursor means restart from page one; offset still works for older clients"
+}

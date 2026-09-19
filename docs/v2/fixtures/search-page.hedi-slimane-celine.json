@@ -1,0 +1,568 @@
+{
+  "request": "GET /api/search?q=hedi%20slimane%3A%20celine",
+  "status": 200,
+  "body": {
+    "contractVersion": 1,
+    "requestId": "7e6a6538-5c82-46bb-b459-b51f50ada7f4",
+    "outcome": "ok",
+    "q": "hedi slimane: celine",
+    "brands": [],
+    "items": [
+      {
+        "id": "syn-0233",
+        "title": "Celine — work shirt",
+        "brand": "Celine",
+        "price": 125,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STATEMENT": 0.35
+        },
+        "src": "ASILUM Vault",
+        "matchReason": "constraint match",
+        "confidenceScore": 0.5
+      },
+      {
+        "id": "syn-0260",
+        "title": "Celine — zip hoodie",
+        "brand": "Celine",
+        "price": 270,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STATEMENT": 0.35
+        },
+        "src": "ASILUM Vault",
+        "matchReason": "constraint match",
+        "confidenceScore": 0.5
+      },
+      {
+        "id": "syn-0323",
+        "title": "Celine — football jersey",
+        "brand": "Celine",
+        "price": 325,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STREETWEAR": 0.35
+        },
+        "src": "ASILUM Vault",
+        "matchReason": "constraint match",
+        "confidenceScore": 0.5
+      }
+    ],
+    "aesthetics": [],
+    "total": 7,
+    "totalIsExact": true,
+    "candidatesTruncated": false,
+    "overview": {
+      "id": "hedi-slimane",
+      "kind": "designer",
+      "name": "Hedi Slimane",
+      "aliases": [],
+      "overview": {
+        "summary": {
+          "text": "French designer-photographer known for skinny tailoring, who led Dior Homme, renamed Saint Laurent's ready-to-wear, and ran Celine for nearly seven years.",
+          "sourceIds": [
+            "s9",
+            "s13"
+          ]
+        },
+        "paragraphs": [],
+        "updatedAt": "2026-09-19"
+      },
+      "image": null,
+      "sources": [
+        {
+          "id": "s9",
+          "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+          "publisher": "Wikipedia",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": null,
+          "fetched": false
+        },
+        {
+          "id": "s13",
+          "url": "https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director",
+          "publisher": "Hypebeast",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": "2024-10-02",
+          "fetched": false
+        },
+        {
+          "id": "s65",
+          "url": "https://www.britannica.com/biography/Slimane-Hedi",
+          "publisher": "Britannica",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": null,
+          "fetched": false
+        }
+      ],
+      "vogueSourceIds": [],
+      "facts": [
+        {
+          "key": "nationality",
+          "claim": {
+            "text": "French.",
+            "sourceIds": [
+              "s65"
+            ]
+          }
+        },
+        {
+          "key": "born",
+          "claim": {
+            "text": "Born 5 July 1968 in Paris.",
+            "sourceIds": [
+              "s65"
+            ]
+          }
+        },
+        {
+          "key": "signature",
+          "claim": {
+            "text": "Popularised the skinny menswear silhouette during his Dior Homme years.",
+            "sourceIds": [
+              "s9"
+            ]
+          }
+        }
+      ],
+      "reference": false
+    },
+    "related": [
+      {
+        "id": "hedi-slimane~saint-laurent~3",
+        "designerId": "hedi-slimane",
+        "houseId": "saint-laurent",
+        "designer": "Hedi Slimane",
+        "house": "Saint Laurent",
+        "role": "menswear designer",
+        "start": "1997",
+        "end": "2000",
+        "current": false,
+        "datePrecision": "year",
+        "note": "YSL Rive Gauche Homme only; one source gives the appointment as 1996.",
+        "sourceIds": [
+          "s9",
+          "s10"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s9",
+            "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s10",
+            "url": "https://www.businessoffashion.com/people/hedi-slimane/",
+            "publisher": "Business of Fashion",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "HEDI SLIMANE: SAINT LAURENT",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "hedi-slimane~dior~4",
+        "designerId": "hedi-slimane",
+        "houseId": "dior",
+        "designer": "Hedi Slimane",
+        "house": "Dior",
+        "role": "creative director",
+        "start": "2000",
+        "end": "2007",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Dior Homme (menswear) only.",
+        "sourceIds": [
+          "s9"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s9",
+            "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "HEDI SLIMANE: DIOR",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "hedi-slimane~saint-laurent~5",
+        "designerId": "hedi-slimane",
+        "houseId": "saint-laurent",
+        "designer": "Hedi Slimane",
+        "house": "Saint Laurent",
+        "role": "creative and image director",
+        "start": "2012",
+        "end": "2016-03",
+        "current": false,
+        "datePrecision": "month",
+        "note": "Renamed the ready-to-wear line Saint Laurent Paris; start precision is year.",
+        "sourceIds": [
+          "s9",
+          "s11",
+          "s20"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s9",
+            "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s11",
+            "url": "https://www.businesswire.com/news/home/20160331006297/en/Kering-Yves-Saint-Laurent-announces-the-departure-of-Creative-and-Image-Director-Hedi-Slimane",
+            "publisher": "Business Wire (Kering)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2016-03-31",
+            "fetched": false
+          },
+          {
+            "id": "s20",
+            "url": "https://en.wikipedia.org/wiki/Yves_Saint_Laurent_(fashion_house)",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "HEDI SLIMANE: SAINT LAURENT",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "hedi-slimane~celine~6",
+        "designerId": "hedi-slimane",
+        "houseId": "celine",
+        "designer": "Hedi Slimane",
+        "house": "Celine",
+        "role": "artistic, creative and image director",
+        "start": "2018-01-21",
+        "end": "2024-10",
+        "current": false,
+        "datePrecision": "day",
+        "note": "Debut show 28 September 2018; exit confirmed October 2024 (end precision month).",
+        "sourceIds": [
+          "s17",
+          "s13",
+          "s18"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s17",
+            "url": "https://en.wikipedia.org/wiki/Celine_(brand)",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s13",
+            "url": "https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director",
+            "publisher": "Hypebeast",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2024-10-02",
+            "fetched": false
+          },
+          {
+            "id": "s18",
+            "url": "https://www.washingtontimes.com/news/2018/sep/28/music-dominates-balmains-couture-infused-paris-sho/",
+            "publisher": "Washington Times (AP)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2018-09-28",
+            "fetched": false
+          }
+        ],
+        "queryText": "HEDI SLIMANE: CELINE",
+        "matchingItemCount": 7
+      }
+    ],
+    "entities": {
+      "designer": {
+        "id": "hedi-slimane",
+        "kind": "designer",
+        "name": "Hedi Slimane",
+        "aliases": [],
+        "overview": {
+          "summary": {
+            "text": "French designer-photographer known for skinny tailoring, who led Dior Homme, renamed Saint Laurent's ready-to-wear, and ran Celine for nearly seven years.",
+            "sourceIds": [
+              "s9",
+              "s13"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
+        "image": null,
+        "sources": [
+          {
+            "id": "s9",
+            "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s13",
+            "url": "https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director",
+            "publisher": "Hypebeast",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2024-10-02",
+            "fetched": false
+          },
+          {
+            "id": "s65",
+            "url": "https://www.britannica.com/biography/Slimane-Hedi",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "vogueSourceIds": [],
+        "facts": [
+          {
+            "key": "nationality",
+            "claim": {
+              "text": "French.",
+              "sourceIds": [
+                "s65"
+              ]
+            }
+          },
+          {
+            "key": "born",
+            "claim": {
+              "text": "Born 5 July 1968 in Paris.",
+              "sourceIds": [
+                "s65"
+              ]
+            }
+          },
+          {
+            "key": "signature",
+            "claim": {
+              "text": "Popularised the skinny menswear silhouette during his Dior Homme years.",
+              "sourceIds": [
+                "s9"
+              ]
+            }
+          }
+        ],
+        "reference": false
+      },
+      "house": {
+        "id": "celine",
+        "kind": "house",
+        "name": "Celine",
+        "aliases": [
+          "Céline"
+        ],
+        "overview": {
+          "summary": {
+            "text": "Paris house founded in 1945 by Céline Vipiana, owned by LVMH, which dropped the accent from its name under Hedi Slimane in 2018.",
+            "sourceIds": [
+              "s17",
+              "s13"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
+        "image": null,
+        "sources": [
+          {
+            "id": "s17",
+            "url": "https://en.wikipedia.org/wiki/Celine_(brand)",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s13",
+            "url": "https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director",
+            "publisher": "Hypebeast",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2024-10-02",
+            "fetched": false
+          }
+        ],
+        "vogueSourceIds": [],
+        "facts": [
+          {
+            "key": "founded",
+            "claim": {
+              "text": "Founded 1945 in Paris by Céline Vipiana, first boutique at 52 rue Malte.",
+              "sourceIds": [
+                "s17"
+              ]
+            }
+          },
+          {
+            "key": "rename",
+            "claim": {
+              "text": "Slimane removed the accent aigu, restyling Céline as Celine, on taking over in 2018.",
+              "sourceIds": [
+                "s17"
+              ]
+            }
+          },
+          {
+            "key": "owner",
+            "claim": {
+              "text": "Owned by LVMH.",
+              "sourceIds": [
+                "s13"
+              ]
+            }
+          }
+        ],
+        "reference": false
+      }
+    },
+    "query": {
+      "text": "hedi slimane: celine",
+      "designerId": "hedi-slimane",
+      "houseId": "celine"
+    },
+    "guidanceEnabled": false,
+    "interpreted": {
+      "intent": "designer-house",
+      "brand": null,
+      "mappedTags": [],
+      "relatedTerms": [],
+      "mappingHits": [],
+      "personalized": false,
+      "typoCorrections": [],
+      "brandSpelling": null,
+      "designerCredit": null,
+      "pair": {
+        "text": "hedi slimane: celine",
+        "designerId": "hedi-slimane",
+        "designer": "Hedi Slimane",
+        "houseId": "celine",
+        "house": "Celine",
+        "brands": [
+          "Celine",
+          "Céline"
+        ],
+        "verified": true,
+        "tenures": [
+          {
+            "role": "artistic, creative and image director",
+            "start": "2018-01-21",
+            "end": "2024-10"
+          }
+        ],
+        "served": true
+      },
+      "assist": null,
+      "exclusions": [],
+      "priceSort": null,
+      "size": null,
+      "origin": null,
+      "era": null
+    },
+    "note": "Hedi Slimane at Celine: artistic, creative and image director, 21 Jan 2018–Oct 2024 (sourced) — 7 pieces here carry that credit",
+    "unmatchedTokens": [],
+    "cultural": {
+      "engaged": false,
+      "entity": null,
+      "interpretationId": null,
+      "label": null,
+      "personalized": false,
+      "method": null
+    },
+    "semantic": {
+      "engaged": false,
+      "reranked": 0,
+      "appended": 0,
+      "strippedQuery": null
+    },
+    "results": [
+      {
+        "id": "syn-0233",
+        "title": "Celine — work shirt",
+        "brand": "Celine",
+        "price": 125,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STATEMENT": 0.35
+        },
+        "category": "tops",
+        "src": "ASILUM Vault",
+        "url": null,
+        "confidenceScore": 0.5,
+        "matchReason": "constraint match",
+        "matchedTags": [],
+        "availability": "unknown"
+      },
+      {
+        "id": "syn-0260",
+        "title": "Celine — zip hoodie",
+        "brand": "Celine",
+        "price": 270,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STATEMENT": 0.35
+        },
+        "category": "tops",
+        "src": "ASILUM Vault",
+        "url": null,
+        "confidenceScore": 0.5,
+        "matchReason": "constraint match",
+        "matchedTags": [],
+        "availability": "unknown"
+      },
+      {
+        "id": "syn-0323",
+        "title": "Celine — football jersey",
+        "brand": "Celine",
+        "price": 325,
+        "currency": "USD",
+        "img": null,
+        "tags": {
+          "MINIMAL": 0.7,
+          "SEDUCTIVE": 0.5,
+          "STREETWEAR": 0.35
+        },
+        "category": "tops",
+        "src": "ASILUM Vault",
+        "url": null,
+        "confidenceScore": 0.5,
+        "matchReason": "constraint match",
+        "matchedTags": [],
+        "availability": "unknown"
+      }
+    ],
+    "itemsShown": "3 of 6 on this page",
+    "resultsShown": "3 of 7 on this page"
+  }
+}

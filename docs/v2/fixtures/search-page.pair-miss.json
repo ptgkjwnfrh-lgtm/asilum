@@ -1,0 +1,433 @@
+{
+  "request": "GET /api/discover?q=nobody%3A%20gucci&limit=3",
+  "status": 200,
+  "body": {
+    "contractVersion": 1,
+    "requestId": "ebd70ae3-2e78-467a-a60d-554ce4519ad7",
+    "outcome": "empty",
+    "total": 0,
+    "totalIsExact": true,
+    "candidatesTruncated": false,
+    "offset": 0,
+    "nextCursor": null,
+    "snapshotId": "e19e271739f2933d422928f0",
+    "demo": false,
+    "sources": [],
+    "guidanceEnabled": false,
+    "assumption": null,
+    "overview": {
+      "id": "gucci",
+      "kind": "house",
+      "name": "Gucci",
+      "aliases": [
+        "House of Gucci"
+      ],
+      "overview": {
+        "summary": {
+          "text": "Florentine leather-goods house founded in 1921, now Kering's flagship brand and led by Demna since 2025.",
+          "sourceIds": [
+            "s58",
+            "s27"
+          ]
+        },
+        "paragraphs": [],
+        "updatedAt": "2026-09-19"
+      },
+      "image": null,
+      "sources": [
+        {
+          "id": "s58",
+          "url": "https://www.britannica.com/topic/Gucci",
+          "publisher": "Britannica",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": null,
+          "fetched": false
+        },
+        {
+          "id": "s27",
+          "url": "https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html",
+          "publisher": "GlobeNewswire (Kering)",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": "2025-03-13",
+          "fetched": true
+        }
+      ],
+      "vogueSourceIds": [],
+      "facts": [
+        {
+          "key": "founded",
+          "claim": {
+            "text": "Founded 1921 in Florence by Guccio Gucci.",
+            "sourceIds": [
+              "s58"
+            ]
+          }
+        },
+        {
+          "key": "origin",
+          "claim": {
+            "text": "Began as a leather goods and luggage shop before expanding under Gucci's sons.",
+            "sourceIds": [
+              "s58"
+            ]
+          }
+        },
+        {
+          "key": "owner",
+          "claim": {
+            "text": "Owned by Kering.",
+            "sourceIds": [
+              "s27"
+            ]
+          }
+        }
+      ],
+      "reference": false
+    },
+    "related": [
+      {
+        "id": "tom-ford~gucci~0",
+        "designerId": "tom-ford",
+        "houseId": "gucci",
+        "designer": "Tom Ford",
+        "house": "Gucci",
+        "role": "creative director",
+        "start": "1994",
+        "end": "2004",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Resigned April 2004 after the PPR buyout of Gucci Group.",
+        "sourceIds": [
+          "s1"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s1",
+            "url": "https://www.businessoffashion.com/people/tom-ford/",
+            "publisher": "Business of Fashion",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "TOM FORD: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "frida-giannini~gucci~14",
+        "designerId": "frida-giannini",
+        "houseId": "gucci",
+        "designer": "Frida Giannini",
+        "house": "Gucci",
+        "role": "creative director of accessories",
+        "start": "2004",
+        "end": "2005",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Accessories only.",
+        "sourceIds": [
+          "s30"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s30",
+            "url": "https://www.britannica.com/biography/Frida-Giannini",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "FRIDA GIANNINI: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "frida-giannini~gucci~15",
+        "designerId": "frida-giannini",
+        "houseId": "gucci",
+        "designer": "Frida Giannini",
+        "house": "Gucci",
+        "role": "womenswear and accessories creative director",
+        "start": "2005",
+        "end": "2006",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Women's ready-to-wear and accessories only.",
+        "sourceIds": [
+          "s30"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s30",
+            "url": "https://www.britannica.com/biography/Frida-Giannini",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "FRIDA GIANNINI: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "frida-giannini~gucci~16",
+        "designerId": "frida-giannini",
+        "houseId": "gucci",
+        "designer": "Frida Giannini",
+        "house": "Gucci",
+        "role": "creative director",
+        "start": "2006",
+        "end": "2015-01",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Exit announced December 2014; brought forward to January 2015.",
+        "sourceIds": [
+          "s30",
+          "s31"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s30",
+            "url": "https://www.britannica.com/biography/Frida-Giannini",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s31",
+            "url": "https://www.hellomagazine.com/fashion/news/2014121253410/frida-giannini-and-patrizio-di-marco-to-leave-gucci/",
+            "publisher": "Hello!",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2014-12-12",
+            "fetched": false
+          }
+        ],
+        "queryText": "FRIDA GIANNINI: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "alessandro-michele~gucci~9",
+        "designerId": "alessandro-michele",
+        "houseId": "gucci",
+        "designer": "Alessandro Michele",
+        "house": "Gucci",
+        "role": "creative director",
+        "start": "2015-01",
+        "end": "2022-11",
+        "current": false,
+        "datePrecision": "month",
+        "note": null,
+        "sourceIds": [
+          "s21",
+          "s23"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s21",
+            "url": "https://en.wikipedia.org/wiki/Alessandro_Michele",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s23",
+            "url": "https://www.npr.org/2022/11/23/1139130009/alessandro-michele-gucci-creative-director",
+            "publisher": "NPR",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2022-11-23",
+            "fetched": false
+          }
+        ],
+        "queryText": "ALESSANDRO MICHELE: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "sabato-de-sarno~gucci~11",
+        "designerId": "sabato-de-sarno",
+        "houseId": "gucci",
+        "designer": "Sabato De Sarno",
+        "house": "Gucci",
+        "role": "creative director",
+        "start": "2023-01",
+        "end": "2025-02",
+        "current": false,
+        "datePrecision": "month",
+        "note": "Appointed 28 January 2023; first show September 2023; departure announced 6 February 2025.",
+        "sourceIds": [
+          "s25",
+          "s24",
+          "s26"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s25",
+            "url": "https://www.euronews.com/2023/01/28/kering-gucci",
+            "publisher": "Euronews",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2023-01-28",
+            "fetched": false
+          },
+          {
+            "id": "s24",
+            "url": "https://wwd.com/fashion-news/designer-luxury/gucci-sabato-de-sarno-exits-1236907009/",
+            "publisher": "WWD",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2025-02-06",
+            "fetched": false
+          },
+          {
+            "id": "s26",
+            "url": "https://en.wikipedia.org/wiki/Sabato_De_Sarno",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "SABATO DE SARNO: GUCCI",
+        "matchingItemCount": 13
+      },
+      {
+        "id": "demna~gucci~13",
+        "designerId": "demna",
+        "houseId": "gucci",
+        "designer": "Demna",
+        "house": "Gucci",
+        "role": "artistic director",
+        "start": "2025-07",
+        "end": null,
+        "current": true,
+        "datePrecision": "month",
+        "note": "Appointment announced 13 March 2025; start stated as early July 2025.",
+        "sourceIds": [
+          "s27"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s27",
+            "url": "https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html",
+            "publisher": "GlobeNewswire (Kering)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2025-03-13",
+            "fetched": true
+          }
+        ],
+        "queryText": "DEMNA: GUCCI",
+        "matchingItemCount": 0
+      }
+    ],
+    "entities": {
+      "designer": null,
+      "house": {
+        "id": "gucci",
+        "kind": "house",
+        "name": "Gucci",
+        "aliases": [
+          "House of Gucci"
+        ],
+        "overview": {
+          "summary": {
+            "text": "Florentine leather-goods house founded in 1921, now Kering's flagship brand and led by Demna since 2025.",
+            "sourceIds": [
+              "s58",
+              "s27"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
+        "image": null,
+        "sources": [
+          {
+            "id": "s58",
+            "url": "https://www.britannica.com/topic/Gucci",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s27",
+            "url": "https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html",
+            "publisher": "GlobeNewswire (Kering)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2025-03-13",
+            "fetched": true
+          }
+        ],
+        "vogueSourceIds": [],
+        "facts": [
+          {
+            "key": "founded",
+            "claim": {
+              "text": "Founded 1921 in Florence by Guccio Gucci.",
+              "sourceIds": [
+                "s58"
+              ]
+            }
+          },
+          {
+            "key": "origin",
+            "claim": {
+              "text": "Began as a leather goods and luggage shop before expanding under Gucci's sons.",
+              "sourceIds": [
+                "s58"
+              ]
+            }
+          },
+          {
+            "key": "owner",
+            "claim": {
+              "text": "Owned by Kering.",
+              "sourceIds": [
+                "s27"
+              ]
+            }
+          }
+        ],
+        "reference": false
+      }
+    },
+    "query": {
+      "text": "nobody: gucci",
+      "designerId": null,
+      "houseId": "gucci"
+    },
+    "note": "could not read \"nobody\" as a designer — no sourced record and no catalog credit",
+    "unmatchedTokens": [],
+    "interpreted": {
+      "intent": "designer-house",
+      "brand": null,
+      "mappedTags": [],
+      "relatedTerms": [],
+      "mappingHits": [],
+      "personalized": false,
+      "typoCorrections": [],
+      "brandSpelling": null,
+      "designerCredit": null,
+      "pair": {
+        "text": "nobody: gucci",
+        "miss": "designer",
+        "served": false
+      },
+      "assist": null,
+      "exclusions": [],
+      "priceSort": null,
+      "size": null,
+      "origin": null,
+      "era": null
+    },
+    "cultural": {
+      "engaged": false,
+      "entity": null,
+      "interpretationId": null,
+      "label": null,
+      "personalized": false,
+      "method": null
+    },
+    "items": [],
+    "itemsShown": "0 of 0 on this page"
+  }
+}

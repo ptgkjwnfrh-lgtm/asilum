@@ -1,0 +1,155 @@
+{
+  "kinds": [
+    "save",
+    "location",
+    "correction",
+    "draft"
+  ],
+  "caps": {
+    "save": 400,
+    "location": 1,
+    "correction": 50,
+    "draft": 50,
+    "payloadBytes": 8192
+  },
+  "put": {
+    "request": "PUT /api/records",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "1913641b-ab2a-4d40-9b0e-0e9b7689ca64",
+      "outcome": "ok",
+      "record": {
+        "id": 1,
+        "userId": "u-fcb46bab-e91e-44d0-8a3e-5e57f3f36a89",
+        "kind": "save",
+        "recordId": "person:olivier-rousteing",
+        "payload": {
+          "kind": "person",
+          "id": "olivier-rousteing",
+          "title": "Olivier Rousteing",
+          "href": "/discover?q=olivier%20rousteing",
+          "at": "2026-09-19T12:00:00.000Z"
+        },
+        "createdAt": 1789814724450,
+        "updatedAt": 1789814724450,
+        "persistent": false
+      },
+      "created": true
+    }
+  },
+  "putLocation": {
+    "request": "PUT /api/records (kind location, recordId base)",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "63182883-e30b-4ff4-91ed-da205743ab21",
+      "outcome": "ok",
+      "record": {
+        "id": 2,
+        "userId": "u-fcb46bab-e91e-44d0-8a3e-5e57f3f36a89",
+        "kind": "location",
+        "recordId": "base",
+        "payload": {
+          "baseCity": {
+            "name": "Bowie",
+            "lat": 38.94,
+            "lng": -76.73,
+            "country": "US"
+          },
+          "publicDetail": "none",
+          "audience": "me",
+          "mapDiscoverable": false
+        },
+        "createdAt": 1789814724451,
+        "updatedAt": 1789814724451,
+        "persistent": false
+      },
+      "created": true
+    }
+  },
+  "list": {
+    "request": "GET /api/records",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "d9adcff8-8ec4-434b-9a5b-0cbac1247586",
+      "outcome": "ok",
+      "records": [
+        {
+          "id": 2,
+          "userId": "u-fcb46bab-e91e-44d0-8a3e-5e57f3f36a89",
+          "kind": "location",
+          "recordId": "base",
+          "payload": {
+            "baseCity": {
+              "name": "Bowie",
+              "lat": 38.94,
+              "lng": -76.73,
+              "country": "US"
+            },
+            "publicDetail": "none",
+            "audience": "me",
+            "mapDiscoverable": false
+          },
+          "createdAt": 1789814724451,
+          "updatedAt": 1789814724451,
+          "persistent": false
+        },
+        {
+          "id": 1,
+          "userId": "u-fcb46bab-e91e-44d0-8a3e-5e57f3f36a89",
+          "kind": "save",
+          "recordId": "person:olivier-rousteing",
+          "payload": {
+            "kind": "person",
+            "id": "olivier-rousteing",
+            "title": "Olivier Rousteing",
+            "href": "/discover?q=olivier%20rousteing",
+            "at": "2026-09-19T12:00:00.000Z"
+          },
+          "createdAt": 1789814724450,
+          "updatedAt": 1789814724450,
+          "persistent": false
+        }
+      ]
+    }
+  },
+  "delete": {
+    "request": "DELETE /api/records",
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "801282c9-68f8-4dec-88cf-15522902d011",
+      "outcome": "ok",
+      "deleted": true
+    }
+  },
+  "invalidKind": {
+    "status": 400,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "15b7484f-d42f-422a-b1d8-fabdd1ca1e41",
+      "outcome": "invalid",
+      "error": {
+        "code": "record_kind",
+        "message": "unknown record kind",
+        "retryable": false
+      }
+    }
+  },
+  "capRefusal": {
+    "status": 409,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "<uuid>",
+      "outcome": "invalid",
+      "error": {
+        "code": "record_cap",
+        "message": "at most 50 draft records — remove one first",
+        "retryable": false
+      },
+      "cap": 50
+    }
+  }
+}
