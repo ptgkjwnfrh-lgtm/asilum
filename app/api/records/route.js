@@ -1,4 +1,4 @@
-// app/api/records/route.js — the reader's own records (v52, V.2).
+// app/api/records/route.js — the reader's own records (v53, V.2).
 //
 // GET    ?kind=save|location|correction|draft   → { outcome, records }
 // PUT    { kind, recordId, payload }             → { outcome, record, created }

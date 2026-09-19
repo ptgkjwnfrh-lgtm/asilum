@@ -1,4 +1,4 @@
-// user_records (v52): the device-only V.2 records become real (19 Sep 2026).
+// user_records (v53): the device-only V.2 records become real (19 Sep 2026).
 //
 // Law 1: a record is private to its identity; another device sees nothing.
 // Law 2: validation is typed — kind, id, payload shape, size, per-kind cap —
@@ -137,12 +137,12 @@ test("law 3: adoption moves records into the account without clobbering, erasure
 });
 
 test("law 3: the migration and the registration points name the table", () => {
-  const sql = fs.readFileSync(new URL("../supabase/schema-v52-user-records.sql", import.meta.url), "utf8");
+  const sql = fs.readFileSync(new URL("../supabase/schema-v53-user-records.sql", import.meta.url), "utf8");
   assert.match(sql, /CREATE TABLE IF NOT EXISTS user_records/);
   assert.match(sql, /UNIQUE \(user_id, kind, record_id\)/);
   assert.match(sql, /ENABLE ROW LEVEL SECURITY/);
   assert.match(sql, /CREATE POLICY asilum_app_server_access ON user_records/);
-  assert.match(sql, /VALUES \(52, 'user-records'\)/);
+  assert.match(sql, /VALUES \(53, 'user-records'\)/);
   const corrections = fs.readFileSync(new URL("../lib/db/production/corrections.js", import.meta.url), "utf8");
   assert.match(corrections, /INSERT INTO user_records \(user_id, kind, record_id, payload, created_at, updated_at\)/, "PG adoption");
   assert.match(corrections, /SELECT count\(\*\) FROM user_records WHERE user_id=\$1/, "adoption's signal count sees the table");

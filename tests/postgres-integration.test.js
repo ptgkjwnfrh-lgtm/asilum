@@ -3863,12 +3863,12 @@ test("DM: leaving 'accepted' does not destroy the record that consent happened",
   assert.ok(row.rows[0].declined_at);
 });
 
-// ---- v52: user_records ------------------------------------------------------
+// ---- v53: user_records ------------------------------------------------------
 // The device-only V.2 records (saves of people/places/events/articles, the
 // base city, corrections, studio drafts) as real rows. The mem twin is in
 // tests/user-records.test.js; this is the Postgres half of the differential:
 // the unique key, the no-clobber adoption, erasure, and the app role's grants.
-test("v52: user_records adopt without clobbering, erase, export, and the app role can write them", { skip: !databaseUrl }, async () => {
+test("v53: user_records adopt without clobbering, erase, export, and the app role can write them", { skip: !databaseUrl }, async () => {
   const db = await import("../lib/db/index.js");
   const production = await import("../lib/db/production.js");
   const pool = await db.getPool();
@@ -3910,5 +3910,5 @@ test("v52: user_records adopt without clobbering, erase, export, and the app rol
   assert.ok(policy.rows.some((r) => r.policyname === "asilum_app_server_access"), "RLS policy for the app role");
   const scopeCol = await pool.query(
     "SELECT column_name FROM information_schema.columns WHERE table_name='user_corrections' AND column_name IN ('scope','undone_at')");
-  assert.equal(scopeCol.rows.length, 2, "v52 also gave user_corrections scope + undone_at");
+  assert.equal(scopeCol.rows.length, 2, "v53 also gave user_corrections scope + undone_at");
 });

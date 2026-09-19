@@ -1,4 +1,4 @@
--- schema-v52-user-records.sql
+-- schema-v53-user-records.sql
 --
 -- THE DEVICE RECORDS BECOME REAL (V.2, 19 Sep 2026).
 --
@@ -29,7 +29,7 @@
 --
 -- ROLLBACK: DROP TABLE IF EXISTS user_records; ALTER TABLE user_corrections
 -- DROP COLUMN IF EXISTS scope, DROP COLUMN IF EXISTS undone_at;
--- DELETE FROM app_schema_migrations WHERE version = 52;
+-- DELETE FROM app_schema_migrations WHERE version = 53;
 
 CREATE TABLE IF NOT EXISTS user_records (
   id          BIGSERIAL PRIMARY KEY,
@@ -71,5 +71,5 @@ DO $$ BEGIN IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'asilum_app') THEN
   GRANT UPDATE (undone_at) ON user_corrections TO asilum_app;
 END IF; END $$;
 
-INSERT INTO app_schema_migrations (version, name) VALUES (52, 'user-records')
+INSERT INTO app_schema_migrations (version, name) VALUES (53, 'user-records')
 ON CONFLICT (version) DO NOTHING;
