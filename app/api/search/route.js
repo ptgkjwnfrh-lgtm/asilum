@@ -17,6 +17,8 @@ import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../
 import { requestSubject } from "../../../lib/security/request.js";
 import { getMemoryPreferences } from "../../../lib/db/production.js";
 import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
+import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
+import { getDiscoverablePool } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +57,8 @@ export async function GET(req) {
     return NextResponse.json({ ...failed.body, q, results: [], total: null }, { status: failed.status });
   }
 
+  const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
+
   // Legacy multi-search facets, now derived from the ranked results.
   const brands = [];
   const seenBrands = new Set();
@@ -81,6 +85,10 @@ export async function GET(req) {
     total: out.total,
     totalIsExact: true,
     candidatesTruncated: !!out.candidatesTruncated,
+    overview: resolvedEntities.overview,
+    related: resolvedEntities.related,
+    entities: resolvedEntities.entities,
+    query: resolvedEntities.query,
     guidanceEnabled,
     interpreted: out.interpreted,
     // Honest disclosure of words the catalog could not match (Aug 5). The

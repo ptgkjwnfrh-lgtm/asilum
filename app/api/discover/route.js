@@ -22,6 +22,7 @@ import { getMemoryPreferences, listInterpretationFeedback } from "../../../lib/d
 import { normalizeQuery } from "../../../lib/asterisk/orchestrator.js";
 import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
 import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/search/cursor.js";
+import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
 
 export const dynamic = "force-dynamic";
 
@@ -83,7 +84,15 @@ async function discover(req, requestId) {
     // end, reintroduced by a route that did not carry it.
     //
     // Verbatim. A route may never synthesise or reword a note.
+    // THE OVERVIEW AND ITS RELATED EDGES (V.2 SearchPage). A name earns its
+    // sourced registry entity; DESIGNER: HOUSE earns both canonical ids;
+    // counts are credits inside the catalog, never tenure inference.
+    const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool() });
     reading = {
+      overview: resolvedEntities.overview,
+      related: resolvedEntities.related,
+      entities: resolvedEntities.entities,
+      query: resolvedEntities.query,
       note: result.note || null,
       unmatchedTokens: result.unmatchedTokens || [],
       interpreted: result.interpreted || null,
