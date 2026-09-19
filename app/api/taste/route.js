@@ -29,6 +29,7 @@ import { buildNetwork, KEEP_FLOOR, EXPLORE_FLOOR } from "../../../lib/taste/netw
 import { getProfile, mutateProfile, getBoards } from "../../../lib/db/index.js";
 import { getMemoryPreferences, getUserRecommendationExclusions } from "../../../lib/db/production.js";
 import { POLICY_VERSION } from "../../../lib/brain/policy.js";
+import { creditedDesigners } from "../../../lib/asterisk/memory.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -49,6 +50,7 @@ export async function GET(req) {
     getUserRecommendationExclusions(userId).catch(() => null),
   ]);
   const net = buildNetwork(profile, boards);
+  const designers = await creditedDesigners(boards).catch(() => []);
   // THE OPEN LANES ride with the network (synergy round): the price ceiling
   // and fit hints a reader's corrections hold open, so the FULL READ can show
   // them beside the tags without a second request. Same source as the feed.
@@ -56,7 +58,7 @@ export async function GET(req) {
     ? { priceCeilingCents: exclusions.priceCeilingCents ?? null, fitHints: exclusions.fitHints || [],
         excludedBrands: exclusions.brands || [], excludedProducts: (exclusions.productIds || []).length }
     : null;
-  return NextResponse.json({ userId, policyVersion: POLICY_VERSION, guidanceEnabled: prefs.guidanceEnabled !== false, lanes, ...net });
+  return NextResponse.json({ userId, policyVersion: POLICY_VERSION, guidanceEnabled: prefs.guidanceEnabled !== false, lanes, designers, ...net });
 }
 
 export async function POST(req) {
