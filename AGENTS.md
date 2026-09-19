@@ -87,6 +87,14 @@ failure green** — if a metric has no power, shrink the claim instead. When an
 instrument gets sharper, re-check whether the old pass was real: a battery
 whose central arm matched zero subjects was not passing.
 
+## V.2 gates
+
+`npm run v2:check` runs the composed V.2 gates (`scripts/measure-v2-gates.mjs`),
+the search latency gate and the feed chunk laws. Thresholds are declared in
+the scripts before the run; a red gate is a red gate. `docs/v2/` holds the
+contracts, the fixtures (regenerate with `node scripts/v2-fixtures.mjs`) and
+both agents' status files.
+
 ## Review focus
 
 Prioritize: correctness of ranking/status-transition logic, RLS/auth
