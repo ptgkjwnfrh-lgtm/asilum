@@ -18,6 +18,7 @@
     "triggers:check": "node scripts/check-deferred-triggers.mjs",
     "floor:check": "node scripts/measure-match-floor.mjs",
     "steward": "node scripts/steward.mjs",
+    "ebay:first-light": "node scripts/ebay-first-light.mjs",
     "test:live-stripe": "STRIPE_SECRET_KEY=$(grep '^STRIPE_SECRET_KEY=' .env.local | cut -d= -f2-) node --test tests/stripe-live.test.js",
     "docs:codemap": "node scripts/generate-code-map.mjs",
     "audit:nav": "node scripts/audit-navigability.mjs",
