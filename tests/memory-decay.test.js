@@ -12,6 +12,10 @@ import { learn, migrateProfile, coldStart } from "../lib/brain/index.js";
 // emit zero-valued tags.
 
 const HALF_LIFE_MS = 1000 * 60 * 60 * 24 * 6; // 6 idle days (memory.js)
+// These tests pin the SINGLE-half-life arm. Since 19 Sep decay is by evidence
+// class by default (tests/taste-classes.test.js); BRAIN_DECAY_BY_CLASS=0 is
+// the kill switch that restores this arm, and it is set for this file.
+process.env.BRAIN_DECAY_BY_CLASS = "0";
 const FORGET_FLOOR = 0.04;
 
 function profileAt(long, session, lastActive) {

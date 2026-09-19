@@ -88,6 +88,14 @@ export async function POST(req) {
       p.session[tag] = (p.session[tag] || 0) * 0.5;
       if (Math.abs(p.long[tag]) < 0.02) delete p.long[tag];
       if (Math.abs(p.session[tag]) < 0.02) delete p.session[tag];
+      // a reduce is a choice the reader made: it is recorded like keep and
+      // explore, so the network can show it, undo can name it, and decay by
+      // class leaves the reduced weight where the reader put it
+      if (p.long[tag] != null || p.session[tag] != null) {
+        p._meta.manual[tag] = now; p._meta.manual[tag + ":via"] = "reduce";
+      } else {
+        delete p._meta.manual[tag]; delete p._meta.manual[tag + ":via"];
+      }
     } else if (op === "remove") {
       delete p.long[tag]; delete p.session[tag];
       delete p._meta.manual[tag]; delete p._meta.manual[tag + ":via"];
