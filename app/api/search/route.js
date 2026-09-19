@@ -19,6 +19,8 @@ import { getMemoryPreferences } from "../../../lib/db/production.js";
 import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
 import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
 import { getDiscoverablePool } from "../../../lib/products.js";
+import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/search/cursor.js";
+import { POLICY_VERSION } from "../../../lib/brain/policy.js";
 
 export const dynamic = "force-dynamic";
 
@@ -44,9 +46,15 @@ export async function GET(req) {
   const guidanceEnabled = !!userId &&
     (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
 
+  // STABLE PAGES on search too (synergy round): the same signed cursor
+  // /api/discover uses, bound to the query, the eligibility context and a
+  // snapshot of the ordered ids. `limit` 1..96 (default 48); a cursor from
+  // another query or a changed list answers 409 stale_cursor.
+  const limit = Math.max(1, Math.min(96, parseInt(searchParams.get("limit"), 10) || 48));
+  const cursor = (searchParams.get("cursor") || "").slice(0, 512);
   let out;
   try {
-    out = await searchProducts(q, { userId, brain: guidanceEnabled, limit: 48 });
+    out = await searchProducts(q, { userId, brain: guidanceEnabled, limit: 2000 });
   } catch (error) {
     // UNAVAILABLE IS NOT EMPTY (19 Sep 2026). This used to answer an engine
     // throw with `{ results: [], total: 0 }` and HTTP 200 — a reader could not
@@ -58,12 +66,28 @@ export async function GET(req) {
   }
 
   const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
+  const binding = bindingOf({ q, guidanceEnabled, subject: guidanceEnabled ? requestSubject(req) : null });
+  const snapshotId = snapshotOf(out.results.map((it) => it.id));
+  let offset = 0;
+  if (cursor) {
+    const decoded = decodeCursor(cursor, { binding, snapshotId });
+    if (!decoded.ok) {
+      const stale = decoded.reason === "snapshot" || decoded.reason === "context";
+      const failed = stale
+        ? failure("stale_cursor", "cursor_" + decoded.reason, "this page no longer exists — restart from the first page", { requestId })
+        : failure("invalid", "cursor_" + decoded.reason, "the cursor could not be read", { requestId });
+      return NextResponse.json(failed.body, { status: failed.status });
+    }
+    offset = decoded.offset;
+  }
+  const page = out.results.slice(offset, offset + limit);
+  const nextCursor = offset + limit < out.results.length ? encodeCursor({ offset: offset + limit, snapshotId, binding }) : null;
 
   // Legacy multi-search facets, now derived from the ranked results.
   const brands = [];
   const seenBrands = new Set();
   const items = [];
-  for (const it of out.results) {
+  for (const it of page) {
     if (it.brand && !seenBrands.has(it.brand) &&
         (it.brand.toLowerCase().includes(q) || it.matchReason === "designer match")) {
       seenBrands.add(it.brand);
@@ -80,10 +104,15 @@ export async function GET(req) {
   const aesthetics = TAGS.filter((t) => t.toLowerCase().includes(q));
 
   return NextResponse.json({
-    ...envelope({ count: out.results.length, requestId }),
+    ...envelope({ count: page.length, requestId }),
+    policyVersion: POLICY_VERSION,
     q, brands, items, aesthetics,
     total: out.total,
     totalIsExact: true,
+    offset,
+    limit,
+    nextCursor,
+    snapshotId,
     candidatesTruncated: !!out.candidatesTruncated,
     overview: resolvedEntities.overview,
     related: resolvedEntities.related,
@@ -102,7 +131,7 @@ export async function GET(req) {
     // here until now.
     cultural: out.cultural || null,
     semantic: out.semantic || null,
-    results: out.results.map((it) => ({
+    results: page.map((it) => ({
       id: it.id, title: it.title, brand: it.brand, price: it.price,
       currency: it.currency, img: it.img, tags: it.tags, category: it.category,
       src: sourceFor(it), url: safeExternalUrl(it.url || it.source_product_url),

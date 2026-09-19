@@ -18,7 +18,7 @@ import { buildPurchaseHub } from "../lib/orders/hub.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { registryCoverage, CAREER_PROVENANCE } from "../lib/people/careers.js";
 
-const OUT = path.join(process.cwd(), "docs", "v2", "fixtures");
+const OUT = process.env.V2_FIXTURES_OUT || path.join(process.cwd(), "docs", "v2", "fixtures");
 fs.mkdirSync(OUT, { recursive: true });
 const write = (name, value) => {
   fs.writeFileSync(path.join(OUT, name), JSON.stringify(value, null, 2) + "\n");

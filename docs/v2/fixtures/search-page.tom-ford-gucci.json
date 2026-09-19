@@ -3,7 +3,7 @@
   "status": 200,
   "body": {
     "contractVersion": 1,
-    "requestId": "a04f9ee7-54bc-40ba-a212-2b309e718ca7",
+    "requestId": "960eaa34-126f-4487-b4b7-6706ac0a6c0d",
     "outcome": "empty",
     "total": 0,
     "totalIsExact": true,
@@ -82,6 +82,7 @@
           }
         }
       ],
+      "origin": null,
       "reference": false
     },
     "related": [
@@ -256,6 +257,7 @@
             }
           }
         ],
+        "origin": null,
         "reference": false
       },
       "house": {
@@ -325,6 +327,13 @@
             }
           }
         ],
+        "origin": {
+          "country": "Italy",
+          "city": "Florence",
+          "foundedIn": null,
+          "basis": "founded in Florence in 1921",
+          "source": "lib/asterisk/houses.js"
+        },
         "reference": false
       }
     },

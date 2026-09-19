@@ -25,6 +25,12 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `WARDROBE_ENABLED` | private owned-piece collection + stylist anchors | on (`0` is the kill switch) | wardrobe API refuses with 503; wardrobe anchors refuse instead of silently dropping |
 | `DISCOVER_RAILS_ENABLED` (+ per-rail registry `enabled` rows) | D: cultural Discover rails | on (`0` is the kill switch) | rails API refuses with 503; Discover stays strip-only |
 | `PROFILE_THEMES_ENABLED` (+ per-theme registry `enabled` rows) | E: profile rooms | on (`0` is the kill switch) | rooms API refuses with 503; profile keeps the default skin; published rooms 404 |
+| `BRAIN_BRIDGE_TUNING` | evidence-gated bridge re-weighting (lib/brain/tuning.js) | on (`0` = the shipped split) | the base 30/15/20/10/15/10 split, always |
+| `BRAIN_EXAMINED_IMPRESSIONS` | attribution counts only examined slots (lib/brain/attribution.js) | on (`0` = serve-counting) | every served slot counts as an impression |
+| `BRAIN_DECAY_BY_CLASS` | decay by evidence class: explicit never fades, inferred 6 days, session 1 day (lib/brain/memory.js) | on (`0` = one half-life) | one 6-day half-life for everything, explicit tags included |
+| `BRAIN_EDGE_CORROBORATION` / `BRAIN_POPULARITY_DEDUP` / `BRAIN_POPULARITY_DECAY` / `BRAIN_IMAGE_GAMMA` / `BRAIN_VECTOR_NEIGHBORS` | per-module gamma/delta behaviour (lib/brain/*) | on | the pre-flag behaviour of each module |
+| `SEARCH_TASTE_BLEND` | search personalisation reads tasteVector (60/40, clamped) like every other surface (lib/search/index.js) | on (`0` = the old 1:1 sum) | long + session summed, unclamped |
+| `SEARCH_BRAIN_LOOP` / `SEARCH_SEMANTIC_RERANK` / `SEARCH_SEMANTIC_TIEBREAK` / `SEARCH_ERA_READING` / `SEARCH_ORIGIN_READING` / `SEARCH_BRAND_SPELLING` / `SEARCH_DESIGNER_CREDIT` / `SEARCH_NEGATION` / `SEARCH_SIZE_READING` / `SEARCH_PRICE_SORT` / `SEARCH_GARMENT_TITLE_EQUIV` / `SEARCH_PASSPORT_ASSUMPTION` / `SEARCH_CULTURE_FALLBACK` | the search readers, one kill switch each (lib/search/index.js) | on | that reader off; the word is disclosed as unmatched instead |
 | `BRAIN_CATALOG_LANE` | the 25% catalog lane + chunk shares in /api/feed (lib/brain/chunk.js) | on (`0` is the kill switch) | legacy zoning: discovery every 5th slot, two spread reaches, no lane; `chunk.catalog` is null. Layout only — equal scores break on an id hash in BOTH modes since #433, so the pre-#433 page order is not restored |
 
 ## Roadmap flags (reserve now, one per phase-1+ surface)

@@ -66,7 +66,15 @@ async function handlePOST(req) {
   if (!CORRECTION_SCOPES.includes(scope)) {
     return NextResponse.json({ error: "unknown correction scope" }, { status: 400 });
   }
-  const r = await recordCorrection(user, { productId, code, note: body.note, scope });
+  // IMPRESSION ATTRIBUTION (docs/v2/CONTRACTS.md § Learning events): the
+  // serve the reader was looking at when they corrected, so a replay can tie
+  // the correction to the bridge that served the piece. Optional, a string,
+  // recorded on the event — never trusted for anything but attribution.
+  const serveId = body.serveId == null ? null : String(body.serveId).slice(0, 80);
+  if (serveId !== null && !/^[A-Za-z0-9_-]{4,80}$/.test(serveId)) {
+    return NextResponse.json({ error: "serveId must be 4–80 url-safe characters" }, { status: 400 });
+  }
+  const r = await recordCorrection(user, { productId, code, note: body.note, scope, serveId });
   if (!r.ok) {
     return NextResponse.json({ error: r.error }, { status: r.status || 400 });
   }
