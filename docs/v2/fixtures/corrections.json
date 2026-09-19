@@ -1,0 +1,86 @@
+{
+  "codes": {
+    "price": [
+      "too-expensive"
+    ],
+    "fit": [
+      "too-small",
+      "too-large"
+    ],
+    "finish": [
+      "dislike-finish"
+    ],
+    "item": [
+      "not-interested",
+      "already-own"
+    ],
+    "taste": [
+      "not-my-style",
+      "less-like-this",
+      "more-like-this",
+      "dont-recommend-silhouette"
+    ],
+    "brand": [
+      "dont-recommend-brand"
+    ],
+    "note": [
+      "right-vibe-wrong-product",
+      "too-literal",
+      "too-abstract"
+    ],
+    "data": [
+      "wrong-brand",
+      "wrong-color",
+      "wrong-category",
+      "wrong-material",
+      "wrong-era",
+      "wrong-attribution"
+    ]
+  },
+  "scopes": [
+    "item",
+    "session",
+    "ongoing"
+  ],
+  "record": {
+    "request": "POST /api/why { productId, code, scope }",
+    "status": 200,
+    "body": {
+      "correction": {
+        "id": 3,
+        "code": "too-expensive",
+        "lane": "price",
+        "scope": "session"
+      },
+      "moderationQueued": false,
+      "duplicate": false,
+      "revived": false,
+      "profileUpdated": null
+    }
+  },
+  "undo": {
+    "request": "POST /api/why { undoOf }",
+    "status": 200,
+    "body": {
+      "undone": {
+        "id": 3,
+        "code": "too-expensive",
+        "lane": "price"
+      },
+      "profileUpdated": null
+    }
+  },
+  "invalidScope": {
+    "status": 400,
+    "body": {
+      "error": "unknown correction scope"
+    }
+  },
+  "effects": {
+    "too-expensive": "a price ceiling on recommendation surfaces (lowest price called too expensive); item scope excludes the piece only; no tag touched",
+    "too-small/too-large": "a fit hint { brand, category, size, direction } on the exclusions and the memory facade; no tag touched",
+    "dislike-finish": "only the finish/material words are subtracted from taste",
+    "not-interested": "the piece is excluded; no tag touched",
+    "wrong-attribution": "a desk task; never a taste signal; the piece is not demoted for the reporter"
+  }
+}

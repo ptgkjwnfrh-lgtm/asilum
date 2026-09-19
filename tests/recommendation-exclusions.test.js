@@ -184,6 +184,9 @@ const POOL_CALLERS = {
   "app/api/related/route.js": "no-identity",
   "app/api/discover/route.js": "browse-full-inventory",
   "app/api/orders/route.js": "id-lookup",
+  // The career registry counts how many pieces CREDIT a designer at a house
+  // (V.2 overview); nothing from the pool is suggested, the count is a fact.
+  "app/api/search/route.js": "id-lookup",
   // Stamp recognition. The reader UPLOADED this photograph — they are pointing
   // AT the piece, not being offered it. A correction says "stop suggesting
   // this to me"; it does not say "pretend not to recognise it when I show it
