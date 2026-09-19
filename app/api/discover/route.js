@@ -20,10 +20,25 @@ import { resolveSearchAssumption, applyPassportAssumption } from "../../../lib/s
 import { createdAtOf, sortNewestFirst, stripRecencyKey } from "../../../lib/discover/recency.js";
 import { getMemoryPreferences, listInterpretationFeedback } from "../../../lib/db/production.js";
 import { normalizeQuery } from "../../../lib/asterisk/orchestrator.js";
+import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
+import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/search/cursor.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
+  const requestId = newRequestId();
+  try {
+    return await discover(req, requestId);
+  } catch (error) {
+    // UNAVAILABLE IS NOT EMPTY (19 Sep 2026): an engine or pool throw is a
+    // typed, retryable 503, never a bare framework 500 and never `items: []`.
+    console.error("[discover] failed", requestId, error?.message || error);
+    const failed = failure("unavailable", "discover_unavailable", "the racks could not be opened — retry", { requestId });
+    return NextResponse.json({ ...failed.body, items: null, total: null }, { status: failed.status });
+  }
+}
+
+async function discover(req, requestId) {
   const { searchParams } = new URL(req.url);
   const quota = await consumeRateLimit({ scope: "discover", subject: requestSubject(req), limit: 180, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
@@ -38,8 +53,9 @@ export async function GET(req) {
   const tag = (searchParams.get("tag") || "").slice(0, 40).toUpperCase();
   const category = (searchParams.get("category") || "").slice(0, 80);
   const sort = searchParams.get("sort") || "";
-  const offset = Math.min(10_000, Math.max(0, parseInt(searchParams.get("offset"), 10) || 0));
+  let offset = Math.min(10_000, Math.max(0, parseInt(searchParams.get("offset"), 10) || 0));
   const limit = Math.max(1, Math.min(96, parseInt(searchParams.get("limit"), 10) || 48));
+  const cursor = (searchParams.get("cursor") || "").slice(0, 512);
 
   let pool = [];
   let items = [];
@@ -72,6 +88,7 @@ export async function GET(req) {
       unmatchedTokens: result.unmatchedTokens || [],
       interpreted: result.interpreted || null,
       cultural: result.cultural || null,
+      candidatesTruncated: !!result.candidatesTruncated,
     };
     items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item), _createdAt: createdAtOf(item) }));
     demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
@@ -117,14 +134,45 @@ export async function GET(req) {
   if (sort === "price-asc") items = items.slice().sort((a, b) => (a.price || 1e9) - (b.price || 1e9));
   if (sort === "price-desc") items = items.slice().sort((a, b) => (b.price || 0) - (a.price || 0));
 
+  // STABLE PAGES (19 Sep 2026, docs/v2/CONTRACTS.md). The cursor is bound to
+  // everything that decided this order and to a snapshot of the ordered ids.
+  // A cursor whose list has changed answers 409 stale_cursor so the client
+  // restarts from page one; the route never re-ranks midway and hands back
+  // a page that skips or repeats. `offset` stays for older clients.
+  const binding = bindingOf({
+    q, source, brands: searchParams.get("brands") || "", tag, category, sort,
+    tags: searchParams.get("tags") || "", guidanceEnabled, demo,
+    subject: guidanceEnabled ? requestSubject(req) : null,
+  });
+  const snapshotId = snapshotOf(items.map((item) => item.id));
+  if (cursor) {
+    const decoded = decodeCursor(cursor, { binding, snapshotId });
+    if (!decoded.ok) {
+      const stale = decoded.reason === "snapshot" || decoded.reason === "context";
+      const failed = stale
+        ? failure("stale_cursor", "cursor_" + decoded.reason, "this page no longer exists — restart from the first page", { requestId })
+        : failure("invalid", "cursor_" + decoded.reason, "the cursor could not be read", { requestId });
+      return NextResponse.json(failed.body, { status: failed.status });
+    }
+    offset = decoded.offset;
+  }
+  const page = items.slice(offset, offset + limit);
+  const nextCursor = offset + limit < items.length
+    ? encodeCursor({ offset: offset + limit, snapshotId, binding }) : null;
+
   return NextResponse.json({
+    ...envelope({ count: page.length, requestId }),
     total: items.length,
+    totalIsExact: true,
+    candidatesTruncated: !!(reading && reading.candidatesTruncated),
     offset,
+    nextCursor,
+    snapshotId,
     demo,
     sources,
     guidanceEnabled,
     assumption,
     ...(reading || {}),
-    items: stripRecencyKey(items.slice(offset, offset + limit)),
+    items: stripRecencyKey(page),
   });
 }

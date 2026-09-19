@@ -23,6 +23,7 @@ import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateL
 import { buildEvent, EVENTS } from "../../../lib/events/index.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
+import { envelope, failure } from "../../../lib/api/outcome.js";
 
 export const dynamic = "force-dynamic";
 
@@ -99,8 +100,10 @@ async function handlePOST(req) {
       item: { id: item.id, title: item.title, brand: item.brand, price: currentPrice, currency: item.currency },
       disclaimer: { text: DISCLAIMER_TEXT, checkbox: DISCLAIMER_CHECKBOX, version: DISCLAIMER_VERSION },
     });
-  } catch {
-    return NextResponse.json({ error: "ticket creation failed" }, { status: 500 });
+  } catch (error) {
+    console.error("[tickets] create failed", error?.message || error);
+    const failed = failure("unavailable", "ticket_create_failed", "the ticket desk could not record this — retry", { status: 500 });
+    return NextResponse.json({ ...failed.body, error: "ticket creation failed" }, { status: failed.status });
   }
 }
 
@@ -111,9 +114,15 @@ async function handleGET(req) {
   const quota = await consumeRateLimit({ scope: "tickets-read", subject: user, limit: 60, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
-    return NextResponse.json({ tickets: await listTickets(user) });
-  } catch {
-    return NextResponse.json({ tickets: [] });
+    const tickets = await listTickets(user);
+    return NextResponse.json({ ...envelope({ count: tickets.length }), tickets });
+  } catch (error) {
+    // A DOWN DESK IS NOT AN EMPTY DESK (19 Sep 2026). This answered a database
+    // failure with `{ tickets: [] }` and HTTP 200, indistinguishable from
+    // "you have no tickets". Typed, retryable 503 instead.
+    console.error("[tickets] list failed", error?.message || error);
+    const failed = failure("unavailable", "tickets_unavailable", "your tickets could not be read — retry");
+    return NextResponse.json({ ...failed.body, tickets: null }, { status: failed.status });
   }
 }
 
