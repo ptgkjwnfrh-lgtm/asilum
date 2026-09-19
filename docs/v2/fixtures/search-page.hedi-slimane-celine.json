@@ -3,7 +3,7 @@
   "status": 200,
   "body": {
     "contractVersion": 1,
-    "requestId": "edded2f2-b2cd-422e-84ee-9f1f57c86400",
+    "requestId": "8153f6c2-5f11-4ab4-9903-1020e2c2bd05",
     "outcome": "ok",
     "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
@@ -533,7 +533,20 @@
         "confidenceScore": 0.5,
         "matchReason": "constraint match",
         "matchedTags": [],
-        "availability": "unknown"
+        "availability": "unknown",
+        "size": {
+          "label": "FR 46",
+          "system": "FR",
+          "gender": "mens",
+          "fitsLikeUS": "XS",
+          "runsBias": 1,
+          "measurements": {
+            "chest": 38,
+            "waist": 36,
+            "shoulder": 17.3,
+            "length": 26
+          }
+        }
       },
       {
         "id": "syn-0260",
@@ -553,7 +566,20 @@
         "confidenceScore": 0.5,
         "matchReason": "constraint match",
         "matchedTags": [],
-        "availability": "unknown"
+        "availability": "unknown",
+        "size": {
+          "label": "FR 48",
+          "system": "FR",
+          "gender": "mens",
+          "fitsLikeUS": "S",
+          "runsBias": 1,
+          "measurements": {
+            "chest": 40,
+            "waist": 38,
+            "shoulder": 17.9,
+            "length": 27
+          }
+        }
       },
       {
         "id": "syn-0323",
@@ -573,7 +599,20 @@
         "confidenceScore": 0.5,
         "matchReason": "constraint match",
         "matchedTags": [],
-        "availability": "unknown"
+        "availability": "unknown",
+        "size": {
+          "label": "FR 46",
+          "system": "FR",
+          "gender": "mens",
+          "fitsLikeUS": "XS",
+          "runsBias": 1,
+          "measurements": {
+            "chest": 38,
+            "waist": 36,
+            "shoulder": 17.3,
+            "length": 26
+          }
+        }
       }
     ],
     "itemsShown": "3 of 6 on this page",

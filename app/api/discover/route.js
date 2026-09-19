@@ -23,6 +23,8 @@ import { normalizeQuery } from "../../../lib/asterisk/orchestrator.js";
 import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
 import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/search/cursor.js";
 import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
+import { poolWithFitHints } from "../../../lib/brain/fitHints.js";
+import { getUserRecommendationExclusions } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +102,13 @@ async function discover(req, requestId) {
       candidatesTruncated: !!result.candidatesTruncated,
     };
     items = result.results.map((item) => ({ ...publicProduct(item), src: sourceFor(item), _createdAt: createdAtOf(item) }));
+    // THE SAME FIT READING ON EVERY SURFACE (19 Sep): a personalised search
+    // reads each piece's size through the reader's own fit hints, exactly as
+    // the feed and the stylist do. Labels untouched; the hint rides on size.
+    if (userId) {
+      const hints = (await getUserRecommendationExclusions(userId).catch(() => null))?.fitHints || [];
+      items = poolWithFitHints(items, hints);
+    }
     demo = items.length > 0 && items.every((item) => String(item.source_name || item.source || "").includes("seed"));
   } else {
     pool = await getDiscoverablePool({ fallback: false });

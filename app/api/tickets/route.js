@@ -24,6 +24,8 @@ import { buildEvent, EVENTS } from "../../../lib/events/index.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
 import { envelope, failure } from "../../../lib/api/outcome.js";
+import { learnFromPurchaseQuietly } from "../../../lib/brain/purchase.js";
+import { consentState } from "../../../lib/consent.js";
 
 export const dynamic = "force-dynamic";
 
@@ -188,6 +190,12 @@ async function handlePATCH(req) {
     );
     if (!result) {
       return NextResponse.json({ error: "outcomes can be reported only after source checkout starts" }, { status: 409 });
+    }
+    // A REPORTED PURCHASE TEACHES THE BRAIN (19 Sep 2026): bought or kept, once
+    // per ticket, under this request's consent; a return or a no-purchase is
+    // not a taste signal. Fire-and-forget — the outcome is already recorded.
+    if (!result.duplicate && (outcome === "bought" || outcome === "kept")) {
+      learnFromPurchaseQuietly({ userId: user, itemId: ticket.productId, kind: "reported", ref: `ticket-${id}`, consent: consentState(req) });
     }
     return NextResponse.json(result);
   }

@@ -21,6 +21,8 @@ import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
 import { getDiscoverablePool } from "../../../lib/products.js";
 import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/search/cursor.js";
 import { POLICY_VERSION } from "../../../lib/brain/policy.js";
+import { sizeWithHints } from "../../../lib/brain/fitHints.js";
+import { getUserRecommendationExclusions } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +68,8 @@ export async function GET(req) {
   }
 
   const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
+  // the reader's fit hints, when the search is personalised (the same reading the feed serves)
+  const fitHints = userId ? (await getUserRecommendationExclusions(userId).catch(() => null))?.fitHints || [] : [];
   const binding = bindingOf({ q, guidanceEnabled, subject: guidanceEnabled ? requestSubject(req) : null });
   const snapshotId = snapshotOf(out.results.map((it) => it.id));
   let offset = 0;
@@ -137,6 +141,8 @@ export async function GET(req) {
       src: sourceFor(it), url: safeExternalUrl(it.url || it.source_product_url),
       confidenceScore: it.confidenceScore, matchReason: it.matchReason,
       matchedTags: it.matchedTags, availability: it.availability_status || "unknown",
+      // additive (19 Sep): the size record, read through the reader's fit hints when personalised
+      size: it.size && typeof it.size === "object" ? sizeWithHints(it, fitHints) : it.size ?? null,
     })),
   });
 }
