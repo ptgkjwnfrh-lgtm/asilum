@@ -20,7 +20,7 @@ Run from the repository root:
 
 ```sh
 npm run wikipedia:canary
-npm run wikipedia:populate -- --limit=100
+npm run wikipedia:populate -- --limit=3000 --enrich-limit=450 --per-source=40
 npm run wikipedia:report
 ```
 
@@ -32,11 +32,27 @@ Set `WIKIMEDIA_USER_AGENT` to a descriptive, contact-bearing value for productio
 
 ## Coverage and limits
 
-`data/wikipedia-overviews.json` records the generated timestamp, each configured source and scan result, discovery evidence, entities, reviews, and the corpus denominator. The report counts candidates, matched designers/houses (including verified language-only matches), published overviews, missing/ambiguous/rejected/error states, pending jobs, and languages. These are counts for the discovered corpus—not a claim that Wikidata, Wikipedia categories, or ASILUM enumerate every designer or house.
+`data/wikipedia-overviews.json` records the generated timestamp, each configured source and scan result, discovery evidence, entities, reviews, and the corpus denominator. The report counts candidates, matched designers/houses (including verified language-only matches), published overviews, missing/ambiguous/rejected/error states, pending jobs, languages, and every candidate's coverage region. These are counts for the discovered corpus—not a claim that Wikipedia, Wikidata, the industry directories, or ASILUM enumerate every designer or house.
 
-The checked-in September 19, 2026 population contains 96 candidates: 33 matched designers, 31 matched houses, and 64 published overviews (61 English, 3 French). It records 3 missing articles, 2 ambiguous matches, 27 rejected matches, 0 source errors, and 0 pending jobs at generation time. Scanned paths were the internal career registry, Wikidata designer and fashion-house classes, a French-without-English Wikidata path, and English Wikipedia designer/house categories. Manual fashion-week and boutique registries are configured but were not falsely reported as scanned.
+The checked-in September 19, 2026 population contains 2,819 candidates: 246 matched designers, 48 matched houses, and 255 published overviews (252 English, 3 French). It records 35 missing articles, 4 ambiguous matches, 27 rejected matches, 0 source errors, and 2,466 deduplicated candidates awaiting bounded enrichment. A reviewed 269-name global ledger provides a deterministic major-name audit; 224 currently publish and every one of the 38 required launch anchors passes the identity and paragraph gates. Remaining ledger gaps stay visible with an explicit status rather than disappearing or accepting an unsafe match.
 
-The source registry is extensible in `lib/people/wikipedia/registry.js`. New external directories require a reviewed access basis, precise discovery URLs, region/season metadata, and evidence semantics that distinguish designer stockists from resale, shows from attendance, and fashion houses from parent corporations or retailers.
+| Region | Candidates | Published overviews |
+|---|---:|---:|
+| North America | 872 | 41 |
+| Europe | 1,139 | 99 |
+| Africa | 121 | 22 |
+| East Asia | 139 | 27 |
+| South Asia | 125 | 20 |
+| Southeast Asia | 72 | 0 |
+| Latin America and the Caribbean | 107 | 21 |
+| Middle East | 91 | 7 |
+| Oceania | 117 | 6 |
+
+Discovery starts with the ASILUM career registry and reviewed global major-name ledger. It then parses the revision-recorded English Wikipedia nationality list, scans Wikidata designer/house classes and the French-without-English path, and samples general plus country/region Wikipedia categories. The nationality list contributes the broad denominator even when a candidate falls outside the current enrichment budget; the pending record preserves its country, region, exact article title, list revision, and evidence for later jobs.
+
+Official CFDA, FHCM, Camera Nazionale della Moda Italiana, Tokyo, Shanghai, Lakmé × FDCI, South African, Lagos, and São Paulo sources are registered as reviewed manual discovery paths. They are not falsely reported as automated scans and cannot supply biography prose; publication still requires a resolved, revision-pinned Wikipedia paragraph.
+
+The source registry is extensible in `lib/people/wikipedia/registry.js`; country-to-region normalization is isolated in `lib/people/wikipedia/regions.js`, and the reviewed name ledger is `data/fashion-coverage-registry.json`. New external directories require a reviewed access basis, precise discovery URLs, region/season metadata, and evidence semantics that distinguish designer stockists from resale, shows from attendance, and fashion houses from parent corporations or retailers.
 
 ## Corrections and rollback
 

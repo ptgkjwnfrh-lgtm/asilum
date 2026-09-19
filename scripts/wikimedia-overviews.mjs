@@ -8,12 +8,15 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import CAREERS from "../lib/people/careers.data.json" with { type: "json" };
+import COVERAGE_REGISTRY from "../data/fashion-coverage-registry.json" with { type: "json" };
 import {
-  discoverWikidataClass, discoverWikipediaCategory, fetchWikipediaOverview,
-  resolveNameCandidate,
+  discoverWikidataClass, discoverWikipediaCategory, discoverWikipediaList,
+  fetchWikipediaOverview, resolveNameCandidate,
 } from "../lib/people/wikipedia/client.js";
 import { entityIdFor, validateOverviewRecord } from "../lib/people/wikipedia/contract.js";
 import { WIKIPEDIA_DISCOVERY_SOURCES } from "../lib/people/wikipedia/registry.js";
+import { coverageRegionForCountry } from "../lib/people/wikipedia/regions.js";
+import { queueWikipediaResolution } from "../lib/people/wikipedia/jobs.js";
 import {
   createWikipediaReview, importedWikipediaDataset, upsertDiscoveryEvidence,
   upsertFashionEntity, upsertFashionRelationship, upsertWikipediaOverview,
@@ -28,7 +31,9 @@ const option = (name, fallback = null) => {
   const raw = argv.find((arg) => arg.startsWith(`--${name}=`));
   return raw ? raw.slice(name.length + 3) : fallback;
 };
-const limit = Math.max(1, Math.min(250, Number.parseInt(option("limit", "80"), 10) || 80));
+const limit = Math.max(1, Math.min(5000, Number.parseInt(option("limit", "3000"), 10) || 3000));
+const enrichLimit = Math.max(1, Math.min(limit, Number.parseInt(option("enrich-limit", "450"), 10) || 450));
+const perSource = Math.max(1, Math.min(100, Number.parseInt(option("per-source", "40"), 10) || 40));
 const persistDatabase = argv.includes("--database");
 
 if (persistDatabase && !process.env.DATABASE_URL) {
@@ -90,6 +95,30 @@ function careerCandidates() {
   }));
 }
 
+function coverageCandidates() {
+  return COVERAGE_REGISTRY.entities.map((row) => ({
+    id: entityIdFor(row.name, row.kind),
+    kind: row.kind,
+    canonicalName: row.name,
+    aliases: row.aliases || [],
+    language: row.language || "en",
+    wikipediaTitle: row.wikipediaTitle,
+    autoPublish: true,
+    discovery: [{
+      sourceKey: "global-major-names-registry",
+      evidenceUrl: "internal://data/fashion-coverage-registry.json",
+      evidenceType: "existing_catalog",
+      qualification: {
+        coverageRegion: row.region,
+        country: row.country,
+        priority: "major-name-ledger",
+        required: row.required === true,
+        curatedArticleMapping: true,
+      },
+    }],
+  }));
+}
+
 function relationshipRows() {
   return (CAREERS.edges || []).map((edge, index) => ({
     id: `${edge.designerId}|${edge.houseId}|${edge.start || "unknown"}|${index + 1}`,
@@ -106,12 +135,15 @@ function relationshipRows() {
 
 async function discoverCandidates(budget) {
   const retrievedAt = nowIso();
-  const candidates = careerCandidates();
+  const careers = careerCandidates();
+  const coverage = coverageCandidates();
+  const candidates = [...careers, ...coverage];
   const sources = [];
-  const perSource = Math.max(8, Math.min(50, Math.ceil(budget / 4)));
   for (const source of WIKIPEDIA_DISCOVERY_SOURCES.filter((row) => row.enabled)) {
     if (source.type === "internal_registry") {
-      sources.push(sourceRecord(source, retrievedAt, { scanned: true, candidateCount: candidates.length }));
+      const candidateCount = source.key === "asilum-career-registry" ? careers.length
+        : source.key === "global-major-names-registry" ? coverage.length : 0;
+      sources.push(sourceRecord(source, retrievedAt, { scanned: true, candidateCount }));
       continue;
     }
     try {
@@ -130,6 +162,12 @@ async function discoverCandidates(budget) {
           kind: source.key.includes("houses") ? "house" : "designer",
           limit: perSource,
         });
+      } else if (source.type === "wikipedia_list") {
+        found = await discoverWikipediaList({
+          title: source.title, language: source.language,
+          kind: source.key.includes("houses") ? "house" : "designer",
+          limit: Math.min(5000, budget),
+        });
       }
       for (const row of found) candidates.push({
         ...row,
@@ -138,10 +176,13 @@ async function discoverCandidates(budget) {
         autoPublish: source.type === "wikidata",
         discovery: [{
           sourceKey: source.key, evidenceUrl: source.url,
-          evidenceType: source.type === "wikidata" ? "wikidata_statement" : "category",
+          evidenceType: source.type === "wikidata" ? "wikidata_statement"
+            : source.type === "wikipedia_list" ? "list" : "category",
           qualification: source.type === "wikidata"
-            ? { classQid: source.classQid, entityQid: row.wikidataQid }
-            : { category: source.category, requiresIdentityReview: true },
+            ? { classQid: source.classQid, entityQid: row.wikidataQid, coverageRegion: source.region }
+            : source.type === "wikipedia_list"
+              ? { listTitle: source.title, listRevisionId: row.listRevisionId, country: row.country, coverageRegion: coverageRegionForCountry(row.country), requiresIdentityReview: true }
+              : { category: source.category, coverageRegion: source.region, requiresIdentityReview: true },
         }],
       });
       sources.push(sourceRecord(source, retrievedAt, { scanned: true, candidateCount: found.length }));
@@ -166,8 +207,31 @@ async function discoverCandidates(budget) {
 
 function coverageOf(dataset) {
   const published = dataset.overviews.filter((row) => row.status === "published");
+  const publishedIds = new Set(published.map((row) => row.entityId));
+  const entitiesById = new Map(dataset.entities.map((row) => [row.id, row]));
   const languages = {};
   for (const row of published) languages[row.language] = (languages[row.language] || 0) + 1;
+  const regionIds = new Map();
+  const majorIds = new Set();
+  for (const evidence of dataset.evidence) {
+    const region = evidence.qualification?.coverageRegion;
+    if (region && region !== "global") {
+      if (!regionIds.has(region)) regionIds.set(region, new Set());
+      regionIds.get(region).add(evidence.entityId);
+    }
+    if (evidence.qualification?.priority === "major-name-ledger") majorIds.add(evidence.entityId);
+  }
+  const regions = Object.fromEntries([...regionIds.entries()].sort(([a],[b]) => a.localeCompare(b)).map(([region, ids]) => {
+    const entities = [...ids].map((id) => entitiesById.get(id)).filter(Boolean);
+    return [region, {
+      candidates: entities.length,
+      matchedDesigners: entities.filter((row) => row.kind === "designer" && ["matched", "language_only"].includes(row.matchStatus)).length,
+      matchedHouses: entities.filter((row) => row.kind === "house" && ["matched", "language_only"].includes(row.matchStatus)).length,
+      publishedOverviews: entities.filter((row) => publishedIds.has(row.id)).length,
+      gaps: entities.filter((row) => !publishedIds.has(row.id)).length,
+    }];
+  }));
+  const majorEntities = [...majorIds].map((id) => entitiesById.get(id)).filter(Boolean);
   return {
     candidates: dataset.entities.length,
     matchedDesigners: dataset.entities.filter((row) => row.kind === "designer" && ["matched", "language_only"].includes(row.matchStatus)).length,
@@ -177,15 +241,21 @@ function coverageOf(dataset) {
     ambiguousMatches: dataset.entities.filter((row) => row.matchStatus === "ambiguous").length,
     rejectedMatches: dataset.entities.filter((row) => row.matchStatus === "rejected").length,
     errors: dataset.entities.filter((row) => row.matchStatus === "temporary_failure").length,
-    pendingJobs: 0,
+    pendingJobs: dataset.pending?.length || 0,
     languages,
+    regions,
+    majorNames: {
+      candidates: majorEntities.length,
+      publishedOverviews: majorEntities.filter((row) => publishedIds.has(row.id)).length,
+      gaps: majorEntities.filter((row) => !publishedIds.has(row.id)).map((row) => ({ id: row.id, name: row.canonicalName, kind: row.kind, status: row.matchStatus })),
+    },
   };
 }
 
 async function populate() {
   const { candidates, sources } = await discoverCandidates(limit);
   const dataset = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     generatedAt: nowIso(),
     sources,
     entities: [],
@@ -193,6 +263,7 @@ async function populate() {
     evidence: [],
     relationships: relationshipRows(),
     reviews: [],
+    pending: [],
     coverage: {},
   };
   const entityIndex = new Map();
@@ -236,6 +307,24 @@ async function populate() {
   };
   for (let index = 0; index < candidates.length; index++) {
     let candidate = candidates[index];
+    if (index >= enrichLimit) {
+      const storedId = storeEntity({
+        id: candidate.id, kind: candidate.kind, canonicalName: candidate.canonicalName,
+        aliases: candidate.aliases || [], wikidataQid: candidate.wikidataQid || null,
+        matchStatus: "candidate", publicStatus: "unpublished",
+        preferredLanguage: candidate.language || null,
+        reviewReason: "awaiting bounded Wikipedia enrichment",
+      });
+      storeCandidateEvidence(candidate, storedId);
+      dataset.pending.push({
+        entityId: storedId, kind: candidate.kind, canonicalName: candidate.canonicalName,
+        language: candidate.language || "en", wikipediaTitle: candidate.wikipediaTitle || null,
+        wikidataQid: candidate.wikidataQid || null,
+        autoPublish: candidate.autoPublish === true,
+        evidence: candidate.discovery?.[0] || null,
+      });
+      continue;
+    }
     process.stderr.write(`[${index + 1}/${candidates.length}] ${candidate.kind}: ${candidate.canonicalName}\n`);
     try {
       // Names without a vetted title get the bounded Wikidata identity path.
@@ -288,6 +377,15 @@ async function populate() {
       storeCandidateEvidence(candidate, storedId);
     }
   }
+  const pendingByEntity = new Map();
+  for (const row of dataset.pending) {
+    const previous = pendingByEntity.get(row.entityId);
+    // QID reconciliation can collapse differently named discovery candidates
+    // into one entity. Keep exactly one resumable job, preferring an exact
+    // article title when only one candidate supplies it.
+    if (!previous || (!previous.wikipediaTitle && row.wikipediaTitle)) pendingByEntity.set(row.entityId, row);
+  }
+  dataset.pending = [...pendingByEntity.values()];
   dataset.coverage = coverageOf(dataset);
   if (persistDatabase) {
     for (const entity of dataset.entities) await upsertFashionEntity(entity);
@@ -298,6 +396,17 @@ async function populate() {
     for (const evidence of dataset.evidence) await upsertDiscoveryEvidence(evidence);
     for (const relationship of dataset.relationships) await upsertFashionRelationship(relationship);
     for (const review of dataset.reviews) await createWikipediaReview(review);
+    for (const pending of dataset.pending) await queueWikipediaResolution({
+      name: pending.canonicalName,
+      kind: pending.kind,
+      requestedBy: "population-backlog",
+      candidate: {
+        id: pending.entityId, kind: pending.kind, canonicalName: pending.canonicalName,
+        aliases: [], wikidataQid: pending.wikidataQid, language: pending.language,
+        wikipediaTitle: pending.wikipediaTitle, autoPublish: pending.autoPublish,
+      },
+      evidence: pending.evidence,
+    });
   }
   await fs.mkdir(path.dirname(OUTPUT), { recursive: true });
   await fs.writeFile(OUTPUT, JSON.stringify(dataset, null, 2) + "\n", "utf8");

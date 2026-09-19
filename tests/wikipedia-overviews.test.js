@@ -3,11 +3,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import DATASET from "../data/wikipedia-overviews.json" with { type: "json" };
+import COVERAGE_REGISTRY from "../data/fashion-coverage-registry.json" with { type: "json" };
 import {
   extractWikipediaLead,
 } from "../lib/people/wikipedia/extract.js";
 import {
-  fetchWikipediaOverview, paragraphDescribesKind, resolveWikipediaArticle, wikimediaFetchJson,
+  discoverWikipediaList, fetchWikipediaOverview, paragraphDescribesKind,
+  resolveWikipediaArticle, wikimediaFetchJson,
 } from "../lib/people/wikipedia/client.js";
 import {
   paragraphHash, validateOverviewRecord, wikipediaEntityDto,
@@ -104,7 +106,7 @@ test("ambiguity, wrong QID, no article, non-English text, and transient failure 
 
 test("discovery paths are independently sufficient and the registry is extensible", async () => {
   const types = new Set(WIKIPEDIA_DISCOVERY_SOURCES.map((source) => source.type));
-  for (const type of ["wikidata", "wikipedia_category", "fashion_week", "boutique_directory"]) assert.ok(types.has(type), type);
+  for (const type of ["wikidata", "wikipedia_category", "wikipedia_list", "fashion_week", "industry_directory", "boutique_directory"]) assert.ok(types.has(type), type);
   for (const [suffix, evidenceType] of [["boutique", "stockist"], ["week", "fashion_week"], ["runway", "runway"]]) {
     const result = await registerFashionCandidate({
       entity: { id: `fixture-${suffix}`, kind: "designer", canonicalName: `Fixture ${suffix}`, aliases: [], wikidataQid: null },
@@ -115,9 +117,21 @@ test("discovery paths are independently sufficient and the registry is extensibl
   }
 });
 
+test("the nationality list yields country-labelled exact article candidates", async () => {
+  const found = await discoverWikipediaList({
+    title: "List of fashion designers", language: "en", kind: "designer", limit: 20,
+  }, { fetchImpl: async () => response(fixture("parse-designer-list.json")) });
+  assert.deepEqual(found.map(({ canonicalName, wikipediaTitle, country, listRevisionId }) => ({ canonicalName, wikipediaTitle, country, listRevisionId })), [
+    { canonicalName: "Rei Kawakubo", wikipediaTitle: "Rei Kawakubo", country: "Japan", listRevisionId: 777 },
+    { canonicalName: "Issey Miyake", wikipediaTitle: "Issey Miyake", country: "Japan", listRevisionId: 777 },
+    { canonicalName: "Sabyasachi Mukherjee", wikipediaTitle: "Sabyasachi Mukherjee", country: "India", listRevisionId: 777 },
+  ]);
+});
+
 test("the checked-in population is broad, traceable, and includes external and historical records", () => {
-  assert.ok(DATASET.coverage.candidates >= 60, `candidates ${DATASET.coverage.candidates}`);
-  assert.ok(DATASET.coverage.publishedOverviews >= 50, `published ${DATASET.coverage.publishedOverviews}`);
+  assert.ok(DATASET.coverage.candidates >= 300, `candidates ${DATASET.coverage.candidates}`);
+  assert.ok(DATASET.coverage.publishedOverviews >= 175, `published ${DATASET.coverage.publishedOverviews}`);
+  assert.equal(new Set(DATASET.pending.map((row) => row.entityId)).size, DATASET.pending.length, "pending enrichment is entity-deduplicated");
   assert.ok(DATASET.sources.filter((source) => source.scanned).length >= 3);
   const seedIds = new Set(["tom-ford", "hedi-slimane", "yves-saint-laurent", "gucci"]);
   const external = DATASET.evidence?.find((row) => row.sourceKey === "wikidata-fashion-designers" && !seedIds.has(row.entityId));
@@ -125,6 +139,18 @@ test("the checked-in population is broad, traceable, and includes external and h
   const historical = DATASET.entities.find((row) => /Callot Soeurs|Schiaparelli/i.test(row.canonicalName));
   assert.ok(historical, "historical or defunct fashion house retained");
   assert.ok(DATASET.overviews.some((row) => row.language !== "en"), "non-English-only article retained without translation");
+  for (const region of ["North America", "Europe", "Africa", "East Asia", "South Asia", "Latin America and the Caribbean"]) {
+    assert.ok(DATASET.coverage.regions?.[region]?.publishedOverviews >= 5, `${region} has measured published coverage`);
+  }
+  const publishedIds = new Set(DATASET.overviews.filter((row) => row.status === "published").map((row) => row.entityId));
+  for (const expected of COVERAGE_REGISTRY.entities.filter((row) => row.required)) {
+    const evidence = DATASET.evidence.find((row) => row.sourceKey === "global-major-names-registry"
+      && row.qualification?.required === true && row.qualification?.country === expected.country
+      && DATASET.entities.find((entity) => entity.id === row.entityId)?.kind === expected.kind
+      && [DATASET.entities.find((entity) => entity.id === row.entityId)?.canonicalName,
+        ...(DATASET.entities.find((entity) => entity.id === row.entityId)?.aliases || [])].includes(expected.name));
+    assert.ok(evidence && publishedIds.has(evidence.entityId), `required global name published: ${expected.kind} ${expected.name}`);
+  }
 });
 
 test("public DTO keeps text and image rights separate and never invents fallback prose", () => {
