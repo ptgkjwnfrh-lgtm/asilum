@@ -103,7 +103,7 @@ async function handlePOST(req) {
   } catch (error) {
     console.error("[tickets] create failed", error?.message || error);
     const failed = failure("unavailable", "ticket_create_failed", "the ticket desk could not record this — retry", { status: 500 });
-    return NextResponse.json({ ...failed.body, error: "ticket creation failed" }, { status: failed.status });
+    return NextResponse.json(failed.body, { status: failed.status });
   }
 }
 
