@@ -3,6 +3,7 @@
   "regions": ["iad1"],
   "crons": [
     { "path": "/api/steward/run", "schedule": "17 5 * * *" },
-    { "path": "/api/catalog/run", "schedule": "*/15 * * * *" }
+    { "path": "/api/catalog/run", "schedule": "*/15 * * * *" },
+    { "path": "/api/knowledge/wikipedia/run", "schedule": "37 */6 * * *" }
   ]
 }

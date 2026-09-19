@@ -57,7 +57,7 @@ export async function GET(req) {
     return NextResponse.json({ ...failed.body, q, results: [], total: null }, { status: failed.status });
   }
 
-  const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
+  const resolvedEntities = await resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
 
   // Legacy multi-search facets, now derived from the ranked results.
   const brands = [];

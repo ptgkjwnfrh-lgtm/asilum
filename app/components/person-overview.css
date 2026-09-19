@@ -23,7 +23,11 @@
 .pov-editorial .povkick { font-size: 10px; letter-spacing: .15em; line-height: 1.6; margin-bottom: 14px; }
 .pov-editorial .povname { margin: 0 0 12px; font-size: clamp(20px, 2.5vw, 32px); line-height: 1.5; overflow-wrap: anywhere; }
 .pov-editorial .povname > button { all: unset; cursor: pointer; }
+.pov-editorial.is-house .povname,
+.pov-editorial.is-house .povrole,
+.pov-editorial.is-house .povlanguage { text-align: center; }
 .pov-editorial .povrole { font-size: 12px; line-height: 1.5; letter-spacing: .04em; }
+.pov-editorial .povlanguage { color: var(--grey); font-size: 10px; letter-spacing: .12em; }
 .pov-editorial .povsum { font-size: 16px; line-height: 1.7; margin: 14px 0 12px; }
 .pov-editorial:not(.is-expanded) .povsum { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 .pov-editorial .povread { min-height: 44px; font-size: 13px; letter-spacing: .04em; }
@@ -37,6 +41,22 @@
 .pov-editorial .povfooter { padding: 16px 24px 22px; border-top: 1px solid var(--line); clear: both; }
 .pov-editorial .povmeta { line-height: 2; letter-spacing: .04em; font-size: 11px; }
 .pov-editorial .povmeta .txtbtn { min-height: 36px; letter-spacing: .04em; font-size: 12px; }
+.pov-editorial .povattribution { margin-top: 12px; color: var(--grey); font-size: 11px; line-height: 1.8; }
+.pov-editorial .povattribution a { color: inherit; text-underline-offset: 3px; }
+.pov-editorial .povattribution details { margin-top: 4px; }
+.pov-editorial .povattribution summary { width: fit-content; cursor: pointer; }
+.pov-editorial .povattribution dl { margin: 8px 0 0; }
+.pov-editorial .povattribution dl > div { display: grid; grid-template-columns: 90px 1fr; gap: 8px; }
+.pov-editorial .povattribution dt { font-weight: 700; }
+.pov-editorial .povattribution dd { margin: 0; overflow-wrap: anywhere; }
+.pov-editorial .povrelations { padding: 18px 24px 22px; border-top: 1px solid var(--line); }
+.pov-editorial .povrelationshead { margin-bottom: 10px; color: var(--grey); font-size: 10px; letter-spacing: .15em; }
+.pov-editorial .povplates { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 8px; scroll-snap-type: x proximity; }
+.pov-editorial .povplate { flex: 0 0 min(250px, 78vw); display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); text-decoration: none; scroll-snap-align: start; }
+.pov-editorial .povplate b { font-family: var(--mich); font-size: 14px; font-weight: 400; }
+.pov-editorial .povplate span { font-size: 11px; }
+.pov-editorial .povplate em { color: var(--grey); font-size: 10px; font-style: normal; }
+.pov-editorial .povplate small { color: var(--sig); font-size: 9px; letter-spacing: .06em; }
 .pov-editorial :is(button, a):focus-visible { outline: 2px solid var(--sig); outline-offset: 4px; border-radius: 3px; }
 .pov-editorial [hidden] { display: none !important; }
 @media (max-width: 640px) {
@@ -51,4 +71,5 @@
   .pov-editorial.is-expanded .povimg { width: 40%; margin: 0 16px 12px 0; }
   .pov-editorial.is-expanded .povsum { font-size: 16px; }
   .pov-editorial .povfooter { padding: 12px 16px 18px; }
+  .pov-editorial .povrelations { padding: 14px 16px 18px; }
 }

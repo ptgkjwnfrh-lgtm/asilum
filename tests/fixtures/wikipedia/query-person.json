@@ -1,0 +1,14 @@
+{
+  "query": {
+    "pages": [{
+      "pageid": 101,
+      "ns": 0,
+      "title": "Tom Ford",
+      "fullurl": "https://en.wikipedia.org/wiki/Tom_Ford",
+      "canonicalurl": "https://en.wikipedia.org/wiki/Tom_Ford",
+      "pageprops": { "wikibase_item": "Q318149" },
+      "revisions": [{ "revid": 9001, "timestamp": "2026-09-11T03:47:46Z" }],
+      "langlinks": []
+    }]
+  }
+}

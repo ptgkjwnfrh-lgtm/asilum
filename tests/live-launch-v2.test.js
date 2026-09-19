@@ -52,24 +52,16 @@ test("the places register: fixtures say so, sourced rows carry a source and a ch
   assert.ok(Math.abs(distanceKm({ lat: 0, lng: 0 }, { lat: 0, lng: 1 }) - 111.2) < 1);
 });
 
-test("the overview lookup tolerates a typo, refuses a single short token, never invents a person", async () => {
-  const { findOverview } = await import("../lib/people/overviews.js");
-  assert.equal(findOverview("olivier rousteing").id, "olivier-rousteing");
-  assert.equal(findOverview("oliver rousteing").id, "olivier-rousteing", "one edit in a 7-letter token");
-  assert.equal(findOverview("rousteing").id, "olivier-rousteing", "the surname alone is enough");
-  assert.equal(findOverview("black cropped leather jacket"), null, "a garment sentence is not a person");
-  assert.equal(findOverview("rick owens"), null, "a designer without a row is simply not here");
-  assert.equal(findOverview(""), null);
+test("the retired hand-written overview lookup fails closed", async () => {
+  const { findOverview, OVERVIEWS } = await import("../lib/people/overviews.js");
+  assert.equal(findOverview("olivier rousteing"), null);
+  assert.deepEqual(OVERVIEWS, []);
 });
 
-test("the overview's claims each name a source, and the row says it is not an affiliation", async () => {
-  const { OVERVIEWS } = await import("../lib/people/overviews.js");
-  for (const o of OVERVIEWS) {
-    assert.match(o.lastUpdated, /^\d{4}-\d{2}-\d{2}$/);
-    for (const f of o.facts) assert.ok(o.sources[f.source], `${o.id}: fact "${f.claim}" has no source`);
-    assert.match(o.notAffiliated, /not/i);
-    assert.ok(!/Balmain's current|current creative director of Balmain/i.test(o.summary));
-  }
+test("the Wikipedia population owns overview prose instead", async () => {
+  const data = (await import("../data/wikipedia-overviews.json", { with: { type: "json" } })).default;
+  assert.ok(data.overviews.length > 0);
+  assert.ok(data.overviews.every((row) => row.sourceParagraph === row.renderedText));
 });
 
 test("the desk: absent evidence is pending, a material disagreement reaches the archivalist, agreement is consistency", async () => {

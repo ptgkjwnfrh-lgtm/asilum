@@ -17,7 +17,6 @@ import PageMast from "../components/PageMast.jsx";
 import DiscoverTabs from "../components/DiscoverTabs.jsx";
 import PersonOverview from "../components/PersonOverview.jsx";
 import PlacesPanel from "../components/PlacesPanel.jsx";
-import { findOverview } from "../../lib/people/overviews.js";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -45,6 +44,8 @@ export default function DiscoverPage() {
   const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [favedIds, setFavedIds] = useState(() => new Set());
   const [searched, setSearched] = useState("");
+  const [overview, setOverview] = useState(null);
+  const [relatedEntities, setRelatedEntities] = useState([]);
   const [followed, setFollowed] = useState([]);
   const [sug, setSug] = useState([]);
   const [ticketItem, setTicketItem] = useState(null);
@@ -72,6 +73,7 @@ export default function DiscoverPage() {
   const sugRef = useRef(null);
   const loadRequestRef = useRef({ id: 0, controller: null });
   const suggestRequestRef = useRef({ id: 0, controller: null });
+  const resolutionQueuedRef = useRef(new Set());
 
   const load = useCallback(async (reset = true, qOverride = null) => {
     loadRequestRef.current.id++;
@@ -112,9 +114,24 @@ export default function DiscoverPage() {
       offsetRef.current = requestOffset + nextItems.length;
       if (reset) {
         setSearched(qval.trim());
+        setOverview(d.overview || null);
+        setRelatedEntities(Array.isArray(d.related) ? d.related : []);
         setAssumption(d.assumption && d.assumption.applied ? d.assumption : null);
         setEngineNote(typeof d.note === "string" && d.note ? d.note : null);
         setConstraints(d.interpreted ? readConstraints(d.interpreted) : []);
+        const lookupName = qval.trim();
+        const hasWikipediaParagraph = Boolean(d.overview?.overview?.paragraph);
+        const nameLike = /^[\p{L}\p{M}.'’& -]{2,120}$/u.test(lookupName) && lookupName.split(/\s+/).length <= 7;
+        if (!hasWikipediaParagraph && nameLike && !lookupName.includes(":") && !resolutionQueuedRef.current.has(lookupName.toLowerCase())) {
+          resolutionQueuedRef.current.add(lookupName.toLowerCase());
+          // Queue after the committed search response. Wikimedia is never on
+          // the keystroke or search-response critical path.
+          authorizedFetch("/api/knowledge/wikipedia/resolve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: lookupName, kind: d.overview?.kind || null }),
+          }).catch(() => {});
+        }
       }
     } catch (error) {
       if (requestId === loadRequestRef.current.id && error?.name !== "AbortError") {
@@ -123,6 +140,8 @@ export default function DiscoverPage() {
           setItems([]);
           setTotal(0);
           setSources([]);
+          setOverview(null);
+          setRelatedEntities([]);
         }
       }
     } finally {
@@ -511,7 +530,7 @@ export default function DiscoverPage() {
           again. Absent entirely when the sentence carried none, because an
           empty row would advertise a filter mechanism that does not exist.
           docs/INVISIBLE-MACHINERY.md */}
-      {searched && findOverview(searched) ? <PersonOverview person={findOverview(searched)} compact /> : null}
+      {searched && overview ? <PersonOverview person={overview} related={relatedEntities} compact /> : null}
       {constraints.length > 0 ? (
         <div className="readsback">
           {constraints.map((c, i) => (

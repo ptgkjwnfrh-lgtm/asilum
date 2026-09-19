@@ -57,6 +57,64 @@ const DUPLICATE_VERSIONS = new Map([[16, ["schema-v16-discover-rails.sql", "sche
 
 const databaseUrl = process.env.TEST_DATABASE_URL || "";
 
+test("Postgres v54 keeps Wikipedia identity, revision and leased-job behavior aligned with memory mode",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const production = await import("../lib/db/production.js");
+  const { paragraphHash, WIKIPEDIA_EXTRACTOR_VERSION } = await import("../lib/people/wikipedia/contract.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const entityId = `pg-wikipedia-${suffix}`;
+  const qid = `Q${BigInt(`0x${suffix.replaceAll("-", "")}`).toString()}`;
+  const pageId = Number.parseInt(suffix.replaceAll("-", "").slice(0, 10), 16);
+  const jobKey = `pg-wikipedia-job-${suffix}`;
+  const paragraph = "Fixture Designer is a British fashion designer known for independently presented clothing collections and careful textile work.";
+  const entity = {
+    id: entityId, kind: "designer", canonicalName: "Fixture Designer",
+    aliases: [`Fixture Designer ${suffix}`], wikidataQid: qid,
+    matchStatus: "matched", publicStatus: "published", preferredLanguage: "en",
+  };
+  const overview = {
+    entityId, language: "en", pageId, canonicalTitle: "Fixture Designer",
+    canonicalUrl: "https://en.wikipedia.org/wiki/Fixture_Designer", redirectFrom: [],
+    revisionId: pageId + 1, revisionTimestamp: "2026-09-01T00:00:00Z",
+    sourceParagraph: paragraph, renderedText: paragraph,
+    paragraphSelector: ".mw-parser-output > p:nth-of-type(1)",
+    extractorVersion: WIKIPEDIA_EXTRACTOR_VERSION, contentHash: paragraphHash(paragraph),
+    attributionLabel: "Wikipedia contributors", textLicense: "CC BY-SA 4.0",
+    textLicenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+    editorialModifications: ["citation markers removed"], image: null,
+    status: "published", checkedAt: "2026-09-19T00:00:00Z",
+    fetchedAt: "2026-09-19T00:00:00Z", expiresAt: "2026-09-26T00:00:00Z",
+  };
+
+  t.after(async () => {
+    await pool.query("DELETE FROM wikipedia_jobs WHERE job_key=$1", [jobKey]);
+    await pool.query("DELETE FROM wikipedia_audit WHERE entity_id=$1", [entityId]);
+    await pool.query("DELETE FROM fashion_entities WHERE id=$1", [entityId]);
+  });
+
+  const saved = await production.upsertWikipediaOverview(entity, overview);
+  assert.equal(saved.overview.revisionId, overview.revisionId);
+  assert.equal((await production.findFashionEntityByName(entity.aliases[0])).id, entityId);
+  assert.equal((await production.getWikipediaOverview(entityId, "en")).sourceParagraph, paragraph);
+
+  const changedText = `${paragraph} `.repeat(5).trim();
+  const quarantined = await production.upsertWikipediaOverview(entity, {
+    ...overview, revisionId: overview.revisionId + 1,
+    sourceParagraph: changedText, renderedText: changedText,
+    contentHash: paragraphHash(changedText),
+  });
+  assert.equal(quarantined.quarantined, true);
+  assert.equal((await production.getWikipediaOverview(entityId, "en")).revisionId, overview.revisionId,
+    "suspicious text never replaces the last-known-good revision");
+
+  const job = await production.enqueueWikipediaJob({ jobKey, kind: "refresh", entityId, payload: {} });
+  const claimed = await production.claimWikipediaJobs(`pg-worker-${suffix}`, { limit: 25 });
+  assert.ok(claimed.some((row) => row.id === job.id));
+});
+
 // The ledger REKEY that adoption performs had no Postgres coverage — exactly
 // the gap #144 existed to close for the popularity write path. The statements
 // run INSIDE adoptAccountData's transaction, and the unit suite that proves

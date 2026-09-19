@@ -26,13 +26,12 @@ test("law 4: the registry is whole — every edge and claim names a source, date
   assert.ok(cov.edges >= 40, `edges ${cov.edges}`);
   assert.ok(cov.sources >= 60);
   assert.ok(cov.fetchedSources >= 4, "at least the official press pages were read");
-  assert.equal(cov.vogueSources, 0, "the Vogue gap is recorded, not hidden");
-  assert.match(CAREER_PROVENANCE.vogueCoverage, /OPEN/);
+  assert.equal(cov.vogueSources, 0, "career registry source counts stay explicit");
+  assert.match(CAREER_PROVENANCE.vogueCoverage, /SUPERSEDED/);
   for (const id of ["tom-ford", "hedi-slimane", "gucci", "saint-laurent", "dior", "celine", "tom-ford-house"]) {
     const dto = entityDto(id);
     assert.ok(dto, id);
-    assert.ok(dto.overview?.summary?.text.length > 20, `${id} has a summary`);
-    assert.ok(dto.overview.summary.sourceIds.length >= 1);
+    assert.equal(dto.overview, null, `${id} does not expose hand-written career prose as an overview`);
     assert.ok(dto.sources.length >= 1);
     for (const s of dto.sources) assert.match(s.url, /^https:\/\//);
     for (const f of dto.facts) assert.ok(f.claim.sourceIds.length >= 1, `${id} fact ${f.key} sourced`);
@@ -152,21 +151,21 @@ test("law 3: no sourced record and a miss are said as what they are, and never w
   assert.ok(plain.total >= 13);
 });
 
-test("the resolver hands Codex both canonical ids for a pair, and the chronology for a name", () => {
-  const pair = resolveOverviewForQuery("tom ford: gucci", { pool: CATALOG });
+test("the resolver hands Codex both canonical ids for a pair, and the chronology for a name", async () => {
+  const pair = await resolveOverviewForQuery("tom ford: gucci", { pool: CATALOG });
   assert.deepEqual(pair.query, { text: "tom ford: gucci", designerId: "tom-ford", houseId: "gucci" });
   assert.equal(pair.overview.id, "tom-ford");
   assert.equal(pair.entities.house.id, "gucci");
   assert.deepEqual(pair.related.map((e) => e.houseId), ["gucci", "saint-laurent", "tom-ford-house"]);
-  const house = resolveOverviewForQuery("gucci", { pool: CATALOG });
+  const house = await resolveOverviewForQuery("gucci", { pool: CATALOG });
   assert.equal(house.overview.kind, "house");
   assert.equal(house.related[0].designerId, "tom-ford");
   assert.equal(house.related[0].matchingItemCount, 0);
   assert.equal(house.related.find((e) => e.designerId === "sabato-de-sarno").matchingItemCount, 13);
-  const none = resolveOverviewForQuery("black leather jacket", { pool: CATALOG });
+  const none = await resolveOverviewForQuery("black leather jacket", { pool: CATALOG });
   assert.equal(none.overview, null);
   assert.deepEqual(none.related, []);
-  assert.equal(resolveOverviewForQuery("gucci").related[0].matchingItemCount, null, "uncounted is null, never zero");
+  assert.equal((await resolveOverviewForQuery("gucci")).related[0].matchingItemCount, null, "uncounted is null, never zero");
 });
 
 test("/api/discover carries overview, related and query ids for a pair, with an honest empty rack", async () => {

@@ -1,0 +1,15 @@
+{
+  "query": {
+    "redirects": [{ "from": "Tom Ford label", "to": "Tom Ford (brand)" }],
+    "pages": [{
+      "pageid": 202,
+      "ns": 0,
+      "title": "Tom Ford (brand)",
+      "fullurl": "https://en.wikipedia.org/wiki/Tom_Ford_(brand)",
+      "canonicalurl": "https://en.wikipedia.org/wiki/Tom_Ford_(brand)",
+      "pageprops": { "wikibase_item": "Q1531596" },
+      "revisions": [{ "revid": 9002, "timestamp": "2026-08-30T10:00:00Z" }],
+      "langlinks": []
+    }]
+  }
+}

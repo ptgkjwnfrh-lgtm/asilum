@@ -1,0 +1,13 @@
+{
+  "query": {
+    "pages": [{
+      "pageid": 303,
+      "ns": 0,
+      "title": "Alex Smith",
+      "fullurl": "https://en.wikipedia.org/wiki/Alex_Smith",
+      "canonicalurl": "https://en.wikipedia.org/wiki/Alex_Smith",
+      "pageprops": { "disambiguation": "", "wikibase_item": "Q1" },
+      "revisions": [{ "revid": 9003, "timestamp": "2026-01-01T00:00:00Z" }]
+    }]
+  }
+}

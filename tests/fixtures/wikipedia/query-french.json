@@ -1,0 +1,14 @@
+{
+  "query": {
+    "pages": [{
+      "pageid": 404,
+      "ns": 0,
+      "title": "Créatrice Exemple",
+      "fullurl": "https://fr.wikipedia.org/wiki/Cr%C3%A9atrice_Exemple",
+      "canonicalurl": "https://fr.wikipedia.org/wiki/Cr%C3%A9atrice_Exemple",
+      "pageprops": { "wikibase_item": "Q404404" },
+      "revisions": [{ "revid": 9004, "timestamp": "2026-07-01T00:00:00Z" }],
+      "langlinks": []
+    }]
+  }
+}

@@ -40,7 +40,7 @@ If a checkpoint is missed, post the concrete impact immediately. Do not silently
 ## Shared completion checklist
 
 - [ ] Claude has acknowledged the handoff and branch ownership.
-- [ ] Designer/house source registry and Vogue overview coverage verified.
+- [x] Designer/house source registry and Wikipedia overview coverage implemented; see `docs/WIKIPEDIA-OVERVIEWS.md`. The September 19 owner instruction superseded the Vogue-only prose requirement.
 - [ ] Both overview directions resolve the exact designer-house search intersection.
 - [ ] Clothing remains within query constraints and respects taste without invented credits.
 - [ ] Pagination has no duplicates/skips in its supported snapshot window.

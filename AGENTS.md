@@ -45,7 +45,7 @@ date once, telling agents the UI was locked after the owner had unlocked it.
 - Persistence: lib/db/index.js (brain tables) + lib/db/production.js
   (production tables) — Postgres via `DATABASE_URL` (Supabase), in-memory
   fallback otherwise. Migrations are `supabase/schema-v*.sql`, applied with
-  `scripts/apply-schema.mjs`; this branch's required schema is **v51** and
+  `scripts/apply-schema.mjs`; this branch's required schema is **v54** and
   `schema-alpha.sql` is still STAGED, not applied. Read
   `.claude/skills/database-safety` before touching schema or production rows.
 - **The two backends must agree.** mem mode is what preview deploys, local

@@ -44,9 +44,14 @@ scripts/apply-schema.mjs <file>`):
 - `supabase/schema-v51-catalog-connections.sql` — source registry, merchant
   OAuth installations, variants, quarantine, leased jobs, webhook dedupe and
   completed-snapshot reconciliation.
+- `supabase/schema-v52-*.sql` and `schema-v53-*.sql` — later stream/cutout and
+  durable user-record changes from the V.2 integration line.
+- `supabase/schema-v54-wikipedia-overviews.sql` — server-only fashion entity,
+  alias, discovery evidence, revision-pinned overview, relationship, leased
+  job, review and audit records.
 - `supabase/schema-alpha.sql` — staged, NOT applied.
 
-Apply v1, `schema.sql`, then every numbered migration through v51 in numeric
+Apply v1, `schema.sql`, then every numbered migration through v54 in numeric
 order before deploying. TLS
 certificate verification stays enabled; configure `DATABASE_SSL_CA` when the
 provider CA is not in Node's trust store.

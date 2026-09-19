@@ -87,7 +87,7 @@ async function discover(req, requestId) {
     // THE OVERVIEW AND ITS RELATED EDGES (V.2 SearchPage). A name earns its
     // sourced registry entity; DESIGNER: HOUSE earns both canonical ids;
     // counts are credits inside the catalog, never tenure inference.
-    const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool() });
+    const resolvedEntities = await resolveOverviewForQuery(q, { pool: await getDiscoverablePool() });
     reading = {
       overview: resolvedEntities.overview,
       related: resolvedEntities.related,

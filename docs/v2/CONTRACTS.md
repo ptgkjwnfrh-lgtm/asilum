@@ -11,13 +11,22 @@ Return a version, request ID, and typed outcome. Distinguish successful empty re
 ```ts
 type Source = {
   id: string; url: string; publisher: string;
-  retrievedAt: string; publishedAt?: string;
+  retrievedAt: string; revisionId?: number; revisionTimestamp?: string;
+  articleUrl?: string; revisionUrl?: string; historyUrl?: string;
+  license?: string; licenseUrl?: string;
 };
 type Claim = { text: string; sourceIds: string[] };
 type Entity = {
   id: string; kind: 'designer' | 'house'; name: string; aliases: string[];
-  overview: { summary: Claim; paragraphs: Claim[]; updatedAt: string } | null;
-  image: { url: string; alt: string; credit: string; rights: string } | null;
+  wikidataQid: string | null;
+  overviewStatus: 'matched' | 'language_only' | 'ambiguous' | 'no_article' | 'wikidata_only' | 'temporary_failure' | string;
+  overview: {
+    paragraph: string; language: string; languageLabel: string;
+    pageId: number; title: string; revisionId: number; revisionTimestamp: string;
+    selector: string; extractorVersion: string; contentHash: string;
+    editorialModifications: string[]; fetchedAt: string; checkedAt: string; expiresAt: string;
+  } | null;
+  image: { url: string; alt: string; credit: string; rights: string; sourceUrl: string; modifications: string[] } | null;
   sources: Source[];
   // House founder, country, founding year and design language are sourced claims.
   facts: { key: string; claim: Claim }[];
@@ -42,7 +51,7 @@ type SearchPage = {
 };
 ```
 
-These illustrative TypeScript names are not imports or implemented declarations. Actual fixtures must validate against the agreed runtime schema. An overview is nullable when evidence is missing. Return full prose; Codex clamps to four visual lines and owns expansion. Career edges are independent of item availability and sort by known start date, with a deterministic unknown-date policy. Separate historical house names/aliases from canonical IDs. Never manufacture garment attribution from a career date alone.
+These illustrative TypeScript names are not imports or implemented declarations. Actual fixtures must validate against the agreed runtime schema. An overview is nullable when a relevant, revision-consistent Wikipedia paragraph is missing. Return the complete stored paragraph; Codex clamps to four visual lines and owns expansion. Text and image licenses are independent. Career edges are independent of item availability and sort by known start date, with a deterministic unknown-date policy. Separate historical house names/aliases from canonical IDs. Never manufacture garment attribution from a career date alone.
 
 For pair queries, return both canonical entities/IDs so quick selections and headings cannot disagree. Existing product cards remain the item contract; add minimal explicit designer attribution/provenance metadata rather than replacing the entire DTO. Apply current explicit constraints to every returned carousel, including exploration. A designer's complete career registry and an inventory-backed quick filter are different concepts and both must be identifiable.
 

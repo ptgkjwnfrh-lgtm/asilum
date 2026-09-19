@@ -12,7 +12,7 @@
   "provenance": {
     "compiledOn": "2026-09-19",
     "method": "web-verified by a research pass on 19 Sep 2026; official house and parent-company press pages first (Estée Lauder Companies, Kering, LVMH), then dated trade press and reference publishers",
-    "vogueCoverage": "none yet — vogue.com and its regional domains refused the research crawler; the owner's Vogue requirement is OPEN and is recorded per entity as vogueSourceIds (empty until a browser pass adds them)",
+    "vogueCoverage": "SUPERSEDED 19 Sep 2026 — overview prose now comes only from revision-pinned Wikipedia paragraphs; Vogue and other publications remain career/identity evidence, never fallback overview prose",
     "fetched": "a source with fetched:true was retrieved and read; fetched:false is supported by a dated search result only",
     "unknownDates": "an unknown date stays null with datePrecision unknown; nothing here is guessed",
     "correction": "corrections belong in this file with an updated source, never in a silent edit"
