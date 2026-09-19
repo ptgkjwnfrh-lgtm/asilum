@@ -3,7 +3,7 @@
   "status": 200,
   "body": {
     "contractVersion": 1,
-    "requestId": "d3286830-f011-42c4-87b0-b7e665ce9d39",
+    "requestId": "edded2f2-b2cd-422e-84ee-9f1f57c86400",
     "outcome": "ok",
     "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
@@ -139,6 +139,7 @@
           }
         }
       ],
+      "origin": null,
       "reference": false
     },
     "related": [
@@ -374,6 +375,7 @@
             }
           }
         ],
+        "origin": null,
         "reference": false
       },
       "house": {
@@ -443,6 +445,13 @@
             }
           }
         ],
+        "origin": {
+          "country": "France",
+          "city": "Paris",
+          "foundedIn": null,
+          "basis": "founded in Paris in 1945",
+          "source": "lib/asterisk/houses.js"
+        },
         "reference": false
       }
     },

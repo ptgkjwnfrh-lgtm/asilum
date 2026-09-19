@@ -17,11 +17,11 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "92e8a554-3f74-4c06-a6f0-3ed8ba5e0369",
+      "requestId": "f768450b-caab-4460-9396-96d223de6416",
       "outcome": "ok",
       "record": {
         "id": 1,
-        "userId": "u-b5737d08-2f42-4af8-9770-365cdf778c64",
+        "userId": "u-b8a3f7df-37d3-4086-bd4a-90c92b7196c6",
         "kind": "save",
         "recordId": "person:olivier-rousteing",
         "payload": {
@@ -31,8 +31,8 @@
           "href": "/discover?q=olivier%20rousteing",
           "at": "2026-09-19T12:00:00.000Z"
         },
-        "createdAt": 1789817152769,
-        "updatedAt": 1789817152769,
+        "createdAt": 1789817258583,
+        "updatedAt": 1789817258583,
         "persistent": false
       },
       "created": true
@@ -43,11 +43,11 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "25afa832-f9e7-423c-8f11-7cb3680890ec",
+      "requestId": "e3964108-0b1a-473d-8ce6-1ea00bb786e7",
       "outcome": "ok",
       "record": {
         "id": 2,
-        "userId": "u-b5737d08-2f42-4af8-9770-365cdf778c64",
+        "userId": "u-b8a3f7df-37d3-4086-bd4a-90c92b7196c6",
         "kind": "location",
         "recordId": "base",
         "payload": {
@@ -61,8 +61,8 @@
           "audience": "me",
           "mapDiscoverable": false
         },
-        "createdAt": 1789817152769,
-        "updatedAt": 1789817152769,
+        "createdAt": 1789817258584,
+        "updatedAt": 1789817258584,
         "persistent": false
       },
       "created": true
@@ -73,12 +73,12 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "cd948a18-3d59-4e4b-a5f4-0614286fcd24",
+      "requestId": "90a03f72-c0c7-4955-a49e-ecc26aebdacc",
       "outcome": "ok",
       "records": [
         {
           "id": 2,
-          "userId": "u-b5737d08-2f42-4af8-9770-365cdf778c64",
+          "userId": "u-b8a3f7df-37d3-4086-bd4a-90c92b7196c6",
           "kind": "location",
           "recordId": "base",
           "payload": {
@@ -92,13 +92,13 @@
             "audience": "me",
             "mapDiscoverable": false
           },
-          "createdAt": 1789817152769,
-          "updatedAt": 1789817152769,
+          "createdAt": 1789817258584,
+          "updatedAt": 1789817258584,
           "persistent": false
         },
         {
           "id": 1,
-          "userId": "u-b5737d08-2f42-4af8-9770-365cdf778c64",
+          "userId": "u-b8a3f7df-37d3-4086-bd4a-90c92b7196c6",
           "kind": "save",
           "recordId": "person:olivier-rousteing",
           "payload": {
@@ -108,8 +108,8 @@
             "href": "/discover?q=olivier%20rousteing",
             "at": "2026-09-19T12:00:00.000Z"
           },
-          "createdAt": 1789817152769,
-          "updatedAt": 1789817152769,
+          "createdAt": 1789817258583,
+          "updatedAt": 1789817258583,
           "persistent": false
         }
       ]
@@ -120,7 +120,7 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "6ca30b2f-59da-4e8b-87f6-ff18cbd670b7",
+      "requestId": "62cb3a12-768c-4a34-9c3a-7970fd597a0c",
       "outcome": "ok",
       "deleted": true
     }
@@ -129,7 +129,7 @@
     "status": 400,
     "body": {
       "contractVersion": 1,
-      "requestId": "8ca60b12-7d05-4497-a245-9b8b10a53f28",
+      "requestId": "90799e8f-2b06-41c2-a824-4170380a445b",
       "outcome": "invalid",
       "error": {
         "code": "record_kind",

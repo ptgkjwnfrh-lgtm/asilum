@@ -30,7 +30,8 @@ export const GATES = Object.freeze({
   G7_latency: { threshold: LATENCY_THRESHOLDS_MS, means: "search p50/p95/max in mem" },
 });
 
-const PAIR_PROBES = ["tom ford: gucci", "hedi slimane: celine", "kim jones: dior", "hedi slimane: saint laurent", "tom ford: prada", "nobody: gucci", "gucci: tom ford"];
+const PAIR_PROBES = ["tom ford: gucci", "hedi slimane: celine", "kim jones: dior", "hedi slimane: saint laurent", "tom ford: prada", "nobody: gucci", "gucci: tom ford",
+  "virgil abloh: louis vuitton", "miuccia prada: miu miu", "glenn martens: y/project", "grace wales bonner: adidas originals"];
 
 async function pairGates() {
   const brands = [...new Set(CATALOG.map((it) => it.brand).filter(Boolean))];

@@ -17,6 +17,8 @@ import { CATALOG } from "../lib/ingest/catalog.js";
 import { POLICY_VERSION } from "../lib/brain/policy.js";
 import { measureV2Gates } from "../scripts/measure-v2-gates.mjs";
 import { callRoute, loadRoute, newDevice } from "./helpers/route.js";
+import { findCareerEntity, entityDto, registryCoverage } from "../lib/people/careers.js";
+import { resolveOverviewForQuery } from "../lib/people/resolve.js";
 
 test("law 1: /api/taste GET carries the open lanes and the policy version", async () => {
   const route = await loadRoute("app/api/taste/route.js");
@@ -84,4 +86,30 @@ test("law 4: the composed V.2 gates pass on this commit", async () => {
   assert.equal(r.verdict, "PASS");
   assert.equal(r.results.G1_pair_violations.value, 0);
   assert.equal(r.results.G3_cursor_dup_skip.value, 0);
+});
+
+test("law 5: every designer the catalog credits has a sourced overview, and a house carries the origin the search engine reads", () => {
+  const credited = new Map();
+  for (const it of CATALOG) for (const d of it.designers || []) if (d !== it.brand) credited.set(d, it.brand);
+  // a house written into designers[] ("Dior" on Dior Men, "Adidas" on Adidas Originals) is a house, not a person
+  for (const name of [...credited.keys()]) if (findCareerEntity(name, "house") && !findCareerEntity(name, "designer")) credited.delete(name);
+  const missing = [...credited.keys()].filter((name) => !findCareerEntity(name, "designer"));
+  assert.deepEqual(missing, [], "credited designers without a registry entity");
+  for (const [name, brand] of credited) {
+    const dto = entityDto(findCareerEntity(name, "designer").id);
+    assert.ok(dto.overview?.summary?.sourceIds?.length, `${name}: overview sourced`);
+    const r = resolveOverviewForQuery(name, { pool: CATALOG });
+    assert.equal(r.overview?.name, dto.name, `${name}: the name resolves to its overview`);
+    assert.ok(r.related.length >= 1, `${name}: at least one dated tenure`);
+    void brand;
+  }
+  const cov = registryCoverage();
+  assert.ok(cov.designers >= 50 && cov.edges >= 85 && cov.sources >= 140, JSON.stringify(cov));
+  const gucci = entityDto("gucci");
+  assert.equal(gucci.origin?.country, "Italy");
+  assert.equal(gucci.origin?.source, "lib/asterisk/houses.js");
+  assert.equal(entityDto("tom-ford").origin, null, "a person has no origin row");
+  const abloh = resolveOverviewForQuery("virgil abloh: louis vuitton", { pool: CATALOG });
+  assert.equal(abloh.query.designerId, "virgil-abloh");
+  assert.equal(abloh.related.find((e) => e.houseId === "louis-vuitton").matchingItemCount, 12);
 });
