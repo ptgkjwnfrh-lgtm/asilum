@@ -4,9 +4,9 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "d3699e09-91b1-4894-ac68-a7d7b1ea5db1",
+      "requestId": "7d8ecbc8-c3ae-4c15-8605-0389b6cacaa2",
       "outcome": "empty",
-      "userId": "u-79e52285-18cb-4ed3-ad50-260c00d3f2a4",
+      "userId": "u-28262cb4-afc9-4cfb-bd3e-e68d87e0c32d",
       "records": [],
       "counts": {
         "payment_order": 0,

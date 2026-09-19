@@ -27,7 +27,8 @@ import { TAGS } from "../../../lib/brain/tags.js";
 import { migrateProfile } from "../../../lib/brain/index.js";
 import { buildNetwork, KEEP_FLOOR, EXPLORE_FLOOR } from "../../../lib/taste/network.js";
 import { getProfile, mutateProfile, getBoards } from "../../../lib/db/index.js";
-import { getMemoryPreferences } from "../../../lib/db/production.js";
+import { getMemoryPreferences, getUserRecommendationExclusions } from "../../../lib/db/production.js";
+import { POLICY_VERSION } from "../../../lib/brain/policy.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -41,13 +42,21 @@ export async function GET(req) {
   const url = new URL(req.url);
   const userId = await resolveRequestUser(req, url.searchParams.get("user") || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });
-  const [profile, boards, prefs] = await Promise.all([
+  const [profile, boards, prefs, exclusions] = await Promise.all([
     getProfile(userId).catch(() => null),
     getBoards(userId).catch(() => []),
     getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: true })),
+    getUserRecommendationExclusions(userId).catch(() => null),
   ]);
   const net = buildNetwork(profile, boards);
-  return NextResponse.json({ userId, guidanceEnabled: prefs.guidanceEnabled !== false, ...net });
+  // THE OPEN LANES ride with the network (synergy round): the price ceiling
+  // and fit hints a reader's corrections hold open, so the FULL READ can show
+  // them beside the tags without a second request. Same source as the feed.
+  const lanes = exclusions
+    ? { priceCeilingCents: exclusions.priceCeilingCents ?? null, fitHints: exclusions.fitHints || [],
+        excludedBrands: exclusions.brands || [], excludedProducts: (exclusions.productIds || []).length }
+    : null;
+  return NextResponse.json({ userId, policyVersion: POLICY_VERSION, guidanceEnabled: prefs.guidanceEnabled !== false, lanes, ...net });
 }
 
 export async function POST(req) {

@@ -3,7 +3,7 @@
   "status": 200,
   "body": {
     "contractVersion": 1,
-    "requestId": "d34cde0b-cbc7-453b-a153-708117671e4a",
+    "requestId": "daf42024-79fd-4aaa-a081-6a6486629a67",
     "outcome": "empty",
     "total": 0,
     "totalIsExact": true,
@@ -263,12 +263,40 @@
         "kind": "house",
         "name": "Prada",
         "aliases": [],
-        "overview": null,
+        "overview": {
+          "summary": {
+            "text": "Milan house led creatively by Miuccia Prada, with Raf Simons as co-creative director since April 2020.",
+            "sourceIds": [
+              "r69"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
         "image": null,
-        "sources": [],
+        "sources": [
+          {
+            "id": "r69",
+            "url": "https://www.pradagroup.com/en/news-media/news-section/co-creative-directors.html",
+            "publisher": "Prada Group",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
         "vogueSourceIds": [],
-        "facts": [],
-        "reference": true
+        "facts": [
+          {
+            "key": "ownership",
+            "claim": {
+              "text": "Owned by Prada Group.",
+              "sourceIds": [
+                "r69"
+              ]
+            }
+          }
+        ],
+        "reference": false
       }
     },
     "query": {

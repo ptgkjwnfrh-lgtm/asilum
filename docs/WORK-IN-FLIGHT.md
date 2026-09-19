@@ -172,7 +172,7 @@ npm run build           # production build
 npm run audit:nav       # navigability debt
 npm run docs:codemap    # regenerate the code map
 npm run deploy:check    # is production serving main?
-npm run steward         # 14 read-only checks (needs DATABASE_URL)
+npm run steward         # 15 read-only checks (needs DATABASE_URL)
 npm run search:snapshot # prove a search refactor inert
 ```
 

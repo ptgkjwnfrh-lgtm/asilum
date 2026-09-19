@@ -1,179 +1,5021 @@
 {
-  "provenance": {
-    "compiledOn": "2026-09-19",
-    "method": "web-verified by a research pass on 19 Sep 2026; official house and parent-company press pages first (Estée Lauder Companies, Kering, LVMH), then dated trade press and reference publishers",
-    "vogueCoverage": "none yet — vogue.com and its regional domains refused the research crawler; the owner's Vogue requirement is OPEN and is recorded per entity as vogueSourceIds (empty until a browser pass adds them)",
-    "fetched": "a source with fetched:true was retrieved and read; fetched:false is supported by a dated search result only",
-    "unknownDates": "an unknown date stays null with datePrecision unknown; nothing here is guessed",
-    "correction": "corrections belong in this file with an updated source, never in a silent edit"
+ "provenance": {
+  "compiledOn": "2026-09-19",
+  "method": "web-verified by a research pass on 19 Sep 2026; official house and parent-company press pages first (Estée Lauder Companies, Kering, LVMH), then dated trade press and reference publishers; extended 19 Sep 2026 (evening) to every designer the catalog credits, from official house/press pages, BoF, WWD and dated trade press",
+  "vogueCoverage": "none yet — vogue.com and its regional domains refused the research crawler; the owner's Vogue requirement is OPEN and is recorded per entity as vogueSourceIds (empty until a browser pass adds them)",
+  "fetched": "a source with fetched:true was retrieved and read; fetched:false is supported by a dated search result only",
+  "unknownDates": "an unknown date stays null with datePrecision unknown; nothing here is guessed",
+  "correction": "corrections belong in this file with an updated source, never in a silent edit"
+ },
+ "sources": [
+  {
+   "id": "s1",
+   "url": "https://www.businessoffashion.com/people/tom-ford/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
   },
-  "sources": [
-    {"id":"s1","url":"https://www.businessoffashion.com/people/tom-ford/","publisher":"Business of Fashion","publishedAt":null,"fetched":false},
-    {"id":"s2","url":"https://www.britannica.com/biography/Tom-Ford","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s3","url":"https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2022/11-15-2022-214518900","publisher":"The Estée Lauder Companies","publishedAt":"2022-11-15","fetched":false},
-    {"id":"s4","url":"https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2023/04-28-2023-171511000","publisher":"The Estée Lauder Companies","publishedAt":"2023-04-28","fetched":true},
-    {"id":"s5","url":"https://www.businesswire.com/news/home/20230428005284/en/Ermenegildo-Zegna-Group-Completes-Acquisition-of-Tom-Ford-International-and-Enters-Into-a-Long-Term-License-Agreement-With-The-Este-Lauder-Companies-for-TOM-FORD-FASHION","publisher":"Business Wire (Ermenegildo Zegna Group)","publishedAt":"2023-04-28","fetched":false},
-    {"id":"s6","url":"https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2024/07-22-2024-130036137","publisher":"The Estée Lauder Companies","publishedAt":"2024-07-22","fetched":true},
-    {"id":"s7","url":"https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2024/09-05-24","publisher":"The Estée Lauder Companies","publishedAt":"2024-09-04","fetched":true},
-    {"id":"s8","url":"https://fashionunited.com/news/people/tom-ford-steps-down-estee-lauder-announces-new-ceo-and-creative-director/2023043053610","publisher":"FashionUnited","publishedAt":"2023-04-30","fetched":false},
-    {"id":"s9","url":"https://en.wikipedia.org/wiki/Hedi_Slimane","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s10","url":"https://www.businessoffashion.com/people/hedi-slimane/","publisher":"Business of Fashion","publishedAt":null,"fetched":false},
-    {"id":"s11","url":"https://www.businesswire.com/news/home/20160331006297/en/Kering-Yves-Saint-Laurent-announces-the-departure-of-Creative-and-Image-Director-Hedi-Slimane","publisher":"Business Wire (Kering)","publishedAt":"2016-03-31","fetched":false},
-    {"id":"s12","url":"https://www.refinery29.com/en-us/2016/04/107555/yves-saint-laurent-anthony-vaccarello-new-creative-director","publisher":"Refinery29","publishedAt":"2016-04-04","fetched":false},
-    {"id":"s13","url":"https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director","publisher":"Hypebeast","publishedAt":"2024-10-02","fetched":false},
-    {"id":"s14","url":"https://www.wmagazine.com/fashion/hedi-slimane-leaving-celine-michael-rider","publisher":"W Magazine","publishedAt":null,"fetched":false},
-    {"id":"s15","url":"https://hypebeast.com/2025/2/celine-michael-rider-debut-runway","publisher":"Hypebeast","publishedAt":"2025-02","fetched":false},
-    {"id":"s16","url":"https://wwd.com/fashion-news/designer-luxury/michael-rider-named-celine-new-artistic-director-1236666285/","publisher":"WWD","publishedAt":null,"fetched":false},
-    {"id":"s17","url":"https://en.wikipedia.org/wiki/Celine_(brand)","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s18","url":"https://www.washingtontimes.com/news/2018/sep/28/music-dominates-balmains-couture-infused-paris-sho/","publisher":"Washington Times (AP)","publishedAt":"2018-09-28","fetched":false},
-    {"id":"s19","url":"https://www.britannica.com/biography/Yves-Saint-Laurent-French-designer","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s20","url":"https://en.wikipedia.org/wiki/Yves_Saint_Laurent_(fashion_house)","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s21","url":"https://en.wikipedia.org/wiki/Alessandro_Michele","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s22","url":"https://wwd.com/fashion-news/designer-luxury/valentino-confirms-alessandro-michele-creative-director-1236286084/","publisher":"WWD","publishedAt":"2024-03-28","fetched":false},
-    {"id":"s23","url":"https://www.npr.org/2022/11/23/1139130009/alessandro-michele-gucci-creative-director","publisher":"NPR","publishedAt":"2022-11-23","fetched":false},
-    {"id":"s24","url":"https://wwd.com/fashion-news/designer-luxury/gucci-sabato-de-sarno-exits-1236907009/","publisher":"WWD","publishedAt":"2025-02-06","fetched":false},
-    {"id":"s25","url":"https://www.euronews.com/2023/01/28/kering-gucci","publisher":"Euronews","publishedAt":"2023-01-28","fetched":false},
-    {"id":"s26","url":"https://en.wikipedia.org/wiki/Sabato_De_Sarno","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s27","url":"https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html","publisher":"GlobeNewswire (Kering)","publishedAt":"2025-03-13","fetched":true},
-    {"id":"s28","url":"https://en.wikipedia.org/wiki/Demna_(designer)","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s29","url":"https://numero.com/en/fashion/fashion-week-en/demnas-sublime-final-balenciaga-haute-couture-show/","publisher":"Numéro","publishedAt":"2025-07","fetched":false},
-    {"id":"s30","url":"https://www.britannica.com/biography/Frida-Giannini","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s31","url":"https://www.hellomagazine.com/fashion/news/2014121253410/frida-giannini-and-patrizio-di-marco-to-leave-gucci/","publisher":"Hello!","publishedAt":"2014-12-12","fetched":false},
-    {"id":"s32","url":"https://en.wikipedia.org/wiki/Anthony_Vaccarello","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s33","url":"https://www.britannica.com/biography/Stefano-Pilati","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s34","url":"https://en.wikipedia.org/wiki/Stefano_Pilati","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s35","url":"https://fashionista.com/2016/02/stefano-pilati-leaves-ermenegildo-zegna","publisher":"Fashionista","publishedAt":"2016-02","fetched":false},
-    {"id":"s36","url":"https://en.wikipedia.org/wiki/Phoebe_Philo","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s37","url":"https://wwd.com/fashion-news/designer-luxury/phoebe-philo-launch-fashion-1235266304/","publisher":"WWD","publishedAt":null,"fetched":false},
-    {"id":"s38","url":"https://en.wikipedia.org/wiki/Michael_Rider","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s39","url":"https://www.forbes.com/sites/roxannerobinson/2025/05/30/maria-grazia-chiuri-diors-first-female-creative-director-is-leaving/","publisher":"Forbes","publishedAt":"2025-05-30","fetched":false},
-    {"id":"s40","url":"https://www.businessoffashion.com/people/maria-grazia-chiuri/","publisher":"Business of Fashion","publishedAt":null,"fetched":false},
-    {"id":"s41","url":"https://www.lvmh.com/en/news-lvmh/maria-grazia-chiuri-named-chief-creative-officer-at-fendi","publisher":"LVMH","publishedAt":"2025-10-14","fetched":true},
-    {"id":"s42","url":"https://en.wikipedia.org/wiki/Maria_Grazia_Chiuri","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s43","url":"https://www.cnn.com/2025/06/02/style/dior-creative-director-jonathan-anderson","publisher":"CNN","publishedAt":"2025-06-02","fetched":false},
-    {"id":"s44","url":"https://www.businessoffashion.com/people/jonathan-anderson/","publisher":"Business of Fashion","publishedAt":null,"fetched":false},
-    {"id":"s45","url":"https://vmagazine.com/article/jonathan-anderson-leaves-loewe-after-11-years-as-creative-director/","publisher":"V Magazine","publishedAt":"2025-03","fetched":false},
-    {"id":"s46","url":"https://hypebeast.com/2025/1/kim-jones-steps-down-as-artistic-director-dior-men-announcement","publisher":"Hypebeast","publishedAt":"2025-01-31","fetched":false},
-    {"id":"s47","url":"https://en.wikipedia.org/wiki/Kim_Jones_(designer)","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s48","url":"https://fashionista.com/2024/10/kim-jones-leaves-fendi","publisher":"Fashionista","publishedAt":"2024-10","fetched":false},
-    {"id":"s49","url":"https://en.wikipedia.org/wiki/John_Galliano","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s50","url":"https://www.britannica.com/biography/Raf-Simons","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s51","url":"https://fashionunited.uk/news/people/raf-simons-quits-as-dior-creative-director/2015102218081","publisher":"FashionUnited","publishedAt":"2015-10-22","fetched":false},
-    {"id":"s52","url":"https://www.dezeen.com/2020/02/25/raf-simons-prada-co-creative-director-fashion-news/","publisher":"Dezeen","publishedAt":"2020-02-25","fetched":false},
-    {"id":"s53","url":"https://en.wikipedia.org/wiki/Raf_Simons","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s54","url":"https://hypebeast.com/2018/12/raf-simons-departs-calvin-klein-chief-creative-officer-role","publisher":"Hypebeast","publishedAt":"2018-12","fetched":false},
-    {"id":"s55","url":"https://en.wikipedia.org/wiki/Haider_Ackermann","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s56","url":"https://hero-magazine.com/article/121140/haider-ackermann-leaves-berluti","publisher":"HERO","publishedAt":"2018-03","fetched":false},
-    {"id":"s57","url":"https://www.businessoffashion.com/articles/luxury/creative-director-peter-hawkings-exits-tom-ford/","publisher":"Business of Fashion","publishedAt":"2024-07-22","fetched":false},
-    {"id":"s58","url":"https://www.britannica.com/topic/Gucci","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s59","url":"https://en.wikipedia.org/wiki/Dior","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s60","url":"https://www.history.com/this-day-in-history/february-12/christian-dior-launches-new-look-fashion-designs","publisher":"History.com","publishedAt":null,"fetched":false},
-    {"id":"s61","url":"https://www.britannica.com/biography/Pierre-Balmain","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s62","url":"https://en.wikipedia.org/wiki/Olivier_Rousteing","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s63","url":"https://www.ksat.com/entertainment/2025/11/05/designer-olivier-rousteing-leaves-balmain-after-14-years-fusing-couture-craft-with-pop-era-bravado/","publisher":"KSAT (AP)","publishedAt":"2025-11-05","fetched":false},
-    {"id":"s64","url":"https://www.ebsco.com/research-starters/biography/yves-saint-laurent","publisher":"EBSCO Research Starters","publishedAt":null,"fetched":false},
-    {"id":"s65","url":"https://www.britannica.com/biography/Slimane-Hedi","publisher":"Britannica","publishedAt":null,"fetched":false},
-    {"id":"s66","url":"https://en.wikipedia.org/wiki/Frida_Giannini","publisher":"Wikipedia","publishedAt":null,"fetched":false},
-    {"id":"s67","url":"https://www.businessoffashion.com/articles/beauty/tom-ford-estee-lauder-zegna-marcolin/","publisher":"Business of Fashion","publishedAt":"2022-11","fetched":false},
-    {"id":"s68","url":"https://www.puig.com/en/newsroom/Rabanne-appoints-Olivier-Rousteing-as-Creative%20Director/","publisher":"Puig (official announcement)","publishedAt":"2026-07","fetched":false}
-  ],
-  "entities": [
-    {"id":"tom-ford","kind":"designer","name":"Tom Ford","aliases":["Thomas Carlyle Ford"],"summary":{"text":"American designer and filmmaker who rebuilt Gucci in the 1990s, ran YSL Rive Gauche, then founded his own luxury house in 2005.","sourceIds":["s1","s2"]},"facts":[{"key":"nationality","claim":{"text":"American.","sourceIds":["s2"]}},{"key":"born","claim":{"text":"Born 27 August 1961 in Austin, Texas.","sourceIds":["s2"]}},{"key":"signature","claim":{"text":"Credited with taking Gucci from about $230m in sales in 1994 to nearly $3bn by 2003.","sourceIds":["s1"]}}]},
-    {"id":"hedi-slimane","kind":"designer","name":"Hedi Slimane","aliases":[],"summary":{"text":"French designer-photographer known for skinny tailoring, who led Dior Homme, renamed Saint Laurent's ready-to-wear, and ran Celine for nearly seven years.","sourceIds":["s9","s13"]},"facts":[{"key":"nationality","claim":{"text":"French.","sourceIds":["s65"]}},{"key":"born","claim":{"text":"Born 5 July 1968 in Paris.","sourceIds":["s65"]}},{"key":"signature","claim":{"text":"Popularised the skinny menswear silhouette during his Dior Homme years.","sourceIds":["s9"]}}]},
-    {"id":"yves-saint-laurent","kind":"designer","name":"Yves Saint Laurent","aliases":["Yves Henri Donat Mathieu-Saint-Laurent"],"summary":{"text":"Algerian-born French couturier who took over Dior at 21, founded his own house in 1961 and put women in the tuxedo.","sourceIds":["s19","s64"]},"facts":[{"key":"born","claim":{"text":"Born 1 August 1936 in Oran, Algeria.","sourceIds":["s19"]}},{"key":"died","claim":{"text":"Died 1 June 2008 in Paris.","sourceIds":["s19"]}},{"key":"signature","claim":{"text":"Introduced Le Smoking, the women's tuxedo, in 1966.","sourceIds":["s20"]}}]},
-    {"id":"alessandro-michele","kind":"designer","name":"Alessandro Michele","aliases":[],"summary":{"text":"Roman designer whose maximalist, eclectic Gucci ran from 2015 to 2022 before he moved to Valentino in 2024.","sourceIds":["s21","s22"]},"facts":[{"key":"nationality","claim":{"text":"Italian.","sourceIds":["s21"]}},{"key":"born","claim":{"text":"Born 25 November 1972 in Rome.","sourceIds":["s21"]}}]},
-    {"id":"sabato-de-sarno","kind":"designer","name":"Sabato De Sarno","aliases":[],"summary":{"text":"Italian designer who rose to fashion director at Valentino and held his first creative-director post at Gucci from 2023 to 2025.","sourceIds":["s26","s24"]},"facts":[{"key":"nationality","claim":{"text":"Italian.","sourceIds":["s26"]}},{"key":"born","claim":{"text":"Born 1983.","sourceIds":["s26"]}},{"key":"career","claim":{"text":"Spent more than a decade at Valentino, ending as fashion director over men's and women's collections.","sourceIds":["s26"]}}]},
-    {"id":"demna","kind":"designer","name":"Demna","aliases":["Demna Gvasalia"],"summary":{"text":"Georgian designer who spent a decade reshaping Balenciaga before Kering moved him to Gucci as artistic director in 2025.","sourceIds":["s27","s28"]},"facts":[{"key":"nationality","claim":{"text":"Georgian.","sourceIds":["s28"]}},{"key":"born","claim":{"text":"Born 1981 in Georgia.","sourceIds":["s28"]}},{"key":"career","claim":{"text":"Closed his Balenciaga tenure with a haute couture show on 9 July 2025.","sourceIds":["s29"]}}]},
-    {"id":"frida-giannini","kind":"designer","name":"Frida Giannini","aliases":[],"summary":{"text":"Roman designer who rose from Gucci's handbag studio to creative director of the whole house, leaving in early 2015.","sourceIds":["s30","s31"]},"facts":[{"key":"nationality","claim":{"text":"Italian.","sourceIds":["s66"]}},{"key":"born","claim":{"text":"Born 1972 in Rome.","sourceIds":["s66"]}},{"key":"career","claim":{"text":"Joined Gucci in 2002 as director of handbag design.","sourceIds":["s30"]}}]},
-    {"id":"anthony-vaccarello","kind":"designer","name":"Anthony Vaccarello","aliases":[],"summary":{"text":"Brussels-born designer of Italian parentage who has led Saint Laurent since April 2016 after a stint at Versus Versace.","sourceIds":["s12","s32"]},"facts":[{"key":"nationality","claim":{"text":"Belgian, born to Italian parents.","sourceIds":["s32"]}},{"key":"born","claim":{"text":"Born 18 January 1982 in Brussels.","sourceIds":["s32"]}},{"key":"career","claim":{"text":"First Saint Laurent collection shown October 2016 for spring 2017.","sourceIds":["s12"]}}]},
-    {"id":"stefano-pilati","kind":"designer","name":"Stefano Pilati","aliases":[],"summary":{"text":"Milanese designer who succeeded Tom Ford at Yves Saint Laurent in 2004 and later led design at Ermenegildo Zegna.","sourceIds":["s33"]},"facts":[{"key":"nationality","claim":{"text":"Italian.","sourceIds":["s34"]}},{"key":"born","claim":{"text":"Born 10 December 1965 in Milan.","sourceIds":["s34"]}},{"key":"signature","claim":{"text":"Known at YSL for the Muse bag and tulip skirts.","sourceIds":["s33"]}}]},
-    {"id":"phoebe-philo","kind":"designer","name":"Phoebe Philo","aliases":[],"summary":{"text":"British designer whose minimalist Céline defined 2010s womenswear; she returned in 2023 with an LVMH-backed label under her own name.","sourceIds":["s36","s37"]},"facts":[{"key":"nationality","claim":{"text":"British, born in Paris and raised in London.","sourceIds":["s36"]}},{"key":"born","claim":{"text":"Born 25 October 1973 in Paris.","sourceIds":["s36"]}},{"key":"career","claim":{"text":"Her own label launched in October 2023 with a minority LVMH stake.","sourceIds":["s37"]}}]},
-    {"id":"michael-rider","kind":"designer","name":"Michael Rider","aliases":[],"summary":{"text":"Designer who spent a decade under Phoebe Philo at Celine and led Polo Ralph Lauren before returning to Celine as creative director.","sourceIds":["s38","s13"]},"facts":[{"key":"career","claim":{"text":"Began at Balenciaga under Nicolas Ghesquière, 2004–2008.","sourceIds":["s38"]}},{"key":"debut","claim":{"text":"Debut Celine runway show held 6 July 2025.","sourceIds":["s15"]}}]},
-    {"id":"maria-grazia-chiuri","kind":"designer","name":"Maria Grazia Chiuri","aliases":[],"summary":{"text":"Roman designer who became Dior's first female creative director in 2016 and was named Fendi's chief creative officer in October 2025.","sourceIds":["s40","s41"]},"facts":[{"key":"nationality","claim":{"text":"Italian.","sourceIds":["s42"]}},{"key":"born","claim":{"text":"Born 2 February 1964 in Rome.","sourceIds":["s42"]}},{"key":"career","claim":{"text":"Spent 17 years at Valentino, eight of them at the creative helm with Pierpaolo Piccioli.","sourceIds":["s40"]}}]},
-    {"id":"jonathan-anderson","kind":"designer","name":"Jonathan Anderson","aliases":["JW Anderson"],"summary":{"text":"Northern Irish designer who ran Loewe for eleven years and in 2025 became the first since Christian Dior to lead all Dior lines.","sourceIds":["s43","s44"]},"facts":[{"key":"nationality","claim":{"text":"Northern Irish.","sourceIds":["s44"]}},{"key":"born","claim":{"text":"Born 1984.","sourceIds":["s44"]}},{"key":"career","claim":{"text":"Launched the JW Anderson label in 2008.","sourceIds":["s44"]}}]},
-    {"id":"kim-jones","kind":"designer","name":"Kim Jones","aliases":[],"summary":{"text":"English designer who fused streetwear and luxury at Louis Vuitton, led Dior Men for seven years and Fendi womenswear for four.","sourceIds":["s46","s47"]},"facts":[{"key":"nationality","claim":{"text":"English.","sourceIds":["s47"]}},{"key":"born","claim":{"text":"Born 11 September 1973 in London.","sourceIds":["s47"]}},{"key":"signature","claim":{"text":"Brought the Supreme collaboration to Louis Vuitton menswear.","sourceIds":["s47"]}}]},
-    {"id":"john-galliano","kind":"designer","name":"John Galliano","aliases":["John Charles Galliano"],"summary":{"text":"Gibraltar-born British designer who led Givenchy, then Dior for fifteen years, and Maison Margiela for a decade.","sourceIds":["s49"]},"facts":[{"key":"nationality","claim":{"text":"British.","sourceIds":["s49"]}},{"key":"born","claim":{"text":"Born 28 November 1960 in Gibraltar.","sourceIds":["s49"]}}]},
-    {"id":"raf-simons","kind":"designer","name":"Raf Simons","aliases":["Raf Jan Simons"],"summary":{"text":"Belgian designer who moved from Jil Sander to Dior to Calvin Klein and since 2020 co-directs Prada with Miuccia Prada.","sourceIds":["s50","s52"]},"facts":[{"key":"nationality","claim":{"text":"Belgian.","sourceIds":["s53"]}},{"key":"born","claim":{"text":"Born 12 January 1968 in Neerpelt, Belgium.","sourceIds":["s53"]}},{"key":"career","claim":{"text":"First Dior collection shown July 2012.","sourceIds":["s50"]}}]},
-    {"id":"haider-ackermann","kind":"designer","name":"Haider Ackermann","aliases":[],"summary":{"text":"Colombian-born French designer known for fluid tailoring, who led Berluti briefly and became Tom Ford's creative director in 2024.","sourceIds":["s7","s55"]},"facts":[{"key":"nationality","claim":{"text":"Colombian-born French.","sourceIds":["s55"]}},{"key":"born","claim":{"text":"Born 29 March 1971 in Bogotá.","sourceIds":["s55"]}},{"key":"career","claim":{"text":"First Tom Ford collection scheduled for Paris Fashion Week, March 2025.","sourceIds":["s7"]}}]},
-    {"id":"peter-hawkings","kind":"designer","name":"Peter Hawkings","aliases":[],"summary":{"text":"Long-time Tom Ford menswear lieutenant who served as the house's creative director for roughly fifteen months after the founder's exit.","sourceIds":["s6","s57"]},"facts":[{"key":"career","claim":{"text":"At Tom Ford since the brand's 2005 inception, latterly as SVP of menswear.","sourceIds":["s6","s57"]}},{"key":"tenure","claim":{"text":"Showed two collections as creative director before stepping down.","sourceIds":["s57"]}}]},
-    {"id":"olivier-rousteing","kind":"designer","name":"Olivier Rousteing","aliases":[],"summary":{"text":"French designer who led Balmain for fourteen years from 2011 and was named creative director of Rabanne in July 2026.","sourceIds":["s63","s68"]},"facts":[{"key":"nationality","claim":{"text":"French.","sourceIds":["s62"]}},{"key":"career","claim":{"text":"Left Balmain on 5 November 2025 after fourteen years.","sourceIds":["s63"]}}]},
-    {"id":"gucci","kind":"house","name":"Gucci","aliases":["House of Gucci"],"catalogBrands":["Gucci"],"summary":{"text":"Florentine leather-goods house founded in 1921, now Kering's flagship brand and led by Demna since 2025.","sourceIds":["s58","s27"]},"facts":[{"key":"founded","claim":{"text":"Founded 1921 in Florence by Guccio Gucci.","sourceIds":["s58"]}},{"key":"origin","claim":{"text":"Began as a leather goods and luggage shop before expanding under Gucci's sons.","sourceIds":["s58"]}},{"key":"owner","claim":{"text":"Owned by Kering.","sourceIds":["s27"]}}]},
-    {"id":"saint-laurent","kind":"house","name":"Saint Laurent","aliases":["Yves Saint Laurent","YSL","Saint Laurent Paris","YSL Rive Gauche"],"catalogBrands":["Saint Laurent","Yves Saint Laurent"],"summary":{"text":"Paris house founded in 1961 by Yves Saint Laurent and Pierre Bergé; its ready-to-wear was rebranded Saint Laurent Paris in 2012.","sourceIds":["s20","s19"]},"facts":[{"key":"founded","claim":{"text":"Founded 1961 in Paris by Yves Saint Laurent with Pierre Bergé.","sourceIds":["s19","s20"]}},{"key":"rename","claim":{"text":"In 2012, under Hedi Slimane, the ready-to-wear line was renamed Saint Laurent Paris while YSL branding stayed on accessories and beauty.","sourceIds":["s20","s9"]}},{"key":"couture","claim":{"text":"The haute couture division closed in 2002.","sourceIds":["s20"]}}]},
-    {"id":"dior","kind":"house","name":"Dior","aliases":["Christian Dior","Dior Homme","Dior Men"],"catalogBrands":["Dior","Christian Dior","Dior Men","Dior Homme"],"summary":{"text":"Paris couture house established in December 1946 whose 1947 New Look reset postwar fashion; its menswear line is Dior Men.","sourceIds":["s59","s60"]},"facts":[{"key":"founded","claim":{"text":"Established 16 December 1946 at 30 avenue Montaigne, Paris.","sourceIds":["s59"]}},{"key":"first-collection","claim":{"text":"First collection, the New Look, shown 12 February 1947.","sourceIds":["s60"]}},{"key":"menswear","claim":{"text":"The Dior Homme menswear line was renamed Dior Men in March 2018.","sourceIds":["s47"]}}]},
-    {"id":"celine","kind":"house","name":"Celine","aliases":["Céline"],"catalogBrands":["Celine","Céline"],"summary":{"text":"Paris house founded in 1945 by Céline Vipiana, owned by LVMH, which dropped the accent from its name under Hedi Slimane in 2018.","sourceIds":["s17","s13"]},"facts":[{"key":"founded","claim":{"text":"Founded 1945 in Paris by Céline Vipiana, first boutique at 52 rue Malte.","sourceIds":["s17"]}},{"key":"rename","claim":{"text":"Slimane removed the accent aigu, restyling Céline as Celine, on taking over in 2018.","sourceIds":["s17"]}},{"key":"owner","claim":{"text":"Owned by LVMH.","sourceIds":["s13"]}}]},
-    {"id":"tom-ford-house","kind":"house","name":"Tom Ford","aliases":["TOM FORD","Tom Ford International","TOM FORD FASHION"],"catalogBrands":["Tom Ford","TOM FORD"],"summary":{"text":"Luxury brand created in 2005, bought outright by The Estée Lauder Companies in 2023 with fashion licensed long-term to the Zegna Group.","sourceIds":["s4","s5"]},"facts":[{"key":"founded","claim":{"text":"Created in 2005.","sourceIds":["s5"]}},{"key":"acquisition","claim":{"text":"Estée Lauder announced the roughly $2.8bn acquisition on 15 November 2022 and completed it on 28 April 2023.","sourceIds":["s3","s4","s67"]}},{"key":"licence","claim":{"text":"Zegna became the long-term licensee for all Tom Ford fashion, accessories and related categories.","sourceIds":["s4","s5"]}}]},
-    {"id":"balmain","kind":"house","name":"Balmain","aliases":["Pierre Balmain"],"catalogBrands":["Balmain"],"summary":{"text":"Paris couture house founded by Pierre Balmain in 1945, led for fourteen years by Olivier Rousteing until November 2025.","sourceIds":["s61","s63"]},"facts":[{"key":"founded","claim":{"text":"Founded 1945 in Paris by Pierre Balmain.","sourceIds":["s61"]}},{"key":"signature","claim":{"text":"Balmain's 'Jolie Madame' look paired architectural tailoring with hand embroidery.","sourceIds":["s61"]}}]},
-    {"id":"valentino","kind":"house","name":"Valentino","aliases":[],"catalogBrands":["Valentino"],"reference":true},
-    {"id":"balenciaga","kind":"house","name":"Balenciaga","aliases":[],"catalogBrands":["Balenciaga"],"reference":true},
-    {"id":"loewe","kind":"house","name":"Loewe","aliases":[],"catalogBrands":["Loewe"],"reference":true},
-    {"id":"fendi","kind":"house","name":"Fendi","aliases":[],"catalogBrands":["Fendi"],"reference":true},
-    {"id":"louis-vuitton","kind":"house","name":"Louis Vuitton","aliases":["LV"],"catalogBrands":["Louis Vuitton"],"reference":true},
-    {"id":"givenchy","kind":"house","name":"Givenchy","aliases":[],"catalogBrands":["Givenchy"],"reference":true},
-    {"id":"maison-margiela","kind":"house","name":"Maison Margiela","aliases":["Margiela","Maison Martin Margiela"],"catalogBrands":["Maison Margiela"],"reference":true},
-    {"id":"jil-sander","kind":"house","name":"Jil Sander","aliases":[],"catalogBrands":["Jil Sander"],"reference":true},
-    {"id":"calvin-klein","kind":"house","name":"Calvin Klein","aliases":[],"catalogBrands":["Calvin Klein"],"reference":true},
-    {"id":"prada","kind":"house","name":"Prada","aliases":[],"catalogBrands":["Prada"],"reference":true},
-    {"id":"berluti","kind":"house","name":"Berluti","aliases":[],"catalogBrands":["Berluti"],"reference":true},
-    {"id":"chloe","kind":"house","name":"Chloé","aliases":["Chloe"],"catalogBrands":["Chloé","Chloe"],"reference":true},
-    {"id":"polo-ralph-lauren","kind":"house","name":"Polo Ralph Lauren","aliases":["Polo"],"catalogBrands":["Polo Ralph Lauren"],"reference":true},
-    {"id":"versus-versace","kind":"house","name":"Versus Versace","aliases":["Versus"],"catalogBrands":["Versus Versace"],"reference":true},
-    {"id":"jw-anderson","kind":"house","name":"JW Anderson","aliases":["J.W. Anderson"],"catalogBrands":["JW Anderson"],"reference":true},
-    {"id":"phoebe-philo-house","kind":"house","name":"Phoebe Philo","aliases":[],"catalogBrands":["Phoebe Philo"],"reference":true},
-    {"id":"zegna","kind":"house","name":"Zegna","aliases":["Ermenegildo Zegna"],"catalogBrands":["Zegna","Ermenegildo Zegna"],"reference":true}
-  ],
-  "edges": [
-    {"designerId":"tom-ford","houseId":"gucci","role":"creative director","start":"1994","end":"2004","datePrecision":"year","sourceIds":["s1"],"note":"Resigned April 2004 after the PPR buyout of Gucci Group."},
-    {"designerId":"tom-ford","houseId":"saint-laurent","role":"creative director","start":"2000-01","end":"2004","datePrecision":"month","sourceIds":["s1","s20"],"note":"YSL Rive Gauche and YSL Beauté only, held concurrently with Gucci; end precision is year."},
-    {"designerId":"tom-ford","houseId":"tom-ford-house","role":"founder","start":"2005","end":"2023","datePrecision":"year","sourceIds":["s5","s8"],"note":"Founder and creative lead; stepped away in April 2023 after the Estée Lauder sale."},
-    {"designerId":"hedi-slimane","houseId":"saint-laurent","role":"menswear designer","start":"1997","end":"2000","datePrecision":"year","sourceIds":["s9","s10"],"note":"YSL Rive Gauche Homme only; one source gives the appointment as 1996."},
-    {"designerId":"hedi-slimane","houseId":"dior","role":"creative director","start":"2000","end":"2007","datePrecision":"year","sourceIds":["s9"],"note":"Dior Homme (menswear) only."},
-    {"designerId":"hedi-slimane","houseId":"saint-laurent","role":"creative and image director","start":"2012","end":"2016-03","datePrecision":"month","sourceIds":["s9","s11","s20"],"note":"Renamed the ready-to-wear line Saint Laurent Paris; start precision is year."},
-    {"designerId":"hedi-slimane","houseId":"celine","role":"artistic, creative and image director","start":"2018-01-21","end":"2024-10","datePrecision":"day","sourceIds":["s17","s13","s18"],"note":"Debut show 28 September 2018; exit confirmed October 2024 (end precision month)."},
-    {"designerId":"yves-saint-laurent","houseId":"dior","role":"artistic director","start":"1957","end":null,"datePrecision":"year","sourceIds":["s19","s64"],"note":"Took over after Christian Dior's death in 1957 aged 21; end year not confirmed by a retrieved source."},
-    {"designerId":"yves-saint-laurent","houseId":"saint-laurent","role":"founder","start":"1961","end":"2002","datePrecision":"year","sourceIds":["s19","s20"],"note":"Founded with Pierre Bergé; retired 2002."},
-    {"designerId":"alessandro-michele","houseId":"gucci","role":"creative director","start":"2015-01","end":"2022-11","datePrecision":"month","sourceIds":["s21","s23"],"note":null},
-    {"designerId":"alessandro-michele","houseId":"valentino","role":"creative director","start":"2024-04","end":null,"datePrecision":"month","sourceIds":["s21","s22"],"note":"Announced 28 March 2024, effective April 2024."},
-    {"designerId":"sabato-de-sarno","houseId":"gucci","role":"creative director","start":"2023-01","end":"2025-02","datePrecision":"month","sourceIds":["s25","s24","s26"],"note":"Appointed 28 January 2023; first show September 2023; departure announced 6 February 2025."},
-    {"designerId":"demna","houseId":"balenciaga","role":"artistic director","start":"2015-10","end":"2025-07","datePrecision":"month","sourceIds":["s28","s27","s29"],"note":"Final show was the haute couture presentation of 9 July 2025."},
-    {"designerId":"demna","houseId":"gucci","role":"artistic director","start":"2025-07","end":null,"datePrecision":"month","sourceIds":["s27"],"note":"Appointment announced 13 March 2025; start stated as early July 2025."},
-    {"designerId":"frida-giannini","houseId":"gucci","role":"creative director of accessories","start":"2004","end":"2005","datePrecision":"year","sourceIds":["s30"],"note":"Accessories only."},
-    {"designerId":"frida-giannini","houseId":"gucci","role":"womenswear and accessories creative director","start":"2005","end":"2006","datePrecision":"year","sourceIds":["s30"],"note":"Women's ready-to-wear and accessories only."},
-    {"designerId":"frida-giannini","houseId":"gucci","role":"creative director","start":"2006","end":"2015-01","datePrecision":"year","sourceIds":["s30","s31"],"note":"Exit announced December 2014; brought forward to January 2015."},
-    {"designerId":"anthony-vaccarello","houseId":"saint-laurent","role":"creative director","start":"2016-04-04","end":null,"datePrecision":"day","sourceIds":["s12","s32"],"note":"First collection October 2016."},
-    {"designerId":"anthony-vaccarello","houseId":"versus-versace","role":"creative director","start":"2015","end":"2016","datePrecision":"year","sourceIds":["s32"],"note":null},
-    {"designerId":"stefano-pilati","houseId":"saint-laurent","role":"creative director","start":"2004","end":"2012","datePrecision":"year","sourceIds":["s33","s20"],"note":"Succeeded Tom Ford; replaced by Hedi Slimane."},
-    {"designerId":"stefano-pilati","houseId":"zegna","role":"head of design","start":"2013","end":"2016-02","datePrecision":"year","sourceIds":["s33","s35"],"note":"Ermenegildo Zegna Couture, plus Agnona womenswear."},
-    {"designerId":"phoebe-philo","houseId":"chloe","role":"creative director","start":"2001","end":"2006","datePrecision":"year","sourceIds":["s36"],"note":null},
-    {"designerId":"phoebe-philo","houseId":"celine","role":"creative director","start":"2008","end":"2017","datePrecision":"year","sourceIds":["s36"],"note":"House styled Céline during her tenure."},
-    {"designerId":"phoebe-philo","houseId":"phoebe-philo-house","role":"founder","start":"2023-10","end":null,"datePrecision":"month","sourceIds":["s37","s36"],"note":"Own-name label with minority LVMH stake."},
-    {"designerId":"michael-rider","houseId":"celine","role":"design director of ready-to-wear","start":"2008","end":"2018","datePrecision":"year","sourceIds":["s38"],"note":"Under Phoebe Philo; ready-to-wear only."},
-    {"designerId":"michael-rider","houseId":"polo-ralph-lauren","role":"creative director","start":"2018","end":"2024","datePrecision":"year","sourceIds":["s38","s13"],"note":"Led the Polo women's division."},
-    {"designerId":"michael-rider","houseId":"celine","role":"creative director","start":"2025","end":null,"datePrecision":"year","sourceIds":["s13","s14","s15","s16"],"note":"Appointed 2 October 2024 to join in early 2025; some outlets style the title artistic director; debut show 6 July 2025."},
-    {"designerId":"maria-grazia-chiuri","houseId":"valentino","role":"co-creative director","start":"2008","end":"2016","datePrecision":"year","sourceIds":["s40"],"note":"Shared with Pierpaolo Piccioli."},
-    {"designerId":"maria-grazia-chiuri","houseId":"dior","role":"creative director","start":"2016-07","end":"2025-05","datePrecision":"month","sourceIds":["s40","s39"],"note":"Womenswear, couture and accessories; Dior Men was a separate role."},
-    {"designerId":"maria-grazia-chiuri","houseId":"fendi","role":"chief creative officer","start":"2025-10-14","end":null,"datePrecision":"day","sourceIds":["s41"],"note":"Announcement date; first collection Fall/Winter 2026-27 in February 2026."},
-    {"designerId":"jonathan-anderson","houseId":"jw-anderson","role":"founder","start":"2008","end":null,"datePrecision":"year","sourceIds":["s44"],"note":null},
-    {"designerId":"jonathan-anderson","houseId":"loewe","role":"creative director","start":"2013-09","end":"2025-03","datePrecision":"month","sourceIds":["s44","s45"],"note":null},
-    {"designerId":"jonathan-anderson","houseId":"dior","role":"men's creative director","start":"2025-04-17","end":"2025-06-02","datePrecision":"day","sourceIds":["s43"],"note":"Dior Men only, until the role was expanded."},
-    {"designerId":"jonathan-anderson","houseId":"dior","role":"creative director","start":"2025-06-02","end":null,"datePrecision":"day","sourceIds":["s43"],"note":"Womenswear, menswear and haute couture combined."},
-    {"designerId":"kim-jones","houseId":"louis-vuitton","role":"men's artistic director","start":"2011","end":"2018-01","datePrecision":"year","sourceIds":["s47","s48"],"note":"Menswear only; initially titled style director."},
-    {"designerId":"kim-jones","houseId":"dior","role":"men's artistic director","start":"2018-03","end":"2025-01","datePrecision":"month","sourceIds":["s46","s47"],"note":"Dior Men only; departure announced 31 January 2025."},
-    {"designerId":"kim-jones","houseId":"fendi","role":"womenswear artistic director","start":"2020-09","end":"2024-10","datePrecision":"month","sourceIds":["s48"],"note":"Women's collections only; held concurrently with Dior Men."},
-    {"designerId":"john-galliano","houseId":"givenchy","role":"designer","start":"1995","end":"1996","datePrecision":"year","sourceIds":["s49"],"note":"Succeeded Hubert de Givenchy."},
-    {"designerId":"john-galliano","houseId":"dior","role":"creative director","start":"1996-10","end":"2011-03","datePrecision":"month","sourceIds":["s49"],"note":"Suspended February 2011, dismissal proceedings March 2011."},
-    {"designerId":"john-galliano","houseId":"maison-margiela","role":"creative director","start":"2014","end":"2024-12-11","datePrecision":"year","sourceIds":["s49"],"note":"End date is day-precise."},
-    {"designerId":"raf-simons","houseId":"jil-sander","role":"creative director","start":"2005","end":"2012-02","datePrecision":"year","sourceIds":["s50"],"note":null},
-    {"designerId":"raf-simons","houseId":"dior","role":"artistic director","start":"2012-04","end":"2015-10","datePrecision":"month","sourceIds":["s50","s51"],"note":"Womenswear and couture; first show July 2012."},
-    {"designerId":"raf-simons","houseId":"calvin-klein","role":"chief creative officer","start":"2016-08","end":"2018-12","datePrecision":"month","sourceIds":["s54","s50"],"note":null},
-    {"designerId":"raf-simons","houseId":"prada","role":"co-creative director","start":"2020-04-02","end":null,"datePrecision":"day","sourceIds":["s52","s53"],"note":"Alongside Miuccia Prada; one source gives 1 April 2020."},
-    {"designerId":"haider-ackermann","houseId":"berluti","role":"creative director","start":"2016-09","end":"2018-03","datePrecision":"month","sourceIds":["s55","s56"],"note":"Three seasons."},
-    {"designerId":"haider-ackermann","houseId":"tom-ford-house","role":"creative director","start":"2024-09-04","end":null,"datePrecision":"day","sourceIds":["s7"],"note":"Effective immediately; all fashion categories."},
-    {"designerId":"peter-hawkings","houseId":"tom-ford-house","role":"creative director","start":"2023-04","end":"2024-07-22","datePrecision":"month","sourceIds":["s6","s57","s8"],"note":"End date is day-precise."},
-    {"designerId":"olivier-rousteing","houseId":"balmain","role":"creative director","start":"2011-04-26","end":"2025-11-05","datePrecision":"day","sourceIds":["s62","s63"],"note":"Succeeded Christophe Decarnin."}
-  ],
-  "unsourced": [
-    {"designerId":"yves-saint-laurent","houseId":"dior","field":"end","reason":"No retrieved source states the year his Dior tenure ended."},
-    {"designerId":"michael-rider","houseId":"celine","field":"start month","reason":"Sources say only 'early 2025'; exact start month not found."},
-    {"designerId":"hedi-slimane","houseId":"saint-laurent","field":"1996 vs 1997 start of the Rive Gauche Homme role","reason":"Two snippets disagree; recorded as 1997 with a note."}
-  ]
+  {
+   "id": "s2",
+   "url": "https://www.britannica.com/biography/Tom-Ford",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s3",
+   "url": "https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2022/11-15-2022-214518900",
+   "publisher": "The Estée Lauder Companies",
+   "publishedAt": "2022-11-15",
+   "fetched": false
+  },
+  {
+   "id": "s4",
+   "url": "https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2023/04-28-2023-171511000",
+   "publisher": "The Estée Lauder Companies",
+   "publishedAt": "2023-04-28",
+   "fetched": true
+  },
+  {
+   "id": "s5",
+   "url": "https://www.businesswire.com/news/home/20230428005284/en/Ermenegildo-Zegna-Group-Completes-Acquisition-of-Tom-Ford-International-and-Enters-Into-a-Long-Term-License-Agreement-With-The-Este-Lauder-Companies-for-TOM-FORD-FASHION",
+   "publisher": "Business Wire (Ermenegildo Zegna Group)",
+   "publishedAt": "2023-04-28",
+   "fetched": false
+  },
+  {
+   "id": "s6",
+   "url": "https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2024/07-22-2024-130036137",
+   "publisher": "The Estée Lauder Companies",
+   "publishedAt": "2024-07-22",
+   "fetched": true
+  },
+  {
+   "id": "s7",
+   "url": "https://www.elcompanies.com/en/news-and-media/newsroom/press-releases/2024/09-05-24",
+   "publisher": "The Estée Lauder Companies",
+   "publishedAt": "2024-09-04",
+   "fetched": true
+  },
+  {
+   "id": "s8",
+   "url": "https://fashionunited.com/news/people/tom-ford-steps-down-estee-lauder-announces-new-ceo-and-creative-director/2023043053610",
+   "publisher": "FashionUnited",
+   "publishedAt": "2023-04-30",
+   "fetched": false
+  },
+  {
+   "id": "s9",
+   "url": "https://en.wikipedia.org/wiki/Hedi_Slimane",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s10",
+   "url": "https://www.businessoffashion.com/people/hedi-slimane/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s11",
+   "url": "https://www.businesswire.com/news/home/20160331006297/en/Kering-Yves-Saint-Laurent-announces-the-departure-of-Creative-and-Image-Director-Hedi-Slimane",
+   "publisher": "Business Wire (Kering)",
+   "publishedAt": "2016-03-31",
+   "fetched": false
+  },
+  {
+   "id": "s12",
+   "url": "https://www.refinery29.com/en-us/2016/04/107555/yves-saint-laurent-anthony-vaccarello-new-creative-director",
+   "publisher": "Refinery29",
+   "publishedAt": "2016-04-04",
+   "fetched": false
+  },
+  {
+   "id": "s13",
+   "url": "https://hypebeast.com/2024/10/hedi-slime-exit-celine-michael-rider-appointed-creative-director",
+   "publisher": "Hypebeast",
+   "publishedAt": "2024-10-02",
+   "fetched": false
+  },
+  {
+   "id": "s14",
+   "url": "https://www.wmagazine.com/fashion/hedi-slimane-leaving-celine-michael-rider",
+   "publisher": "W Magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s15",
+   "url": "https://hypebeast.com/2025/2/celine-michael-rider-debut-runway",
+   "publisher": "Hypebeast",
+   "publishedAt": "2025-02",
+   "fetched": false
+  },
+  {
+   "id": "s16",
+   "url": "https://wwd.com/fashion-news/designer-luxury/michael-rider-named-celine-new-artistic-director-1236666285/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s17",
+   "url": "https://en.wikipedia.org/wiki/Celine_(brand)",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s18",
+   "url": "https://www.washingtontimes.com/news/2018/sep/28/music-dominates-balmains-couture-infused-paris-sho/",
+   "publisher": "Washington Times (AP)",
+   "publishedAt": "2018-09-28",
+   "fetched": false
+  },
+  {
+   "id": "s19",
+   "url": "https://www.britannica.com/biography/Yves-Saint-Laurent-French-designer",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s20",
+   "url": "https://en.wikipedia.org/wiki/Yves_Saint_Laurent_(fashion_house)",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s21",
+   "url": "https://en.wikipedia.org/wiki/Alessandro_Michele",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s22",
+   "url": "https://wwd.com/fashion-news/designer-luxury/valentino-confirms-alessandro-michele-creative-director-1236286084/",
+   "publisher": "WWD",
+   "publishedAt": "2024-03-28",
+   "fetched": false
+  },
+  {
+   "id": "s23",
+   "url": "https://www.npr.org/2022/11/23/1139130009/alessandro-michele-gucci-creative-director",
+   "publisher": "NPR",
+   "publishedAt": "2022-11-23",
+   "fetched": false
+  },
+  {
+   "id": "s24",
+   "url": "https://wwd.com/fashion-news/designer-luxury/gucci-sabato-de-sarno-exits-1236907009/",
+   "publisher": "WWD",
+   "publishedAt": "2025-02-06",
+   "fetched": false
+  },
+  {
+   "id": "s25",
+   "url": "https://www.euronews.com/2023/01/28/kering-gucci",
+   "publisher": "Euronews",
+   "publishedAt": "2023-01-28",
+   "fetched": false
+  },
+  {
+   "id": "s26",
+   "url": "https://en.wikipedia.org/wiki/Sabato_De_Sarno",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s27",
+   "url": "https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html",
+   "publisher": "GlobeNewswire (Kering)",
+   "publishedAt": "2025-03-13",
+   "fetched": true
+  },
+  {
+   "id": "s28",
+   "url": "https://en.wikipedia.org/wiki/Demna_(designer)",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s29",
+   "url": "https://numero.com/en/fashion/fashion-week-en/demnas-sublime-final-balenciaga-haute-couture-show/",
+   "publisher": "Numéro",
+   "publishedAt": "2025-07",
+   "fetched": false
+  },
+  {
+   "id": "s30",
+   "url": "https://www.britannica.com/biography/Frida-Giannini",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s31",
+   "url": "https://www.hellomagazine.com/fashion/news/2014121253410/frida-giannini-and-patrizio-di-marco-to-leave-gucci/",
+   "publisher": "Hello!",
+   "publishedAt": "2014-12-12",
+   "fetched": false
+  },
+  {
+   "id": "s32",
+   "url": "https://en.wikipedia.org/wiki/Anthony_Vaccarello",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s33",
+   "url": "https://www.britannica.com/biography/Stefano-Pilati",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s34",
+   "url": "https://en.wikipedia.org/wiki/Stefano_Pilati",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s35",
+   "url": "https://fashionista.com/2016/02/stefano-pilati-leaves-ermenegildo-zegna",
+   "publisher": "Fashionista",
+   "publishedAt": "2016-02",
+   "fetched": false
+  },
+  {
+   "id": "s36",
+   "url": "https://en.wikipedia.org/wiki/Phoebe_Philo",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s37",
+   "url": "https://wwd.com/fashion-news/designer-luxury/phoebe-philo-launch-fashion-1235266304/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s38",
+   "url": "https://en.wikipedia.org/wiki/Michael_Rider",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s39",
+   "url": "https://www.forbes.com/sites/roxannerobinson/2025/05/30/maria-grazia-chiuri-diors-first-female-creative-director-is-leaving/",
+   "publisher": "Forbes",
+   "publishedAt": "2025-05-30",
+   "fetched": false
+  },
+  {
+   "id": "s40",
+   "url": "https://www.businessoffashion.com/people/maria-grazia-chiuri/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s41",
+   "url": "https://www.lvmh.com/en/news-lvmh/maria-grazia-chiuri-named-chief-creative-officer-at-fendi",
+   "publisher": "LVMH",
+   "publishedAt": "2025-10-14",
+   "fetched": true
+  },
+  {
+   "id": "s42",
+   "url": "https://en.wikipedia.org/wiki/Maria_Grazia_Chiuri",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s43",
+   "url": "https://www.cnn.com/2025/06/02/style/dior-creative-director-jonathan-anderson",
+   "publisher": "CNN",
+   "publishedAt": "2025-06-02",
+   "fetched": false
+  },
+  {
+   "id": "s44",
+   "url": "https://www.businessoffashion.com/people/jonathan-anderson/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s45",
+   "url": "https://vmagazine.com/article/jonathan-anderson-leaves-loewe-after-11-years-as-creative-director/",
+   "publisher": "V Magazine",
+   "publishedAt": "2025-03",
+   "fetched": false
+  },
+  {
+   "id": "s46",
+   "url": "https://hypebeast.com/2025/1/kim-jones-steps-down-as-artistic-director-dior-men-announcement",
+   "publisher": "Hypebeast",
+   "publishedAt": "2025-01-31",
+   "fetched": false
+  },
+  {
+   "id": "s47",
+   "url": "https://en.wikipedia.org/wiki/Kim_Jones_(designer)",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s48",
+   "url": "https://fashionista.com/2024/10/kim-jones-leaves-fendi",
+   "publisher": "Fashionista",
+   "publishedAt": "2024-10",
+   "fetched": false
+  },
+  {
+   "id": "s49",
+   "url": "https://en.wikipedia.org/wiki/John_Galliano",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s50",
+   "url": "https://www.britannica.com/biography/Raf-Simons",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s51",
+   "url": "https://fashionunited.uk/news/people/raf-simons-quits-as-dior-creative-director/2015102218081",
+   "publisher": "FashionUnited",
+   "publishedAt": "2015-10-22",
+   "fetched": false
+  },
+  {
+   "id": "s52",
+   "url": "https://www.dezeen.com/2020/02/25/raf-simons-prada-co-creative-director-fashion-news/",
+   "publisher": "Dezeen",
+   "publishedAt": "2020-02-25",
+   "fetched": false
+  },
+  {
+   "id": "s53",
+   "url": "https://en.wikipedia.org/wiki/Raf_Simons",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s54",
+   "url": "https://hypebeast.com/2018/12/raf-simons-departs-calvin-klein-chief-creative-officer-role",
+   "publisher": "Hypebeast",
+   "publishedAt": "2018-12",
+   "fetched": false
+  },
+  {
+   "id": "s55",
+   "url": "https://en.wikipedia.org/wiki/Haider_Ackermann",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s56",
+   "url": "https://hero-magazine.com/article/121140/haider-ackermann-leaves-berluti",
+   "publisher": "HERO",
+   "publishedAt": "2018-03",
+   "fetched": false
+  },
+  {
+   "id": "s57",
+   "url": "https://www.businessoffashion.com/articles/luxury/creative-director-peter-hawkings-exits-tom-ford/",
+   "publisher": "Business of Fashion",
+   "publishedAt": "2024-07-22",
+   "fetched": false
+  },
+  {
+   "id": "s58",
+   "url": "https://www.britannica.com/topic/Gucci",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s59",
+   "url": "https://en.wikipedia.org/wiki/Dior",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s60",
+   "url": "https://www.history.com/this-day-in-history/february-12/christian-dior-launches-new-look-fashion-designs",
+   "publisher": "History.com",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s61",
+   "url": "https://www.britannica.com/biography/Pierre-Balmain",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s62",
+   "url": "https://en.wikipedia.org/wiki/Olivier_Rousteing",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s63",
+   "url": "https://www.ksat.com/entertainment/2025/11/05/designer-olivier-rousteing-leaves-balmain-after-14-years-fusing-couture-craft-with-pop-era-bravado/",
+   "publisher": "KSAT (AP)",
+   "publishedAt": "2025-11-05",
+   "fetched": false
+  },
+  {
+   "id": "s64",
+   "url": "https://www.ebsco.com/research-starters/biography/yves-saint-laurent",
+   "publisher": "EBSCO Research Starters",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s65",
+   "url": "https://www.britannica.com/biography/Slimane-Hedi",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s66",
+   "url": "https://en.wikipedia.org/wiki/Frida_Giannini",
+   "publisher": "Wikipedia",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "s67",
+   "url": "https://www.businessoffashion.com/articles/beauty/tom-ford-estee-lauder-zegna-marcolin/",
+   "publisher": "Business of Fashion",
+   "publishedAt": "2022-11",
+   "fetched": false
+  },
+  {
+   "id": "s68",
+   "url": "https://www.puig.com/en/newsroom/Rabanne-appoints-Olivier-Rousteing-as-Creative%20Director/",
+   "publisher": "Puig (official announcement)",
+   "publishedAt": "2026-07",
+   "fetched": false
+  },
+  {
+   "id": "r1",
+   "url": "https://www.forbes.com/sites/marioabad/2018/03/26/louis-vuitton-appoints-virgil-abloh-as-its-new-mens-artistic-director/",
+   "publisher": "Forbes",
+   "publishedAt": "2018-03-26",
+   "fetched": false
+  },
+  {
+   "id": "r2",
+   "url": "https://www.lvmh.com/en/publications/the-passing-of-virgil-abloh",
+   "publisher": "LVMH",
+   "publishedAt": "2021-11-28",
+   "fetched": true
+  },
+  {
+   "id": "r3",
+   "url": "https://www.prnewswire.com/news-releases/bluestar-alliance-llc-announces-that-it-has-acquired-off-white-llc-the-company-which-owns-the-off-white-brand-from-lvmh-302262962.html",
+   "publisher": "Bluestar Alliance via PR Newswire",
+   "publishedAt": "2024-09-30",
+   "fetched": false
+  },
+  {
+   "id": "r4",
+   "url": "https://www.businessoffashion.com/articles/luxury/lvmh-sells-off-white-brand-to-bluestar-alliance/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r5",
+   "url": "https://www.off---white.com/en-us/virgil-is-here",
+   "publisher": "Off-White",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r6",
+   "url": "https://www.britannica.com/biography/Louis-Vuitton-designer",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r7",
+   "url": "https://www.otb.net/en/news/maison-margiela-appoints-new-creative-director",
+   "publisher": "OTB Group",
+   "publishedAt": "2025-01-29",
+   "fetched": true
+  },
+  {
+   "id": "r8",
+   "url": "https://www.businessoffashion.com/news/luxury/y-project-shut-down-glenn-martens/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r9",
+   "url": "https://wwd.com/fashion-news/designer-luxury/y-projects-glenn-martens-departure-1236574140/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r10",
+   "url": "https://wwd.com/sourcing-journal/sj-denim/denim-brand-diesel-glenn-martens-creative-director-y-project-1238759770/",
+   "publisher": "WWD / Sourcing Journal",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r11",
+   "url": "https://www.designscene.net/2026/09/glenn-martens-leaving-diesel.html",
+   "publisher": "Design Scene",
+   "publishedAt": "2026-09-18",
+   "fetched": true
+  },
+  {
+   "id": "r12",
+   "url": "https://www.otb.net/en/diesel",
+   "publisher": "OTB Group",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r13",
+   "url": "https://www.chanel.com/us/about-chanel/the-house-of-chanel/1910/",
+   "publisher": "Chanel",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r14",
+   "url": "https://www.cnn.com/2024/12/12/style/chanel-matthieu-blazy-new-artistic-director/index.html",
+   "publisher": "CNN",
+   "publishedAt": "2024-12-12",
+   "fetched": false
+  },
+  {
+   "id": "r15",
+   "url": "https://www.businessoffashion.com/articles/luxury/kering-names-matthieu-blazy-as-bottega-venetas-new-creative-director/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r16",
+   "url": "https://fashionunited.uk/news/people/bottega-veneta-announces-creative-director-transition-louise-trotter-to-succeed-matthieu-blazy/2024121279114",
+   "publisher": "FashionUnited",
+   "publishedAt": "2024-12-12",
+   "fetched": false
+  },
+  {
+   "id": "r17",
+   "url": "https://www.wmagazine.com/fashion/chanel-spring-2026-matthieu-blazy-debut-runway-photos",
+   "publisher": "W Magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r18",
+   "url": "https://group.ferragamo.com/resource/blob/1078932/24ec9c2b9aded2034e95ef611df8d3e2/021-2022-03-14-press-release-data.pdf",
+   "publisher": "Salvatore Ferragamo S.p.A.",
+   "publishedAt": "2022-03-14",
+   "fetched": false
+  },
+  {
+   "id": "r19",
+   "url": "https://www.richemont.com/news-media/press-releases-news/alaia-appoints-pieter-mulier-as-creative-director/",
+   "publisher": "Richemont",
+   "publishedAt": "2021-02-05",
+   "fetched": true
+  },
+  {
+   "id": "r20",
+   "url": "https://cpp-luxury.com/richemont-appoints-new-creative-director-at-alaia-showing-trust-in-the-huge-potential-of-the-brand/",
+   "publisher": "CPP-Luxury",
+   "publishedAt": "2021-02-08",
+   "fetched": true
+  },
+  {
+   "id": "r21",
+   "url": "https://www.businessoffashion.com/articles/luxury/pieter-mulier-versace-creative-director-prada-group/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r22",
+   "url": "https://www.pradagroup.com/en/news-media/news-section/26-02-05-versace-pieter-mulier-chief-creative-officer.html",
+   "publisher": "Prada Group",
+   "publishedAt": "2026-02-05",
+   "fetched": false
+  },
+  {
+   "id": "r23",
+   "url": "https://us.fashionnetwork.com/news/Pieter-mulier-steps-down-as-alaia-s-creative-director,1803176.html",
+   "publisher": "FashionNetwork",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r24",
+   "url": "https://www.richemont.com/our-maisons/alaia/",
+   "publisher": "Richemont",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r25",
+   "url": "https://www.businessoffashion.com/articles/news-analysis/breaking-news-alaia-in-surprise-deal-with-richemont/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r26",
+   "url": "https://news.adidas.com/originals/adidas-originals-and-wales-bonner-present-fall-winter-2025/s/e29eb315-f018-4944-8e1d-2771c0b8259d",
+   "publisher": "adidas",
+   "publishedAt": "2025-10-28",
+   "fetched": true
+  },
+  {
+   "id": "r27",
+   "url": "https://www.anothermag.com/fashion-beauty/13707/get-your-first-look-at-grace-wales-bonners-latest-adidas-collaboration",
+   "publisher": "AnOther",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r28",
+   "url": "https://www.fastretailing.com/eng/group/news/1807241530.html",
+   "publisher": "Fast Retailing",
+   "publishedAt": "2018-07-24",
+   "fetched": true
+  },
+  {
+   "id": "r29",
+   "url": "https://www.lemaire.fr/pages/about-lemaire",
+   "publisher": "Lemaire",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r30",
+   "url": "https://www.businessoffashion.com/people/christophe-lemaire/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r31",
+   "url": "https://www.otb.net/en/news/jil-sander-appoints-new-creative-director",
+   "publisher": "OTB Group",
+   "publishedAt": "2025-03-10",
+   "fetched": false
+  },
+  {
+   "id": "r32",
+   "url": "https://usa.10magazine.com/breaking-luke-and-lucie-meier-exit-jil-sander/",
+   "publisher": "10 Magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r33",
+   "url": "https://fashionunited.uk/news/business/jil-sander-acquired-by-otb/2021030554196",
+   "publisher": "FashionUnited",
+   "publishedAt": "2021-03-05",
+   "fetched": false
+  },
+  {
+   "id": "r34",
+   "url": "https://www.otb.net/en/jil-sander",
+   "publisher": "OTB Group",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r35",
+   "url": "https://www.businessoffashion.com/people/chitose-abe/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r36",
+   "url": "https://www.businessoffashion.com/people/catherine-holstein/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r37",
+   "url": "https://wwd.com/fashion-news/designer-luxury/khaites-catherine-holstein-tapped-cfda-womens-wear-designer-of-the-year-1235409355/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r38",
+   "url": "https://fortune.com/2024/09/12/billionaire-loreal-heiress-chanel-owners-buy-stake-in-olsens-fashion-brand/",
+   "publisher": "Fortune",
+   "publishedAt": "2024-09-12",
+   "fetched": false
+  },
+  {
+   "id": "r39",
+   "url": "https://wwd.com/fashion-news/fashion-scoops/adidas-and-fear-of-god-enter-long-term-basketball-athletics-partnership-1234684952/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r40",
+   "url": "https://www.businessoffashion.com/people/jerry-lorenzo/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r41",
+   "url": "https://cfda.com/member/emily-adams-bode/",
+   "publisher": "CFDA",
+   "publishedAt": null,
+   "fetched": true
+  },
+  {
+   "id": "r42",
+   "url": "https://bode.com/pages/about",
+   "publisher": "Bode",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r43",
+   "url": "https://wwd.com/menswear-news/mens-designer-luxury/kim-jones-eli-russell-linnetz-erl-guest-edit-dior-men-spring-capsule-collection-venice-beach-1235182568/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r44",
+   "url": "https://www.nssmag.com/en/fashion/24073/erl-brand-eli-russell-linnetz",
+   "publisher": "nss magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r45",
+   "url": "https://wwd.com/fashion-news/designer-luxury/vetements-creative-director-guram-gvasalia-1235017790/",
+   "publisher": "WWD",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r46",
+   "url": "https://www.businessoffashion.com/people/guram-gvasalia/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r47",
+   "url": "https://www.businessoffashion.com/people/hiroki-nakamura/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r48",
+   "url": "https://www.heddels.com/2018/07/visvim-history-philosophy-and-iconic-products/",
+   "publisher": "Heddels",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r49",
+   "url": "https://www.acnestudios.com/us/en/about/about.html",
+   "publisher": "Acne Studios",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r50",
+   "url": "https://www.businessoffashion.com/people/jonny-johansson/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r51",
+   "url": "https://nepenthesamerica.com/pages/about",
+   "publisher": "Nepenthes America",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r52",
+   "url": "https://www.heddels.com/2023/01/faces-nepenthes-breaking-keizo-shimizus-multi-faceted-brand/",
+   "publisher": "Heddels",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r53",
+   "url": "https://www.heddels.com/2018/05/kapital-history-philosophy-and-iconic-products/",
+   "publisher": "Heddels",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r54",
+   "url": "https://www.complex.com/style/a/alex-ocho/kapital-founder-toshikiyo-hirata-dies",
+   "publisher": "Complex",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r55",
+   "url": "https://www.fhcm.paris/en/news/ryota-iwai-auralee",
+   "publisher": "FHCM",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r56",
+   "url": "https://www.businessoffashion.com/people/ryota-iwai/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r57",
+   "url": "https://www.goldwin-global.com/us/feature/kaptain-sunshine/interview/",
+   "publisher": "Goldwin",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r58",
+   "url": "https://monocle.com/fashion/japanese-label-kaptain-sunshine-settles-down-in-tokyo/",
+   "publisher": "Monocle",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r59",
+   "url": "https://www.dazeddigital.com/fashion/article/41129/1/cav-empt-the-mysterious-streetwear-brand-out-of-tokyo",
+   "publisher": "Dazed",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r60",
+   "url": "https://www.aimeleondore.com/pages/teddy-santis",
+   "publisher": "Aimé Leon Dore",
+   "publishedAt": null,
+   "fetched": true
+  },
+  {
+   "id": "r61",
+   "url": "https://www.businessoffashion.com/articles/retail/aime-leon-dores-teddy-santis-on-new-balance-and-the-future-of-menswear/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r62",
+   "url": "https://hypebae.com/2022/1/aime-leon-dore-lvmh-investment-teddy-santis-announcement",
+   "publisher": "Hypebae",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r63",
+   "url": "https://10magazine.com/ten-minutes-dilan-lurr-namacheko/",
+   "publisher": "10 Magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r64",
+   "url": "https://system-magazine.com/editorial/system-selects/i-don-t-want-my-ethnicity-to-solely-define-my-designs-or-myself-as-a-creative-i-design-what-i-feel-represents-my-vision-for-nama",
+   "publisher": "System Magazine",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r65",
+   "url": "https://www.adidas-group.com/en/about/history",
+   "publisher": "adidas AG",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r66",
+   "url": "https://www.britannica.com/biography/Rei-Kawakubo",
+   "publisher": "Britannica",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r67",
+   "url": "https://rakutenfashionweektokyo.com/en/brands/detail/undercover/",
+   "publisher": "Rakuten Fashion Week Tokyo",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r68",
+   "url": "https://www.businessoffashion.com/people/jun-takahashi/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r69",
+   "url": "https://www.pradagroup.com/en/news-media/news-section/co-creative-directors.html",
+   "publisher": "Prada Group",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r70",
+   "url": "https://www.pradagroup.com/en/brands/miu-miu.html",
+   "publisher": "Prada Group",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r71",
+   "url": "https://www.businessoffashion.com/people/simone-bellotti/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r72",
+   "url": "https://fashionunited.com/press/fashion/everything-you-need-to-know-about-bottega-veneta/2022091249596",
+   "publisher": "FashionUnited",
+   "publishedAt": "2022-09-12",
+   "fetched": false
+  },
+  {
+   "id": "r73",
+   "url": "https://www.businessoffashion.com/people/glenn-martens/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r74",
+   "url": "https://www.businessoffashion.com/people/pieter-mulier/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  },
+  {
+   "id": "r75",
+   "url": "https://www.businessoffashion.com/people/teddy-santis/",
+   "publisher": "Business of Fashion",
+   "publishedAt": null,
+   "fetched": false
+  }
+ ],
+ "entities": [
+  {
+   "id": "tom-ford",
+   "kind": "designer",
+   "name": "Tom Ford",
+   "aliases": [
+    "Thomas Carlyle Ford"
+   ],
+   "summary": {
+    "text": "American designer and filmmaker who rebuilt Gucci in the 1990s, ran YSL Rive Gauche, then founded his own luxury house in 2005.",
+    "sourceIds": [
+     "s1",
+     "s2"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "American.",
+      "sourceIds": [
+       "s2"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 27 August 1961 in Austin, Texas.",
+      "sourceIds": [
+       "s2"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Credited with taking Gucci from about $230m in sales in 1994 to nearly $3bn by 2003.",
+      "sourceIds": [
+       "s1"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "hedi-slimane",
+   "kind": "designer",
+   "name": "Hedi Slimane",
+   "aliases": [],
+   "summary": {
+    "text": "French designer-photographer known for skinny tailoring, who led Dior Homme, renamed Saint Laurent's ready-to-wear, and ran Celine for nearly seven years.",
+    "sourceIds": [
+     "s9",
+     "s13"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "French.",
+      "sourceIds": [
+       "s65"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 5 July 1968 in Paris.",
+      "sourceIds": [
+       "s65"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Popularised the skinny menswear silhouette during his Dior Homme years.",
+      "sourceIds": [
+       "s9"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "yves-saint-laurent",
+   "kind": "designer",
+   "name": "Yves Saint Laurent",
+   "aliases": [
+    "Yves Henri Donat Mathieu-Saint-Laurent"
+   ],
+   "summary": {
+    "text": "Algerian-born French couturier who took over Dior at 21, founded his own house in 1961 and put women in the tuxedo.",
+    "sourceIds": [
+     "s19",
+     "s64"
+    ]
+   },
+   "facts": [
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 1 August 1936 in Oran, Algeria.",
+      "sourceIds": [
+       "s19"
+      ]
+     }
+    },
+    {
+     "key": "died",
+     "claim": {
+      "text": "Died 1 June 2008 in Paris.",
+      "sourceIds": [
+       "s19"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Introduced Le Smoking, the women's tuxedo, in 1966.",
+      "sourceIds": [
+       "s20"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "alessandro-michele",
+   "kind": "designer",
+   "name": "Alessandro Michele",
+   "aliases": [],
+   "summary": {
+    "text": "Roman designer whose maximalist, eclectic Gucci ran from 2015 to 2022 before he moved to Valentino in 2024.",
+    "sourceIds": [
+     "s21",
+     "s22"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Italian.",
+      "sourceIds": [
+       "s21"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 25 November 1972 in Rome.",
+      "sourceIds": [
+       "s21"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "sabato-de-sarno",
+   "kind": "designer",
+   "name": "Sabato De Sarno",
+   "aliases": [],
+   "summary": {
+    "text": "Italian designer who rose to fashion director at Valentino and held his first creative-director post at Gucci from 2023 to 2025.",
+    "sourceIds": [
+     "s26",
+     "s24"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Italian.",
+      "sourceIds": [
+       "s26"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 1983.",
+      "sourceIds": [
+       "s26"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Spent more than a decade at Valentino, ending as fashion director over men's and women's collections.",
+      "sourceIds": [
+       "s26"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "demna",
+   "kind": "designer",
+   "name": "Demna",
+   "aliases": [
+    "Demna Gvasalia"
+   ],
+   "summary": {
+    "text": "Georgian designer who spent a decade reshaping Balenciaga before Kering moved him to Gucci as artistic director in 2025.",
+    "sourceIds": [
+     "s27",
+     "s28"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Georgian.",
+      "sourceIds": [
+       "s28"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 1981 in Georgia.",
+      "sourceIds": [
+       "s28"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Closed his Balenciaga tenure with a haute couture show on 9 July 2025.",
+      "sourceIds": [
+       "s29"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "frida-giannini",
+   "kind": "designer",
+   "name": "Frida Giannini",
+   "aliases": [],
+   "summary": {
+    "text": "Roman designer who rose from Gucci's handbag studio to creative director of the whole house, leaving in early 2015.",
+    "sourceIds": [
+     "s30",
+     "s31"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Italian.",
+      "sourceIds": [
+       "s66"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 1972 in Rome.",
+      "sourceIds": [
+       "s66"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Joined Gucci in 2002 as director of handbag design.",
+      "sourceIds": [
+       "s30"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "anthony-vaccarello",
+   "kind": "designer",
+   "name": "Anthony Vaccarello",
+   "aliases": [],
+   "summary": {
+    "text": "Brussels-born designer of Italian parentage who has led Saint Laurent since April 2016 after a stint at Versus Versace.",
+    "sourceIds": [
+     "s12",
+     "s32"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Belgian, born to Italian parents.",
+      "sourceIds": [
+       "s32"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 18 January 1982 in Brussels.",
+      "sourceIds": [
+       "s32"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "First Saint Laurent collection shown October 2016 for spring 2017.",
+      "sourceIds": [
+       "s12"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "stefano-pilati",
+   "kind": "designer",
+   "name": "Stefano Pilati",
+   "aliases": [],
+   "summary": {
+    "text": "Milanese designer who succeeded Tom Ford at Yves Saint Laurent in 2004 and later led design at Ermenegildo Zegna.",
+    "sourceIds": [
+     "s33"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Italian.",
+      "sourceIds": [
+       "s34"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 10 December 1965 in Milan.",
+      "sourceIds": [
+       "s34"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Known at YSL for the Muse bag and tulip skirts.",
+      "sourceIds": [
+       "s33"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "phoebe-philo",
+   "kind": "designer",
+   "name": "Phoebe Philo",
+   "aliases": [],
+   "summary": {
+    "text": "British designer whose minimalist Céline defined 2010s womenswear; she returned in 2023 with an LVMH-backed label under her own name.",
+    "sourceIds": [
+     "s36",
+     "s37"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "British, born in Paris and raised in London.",
+      "sourceIds": [
+       "s36"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 25 October 1973 in Paris.",
+      "sourceIds": [
+       "s36"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Her own label launched in October 2023 with a minority LVMH stake.",
+      "sourceIds": [
+       "s37"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "michael-rider",
+   "kind": "designer",
+   "name": "Michael Rider",
+   "aliases": [],
+   "summary": {
+    "text": "Designer who spent a decade under Phoebe Philo at Celine and led Polo Ralph Lauren before returning to Celine as creative director.",
+    "sourceIds": [
+     "s38",
+     "s13"
+    ]
+   },
+   "facts": [
+    {
+     "key": "career",
+     "claim": {
+      "text": "Began at Balenciaga under Nicolas Ghesquière, 2004–2008.",
+      "sourceIds": [
+       "s38"
+      ]
+     }
+    },
+    {
+     "key": "debut",
+     "claim": {
+      "text": "Debut Celine runway show held 6 July 2025.",
+      "sourceIds": [
+       "s15"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "maria-grazia-chiuri",
+   "kind": "designer",
+   "name": "Maria Grazia Chiuri",
+   "aliases": [],
+   "summary": {
+    "text": "Roman designer who became Dior's first female creative director in 2016 and was named Fendi's chief creative officer in October 2025.",
+    "sourceIds": [
+     "s40",
+     "s41"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Italian.",
+      "sourceIds": [
+       "s42"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 2 February 1964 in Rome.",
+      "sourceIds": [
+       "s42"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Spent 17 years at Valentino, eight of them at the creative helm with Pierpaolo Piccioli.",
+      "sourceIds": [
+       "s40"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "jonathan-anderson",
+   "kind": "designer",
+   "name": "Jonathan Anderson",
+   "aliases": [
+    "JW Anderson"
+   ],
+   "summary": {
+    "text": "Northern Irish designer who ran Loewe for eleven years and in 2025 became the first since Christian Dior to lead all Dior lines.",
+    "sourceIds": [
+     "s43",
+     "s44"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Northern Irish.",
+      "sourceIds": [
+       "s44"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 1984.",
+      "sourceIds": [
+       "s44"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Launched the JW Anderson label in 2008.",
+      "sourceIds": [
+       "s44"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "kim-jones",
+   "kind": "designer",
+   "name": "Kim Jones",
+   "aliases": [],
+   "summary": {
+    "text": "English designer who fused streetwear and luxury at Louis Vuitton, led Dior Men for seven years and Fendi womenswear for four.",
+    "sourceIds": [
+     "s46",
+     "s47"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "English.",
+      "sourceIds": [
+       "s47"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 11 September 1973 in London.",
+      "sourceIds": [
+       "s47"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Brought the Supreme collaboration to Louis Vuitton menswear.",
+      "sourceIds": [
+       "s47"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "john-galliano",
+   "kind": "designer",
+   "name": "John Galliano",
+   "aliases": [
+    "John Charles Galliano"
+   ],
+   "summary": {
+    "text": "Gibraltar-born British designer who led Givenchy, then Dior for fifteen years, and Maison Margiela for a decade.",
+    "sourceIds": [
+     "s49"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "British.",
+      "sourceIds": [
+       "s49"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 28 November 1960 in Gibraltar.",
+      "sourceIds": [
+       "s49"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "raf-simons",
+   "kind": "designer",
+   "name": "Raf Simons",
+   "aliases": [
+    "Raf Jan Simons"
+   ],
+   "summary": {
+    "text": "Belgian designer who moved from Jil Sander to Dior to Calvin Klein and since 2020 co-directs Prada with Miuccia Prada.",
+    "sourceIds": [
+     "s50",
+     "s52"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Belgian.",
+      "sourceIds": [
+       "s53"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 12 January 1968 in Neerpelt, Belgium.",
+      "sourceIds": [
+       "s53"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "First Dior collection shown July 2012.",
+      "sourceIds": [
+       "s50"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "haider-ackermann",
+   "kind": "designer",
+   "name": "Haider Ackermann",
+   "aliases": [],
+   "summary": {
+    "text": "Colombian-born French designer known for fluid tailoring, who led Berluti briefly and became Tom Ford's creative director in 2024.",
+    "sourceIds": [
+     "s7",
+     "s55"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Colombian-born French.",
+      "sourceIds": [
+       "s55"
+      ]
+     }
+    },
+    {
+     "key": "born",
+     "claim": {
+      "text": "Born 29 March 1971 in Bogotá.",
+      "sourceIds": [
+       "s55"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "First Tom Ford collection scheduled for Paris Fashion Week, March 2025.",
+      "sourceIds": [
+       "s7"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "peter-hawkings",
+   "kind": "designer",
+   "name": "Peter Hawkings",
+   "aliases": [],
+   "summary": {
+    "text": "Long-time Tom Ford menswear lieutenant who served as the house's creative director for roughly fifteen months after the founder's exit.",
+    "sourceIds": [
+     "s6",
+     "s57"
+    ]
+   },
+   "facts": [
+    {
+     "key": "career",
+     "claim": {
+      "text": "At Tom Ford since the brand's 2005 inception, latterly as SVP of menswear.",
+      "sourceIds": [
+       "s6",
+       "s57"
+      ]
+     }
+    },
+    {
+     "key": "tenure",
+     "claim": {
+      "text": "Showed two collections as creative director before stepping down.",
+      "sourceIds": [
+       "s57"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "olivier-rousteing",
+   "kind": "designer",
+   "name": "Olivier Rousteing",
+   "aliases": [],
+   "summary": {
+    "text": "French designer who led Balmain for fourteen years from 2011 and was named creative director of Rabanne in July 2026.",
+    "sourceIds": [
+     "s63",
+     "s68"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "French.",
+      "sourceIds": [
+       "s62"
+      ]
+     }
+    },
+    {
+     "key": "career",
+     "claim": {
+      "text": "Left Balmain on 5 November 2025 after fourteen years.",
+      "sourceIds": [
+       "s63"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "gucci",
+   "kind": "house",
+   "name": "Gucci",
+   "aliases": [
+    "House of Gucci"
+   ],
+   "catalogBrands": [
+    "Gucci"
+   ],
+   "summary": {
+    "text": "Florentine leather-goods house founded in 1921, now Kering's flagship brand and led by Demna since 2025.",
+    "sourceIds": [
+     "s58",
+     "s27"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1921 in Florence by Guccio Gucci.",
+      "sourceIds": [
+       "s58"
+      ]
+     }
+    },
+    {
+     "key": "origin",
+     "claim": {
+      "text": "Began as a leather goods and luggage shop before expanding under Gucci's sons.",
+      "sourceIds": [
+       "s58"
+      ]
+     }
+    },
+    {
+     "key": "owner",
+     "claim": {
+      "text": "Owned by Kering.",
+      "sourceIds": [
+       "s27"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "saint-laurent",
+   "kind": "house",
+   "name": "Saint Laurent",
+   "aliases": [
+    "Yves Saint Laurent",
+    "YSL",
+    "Saint Laurent Paris",
+    "YSL Rive Gauche"
+   ],
+   "catalogBrands": [
+    "Saint Laurent",
+    "Yves Saint Laurent"
+   ],
+   "summary": {
+    "text": "Paris house founded in 1961 by Yves Saint Laurent and Pierre Bergé; its ready-to-wear was rebranded Saint Laurent Paris in 2012.",
+    "sourceIds": [
+     "s20",
+     "s19"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1961 in Paris by Yves Saint Laurent with Pierre Bergé.",
+      "sourceIds": [
+       "s19",
+       "s20"
+      ]
+     }
+    },
+    {
+     "key": "rename",
+     "claim": {
+      "text": "In 2012, under Hedi Slimane, the ready-to-wear line was renamed Saint Laurent Paris while YSL branding stayed on accessories and beauty.",
+      "sourceIds": [
+       "s20",
+       "s9"
+      ]
+     }
+    },
+    {
+     "key": "couture",
+     "claim": {
+      "text": "The haute couture division closed in 2002.",
+      "sourceIds": [
+       "s20"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "dior",
+   "kind": "house",
+   "name": "Dior",
+   "aliases": [
+    "Christian Dior",
+    "Dior Homme",
+    "Dior Men"
+   ],
+   "catalogBrands": [
+    "Dior",
+    "Christian Dior",
+    "Dior Men",
+    "Dior Homme"
+   ],
+   "summary": {
+    "text": "Paris couture house established in December 1946 whose 1947 New Look reset postwar fashion; its menswear line is Dior Men.",
+    "sourceIds": [
+     "s59",
+     "s60"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Established 16 December 1946 at 30 avenue Montaigne, Paris.",
+      "sourceIds": [
+       "s59"
+      ]
+     }
+    },
+    {
+     "key": "first-collection",
+     "claim": {
+      "text": "First collection, the New Look, shown 12 February 1947.",
+      "sourceIds": [
+       "s60"
+      ]
+     }
+    },
+    {
+     "key": "menswear",
+     "claim": {
+      "text": "The Dior Homme menswear line was renamed Dior Men in March 2018.",
+      "sourceIds": [
+       "s47"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "celine",
+   "kind": "house",
+   "name": "Celine",
+   "aliases": [
+    "Céline"
+   ],
+   "catalogBrands": [
+    "Celine",
+    "Céline"
+   ],
+   "summary": {
+    "text": "Paris house founded in 1945 by Céline Vipiana, owned by LVMH, which dropped the accent from its name under Hedi Slimane in 2018.",
+    "sourceIds": [
+     "s17",
+     "s13"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1945 in Paris by Céline Vipiana, first boutique at 52 rue Malte.",
+      "sourceIds": [
+       "s17"
+      ]
+     }
+    },
+    {
+     "key": "rename",
+     "claim": {
+      "text": "Slimane removed the accent aigu, restyling Céline as Celine, on taking over in 2018.",
+      "sourceIds": [
+       "s17"
+      ]
+     }
+    },
+    {
+     "key": "owner",
+     "claim": {
+      "text": "Owned by LVMH.",
+      "sourceIds": [
+       "s13"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "tom-ford-house",
+   "kind": "house",
+   "name": "Tom Ford",
+   "aliases": [
+    "TOM FORD",
+    "Tom Ford International",
+    "TOM FORD FASHION"
+   ],
+   "catalogBrands": [
+    "Tom Ford",
+    "TOM FORD"
+   ],
+   "summary": {
+    "text": "Luxury brand created in 2005, bought outright by The Estée Lauder Companies in 2023 with fashion licensed long-term to the Zegna Group.",
+    "sourceIds": [
+     "s4",
+     "s5"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Created in 2005.",
+      "sourceIds": [
+       "s5"
+      ]
+     }
+    },
+    {
+     "key": "acquisition",
+     "claim": {
+      "text": "Estée Lauder announced the roughly $2.8bn acquisition on 15 November 2022 and completed it on 28 April 2023.",
+      "sourceIds": [
+       "s3",
+       "s4",
+       "s67"
+      ]
+     }
+    },
+    {
+     "key": "licence",
+     "claim": {
+      "text": "Zegna became the long-term licensee for all Tom Ford fashion, accessories and related categories.",
+      "sourceIds": [
+       "s4",
+       "s5"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "balmain",
+   "kind": "house",
+   "name": "Balmain",
+   "aliases": [
+    "Pierre Balmain"
+   ],
+   "catalogBrands": [
+    "Balmain"
+   ],
+   "summary": {
+    "text": "Paris couture house founded by Pierre Balmain in 1945, led for fourteen years by Olivier Rousteing until November 2025.",
+    "sourceIds": [
+     "s61",
+     "s63"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1945 in Paris by Pierre Balmain.",
+      "sourceIds": [
+       "s61"
+      ]
+     }
+    },
+    {
+     "key": "signature",
+     "claim": {
+      "text": "Balmain's 'Jolie Madame' look paired architectural tailoring with hand embroidery.",
+      "sourceIds": [
+       "s61"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "valentino",
+   "kind": "house",
+   "name": "Valentino",
+   "aliases": [],
+   "catalogBrands": [
+    "Valentino"
+   ],
+   "reference": true
+  },
+  {
+   "id": "balenciaga",
+   "kind": "house",
+   "name": "Balenciaga",
+   "aliases": [],
+   "catalogBrands": [
+    "Balenciaga"
+   ],
+   "reference": true
+  },
+  {
+   "id": "loewe",
+   "kind": "house",
+   "name": "Loewe",
+   "aliases": [],
+   "catalogBrands": [
+    "Loewe"
+   ],
+   "reference": true
+  },
+  {
+   "id": "fendi",
+   "kind": "house",
+   "name": "Fendi",
+   "aliases": [],
+   "catalogBrands": [
+    "Fendi"
+   ],
+   "reference": true
+  },
+  {
+   "id": "louis-vuitton",
+   "kind": "house",
+   "name": "Louis Vuitton",
+   "aliases": [
+    "LV"
+   ],
+   "catalogBrands": [
+    "Louis Vuitton"
+   ],
+   "summary": {
+    "text": "Paris trunk-maker founded by Louis Vuitton in 1854, now LVMH's flagship house.",
+    "sourceIds": [
+     "r6",
+     "r2"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1854 in Paris by Louis Vuitton.",
+      "sourceIds": [
+       "r6"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Part of LVMH.",
+      "sourceIds": [
+       "r2"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "givenchy",
+   "kind": "house",
+   "name": "Givenchy",
+   "aliases": [],
+   "catalogBrands": [
+    "Givenchy"
+   ],
+   "reference": true
+  },
+  {
+   "id": "maison-margiela",
+   "kind": "house",
+   "name": "Maison Margiela",
+   "aliases": [
+    "Margiela",
+    "Maison Martin Margiela"
+   ],
+   "catalogBrands": [
+    "Maison Margiela"
+   ],
+   "reference": true
+  },
+  {
+   "id": "jil-sander",
+   "kind": "house",
+   "name": "Jil Sander",
+   "aliases": [],
+   "catalogBrands": [
+    "Jil Sander"
+   ],
+   "summary": {
+    "text": "Hamburg house founded 1968 by Jil Sander; acquired by OTB from Onward Holdings in 2021.",
+    "sourceIds": [
+     "r34",
+     "r33"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1968 in Hamburg.",
+      "sourceIds": [
+       "r34"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "OTB bought Jil Sander from Onward Holdings in March 2021.",
+      "sourceIds": [
+       "r33"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "calvin-klein",
+   "kind": "house",
+   "name": "Calvin Klein",
+   "aliases": [],
+   "catalogBrands": [
+    "Calvin Klein"
+   ],
+   "reference": true
+  },
+  {
+   "id": "prada",
+   "kind": "house",
+   "name": "Prada",
+   "aliases": [],
+   "catalogBrands": [
+    "Prada"
+   ],
+   "summary": {
+    "text": "Milan house led creatively by Miuccia Prada, with Raf Simons as co-creative director since April 2020.",
+    "sourceIds": [
+     "r69"
+    ]
+   },
+   "facts": [
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Owned by Prada Group.",
+      "sourceIds": [
+       "r69"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "berluti",
+   "kind": "house",
+   "name": "Berluti",
+   "aliases": [],
+   "catalogBrands": [
+    "Berluti"
+   ],
+   "reference": true
+  },
+  {
+   "id": "chloe",
+   "kind": "house",
+   "name": "Chloé",
+   "aliases": [
+    "Chloe"
+   ],
+   "catalogBrands": [
+    "Chloé",
+    "Chloe"
+   ],
+   "reference": true
+  },
+  {
+   "id": "polo-ralph-lauren",
+   "kind": "house",
+   "name": "Polo Ralph Lauren",
+   "aliases": [
+    "Polo"
+   ],
+   "catalogBrands": [
+    "Polo Ralph Lauren"
+   ],
+   "reference": true
+  },
+  {
+   "id": "versus-versace",
+   "kind": "house",
+   "name": "Versus Versace",
+   "aliases": [
+    "Versus"
+   ],
+   "catalogBrands": [
+    "Versus Versace"
+   ],
+   "reference": true
+  },
+  {
+   "id": "jw-anderson",
+   "kind": "house",
+   "name": "JW Anderson",
+   "aliases": [
+    "J.W. Anderson"
+   ],
+   "catalogBrands": [
+    "JW Anderson"
+   ],
+   "reference": true
+  },
+  {
+   "id": "phoebe-philo-house",
+   "kind": "house",
+   "name": "Phoebe Philo",
+   "aliases": [],
+   "catalogBrands": [
+    "Phoebe Philo"
+   ],
+   "reference": true
+  },
+  {
+   "id": "zegna",
+   "kind": "house",
+   "name": "Zegna",
+   "aliases": [
+    "Ermenegildo Zegna"
+   ],
+   "catalogBrands": [
+    "Zegna",
+    "Ermenegildo Zegna"
+   ],
+   "reference": true
+  },
+  {
+   "id": "virgil-abloh",
+   "kind": "designer",
+   "name": "Virgil Abloh",
+   "aliases": [],
+   "summary": {
+    "text": "American designer, born Rockford, Illinois, 1980; founded Off-White and led Louis Vuitton menswear from 2018 until his death on 28 November 2021.",
+    "sourceIds": [
+     "r2"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "American, born in Rockford, Illinois in 1980.",
+      "sourceIds": [
+       "r2"
+      ]
+     }
+    },
+    {
+     "key": "died",
+     "claim": {
+      "text": "Died of cancer on 28 November 2021.",
+      "sourceIds": [
+       "r2"
+      ]
+     }
+    },
+    {
+     "key": "education",
+     "claim": {
+      "text": "Civil engineering degree (Wisconsin–Madison) and master's in architecture (Illinois Institute of Technology).",
+      "sourceIds": [
+       "r2"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "miuccia-prada",
+   "kind": "designer",
+   "name": "Miuccia Prada",
+   "aliases": [],
+   "summary": {
+    "text": "Italian designer who leads Prada's creative direction, since April 2020 jointly with Raf Simons, and founded Miu Miu in 1993.",
+    "sourceIds": [
+     "r69",
+     "r70"
+    ]
+   },
+   "facts": [
+    {
+     "key": "co-creative-direction",
+     "claim": {
+      "text": "Raf Simons joined Prada as co-creative director on 2 April 2020 with equal responsibilities alongside Miuccia Prada.",
+      "sourceIds": [
+       "r69"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "rei-kawakubo",
+   "kind": "designer",
+   "name": "Rei Kawakubo",
+   "aliases": [],
+   "summary": {
+    "text": "Self-taught Japanese designer, born Tokyo 11 October 1942, who founded Comme des Garçons in 1969.",
+    "sourceIds": [
+     "r66"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Japanese, born in Tokyo on 11 October 1942.",
+      "sourceIds": [
+       "r66"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "jun-takahashi",
+   "kind": "designer",
+   "name": "Jun Takahashi",
+   "aliases": [],
+   "summary": {
+    "text": "Japanese designer who founded Undercover in 1990 while a Bunka Fashion College student; the label debuted in Paris in 2002.",
+    "sourceIds": [
+     "r67",
+     "r68"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Japanese; born in Kiryu, Gunma; graduated Bunka Fashion College 1991.",
+      "sourceIds": [
+       "r67"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "glenn-martens",
+   "kind": "designer",
+   "name": "Glenn Martens",
+   "aliases": [],
+   "summary": {
+    "text": "Belgian, Antwerp-trained designer: Y/Project creative director 2013–2024, Diesel 2020–2026, Maison Margiela since January 2025.",
+    "sourceIds": [
+     "r7",
+     "r10",
+     "r11",
+     "r73"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Belgian; studied at Antwerp's Royal Academy of Fine Arts.",
+      "sourceIds": [
+       "r7"
+      ]
+     }
+    },
+    {
+     "key": "awards",
+     "claim": {
+      "text": "Won the ANDAM Grand Prix in 2017 with Y/Project.",
+      "sourceIds": [
+       "r10"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "matthieu-blazy",
+   "kind": "designer",
+   "name": "Matthieu Blazy",
+   "aliases": [],
+   "summary": {
+    "text": "Franco-Belgian designer; Bottega Veneta creative director 2021–2025, named Chanel artistic director December 2024, debut show October 2025.",
+    "sourceIds": [
+     "r14",
+     "r15",
+     "r17"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Franco-Belgian.",
+      "sourceIds": [
+       "r14"
+      ]
+     }
+    },
+    {
+     "key": "prior-roles",
+     "claim": {
+      "text": "Earlier worked at Raf Simons, Maison Margiela and Céline under Phoebe Philo.",
+      "sourceIds": [
+       "r14"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "maximilian-davis",
+   "kind": "designer",
+   "name": "Maximilian Davis",
+   "aliases": [],
+   "summary": {
+    "text": "London College of Fashion graduate who founded label Maximilian in 2020 and became Ferragamo creative director in March 2022.",
+    "sourceIds": [
+     "r18"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "pieter-mulier",
+   "kind": "designer",
+   "name": "Pieter Mulier",
+   "aliases": [],
+   "summary": {
+    "text": "Belgian designer, long Raf Simons's deputy; Alaïa creative director 2021–2026, Versace chief creative officer from July 2026.",
+    "sourceIds": [
+     "r19",
+     "r20",
+     "r21",
+     "r22"
+    ]
+   },
+   "facts": [
+    {
+     "key": "nationality",
+     "claim": {
+      "text": "Belgian.",
+      "sourceIds": [
+       "r20"
+      ]
+     }
+    },
+    {
+     "key": "prior-roles",
+     "claim": {
+      "text": "Previously global creative director at Calvin Klein and design director at Christian Dior under Raf Simons.",
+      "sourceIds": [
+       "r21",
+       "r20"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "grace-wales-bonner",
+   "kind": "designer",
+   "name": "Grace Wales Bonner",
+   "aliases": [],
+   "summary": {
+    "text": "British designer who launched Wales Bonner after graduating from Central Saint Martins in 2014 and has collaborated with adidas Originals since 2020.",
+    "sourceIds": [
+     "r26",
+     "r27"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "christophe-lemaire",
+   "kind": "designer",
+   "name": "Christophe Lemaire",
+   "aliases": [],
+   "summary": {
+    "text": "French designer who founded Lemaire in 1991 and has been artistic director of Uniqlo's Paris R&D Center since 2016.",
+    "sourceIds": [
+     "r29",
+     "r28"
+    ]
+   },
+   "facts": [
+    {
+     "key": "uniqlo-role",
+     "claim": {
+      "text": "Artistic director of the UNIQLO Paris R&D Center since 2016; contract renewed for five years in July 2018.",
+      "sourceIds": [
+       "r28"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "sarah-linh-tran",
+   "kind": "designer",
+   "name": "Sarah-Linh Tran",
+   "aliases": [],
+   "summary": {
+    "text": "Co-founder of the Lemaire brand alongside Christophe Lemaire, with whom she relaunched the label in 2014.",
+    "sourceIds": [
+     "r28",
+     "r30"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "lucie-meier",
+   "kind": "designer",
+   "name": "Lucie Meier",
+   "aliases": [],
+   "summary": {
+    "text": "Co-creative director of Jil Sander with Luke Meier from 2017 until their exit in February 2025.",
+    "sourceIds": [
+     "r32",
+     "r31"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "luke-meier",
+   "kind": "designer",
+   "name": "Luke Meier",
+   "aliases": [],
+   "summary": {
+    "text": "Co-creative director of Jil Sander with Lucie Meier from 2017 until their exit in February 2025.",
+    "sourceIds": [
+     "r32",
+     "r31"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "simone-bellotti",
+   "kind": "designer",
+   "name": "Simone Bellotti",
+   "aliases": [],
+   "summary": {
+    "text": "Italian designer, formerly at Bally after sixteen years at Gucci, appointed Jil Sander creative director on 10 March 2025.",
+    "sourceIds": [
+     "r31",
+     "r71"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "chitose-abe",
+   "kind": "designer",
+   "name": "Chitose Abe",
+   "aliases": [],
+   "summary": {
+    "text": "Japanese designer, ex-Comme des Garçons patternmaker, who founded Sacai in Tokyo in 1999 and owns it outright.",
+    "sourceIds": [
+     "r35"
+    ]
+   },
+   "facts": [
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Abe owns 100 percent of Sacai.",
+      "sourceIds": [
+       "r35"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "catherine-holstein",
+   "kind": "designer",
+   "name": "Catherine Holstein",
+   "aliases": [
+    "Cate Holstein"
+   ],
+   "summary": {
+    "text": "New York designer who founded Khaite in 2016; CFDA Womenswear Designer of the Year 2022.",
+    "sourceIds": [
+     "r36",
+     "r37"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "ashley-olsen",
+   "kind": "designer",
+   "name": "Ashley Olsen",
+   "aliases": [],
+   "summary": {
+    "text": "Co-founder of The Row with Mary-Kate Olsen in New York in 2006.",
+    "sourceIds": [
+     "r38"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "mary-kate-olsen",
+   "kind": "designer",
+   "name": "Mary-Kate Olsen",
+   "aliases": [],
+   "summary": {
+    "text": "Co-founder of The Row with Ashley Olsen in New York in 2006.",
+    "sourceIds": [
+     "r38"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "jerry-lorenzo",
+   "kind": "designer",
+   "name": "Jerry Lorenzo",
+   "aliases": [],
+   "summary": {
+    "text": "Los Angeles designer who founded Fear of God in 2013 and entered a long-term adidas partnership.",
+    "sourceIds": [
+     "r40",
+     "r39"
+    ]
+   },
+   "facts": [
+    {
+     "key": "adidas",
+     "claim": {
+      "text": "Fear of God Athletics with adidas launched 3 December 2023 under a long-term partnership.",
+      "sourceIds": [
+       "r39"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "emily-adams-bode-aujla",
+   "kind": "designer",
+   "name": "Emily Adams Bode Aujla",
+   "aliases": [
+    "Emily Bode"
+   ],
+   "summary": {
+    "text": "Atlanta-born, Parsons-trained designer who founded Bode in New York; first woman to show at New York Men's Week.",
+    "sourceIds": [
+     "r41",
+     "r42"
+    ]
+   },
+   "facts": [
+    {
+     "key": "awards",
+     "claim": {
+      "text": "CFDA Emerging Designer of the Year 2019; American Menswear Designer of the Year 2021 and 2022.",
+      "sourceIds": [
+       "r41",
+       "r42"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "eli-russell-linnetz",
+   "kind": "designer",
+   "name": "Eli Russell Linnetz",
+   "aliases": [],
+   "summary": {
+    "text": "Venice Beach-based founder of ERL who guest-designed a Dior Men capsule with Kim Jones in 2022.",
+    "sourceIds": [
+     "r43",
+     "r44"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "guram-gvasalia",
+   "kind": "designer",
+   "name": "Guram Gvasalia",
+   "aliases": [],
+   "summary": {
+    "text": "Co-founder and CEO of Vetements since 2014, named its creative director effective the fall 2022 collections.",
+    "sourceIds": [
+     "r45",
+     "r46"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "hiroki-nakamura",
+   "kind": "designer",
+   "name": "Hiroki Nakamura",
+   "aliases": [],
+   "summary": {
+    "text": "Japanese designer, formerly at Burton Snowboards, who founded Visvim in Tokyo in 2000.",
+    "sourceIds": [
+     "r47",
+     "r48"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "jonny-johansson",
+   "kind": "designer",
+   "name": "Jonny Johansson",
+   "aliases": [],
+   "summary": {
+    "text": "Swedish co-founder and creative director of Acne Studios, founded in Stockholm in 1996.",
+    "sourceIds": [
+     "r49",
+     "r50"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "keizo-shimizu",
+   "kind": "designer",
+   "name": "Keizo Shimizu",
+   "aliases": [],
+   "summary": {
+    "text": "Founder and director of Tokyo's Nepenthes group (1988) and designer of its in-house label Needles.",
+    "sourceIds": [
+     "r51",
+     "r52"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "kiro-hirata",
+   "kind": "designer",
+   "name": "Kiro Hirata",
+   "aliases": [],
+   "summary": {
+    "text": "Designer at Kapital, son of founder Toshikiyo Hirata, who joined the Kojima brand in 2002.",
+    "sourceIds": [
+     "r53"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "ryota-iwai",
+   "kind": "designer",
+   "name": "Ryota Iwai",
+   "aliases": [],
+   "summary": {
+    "text": "Kobe-born, Bunka-trained designer who founded Auralee in 2015; Fashion Prize of Tokyo 2019.",
+    "sourceIds": [
+     "r55",
+     "r56"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "shinsuke-kojima",
+   "kind": "designer",
+   "name": "Shinsuke Kojima",
+   "aliases": [],
+   "summary": {
+    "text": "Former menswear magazine editor, born 1976 in Hyogo, who founded Kaptain Sunshine in 2013.",
+    "sourceIds": [
+     "r57",
+     "r58"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "sk8thing",
+   "kind": "designer",
+   "name": "Sk8thing",
+   "aliases": [
+    "SK8THING"
+   ],
+   "summary": {
+    "text": "Tokyo graphic designer behind A Bathing Ape and Billionaire Boys Club identities; co-founded Cav Empt in 2011.",
+    "sourceIds": [
+     "r59"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "toby-feltwell",
+   "kind": "designer",
+   "name": "Toby Feltwell",
+   "aliases": [],
+   "summary": {
+    "text": "English, ex-Mo'Wax and NIGO collaborator who moved to Tokyo in 2005 and co-founded Cav Empt in 2011.",
+    "sourceIds": [
+     "r59"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "teddy-santis",
+   "kind": "designer",
+   "name": "Teddy Santis",
+   "aliases": [],
+   "summary": {
+    "text": "Queens-raised founder and creative director of Aimé Leon Dore (2014); creative director of New Balance Made in USA.",
+    "sourceIds": [
+     "r60",
+     "r61",
+     "r75"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "dilan-lurr",
+   "kind": "designer",
+   "name": "Dilan Lurr",
+   "aliases": [],
+   "summary": {
+    "text": "Self-taught Kurdish designer raised in Sweden who founded Namacheko with sister Lezan Lurr in Antwerp in January 2017.",
+    "sourceIds": [
+     "r63",
+     "r64"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "off-white",
+   "kind": "house",
+   "name": "Off-White",
+   "aliases": [
+    "Off-White c/o Virgil Abloh"
+   ],
+   "catalogBrands": [
+    "Off-White"
+   ],
+   "summary": {
+    "text": "Milan-studio streetwear-luxury label founded by Virgil Abloh in 2013; LVMH took 60% in 2021 and sold it to Bluestar Alliance in 2024.",
+    "sourceIds": [
+     "r5",
+     "r3",
+     "r4"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2013 with a design studio in Milan.",
+      "sourceIds": [
+       "r5"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "LVMH acquired 60% in July 2021 and sold Off-White LLC to Bluestar Alliance, announced 30 September 2024.",
+      "sourceIds": [
+       "r3",
+       "r4"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "miu-miu",
+   "kind": "house",
+   "name": "Miu Miu",
+   "aliases": [],
+   "catalogBrands": [
+    "Miu Miu"
+   ],
+   "summary": {
+    "text": "Prada Group brand founded in 1993 by Miuccia Prada and named after her family nickname.",
+    "sourceIds": [
+     "r70"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1993 by Miuccia Prada.",
+      "sourceIds": [
+       "r70"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Owned by Prada Group.",
+      "sourceIds": [
+       "r70"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "comme-des-garcons",
+   "kind": "house",
+   "name": "Comme des Garçons",
+   "aliases": [
+    "CDG",
+    "Comme des Garcons"
+   ],
+   "catalogBrands": [
+    "Comme des Garçons"
+   ],
+   "summary": {
+    "text": "Tokyo label founded by Rei Kawakubo in 1969, adding menswear in 1978.",
+    "sourceIds": [
+     "r66"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1969 in Tokyo by Rei Kawakubo.",
+      "sourceIds": [
+       "r66"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "undercover",
+   "kind": "house",
+   "name": "Undercover",
+   "aliases": [],
+   "catalogBrands": [
+    "Undercover"
+   ],
+   "summary": {
+    "text": "Tokyo label founded by Jun Takahashi in 1990; Paris runway debut for Spring/Summer 2003.",
+    "sourceIds": [
+     "r67",
+     "r68"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1990 in Tokyo by Jun Takahashi.",
+      "sourceIds": [
+       "r67"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "y-project",
+   "kind": "house",
+   "name": "Y/Project",
+   "aliases": [
+    "Y Project"
+   ],
+   "catalogBrands": [
+    "Y/Project"
+   ],
+   "summary": {
+    "text": "Paris label founded 2010 by Yohan Serfaty and Gilles Elalouf; led by Glenn Martens from 2013; ceased operations January 2025.",
+    "sourceIds": [
+     "r8",
+     "r9"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2010 in Paris by Yohan Serfaty and Gilles Elalouf.",
+      "sourceIds": [
+       "r8"
+      ]
+     }
+    },
+    {
+     "key": "status",
+     "claim": {
+      "text": "Announced closure in January 2025 after failing to find a buyer.",
+      "sourceIds": [
+       "r8"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "bottega-veneta",
+   "kind": "house",
+   "name": "Bottega Veneta",
+   "aliases": [
+    "Bottega"
+   ],
+   "catalogBrands": [
+    "Bottega Veneta"
+   ],
+   "summary": {
+    "text": "Vicenza leather house founded 1966 by Michele Taddei and Renzo Zengiaro, owned by Kering since 2001.",
+    "sourceIds": [
+     "r72"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1966 in Vicenza.",
+      "sourceIds": [
+       "r72"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Acquired by Gucci Group (now Kering) in 2001.",
+      "sourceIds": [
+       "r72"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "ferragamo",
+   "kind": "house",
+   "name": "Ferragamo",
+   "aliases": [
+    "Salvatore Ferragamo"
+   ],
+   "catalogBrands": [
+    "Ferragamo"
+   ],
+   "summary": {
+    "text": "Florentine house whose creative direction passed to Maximilian Davis in March 2022 under CEO Marco Gobbetti.",
+    "sourceIds": [
+     "r18"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "alaia",
+   "kind": "house",
+   "name": "Alaïa",
+   "aliases": [
+    "Maison Alaïa",
+    "Azzedine Alaïa",
+    "Alaia"
+   ],
+   "catalogBrands": [
+    "Alaïa"
+   ],
+   "summary": {
+    "text": "Paris couture house founded by Azzedine Alaïa in 1964, owned by Richemont since 2007.",
+    "sourceIds": [
+     "r24",
+     "r25"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1964.",
+      "sourceIds": [
+       "r24"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Richemont acquired the maison in 2007.",
+      "sourceIds": [
+       "r24",
+       "r25"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "wales-bonner",
+   "kind": "house",
+   "name": "Wales Bonner",
+   "aliases": [],
+   "catalogBrands": [
+    "Wales Bonner"
+   ],
+   "summary": {
+    "text": "London label launched by Grace Wales Bonner after her 2014 Central Saint Martins graduation, menswear first then womenswear.",
+    "sourceIds": [
+     "r26"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Launched 2014.",
+      "sourceIds": [
+       "r26"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "lemaire",
+   "kind": "house",
+   "name": "Lemaire",
+   "aliases": [],
+   "catalogBrands": [
+    "Lemaire"
+   ],
+   "summary": {
+    "text": "Paris label founded by Christophe Lemaire in 1991, relaunched with Sarah-Linh Tran in 2014; Fast Retailing holds a minority stake.",
+    "sourceIds": [
+     "r29",
+     "r30",
+     "r28"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1991 by Christophe Lemaire.",
+      "sourceIds": [
+       "r29",
+       "r30"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Fast Retailing took a minority interest in July 2018.",
+      "sourceIds": [
+       "r28"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "sacai",
+   "kind": "house",
+   "name": "Sacai",
+   "aliases": [],
+   "catalogBrands": [
+    "Sacai"
+   ],
+   "summary": {
+    "text": "Tokyo label founded by Chitose Abe in 1999 and wholly owned by her.",
+    "sourceIds": [
+     "r35"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1999 in Tokyo.",
+      "sourceIds": [
+       "r35"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "khaite",
+   "kind": "house",
+   "name": "Khaite",
+   "aliases": [],
+   "catalogBrands": [
+    "Khaite"
+   ],
+   "summary": {
+    "text": "New York womenswear label founded by Catherine Holstein in 2016.",
+    "sourceIds": [
+     "r36"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2016 in New York.",
+      "sourceIds": [
+       "r36"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "the-row",
+   "kind": "house",
+   "name": "The Row",
+   "aliases": [],
+   "catalogBrands": [
+    "The Row"
+   ],
+   "summary": {
+    "text": "New York luxury label founded 2006 by Mary-Kate and Ashley Olsen, who remain majority owners after a 2024 minority sale.",
+    "sourceIds": [
+     "r38"
+    ]
+   },
+   "facts": [
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "September 2024 minority stake sold at a $1bn valuation to investors including the Wertheimers and Françoise Bettencourt Meyers.",
+      "sourceIds": [
+       "r38"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "fear-of-god",
+   "kind": "house",
+   "name": "Fear of God",
+   "aliases": [],
+   "catalogBrands": [
+    "Fear of God"
+   ],
+   "summary": {
+    "text": "Los Angeles label founded by Jerry Lorenzo in 2013.",
+    "sourceIds": [
+     "r40"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2013 in Los Angeles.",
+      "sourceIds": [
+       "r40"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "bode",
+   "kind": "house",
+   "name": "Bode",
+   "aliases": [],
+   "catalogBrands": [
+    "Bode"
+   ],
+   "summary": {
+    "text": "New York label built on antique textiles, founded by Emily Adams Bode Aujla in 2016 with a February 2017 NYFW Men's debut.",
+    "sourceIds": [
+     "r42",
+     "r41"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2016 in New York; debuted at New York Men's Week February 2017.",
+      "sourceIds": [
+       "r42",
+       "r41"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "erl",
+   "kind": "house",
+   "name": "ERL",
+   "aliases": [],
+   "catalogBrands": [
+    "ERL"
+   ],
+   "summary": {
+    "text": "Venice Beach label founded by Eli Russell Linnetz in 2018.",
+    "sourceIds": [
+     "r44"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2018 in Venice Beach, California.",
+      "sourceIds": [
+       "r44"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "vetements",
+   "kind": "house",
+   "name": "Vetements",
+   "aliases": [],
+   "catalogBrands": [
+    "Vetements"
+   ],
+   "summary": {
+    "text": "Label founded 2014 by brothers Demna and Guram Gvasalia; Guram became creative director after Demna's 2019 exit.",
+    "sourceIds": [
+     "r45",
+     "r46"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2014 by Demna and Guram Gvasalia.",
+      "sourceIds": [
+       "r45"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "visvim",
+   "kind": "house",
+   "name": "Visvim",
+   "aliases": [],
+   "catalogBrands": [
+    "Visvim"
+   ],
+   "summary": {
+    "text": "Tokyo menswear label founded by Hiroki Nakamura around 2000, beginning with footwear.",
+    "sourceIds": [
+     "r47",
+     "r48"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "acne-studios",
+   "kind": "house",
+   "name": "Acne Studios",
+   "aliases": [
+    "Acne"
+   ],
+   "catalogBrands": [
+    "Acne Studios"
+   ],
+   "summary": {
+    "text": "Stockholm house founded 1996 from the ACNE collective, with Jonny Johansson as creative director.",
+    "sourceIds": [
+     "r49"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1996 in Stockholm.",
+      "sourceIds": [
+       "r49"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "needles",
+   "kind": "house",
+   "name": "Needles",
+   "aliases": [],
+   "catalogBrands": [
+    "Needles"
+   ],
+   "summary": {
+    "text": "In-house label of Tokyo's Nepenthes group, founded 1988 by Keizo Shimizu; first branded HOGGS before renaming.",
+    "sourceIds": [
+     "r51",
+     "r52"
+    ]
+   },
+   "facts": [
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Owned by Nepenthes Co., Ltd., founded in Aoyama, Tokyo in 1988.",
+      "sourceIds": [
+       "r51",
+       "r52"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "kapital",
+   "kind": "house",
+   "name": "Kapital",
+   "aliases": [],
+   "catalogBrands": [
+    "Kapital"
+   ],
+   "summary": {
+    "text": "Denim label from Kojima, Okayama, founded by Toshikiyo Hirata from 1984; son Kiro Hirata joined in 2002.",
+    "sourceIds": [
+     "r53",
+     "r54"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Denim factory 1984, Kapital brand founded 1985 in Kojima, Okayama.",
+      "sourceIds": [
+       "r53"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "auralee",
+   "kind": "house",
+   "name": "Auralee",
+   "aliases": [],
+   "catalogBrands": [
+    "Auralee"
+   ],
+   "summary": {
+    "text": "Tokyo label founded by Ryota Iwai in 2015; first own store opened 2017.",
+    "sourceIds": [
+     "r55"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Launched 2015 in Tokyo.",
+      "sourceIds": [
+       "r55"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "kaptain-sunshine",
+   "kind": "house",
+   "name": "Kaptain Sunshine",
+   "aliases": [],
+   "catalogBrands": [
+    "Kaptain Sunshine"
+   ],
+   "summary": {
+    "text": "Tokyo-based military and workwear label founded by Shinsuke Kojima in 2013.",
+    "sourceIds": [
+     "r57",
+     "r58"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2013.",
+      "sourceIds": [
+       "r57"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "cav-empt",
+   "kind": "house",
+   "name": "Cav Empt",
+   "aliases": [
+    "C.E"
+   ],
+   "catalogBrands": [
+    "Cav Empt"
+   ],
+   "summary": {
+    "text": "Tokyo label founded 2011 by Sk8thing, Toby Feltwell and Hishiyama Yutaka; name from 'caveat emptor'.",
+    "sourceIds": [
+     "r59"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 2011 in Tokyo.",
+      "sourceIds": [
+       "r59"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "aime-leon-dore",
+   "kind": "house",
+   "name": "Aimé Leon Dore",
+   "aliases": [
+    "ALD",
+    "Aime Leon Dore"
+   ],
+   "catalogBrands": [
+    "Aimé Leon Dore"
+   ],
+   "summary": {
+    "text": "Queens, New York label founded by Teddy Santis in 2014; LVMH Luxury Ventures took a minority stake in January 2022.",
+    "sourceIds": [
+     "r60",
+     "r62"
+    ]
+   },
+   "facts": [
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "LVMH Luxury Ventures acquired a minority stake in January 2022.",
+      "sourceIds": [
+       "r62"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "namacheko",
+   "kind": "house",
+   "name": "Namacheko",
+   "aliases": [],
+   "catalogBrands": [
+    "Namacheko"
+   ],
+   "summary": {
+    "text": "Antwerp label founded January 2017 by siblings Dilan and Lezan Lurr, from a Kurdish-wedding art project.",
+    "sourceIds": [
+     "r63",
+     "r64"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded January 2017 in Antwerp.",
+      "sourceIds": [
+       "r63",
+       "r64"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "adidas-originals",
+   "kind": "house",
+   "name": "Adidas Originals",
+   "aliases": [
+    "adidas Originals"
+   ],
+   "catalogBrands": [
+    "Adidas Originals"
+   ],
+   "summary": {
+    "text": "Heritage division of adidas AG, the Herzogenaurach company Adi Dassler registered on 18 August 1949.",
+    "sourceIds": [
+     "r65"
+    ]
+   },
+   "facts": [
+    {
+     "key": "parent-founded",
+     "claim": {
+      "text": "adidas registered by Adi Dassler in Herzogenaurach on 18 August 1949.",
+      "sourceIds": [
+       "r65"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "diesel",
+   "kind": "house",
+   "name": "Diesel",
+   "aliases": [],
+   "catalogBrands": [
+    "Diesel"
+   ],
+   "summary": {
+    "text": "Denim brand founded 1978 in Molvena, Italy by Renzo Rosso; core of OTB Group.",
+    "sourceIds": [
+     "r12"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Founded 1978 in Molvena by Renzo Rosso.",
+      "sourceIds": [
+       "r12"
+      ]
+     }
+    },
+    {
+     "key": "ownership",
+     "claim": {
+      "text": "Part of OTB Group.",
+      "sourceIds": [
+       "r12"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "chanel",
+   "kind": "house",
+   "name": "Chanel",
+   "aliases": [],
+   "catalogBrands": [
+    "Chanel"
+   ],
+   "summary": {
+    "text": "Paris house begun when Gabrielle Chanel opened her Rue Cambon hat shop in 1910; Matthieu Blazy is its fourth head designer.",
+    "sourceIds": [
+     "r13",
+     "r14"
+    ]
+   },
+   "facts": [
+    {
+     "key": "founded",
+     "claim": {
+      "text": "Opened 1910 at Rue Cambon, Paris by Gabrielle Chanel.",
+      "sourceIds": [
+       "r13"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "id": "versace",
+   "kind": "house",
+   "name": "Versace",
+   "aliases": [],
+   "catalogBrands": [
+    "Versace"
+   ],
+   "summary": {
+    "text": "Milan house acquired by Prada Group in 2025; Pieter Mulier chief creative officer from 1 July 2026.",
+    "sourceIds": [
+     "r21",
+     "r22"
+    ]
+   },
+   "facts": []
+  },
+  {
+   "id": "new-balance",
+   "kind": "house",
+   "name": "New Balance",
+   "aliases": [],
+   "catalogBrands": [
+    "New Balance"
+   ],
+   "summary": {
+    "text": "Footwear company whose Made in USA line is creatively directed by Teddy Santis.",
+    "sourceIds": [
+     "r61"
+    ]
+   },
+   "facts": []
+  }
+ ],
+ "edges": [
+  {
+   "designerId": "tom-ford",
+   "houseId": "gucci",
+   "role": "creative director",
+   "start": "1994",
+   "end": "2004",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s1"
+   ],
+   "note": "Resigned April 2004 after the PPR buyout of Gucci Group."
+  },
+  {
+   "designerId": "tom-ford",
+   "houseId": "saint-laurent",
+   "role": "creative director",
+   "start": "2000-01",
+   "end": "2004",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s1",
+    "s20"
+   ],
+   "note": "YSL Rive Gauche and YSL Beauté only, held concurrently with Gucci; end precision is year."
+  },
+  {
+   "designerId": "tom-ford",
+   "houseId": "tom-ford-house",
+   "role": "founder",
+   "start": "2005",
+   "end": "2023",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s5",
+    "s8"
+   ],
+   "note": "Founder and creative lead; stepped away in April 2023 after the Estée Lauder sale."
+  },
+  {
+   "designerId": "hedi-slimane",
+   "houseId": "saint-laurent",
+   "role": "menswear designer",
+   "start": "1997",
+   "end": "2000",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s9",
+    "s10"
+   ],
+   "note": "YSL Rive Gauche Homme only; one source gives the appointment as 1996."
+  },
+  {
+   "designerId": "hedi-slimane",
+   "houseId": "dior",
+   "role": "creative director",
+   "start": "2000",
+   "end": "2007",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s9"
+   ],
+   "note": "Dior Homme (menswear) only."
+  },
+  {
+   "designerId": "hedi-slimane",
+   "houseId": "saint-laurent",
+   "role": "creative and image director",
+   "start": "2012",
+   "end": "2016-03",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s9",
+    "s11",
+    "s20"
+   ],
+   "note": "Renamed the ready-to-wear line Saint Laurent Paris; start precision is year."
+  },
+  {
+   "designerId": "hedi-slimane",
+   "houseId": "celine",
+   "role": "artistic, creative and image director",
+   "start": "2018-01-21",
+   "end": "2024-10",
+   "datePrecision": "day",
+   "sourceIds": [
+    "s17",
+    "s13",
+    "s18"
+   ],
+   "note": "Debut show 28 September 2018; exit confirmed October 2024 (end precision month)."
+  },
+  {
+   "designerId": "yves-saint-laurent",
+   "houseId": "dior",
+   "role": "artistic director",
+   "start": "1957",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "s19",
+    "s64"
+   ],
+   "note": "Took over after Christian Dior's death in 1957 aged 21; end year not confirmed by a retrieved source."
+  },
+  {
+   "designerId": "yves-saint-laurent",
+   "houseId": "saint-laurent",
+   "role": "founder",
+   "start": "1961",
+   "end": "2002",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s19",
+    "s20"
+   ],
+   "note": "Founded with Pierre Bergé; retired 2002."
+  },
+  {
+   "designerId": "alessandro-michele",
+   "houseId": "gucci",
+   "role": "creative director",
+   "start": "2015-01",
+   "end": "2022-11",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s21",
+    "s23"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "alessandro-michele",
+   "houseId": "valentino",
+   "role": "creative director",
+   "start": "2024-04",
+   "end": null,
+   "datePrecision": "month",
+   "sourceIds": [
+    "s21",
+    "s22"
+   ],
+   "note": "Announced 28 March 2024, effective April 2024."
+  },
+  {
+   "designerId": "sabato-de-sarno",
+   "houseId": "gucci",
+   "role": "creative director",
+   "start": "2023-01",
+   "end": "2025-02",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s25",
+    "s24",
+    "s26"
+   ],
+   "note": "Appointed 28 January 2023; first show September 2023; departure announced 6 February 2025."
+  },
+  {
+   "designerId": "demna",
+   "houseId": "balenciaga",
+   "role": "artistic director",
+   "start": "2015-10",
+   "end": "2025-07",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s28",
+    "s27",
+    "s29"
+   ],
+   "note": "Final show was the haute couture presentation of 9 July 2025."
+  },
+  {
+   "designerId": "demna",
+   "houseId": "gucci",
+   "role": "artistic director",
+   "start": "2025-07",
+   "end": null,
+   "datePrecision": "month",
+   "sourceIds": [
+    "s27"
+   ],
+   "note": "Appointment announced 13 March 2025; start stated as early July 2025."
+  },
+  {
+   "designerId": "frida-giannini",
+   "houseId": "gucci",
+   "role": "creative director of accessories",
+   "start": "2004",
+   "end": "2005",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s30"
+   ],
+   "note": "Accessories only."
+  },
+  {
+   "designerId": "frida-giannini",
+   "houseId": "gucci",
+   "role": "womenswear and accessories creative director",
+   "start": "2005",
+   "end": "2006",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s30"
+   ],
+   "note": "Women's ready-to-wear and accessories only."
+  },
+  {
+   "designerId": "frida-giannini",
+   "houseId": "gucci",
+   "role": "creative director",
+   "start": "2006",
+   "end": "2015-01",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s30",
+    "s31"
+   ],
+   "note": "Exit announced December 2014; brought forward to January 2015."
+  },
+  {
+   "designerId": "anthony-vaccarello",
+   "houseId": "saint-laurent",
+   "role": "creative director",
+   "start": "2016-04-04",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "s12",
+    "s32"
+   ],
+   "note": "First collection October 2016."
+  },
+  {
+   "designerId": "anthony-vaccarello",
+   "houseId": "versus-versace",
+   "role": "creative director",
+   "start": "2015",
+   "end": "2016",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s32"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "stefano-pilati",
+   "houseId": "saint-laurent",
+   "role": "creative director",
+   "start": "2004",
+   "end": "2012",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s33",
+    "s20"
+   ],
+   "note": "Succeeded Tom Ford; replaced by Hedi Slimane."
+  },
+  {
+   "designerId": "stefano-pilati",
+   "houseId": "zegna",
+   "role": "head of design",
+   "start": "2013",
+   "end": "2016-02",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s33",
+    "s35"
+   ],
+   "note": "Ermenegildo Zegna Couture, plus Agnona womenswear."
+  },
+  {
+   "designerId": "phoebe-philo",
+   "houseId": "chloe",
+   "role": "creative director",
+   "start": "2001",
+   "end": "2006",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s36"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "phoebe-philo",
+   "houseId": "celine",
+   "role": "creative director",
+   "start": "2008",
+   "end": "2017",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s36"
+   ],
+   "note": "House styled Céline during her tenure."
+  },
+  {
+   "designerId": "phoebe-philo",
+   "houseId": "phoebe-philo-house",
+   "role": "founder",
+   "start": "2023-10",
+   "end": null,
+   "datePrecision": "month",
+   "sourceIds": [
+    "s37",
+    "s36"
+   ],
+   "note": "Own-name label with minority LVMH stake."
+  },
+  {
+   "designerId": "michael-rider",
+   "houseId": "celine",
+   "role": "design director of ready-to-wear",
+   "start": "2008",
+   "end": "2018",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s38"
+   ],
+   "note": "Under Phoebe Philo; ready-to-wear only."
+  },
+  {
+   "designerId": "michael-rider",
+   "houseId": "polo-ralph-lauren",
+   "role": "creative director",
+   "start": "2018",
+   "end": "2024",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s38",
+    "s13"
+   ],
+   "note": "Led the Polo women's division."
+  },
+  {
+   "designerId": "michael-rider",
+   "houseId": "celine",
+   "role": "creative director",
+   "start": "2025",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "s13",
+    "s14",
+    "s15",
+    "s16"
+   ],
+   "note": "Appointed 2 October 2024 to join in early 2025; some outlets style the title artistic director; debut show 6 July 2025."
+  },
+  {
+   "designerId": "maria-grazia-chiuri",
+   "houseId": "valentino",
+   "role": "co-creative director",
+   "start": "2008",
+   "end": "2016",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s40"
+   ],
+   "note": "Shared with Pierpaolo Piccioli."
+  },
+  {
+   "designerId": "maria-grazia-chiuri",
+   "houseId": "dior",
+   "role": "creative director",
+   "start": "2016-07",
+   "end": "2025-05",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s40",
+    "s39"
+   ],
+   "note": "Womenswear, couture and accessories; Dior Men was a separate role."
+  },
+  {
+   "designerId": "maria-grazia-chiuri",
+   "houseId": "fendi",
+   "role": "chief creative officer",
+   "start": "2025-10-14",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "s41"
+   ],
+   "note": "Announcement date; first collection Fall/Winter 2026-27 in February 2026."
+  },
+  {
+   "designerId": "jonathan-anderson",
+   "houseId": "jw-anderson",
+   "role": "founder",
+   "start": "2008",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "s44"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "jonathan-anderson",
+   "houseId": "loewe",
+   "role": "creative director",
+   "start": "2013-09",
+   "end": "2025-03",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s44",
+    "s45"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "jonathan-anderson",
+   "houseId": "dior",
+   "role": "men's creative director",
+   "start": "2025-04-17",
+   "end": "2025-06-02",
+   "datePrecision": "day",
+   "sourceIds": [
+    "s43"
+   ],
+   "note": "Dior Men only, until the role was expanded."
+  },
+  {
+   "designerId": "jonathan-anderson",
+   "houseId": "dior",
+   "role": "creative director",
+   "start": "2025-06-02",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "s43"
+   ],
+   "note": "Womenswear, menswear and haute couture combined."
+  },
+  {
+   "designerId": "kim-jones",
+   "houseId": "louis-vuitton",
+   "role": "men's artistic director",
+   "start": "2011",
+   "end": "2018-01",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s47",
+    "s48"
+   ],
+   "note": "Menswear only; initially titled style director."
+  },
+  {
+   "designerId": "kim-jones",
+   "houseId": "dior",
+   "role": "men's artistic director",
+   "start": "2018-03",
+   "end": "2025-01",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s46",
+    "s47"
+   ],
+   "note": "Dior Men only; departure announced 31 January 2025."
+  },
+  {
+   "designerId": "kim-jones",
+   "houseId": "fendi",
+   "role": "womenswear artistic director",
+   "start": "2020-09",
+   "end": "2024-10",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s48"
+   ],
+   "note": "Women's collections only; held concurrently with Dior Men."
+  },
+  {
+   "designerId": "john-galliano",
+   "houseId": "givenchy",
+   "role": "designer",
+   "start": "1995",
+   "end": "1996",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s49"
+   ],
+   "note": "Succeeded Hubert de Givenchy."
+  },
+  {
+   "designerId": "john-galliano",
+   "houseId": "dior",
+   "role": "creative director",
+   "start": "1996-10",
+   "end": "2011-03",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s49"
+   ],
+   "note": "Suspended February 2011, dismissal proceedings March 2011."
+  },
+  {
+   "designerId": "john-galliano",
+   "houseId": "maison-margiela",
+   "role": "creative director",
+   "start": "2014",
+   "end": "2024-12-11",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s49"
+   ],
+   "note": "End date is day-precise."
+  },
+  {
+   "designerId": "raf-simons",
+   "houseId": "jil-sander",
+   "role": "creative director",
+   "start": "2005",
+   "end": "2012-02",
+   "datePrecision": "year",
+   "sourceIds": [
+    "s50"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "raf-simons",
+   "houseId": "dior",
+   "role": "artistic director",
+   "start": "2012-04",
+   "end": "2015-10",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s50",
+    "s51"
+   ],
+   "note": "Womenswear and couture; first show July 2012."
+  },
+  {
+   "designerId": "raf-simons",
+   "houseId": "calvin-klein",
+   "role": "chief creative officer",
+   "start": "2016-08",
+   "end": "2018-12",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s54",
+    "s50"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "raf-simons",
+   "houseId": "prada",
+   "role": "co-creative director",
+   "start": "2020-04-02",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "s52",
+    "s53"
+   ],
+   "note": "Alongside Miuccia Prada; one source gives 1 April 2020."
+  },
+  {
+   "designerId": "haider-ackermann",
+   "houseId": "berluti",
+   "role": "creative director",
+   "start": "2016-09",
+   "end": "2018-03",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s55",
+    "s56"
+   ],
+   "note": "Three seasons."
+  },
+  {
+   "designerId": "haider-ackermann",
+   "houseId": "tom-ford-house",
+   "role": "creative director",
+   "start": "2024-09-04",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "s7"
+   ],
+   "note": "Effective immediately; all fashion categories."
+  },
+  {
+   "designerId": "peter-hawkings",
+   "houseId": "tom-ford-house",
+   "role": "creative director",
+   "start": "2023-04",
+   "end": "2024-07-22",
+   "datePrecision": "month",
+   "sourceIds": [
+    "s6",
+    "s57",
+    "s8"
+   ],
+   "note": "End date is day-precise."
+  },
+  {
+   "designerId": "olivier-rousteing",
+   "houseId": "balmain",
+   "role": "creative director",
+   "start": "2011-04-26",
+   "end": "2025-11-05",
+   "datePrecision": "day",
+   "sourceIds": [
+    "s62",
+    "s63"
+   ],
+   "note": "Succeeded Christophe Decarnin."
+  },
+  {
+   "designerId": "virgil-abloh",
+   "houseId": "off-white",
+   "role": "founder and artistic director",
+   "start": "2013",
+   "end": "2021-11-28",
+   "datePrecision": "year",
+   "sourceIds": [
+    "r2",
+    "r5"
+   ],
+   "note": "LVMH notes the brand 'started in 2012'; Off-White's own page says founded 2013."
+  },
+  {
+   "designerId": "virgil-abloh",
+   "houseId": "louis-vuitton",
+   "role": "men's artistic director",
+   "start": "2018-03-26",
+   "end": "2021-11-28",
+   "datePrecision": "day",
+   "sourceIds": [
+    "r1",
+    "r2"
+   ],
+   "note": "Succeeded Kim Jones; role ended at his death."
+  },
+  {
+   "designerId": "miuccia-prada",
+   "houseId": "prada",
+   "role": "creative director",
+   "start": null,
+   "end": null,
+   "datePrecision": "unknown",
+   "sourceIds": [
+    "r69"
+   ],
+   "note": "Co-creative director with Raf Simons from 2 April 2020; the date she took creative charge is not in the retrieved sources."
+  },
+  {
+   "designerId": "miuccia-prada",
+   "houseId": "miu-miu",
+   "role": "founder and creative director",
+   "start": "1993",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r70"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "rei-kawakubo",
+   "houseId": "comme-des-garcons",
+   "role": "founder and designer",
+   "start": "1969",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r66"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "jun-takahashi",
+   "houseId": "undercover",
+   "role": "founder and designer",
+   "start": "1990",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r67",
+    "r68"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "glenn-martens",
+   "houseId": "y-project",
+   "role": "creative director",
+   "start": "2013",
+   "end": "2024",
+   "datePrecision": "year",
+   "sourceIds": [
+    "r8",
+    "r9",
+    "r10"
+   ],
+   "note": "Departure announced late 2024; label closed January 2025."
+  },
+  {
+   "designerId": "glenn-martens",
+   "houseId": "diesel",
+   "role": "creative director",
+   "start": "2020-10",
+   "end": "2026",
+   "datePrecision": "month",
+   "sourceIds": [
+    "r10",
+    "r11"
+   ],
+   "note": "Exit announced 2026-09-18; final collection is the Spring/Summer 2027 show at Milan Fashion Week; successor not named."
+  },
+  {
+   "designerId": "glenn-martens",
+   "houseId": "maison-margiela",
+   "role": "creative director",
+   "start": "2025-01-29",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "r7",
+    "r11"
+   ],
+   "note": "Effective immediately; succeeded John Galliano."
+  },
+  {
+   "designerId": "matthieu-blazy",
+   "houseId": "bottega-veneta",
+   "role": "creative director",
+   "start": "2021-11-15",
+   "end": "2025-01",
+   "datePrecision": "day",
+   "sourceIds": [
+    "r15",
+    "r16"
+   ],
+   "note": "Succeeded Daniel Lee; Louise Trotter took over at end of January 2025."
+  },
+  {
+   "designerId": "matthieu-blazy",
+   "houseId": "chanel",
+   "role": "artistic director",
+   "start": "2025",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r14",
+    "r17"
+   ],
+   "note": "Appointed 2024-12-12; first show Spring 2026 at the Grand Palais on 2025-10-06."
+  },
+  {
+   "designerId": "maximilian-davis",
+   "houseId": "ferragamo",
+   "role": "creative director",
+   "start": "2022-03-16",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "r18"
+   ],
+   "note": "Announced 2022-03-14; succeeded Paul Andrew."
+  },
+  {
+   "designerId": "pieter-mulier",
+   "houseId": "alaia",
+   "role": "creative director",
+   "start": "2021-02-05",
+   "end": "2026-03",
+   "datePrecision": "day",
+   "sourceIds": [
+    "r19",
+    "r20",
+    "r23"
+   ],
+   "note": "First collection Spring/Summer 2022; final show Summer/Fall 2026 at Paris Fashion Week, March 2026. Successor not officially named in sources."
+  },
+  {
+   "designerId": "pieter-mulier",
+   "houseId": "versace",
+   "role": "chief creative officer",
+   "start": "2026-07-01",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "r21",
+    "r22"
+   ],
+   "note": "Announced 2026-02-05."
+  },
+  {
+   "designerId": "grace-wales-bonner",
+   "houseId": "wales-bonner",
+   "role": "founder and creative director",
+   "start": "2014",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r26"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "grace-wales-bonner",
+   "houseId": "adidas-originals",
+   "role": "collaborator",
+   "start": "2020-01",
+   "end": null,
+   "datePrecision": "month",
+   "sourceIds": [
+    "r27",
+    "r26"
+   ],
+   "note": "First collaboration shown in the Fall/Winter 2020 'Lovers Rock' collection; ongoing through Fall/Winter 2025."
+  },
+  {
+   "designerId": "christophe-lemaire",
+   "houseId": "lemaire",
+   "role": "founder and artistic director",
+   "start": "1991",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r29",
+    "r30"
+   ],
+   "note": "Relaunched with Sarah-Linh Tran in 2014."
+  },
+  {
+   "designerId": "sarah-linh-tran",
+   "houseId": "lemaire",
+   "role": "co-founder and co-artistic director",
+   "start": null,
+   "end": null,
+   "datePrecision": "unknown",
+   "sourceIds": [
+    "r28",
+    "r30"
+   ],
+   "note": "Fast Retailing names her co-founder; joined the label around its 2014 relaunch."
+  },
+  {
+   "designerId": "lucie-meier",
+   "houseId": "jil-sander",
+   "role": "co-creative director",
+   "start": "2017",
+   "end": "2025-02",
+   "datePrecision": "year",
+   "sourceIds": [
+    "r32",
+    "r31"
+   ],
+   "note": "Fall/Winter 2025 was their last collection."
+  },
+  {
+   "designerId": "luke-meier",
+   "houseId": "jil-sander",
+   "role": "co-creative director",
+   "start": "2017",
+   "end": "2025-02",
+   "datePrecision": "year",
+   "sourceIds": [
+    "r32",
+    "r31"
+   ],
+   "note": "Fall/Winter 2025 was their last collection."
+  },
+  {
+   "designerId": "simone-bellotti",
+   "houseId": "jil-sander",
+   "role": "creative director",
+   "start": "2025-03-10",
+   "end": null,
+   "datePrecision": "day",
+   "sourceIds": [
+    "r31",
+    "r71"
+   ],
+   "note": "Effective immediately."
+  },
+  {
+   "designerId": "chitose-abe",
+   "houseId": "sacai",
+   "role": "founder and creative director",
+   "start": "1999",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r35"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "catherine-holstein",
+   "houseId": "khaite",
+   "role": "founder and creative director",
+   "start": "2016",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r36"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "ashley-olsen",
+   "houseId": "the-row",
+   "role": "co-founder",
+   "start": "2006",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r38"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "mary-kate-olsen",
+   "houseId": "the-row",
+   "role": "co-founder",
+   "start": "2006",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r38"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "jerry-lorenzo",
+   "houseId": "fear-of-god",
+   "role": "founder",
+   "start": "2013",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r40"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "emily-adams-bode-aujla",
+   "houseId": "bode",
+   "role": "founder and designer",
+   "start": "2016",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r42",
+    "r41"
+   ],
+   "note": "CFDA dates the runway debut to February 2017."
+  },
+  {
+   "designerId": "eli-russell-linnetz",
+   "houseId": "erl",
+   "role": "founder",
+   "start": "2018",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r44"
+   ],
+   "note": "Sources say 2018."
+  },
+  {
+   "designerId": "guram-gvasalia",
+   "houseId": "vetements",
+   "role": "co-founder and CEO",
+   "start": "2014",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r45",
+    "r46"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "guram-gvasalia",
+   "houseId": "vetements",
+   "role": "creative director",
+   "start": "2021",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r45"
+   ],
+   "note": "Named 2021, effective with the fall 2022 collections; Demna had stepped down September 2019."
+  },
+  {
+   "designerId": "hiroki-nakamura",
+   "houseId": "visvim",
+   "role": "founder and designer",
+   "start": "2000",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r47",
+    "r48"
+   ],
+   "note": "Sources split between 2000 and 2001."
+  },
+  {
+   "designerId": "jonny-johansson",
+   "houseId": "acne-studios",
+   "role": "co-founder and creative director",
+   "start": "1996",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r49",
+    "r50"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "keizo-shimizu",
+   "houseId": "needles",
+   "role": "founder and designer",
+   "start": null,
+   "end": null,
+   "datePrecision": "unknown",
+   "sourceIds": [
+    "r51",
+    "r52"
+   ],
+   "note": "Nepenthes founded 1988; Needles' own launch year not stated in sources."
+  },
+  {
+   "designerId": "kiro-hirata",
+   "houseId": "kapital",
+   "role": "designer",
+   "start": "2002",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r53"
+   ],
+   "note": "Joined his father's brand in 2002; exact current title unsourced."
+  },
+  {
+   "designerId": "ryota-iwai",
+   "houseId": "auralee",
+   "role": "founder and designer",
+   "start": "2015",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r55",
+    "r56"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "shinsuke-kojima",
+   "houseId": "kaptain-sunshine",
+   "role": "founder and designer",
+   "start": "2013",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r57",
+    "r58"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "sk8thing",
+   "houseId": "cav-empt",
+   "role": "co-founder",
+   "start": "2011",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r59"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "toby-feltwell",
+   "houseId": "cav-empt",
+   "role": "co-founder",
+   "start": "2011",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r59"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "teddy-santis",
+   "houseId": "aime-leon-dore",
+   "role": "founder and creative director",
+   "start": "2014",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r60"
+   ],
+   "note": null
+  },
+  {
+   "designerId": "teddy-santis",
+   "houseId": "new-balance",
+   "role": "creative director, Made in USA line",
+   "start": "2021",
+   "end": null,
+   "datePrecision": "year",
+   "sourceIds": [
+    "r61",
+    "r75"
+   ],
+   "note": "Named summer 2021 per BoF; official New Balance release not located."
+  },
+  {
+   "designerId": "dilan-lurr",
+   "houseId": "namacheko",
+   "role": "co-founder and designer",
+   "start": "2017-01",
+   "end": null,
+   "datePrecision": "month",
+   "sourceIds": [
+    "r63",
+    "r64"
+   ],
+   "note": "Co-founded with sister Lezan Lurr."
+  }
+ ],
+ "unsourced": [
+  {
+   "designerId": "yves-saint-laurent",
+   "houseId": "dior",
+   "field": "end",
+   "reason": "No retrieved source states the year his Dior tenure ended."
+  },
+  {
+   "designerId": "michael-rider",
+   "houseId": "celine",
+   "field": "start month",
+   "reason": "Sources say only 'early 2025'; exact start month not found."
+  },
+  {
+   "designerId": "hedi-slimane",
+   "houseId": "saint-laurent",
+   "field": "1996 vs 1997 start of the Rive Gauche Homme role",
+   "reason": "Two snippets disagree; recorded as 1997 with a note."
+  },
+  {
+   "designerId": null,
+   "houseId": "prada",
+   "field": "founded",
+   "reason": "Prada's 1913 Milan founding not looked up this pass; only Prada Group role pages retrieved."
+  },
+  {
+   "designerId": null,
+   "houseId": "ferragamo",
+   "field": "founded/ownership",
+   "reason": "Ferragamo group page returned 403; founding year and ownership not verified."
+  },
+  {
+   "designerId": null,
+   "houseId": "chanel",
+   "field": "ownership",
+   "reason": "Wertheimer ownership not confirmed from an official or Britannica page."
+  },
+  {
+   "designerId": null,
+   "houseId": "adidas-originals",
+   "field": "founded (Originals division launch year)",
+   "reason": "2001 launch appears only in Wikipedia-derived summaries; no official page retrieved."
+  },
+  {
+   "designerId": "pieter-mulier",
+   "houseId": "alaia",
+   "field": "successor",
+   "reason": "No official appointment found; press rumours name Olivier Rousteing or Nicolas Di Felice."
+  },
+  {
+   "designerId": "glenn-martens",
+   "houseId": "diesel",
+   "field": "successor",
+   "reason": "Diesel had not named one as of 2026-09-18."
+  },
+  {
+   "designerId": "miuccia-prada",
+   "houseId": "prada",
+   "field": "start",
+   "reason": "Date she took creative charge of Prada not in retrieved sources."
+  },
+  {
+   "designerId": "kiro-hirata",
+   "houseId": "kapital",
+   "field": "role title",
+   "reason": "Only 'joined 2002' sourced; creative-director title unverified."
+  },
+  {
+   "designerId": "keizo-shimizu",
+   "houseId": "needles",
+   "field": "start",
+   "reason": "Needles launch year absent from sources."
+  },
+  {
+   "designerId": "sarah-linh-tran",
+   "houseId": "lemaire",
+   "field": "start",
+   "reason": "Only 'co-founder' and the 2014 relaunch are sourced."
+  }
+ ]
 }
