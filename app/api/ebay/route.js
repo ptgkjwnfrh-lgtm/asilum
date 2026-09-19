@@ -16,6 +16,12 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().slice(0, 200);
   const limit = Math.max(1, Math.min(50, parseInt(searchParams.get("limit"), 10) || 24));
+  const maxPages = Math.max(1, Math.min(20, parseInt(searchParams.get("pages"), 10) || 1));
+  const maxItems = Math.max(1, Math.min(2000, parseInt(searchParams.get("maxItems"), 10) || limit));
+  const marketplaceId = (searchParams.get("marketplace") || process.env.EBAY_MARKETPLACE_ID || "EBAY_US").slice(0, 20);
+  const categoryId = (searchParams.get("category") || process.env.EBAY_CATEGORY_ID || "11450").slice(0, 20);
+  const deliveryCountry = (searchParams.get("country") || "").slice(0, 3);
+  const deliveryPostalCode = (searchParams.get("postalCode") || "").slice(0, 20);
   if (!q) return NextResponse.json({ error: "q required" }, { status: 400 });
   if (process.env.EBAY_PARTNERSHIP_APPROVED !== "1") {
     return NextResponse.json(
@@ -52,8 +58,11 @@ export async function GET(req) {
     });
   }
   try {
-    const items = await searchEbay(q, { limit });
-    return NextResponse.json({ q, count: items.length, items });
+    const items = await searchEbay(q, { limit, maxPages, maxItems, marketplaceId, categoryId, deliveryCountry, deliveryPostalCode });
+    return NextResponse.json(
+      { q, count: items.length, paging: { maxPages, maxItems, marketplaceId, categoryId }, items },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (e) {
     return NextResponse.json({ error: "eBay search is temporarily unavailable" }, { status: 502 });
   }

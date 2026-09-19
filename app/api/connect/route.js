@@ -1,8 +1,9 @@
 // app/api/connect/route.js
 // POST /api/connect  { user, platform }
 // Account linking. Real platform OAuth adapters plug in here (eBay Browse,
-// Pinterest OAuth, Shopify Storefront). Until real credentials + adapters
-// exist, this endpoint honestly reports the connection as unavailable —
+// Pinterest OAuth). Shopify now has a dedicated owner-scoped flow in Studio;
+// this legacy endpoint points there instead of claiming it is unbuilt. Until
+// other real credentials + adapters exist, it reports them unavailable —
 // it must NOT simulate imported purchase history (see CONSTITUTION.md).
 
 import { NextResponse } from "next/server";
@@ -18,7 +19,7 @@ const PLATFORMS = new Set(["ebay", "pinterest", "shopify"]);
 const ADAPTER_ENV = {
   ebay: ["EBAY_CLIENT_ID", "EBAY_CLIENT_SECRET"],
   pinterest: ["PINTEREST_CLIENT_ID", "PINTEREST_CLIENT_SECRET"],
-  shopify: ["SHOPIFY_STORE_DOMAIN", "SHOPIFY_STOREFRONT_TOKEN"],
+  shopify: ["SHOPIFY_CLIENT_ID", "SHOPIFY_CLIENT_SECRET"],
 };
 
 export async function POST(req) {
@@ -30,6 +31,13 @@ export async function POST(req) {
   const platform = String(body.platform || "").toLowerCase();
   if (!PLATFORMS.has(platform)) {
     return NextResponse.json({ error: "unknown platform" }, { status: 400 });
+  }
+  if (platform === "shopify") {
+    return NextResponse.json({
+      error: "use_shopify_oauth", platform,
+      message: "Connect a verified Shopify business in Studio.",
+      next: "/board?tab=studio",
+    }, { status: 409 });
   }
 
   const envNeeded = ADAPTER_ENV[platform];

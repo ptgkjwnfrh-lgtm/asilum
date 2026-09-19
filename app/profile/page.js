@@ -565,6 +565,7 @@ function ProfileAccess() {
     try {
       const response = await postJSON("/api/connect", { user: getUid(), platform });
       const data = await response.json().catch(() => null);
+      if (data?.next) { window.location.assign(data.next); return; }
       setConnectNotice(data?.message || `${platform} linking requires partner setup`);
     } catch { setConnectNotice(`${platform} linking requires partner setup`); }
     setConnecting("");

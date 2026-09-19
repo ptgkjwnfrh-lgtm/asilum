@@ -724,6 +724,7 @@ export default function Home() {
     try {
       const res = await postJSON("/api/connect", { user: uidRef.current, platform });
       const d = await res.json().catch(() => null);
+      if (d?.next) { window.location.assign(d.next); return; }
       setConnectNote((d && d.message) || `${platform} linking is coming soon — teach the feed with the moodboard instead`);
     } catch (e) { console.error(e); }
     setConnecting("");

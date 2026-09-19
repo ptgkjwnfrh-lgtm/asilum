@@ -82,12 +82,15 @@ Sequence (owner + agent):
    NOT sent — EPN enrolment is a separate programme with its own ⚖ (the
    22 Aug brief). Listings link out plain until that is ruled.
 
-## 3. Shopify Storefront (brand/boutique catalogs)
+## 3. Shopify merchant catalog OAuth
 
-1. On the store's admin: Settings → Apps and sales channels → Develop apps →
-   create an app with Storefront API scopes (`unauthenticated_read_product_*`).
-2. Set `SHOPIFY_STORE_DOMAIN=<store>.myshopify.com` and
-   `SHOPIFY_STOREFRONT_TOKEN=<storefront access token>`.
+1. Register the ASILUM public app and use `config/shopify.app.toml.example` as
+   the callback, read-only scope and webhook checklist.
+2. Set `SHOPIFY_CLIENT_ID`, `SHOPIFY_CLIENT_SECRET`, `SHOPIFY_API_VERSION`,
+   `SHOPIFY_REDIRECT_URI`, `CATALOG_TOKEN_KEY`, `CATALOG_TOKEN_KEY_VERSION`
+   and `CRON_SECRET` on the deployment; never ask a merchant for an Admin token.
+3. Apply schema v51, deploy, then run the install/sync/update/uninstall/privacy
+   canary in a Shopify development store before submitting app review.
 
 ## 4. Pinterest OAuth (board import)
 

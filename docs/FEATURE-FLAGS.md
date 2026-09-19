@@ -19,6 +19,9 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `EBAY_CLIENT_ID/SECRET` (+ approval) | eBay adapter | unset | adapter reports disabled |
 | `EBAY_DELETION_VERIFICATION_TOKEN` (+ optional `EBAY_DELETION_ENDPOINT`) | eBay account-deletion notification endpoint | unset | honest 503 (eBay's portal verification fails until set) |
 | `WOOCOMMERCE_STORE_APPROVED` + `WOOCOMMERCE_STORE_URL` | WooCommerce adapter | off | adapter reports disabled |
+| `SHOPIFY_CLIENT_ID/SECRET` + redirect/API version/token vault | per-merchant Shopify OAuth and catalog worker | unset | OAuth start reports 503; no simulated connection |
+| `YAHOO_SHOPPING_APPROVED` + `YAHOO_SHOPPING_APP_ID` | Yahoo Shopping Japan live search | off | adapter reports disabled; nothing stored |
+| `RAKUTEN_ICHIBA_APPROVED` + credentials + `RAKUTEN_USED_SHOP_CODES` | Rakuten reviewed-used-merchant live search | off | adapter reports disabled/empty; retail is never relabeled resale |
 | `DEVICE_COOKIE_SECRET` | identity issuing | required (503 if unset in prod) | honest 503 |
 | `ADMIN_TOKEN` | admin surface | disabled if unset | honest 503 |
 | `DATABASE_EXPECTED_ROLE` / prod default `asilum_app` | least-privilege runtime | enforced in prod | fail-closed boot |

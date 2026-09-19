@@ -1,0 +1,21 @@
+client_id = "replace-in-shopify-cli"
+name = "ASILUM"
+application_url = "https://www.asilummagazine.com"
+embedded = false
+
+[auth]
+redirect_urls = ["https://www.asilummagazine.com/api/connections/shopify/callback"]
+
+[access_scopes]
+scopes = "read_products,read_inventory"
+
+[webhooks]
+api_version = "2026-07"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled", "app/scopes_update", "products/create", "products/update", "products/delete", "inventory_levels/update"]
+uri = "/api/webhooks/shopify"
+
+[[webhooks.subscriptions]]
+compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+uri = "/api/webhooks/shopify"

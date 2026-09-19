@@ -3,11 +3,9 @@
 // app/components/Studio.jsx — STUDIO, inside the Passport (V.2).
 // One account; the business tools appear here, contextually, without a
 // second identity. Four instruments:
-//   1. CONNECT SHOPIFY STORE — the real path today is the booth application
-//      (POST /api/business, a human decides) plus the public products.json
-//      import behind THE DESK. Full OAuth needs a partner app the register
-//      lists as BLOCKED, so the connection walkthrough is a labelled MODEL
-//      and never a fake success.
+//   1. CONNECT SHOPIFY STORE — an owner-scoped OAuth installation. The panel
+//      reports app-configuration and review blockers as blockers, never as a
+//      pretend connection.
 //   2. ADD AN EVENT / A SHOP — a submission with every provenance field the
 //      map demands, saved as a DRAFT on this device (no directory table
 //      exists yet). Submission is open to anyone; it is not verification.
@@ -21,6 +19,7 @@
 import { useEffect, useState } from "react";
 import ModelTag from "./ModelTag.jsx";
 import { PLACE_KINDS, CITIES } from "../../lib/places/registry.js";
+import { authorizedFetch, getUid, postJSON, sendJSON } from "../../lib/client.js";
 
 const DRAFTS_KEY = "asilum-studio-drafts";
 const KIND_LABEL = { runway: "RUNWAY", "pop-up": "POP-UP", consignment: "CONSIGNMENT", thrift: "THRIFT", shop: "SHOP", exhibition: "EXHIBITION", creator: "CREATOR" };
@@ -31,11 +30,102 @@ function writeDrafts(list) { try { window.localStorage.setItem(DRAFTS_KEY, JSON.
 
 const EMPTY_EVENT = { kind: "pop-up", name: "", organizer: "", address: "", city: "Bowie, Maryland", startsAt: "", endsAt: "", admission: "", price: "", sourceUrl: "", imageRights: false };
 
+function ShopifyConnectionPanel({ uid }) {
+  const [shop, setShop] = useState("");
+  const [connections, setConnections] = useState([]);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  function load() {
+    if (!uid) { setConnections([]); return; }
+    authorizedFetch(`/api/connections?user=${encodeURIComponent(getUid() || "")}`, { cache: "no-store" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(data?.error || "connections could not be read");
+        setConnections(data.connections || []);
+      })
+      .catch((error) => setNote(error.message));
+  }
+
+  useEffect(() => {
+    load();
+    const state = new URLSearchParams(window.location.search).get("shopify");
+    if (state) setNote(state === "syncing" ? "store authorized — the first catalog sync is running" : `Shopify: ${state.replaceAll("_", " ")}`);
+  }, [uid]);
+
+  async function connect(event) {
+    event.preventDefault(); setBusy(true); setNote("");
+    try {
+      const response = await postJSON("/api/connections/shopify/start", { user: getUid(), shop });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.authorizationUrl) throw new Error(data?.error || "authorization could not start");
+      window.location.assign(data.authorizationUrl);
+    } catch (error) { setNote(error.message); setBusy(false); }
+  }
+
+  async function resync(id) {
+    setBusy(true); setNote("");
+    try {
+      const response = await postJSON(`/api/connections/${id}/resync`, { user: getUid(), operationId: crypto.randomUUID() });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "sync could not start");
+      setNote("catalog sync queued"); load();
+    } catch (error) { setNote(error.message); }
+    finally { setBusy(false); }
+  }
+
+  async function disconnect(id) {
+    setBusy(true); setNote("");
+    try {
+      const response = await sendJSON("DELETE", `/api/connections/${id}`, { user: getUid() });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "store could not be disconnected");
+      setNote("store disconnected and its catalog withdrawn"); load();
+    } catch (error) { setNote(error.message); }
+    finally { setBusy(false); }
+  }
+
+  async function changeDisplay(id, action) {
+    setBusy(true); setNote("");
+    try {
+      const response = await sendJSON("PATCH", `/api/connections/${id}`, { user: getUid(), action });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || `store could not ${action}`);
+      setNote(action === "pause" ? "store catalog paused and hidden" : "store catalog sync resumed"); load();
+    } catch (error) { setNote(error.message); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <>
+      <p className="stp">Authorize ASILUM from Shopify. We request read-only product and inventory access; checkout, orders, customers, payments, shipping and returns remain with your store. Only products you explicitly tag <b>asilum:resale</b> enter the resale catalog.</p>
+      {!uid && <p className="pempty">sign in before connecting a store.</p>}
+      {uid && <form className="stform" onSubmit={connect}>
+        <label>your myshopify domain<input type="text" value={shop} onChange={(event) => setShop(event.target.value)} placeholder="your-shop.myshopify.com" required /></label>
+        <div className="stacts"><button className="btn" type="submit" disabled={busy}>{busy ? "WORKING…" : "AUTHORIZE IN SHOPIFY →"}</button></div>
+      </form>}
+      {note && <p className="pempty" role="status">{note}</p>}
+      <ul className="stdrafts">
+        {connections.map((connection) => <li key={connection.id}>
+          <b>{connection.canonicalDomain}</b>
+          <span>{connection.status.replaceAll("_", " ")} · {connection.importedCount} imported · {connection.skippedCount} skipped{connection.lastError ? ` · ${connection.lastError}` : ""}</span>
+          {connection.status !== "revoked" && <span className="stacts">
+            {connection.status === "paused"
+              ? <button className="txtbtn" type="button" disabled={busy} onClick={() => changeDisplay(connection.id, "resume")}>RESUME</button>
+              : <><button className="txtbtn" type="button" disabled={busy} onClick={() => resync(connection.id)}>SYNC NOW</button><button className="txtbtn" type="button" disabled={busy} onClick={() => changeDisplay(connection.id, "pause")}>PAUSE DISPLAY</button></>}
+            <button className="txtbtn" type="button" disabled={busy} onClick={() => disconnect(connection.id)}>DISCONNECT</button>
+          </span>}
+        </li>)}
+      </ul>
+      <p className="stfine">disconnecting revokes ASILUM's stored credential and withdraws imported listings. your saves and Passport remain untouched.</p>
+    </>
+  );
+}
+
 export default function Studio({ uid }) {
   const [drafts, setDrafts] = useState([]);
   const [ev, setEv] = useState(EMPTY_EVENT);
   const [promo, setPromo] = useState({ draftId: "", startsAt: "", endsAt: "", budget: "" });
-  const [shopStep, setShopStep] = useState(0);
   const [desk, setDesk] = useState(null);
   const [deskOpen, setDeskOpen] = useState(null);
   const [note, setNote] = useState("");
@@ -75,18 +165,8 @@ export default function Studio({ uid }) {
         {/* 1 — SHOPIFY */}
         <section className="stcard" aria-label="connect a store">
           <div className="cclbl">01 · BRING YOUR SHOP IN</div>
-          <h3 className="sthead">Connect Shopify store <ModelTag kind="connection" /></h3>
-          <p className="stp">Real OAuth needs a Shopify partner app ASILUM does not have yet (the rights register marks it blocked). The real path today: a verified booth application, decided by a person, then a catalog import of only the fields ASILUM needs — product and variant identity, price, availability, authorized media. Checkout, payment, inventory truth, shipping and returns stay with the merchant.</p>
-          <ol className="stwalk">
-            {["store domain — yours, never your password", "scopes: read products and collections only", "choose the collections to show", "catalog fields imported; checkout stays on your store"].map((s, i) => (
-              <li key={s} className={i < shopStep ? "done" : i === shopStep ? "cur" : ""}>{s}</li>
-            ))}
-          </ol>
-          <div className="stacts">
-            <button className="txtbtn" onClick={() => setShopStep((s) => (s + 1) % 5)}>{shopStep === 4 ? "RESET THE WALKTHROUGH" : "PREVIEW THE CONNECTION →"} <ModelTag>MODEL</ModelTag></button>
-            <a className="txtbtn" href="/profile#access">APPLY FOR A VERIFIED BOOTH →</a>
-          </div>
-          <p className="stfine">staff use their own accounts and receive scoped permissions; disconnecting removes the imported catalog and nothing else.</p>
+          <h3 className="sthead">Connect Shopify store</h3>
+          <ShopifyConnectionPanel uid={uid} />
         </section>
 
         {/* 2 — EVENT / SHOP */}

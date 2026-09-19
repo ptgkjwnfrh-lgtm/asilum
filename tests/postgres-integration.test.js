@@ -3862,3 +3862,68 @@ test("DM: leaving 'accepted' does not destroy the record that consent happened",
   assert.ok(row.rows[0].accepted_at, "the acceptance timestamp survives the state change");
   assert.ok(row.rows[0].declined_at);
 });
+
+test("Postgres catalog connections isolate stores, replay-proof OAuth, lease jobs, and withdraw on disconnect",
+  { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js?catalog-v51");
+  const production = await import("../lib/db/production.js?catalog-v51");
+  const pool = await db.getPool();
+  const accounts = [randomUUID(), randomUUID()];
+  const suffix = randomUUID();
+  for (const id of accounts) await pool.query("INSERT INTO auth.users (id) VALUES ($1) ON CONFLICT DO NOTHING", [id]);
+  const connections = [];
+  t.after(async () => {
+    await pool.query("DELETE FROM items WHERE connection_id=ANY($1::text[])", [connections.map((row) => row.id)]).catch(() => {});
+    await pool.query("DELETE FROM merchant_connections WHERE id=ANY($1::uuid[])", [connections.map((row) => row.id)]).catch(() => {});
+    await pool.query("DELETE FROM shopify_oauth_states WHERE account_id=ANY($1::uuid[])", [accounts]).catch(() => {});
+    await pool.query("DELETE FROM auth.users WHERE id=ANY($1::uuid[])", [accounts]).catch(() => {});
+  });
+
+  for (let index = 0; index < 2; index++) {
+    connections.push(await production.upsertMerchantConnection({
+      accountId: accounts[index], provider: "shopify", providerAccountId: `gid://shopify/Shop/${suffix}-${index}`,
+      canonicalDomain: `catalog-${index}-${suffix}.myshopify.com`, grantedScopes: ["read_products"],
+      publicationSelection: { currency: "USD" }, policyId: "shopify-merchant", policyVersion: 1,
+      status: "connected", tokenCiphertext: `cipher-${index}`, refreshTokenCiphertext: `refresh-${index}`,
+    }));
+  }
+
+  const common = {
+    source_name: "shopify", source_product_id: "gid://shopify/Product/123",
+    title: "Store-specific coat", price: 100, currency: "USD", is_available: true,
+    availability_status: "available", source_product_url: "https://example.com/coat",
+  };
+  await db.upsertItems([
+    { ...common, id: `pg-cat-a-${suffix}`, connection_id: connections[0].id },
+    { ...common, id: `pg-cat-b-${suffix}`, connection_id: connections[1].id },
+  ]);
+  const isolated = await pool.query(
+    "SELECT connection_id,count(*)::int n FROM items WHERE source_product_id=$1 AND connection_id=ANY($2::text[]) GROUP BY connection_id",
+    [common.source_product_id, connections.map((row) => row.id)]);
+  assert.equal(isolated.rows.length, 2, "the same provider product id can exist in two installed stores");
+
+  const stateHash = `state-${suffix}`;
+  await production.createOAuthState({ stateHash, accountId: accounts[0], shopDomain: connections[0].canonicalDomain,
+    returnPath: "/board?tab=studio", expiresAt: new Date(Date.now() + 60_000).toISOString() });
+  assert.ok(await production.consumeOAuthState({ stateHash, shopDomain: connections[0].canonicalDomain }));
+  assert.equal(await production.consumeOAuthState({ stateHash, shopDomain: connections[0].canonicalDomain }), null,
+    "OAuth state is one-use in Postgres, not only memory mode");
+
+  for (let index = 0; index < 2; index++) await production.enqueueCatalogJob({
+    connectionId: connections[index].id, kind: "shopify_reconcile",
+    idempotencyKey: `pg-catalog-job-${suffix}-${index}`, payload: { syncRunId: randomUUID() },
+  });
+  const first = await production.claimCatalogJobs(`worker-a-${suffix}`, { limit: 1 });
+  const second = await production.claimCatalogJobs(`worker-b-${suffix}`, { limit: 1 });
+  assert.equal(first.length, 1);
+  assert.equal(second.length, 1);
+  assert.notEqual(first[0].id, second[0].id, "SKIP LOCKED prevents two workers claiming one job");
+  assert.equal(await production.finishCatalogJob(first[0].id, `wrong-worker-${suffix}`, { status: "completed" }), false,
+    "only the lease owner can finish a job");
+
+  assert.equal(await production.disconnectMerchantConnection(connections[0].id, accounts[0]), true);
+  const withdrawn = await pool.query("SELECT is_available,availability_status FROM items WHERE id=$1", [`pg-cat-a-${suffix}`]);
+  assert.equal(withdrawn.rows[0].is_available, false);
+  assert.equal(withdrawn.rows[0].availability_status, "removed");
+});

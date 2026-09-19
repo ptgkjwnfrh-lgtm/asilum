@@ -38,9 +38,16 @@ scripts/apply-schema.mjs <file>`):
   sponsorship gates, post-handoff outcomes, and privacy-delete indexes.
 - `supabase/schema-v10-policy-performance.sql` — statement-scoped auth checks
   for the client-facing profile and saved-item RLS policies.
+- `supabase/schema-v11-*.sql` through `schema-v50-*.sql` — subsequent ledger,
+  privacy, identity, messaging, business and operations migrations; apply every
+  numbered file in numeric order, never by lexical glob order.
+- `supabase/schema-v51-catalog-connections.sql` — source registry, merchant
+  OAuth installations, variants, quarantine, leased jobs, webhook dedupe and
+  completed-snapshot reconciliation.
 - `supabase/schema-alpha.sql` — staged, NOT applied.
 
-Apply v1, `schema.sql`, then v2 through v10 in order before deploying. TLS
+Apply v1, `schema.sql`, then every numbered migration through v51 in numeric
+order before deploying. TLS
 certificate verification stays enabled; configure `DATABASE_SSL_CA` when the
 provider CA is not in Node's trust store.
 
@@ -65,13 +72,19 @@ fetchProductById, checkAvailability, normalizeSourceProduct, syncProducts`.
   `EBAY_PARTNERSHIP_APPROVED=1` and API credentials are present.
 - **woocommerce** — official Store API, enabled only for an exact HTTPS store
   origin whose merchant approved ASILUM (`WOOCOMMERCE_STORE_APPROVED=1`).
-- **shopify** — honest disabled placeholder until an independent store grants
-  Storefront access. It returns empty results and never scrapes or fakes data.
+- **shopify** — per-merchant Admin OAuth under `/api/connections`; encrypted
+  expiring offline tokens, background pagination, webhooks and exact
+  disconnect withdrawal. The legacy public export remains separately labeled.
+- **yahoo-shopping-jp** — official v3 live search, used/in-stock/cross-border
+  filters, approval and app-id gated; never durably ingested.
+- **rakuten-ichiba** — official live search, gated by credentials and an exact
+  reviewed used-shop allowlist; general retail is never called resale.
 
 `normalize.js` converts any raw source product into the ASILUM shape and
 derives typed tags; `sync.js` runs enabled adapters → upserts items → writes
 product_images + product_tags → logs to source_sync_logs. Trigger via
-`/api/admin` `sync.run` (no cron yet — see lib/background-jobs stubs).
+`/api/admin` `sync.run`; merchant Shopify jobs run through the leased v51 queue
+at `/api/catalog/run`, protected by `CRON_SECRET` and scheduled every 15 minutes.
 
 Availability: `checkAvailability` per adapter; results land in
 product_availability_checks and reflect onto `items.availability_status` /
@@ -185,6 +198,7 @@ records + brain toggle, stylist persistence, editorial posts, admin API,
 adapter framework with availability checking, transient craving context,
 indexed catalog candidates, privacy controls, and self-reported outcomes.
 
-WAITING ON OFFICIAL ACCESS: eBay approval + keys (adapter ready), per-store Shopify
-tokens, any vision/embedding provider, and Pinterest OAuth. Checkout remains
+WAITING ON OFFICIAL ACCESS: eBay/Yahoo/Rakuten approvals and keys, Shopify
+public-app registration/review plus deployment secrets, any vision/embedding
+provider, and Pinterest OAuth. Checkout remains
 out of scope by constitution.

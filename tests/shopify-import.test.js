@@ -54,16 +54,34 @@ test("mapping: cheapest AVAILABLE variant prices it; variant truth decides avail
   assert.equal(raws[1].availability_status, "sold");
 });
 
-test("import: gate-passers land, the sold-out is skipped with the gate's own words", async () => {
+test("import persists sold-out tombstones instead of leaving old stock available", async () => {
   const fetchImpl = async () => ({ ok: true, text: async () => JSON.stringify(PAYLOAD) });
   const result = await importShopifyInventory({ shopifyDomain: DOMAIN, sourceName: "atelier-example", currency: "CAD", fetchImpl });
   assert.equal(result.error, undefined);
-  assert.equal(result.imported.length, 1);
-  assert.equal(result.imported[0].id, "atelier-example-wool-column-coat");
+  assert.equal(result.imported.length, 2);
+  assert.match(result.imported[0].id, /^atelier-example-[0-9a-f]{48}$/);
+  assert.equal(result.imported[0].source_product_id, "wool-column-coat");
   assert.equal(result.imported[0].availability_status, "available");
-  assert.equal(result.skipped.length, 1);
-  assert.equal(result.skipped[0].handle, "slip-dress");
-  assert.match(result.skipped[0].reason, /availability is "sold"/);
+  assert.equal(result.imported[1].availability_status, "sold");
+  assert.equal(result.imported[1].is_available, false);
+  assert.equal(result.skipped.length, 0);
+});
+
+test("products.json pagination advances past 250 and remains bounded", async () => {
+  const first = Array.from({ length: 250 }, (_, index) => ({
+    id: index + 1, handle: `piece-${index + 1}`, title: `Piece ${index + 1}`,
+    vendor: "Atelier Example", variants: [{ id: index + 1, price: "10.00", available: true }],
+  }));
+  const second = [{ id: 251, handle: "piece-251", title: "Piece 251", vendor: "Atelier Example", variants: [{ id: 251, price: "11.00", available: true }] }];
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(String(url));
+    const payload = urls.length === 1 ? { products: first } : { products: second };
+    return { ok: true, text: async () => JSON.stringify(payload) };
+  };
+  const result = await importShopifyInventory({ shopifyDomain: DOMAIN, sourceName: "atelier-example", currency: "CAD", fetchImpl });
+  assert.equal(result.imported.length, 251);
+  assert.match(urls[1], /since_id=250/);
 });
 
 test("a non-Shopify response is an error, never an empty success", async () => {

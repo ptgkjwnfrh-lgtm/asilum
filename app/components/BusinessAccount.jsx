@@ -9,8 +9,8 @@
 // anti-impersonation evidence a human reviewer checks — the machine
 // never verifies on its own. A verified business links an inventory
 // namespace and imports from its own Shopify storefront through the
-// checkout honesty gate; full OAuth store control stays a later,
-// partner-app step and nothing here pretends otherwise.
+// checkout honesty gate; verified businesses can then authorize the real
+// owner-scoped OAuth catalog connection in Studio.
 
 import { useEffect, useState } from "react";
 import { getUid, authorizedFetch, postJSON } from "../../lib/client.js";
