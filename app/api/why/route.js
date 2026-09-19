@@ -8,7 +8,8 @@
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { explainProduct, recordCorrection, CORRECTION_CODES } from "../../../lib/asterisk/explain.js";
+import { explainProduct, recordCorrection, undoCorrection, CORRECTION_CODES } from "../../../lib/asterisk/explain.js";
+import { CORRECTION_SCOPES } from "../../../lib/asterisk/correctionSignals.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
@@ -43,6 +44,16 @@ async function handlePOST(req) {
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "why-correct", subject: user, limit: 30, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  // UNDO (V.2): { undoOf } takes one correction back; the row stays as the
+  // record that it was made and withdrawn, and every effect it had is gone.
+  if (body.undoOf != null) {
+    const r = await undoCorrection(user, body.undoOf);
+    if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status || 400 });
+    return NextResponse.json({
+      undone: { id: r.correction.id, code: r.correction.code, lane: r.lane },
+      profileUpdated: r.profileUpdated,
+    });
+  }
   const code = String(body.code || "");
   if (!CORRECTION_CODES.has(code)) {
     return NextResponse.json({ error: "unknown correction code" }, { status: 400 });
@@ -51,14 +62,19 @@ async function handlePOST(req) {
   if (!validProductId(productId)) {
     return NextResponse.json({ error: "valid productId required" }, { status: 400 });
   }
-  const r = await recordCorrection(user, { productId, code, note: body.note });
+  const scope = body.scope == null ? "ongoing" : String(body.scope);
+  if (!CORRECTION_SCOPES.includes(scope)) {
+    return NextResponse.json({ error: "unknown correction scope" }, { status: 400 });
+  }
+  const r = await recordCorrection(user, { productId, code, note: body.note, scope });
   if (!r.ok) {
     return NextResponse.json({ error: r.error }, { status: r.status || 400 });
   }
   return NextResponse.json({
-    correction: { id: r.correction.id, code: r.correction.code },
+    correction: { id: r.correction.id, code: r.correction.code, lane: r.lane, scope: r.correction.scope || scope },
     moderationQueued: !!r.moderationTask,
     duplicate: !!r.duplicate,
+    revived: !!r.revived,
     profileUpdated: r.profileUpdated,
   });
 }

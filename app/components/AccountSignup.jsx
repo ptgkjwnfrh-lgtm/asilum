@@ -68,15 +68,13 @@ export default function AccountSignup() {
     if (!authConfigured()) return;
     let active = true;
     let subscription = null;
-    // Once per device, home screen only, never over the first-visit sheet.
+    // V.2 (owner brief, 17 Sep): no account gate before the first reward.
+    // The sheet no longer opens itself on the home screen; it opens on the
+    // shell's SIGN IN word, the account circle, or the first-save moment
+    // (SavePrompt.jsx). The listener stays so nothing else changes.
     const maybeAutoShow = () => {
       if (!active || signedInRef.current) return;
-      try {
-        if (window.location.pathname !== "/") return;
-        if (!window.localStorage.getItem("asilum-onboarded")) return;
-        if (window.localStorage.getItem(SEEN_KEY)) return;
-      } catch { return; }
-      setOpen(true);
+      try { window.localStorage.setItem(SEEN_KEY, "1"); } catch {}
     };
     // The shell's SIGN IN button (any page) — always honored while signed out.
     const onOpenRequest = (event) => {

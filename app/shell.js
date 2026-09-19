@@ -28,7 +28,8 @@ import DesignConsole from "./components/DesignConsole.jsx";
 import Notice from "./components/Notice.jsx";
 import MailDesk from "./components/MailDesk.jsx";
 import { DEFAULT_KIND } from "../lib/accounts.js";
-import { navFor } from "../lib/nav.js";
+import { navFor, ACCOUNT_MENU } from "../lib/nav.js";
+import SavePrompt from "./components/SavePrompt.jsx";
 
 // Seven destinations — the complete mental model of the OS. Every legacy
 // route stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE,
@@ -404,6 +405,28 @@ export default function Shell({ children }) {
   // close the bag panel; the toggle button still toggles.
   useEscape(() => setBagOpen(false), bagOpen);
   useClickAway(bagPanelRef, () => setBagOpen(false), { active: bagOpen, excludeRef: bagToggleRef });
+
+  // THE ACCOUNT CIRCLE (V.2): one door for PROFILE, ORDERS, SETTINGS and the
+  // sign-in/out verb. Signed out it still opens — SETTINGS (the theme) must
+  // be reachable without an account — but every row that needs a person says
+  // so rather than pretending.
+  const [acctOpen, setAcctOpen] = useState(false);
+  const acctPanelRef = useRef(null);
+  const acctToggleRef = useRef(null);
+  useEscape(() => setAcctOpen(false), acctOpen);
+  useClickAway(acctPanelRef, () => setAcctOpen(false), { active: acctOpen, excludeRef: acctToggleRef });
+  useEffect(() => { setAcctOpen(false); }, [pathname]);
+  async function signOutHere() {
+    setAcctOpen(false);
+    try {
+      const sb = await getSupabase();
+      if (!sb) return;
+      const { error } = await sb.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      // The shell's own SIGNED_OUT listener publishes SIGN_OUT_NOTICE — one
+      // emitter, one wording (Aug 8).
+    } catch { setAuthNotice("could not sign out — try again"); }
+  }
 
   // A search that is already open must be re-ranked immediately when the
   // switch changes; stale personalized results must never sit under OFF.
@@ -786,15 +809,9 @@ export default function Shell({ children }) {
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 5h10.8l-.9 9H3.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M5.4 5V4a2.6 2.6 0 0 1 5.2 0v1" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
               BAG ({bag.length})
             </button>
-            {authUser ? (
-              // Signed in: the corner button becomes the profile circle
-              // (owner order, Aug 13) — initial from the account email.
-              <a className="tbtn tbav" href="/profile" title={authUser.email || authUser.id} aria-label="your profile — signed in">
-                <span className="tbavatar">{String(authUser.email || "•").slice(0, 1).toUpperCase()}</span>
-              </a>
-            ) : (
+            {!authUser && (
               <button
-                className="tbtn"
+                className="tbtn tbsignin"
                 onClick={() =>
                   window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }))
                 }
@@ -802,6 +819,21 @@ export default function Shell({ children }) {
                 SIGN IN
               </button>
             )}
+            {/* The account circle (V.2): the initial when signed in, a ring
+                when not. It opens the person's own drawers — PROFILE,
+                ORDERS, SETTINGS — which left the destination row so the
+                row could be four words. */}
+            <button
+              ref={acctToggleRef}
+              className={"tbtn tbav" + (acctOpen ? " on" : "")}
+              onClick={() => setAcctOpen((o) => !o)}
+              aria-haspopup="menu"
+              aria-expanded={acctOpen}
+              aria-label={authUser ? "your account — signed in" : "account menu"}
+              title={authUser ? (authUser.email || authUser.id) : "account"}
+            >
+              <span className="tbavatar">{authUser ? String(authUser.email || "•").slice(0, 1).toUpperCase() : "◉"}</span>
+            </button>
           </div>
         </div>
         {/* The destination row carries the destinations, and at its RIGHT END
@@ -840,7 +872,41 @@ export default function Shell({ children }) {
         </nav>
       </header>
 
+      {/* THE TAB BAR (V.2): under 760px the four destinations move to the
+          thumb — the same four words, the same red for "you are here". Hidden
+          on desktop by CSS; the header row hides on phones in its place. */}
+      <nav className="tabbar" aria-label="destinations">
+        {nav.map((n) => {
+          const cur = n.match(pathname || "/");
+          return (
+            <a key={n.href} className={"tabl" + (cur ? " cur" : "")} href={n.href} aria-current={cur ? "page" : undefined}>
+              <span className="tbi" aria-hidden="true">{n.icon}</span>
+              <span className="tbl">{n.label}</span>
+            </a>
+          );
+        })}
+      </nav>
+
+      {acctOpen && (
+        <div ref={acctPanelRef} className="panel acctpanel" role="menu" aria-label="account">
+          <div className="phead">{authUser ? (authUser.email || "SIGNED IN") : "YOUR ACCOUNT"}</div>
+          {ACCOUNT_MENU.map((m) => (
+            <a key={m.href} role="menuitem" className={"acctrow" + ((pathname || "").startsWith(m.href) ? " cur" : "")} href={m.href}>
+              <b>{m.label}</b><span>{m.meta}</span>
+            </a>
+          ))}
+          {authUser ? (
+            <button role="menuitem" className="acctrow" onClick={signOutHere}><b>SIGN OUT</b><span>this device</span></button>
+          ) : (
+            <button role="menuitem" className="acctrow" onClick={() => { setAcctOpen(false); window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } })); }}>
+              <b>SIGN IN</b><span>keep your passport across devices</span>
+            </button>
+          )}
+        </div>
+      )}
+
       <AccountSignup />
+      <SavePrompt />
       <DesignConsole />
 
       {searchOpen && results && (

@@ -16,13 +16,18 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, consumeGlobalBudget, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
 import { getMemoryPreferences } from "../../../lib/db/production.js";
+import { envelope, failure, newRequestId } from "../../../lib/api/outcome.js";
+import { resolveOverviewForQuery } from "../../../lib/people/resolve.js";
+import { getDiscoverablePool } from "../../../lib/products.js";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().toLowerCase().slice(0, 200);
+  const requestId = newRequestId();
   if (!q) return NextResponse.json({
+    ...envelope({ count: 0, requestId }),
     q, brands: [], items: [], aesthetics: [], results: [], total: 0, guidanceEnabled: false,
   });
   const quota = await consumeRateLimit({ scope: "search", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
@@ -39,12 +44,20 @@ export async function GET(req) {
   const guidanceEnabled = !!userId &&
     (await getMemoryPreferences(userId).catch(() => ({ guidanceEnabled: false }))).guidanceEnabled !== false;
 
-  let out = { query: q, results: [], total: 0, interpreted: null };
+  let out;
   try {
     out = await searchProducts(q, { userId, brain: guidanceEnabled, limit: 48 });
-  } catch {
-    // engine failure degrades to an empty (not fake) result set
+  } catch (error) {
+    // UNAVAILABLE IS NOT EMPTY (19 Sep 2026). This used to answer an engine
+    // throw with `{ results: [], total: 0 }` and HTTP 200 — a reader could not
+    // tell "nothing matches" from "the engine is down". Now it is a typed,
+    // retryable 503 (docs/v2/CONTRACTS.md § Common behavior).
+    console.error("[search] engine failure", requestId, error?.message || error);
+    const failed = failure("unavailable", "search_engine_failed", "the search engine could not answer — retry", { requestId });
+    return NextResponse.json({ ...failed.body, q, results: [], total: null }, { status: failed.status });
   }
+
+  const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
 
   // Legacy multi-search facets, now derived from the ranked results.
   const brands = [];
@@ -67,8 +80,15 @@ export async function GET(req) {
   const aesthetics = TAGS.filter((t) => t.toLowerCase().includes(q));
 
   return NextResponse.json({
+    ...envelope({ count: out.results.length, requestId }),
     q, brands, items, aesthetics,
     total: out.total,
+    totalIsExact: true,
+    candidatesTruncated: !!out.candidatesTruncated,
+    overview: resolvedEntities.overview,
+    related: resolvedEntities.related,
+    entities: resolvedEntities.entities,
+    query: resolvedEntities.query,
     guidanceEnabled,
     interpreted: out.interpreted,
     // Honest disclosure of words the catalog could not match (Aug 5). The

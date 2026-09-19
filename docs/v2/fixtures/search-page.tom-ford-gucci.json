@@ -1,0 +1,385 @@
+{
+  "request": "GET /api/discover?q=tom%20ford%3A%20gucci&limit=6",
+  "status": 200,
+  "body": {
+    "contractVersion": 1,
+    "requestId": "a04f9ee7-54bc-40ba-a212-2b309e718ca7",
+    "outcome": "empty",
+    "total": 0,
+    "totalIsExact": true,
+    "candidatesTruncated": false,
+    "offset": 0,
+    "nextCursor": null,
+    "snapshotId": "e19e271739f2933d422928f0",
+    "demo": false,
+    "sources": [],
+    "guidanceEnabled": false,
+    "assumption": null,
+    "overview": {
+      "id": "tom-ford",
+      "kind": "designer",
+      "name": "Tom Ford",
+      "aliases": [
+        "Thomas Carlyle Ford"
+      ],
+      "overview": {
+        "summary": {
+          "text": "American designer and filmmaker who rebuilt Gucci in the 1990s, ran YSL Rive Gauche, then founded his own luxury house in 2005.",
+          "sourceIds": [
+            "s1",
+            "s2"
+          ]
+        },
+        "paragraphs": [],
+        "updatedAt": "2026-09-19"
+      },
+      "image": null,
+      "sources": [
+        {
+          "id": "s1",
+          "url": "https://www.businessoffashion.com/people/tom-ford/",
+          "publisher": "Business of Fashion",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": null,
+          "fetched": false
+        },
+        {
+          "id": "s2",
+          "url": "https://www.britannica.com/biography/Tom-Ford",
+          "publisher": "Britannica",
+          "retrievedAt": "2026-09-19",
+          "publishedAt": null,
+          "fetched": false
+        }
+      ],
+      "vogueSourceIds": [],
+      "facts": [
+        {
+          "key": "nationality",
+          "claim": {
+            "text": "American.",
+            "sourceIds": [
+              "s2"
+            ]
+          }
+        },
+        {
+          "key": "born",
+          "claim": {
+            "text": "Born 27 August 1961 in Austin, Texas.",
+            "sourceIds": [
+              "s2"
+            ]
+          }
+        },
+        {
+          "key": "signature",
+          "claim": {
+            "text": "Credited with taking Gucci from about $230m in sales in 1994 to nearly $3bn by 2003.",
+            "sourceIds": [
+              "s1"
+            ]
+          }
+        }
+      ],
+      "reference": false
+    },
+    "related": [
+      {
+        "id": "tom-ford~gucci~0",
+        "designerId": "tom-ford",
+        "houseId": "gucci",
+        "designer": "Tom Ford",
+        "house": "Gucci",
+        "role": "creative director",
+        "start": "1994",
+        "end": "2004",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Resigned April 2004 after the PPR buyout of Gucci Group.",
+        "sourceIds": [
+          "s1"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s1",
+            "url": "https://www.businessoffashion.com/people/tom-ford/",
+            "publisher": "Business of Fashion",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "TOM FORD: GUCCI",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "tom-ford~saint-laurent~1",
+        "designerId": "tom-ford",
+        "houseId": "saint-laurent",
+        "designer": "Tom Ford",
+        "house": "Saint Laurent",
+        "role": "creative director",
+        "start": "2000-01",
+        "end": "2004",
+        "current": false,
+        "datePrecision": "month",
+        "note": "YSL Rive Gauche and YSL Beauté only, held concurrently with Gucci; end precision is year.",
+        "sourceIds": [
+          "s1",
+          "s20"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s1",
+            "url": "https://www.businessoffashion.com/people/tom-ford/",
+            "publisher": "Business of Fashion",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s20",
+            "url": "https://en.wikipedia.org/wiki/Yves_Saint_Laurent_(fashion_house)",
+            "publisher": "Wikipedia",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "queryText": "TOM FORD: SAINT LAURENT",
+        "matchingItemCount": 0
+      },
+      {
+        "id": "tom-ford~tom-ford-house~2",
+        "designerId": "tom-ford",
+        "houseId": "tom-ford-house",
+        "designer": "Tom Ford",
+        "house": "Tom Ford",
+        "role": "founder",
+        "start": "2005",
+        "end": "2023",
+        "current": false,
+        "datePrecision": "year",
+        "note": "Founder and creative lead; stepped away in April 2023 after the Estée Lauder sale.",
+        "sourceIds": [
+          "s5",
+          "s8"
+        ],
+        "sourceCatalog": [
+          {
+            "id": "s5",
+            "url": "https://www.businesswire.com/news/home/20230428005284/en/Ermenegildo-Zegna-Group-Completes-Acquisition-of-Tom-Ford-International-and-Enters-Into-a-Long-Term-License-Agreement-With-The-Este-Lauder-Companies-for-TOM-FORD-FASHION",
+            "publisher": "Business Wire (Ermenegildo Zegna Group)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2023-04-28",
+            "fetched": false
+          },
+          {
+            "id": "s8",
+            "url": "https://fashionunited.com/news/people/tom-ford-steps-down-estee-lauder-announces-new-ceo-and-creative-director/2023043053610",
+            "publisher": "FashionUnited",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2023-04-30",
+            "fetched": false
+          }
+        ],
+        "queryText": "TOM FORD: TOM FORD",
+        "matchingItemCount": 0
+      }
+    ],
+    "entities": {
+      "designer": {
+        "id": "tom-ford",
+        "kind": "designer",
+        "name": "Tom Ford",
+        "aliases": [
+          "Thomas Carlyle Ford"
+        ],
+        "overview": {
+          "summary": {
+            "text": "American designer and filmmaker who rebuilt Gucci in the 1990s, ran YSL Rive Gauche, then founded his own luxury house in 2005.",
+            "sourceIds": [
+              "s1",
+              "s2"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
+        "image": null,
+        "sources": [
+          {
+            "id": "s1",
+            "url": "https://www.businessoffashion.com/people/tom-ford/",
+            "publisher": "Business of Fashion",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s2",
+            "url": "https://www.britannica.com/biography/Tom-Ford",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          }
+        ],
+        "vogueSourceIds": [],
+        "facts": [
+          {
+            "key": "nationality",
+            "claim": {
+              "text": "American.",
+              "sourceIds": [
+                "s2"
+              ]
+            }
+          },
+          {
+            "key": "born",
+            "claim": {
+              "text": "Born 27 August 1961 in Austin, Texas.",
+              "sourceIds": [
+                "s2"
+              ]
+            }
+          },
+          {
+            "key": "signature",
+            "claim": {
+              "text": "Credited with taking Gucci from about $230m in sales in 1994 to nearly $3bn by 2003.",
+              "sourceIds": [
+                "s1"
+              ]
+            }
+          }
+        ],
+        "reference": false
+      },
+      "house": {
+        "id": "gucci",
+        "kind": "house",
+        "name": "Gucci",
+        "aliases": [
+          "House of Gucci"
+        ],
+        "overview": {
+          "summary": {
+            "text": "Florentine leather-goods house founded in 1921, now Kering's flagship brand and led by Demna since 2025.",
+            "sourceIds": [
+              "s58",
+              "s27"
+            ]
+          },
+          "paragraphs": [],
+          "updatedAt": "2026-09-19"
+        },
+        "image": null,
+        "sources": [
+          {
+            "id": "s58",
+            "url": "https://www.britannica.com/topic/Gucci",
+            "publisher": "Britannica",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": null,
+            "fetched": false
+          },
+          {
+            "id": "s27",
+            "url": "https://www.globenewswire.com/news-release/2025/03/13/3042482/0/en/kering-demna-appointed-artistic-director-of-gucci.html",
+            "publisher": "GlobeNewswire (Kering)",
+            "retrievedAt": "2026-09-19",
+            "publishedAt": "2025-03-13",
+            "fetched": true
+          }
+        ],
+        "vogueSourceIds": [],
+        "facts": [
+          {
+            "key": "founded",
+            "claim": {
+              "text": "Founded 1921 in Florence by Guccio Gucci.",
+              "sourceIds": [
+                "s58"
+              ]
+            }
+          },
+          {
+            "key": "origin",
+            "claim": {
+              "text": "Began as a leather goods and luggage shop before expanding under Gucci's sons.",
+              "sourceIds": [
+                "s58"
+              ]
+            }
+          },
+          {
+            "key": "owner",
+            "claim": {
+              "text": "Owned by Kering.",
+              "sourceIds": [
+                "s27"
+              ]
+            }
+          }
+        ],
+        "reference": false
+      }
+    },
+    "query": {
+      "text": "tom ford: gucci",
+      "designerId": "tom-ford",
+      "houseId": "gucci"
+    },
+    "note": "Tom Ford at Gucci: creative director, 1994–2004 (sourced) — no piece here carries that credit",
+    "unmatchedTokens": [],
+    "interpreted": {
+      "intent": "designer-house",
+      "brand": null,
+      "mappedTags": [],
+      "relatedTerms": [],
+      "mappingHits": [],
+      "personalized": false,
+      "typoCorrections": [],
+      "brandSpelling": null,
+      "designerCredit": null,
+      "pair": {
+        "text": "tom ford: gucci",
+        "designerId": "tom-ford",
+        "designer": "Tom Ford",
+        "houseId": "gucci",
+        "house": "Gucci",
+        "brands": [
+          "Gucci"
+        ],
+        "verified": true,
+        "tenures": [
+          {
+            "role": "creative director",
+            "start": "1994",
+            "end": "2004"
+          }
+        ],
+        "served": true
+      },
+      "assist": null,
+      "exclusions": [],
+      "priceSort": null,
+      "size": null,
+      "origin": null,
+      "era": null
+    },
+    "cultural": {
+      "engaged": false,
+      "entity": null,
+      "interpretationId": null,
+      "label": null,
+      "personalized": false,
+      "method": null
+    },
+    "items": [],
+    "itemsShown": "0 of 0 on this page"
+  }
+}

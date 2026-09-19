@@ -14,6 +14,10 @@ import { DiscoverRails } from "../components/DiscoverRails.jsx";
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import PageMast from "../components/PageMast.jsx";
+import DiscoverTabs from "../components/DiscoverTabs.jsx";
+import PersonOverview from "../components/PersonOverview.jsx";
+import PlacesPanel from "../components/PlacesPanel.jsx";
+import { findOverview } from "../../lib/people/overviews.js";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -52,6 +56,13 @@ export default function DiscoverPage() {
   // What the sentence turned into. Never set by a control — see
   // lib/search/constraints.js.
   const [constraints, setConstraints] = useState([]);
+  // V.2: DISCOVER's inner doors. "search" is this page; "places" and
+  // "people" render their own panels and leave the racks alone.
+  const [dtab, setDtab] = useState("search");
+  // When a constrained sentence returns nothing, count the rack behind each
+  // constraint alone — so the reader is TOLD which one binds and can release
+  // it, never silently widened (lib/search/constraints.js).
+  const [missCounts, setMissCounts] = useState(null);
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitBrain();
   const [activeInterp, setActiveInterp] = useState("");
@@ -123,6 +134,28 @@ export default function DiscoverPage() {
   }, [q, source, tag, sort, guideOn]);
 
   useEffect(() => { setFollowed(followedBrands()); }, []);
+  useEffect(() => {
+    try {
+      const t = new URLSearchParams(window.location.search).get("tab");
+      if (t === "places") setDtab(t);
+    } catch {}
+  }, []);
+  useEffect(() => {
+    // the binding constraint: one release-query per releasable chip, limit 1
+    let cancelled = false;
+    if (loading || items.length > 0 || !searched || !constraints.some((c) => c.releasable)) { setMissCounts(null); return; }
+    Promise.all(constraints.filter((c) => c.releasable).map(async (c) => {
+      const next = releaseConstraint(searched, c);
+      if (next === searched || !next.trim()) return { kind: c.kind, label: c.label, total: null };
+      try {
+        const qs = new URLSearchParams({ q: next, limit: "1", offset: "0", user: getUid(), brain: guideOn ? "1" : "0" });
+        const r = await authorizedFetch("/api/discover?" + qs.toString());
+        const d = r.ok ? await r.json() : null;
+        return { kind: c.kind, label: c.label, total: d ? (d.total || 0) : null, next };
+      } catch { return { kind: c.kind, label: c.label, total: null }; }
+    })).then((rows) => { if (!cancelled) setMissCounts(rows); });
+    return () => { cancelled = true; };
+  }, [loading, items.length, searched, constraints, guideOn]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const sync = () => setGuideOn(brainEnabled());
     sync();
@@ -293,17 +326,18 @@ export default function DiscoverPage() {
 
   return (
     <div className="wrap">
-      <PageMast word="DISCOVER" sub="THE OPEN INDEX" />
-      <p className="demobanner" role="note">
-        <b>DEMO ARCHIVE.</b> synthetic sample records with placeholder imagery —
-        nothing here is real inventory or for sale. the search is real; the
-        clothes are not.
-      </p>
-      <p className="deck">
-        explore the full archive. {guideOn
-          ? "The Asterisk system is using your Passport to route every search toward your style."
-          : "The Asterisk system is paused, so results stay general."}
-        {" "}{total ? total + " pieces" : "counting"} across the racks.
+      <PageMast word="DISCOVER" sub={dtab === "places" ? "AROUND YOU" : "SEARCH · THE OPEN INDEX"} />
+      <DiscoverTabs current={dtab} />
+      {dtab === "places" && (
+        <>
+          <p className="deck">what is happening in fashion near you and around the world — events and permanent places, sourced or plainly labelled fixtures.</p>
+          <PlacesPanel />
+        </>
+      )}
+      {dtab === "search" && (<>
+      <p className="demoline" role="note">
+        <b>DEMO ARCHIVE</b> — synthetic sample records with placeholder imagery; nothing is real inventory or for sale. the search is real; the clothes are not.
+        {" "}{guideOn ? "The Asterisk system is using your Passport to route every search toward your style." : "The Asterisk system is paused, so results stay general."}{" "}{total ? total + " pieces." : ""}
       </p>
       <div className={"searchguide " + (guideOn ? "on" : "off")}>
         <b className="red">*</b> ASTERISK {guideOn ? "GUIDING" : "PAUSED"}
@@ -477,6 +511,7 @@ export default function DiscoverPage() {
           again. Absent entirely when the sentence carried none, because an
           empty row would advertise a filter mechanism that does not exist.
           docs/INVISIBLE-MACHINERY.md */}
+      {searched && findOverview(searched) ? <PersonOverview person={findOverview(searched)} compact /> : null}
       {constraints.length > 0 ? (
         <div className="readsback">
           {constraints.map((c, i) => (
@@ -517,7 +552,19 @@ export default function DiscoverPage() {
         </div>
       )}
       {!loading && !loadError && items.length === 0 && (
-        <div className="empty">nothing matches — loosen a filter.</div>
+        <div className="empty">
+          {constraints.length > 0 ? "nothing matches every constraint at once." : "nothing matches — loosen a filter."}
+          {missCounts && missCounts.length > 0 && (
+            <ul className="missrack" aria-label="which constraint binds">
+              {missCounts.map((m) => (
+                <li key={m.kind + m.label}>
+                  without <b>{m.label}</b>: {m.total === null ? "could not count" : m.total === 0 ? "still nothing" : `${m.total} piece${m.total === 1 ? "" : "s"}`}
+                  {m.total > 0 && m.next ? <button className="txtbtn" onClick={() => { setQ(m.next); load(true, m.next); }}>RELEASE IT →</button> : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
 
       {/* The whole card was one clickable div — reachable by mouse only, and it
@@ -597,6 +644,7 @@ export default function DiscoverPage() {
       )}
 
       {ticketItem && <TicketFlow item={ticketItem} onClose={() => setTicketItem(null)} />}
+      </>)}
     </div>
   );
 }

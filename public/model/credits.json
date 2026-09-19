@@ -1,0 +1,86 @@
+{
+  "use": "Reference photography for the ASILUM interactive model, not real inventory. Display crops and grayscale treatments may be applied.",
+  "assets": [
+    {
+      "filename": "olivier-rousteing-2016.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Olivier_Rousteing.jpg",
+      "credit": "My Wall Art / Wikimedia Commons",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "alt": "Olivier Rousteing seated in a black suit in 2016"
+    },
+    {
+      "filename": "chyntia-juls-fashion.jpg",
+      "source_page": "https://unsplash.com/photos/HlVjI5WmoQY",
+      "credit": "Chyntia Juls / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Low-angle monochrome portrait of a model in a textured blazer and dark trousers"
+    },
+    {
+      "filename": "yaosheng-zheng-brutalist.jpg",
+      "source_page": "https://unsplash.com/photos/gray-concrete-building-under-white-sky-during-daytime-pQOqQpweE98",
+      "credit": "Yaosheng Zheng / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Interlocking gray concrete walls against a pale sky"
+    },
+    {
+      "filename": "ana-nichita-leather.jpg",
+      "source_page": "https://unsplash.com/photos/woman-wearing-black-leather-jacket-IfNYCBwtAL4",
+      "credit": "Ana Nichita / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Model in a black leather jacket with arms raised"
+    },
+    {
+      "filename": "faune-magazine-fashion.jpg",
+      "source_page": "https://unsplash.com/photos/DQP03Vq78Z4",
+      "credit": "Faune Magazine / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Open fashion magazine on a sofa, with a portrait on its right page"
+    },
+    {
+      "filename": "marjan-taghipour-fashion.jpg",
+      "source_page": "https://unsplash.com/photos/1tjMpBTvFAA",
+      "credit": "Marjan Taghipour / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Low-angle fashion portrait in a red outfit against a clear blue sky"
+    },
+    {
+      "filename": "nicolas-ladino-silva-fashion.jpg",
+      "source_page": "https://unsplash.com/photos/qUp0UsT89BY",
+      "credit": "Nicolas Ladino Silva / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Seated model in a burgundy blazer, patterned trousers and long black gloves"
+    },
+    {
+      "filename": "zachary-keimig-white-sneakers.jpg",
+      "source_page": "https://unsplash.com/photos/pair-of-white-sneakers-XVBZc0zig4Y",
+      "credit": "Zachary Keimig / Unsplash",
+      "license": "Unsplash License",
+      "license_url": "https://unsplash.com/license",
+      "alt": "Pair of white sneakers photographed from above on a dark surface"
+    }
+  ],
+  "profile_sources": [
+    {
+      "url": "https://www.puig.com/en/newsroom/Rabanne-appoints-Olivier-Rousteing-as-Creative%20Director/",
+      "type": "primary",
+      "supports": "Rabanne appointment and first show in March 2027"
+    },
+    {
+      "url": "https://uploads.puig.com/uploads/CP_OR_EN_vf_5e9e0145c7.pdf",
+      "type": "primary",
+      "supports": "Appointment announcement date: July 14, 2026"
+    },
+    {
+      "url": "https://apnews.com/article/0d969339a4e08b7fab728dc4d6fb20aa",
+      "type": "secondary reporting of official statement",
+      "supports": "Balmain creative director from 2011; departure on November 5, 2025 after 14 years"
+    }
+  ]
+}

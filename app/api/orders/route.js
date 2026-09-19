@@ -21,6 +21,8 @@ import { listOrdersForUser } from "../../../lib/db/orders.js";
 import { listTickets } from "../../../lib/db/production.js";
 import { getItems } from "../../../lib/db/index.js";
 import { aggregatePlaces } from "../../../lib/asterisk/places.js";
+import { buildPurchaseHub } from "../../../lib/orders/hub.js";
+import { envelope } from "../../../lib/api/outcome.js";
 
 const BOUGHT_OUTCOMES = new Set(["bought", "kept", "returned"]);
 
@@ -44,6 +46,24 @@ async function handleGET(req) {
   }
   const quota = await consumeRateLimit({ scope: "orders-read", subject: userId, limit: 60, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+
+  // THE PURCHASE HUB (V.2): one read facade over payment orders and source
+  // tickets with separate payment / fee / merchant / outcome lanes. A read,
+  // never a transition; the state machines in lib/orders.js and the ticket
+  // store stay authoritative (lib/orders/hub.js).
+  if (searchParams.get("hub") === "1") {
+    const [orders, tickets] = await Promise.all([listOrdersForUser(userId, 50), listTickets(userId, 200)]);
+    const byId = await itemIndex();
+    const wanted = [...new Set([...orders.map((o) => o.item_id), ...tickets.map((t) => t.productId)].filter((id) => id && !byId.has(id)))];
+    if (wanted.length) for (const [id, it] of await getItems(wanted)) byId.set(id, it);
+    const titles = new Map();
+    for (const id of [...orders.map((o) => o.item_id), ...tickets.map((t) => t.productId)]) {
+      const it = id ? byId.get(id) : null;
+      if (it) titles.set(id, { title: it.title || null, brand: it.brand || null });
+    }
+    const hub = buildPurchaseHub({ orders, tickets, titles });
+    return NextResponse.json({ ...envelope({ count: hub.records.length }), userId, ...hub });
+  }
 
   if (searchParams.get("places") === "1") {
     const [orders, tickets] = await Promise.all([listOrdersForUser(userId, 50), listTickets(userId, 200)]);

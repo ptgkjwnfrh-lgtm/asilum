@@ -1,0 +1,473 @@
+{
+  "request": "GET /api/orders?hub=1",
+  "empty": {
+    "status": 200,
+    "body": {
+      "contractVersion": 1,
+      "requestId": "f5f87ab2-e542-4344-9962-2d6ab5af3670",
+      "outcome": "empty",
+      "userId": "u-49ee2b84-d5eb-4049-ba19-3c2a3693f622",
+      "records": [],
+      "counts": {
+        "payment_order": 0,
+        "source_ticket": 0,
+        "verifiedPurchases": 0,
+        "userReported": 0
+      },
+      "disclosures": [
+        "a paid founders fee is not proof a garment was purchased",
+        "a self-reported outcome is the reader's word, not the merchant's",
+        "merchant-verified fulfilment has no adapter yet: that lane is always unknown",
+        "a saved bag is never a purchase and is not listed here"
+      ]
+    }
+  },
+  "representativeStates": {
+    "contractVersion": 1,
+    "records": [
+      {
+        "contractVersion": 1,
+        "id": "14",
+        "kind": "source_ticket",
+        "orderKind": null,
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/4"
+        },
+        "item": {
+          "id": "it-2",
+          "title": "Wool coat",
+          "brand": "Gucci"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 90000,
+          "current_price_cents": null,
+          "fee_cents": null,
+          "total_cents": null
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "none",
+          "merchant": "unavailable",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "unavailable",
+        "consented": false,
+        "availability": "sold",
+        "timestamps": {
+          "created_at": "2026-09-19T12:00:00.000Z",
+          "updated_at": null,
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": null,
+        "allowedActions": []
+      },
+      {
+        "contractVersion": 1,
+        "id": "11",
+        "kind": "source_ticket",
+        "orderKind": null,
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/1"
+        },
+        "item": {
+          "id": "it-1",
+          "title": "Leather blazer",
+          "brand": "Celine"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 60000,
+          "current_price_cents": 60000,
+          "fee_cents": null,
+          "total_cents": null
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "none",
+          "merchant": "awaiting_consent",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "awaiting_user_consent",
+        "consented": false,
+        "availability": "available",
+        "timestamps": {
+          "created_at": "2026-09-17T12:00:00.000Z",
+          "updated_at": null,
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": null,
+        "allowedActions": [
+          "consent",
+          "cancel"
+        ]
+      },
+      {
+        "contractVersion": 1,
+        "id": "13",
+        "kind": "source_ticket",
+        "orderKind": null,
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/3"
+        },
+        "item": {
+          "id": "it-1",
+          "title": "Leather blazer",
+          "brand": "Celine"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 60000,
+          "current_price_cents": null,
+          "fee_cents": 600,
+          "total_cents": null
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "awaiting",
+          "merchant": "completed_on_source",
+          "outcome": "bought",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "user_report",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "user_report",
+        "status": "checkout_completed_on_source",
+        "consented": true,
+        "availability": "available",
+        "timestamps": {
+          "created_at": "2026-09-16T12:00:00.000Z",
+          "updated_at": null,
+          "outcome_reported_at": "2026-09-18T12:00:00.000Z"
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": "ord_fee2",
+        "allowedActions": []
+      },
+      {
+        "contractVersion": 1,
+        "id": "ord_fee2",
+        "kind": "payment_order",
+        "orderKind": "ticket_fee",
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/3"
+        },
+        "item": {
+          "id": "it-1",
+          "title": "Leather blazer",
+          "brand": "Celine"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": null,
+          "fee_cents": 600,
+          "total_cents": 600
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "awaiting",
+          "merchant": "completed_on_source",
+          "outcome": "bought",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "user_report",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "user_report",
+        "status": "awaiting_payment",
+        "timestamps": {
+          "created_at": "2026-09-16T12:00:00.000Z",
+          "updated_at": "2026-09-16T12:00:00.000Z",
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": 13,
+        "linkedOrderId": null,
+        "allowedActions": []
+      },
+      {
+        "contractVersion": 1,
+        "id": "12",
+        "kind": "source_ticket",
+        "orderKind": null,
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/2"
+        },
+        "item": {
+          "id": "it-2",
+          "title": "Wool coat",
+          "brand": "Gucci"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 90000,
+          "current_price_cents": 90000,
+          "fee_cents": 900,
+          "total_cents": null
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "paid",
+          "merchant": "checkout_started",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "checkout_started",
+        "consented": true,
+        "availability": "available",
+        "timestamps": {
+          "created_at": "2026-09-15T12:00:00.000Z",
+          "updated_at": null,
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": "ord_fee1",
+        "allowedActions": [
+          "report_outcome"
+        ]
+      },
+      {
+        "contractVersion": 1,
+        "id": "ord_fee1",
+        "kind": "payment_order",
+        "orderKind": "ticket_fee",
+        "merchant": {
+          "name": "ebay",
+          "url": "https://www.ebay.com/itm/2"
+        },
+        "item": {
+          "id": "it-2",
+          "title": "Wool coat",
+          "brand": "Gucci"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": null,
+          "fee_cents": 900,
+          "total_cents": 900
+        },
+        "lanes": {
+          "payment": "none",
+          "fee": "paid",
+          "merchant": "checkout_started",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "paid",
+        "timestamps": {
+          "created_at": "2026-09-15T12:00:00.000Z",
+          "updated_at": "2026-09-15T12:00:00.000Z",
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": 12,
+        "linkedOrderId": null,
+        "allowedActions": []
+      },
+      {
+        "contractVersion": 1,
+        "id": "ord_ref",
+        "kind": "payment_order",
+        "orderKind": "sale",
+        "merchant": {
+          "name": "ASILUM",
+          "url": null
+        },
+        "item": {
+          "id": "it-2",
+          "title": "Wool coat",
+          "brand": "Gucci"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 90000,
+          "fee_cents": 900,
+          "total_cents": 90900
+        },
+        "lanes": {
+          "payment": "refunded",
+          "fee": "refunded",
+          "merchant": "none",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "refunded",
+        "timestamps": {
+          "created_at": "2026-09-13T12:00:00.000Z",
+          "updated_at": "2026-09-14T12:00:00.000Z",
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": null,
+        "allowedActions": []
+      },
+      {
+        "contractVersion": 1,
+        "id": "ord_wait",
+        "kind": "payment_order",
+        "orderKind": "sale",
+        "merchant": {
+          "name": "ASILUM",
+          "url": null
+        },
+        "item": {
+          "id": "it-1",
+          "title": "Leather blazer",
+          "brand": "Celine"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 60000,
+          "fee_cents": 600,
+          "total_cents": 60600
+        },
+        "lanes": {
+          "payment": "awaiting",
+          "fee": "awaiting",
+          "merchant": "none",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": false,
+        "purchaseEvidence": "none",
+        "status": "awaiting_payment",
+        "timestamps": {
+          "created_at": "2026-09-12T12:00:00.000Z",
+          "updated_at": "2026-09-12T12:00:00.000Z",
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": null,
+        "allowedActions": [
+          "resume_payment"
+        ]
+      },
+      {
+        "contractVersion": 1,
+        "id": "ord_paid",
+        "kind": "payment_order",
+        "orderKind": "sale",
+        "merchant": {
+          "name": "ASILUM",
+          "url": null
+        },
+        "item": {
+          "id": "it-1",
+          "title": "Leather blazer",
+          "brand": "Celine"
+        },
+        "currency": "usd",
+        "amounts": {
+          "item_cents": 60000,
+          "fee_cents": 600,
+          "total_cents": 60600
+        },
+        "lanes": {
+          "payment": "paid",
+          "fee": "paid",
+          "merchant": "none",
+          "outcome": "unknown",
+          "fulfillment": "unknown"
+        },
+        "outcomeSource": "unknown",
+        "verifiedPurchase": true,
+        "purchaseEvidence": "provider",
+        "status": "paid",
+        "timestamps": {
+          "created_at": "2026-09-11T12:00:00.000Z",
+          "updated_at": "2026-09-11T12:00:00.000Z",
+          "outcome_reported_at": null
+        },
+        "linkedTicketId": null,
+        "linkedOrderId": null,
+        "allowedActions": []
+      }
+    ],
+    "counts": {
+      "payment_order": 5,
+      "source_ticket": 4,
+      "verifiedPurchases": 1,
+      "userReported": 2
+    },
+    "disclosures": [
+      "a paid founders fee is not proof a garment was purchased",
+      "a self-reported outcome is the reader's word, not the merchant's",
+      "merchant-verified fulfilment has no adapter yet: that lane is always unknown",
+      "a saved bag is never a purchase and is not listed here"
+    ]
+  },
+  "lanes": {
+    "payment": [
+      "none",
+      "awaiting",
+      "paid",
+      "failed",
+      "expired",
+      "refunded",
+      "unknown"
+    ],
+    "fee": [
+      "none",
+      "awaiting",
+      "paid",
+      "failed",
+      "expired",
+      "refunded",
+      "unknown"
+    ],
+    "merchant": [
+      "none",
+      "handoff",
+      "requested",
+      "checking",
+      "available",
+      "unavailable",
+      "awaiting_consent",
+      "awaiting_checkout",
+      "checkout_started",
+      "completed_on_source",
+      "canceled",
+      "failed",
+      "completed",
+      "unknown"
+    ],
+    "outcome": [
+      "unknown",
+      "bought",
+      "kept",
+      "returned",
+      "not-bought"
+    ],
+    "fulfillment": [
+      "unknown"
+    ]
+  },
+  "allowedActions": [
+    "resume_payment",
+    "consent",
+    "cancel",
+    "report_outcome"
+  ]
+}

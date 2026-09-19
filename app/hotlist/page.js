@@ -45,6 +45,10 @@ import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import PageMast from "../components/PageMast.jsx";
 import GlassPane from "../components/GlassPane.jsx";
+import SaveButton from "../components/SaveButton.jsx";
+import ModelTag from "../components/ModelTag.jsx";
+import { thumbFor } from "../../lib/client.js";
+import { SAMPLE_POSTS, WIRE_CATEGORIES, WIRE_INTENTS, readWireRefs } from "../../lib/model/media.js";
 
 // The identity chain (owner order, Aug 13): every byline is a link —
 // your own to /profile, anyone else's to their /u/[handle] page — and a
@@ -61,7 +65,7 @@ function PostByline({ p }) {
       {p.mine ? <i className="cmine">you</i> : null}
       {" · "}
       {p.serverId != null
-        ? <a className="wperma" href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
+        ? <a className="wperma" href={"/?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
         : timeAgo(p.at)}
       {/* the edited stamp is server truth — a touched transmission says
           so; an untouched one carries no label (honesty, Aug 14) */}
@@ -86,6 +90,13 @@ export default function TheWirePage() {
   const [houseLive, setHouseLive] = useState(true);
   const [stamp, setStamp] = useState("");
   const [mode, setMode] = useState("transmission"); // transmission | images | video
+  // V.2 — CREATE / CURATE / INTERPRET and the category ride as hashtags on
+  // the transmission (the refs the wire already parses), so no schema moves.
+  const [intent, setIntent] = useState("create");
+  const [category, setCategory] = useState("style");
+  const [lane, setLane] = useState("foryou");  // foryou | mine | <category id>
+  // purchasable pieces braided into the stream, from the feed engine
+  const [pieces, setPieces] = useState([]);
   const [caption, setCaption] = useState("");
   const [text, setText] = useState("");
   const [wireNote, setWireNote] = useState("");
@@ -143,6 +154,10 @@ export default function TheWirePage() {
   }
 
   function loadWire() {
+    authorizedFetch("/api/feed?user=" + encodeURIComponent(getUid() || "guest") + "&limit=12")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setPieces(((d && d.items) || []).slice(0, 8)))
+      .catch(() => {});
     fetchWire("user")
       .then((w) => {
         setPosts(w.posts);
@@ -252,9 +267,11 @@ export default function TheWirePage() {
     // outcome: a signed-out visitor saw their transmission appear on their own
     // wire, with no error, having published nothing. The honesty contract says
     // a refusal must look like a refusal.
+    const refs = `#${intent} #${category}`;
+    const body = t.includes(refs) ? t : `${t}\n\n${refs}`;
     postJSON("/api/editorial", {
       user: getUid(), handle: info.handle || info.name,
-      text: t, title: cap || undefined,
+      text: body, title: cap || undefined,
     })
       .then(async (res) => {
         const d = await res.json().catch(() => null);
@@ -275,6 +292,24 @@ export default function TheWirePage() {
 
   // THE HOTLIST's ten booths — the rail's pane (9 Sep). Same roster, same
   // links, same attribution click as before; the row is compact.
+  // THE STREAM (V.2): the floor's posts in the chosen lane, sample editorial
+  // filling in when the lane is thin, and a purchasable piece braided in
+  // after every third entry — so browsing is never only scrolling and a
+  // film edit never has to be shoppable to belong.
+  const lanePosts = (posts || []).filter((p) => {
+    if (lane === "mine") return !!p.mine;
+    if (lane === "foryou") return true;
+    return readWireRefs(p.tags || []).category === lane;
+  });
+  const samples = lane === "mine" ? [] : SAMPLE_POSTS.filter((sp) => lane === "foryou" || sp.category === lane);
+  const stream = [];
+  const laneEntries = [...lanePosts.map((post) => ({ post })), ...(lanePosts.length < 3 ? samples.map((sample) => ({ sample })) : [])];
+  let pi = 0;
+  laneEntries.forEach((e, i) => {
+    stream.push(e);
+    if ((i + 1) % 3 === 0 && pieces[pi] && lane !== "mine") stream.push({ piece: pieces[pi++] });
+  });
+
   const boothRows = BOOTHS.map((n) => {
     const holder = booths ? booths[n - 1] : null;
     return (
@@ -338,7 +373,7 @@ export default function TheWirePage() {
       </span>
 
       <header className="cthead">
-        <PageMast word="THE WIRE" sub="FOR YOU" />
+        <PageMast word="THE HOTLIST" sub="TEN BOOTHS · THE LADDER" />
         {stamp && (
           <div className="ctmeta">
             LIVE EDITION · {stamp}
@@ -352,195 +387,10 @@ export default function TheWirePage() {
         )}
       </header>
       <p className="deck">
-        every post lives here — transmissions, and in time images and video,
-        one hub. beside it, the hotlist&apos;s ten booths.
+        the ten booths held for verified independent brands, and the quieter rungs of the ladder. the stream itself lives on <a className="txtbtn" href="/">THE WIRE →</a>
       </p>
 
-      <div className="wlayout">
-        {/* ---- THE FEED — the composer, then every post as a card ---- */}
-        <main className="wfeed" aria-label="the wire's feed">
-          {/* ---- Permalink focus: ?post=<id> pins one transmission ---- */}
-          {focus !== undefined && (
-            <GlassPane glass="lg-w-focus" className="wfocus" aria-label="pinned transmission">
-              <a className="wfocusback" href="/hotlist">← BACK TO THE FULL WIRE</a>
-              {focus === null && <div className="empty">pulling the transmission…</div>}
-              {focus === false && (
-                <div className="empty">
-                  this transmission is not on the wire — it may be held for
-                  review, or it may be gone.
-                </div>
-              )}
-              {focus && (
-                <div className="fpost wpost wfocuspost">
-                  {focus.title ? <div className="wposthead">{focus.title}</div> : null}
-                  <TransmissionText text={focus.text} />
-                  <PostByline p={focus} />
-                </div>
-              )}
-            </GlassPane>
-          )}
-
-          {/* ---- THE COMPOSER — three ways of posting (owner law, Aug 13) ---- */}
-          <GlassPane glass="lg-w-compose" className="wcomposer" aria-label="post to the wire">
-            <div className="wmodes">
-              <button className={"fmode" + (mode === "transmission" ? " cur" : "")} onClick={() => setMode("transmission")}>
-                TRANSMISSION
-              </button>
-              <button className={"fmode" + (mode === "images" ? " cur" : "")} onClick={() => setMode("images")}>
-                IMAGES ×6
-              </button>
-              <button className={"fmode" + (mode === "video" ? " cur" : "")} onClick={() => setMode("video")}>
-                VIDEO ≤3:00
-              </button>
-            </div>
-            {anonPoster && (
-              <p className="pempty">
-                transmissions ride on a signed-in account — reading is open,
-                posting is named.{" "}
-                <a className="bizapply" href="/profile#access">sign in on your passport →</a>
-              </p>
-            )}
-
-            {mode === "transmission" && (
-              <div className="wcompose">
-                <Avatar name={getProfileInfo().name} />
-                <div className="wcright">
-                  <input aria-label="caption"
-                    className="wcap"
-                    type="text"
-                    maxLength={200}
-                    placeholder="caption — becomes the transmission's header"
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                  />
-                  <textarea aria-label="the transmission"
-                    rows={4}
-                    maxLength={5000}
-                    placeholder="the transmission — today's uniform, tonight's find, the whole account of it…"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                  />
-                  <div className="cvcomposerow">
-                    <span className="ccount">{text.length}/5000</span>
-                    <button className="btn postbtn" onClick={publish} disabled={!text.trim()}>POST</button>
-                  </div>
-                </div>
-              </div>
-            )}
-            {mode === "images" && (
-              <div className="wsoonpanel">
-                <b>IMAGES</b> — up to SIX images in one carousel, caption allowed.
-                the media pipeline (storage, moderation, playback) requires setup;
-                nothing here is faked in the meantime. <em>coming soon</em>
-              </div>
-            )}
-            {mode === "video" && (
-              <div className="wsoonpanel">
-                <b>VIDEO</b> — one video, capped at THREE MINUTES, caption allowed.
-                arrives with the same media pipeline. <em>coming soon</em>
-              </div>
-            )}
-            {wireNote && <div className="pempty">{wireNote}</div>}
-          </GlassPane>
-
-          {/* ---- THE FLOOR — every post, newest first, each a card:
-               avatar · handle · time · the caption header · the text ·
-               the action row. The cards are the header's pill glass, not
-               refracting panes — sixty lensing panes in one column is a
-               scroll cost (trap 151's cousin); the composer and the rail
-               carry the real glass. Pictures and video take this same
-               card when the pipeline lands. ---- */}
-          <section className="elfloor wfloor" aria-label="the wire's posts">
-            {posts === null && <div className="empty">pulling the wire…</div>}
-            {posts && !postsLive && (
-              <div className="empty">
-                the shared wire could not be reached — showing this device&apos;s
-                posts only.
-              </div>
-            )}
-            {posts && postsLive && posts.length === 0 && (
-              <div className="empty">no transmissions yet — yours opens the wire.</div>
-            )}
-            {(posts || []).map((p) => {
-              const own = p.serverId != null && mineIds !== null && mineIds.has(String(p.serverId));
-              const inEdit = own && editing === p.serverId;
-              return (
-                <article className="wcard fpost wpost" key={p.id}>
-                  {p.mine
-                    ? <a href="/profile"><Avatar name={p.name || p.handle} /></a>
-                    : <a href={"/u/" + encodeURIComponent(p.handle)}><Avatar name={p.name || p.handle} /></a>}
-                  <div className="wcbody">
-                    <div className="wctop"><PostByline p={p} /></div>
-                    {inEdit ? (
-                      <div className="wedit">
-                        <input aria-label="edit the caption"
-                          className="wcap"
-                          type="text"
-                          maxLength={200}
-                          placeholder="caption — becomes the transmission's header"
-                          value={editCaption}
-                          onChange={(e) => setEditCaption(e.target.value)}
-                        />
-                        <textarea aria-label="edit the transmission"
-                          rows={4}
-                          maxLength={5000}
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                        />
-                        <div className="cvcomposerow">
-                          <span className="ccount">{editText.length}/5000</span>
-                          <button className="wctl" onClick={() => setEditing(null)}>CANCEL</button>
-                          <button className="btn postbtn" onClick={saveEdit} disabled={!editText.trim()}>SAVE</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {p.title ? <div className="wposthead">{p.title}</div> : null}
-                        <TransmissionText text={p.text} />
-                      </>
-                    )}
-                    <div className="wacts">
-                      {/* Real counters or none. A count renders only once the ledger
-                          has answered for this transmission; a number nobody has
-                          earned yet stays silent rather than printing 0. */}
-                      {p.serverId != null && engagement[String(p.serverId)] && (
-                        <span className="wengage">
-                          <button
-                            className={"weng" + (engagement[String(p.serverId)].youLike ? " on" : "")}
-                            onClick={() => engage(p, "like")}
-                          >
-                            LIKE
-                            {engagement[String(p.serverId)].likes > 0 && (
-                              <b>{engagement[String(p.serverId)].likes}</b>
-                            )}
-                          </button>
-                          <button
-                            className={"weng" + (engagement[String(p.serverId)].youSave ? " on" : "")}
-                            onClick={() => engage(p, "save")}
-                          >
-                            SAVE
-                            {engagement[String(p.serverId)].saves > 0 && (
-                              <b>{engagement[String(p.serverId)].saves}</b>
-                            )}
-                          </button>
-                        </span>
-                      )}
-                      {own && !inEdit && (
-                        <span className="wctls">
-                          <button className="wctl" onClick={() => beginEdit(p)}>EDIT</button>
-                          {confirmDel === p.serverId
-                            ? <button className="wctl warn" onClick={() => doDelete(p)}>SURE? DELETE</button>
-                            : <button className="wctl" onClick={() => setConfirmDel(p.serverId)}>DELETE</button>}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </section>
-        </main>
-
+      <div className="wlayout hotlistonly">
         {/* ---- THE RAIL — the hotlist in its glass strip, then the quieter
              rungs of the ladder: who to follow, the house, the open
              placements, the reading room, the report form ---- */}

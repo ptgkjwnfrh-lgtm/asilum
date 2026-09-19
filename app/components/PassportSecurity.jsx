@@ -39,8 +39,15 @@ function Ast({ x, y, s = 5, tone = "s" }) {
   return <path className={"pvplus pv-" + tone} d={arms.join(" ")} />;
 }
 
-export default function PassportSecurity({ topTag, topWeight }) {
-  const map = useParisRoads();
+// V.2: the hologram is drawn only when the bearer's confirmed base city IS
+// Paris (or no city is set yet). Another city gets no recognizable street
+// map — the repo carries Paris's roads alone, and a public Passport whose
+// city is hidden may never show one (lib/location.js).
+export default function PassportSecurity({ topTag, topWeight, roads = true, map: given }) {
+  const paris = useParisRoads();
+  // V.2 round two: the document draws the map it is GIVEN (the reader's own
+  // streets); with none given, Paris — or nothing when roads are off.
+  const map = given !== undefined ? given : (roads ? paris : null);
 
   const summit = topTag
     ? `${Math.round(Math.abs(topWeight) * 100)} ${String(topTag).toUpperCase()}`
@@ -66,7 +73,7 @@ export default function PassportSecurity({ topTag, topWeight }) {
       {/* open window where the hologram burns at full strength */}
       <div className="ppterrain" aria-hidden="true">
         <span className="ppsummit">▲ {summit}</span>
-        <span className="pposm">MAP DATA © OPENSTREETMAP</span>
+        <span className="pposm">{map ? (map.centre ? "YOUR STREETS · MAP DATA © OPENSTREETMAP" : "MAP DATA © OPENSTREETMAP") : "READING YOUR STREETS…"}</span>
       </div>
 
       {/* microprint band above the machine zone, like security print */}

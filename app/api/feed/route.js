@@ -26,6 +26,7 @@ import { listEvents } from "../../../lib/db/index.js";
 import { enrichItemVec } from "../../../lib/tagging/dense.js";
 import { applyTimeDecay } from "../../../lib/brain/memory.js";
 import { fitIndex } from "../../../lib/brain/sizing.js";
+import { poolWithFitHints } from "../../../lib/brain/fitHints.js";
 import { clampChunkLimit, listingOrder, CATALOG_SHARE, CURSOR_MAX_LEN } from "../../../lib/brain/chunk.js";
 import { whatArrived } from "../../../lib/waiting/index.js";
 import {
@@ -130,6 +131,10 @@ export async function GET(req) {
     return NextResponse.json({ error: "correction state unavailable" }, { status: 503 });
   }
   pool = applyRecommendationExclusions(pool, exclusions);
+  // THE READER'S FIT HINTS (V.2): a house they said runs small is read one
+  // size smaller for them — before the ladder filter, and on the served size
+  // so the card can say so. Labels are untouched (lib/brain/fitHints.js).
+  pool = poolWithFitHints(pool, exclusions?.fitHints || []);
 
   // Hard filters run BEFORE ranking so taste ordering applies within them.
   const category = (searchParams.get("category") || "").slice(0, 80);

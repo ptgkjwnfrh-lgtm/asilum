@@ -21,6 +21,7 @@ import { normalizeMeasurementProfile } from "../../../lib/brain/measurements.js"
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
+import { getUserRecommendationExclusions } from "../../../lib/db/production.js";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,13 @@ async function handleGET(req) {
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const quota = await consumeRateLimit({ scope: "measurements-read", subject: user, limit: 60, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
-  return NextResponse.json({ profile: await getUserMeasurements(user) });
+  const [profile, exclusions] = await Promise.all([
+    getUserMeasurements(user),
+    getUserRecommendationExclusions(user).catch(() => ({ fitHints: [] })),
+  ]);
+  // the reader's own fit hints (lib/brain/fitHints.js) — theirs alone, so the
+  // client fit profile can read a house they corrected the way the server does
+  return NextResponse.json({ profile, fitHints: exclusions?.fitHints || [] });
 }
 
 async function handlePUT(req) {
