@@ -47,7 +47,7 @@ for (let i = 0; i < todo.length; i += 64) {
   // retry the same batch instead of dying (up to 10 tries per batch)
   let res;
   for (let attempt = 0; attempt < 10; attempt++) {
-    res = await embedTexts(batch.map(itemEmbedText));
+    res = await embedTexts(batch.map(itemEmbedText), { feature: "catalog.embed" });
     if (res.ok || !/429/.test(res.hint || "")) break;
     console.error(`batch ${i / 64 + 1}: rate-limited, waiting 25s (attempt ${attempt + 1})`);
     await new Promise((r) => setTimeout(r, 25_000));
