@@ -20,8 +20,11 @@ import { fileURLToPath } from "node:url";
 
 import {
   getEmbeddingSnapshot, invalidateEmbeddingSnapshots, listEmbeddings, saveEmbeddings,
-  getStats, getStatsSnapshot, recordInteraction, saveProfile, recordEvent,
+  getStats, getStatsSnapshot, recordInteraction, saveProfile, recordEvent, upsertItems,
+  getTasteVectorSnapshot, invalidateTasteVectorSnapshots, listTasteVectors,
 } from "../lib/db/index.js";
+import { searchProducts } from "../lib/search/index.js";
+import { TEXT_SPACE } from "../lib/embeddings/index.js";
 import { buildSlate } from "../lib/brain/stylist.js";
 import { crossUserCandidates, similarUsers, CROSS_USER_NEIGHBORS } from "../lib/taste-graph/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
@@ -49,6 +52,16 @@ function declarationBody(code, declaration) {
 // it was paid on the blocking path of EVERY keyed search.
 
 const SPACE = "test-space-v1";
+
+// A product vector is read through the items table (optimize round, 20 Sep
+// 2026), so the products these vectors belong to must exist first.
+test("E0 the products the test vectors belong to exist", async () => {
+  await upsertItems([
+    { id: "e-a", title: "vector a", price: 1 },
+    { id: "e-b", title: "vector b", price: 1 },
+    { id: "e-c", title: "vector c", price: 1 },
+  ]);
+});
 
 test("E1 a warm snapshot is the SAME array — it did not go back to the database", async () => {
   invalidateEmbeddingSnapshots();
@@ -260,4 +273,124 @@ test("G4 /api/stats uses the snapshot and batches its top-ten hydration", () => 
   assert.ok(code.includes("getStatsSnapshot("), "the route must use the cached read");
   assert.ok(code.includes("getItems("), "ten primary-key lookups are one batched read");
   assert.ok(!/\bgetItem\s*\(/.test(code), "the per-id fan-out must be gone");
+});
+
+// ---- the dead vectors (optimize round, 20 Sep 2026) --------------------------
+// Production held 915 product vectors for a catalog that had been deleted and
+// 0 for the 897 live listings: every keyed search loaded ~6 MB of JSONB, paid
+// the provider for a query vector, and compared it against nothing.
+
+test("E7 a product vector whose product is gone never enters the snapshot", async () => {
+  invalidateEmbeddingSnapshots();
+  await saveEmbeddings([
+    { ownerId: "e-a", space: SPACE, vector: [1, 0, 0] },
+    { ownerId: "e-ghost-of-the-seed", space: SPACE, vector: [0, 0, 1] },
+  ]);
+  const rows = await listEmbeddings(SPACE);
+  const ids = rows.map((r) => r.owner_id);
+  assert.ok(ids.includes("e-a"), "a vector whose product exists loads");
+  assert.ok(!ids.includes("e-ghost-of-the-seed"), "a vector whose product is gone does not");
+  const snap = await getEmbeddingSnapshot(SPACE);
+  assert.ok(!snap.some((r) => r.owner_id === "e-ghost-of-the-seed"), "and the snapshot agrees with the raw read");
+  // Other owner kinds are not products and are not judged by the items table.
+  await saveEmbeddings([{ ownerId: "someone", ownerKind: "user", space: SPACE, vector: [1, 1, 0] }]);
+  assert.equal((await listEmbeddings(SPACE, "user")).length, 1);
+});
+
+test("E8 a keyed search embeds the query ONLY when there is a live vector to compare it with", async () => {
+  const saved = {
+    p: process.env.EMBEDDINGS_PROVIDER, k: process.env.EMBEDDINGS_API_KEY, fetch: globalThis.fetch,
+  };
+  let providerCalls = 0;
+  globalThis.fetch = async () => { providerCalls++; return { ok: false, status: 500, text: async () => "stubbed", json: async () => ({}) }; };
+  process.env.EMBEDDINGS_PROVIDER = "voyage";
+  process.env.EMBEDDINGS_API_KEY = "test-key";
+  try {
+    invalidateEmbeddingSnapshots();
+    // Only a dead vector in the text space: nothing to compare against.
+    await saveEmbeddings([{ ownerId: "e-nobody", space: TEXT_SPACE, vector: [1, 0, 0] }]);
+    const empty = await searchProducts("black wool coat", { userId: null });
+    assert.ok(Array.isArray(empty.results ?? empty), "search still answers");
+    assert.equal(providerCalls, 0, "no live product vector → no paid call for a query vector");
+
+    // One live vector: now the provider is worth asking.
+    await saveEmbeddings([{ ownerId: "e-a", space: TEXT_SPACE, vector: [1, 0, 0] }]);
+    await searchProducts("black wool coat", { userId: null });
+    assert.equal(providerCalls, 1, "with something to compare against, the query is embedded");
+  } finally {
+    globalThis.fetch = saved.fetch;
+    if (saved.p == null) delete process.env.EMBEDDINGS_PROVIDER; else process.env.EMBEDDINGS_PROVIDER = saved.p;
+    if (saved.k == null) delete process.env.EMBEDDINGS_API_KEY; else process.env.EMBEDDINGS_API_KEY = saved.k;
+    invalidateEmbeddingSnapshots();
+  }
+});
+
+// ---- the neighbour scan snapshot (optimize round, 20 Sep 2026) ---------------
+// similarUsers scanned every profile on every personalised feed request:
+// 45 ms mean in production for ~400 rows. The scan is of OTHER people's
+// slow-moving long-term vectors, so a per-instance snapshot with a 30 s TTL
+// ranks the same neighbours — and it is deliberately not invalidated by
+// profile writes, because the feed instance is also the writer.
+
+test("T1 a warm taste snapshot is the SAME frozen array", async () => {
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t-a", { long: { MINIMAL: 1 } });
+  await saveProfile("t-b", { long: { MINIMAL: 0.9, DARK: 0.2 } });
+  const first = await getTasteVectorSnapshot(500);
+  const second = await getTasteVectorSnapshot(500);
+  assert.equal(first, second, "identical reference — a cache hit, not a re-scan");
+  assert.ok(Object.isFrozen(first), "shared, so frozen");
+  assert.deepEqual(
+    first.map((r) => r.userId).sort(),
+    (await listTasteVectors(500)).map((r) => r.userId).sort(),
+    "the snapshot's content is what the raw scan would have given",
+  );
+  const all = await Promise.all(Array.from({ length: 5 }, () => getTasteVectorSnapshot(500)));
+  assert.ok(all.every((rows) => rows === all[0]), "five simultaneous callers, one array between them");
+});
+
+test("T2 a profile written after the snapshot waits for the TTL (or an explicit invalidation)", async () => {
+  invalidateTasteVectorSnapshots();
+  const before = await getTasteVectorSnapshot(500);
+  await saveProfile("t-late", { long: { MINIMAL: 1 } });
+  const during = await getTasteVectorSnapshot(500);
+  assert.equal(during, before, "a write does not throw the scan away — the writer is the feed instance");
+  assert.ok(!during.some((r) => r.userId === "t-late"));
+  invalidateTasteVectorSnapshots();
+  const after = await getTasteVectorSnapshot(500);
+  assert.ok(after.some((r) => r.userId === "t-late"), "and is visible once the snapshot turns over");
+});
+
+test("T3 the reader's OWN vector is always fresh — only the neighbours are snapshotted", async () => {
+  const { TAGS } = await import("../lib/brain/tags.js");
+  const [DARK, MINIMAL] = TAGS; // two real tags of the shared space, whatever they are called
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t-me", { long: { [DARK]: 1 } });
+  await saveProfile("t-dark", { long: { [DARK]: 1 } });
+  await saveProfile("t-min", { long: { [MINIMAL]: 1 } });
+  const cold = await similarUsers("t-me", 5);
+  assert.equal(cold.data.neighbors[0]?.uid, "t-dark");
+  // The reader changes their mind inside the TTL: the neighbour ranking must
+  // follow their new vector, because it is read through getProfile, not the snapshot.
+  await saveProfile("t-me", { long: { [MINIMAL]: 1 } });
+  const warm = await similarUsers("t-me", 5);
+  assert.equal(warm.data.neighbors[0]?.uid, "t-min", "the own vector is fresh");
+  assert.ok(!warm.data.neighbors.some((n) => n.uid === "t-me"), "and never their own neighbour");
+});
+
+test("T4 similarUsers reads the neighbours THROUGH the snapshot — a newcomer waits for it to turn over", async () => {
+  const { TAGS } = await import("../lib/brain/tags.js");
+  const [A] = TAGS;
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t4-me", { long: { [A]: 1 } });
+  await saveProfile("t4-old", { long: { [A]: 1 } });
+  const warm = await similarUsers("t4-me", 10);
+  assert.ok(warm.data.neighbors.some((n) => n.uid === "t4-old"));
+  await saveProfile("t4-new", { long: { [A]: 1 } });
+  const stale = await similarUsers("t4-me", 10);
+  assert.ok(!stale.data.neighbors.some((n) => n.uid === "t4-new"),
+    "inside the TTL the scan is the snapshot's — a direct listTasteVectors read here would be the 45 ms per feed request this exists to remove");
+  invalidateTasteVectorSnapshots();
+  const fresh = await similarUsers("t4-me", 10);
+  assert.ok(fresh.data.neighbors.some((n) => n.uid === "t4-new"));
 });

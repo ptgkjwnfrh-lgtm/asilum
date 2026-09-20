@@ -87,7 +87,10 @@ test("half a word inside a house name is not a designer capture", async () => {
 
 test("one piece of evidence is paid for once", async () => {
   // A partial capture of a surname must not reach the ceiling of the scale.
-  const partial = await searchProducts("green", { limit: 24 });
+  // (20 Sep 2026) The probe was bare "green"; a bare colour is now a colour,
+  // never a house (lib/search/ordinary.js), so the surname probed here is one
+  // that is not also an ordinary word.
+  const partial = await searchProducts("owens", { limit: 24 });
   assert.equal(partial.results[0].matchReason, "designer match");
   assert.ok(partial.results[0].confidenceScore < 1,
     `a one-word surname capture scored ${partial.results[0].confidenceScore}`);
@@ -115,8 +118,16 @@ test("\"like <designer>\" says why the designer is absent from the rack", async 
 test("the round changes claims, never the rack", async () => {
   // Ordering was compared against main across 40 queries: 40/40 identical.
   // These two are the shapes most at risk from the scoring touch.
+  // (20 Sep 2026) Bare "green" WAS Craig Green's rack, by the partial rule.
+  // A bare colour is now a description (lib/search/ordinary.js): on this
+  // catalog, which has no green piece, it says so and reads no house.
   const green = await searchProducts("green", { limit: 48 });
-  assert.ok(green.results.every((it) => it.brand === "Craig Green"));
+  assert.equal(green.interpreted.intent, "text");
+  assert.match(green.note, /no piece here matches "green"/);
+  assert.ok(!green.results.some((it) => it.matchReason === "designer match" || it.matchReason === "brand match"));
+  // "green jacket" keeps its disclosed partial reading — the law is for the BARE word.
+  const gj = await searchProducts("green jacket", { limit: 24 });
+  assert.match(gj.note, /reading "green" as the designer Craig Green/);
   const jacket = await searchProducts("jacket", { limit: 48 });
   assert.equal(jacket.results[0].title, "Willy Chavarria — varsity jacket");
 });
