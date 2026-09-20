@@ -134,15 +134,17 @@ test("worseOf keeps the worse of two states", () => {
 test("a rate below the sample floor is unmeasurable, never healthy", async () => {
   // The trap this closes: 0 zero-results out of 3 searches is 0%, which reads
   // like a perfect score and means nothing at all.
-  const thin = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 3, zero: 0 }]]]) });
+  // (20 Sep 2026) The check asks a second question — why each empty was
+  // empty — so the specific fragment leads (fakeQuery matches in order).
+  const thin = await searchAnswerRate.run({ query: fakeQuery([["emptyReason", []], ["search_logs", [{ total: 3, zero: 0 }]]]) });
   assert.equal(thin.state, "unmeasurable");
   assert.match(thin.evidence, /under the 25 needed/);
 
-  const real = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 411, zero: 9 }]]]) });
+  const real = await searchAnswerRate.run({ query: fakeQuery([["emptyReason", [{ reason: "unrecorded", n: 9 }]], ["search_logs", [{ total: 411, zero: 9 }]]]) });
   assert.equal(real.state, "ok", "production's own 2.2% must not read as an alarm");
 
-  const broken = await searchAnswerRate.run({ query: fakeQuery([["search_logs", [{ total: 400, zero: 120 }]]]) });
-  assert.equal(broken.state, "warn", "30% unanswered is the cultural read having stopped working");
+  const broken = await searchAnswerRate.run({ query: fakeQuery([["emptyReason", [{ reason: "unrecorded", n: 120 }]], ["search_logs", [{ total: 400, zero: 120 }]]]) });
+  assert.equal(broken.state, "warn", "30% unanswered and unexplained is the cultural read having stopped working");
   assert.match(broken.action, /SEARCH_CULTURE_FALLBACK/);
 });
 
