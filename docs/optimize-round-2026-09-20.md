@@ -40,9 +40,13 @@ The chat/vision adapter has written every attempt to `ai_model_events` since it 
 
 The search log kept four fields of the interpretation and none of the answer, so the steward could count empty searches but never explain them: "6 of 96 returned nothing" blamed the cultural fallback for three prefix fragments ("lov", "dol", "ba"), an unknown house ("telfar") and a contradiction ("under $500 over $900") alike. The log now carries the note, the unmatched tokens, the typo corrections, whether the semantic and cultural tiers engaged, the constraint labels that applied, and — for an empty rack — the engine's own reason: fragment, pair-miss, constraint-conflict, constraint-miss, unknown-words, other. The steward groups the empties by reason; an explained empty share is honest and never warns; the culture-fallback action fires only for unexplained empties.
 
+### 7. A shoe size is a shoe size
+
+On the live catalog, "boots size 42" read 42 as a waist and answered "nothing with a 42 waist in footwear"; "boots size 9" read no size at all, because 9 is below the waist floor. The sellers label footwear "8", "9.5", "EU 45", "US10.5=UK9.5=EUR44=27CM" and "38.5,39,40,…,45". When the query names footwear, "size N" now reads as a shoe size — the US ladder up to 16, the EU ladder from 35 to 50, or whichever marker the reader typed — and matches the label as printed: a bare number is the US ladder, an EU number needs its marker or a seller's list. No conversion table. A miss lists the shoe sizes that are here. Outside footwear the old readings stand.
+
 ## Gates on the branch head
 
-`npm test` green on every commit (1,546 → 1,569 tests, 0 fail); `npm run build` green; `npm run v2:check` PASS; `search:snapshot` byte-identical to `main` on every commit (35 identity queries); every new test run with its fix reverted and seen to fail. Steward against production before the round: 0 blocker / 0 warn / 2 note / 14 ok (the new coverage check is one of the notes).
+`npm test` green on every commit (1,546 → 1,573 tests, 0 fail); `npm run build` green; `npm run v2:check` PASS; `search:snapshot` byte-identical to `main` on every commit (35 identity queries); every new test run with its fix reverted and seen to fail. Steward against production before the round: 0 blocker / 0 warn / 2 note / 14 ok (the new coverage check is one of the notes).
 
 ## Production measurements (the in-app browser against www.asilummagazine.com, 20 Sep)
 
