@@ -20,8 +20,10 @@ import { fileURLToPath } from "node:url";
 
 import {
   getEmbeddingSnapshot, invalidateEmbeddingSnapshots, listEmbeddings, saveEmbeddings,
-  getStats, getStatsSnapshot, recordInteraction, saveProfile, recordEvent,
+  getStats, getStatsSnapshot, recordInteraction, saveProfile, recordEvent, upsertItems,
 } from "../lib/db/index.js";
+import { searchProducts } from "../lib/search/index.js";
+import { TEXT_SPACE } from "../lib/embeddings/index.js";
 import { buildSlate } from "../lib/brain/stylist.js";
 import { crossUserCandidates, similarUsers, CROSS_USER_NEIGHBORS } from "../lib/taste-graph/index.js";
 import { CATALOG } from "../lib/ingest/catalog.js";
@@ -49,6 +51,16 @@ function declarationBody(code, declaration) {
 // it was paid on the blocking path of EVERY keyed search.
 
 const SPACE = "test-space-v1";
+
+// A product vector is read through the items table (optimize round, 20 Sep
+// 2026), so the products these vectors belong to must exist first.
+test("E0 the products the test vectors belong to exist", async () => {
+  await upsertItems([
+    { id: "e-a", title: "vector a", price: 1 },
+    { id: "e-b", title: "vector b", price: 1 },
+    { id: "e-c", title: "vector c", price: 1 },
+  ]);
+});
 
 test("E1 a warm snapshot is the SAME array — it did not go back to the database", async () => {
   invalidateEmbeddingSnapshots();
@@ -260,4 +272,54 @@ test("G4 /api/stats uses the snapshot and batches its top-ten hydration", () => 
   assert.ok(code.includes("getStatsSnapshot("), "the route must use the cached read");
   assert.ok(code.includes("getItems("), "ten primary-key lookups are one batched read");
   assert.ok(!/\bgetItem\s*\(/.test(code), "the per-id fan-out must be gone");
+});
+
+// ---- the dead vectors (optimize round, 20 Sep 2026) --------------------------
+// Production held 915 product vectors for a catalog that had been deleted and
+// 0 for the 897 live listings: every keyed search loaded ~6 MB of JSONB, paid
+// the provider for a query vector, and compared it against nothing.
+
+test("E7 a product vector whose product is gone never enters the snapshot", async () => {
+  invalidateEmbeddingSnapshots();
+  await saveEmbeddings([
+    { ownerId: "e-a", space: SPACE, vector: [1, 0, 0] },
+    { ownerId: "e-ghost-of-the-seed", space: SPACE, vector: [0, 0, 1] },
+  ]);
+  const rows = await listEmbeddings(SPACE);
+  const ids = rows.map((r) => r.owner_id);
+  assert.ok(ids.includes("e-a"), "a vector whose product exists loads");
+  assert.ok(!ids.includes("e-ghost-of-the-seed"), "a vector whose product is gone does not");
+  const snap = await getEmbeddingSnapshot(SPACE);
+  assert.ok(!snap.some((r) => r.owner_id === "e-ghost-of-the-seed"), "and the snapshot agrees with the raw read");
+  // Other owner kinds are not products and are not judged by the items table.
+  await saveEmbeddings([{ ownerId: "someone", ownerKind: "user", space: SPACE, vector: [1, 1, 0] }]);
+  assert.equal((await listEmbeddings(SPACE, "user")).length, 1);
+});
+
+test("E8 a keyed search embeds the query ONLY when there is a live vector to compare it with", async () => {
+  const saved = {
+    p: process.env.EMBEDDINGS_PROVIDER, k: process.env.EMBEDDINGS_API_KEY, fetch: globalThis.fetch,
+  };
+  let providerCalls = 0;
+  globalThis.fetch = async () => { providerCalls++; return { ok: false, status: 500, text: async () => "stubbed", json: async () => ({}) }; };
+  process.env.EMBEDDINGS_PROVIDER = "voyage";
+  process.env.EMBEDDINGS_API_KEY = "test-key";
+  try {
+    invalidateEmbeddingSnapshots();
+    // Only a dead vector in the text space: nothing to compare against.
+    await saveEmbeddings([{ ownerId: "e-nobody", space: TEXT_SPACE, vector: [1, 0, 0] }]);
+    const empty = await searchProducts("black wool coat", { userId: null });
+    assert.ok(Array.isArray(empty.results ?? empty), "search still answers");
+    assert.equal(providerCalls, 0, "no live product vector → no paid call for a query vector");
+
+    // One live vector: now the provider is worth asking.
+    await saveEmbeddings([{ ownerId: "e-a", space: TEXT_SPACE, vector: [1, 0, 0] }]);
+    await searchProducts("black wool coat", { userId: null });
+    assert.equal(providerCalls, 1, "with something to compare against, the query is embedded");
+  } finally {
+    globalThis.fetch = saved.fetch;
+    if (saved.p == null) delete process.env.EMBEDDINGS_PROVIDER; else process.env.EMBEDDINGS_PROVIDER = saved.p;
+    if (saved.k == null) delete process.env.EMBEDDINGS_API_KEY; else process.env.EMBEDDINGS_API_KEY = saved.k;
+    invalidateEmbeddingSnapshots();
+  }
 });

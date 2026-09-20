@@ -242,3 +242,44 @@ test("the workflow's bytes survive the only route available for editing it", () 
   assert.doesNotMatch(STEWARD_WORKFLOW, /Â|â€|‚Ä/,
     "mojibake in the workflow — the web-UI paste re-encoded a non-ASCII character");
 });
+
+// ---- data.embedding-coverage (optimize round, 20 Sep 2026) ------------------
+
+test("a keyed provider with zero live product vectors is a WARN; orphans alone are a note", async () => {
+  const { embeddingCoverage } = await import("../lib/steward/checks.js");
+  const saved = { p: process.env.EMBEDDINGS_PROVIDER, k: process.env.EMBEDDINGS_API_KEY };
+  try {
+    process.env.EMBEDDINGS_PROVIDER = "voyage";
+    process.env.EMBEDDINGS_API_KEY = "test-key";
+    const silent = await embeddingCoverage.run({ query: fakeQuery([
+      ["from embeddings e", [{ live: 0, orphans: 915, items: 897 }]],
+    ]) });
+    assert.equal(silent.state, "warn");
+    assert.match(silent.evidence, /0 live product vectors over 897 items/);
+    assert.match(silent.evidence, /915 vectors whose product is gone/);
+    assert.match(silent.action, /embed-catalog/);
+
+    const covered = await embeddingCoverage.run({ query: fakeQuery([
+      ["from embeddings e", [{ live: 897, orphans: 3, items: 897 }]],
+    ]) });
+    assert.equal(covered.state, "note", "dead rows with live coverage are a note, not a warning");
+    assert.match(covered.action, /DELETE FROM embeddings/);
+
+    const clean = await embeddingCoverage.run({ query: fakeQuery([
+      ["from embeddings e", [{ live: 897, orphans: 0, items: 897 }]],
+    ]) });
+    assert.equal(clean.state, "ok");
+    assert.equal(clean.action, null);
+
+    delete process.env.EMBEDDINGS_PROVIDER;
+    delete process.env.EMBEDDINGS_API_KEY;
+    const unkeyed = await embeddingCoverage.run({ query: fakeQuery([
+      ["from embeddings e", [{ live: 0, orphans: 915, items: 897 }]],
+    ]) });
+    assert.equal(unkeyed.state, "note", "with no provider keyed there is no silent tier — only dead rows");
+    assert.match(unkeyed.evidence, /unkeyed/);
+  } finally {
+    if (saved.p == null) delete process.env.EMBEDDINGS_PROVIDER; else process.env.EMBEDDINGS_PROVIDER = saved.p;
+    if (saved.k == null) delete process.env.EMBEDDINGS_API_KEY; else process.env.EMBEDDINGS_API_KEY = saved.k;
+  }
+});

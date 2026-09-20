@@ -3912,3 +3912,32 @@ test("v53: user_records adopt without clobbering, erase, export, and the app rol
     "SELECT column_name FROM information_schema.columns WHERE table_name='user_corrections' AND column_name IN ('scope','undone_at')");
   assert.equal(scopeCol.rows.length, 2, "v53 also gave user_corrections scope + undone_at");
 });
+
+// ---- the dead vectors (optimize round, 20 Sep 2026) --------------------------
+// The mem law (tests/perf-read-paths E7) is a Map lookup; the Postgres law is
+// a JOIN. This is the differential that keeps them the same law.
+test("Postgres: a product vector loads only while its product exists", { skip: !databaseUrl }, async (t) => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const pool = await db.getPool();
+  const suffix = randomUUID();
+  const space = `pgvec-${suffix}`;
+  const live = `pgvec-live-${suffix}`;
+  const ghost = `pgvec-ghost-${suffix}`;
+  t.after(async () => {
+    await pool.query("DELETE FROM embeddings WHERE space=$1", [space]);
+    await pool.query("DELETE FROM items WHERE id=$1", [live]);
+  });
+  await db.upsertItems([{ id: live, title: "a live listing", price: 10 }]);
+  await db.saveEmbeddings([
+    { ownerId: live, space, vector: [1, 0, 0] },
+    { ownerId: ghost, space, vector: [0, 0, 1] },
+    { ownerId: ghost, ownerKind: "user", space, vector: [0, 1, 0] },
+  ]);
+  const { rows: stored } = await pool.query("SELECT count(*)::int AS n FROM embeddings WHERE space=$1", [space]);
+  assert.equal(stored[0].n, 3, "all three rows are in the table — the filter is on the read, not the write");
+  const products = (await db.listEmbeddings(space, "product")).map((r) => r.owner_id);
+  assert.deepEqual(products, [live], "the ghost's product vector does not load");
+  const users = (await db.listEmbeddings(space, "user")).map((r) => r.owner_id);
+  assert.deepEqual(users, [ghost], "a non-product vector is not judged by the items table");
+});
