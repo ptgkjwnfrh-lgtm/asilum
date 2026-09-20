@@ -65,3 +65,12 @@ test("R3 the steward says what kind of nothing it was, and stops blaming the cul
   assert.match(dark.action, /SEARCH_CULTURE_FALLBACK/);
   assert.match(dark.evidence, /12 logged before the engine recorded reasons/);
 });
+
+test("R4 a grammar word is never what the rack is showing instead", async () => {
+  await upsertItems([
+    { id: "rr-and-1", title: "Silk scarf", brand: "Unbranded", price: 40, category: "accessories", tags: { SEDUCTIVE: 0.5 } },
+  ]);
+  const r = await searchProducts("love and basket", { userId: null, log: false });
+  assert.ok(!/showing and instead/.test(r.note || ""), `the note: ${r.note}`);
+  assert.ok(!/showing (\w+ )?and instead/.test(r.note || ""), `no grammar word shown: ${r.note}`);
+});
