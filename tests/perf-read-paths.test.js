@@ -21,6 +21,7 @@ import { fileURLToPath } from "node:url";
 import {
   getEmbeddingSnapshot, invalidateEmbeddingSnapshots, listEmbeddings, saveEmbeddings,
   getStats, getStatsSnapshot, recordInteraction, saveProfile, recordEvent, upsertItems,
+  getTasteVectorSnapshot, invalidateTasteVectorSnapshots, listTasteVectors,
 } from "../lib/db/index.js";
 import { searchProducts } from "../lib/search/index.js";
 import { TEXT_SPACE } from "../lib/embeddings/index.js";
@@ -322,4 +323,74 @@ test("E8 a keyed search embeds the query ONLY when there is a live vector to com
     if (saved.k == null) delete process.env.EMBEDDINGS_API_KEY; else process.env.EMBEDDINGS_API_KEY = saved.k;
     invalidateEmbeddingSnapshots();
   }
+});
+
+// ---- the neighbour scan snapshot (optimize round, 20 Sep 2026) ---------------
+// similarUsers scanned every profile on every personalised feed request:
+// 45 ms mean in production for ~400 rows. The scan is of OTHER people's
+// slow-moving long-term vectors, so a per-instance snapshot with a 30 s TTL
+// ranks the same neighbours — and it is deliberately not invalidated by
+// profile writes, because the feed instance is also the writer.
+
+test("T1 a warm taste snapshot is the SAME frozen array", async () => {
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t-a", { long: { MINIMAL: 1 } });
+  await saveProfile("t-b", { long: { MINIMAL: 0.9, DARK: 0.2 } });
+  const first = await getTasteVectorSnapshot(500);
+  const second = await getTasteVectorSnapshot(500);
+  assert.equal(first, second, "identical reference — a cache hit, not a re-scan");
+  assert.ok(Object.isFrozen(first), "shared, so frozen");
+  assert.deepEqual(
+    first.map((r) => r.userId).sort(),
+    (await listTasteVectors(500)).map((r) => r.userId).sort(),
+    "the snapshot's content is what the raw scan would have given",
+  );
+  const all = await Promise.all(Array.from({ length: 5 }, () => getTasteVectorSnapshot(500)));
+  assert.ok(all.every((rows) => rows === all[0]), "five simultaneous callers, one array between them");
+});
+
+test("T2 a profile written after the snapshot waits for the TTL (or an explicit invalidation)", async () => {
+  invalidateTasteVectorSnapshots();
+  const before = await getTasteVectorSnapshot(500);
+  await saveProfile("t-late", { long: { MINIMAL: 1 } });
+  const during = await getTasteVectorSnapshot(500);
+  assert.equal(during, before, "a write does not throw the scan away — the writer is the feed instance");
+  assert.ok(!during.some((r) => r.userId === "t-late"));
+  invalidateTasteVectorSnapshots();
+  const after = await getTasteVectorSnapshot(500);
+  assert.ok(after.some((r) => r.userId === "t-late"), "and is visible once the snapshot turns over");
+});
+
+test("T3 the reader's OWN vector is always fresh — only the neighbours are snapshotted", async () => {
+  const { TAGS } = await import("../lib/brain/tags.js");
+  const [DARK, MINIMAL] = TAGS; // two real tags of the shared space, whatever they are called
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t-me", { long: { [DARK]: 1 } });
+  await saveProfile("t-dark", { long: { [DARK]: 1 } });
+  await saveProfile("t-min", { long: { [MINIMAL]: 1 } });
+  const cold = await similarUsers("t-me", 5);
+  assert.equal(cold.data.neighbors[0]?.uid, "t-dark");
+  // The reader changes their mind inside the TTL: the neighbour ranking must
+  // follow their new vector, because it is read through getProfile, not the snapshot.
+  await saveProfile("t-me", { long: { [MINIMAL]: 1 } });
+  const warm = await similarUsers("t-me", 5);
+  assert.equal(warm.data.neighbors[0]?.uid, "t-min", "the own vector is fresh");
+  assert.ok(!warm.data.neighbors.some((n) => n.uid === "t-me"), "and never their own neighbour");
+});
+
+test("T4 similarUsers reads the neighbours THROUGH the snapshot — a newcomer waits for it to turn over", async () => {
+  const { TAGS } = await import("../lib/brain/tags.js");
+  const [A] = TAGS;
+  invalidateTasteVectorSnapshots();
+  await saveProfile("t4-me", { long: { [A]: 1 } });
+  await saveProfile("t4-old", { long: { [A]: 1 } });
+  const warm = await similarUsers("t4-me", 10);
+  assert.ok(warm.data.neighbors.some((n) => n.uid === "t4-old"));
+  await saveProfile("t4-new", { long: { [A]: 1 } });
+  const stale = await similarUsers("t4-me", 10);
+  assert.ok(!stale.data.neighbors.some((n) => n.uid === "t4-new"),
+    "inside the TTL the scan is the snapshot's — a direct listTasteVectors read here would be the 45 ms per feed request this exists to remove");
+  invalidateTasteVectorSnapshots();
+  const fresh = await similarUsers("t4-me", 10);
+  assert.ok(fresh.data.neighbors.some((n) => n.uid === "t4-new"));
 });
