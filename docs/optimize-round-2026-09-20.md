@@ -44,9 +44,13 @@ The search log kept four fields of the interpretation and none of the answer, so
 
 On the live catalog, "boots size 42" read 42 as a waist and answered "nothing with a 42 waist in footwear"; "boots size 9" read no size at all, because 9 is below the waist floor. The sellers label footwear "8", "9.5", "EU 45", "US10.5=UK9.5=EUR44=27CM" and "38.5,39,40,…,45". When the query names footwear, "size N" now reads as a shoe size — the US ladder up to 16, the EU ladder from 35 to 50, or whichever marker the reader typed — and matches the label as printed: a bare number is the US ladder, an EU number needs its marker or a seller's list. No conversion table. A miss lists the shoe sizes that are here. Outside footwear the old readings stand.
 
+### 8. A grammar word is never what the rack is showing instead
+
+Live, "dolce and gabana" said "showing dolce and instead" and "love and basket" said "showing and instead": the words a note claims to show were the tokens that had not been reported unmatched, and grammar was never reported. Stopwords now leave the shown words. Not fixed, recorded for the next round: the compositional read behind those racks — 861 and 895 pieces from a house or phrase the brain recognised — should say what it read, the way the cultural tier does ("read as blade runner — neon noir").
+
 ## Gates on the branch head
 
-`npm test` green on every commit (1,546 → 1,573 tests, 0 fail); `npm run build` green; `npm run v2:check` PASS; `search:snapshot` byte-identical to `main` on every commit (35 identity queries); every new test run with its fix reverted and seen to fail. Steward against production before the round: 0 blocker / 0 warn / 2 note / 14 ok (the new coverage check is one of the notes).
+`npm test` green on every commit (1,546 → 1,574 tests, 0 fail); `npm run build` green; `npm run v2:check` PASS; `search:snapshot` byte-identical to `main` on every commit (35 identity queries); every new test run with its fix reverted and seen to fail. Steward against production before the round: 0 blocker / 0 warn / 2 note / 14 ok (the new coverage check is one of the notes).
 
 ## Production measurements (the in-app browser against www.asilummagazine.com, 20 Sep)
 
