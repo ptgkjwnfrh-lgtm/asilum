@@ -3924,6 +3924,10 @@ test("Postgres: a product vector loads only while its product exists", { skip: !
   const space = `pgvec-${suffix}`;
   const live = `pgvec-live-${suffix}`;
   const ghost = `pgvec-ghost-${suffix}`;
+  // A row id is `<space>:<owner>` regardless of owner_kind, so a user vector
+  // needs its own owner id here (in the app, user ids and product ids never
+  // share a namespace).
+  const person = `pgvec-person-${suffix}`;
   t.after(async () => {
     await pool.query("DELETE FROM embeddings WHERE space=$1", [space]);
     await pool.query("DELETE FROM items WHERE id=$1", [live]);
@@ -3932,12 +3936,12 @@ test("Postgres: a product vector loads only while its product exists", { skip: !
   await db.saveEmbeddings([
     { ownerId: live, space, vector: [1, 0, 0] },
     { ownerId: ghost, space, vector: [0, 0, 1] },
-    { ownerId: ghost, ownerKind: "user", space, vector: [0, 1, 0] },
+    { ownerId: person, ownerKind: "user", space, vector: [0, 1, 0] },
   ]);
   const { rows: stored } = await pool.query("SELECT count(*)::int AS n FROM embeddings WHERE space=$1", [space]);
   assert.equal(stored[0].n, 3, "all three rows are in the table — the filter is on the read, not the write");
   const products = (await db.listEmbeddings(space, "product")).map((r) => r.owner_id);
   assert.deepEqual(products, [live], "the ghost's product vector does not load");
   const users = (await db.listEmbeddings(space, "user")).map((r) => r.owner_id);
-  assert.deepEqual(users, [ghost], "a non-product vector is not judged by the items table");
+  assert.deepEqual(users, [person], "a non-product vector is not judged by the items table");
 });
