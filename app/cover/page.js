@@ -432,7 +432,7 @@ export default function CoverPage() {
 
       <nav className="cvindex" aria-label="subsystem index">
         {SUBSYSTEMS.map((s) => (
-          <a key={s.href} href={s.href}>
+          <a key={s.label} href={s.href}>
             <b>{s.label}</b>
             <span>{s.meta}</span>
           </a>

@@ -30,6 +30,8 @@ import MailDesk from "./components/MailDesk.jsx";
 import { DEFAULT_KIND } from "../lib/accounts.js";
 import { navFor, ACCOUNT_MENU } from "../lib/nav.js";
 import SavePrompt from "./components/SavePrompt.jsx";
+import ControlCenter from "./components/ControlCenter.jsx";
+import SheetHost from "./components/SheetHost.jsx";
 
 // Seven destinations — the complete mental model of the OS. Every legacy
 // route stays reachable: STYLIST rides under DISCOVER, ORDERS under PROFILE,
@@ -753,7 +755,7 @@ export default function Shell({ children }) {
           <feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
         </filter>
       </svg>
-      <header className="tophead" ref={headRef}>
+      <header className="tophead slim" ref={headRef}>
         <div className="thbar">
           {/* MAGAZINE is justified to the exact width of ASILUM above it (owner
               order, 17 Aug) — one letter per span, spread by flex, so the line
@@ -761,8 +763,8 @@ export default function Shell({ children }) {
               letter-spacing that only lands at one font-size. See .wordmark em.
               aria-label pins the accessible name so splitting the word cannot
               make a screen reader spell it out. */}
-          <a className="wordmark" href="/" title="back to the catalog"
-             aria-label="*ASILUM magazine — back to the catalog">
+          <a className="wordmark" href="/" title="the feed"
+             aria-label="*ASILUM magazine — the feed">
             <i>*</i>ASILUM
             <em aria-hidden="true">
               {"MAGAZINE".split("").map((ch, i) => <span key={i}>{ch}</span>)}
@@ -786,25 +788,6 @@ export default function Shell({ children }) {
             </div>
           </div>
           <div className="topright">
-            {searchOpen ? (
-              <>
-                <input aria-label="ask for a piece, feeling, place, film or era"
-                  autoFocus
-                  className="search"
-                  placeholder="ask for a piece, feeling, place, film, era…"
-                  value={q}
-                  onChange={(e) => onSearchInput(e.target.value)}
-                  onKeyDown={submitSearch}
-                  onBlur={closeSearch}
-                />
-                <AsteriskGuidanceToggle className="fitbtn asearchtoggle" />
-              </>
-            ) : (
-              <button className="tbtn" onClick={() => setSearchOpen(true)}>
-                <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.7" cy="6.7" r="4.6" fill="none" stroke="currentColor" strokeWidth="1.6" /><line x1="10.2" y1="10.2" x2="14.4" y2="14.4" stroke="currentColor" strokeWidth="1.6" /></svg>
-                SEARCH
-              </button>
-            )}
             <button ref={bagToggleRef} className="tbtn" onClick={() => setBagOpen((o) => !o)}>
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 5h10.8l-.9 9H3.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M5.4 5V4a2.6 2.6 0 0 1 5.2 0v1" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
               BAG ({bag.length})
@@ -836,56 +819,14 @@ export default function Shell({ children }) {
             </button>
           </div>
         </div>
-        {/* The destination row carries the destinations, and at its RIGHT END
-            the mail desk — the place the owner marked on the screenshot. The
-            Asterisk guide chip that rode the left end and the compact orb that
-            rode the right end are both gone; the guide lives whole at
-            /asterisk and the orb still holds /stats and /upload.
-
-            The desk renders nothing at all when messaging is off or the reader
-            is signed out — absent, not disabled — so for everyone else the row
-            is exactly the seven destinations. */}
-        <nav className="topnav">
-          <div className="snavs">
-            {nav.map((n) => {
-              const cur = n.match(pathname || "/");
-              return (
-                <span className="snavwrap" key={n.href}>
-                  <a className={"snav" + (cur ? " cur" : "")} href={n.href}>
-                    <span className="nic" aria-hidden="true">{n.icon}</span>
-                    {n.label}
-                    <span className="nled" aria-hidden="true" />
-                    <span className="nmeta">{n.meta}</span>
-                  </a>
-                  {cur && n.sub && (
-                    <span className="snavsub">
-                      {n.sub.map((s) => (
-                        <a key={s.href} className={pathname?.startsWith(s.href) ? "cur" : ""} href={s.href}>{s.label}</a>
-                      ))}
-                    </span>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-          <MailDesk />
-        </nav>
       </header>
 
-      {/* THE TAB BAR (V.2): under 760px the four destinations move to the
-          thumb — the same four words, the same red for "you are here". Hidden
-          on desktop by CSS; the header row hides on phones in its place. */}
-      <nav className="tabbar" aria-label="destinations">
-        {nav.map((n) => {
-          const cur = n.match(pathname || "/");
-          return (
-            <a key={n.href} className={"tabl" + (cur ? " cur" : "")} href={n.href} aria-current={cur ? "page" : undefined}>
-              <span className="tbi" aria-hidden="true">{n.icon}</span>
-              <span className="tbl">{n.label}</span>
-            </a>
-          );
-        })}
-      </nav>
+      {/* THE CONTROL CENTER (V.2 brief, 1 Oct): the four tabs and the three
+          utilities at the thumb on every size, the scoped search, the
+          Sponsored strip — ControlCenter.jsx. The one sheet (Likes, Search,
+          Messages, an overview) rises over the root from SheetHost. */}
+      <ControlCenter kind={accountKind} pathname={pathname} />
+      <SheetHost />
 
       {acctOpen && (
         <div ref={acctPanelRef} className="panel acctpanel" role="menu" aria-label="account">

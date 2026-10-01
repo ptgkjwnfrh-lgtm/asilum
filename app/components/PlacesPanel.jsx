@@ -36,7 +36,10 @@ function icsFor(p) {
   return "data:text/calendar;charset=utf-8," + encodeURIComponent(lines.join("\r\n"));
 }
 
-export default function PlacesPanel({ compact = false, showControls = true }) {
+// `query` (V.2 brief §1: the dock's "Search places and events" scope) narrows
+// the frame to rows whose name, kind, city or address contain the words —
+// exact substring, never a guess; the count line says how many matched.
+export default function PlacesPanel({ compact = false, showControls = true, query = "" }) {
   const [loc, setLoc] = useState(null);
   const [area, setArea] = useState(null);
   const [mode, setMode] = useState("local");   // local | world
@@ -75,7 +78,11 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
       .catch(() => setData({ places: [], count: 0, error: true }));
   }, [mode, kind, dated, center && center.lat, center && center.lng]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const places = (data && data.places) || [];
+  const needle = String(query || "").trim().toLowerCase();
+  const allPlaces = (data && data.places) || [];
+  const places = needle
+    ? allPlaces.filter((p) => [p.name, KIND_LABEL[p.kind], p.kind, p.city, p.address, p.organizer].join(" ").toLowerCase().includes(needle))
+    : allPlaces;
   const selected = sel ? places.find((p) => p.id === sel) : null;
 
   function confirmCity() {
@@ -144,7 +151,7 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
       )}
 
       <div className="plmeta">
-        {data ? `${data.count || 0} ${dated === "events" ? "EVENTS" : dated === "places" ? "PLACES" : "EVENTS AND PLACES"}` : "READING THE MAP…"}
+        {data ? `${needle ? `${places.length} OF ` : ""}${data.count || 0} ${dated === "events" ? "EVENTS" : dated === "places" ? "PLACES" : "EVENTS AND PLACES"}${needle ? ` MATCH “${query.trim()}”` : ""}` : "READING THE MAP…"}
         {data && data.sampleCount > 0 && <> · {data.sampleCount} ARE LABELLED FIXTURES</>}
         {data && data.coverage && <> · {data.coverage.sourced} SOURCED</>}
       </div>
@@ -181,7 +188,7 @@ export default function PlacesPanel({ compact = false, showControls = true }) {
             )}
           </li>
         ))}
-        {data && places.length === 0 && <li className="empty">nothing in this frame — widen to WORLD, or clear a filter.</li>}
+        {data && places.length === 0 && <li className="empty">{needle ? "nothing in this frame matches that — clear the search, or widen to WORLD." : "nothing in this frame — widen to WORLD, or clear a filter."}</li>}
       </ul>
 
       {showControls && loc && (

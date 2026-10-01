@@ -3879,3 +3879,240 @@ body { font-size: 14px; }
   .ctr .filters { display: none; }
   .ctr .streamcompose { margin: 2px 0 10px; }
 }
+
+/* =====================================================================
+   THE CONTROL CENTER, THE ONE SHEET, THE MAP ROOT (V.2 brief, owner,
+   1 Oct 2026). Primary reference IMG_0999: pale icy surfaces, deep teal
+   ink, thin blue-grey hairlines, broad rounded panels, Michroma headings,
+   tracked mono labels, generous space. The tokens are the ice theme's own
+   (--bg --ink --sig --line --grey --red); nothing here names a colour. The
+   secondary hardware references give only the control geometry: one row
+   of keys, detented toggles, engraved labels — never a silver skin.
+   This block stays LAST: it overrides the V.2 simplification pass above.
+   ===================================================================== */
+:root {
+  --nav-h: 0px;                 /* the destination row is gone */
+  --cc-w: min(760px, calc(100vw - 20px));
+  --cc-row-h: 64px;
+  --ad-h: 32px;
+  --cc-gap: 10px;
+  --cc-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
+  --sheet-radius: 26px;
+}
+.tophead.slim { --mq-h: 48px; }
+.tophead.slim .thbar { min-height: 48px; }
+.main { padding-bottom: calc(var(--cc-space) + 24px); }
+.os-frame { bottom: var(--cc-space); }
+.saveprompt { bottom: calc(var(--cc-space) + 8px); }
+
+/* ---- the dock ------------------------------------------------------- */
+.ccenter {
+  position: fixed; z-index: 66; left: max(10px, calc(50% - var(--cc-w) / 2)); width: var(--cc-w);
+  bottom: var(--cc-bottom);
+  display: flex; flex-direction: column;
+  border-radius: var(--sheet-radius); border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg3) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+}
+.ccenter .tabbar { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 6px; position: static; height: auto; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.ccrow { display: flex; align-items: stretch; gap: var(--cc-gap); }
+.cctabs { display: flex; flex: 1; gap: 2px; min-width: 0; }
+.ccenter .tabl {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 52px; min-width: 44px; padding: 4px 2px; border-radius: 18px; text-decoration: none;
+  font-family: var(--mich); font-size: 9px; letter-spacing: 0.1em; color: var(--grey); text-shadow: none;
+  transition: background 0.18s, color 0.18s;
+}
+.ccenter .tabl:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.ccenter .tabl.cur { color: var(--red); text-shadow: none; }
+.ccenter .tabl.cur .ic { color: var(--red); }
+.ccenter .tabl .tbl { white-space: nowrap; }
+.ccutil { display: flex; gap: 2px; padding-left: var(--cc-gap); border-left: 1px solid var(--line); }
+.cckey {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0; background: none; cursor: pointer;
+  font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); text-shadow: none;
+  transition: background 0.18s, color 0.18s;
+}
+.cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
+.cckey.cur .ic { color: var(--red); }
+/* the MESSAGES key is the mail desk's own button when the desk exists */
+.cckey-mail { display: inline-flex; }
+.cckey-mail:has(.maildesk) .ccfallback { display: none; }
+.ccenter .maildesk { position: static; }
+.ccenter .mailbtn { flex-direction: column; gap: 4px; min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0;
+  font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); justify-content: center; }
+.ccenter .mailbtn:hover, .ccenter .mailbtn.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); border: 0; }
+.ccenter .mailword { font-weight: 400; }
+.ccenter .mailpanel { position: absolute; top: auto; bottom: calc(100% + 10px); left: 0; right: 0; width: auto; max-height: 60vh; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 16%, transparent); }
+/* search mode: the field takes the row; the keys keep their targets, lose their words */
+.ccsearch { display: flex; align-items: center; gap: 8px; }
+.ccfield {
+  flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 46px;
+  padding: 4px 8px 4px 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--paper); color: var(--grey);
+}
+.ccfield:focus-within { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent); }
+.ccfield input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); }
+/* the field's ring is drawn on the pill (.ccfield:focus-within above), so the
+   input's own outline would double it */
+.ccfield input:focus-visible { outline: 2px solid transparent; outline-offset: 0; }
+.ccfield input::placeholder { color: var(--grey); }
+.ccfield input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.ccscope { font-family: var(--mich); font-size: 8px; letter-spacing: 0.18em; color: var(--grey); white-space: nowrap; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; }
+.ccclose { min-height: 46px; }
+.ccenter.ccsearching .tabl { min-height: 44px; }
+.ccenter.ccsearching .tabl .tbl, .ccenter.ccsearching .cckey span, .ccenter.ccsearching .mailword { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { min-height: 44px; }
+.cctoggles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 2px 2px; }
+.cctog {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 34px; padding: 6px 14px; border-radius: 14px;
+  border: 1px solid var(--line); background: var(--paper); color: var(--grey); cursor: pointer; text-decoration: none;
+  font-family: var(--mich); font-size: 10px; letter-spacing: 0.14em; transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.cctog.on { color: var(--ink); border-color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, var(--paper)); }
+.cctog.link { margin-left: auto; color: var(--sig); }
+.cctog .red { font-style: normal; }
+.ccscopenote { font-size: 11px; letter-spacing: 0.08em; color: var(--grey); padding: 0 6px; }
+/* the ad strip: its own stable height; never resized by a mode change */
+.adstrip {
+  height: var(--ad-h); flex: none; display: flex; align-items: center; gap: 10px; padding: 0 14px;
+  border-top: 1px solid var(--line); border-radius: 0 0 var(--sheet-radius) var(--sheet-radius);
+  font-size: 11px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
+}
+.adline { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
+.adline:hover .adtext { color: var(--sig); }
+.adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
+.adtag.sponsored { color: var(--red); border-color: var(--red); }
+.adtag.draft { color: var(--p2); border-color: var(--p2); }
+.adtag.asilum { color: var(--ink); border-color: var(--ink); }
+.adtext { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.adnav { display: inline-flex; align-items: center; gap: 4px; flex: none; }
+.adbtn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--grey); cursor: pointer; }
+.adbtn:hover { color: var(--ink); border-color: var(--ink); }
+.adbtn .flip { transform: scaleX(-1); }
+.adcount { font-size: 9px; letter-spacing: 0.12em; color: var(--grey); }
+
+/* ---- the one sheet ------------------------------------------------- */
+.sheetscrim {
+  position: fixed; inset: 0; z-index: 64; display: flex; align-items: flex-end; justify-content: center;
+  background: color-mix(in srgb, var(--ink) 42%, transparent);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.sheet {
+  width: var(--cc-w); height: 60vh; max-height: calc(100vh - 24px - var(--cc-space));
+  margin-bottom: var(--cc-space); display: flex; flex-direction: column; min-height: 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--sheet-radius);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--ink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
+  animation: sheetin 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
+@keyframes sheetin { from { transform: translateY(24px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+.sheethead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
+.sheetgrip { justify-self: start; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin-left: 8px; }
+.sheettitle { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-align: center; white-space: nowrap; }
+.sheetbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 14px; background: none; color: var(--sig); cursor: pointer;
+  font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; text-shadow: none; }
+.sheetbtn:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.sheetbody { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 28px; }
+.sheetnote .fine, .likesfine, .fine { font-size: 12px; line-height: 1.5; color: var(--grey); letter-spacing: 0.02em; }
+.sheetbody .deck { font-style: normal; font-family: var(--helv); font-size: 15px; color: var(--ink); }
+/* likes and result lists */
+.likestabs { margin: 0 0 12px; }
+.likelist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.likerow { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 12px; padding: 8px 4px; border-top: 1px solid var(--line); }
+.likeimg { width: 56px; height: 56px; object-fit: cover; border-radius: 12px; background: color-mix(in srgb, var(--ink) 6%, transparent); display: block; }
+.likeimg.blank { border: 1px dashed var(--line); }
+.likebody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.liketitle { color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.25; }
+.liketitle:hover { color: var(--sig); }
+.likemeta { font-size: 10.5px; letter-spacing: 0.12em; color: var(--grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.srchrow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
+.srchsec { margin: 18px 0 0; }
+.srchgrid { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.srchcard { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.srchimg { display: block; aspect-ratio: 4 / 5; border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.srchimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.srchbody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.srchbody .ttl { color: var(--ink); text-decoration: none; font-size: 13.5px; line-height: 1.25; }
+.srchbody .savew { align-self: flex-start; padding-left: 0; }
+/* the overview preview: portrait over the lettering, the text beside */
+.ovp {
+  display: grid; grid-template-columns: 180px 1fr; gap: 18px; align-items: start; margin: 4px 0 18px; padding: 16px 18px 16px 14px;
+  border: 1px solid var(--line); border-radius: 22px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 70%, transparent), color-mix(in srgb, var(--ink) 4%, var(--bg)));
+}
+.ovpport { position: relative; min-height: 220px; }
+.ovpletter { position: absolute; left: 4px; top: 10px; z-index: 0; font-family: var(--mich); font-size: 24px; line-height: 1.05; letter-spacing: 0.02em; color: var(--ink); opacity: 0.9; }
+.ovpletter i { font-style: normal; color: var(--red); }
+.ovpimg { position: relative; z-index: 1; display: block; width: 100%; max-height: 300px; object-fit: contain; object-position: bottom;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent); mask-image: linear-gradient(180deg, #000 78%, transparent); }
+.ovpimg.blank { height: 220px; }
+.ovpbody { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding-top: 8px; }
+.ovpname { margin: 0; font-family: var(--mich); font-weight: 400; font-size: clamp(22px, 3vw, 30px); letter-spacing: 0.02em; color: var(--ink); line-height: 1.1; }
+.ovpsrc { margin: 0 0 4px; font-size: 10.5px; letter-spacing: 0.18em; color: var(--grey); }
+.ovpsrc a { color: var(--sig); text-decoration: underline; text-underline-offset: 3px; }
+.ovptext { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.ovpmore { align-self: flex-start; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 6px 0; border: 0; background: none; cursor: pointer; font: inherit; font-size: 15px; color: var(--sig); }
+.ovpmore:hover { color: var(--ink); }
+@media (max-width: 560px) {
+  .ovp { grid-template-columns: 1fr; }
+  .ovpport { min-height: 200px; max-width: 220px; }
+}
+/* the feed | wire selector */
+.feedview { margin-bottom: 4px; }
+.feedview .tab { font-size: 12px !important; letter-spacing: 0.18em !important; padding: 8px 16px !important; }
+
+/* ---- the map root --------------------------------------------------- */
+.maplayout { display: grid; grid-template-columns: 1fr 92px; gap: 16px; align-items: start; }
+.maptools { position: sticky; top: calc(var(--head-h) + 14px); display: flex; flex-direction: column; gap: 8px; }
+.maptool {
+  display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 76px; padding: 10px 6px; border-radius: 20px;
+  border: 1px solid var(--line); background: var(--paper); color: var(--grey); cursor: pointer; text-align: center;
+  font-family: var(--mich); font-size: 9px; letter-spacing: 0.14em; transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.maptool small { font-family: var(--helv); font-size: 9px; letter-spacing: 0.08em; text-transform: lowercase; color: var(--grey); }
+.maptool:hover { color: var(--ink); border-color: var(--ink); }
+.maptool.on { color: var(--ink); border-color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, var(--paper)); }
+.maptool.on .ic { color: var(--red); }
+.mapdrawer { margin: 16px 0 0; padding: 14px 18px; border: 1px solid var(--line); border-radius: 22px; background: var(--paper); }
+@media (max-width: 760px) {
+  .maplayout { grid-template-columns: 1fr; }
+  .maptools { position: static; flex-direction: row; order: -1; }
+  .maptool { flex: 1; min-height: 64px; }
+  .ccenter .tabl { font-size: 8px; }
+  .cckey, .ccenter .mailbtn { min-width: 46px; font-size: 8px; }
+  .ccutil { padding-left: 6px; }
+  .ccscope { display: none; }
+  .ccrow { gap: 6px; }
+  .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - 12px); }
+  .sheetscrim { align-items: flex-end; }
+  .sheetbody { padding-bottom: calc(var(--cc-space) + 12px); }
+  .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 360px) {
+  .ccenter .tabl .tbl { font-size: 7px; }
+  .cckey span { font-size: 7px; }
+}
+/* phones: the four tabs and the three utilities cannot share one 375px row
+   (the brief, decision 3) — the dock grows DOWNWARD: tabs on one row, the
+   utilities on their own row beneath, every target still 44px */
+@media (max-width: 760px) {
+  .ccrow { flex-wrap: wrap; gap: 2px; }
+  .cctabs { flex: 1 1 100%; }
+  .ccutil { flex: 1 1 100%; justify-content: space-around; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 2px; }
+  .ccenter .tabl { min-height: 50px; }
+  .cckey, .ccenter .mailbtn { min-height: 44px; flex-direction: row; gap: 6px; }
+  /* in search mode the seven keys shrink to their glyphs on ONE row — the
+     targets stay 44px (7 × 44 = 308px inside a 355px dock) */
+  .ccenter.ccsearching .ccrow { flex-wrap: nowrap; gap: 0; }
+  .ccenter.ccsearching .cctabs { flex: 4 1 auto; }
+  .ccenter.ccsearching .ccutil { flex: 3 1 auto; border-top: 0; border-left: 1px solid var(--line); padding: 0 0 0 4px; }
+  .ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { flex: 1; min-width: 44px; padding: 4px 2px; }
+  :root { --cc-row-h: 100px; }
+}

@@ -231,6 +231,15 @@ export default function Home() {
   const [posts, setPosts] = useState(null);
   const [engagement, setEngagement] = useState({});
   const [lane, setLane] = useState("all"); // all | mine | <category id>
+  // THE FEED | THE WIRE (V.2 brief, 1 Oct, decision 1): one destination, two
+  // labelled views with independent state. "/" is the Feed — pieces and Wire
+  // posts in one stream; "/?view=wire" is the Wire — the posts alone, in the
+  // same columns, with its own remembered position (the URL is the state, so
+  // Back restores it and the view-state registry keys on it).
+  const [view, setView] = useState("feed");
+  useEffect(() => {
+    try { setView(new URLSearchParams(window.location.search).get("view") === "wire" ? "wire" : "feed"); } catch {}
+  }, []);
   const [pinned, setPinned] = useState(null); // ?post=<id>
   const loadPosts = useCallback(() => {
     fetchWire("user")
@@ -270,6 +279,11 @@ export default function Home() {
     if (list.length < 3) for (const x of lanePosts.slice(pi, pi + 2)) out.push({ id: "post:" + (x.serverId ?? x.id), __post: x });
     mixedCache.current.set(list, { posts, lane, out });
     return out;
+  }
+  // the Wire view: every post of the lane, no pieces between them
+  function feedList(list) {
+    if (view === "wire") return lanePosts.map((x) => ({ id: "post:" + (x.serverId ?? x.id), __post: x }));
+    return mixed(list);
   }
   const weightOf = useCallback((it) => (it.__post ? ((it.__post.image || it.__post.imageUrl) ? 1.95 : 0.85) : cardWeight(it)), [cardWeight]);
   // Which tab is on screen, for handlers that resolve after a switch.
@@ -911,7 +925,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
-        <PageMast word="THE WIRE" sub="ONE STREAM · PIECES AND CULTURE" />
+        <PageMast word={view === "wire" ? "THE WIRE" : "THE FEED"} sub={view === "wire" ? "CULTURE · THE POSTS ALONE" : "PIECES · THE WIRE · ONE STREAM"} />
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}
@@ -942,6 +956,10 @@ export default function Home() {
           <span className="cvside cvsider ctsider" aria-hidden="true">
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
+          <nav className="seg feedview" aria-label="feed or wire">
+            <a className={"tab" + (view === "feed" ? " cur" : "")} href="/" aria-current={view === "feed" ? "page" : undefined}>THE FEED</a>
+            <a className={"tab" + (view === "wire" ? " cur" : "")} href="/?view=wire" aria-current={view === "wire" ? "page" : undefined}>THE WIRE</a>
+          </nav>
           <div className="fmodes seg">
             {[["curated", "FOR YOU"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
@@ -1048,7 +1066,7 @@ export default function Home() {
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
-              <Columns count={gridCols} items={mixed(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+              <Columns count={gridCols} items={feedList(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                   <FragmentCard
                     key={it.id}
                     it={it}
@@ -1075,7 +1093,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <Columns count={gridCols} items={mixed(tabItems)} memo={followingColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+                <Columns count={gridCols} items={feedList(tabItems)} memo={followingColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1099,7 +1117,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <Columns count={gridCols} items={mixed(tabItems)} memo={newColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+                <Columns count={gridCols} items={feedList(tabItems)} memo={newColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
