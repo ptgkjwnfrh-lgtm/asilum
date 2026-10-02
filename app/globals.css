@@ -4187,3 +4187,24 @@ body { font-size: 14px; }
 .wpclink img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
 .wpclinkbody { display: grid; gap: 2px; min-width: 0; }
 .wpclinkbody span:last-child { color: var(--grey); font-size: 12px; }
+
+/* ---- THE ENTITY OVERVIEW (V.2 brief §9) -------------------------------- */
+.eo { display: grid; gap: 10px; }
+.eo-house, .eo-spot, .eo-passenger { padding: 18px 20px; border: 1px solid var(--line); border-radius: 22px; background: color-mix(in srgb, var(--paper) 60%, transparent); }
+.eoname { margin: 0; font-family: var(--mich); font-weight: 400; font-size: clamp(20px, 2.6vw, 30px); letter-spacing: 0.02em; line-height: 1.1; color: var(--ink); }
+.eoorigin { margin: 0; font-size: 14px; color: var(--ink); }
+.eomissing { margin: 0; font-size: 12px; color: var(--grey); letter-spacing: 0.02em; }
+.eochips { display: grid; gap: 6px; }
+.eochiprow { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 4px; }
+.eochip { flex: 0 0 auto; display: grid; gap: 2px; min-width: 160px; text-align: left; padding: 10px 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--paper); cursor: pointer; scroll-snap-align: start; color: var(--ink); }
+.eochip:hover { border-color: var(--ink); }
+.eochip b { font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.08em; }
+.eochip span { font-size: 11.5px; color: var(--ink); }
+.eochip i { font-style: normal; font-size: 9.5px; letter-spacing: 0.12em; color: var(--grey); text-transform: uppercase; }
+.eostamp { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.eostamp .fine { flex-basis: 100%; }
+.eolinks { display: flex; flex-wrap: wrap; gap: 14px; }
+.eoquote { margin: 4px 0; padding: 0 0 0 14px; border-left: 2px solid var(--line); font-size: 15px; line-height: 1.5; }
+.eoquote cite { display: block; font-style: normal; font-size: 11px; letter-spacing: 0.12em; color: var(--grey); margin-top: 4px; }
+.eosources { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; }
+.ovp-line { grid-template-columns: 1fr; }

@@ -15,9 +15,9 @@ import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import PageMast from "../components/PageMast.jsx";
 import DiscoverTabs from "../components/DiscoverTabs.jsx";
-import PersonOverview from "../components/PersonOverview.jsx";
+import EntityOverview from "../components/EntityOverview.jsx";
 import PlacesPanel from "../components/PlacesPanel.jsx";
-import { findOverview } from "../../lib/people/overviews.js";
+import { findEntity } from "../../lib/entities/graph.js";
 
 const TAGS = ["AVANT-GARDE", "SEDUCTIVE", "STATEMENT", "TAILORED", "ARCHIVAL",
   "MINIMAL", "UTILITARIAN", "STREETWEAR", "INDEPENDENT", "GORP"];
@@ -511,7 +511,7 @@ export default function DiscoverPage() {
           again. Absent entirely when the sentence carried none, because an
           empty row would advertise a filter mechanism that does not exist.
           docs/INVISIBLE-MACHINERY.md */}
-      {searched && findOverview(searched) ? <PersonOverview person={findOverview(searched)} compact /> : null}
+      {searched && findEntity(searched) ? <EntityOverview entity={findEntity(searched)} compact onOpen={(next) => { window.location.href = "/discover?q=" + encodeURIComponent(next.name); }} /> : null}
       {constraints.length > 0 ? (
         <div className="readsback">
           {constraints.map((c, i) => (

@@ -323,6 +323,14 @@ Nothing here may import from `app/`.
 | `index.js` | 168 | Vector contracts for the Alpha Learning Brain. |
 | `provider.js` | 71 | the v1 provider adapter (asterisk-boost r4). Plain fetch against an embeddings REST API; NO new runtime dependencies |
 
+### `lib/entities/`
+*2 files, 257 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `graph.js` | 201 | THE ENTITY GRAPH (V.2 brief §9, owner, 1 Oct 2026). Five types — :Designer :House :Artist :Spot :Passenger — as one |
+| `sources.js` | 56 | THE SOURCE REGISTRY (V.2 brief §9, owner, 1 Oct 2026: "Store source URL, publisher, author, retrieved date, claim/quote |
+
 ### `lib/events/`
 *1 file, 113 lines*
 
@@ -1084,14 +1092,14 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*48 files, 7,572 lines*
+*49 files, 7,738 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `MailDesk.jsx` | 954 | EVERY CALL HERE GOES THROUGH authorizedFetch, AND THAT IS NOT STYLE. |
 | `AccountSignup.jsx` | 456 | the account hold (mounted in the shell). Real Supabase accounts only (email + password, or a magic link for |
 | `LiquidGlass.jsx` | 395 | LIQUID GLASS, shared: the optics of the header strip (shell.js) and of the item detail (page.js) are one thing — a clear pane whose open edges bend |
-| `WireComposer.jsx` | 365 | THE ONE COMPOSER (V.2 brief §6, owner, 1 Oct 2026). One housing for every post: begin with text, then ADD MEDIA |
+| `WireComposer.jsx` | 371 | THE ONE COMPOSER (V.2 brief §6, owner, 1 Oct 2026). One housing for every post: begin with text, then ADD MEDIA |
 | `roadBuilder.js` | 352 | passport → /upload build animation (upload-station r5, owner decree). At click the overlay shows a still |
 | `DesignConsole.jsx` | 349 | the DESIGN CONSOLE. The owner's hand on the Fashion Intelligence OS: every text size, button |
 | `AsteriskDock.jsx` | 308 | ASTERISK's living form (owner decree, redesign/asterisk-hologram): an interactive 3D hologram entity built |
@@ -1108,7 +1116,8 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `ConsentMoment.jsx` | 138 | D4's first-visit consent moment (ruled 20 Aug 2026; spec docs/d4-consent-spec-2026-08-20.md). Shell- |
 | `DiscoverRails.jsx` | 137 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
 | `dismiss.js` | 136 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
-| `SearchSheet.jsx` | 131 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
+| `EntityOverview.jsx` | 135 | the ASiLUM OVERVIEW for any entity in the graph (V.2 brief §9): a designer (PersonOverview's card, plus the |
+| `SearchSheet.jsx` | 132 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
 | `PersonOverview.jsx` | 119 | the sourced overview panel (V.2). A knowledge-panel's speed in ASILUM's voice: image with its credit, role, |
 | `TicketFlow.jsx` | 117 | the third-party purchase-assistant flow. Buy/Request → ticket created → availability + price shown → REQUIRED |
 | `WireCard.jsx` | 117 | a transmission as a card in THE STREAM's masonry (V.2 round three): the same column a piece takes, so culture and |
@@ -1122,19 +1131,19 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `SheetHost.jsx` | 85 | THE ONE SHEET (V.2 brief, owner, 1 Oct 2026, decision 2): secondary surfaces open at about 60% of the available |
 | `FashionMap.jsx` | 75 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
 | `KindGate.jsx` | 69 | the client half of the account-kind split. |
+| `OverviewPreview.jsx` | 56 | the ASiLUM OVERVIEW card in search, cut to the primary reference (IMG_0999, V.2 brief, 1 Oct 2026): the |
 | `Placements.jsx` | 53 | the ONE reading of placements the dock's strip and the Front Cover's block share (V.2 brief §1, 1 Oct 2026: |
 | `MessagesSheet.jsx` | 46 | MESSAGES as a utility (V.2 brief, owner, 1 Oct 2026, §1 + §3). The live mail desk (MailDesk.jsx — inbox, |
 | `HotlistStrip.jsx` | 45 | THE HOTLIST beside the stream (V.2 round three). The ten booths for verified independent brands, server |
 | `SaveButton.jsx` | 44 | the one SAVE word (V.2). A word, per the button law: SAVE in the signal colour, SAVED in red once it |
 | `Icons.jsx` | 43 | the control center's glyphs. One stroke weight, one grid, no fills: the restraint of the secondary hardware |
 | `SavePrompt.jsx` | 37 | the account moment (V.2). The brief: "Let visitors browse. Prompt account creation after a meaningful |
-| `OverviewPreview.jsx` | 35 | the ASiLUM OVERVIEW card in search, cut to the primary reference (IMG_0999, V.2 brief, 1 Oct 2026): the |
 | `Notice.jsx` | 33 | ONE notice surface (synergy phase 1). The app had grown nine ad-hoc notice/error treatments; this is the house primitive |
 | `TransmissionText.jsx` | 32 | One transmission's body, with #hashtags and @mentions as live links (owner directive, HANDOVER-2026-08-14 backlog 3). Every surface that |
 | `GlassPane.jsx` | 30 | one pane of the app's liquid glass, for any page (owner, 9 Sep evening: "make sure you utilize liquid glass when |
+| `OverviewSheet.jsx` | 22 | an entity overview opened INSIDE the one sheet (Back returns to the search with its query). The record and |
 | `DiscoverTabs.jsx` | 21 | DISCOVER's inner row (V.2). One destination, three doors: the open index (SEARCH), the map (AROUND YOU), and the |
 | `PageMast.jsx` | 20 | THE MASTHEAD, EVERYWHERE (owner, 9 Sep: "add more large title words overall to the whole website to match the |
-| `OverviewSheet.jsx` | 19 | an entity overview opened INSIDE the one sheet (Back returns to the search with its query). The record and |
 | `ModelTag.jsx` | 10 | the honest tag (V.2). MODEL: simulated in this build. SAMPLE: fixture content, credited. DEVICE: kept on this device only. CONNECTION REQUIRED: a real service |
 
 ### `app/cover/`
@@ -1336,4 +1345,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 1b91843 — 443 source files, 73,951 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ fcc9bc1 — 446 source files, 74,374 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

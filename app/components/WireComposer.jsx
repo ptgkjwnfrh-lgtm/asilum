@@ -33,7 +33,7 @@ import { getProfileInfo, addPost } from "../../lib/social.js";
 import { WIRE_CATEGORIES, WIRE_INTENTS } from "../../lib/model/media.js";
 import { TRANSMISSION_MAX, CAPTION_MAX, MAX_IMAGES, MAX_PIECES, LAYOUTS, LAYER_ALIGNS, LAYER_POSITIONS, LAYER_COLORS, graphemeCount } from "../../lib/wire/compose.js";
 import {
-  readDraft, writeDraft, clearDraft, attachMedia, detachMedia, restoreMedia, discardMedia,
+  newDraft, readDraft, writeDraft, clearDraft, attachMedia, detachMedia, restoreMedia, discardMedia,
   setText, setTitle, setLayout, setLink, setEvent, setPieces, setLayers, describe,
 } from "../../lib/wire/draft.js";
 
@@ -64,7 +64,12 @@ async function prepImage(file) {
 }
 
 export default function WireComposer({ onPublished, compact = false }) {
-  const [draft, setDraft] = useState(() => readDraft());
+  // the draft lives in localStorage, which the server cannot read: start from
+  // an empty draft on both sides and adopt the device's after mount, or the
+  // first paint and the hydration disagree (caught 1 Oct: "a draft is
+  // waiting" rendered on the client only)
+  const [draft, setDraft] = useState(() => newDraft());
+  useEffect(() => { setDraft(readDraft()); }, []);
   const [intent, setIntent] = useState("create");
   const [category, setCategory] = useState("style");
   const [open, setOpen] = useState(!compact);

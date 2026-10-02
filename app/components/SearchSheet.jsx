@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { useDock, pushSheet } from "../../lib/dockstate.js";
 import { authorizedFetch, getUid, thumbFor } from "../../lib/client.js";
 import { fetchWire } from "../../lib/social.js";
-import { findOverview } from "../../lib/people/overviews.js";
+import { findEntity } from "../../lib/entities/graph.js";
 import { isDemoItem, DEMO_LABEL } from "../../lib/social.js";
 import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
@@ -59,7 +59,8 @@ export default function SearchSheet() {
     return () => { live = false; };
   }, [q, wantPieces, wantWire, asterisk]);
 
-  const overview = q ? findOverview(q) : null;
+  // an entity overview is eligible regardless of the content toggles (brief, decision 4)
+  const overview = q ? findEntity(q) : null;
 
   if (!q) {
     return (
@@ -77,7 +78,7 @@ export default function SearchSheet() {
         <a className="txtbtn" href={"/discover?q=" + encodeURIComponent(q)}>SEARCH ALL ASILUM →</a>
       </div>
       {overview && (
-        <OverviewPreview person={overview} onOpen={() => pushSheet("overview", { person: overview, title: overview.name.toUpperCase() })} />
+        <OverviewPreview person={overview} onOpen={() => pushSheet("overview", { entity: overview, title: overview.name.toUpperCase() })} />
       )}
       {res.loading && <p className="pempty" role="status">reading…</p>}
       {res.error && <p className="pempty" role="status">{res.error}</p>}
