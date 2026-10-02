@@ -144,6 +144,10 @@ Answer sheet at the bottom — ten lines, fill and return.
 - **Default:** manual-only (identical to the recommendation — this one is
   effectively decided by inaction; the memo just asks you to make it
   official).
+- **DECIDED 2 Oct 2026 (owner: "take the wheel"): manual-only, permanently.**
+  Automatic profiling is abandoned. The connector registry
+  (`lib/connectors/index.js`) states it: `artist-stamps` available from
+  ASILUM's own table, `taste-import` unsupported. RIGHTS-REGISTER row updated.
 
 ## 8. TikTok: wait or drop
 
@@ -254,3 +258,22 @@ Reply with ten lines (any format):
 Engineering acts the same day on: 5 (model-enable gate walk), 6 (eBay
 keying), 7/8 (register updates), 10 (cleanup job PR). 1/2/3 route through
 counsel; 4/9 are register updates until their features go public.
+
+## 9. The clear-history notice (V.2 §3) — DECIDED 2 Oct 2026
+
+- **Question:** tell the other participant when a viewer clears their own
+  copy of a conversation (the brief's requested behaviour), or suppress it
+  (the brief's own recommendation: clearing one's inbox is ordinarily private).
+- **Decided (owner: "fix any recommendations you have"):** SUPPRESSED.
+  `DM_CLEAR_NOTICES=0` on production. The handler stays configurable; the
+  notice is built and one variable away.
+
+## 10. Listing verification reviewers (V.2 §12) — DECIDED 2 Oct 2026
+
+- With the model off, the AI metadata check is LOCAL RULES capped at 0.5
+  confidence (`lib/verification/ledger.js`), so **every badge needs a named
+  human review** until a keyed model is evaluated on fixtures. Reviewer name =
+  `ADMIN_ACTOR` on production; the breakdown prints it on every verified card.
+- No listing carries a badge today. `npm run verify:listings` lands passing
+  listings PENDING; a review is `POST /api/verification/listing { itemId,
+  human: pass|fail }` with the admin token.

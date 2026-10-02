@@ -11,6 +11,8 @@ import { PHOTO_MAX_BYTES } from "../../lib/wardrobe/photo-contract.js";
 // STAGE C (V.2 brief §8): gifting — a pending digital transfer the recipient
 // must accept. The words both parties see live in one place.
 import { TRANSFER_DISCLAIMER, provenanceLabel } from "../../lib/wardrobe/gifts.js";
+// V.2 §8: the closet — Cover Flow / grid / list with a direct lookup
+import WardrobeFlow from "./WardrobeFlow.jsx";
 
 const CATEGORIES = ["", "outerwear", "tops", "knitwear", "tailoring", "bottoms", "footwear", "accessories", "dresses"];
 
@@ -78,6 +80,9 @@ export function WardrobeTab() {
   // STAGE C: gifts. `gifts` = the four lists from the server; `gifting` =
   // { id, handle, confirmed } for the one card being offered.
   const [gifts, setGifts] = useState(null);
+  // the closet view and the piece in hand (V.2 §8)
+  const [view, setView] = useState("flow");
+  const [selectedId, setSelectedId] = useState(null);
   const [gifting, setGifting] = useState(null);
   const signedIn = Boolean((getUid() || "").startsWith("sb-"));
 
@@ -196,6 +201,8 @@ export function WardrobeTab() {
   }
 
   const visible = (items || []).filter((piece) => showRetired || piece.status === "active");
+  // in the FLOW and GRID views the detail row below is the selected piece's; LIST shows every row
+  const rows = view === "list" ? visible : visible.filter((piece) => String(piece.id) === String(selectedId)).slice(0, 1);
 
   return (
     <div className="wtab">
@@ -274,13 +281,16 @@ export function WardrobeTab() {
         </div>
       ) : null}
       {items === null && <div className="pempty">reading your wardrobe…</div>}
+      {items !== null && visible.length > 0 ? (
+        <WardrobeFlow items={visible} selectedId={selectedId} onSelect={setSelectedId} view={view} onView={setView} />
+      ) : null}
       {items !== null && visible.length === 0 && (
         <div className="pempty">
           nothing here yet — add a piece above, or report a purchase ticket as
           {" "}<b>bought</b> on ORDERS &amp; TICKETS and promote it.
         </div>
       )}
-      {visible.map((piece) => (
+      {rows.map((piece) => (
         <div className="wrow" key={piece.id}>
           {piece.photoUrl ? <img className="wthumb" src={piece.photoUrl} alt={piece.title} /> : null}
           <div className="winfo">
