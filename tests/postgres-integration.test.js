@@ -3945,3 +3945,280 @@ test("Postgres: a product vector loads only while its product exists", { skip: !
   const users = (await db.listEmbeddings(space, "user")).map((r) => r.owner_id);
   assert.deepEqual(users, [person], "a non-product vector is not judged by the items table");
 });
+
+// ---------------------------------------------------------------------------
+// STAGE C OF THE MAIL DESK (V.2 brief §3–§4, schema v59). The laws a unit
+// suite cannot prove: the hour measured by the database's clock, the version
+// check, the per-viewer clear boundary, the search predicate, the profile
+// card's refusals and its view-time render.
+// ---------------------------------------------------------------------------
+
+async function stageCFixture(pool) {
+  const f = await dmFixture(pool, { state: "accepted", openedBy: "lo" });
+  return f;
+}
+
+test("DM stage C: an edit is the sender's, inside the hour, carrying the version it saw",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+  assert.equal(await dm.stageCApplied(pool), true, "CI applies v59");
+  const { id: convo, lo: a, hi: b } = await stageCFixture(pool);
+  const m = await dm.sendMessage({ conversationId: convo, senderId: a, body: "first words" });
+
+  // the recipient cannot edit the sender's words — and learns only "cannot"
+  await assert.rejects(() => dm.editMessage(b, m.id, "theirs now", 0), (e) => e.code === "P0006");
+  // a stale version is refused, never merged
+  const e1 = await dm.editMessage(a, m.id, "second words", 0);
+  assert.equal(e1.editVersion, 1); assert.ok(e1.editedAt);
+  await assert.rejects(() => dm.editMessage(a, m.id, "from a stale tab", 0), (e) => e.code === "P0008");
+  const e2 = await dm.editMessage(a, m.id, "third words", 1);
+  assert.equal(e2.editVersion, 2);
+  // the thread says so
+  const t = await dm.readThread(a, convo);
+  const row = t.messages.find((x) => x.id === Number(m.id));
+  assert.equal(row.body, "third words"); assert.equal(row.edited, true); assert.equal(row.editVersion, 2); assert.equal(row.kind, "text");
+
+  // 59:59 works, 60:00 fails — the DATABASE's clock, not the client's
+  await pool.query(`UPDATE dm_messages SET created_at = clock_timestamp() - interval '59 minutes 59 seconds' WHERE id=$1`, [m.id]);
+  const e3 = await dm.editMessage(a, m.id, "just in time", 2);
+  assert.equal(e3.editVersion, 3);
+  await pool.query(`UPDATE dm_messages SET created_at = clock_timestamp() - interval '1 hour' WHERE id=$1`, [m.id]);
+  await assert.rejects(() => dm.editMessage(a, m.id, "too late", 3), (e) => e.code === "P0007");
+  assert.equal((await pool.query(`SELECT body FROM dm_messages WHERE id=$1`, [m.id])).rows[0].body, "just in time");
+
+  // the trigger is the second lock: a raw write that skips the version is refused
+  const raw = await pool.connect();
+  try {
+    await raw.query("BEGIN");
+    await raw.query("SELECT set_config('asilum.dm_actor', $1, true)", [a]);
+    await pool.query(`UPDATE dm_messages SET created_at = clock_timestamp() WHERE id=$1`, [m.id]);
+    await assert.rejects(() => raw.query(`UPDATE dm_messages SET body='raw', edited_at=now() WHERE id=$1`, [m.id]), (e) => e.code === "P0008", "the version must climb by one");
+    await raw.query("ROLLBACK");
+    await raw.query("BEGIN");
+    await assert.rejects(() => raw.query(`UPDATE dm_messages SET body='raw', edited_at=now(), edit_version=edit_version+1 WHERE id=$1`, [m.id]), (e) => e.code === "42501", "an unattributed edit is nobody's act");
+    await raw.query("ROLLBACK");
+  } finally { raw.release(); }
+
+  // an unsent message cannot be edited, and unsend itself closes at the hour
+  const u = await dm.sendMessage({ conversationId: convo, senderId: a, body: "withdraw me" });
+  await pool.query(`UPDATE dm_messages SET created_at = clock_timestamp() - interval '1 hour' WHERE id=$1`, [u.id]);
+  assert.equal(await dm.unsendMessage(a, u.id), false, "60:00 — the unsend window is closed");
+  await pool.query(`UPDATE dm_messages SET created_at = clock_timestamp() - interval '59 minutes' WHERE id=$1`, [u.id]);
+  assert.equal(await dm.unsendMessage(a, u.id), true);
+  await assert.rejects(() => dm.editMessage(a, u.id, "back from the dead", 0), (e) => e.code === "P0006");
+  // and a too-long edit is refused by count before any write
+  await assert.rejects(() => dm.editMessage(a, m.id, "x".repeat(1001), 3), (e) => e.code === "DM_TOO_LONG");
+});
+
+test("DM stage C: clear history is per viewer, reintroduced by a new message, told once and neutrally",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const notes = await import("../lib/db/production/listingStatus.js");
+  const pool = await db.getPool();
+  const { id: convo, lo: a, hi: b } = await stageCFixture(pool);
+  const m1 = await dm.sendMessage({ conversationId: convo, senderId: a, body: "before the clear" });
+  await dm.sendMessage({ conversationId: convo, senderId: b, body: "also before" });
+
+  assert.equal(await dm.clearHistory(b, randomUUID()), null, "a non-member gets the absent answer");
+  // the notice is OFF by default (OWNER-DECISIONS §9); this test turns it on to prove the path
+  process.env.DM_CLEAR_NOTICES = "1";
+  const cleared = await dm.clearHistory(a, convo);
+  assert.equal(cleared.clearedBeforeId >= Number(m1.id) + 1, true);
+  assert.equal(cleared.noticed, true, "the other participant is told once, when the switch is on");
+
+  // my copy is empty, theirs is whole
+  assert.deepEqual((await dm.readThread(a, convo)).messages, []);
+  assert.ok((await dm.readThread(a, convo)).clearedAt);
+  assert.equal((await dm.readThread(b, convo)).messages.length, 2, "the other participant's copy is untouched");
+  // the conversation leaves MY list until something new arrives
+  assert.equal((await dm.listFolder(a)).items.some((i) => i.id === convo), false, "cleared: gone from my inbox");
+  assert.equal((await dm.listFolder(b)).items.some((i) => i.id === convo), true);
+  assert.deepEqual(await dm.unreadSummary(a), { inbox: 0, requests: 0 }, "nothing unread behind the boundary");
+
+  // a new message reintroduces it — without the history
+  const m3 = await dm.sendMessage({ conversationId: convo, senderId: b, body: "after the clear" });
+  const mine = await dm.listFolder(a);
+  const row = mine.items.find((i) => i.id === convo);
+  assert.ok(row, "reintroduced"); assert.equal(row.preview, "after the clear"); assert.equal(row.unread, 1);
+  assert.deepEqual((await dm.readThread(a, convo)).messages.map((x) => x.body), ["after the clear"]);
+  assert.equal((await dm.readThread(b, convo)).messages.length, 3);
+
+  // the notice: neutral words, no body, once per clear; a second clear is a second notice
+  const list = await notes.listNotifications("sb-" + b);
+  const notice = list.find((n) => n.kind === "dm-cleared" && n.subjectId.startsWith(convo));
+  assert.ok(notice); assert.match(notice.payload.text, /cleared their own copy/); assert.doesNotMatch(notice.payload.text, /delet/);
+  assert.equal(JSON.stringify(notice.payload).includes("before the clear"), false, "a notice never carries message text");
+  await new Promise((r) => setTimeout(r, 5));
+  const again = await dm.clearHistory(a, convo);
+  assert.equal(again.clearedBeforeId >= Number(m3.id), true);
+  assert.equal((await notes.listNotifications("sb-" + b)).filter((n) => n.kind === "dm-cleared" && n.subjectId.startsWith(convo)).length, 2);
+
+  // the default: off means no notice, and the clear still happens
+  delete process.env.DM_CLEAR_NOTICES;
+  try {
+    await dm.sendMessage({ conversationId: convo, senderId: b, body: "one more" });
+    const quiet = await dm.clearHistory(a, convo);
+    assert.equal(quiet.noticed, false);
+    assert.equal((await notes.listNotifications("sb-" + b)).filter((n) => n.kind === "dm-cleared" && n.subjectId.startsWith(convo)).length, 2);
+  } finally { delete process.env.DM_CLEAR_NOTICES; }
+});
+
+test("DM stage C: search sees only my own visible history — after my cutoff, never unsent, never a knock, never another viewer's",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const pool = await db.getPool();
+  const tag = randomUUID().slice(0, 6);
+  const { id: convo, lo: a, hi: b } = await stageCFixture(pool);
+  await publishRoom(pool, b, `jerry-${tag}`);
+  await dm.sendMessage({ conversationId: convo, senderId: a, body: `Jerry’s ice cream ${tag} is the best` });
+  const gone = await dm.sendMessage({ conversationId: convo, senderId: b, body: `ice cream ${tag} unsent soon` });
+  await dm.unsendMessage(b, gone.id);
+  await dm.sendMessage({ conversationId: convo, senderId: b, body: `cream ${tag} without the ice` });
+
+  // words, with a straight apostrophe finding the curly one
+  const words = await dm.searchMessages(a, `jerry's ice cream ${tag}`);
+  assert.equal(words.mode, "messages");
+  assert.deepEqual(words.hits.map((h) => h.handle), [`jerry-${tag}`]);
+  assert.ok(words.hits[0].excerpt.includes("Jerry's ice cream"));
+  assert.equal(words.hits[0].conversationId, convo); assert.equal(typeof words.hits[0].messageId, "number");
+  // the unsent message is not findable by anyone
+  assert.equal((await dm.searchMessages(b, `unsent soon`)).hits.length, 0);
+  assert.equal((await dm.searchMessages(a, `unsent soon`)).hits.length, 0);
+  // exact phrase vs words
+  assert.equal((await dm.searchMessages(a, `"ice ${tag} without"`)).hits.length, 0, "a quoted phrase is contiguous");
+  assert.equal((await dm.searchMessages(a, `ice ${tag} without`)).hits.length, 1, "words need not be adjacent");
+  // *handle → conversations; *handle: words → messages with them; an unknown handle → nothing
+  const convos = await dm.searchMessages(a, `*jerry-${tag}`);
+  assert.equal(convos.mode, "conversations"); assert.deepEqual(convos.hits.map((h) => h.conversationId), [convo]);
+  assert.equal((await dm.searchMessages(a, `*jerry-${tag}: cream ${tag}`)).hits.length, 2);
+  assert.equal((await dm.searchMessages(a, `*nobody-${tag}: cream`)).hits.length, 0);
+  // LIKE's own characters are literal
+  assert.equal((await dm.searchMessages(a, `%${tag}%`)).hits.length, 0);
+  // another viewer sees nothing of this thread
+  const { lo: stranger } = await dmAccounts(pool);
+  assert.equal((await dm.searchMessages(stranger, `cream ${tag}`)).hits.length, 0, "a forged viewer changes nothing");
+  // after my clear, my search is empty; theirs is not
+  await dm.clearHistory(a, convo);
+  assert.equal((await dm.searchMessages(a, `cream ${tag}`)).hits.length, 0, "cleared history is not searchable");
+  assert.equal((await dm.searchMessages(b, `cream ${tag}`)).hits.length, 2);
+  // a stranger's knock in REQUESTS is not mine to search
+  const { lo: c } = await dmAccounts(pool);
+  const knock = await dm.openConversation(c, a);
+  await dm.sendMessage({ conversationId: knock.id, senderId: c, body: `knock knock ${tag}` });
+  assert.equal((await dm.searchMessages(a, `knock knock ${tag}`)).hits.length, 0, "an unaccepted request has no preview and no search");
+  assert.equal((await dm.searchMessages(c, `knock knock ${tag}`)).hits.length, 1, "the knocker can search their own words");
+});
+
+test("DM stage C: a profile card is refused server-side with the owner's words, and renders from the live state",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const dm = await import("../lib/db/dm.js");
+  const { SHARE_REFUSED_COPY } = await import("../lib/dm.js");
+  const notes = await import("../lib/db/production/listingStatus.js");
+  const pool = await db.getPool();
+  const tag = randomUUID().slice(0, 6);
+  const { id: convo, lo: a, hi: b } = await stageCFixture(pool);
+  const { lo: shared } = await dmAccounts(pool);
+  await publishRoom(pool, shared, `third-${tag}`);
+  await pool.query(`INSERT INTO profile_modules (account_id, module, content) VALUES ($1,'statement',$2::jsonb)
+                    ON CONFLICT (account_id, module) DO UPDATE SET content=EXCLUDED.content`, [shared, JSON.stringify({ text: "a public statement " + tag })]);
+
+  await assert.rejects(() => dm.sendProfileCard(a, convo, `nobody-${tag}`), (e) => e.code === "DM_NO_SUCH_PASSENGER");
+  const sent = await dm.sendProfileCard(a, convo, `third-${tag}`);
+  assert.equal(sent.handle, `third-${tag}`); assert.equal(sent.duplicate, false);
+  let t = await dm.readThread(b, convo);
+  let card = t.messages.find((m) => m.kind === "profile-card");
+  assert.ok(card); assert.equal(card.body, `*third-${tag}`);
+  assert.deepEqual(card.sharedProfile, { available: true, handle: `third-${tag}`, statement: "a public statement " + tag });
+  assert.equal(JSON.stringify(t).includes(shared), false, "the shared passenger's uuid never leaves the server");
+  // the shared passenger is told, without sender or recipient, once per day
+  const n = (await notes.listNotifications("sb-" + shared)).filter((x) => x.kind === "profile-shared");
+  assert.equal(n.length, 1); assert.equal(JSON.stringify(n[0].payload).includes(a), false); assert.equal(JSON.stringify(n[0].payload).includes(b), false);
+  await dm.sendProfileCard(a, convo, `third-${tag}`);
+  assert.equal((await notes.listNotifications("sb-" + shared)).filter((x) => x.kind === "profile-shared").length, 1, "aggregated by day");
+  // a card cannot be edited like text
+  await assert.rejects(() => dm.editMessage(a, sent.id, "rewritten", 0), (e) => e.code === "P0006");
+
+  // the passenger switches sharing off: creation refused with the exact words, and EXISTING cards go unavailable
+  await dm.setDmSettings(shared, { profileSharing: false });
+  assert.equal(await dm.readProfileSharing(shared), false);
+  await assert.rejects(() => dm.sendProfileCard(a, convo, `third-${tag}`), (e) => e.code === "DM_SHARE_REFUSED" && e.message === SHARE_REFUSED_COPY);
+  t = await dm.readThread(b, convo);
+  card = t.messages.find((m) => m.kind === "profile-card");
+  assert.deepEqual(card.sharedProfile, { available: false, handle: null, statement: null }, "an old card cannot defeat a later change");
+  await dm.setDmSettings(shared, { profileSharing: true });
+  assert.equal((await dm.readThread(b, convo)).messages.find((m) => m.kind === "profile-card").sharedProfile.available, true);
+
+  // a block between the VIEWER and the passenger hides the card from that viewer only, and a block
+  // between sharer and passenger refuses creation with the same words (no block oracle)
+  await dm.blockAccount(shared, b);
+  assert.equal((await dm.readThread(b, convo)).messages.find((m) => m.kind === "profile-card").sharedProfile.available, false);
+  assert.equal((await dm.readThread(a, convo)).messages.find((m) => m.kind === "profile-card").sharedProfile.available, true);
+  await dm.blockAccount(shared, a);
+  await assert.rejects(() => dm.sendProfileCard(a, convo, `third-${tag}`), (e) => e.code === "DM_SHARE_REFUSED" && e.message === SHARE_REFUSED_COPY);
+  // unpublished: not a passenger
+  await pool.query(`UPDATE profile_rooms SET published=false WHERE account_id=$1`, [shared]);
+  assert.equal((await dm.readThread(a, convo)).messages.find((m) => m.kind === "profile-card").sharedProfile.available, false);
+});
+
+// ---------------------------------------------------------------------------
+// WARDROBE GIFTING (V.2 brief §8, schema v60): the concurrency law a unit
+// suite cannot prove — two accepts of one offer, two offers of one card.
+// ---------------------------------------------------------------------------
+
+test("wardrobe gift: concurrent accepts give one card to one person, and the pending lock refuses a second offer",
+  { skip: !databaseUrl }, async () => {
+  process.env.DATABASE_URL = databaseUrl;
+  const db = await import("../lib/db/index.js");
+  const prod = await import("../lib/db/production.js");
+  const gifts = await import("../lib/db/production/wardrobeTransfers.js");
+  const { addWardrobeItem } = await import("../lib/wardrobe/index.js");
+  const pool = await db.getPool();
+  const { lo: aId, hi: bId } = await dmAccounts(pool);
+  const tag = randomUUID().slice(0, 6);
+  await publishRoom(pool, aId, `giver-${tag}`);
+  await publishRoom(pool, bId, `taker-${tag}`);
+  const A = "sb-" + aId, B = "sb-" + bId;
+  const item = (await addWardrobeItem(A, { source: "manual", title: "gift " + tag, brand: "House" })).item;
+
+  const offer = await gifts.offerGift(A, { itemId: item.id, toHandle: `taker-${tag}`, idempotencyKey: "pgkey-" + tag });
+  assert.equal(offer.state, "pending");
+  assert.equal((await gifts.offerGift(A, { itemId: item.id, toHandle: `taker-${tag}`, idempotencyKey: "pgkey-" + tag })).duplicate, true);
+  await assert.rejects(() => gifts.offerGift(A, { itemId: item.id, toHandle: `taker-${tag}` }), (e) => e.code === "already-offered", "the partial unique index is the lock");
+
+  // TWO ACCEPTS AT ONCE: exactly one wins, the other finds it decided
+  const results = await Promise.all([gifts.acceptGift(B, offer.id), gifts.acceptGift(B, offer.id), gifts.acceptGift(B, offer.id)]);
+  assert.equal(results.filter((r) => r.ok).length, 1, "one winner");
+  assert.equal(results.filter((r) => !r.ok && r.reason === "not-pending").length, 2);
+  const rows = (await pool.query(`SELECT user_id, provenance, transferred_from, transfer_id FROM wardrobe_items WHERE id = $1`, [item.id])).rows;
+  assert.equal(rows.length, 1); assert.equal(rows[0].user_id, B); assert.equal(rows[0].provenance, "transferred"); assert.equal(rows[0].transferred_from, A); assert.equal(String(rows[0].transfer_id), offer.id);
+  assert.equal((await prod.listWardrobeItems(A)).length, 0);
+  assert.equal((await prod.listWardrobeItems(B)).length, 1);
+  const events = (await pool.query(`SELECT event FROM wardrobe_transfer_events WHERE transfer_id = $1 ORDER BY id`, [offer.id])).rows.map((r) => r.event);
+  assert.deepEqual(events, ["offered", "accepted"], "one event per act, never a second accept");
+  // the sender's receipt
+  assert.equal((await gifts.listGifts(A)).given[0].item.title, "gift " + tag);
+
+  // decline / cancel / expiry leave ownership exactly where it is
+  const two = (await addWardrobeItem(A, { source: "manual", title: "two " + tag })).item;
+  const o2 = await gifts.offerGift(A, { itemId: two.id, toHandle: `taker-${tag}` });
+  const race = await Promise.all([gifts.declineGift(B, o2.id), gifts.cancelGift(A, o2.id)]);
+  assert.equal(race.filter((r) => r.ok).length, 1, "a decline and a cancel at once: one lands");
+  assert.equal((await pool.query(`SELECT user_id FROM wardrobe_items WHERE id = $1`, [two.id])).rows[0].user_id, A);
+  const o3 = await gifts.offerGift(A, { itemId: two.id, toHandle: `taker-${tag}` });
+  await pool.query(`UPDATE wardrobe_transfers SET expires_at = now() - interval '1 second' WHERE id = $1`, [o3.id]);
+  assert.deepEqual(await gifts.acceptGift(B, o3.id), { ok: false, reason: "expired" });
+  assert.equal((await pool.query(`SELECT user_id FROM wardrobe_items WHERE id = $1`, [two.id])).rows[0].user_id, A);
+  // a block between them closes the gift
+  const dm = await import("../lib/db/dm.js");
+  await dm.blockAccount(bId, aId);
+  await assert.rejects(() => gifts.offerGift(A, { itemId: two.id, toHandle: `taker-${tag}` }), (e) => e.code === "no-recipient");
+});

@@ -31,6 +31,8 @@ import { authConfigured, getSupabase } from "../../lib/supabase.js";
 import { Avatar, UserSearch } from "../components/UserBits.jsx";
 import GlassPane from "../components/GlassPane.jsx";
 import PassportPreview from "../components/PassportPreview.jsx";
+import ConnectionsRack from "../components/ConnectionsRack.jsx";
+import ConnectionsWheel from "../components/ConnectionsWheel.jsx";
 import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
@@ -377,7 +379,6 @@ export default function ProfilePage() {
   );
 }
 
-const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 function ProfileAccess() {
   const [authUser, setAuthUser] = useState(null);
@@ -395,8 +396,6 @@ function ProfileAccess() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
-  const [connecting, setConnecting] = useState("");
-  const [connectNotice, setConnectNotice] = useState("");
   const [people, setPeople] = useState(() => followedUsers());
 
   useEffect(() => {
@@ -559,16 +558,7 @@ function ProfileAccess() {
     } catch {}
   }
 
-  async function connect(platform) {
-    if (connecting) return;
-    setConnecting(platform);
-    try {
-      const response = await postJSON("/api/connect", { user: getUid(), platform });
-      const data = await response.json().catch(() => null);
-      setConnectNotice(data?.message || `${platform} linking requires partner setup`);
-    } catch { setConnectNotice(`${platform} linking requires partner setup`); }
-    setConnecting("");
-  }
+
 
   function unfollowPerson(handle) {
     setFollowUser(handle, false);
@@ -669,16 +659,15 @@ function ProfileAccess() {
         </div>
         <div>
           <div className="psub">SOURCE CONNECTIONS</div>
-          <div className="platformrow">
-            {PLATFORMS.map((platform) => (
-              <button key={platform} className="platform soon" disabled={!!connecting} onClick={() => connect(platform)}>
-                {connecting === platform ? "checking…" : platform}
-              </button>
-            ))}
-          </div>
-          {connectNotice ? <div className="acctline accountnotice">{connectNotice}</div> : null}
+          {/* V.2 §11: every connector with its explicit per-capability state
+              (lib/connectors). The old row of "coming soon" buttons is gone:
+              a state is a fact, a disabled button was a promise. */}
+          <ConnectionsRack />
         </div>
         <div>
+          <div className="psub">CONNECTIONS</div>
+          {/* V.2 §11: the searchable list with A–Z shortcuts, and the optional wheel */}
+          <ConnectionsWheel />
           <div className="psub">FOLLOWING — PEOPLE</div>
           {people.length ? <div className="tagfilter">
             {people.map((handle) => <button className="chip clickable cur" key={handle}

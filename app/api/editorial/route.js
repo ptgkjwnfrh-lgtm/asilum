@@ -19,6 +19,11 @@ import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity
 import { sanitizeStatement, screenStatement } from "../../../lib/profile/rooms.js";
 import { extractRefs } from "../../../lib/wire/refs.js";
 import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
+import { validateComposition, attachmentsFor } from "../../../lib/wire/compose.js";
+import { fetchPreview } from "../../../lib/wire/preview.js";
+import { wireImageUrl } from "../../../lib/wire/media.js";
+import { getItem } from "../../../lib/db/index.js";
+import { listPlaces } from "../../../lib/places/registry.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { requestSubject } from "../../../lib/security/request.js";
@@ -134,7 +139,44 @@ export async function POST(req) {
   } catch {
     return NextResponse.json({ error: "text could not be sanitized" }, { status: 400 });
   }
-  if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });
+  // THE COMPOSITION (V.2 brief §6): the same validator the composer ran, run
+  // again here — a transmission over 500 graphemes is refused with the
+  // composer's own sentence, never truncated; a post's pieces must resolve to
+  // listings, its event to a map record, its link to a public https page the
+  // preview service could read. The server resolves and SNAPSHOTS them.
+  const composition = body.composition && typeof body.composition === "object" ? { ...body.composition, text, title: body.title ? String(body.title) : "" } : null;
+  let compositionRow = null;
+  if (composition) {
+    const v = validateComposition(composition);
+    if (!v.ok) return NextResponse.json({ error: v.errors[0].message, errors: v.errors }, { status: 400 });
+    const pieceSnapshots = [];
+    for (const ref of (composition.pieces || []).slice(0, 10)) {
+      const id = typeof ref === "string" ? ref : ref && ref.id;
+      const it = await getItem(String(id)).catch(() => null);
+      if (!it) return NextResponse.json({ error: `piece ${id} is not a listing this catalog holds` }, { status: 400 });
+      pieceSnapshots.push({ id: it.id, title: it.title, brand: it.brand, img: it.img || null, price: it.price ?? null, currency: it.currency || "USD", source: it.source_name || it.source || null });
+    }
+    let eventSnapshot = null;
+    if (composition.event) {
+      const row = listPlaces({ dated: true }).find((pl) => pl.id === String(composition.event.id));
+      if (!row) return NextResponse.json({ error: "the event must be one the map knows" }, { status: 400 });
+      eventSnapshot = { id: row.id, name: row.name, kind: row.kind, city: row.city, startsAt: row.startsAt || null, endsAt: row.endsAt || null, tz: row.tz || null, status: row.status, admission: row.admission || null, sourceUrl: row.sourceUrl || null, sample: !!row.sample };
+    }
+    let linkSnapshot = null;
+    if (composition.link) {
+      const url = safeExternalUrl(String(composition.link.url || composition.link));
+      if (!url) return NextResponse.json({ error: "a link must be a public https address" }, { status: 400 });
+      const snap = await fetchPreview(url);
+      linkSnapshot = snap.refused ? { url, title: "", description: "", image: "", host: new URL(url).hostname.replace(/^www\./, ""), refused: snap.refused, fetchedAt: new Date().toISOString() } : snap;
+    }
+    let attachments;
+    try { attachments = attachmentsFor(composition, { pieceSnapshots, eventSnapshot, linkSnapshot }); }
+    catch (e) { return NextResponse.json({ error: String(e.message).slice(0, 300) }, { status: 400 }); }
+    compositionRow = { postKind: v.kind, layout: v.layout, attachments,
+      imageUrl: attachments.media && attachments.media[0] ? wireImageUrl(attachments.media[0].path) : safeImageUrl(body.imageUrl),
+      externalUrl: linkSnapshot ? linkSnapshot.url : safeExternalUrl(body.externalUrl),
+      productRefs: pieceSnapshots.map((p) => p.id) };
+  } else if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });
   const quota = await consumeRateLimit({ scope: "editorial", subject: user, limit: 60, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
@@ -150,8 +192,9 @@ export async function POST(req) {
       title: body.title ? String(body.title).slice(0, 200) : null,
       body: text,
       excerpt: text.slice(0, 200),
-      imageUrl: safeImageUrl(body.imageUrl),
-      externalUrl: safeExternalUrl(body.externalUrl),
+      imageUrl: compositionRow ? compositionRow.imageUrl : safeImageUrl(body.imageUrl),
+      externalUrl: compositionRow ? compositionRow.externalUrl : safeExternalUrl(body.externalUrl),
+      ...(compositionRow ? { postKind: compositionRow.postKind, layout: compositionRow.layout, attachments: compositionRow.attachments } : {}),
       // Hashtags are extracted from the SANITIZED text (owner directive,
       // Aug 14: parse after the sanitizer, never before) and stored on the
       // row. A caller-supplied tags array still rides along — the two are
@@ -161,7 +204,7 @@ export async function POST(req) {
       // collecting data nothing reads.
       tags: mergeTags(body.tags, extractRefs(text).hashtags),
       designerRefs: Array.isArray(body.designerRefs) ? body.designerRefs.slice(0, 12).map((v) => String(v).slice(0, 160)) : [],
-      productRefs: Array.isArray(body.productRefs) ? body.productRefs.slice(0, 24).map((v) => String(v).slice(0, 80)) : [],
+      productRefs: compositionRow ? compositionRow.productRefs : (Array.isArray(body.productRefs) ? body.productRefs.slice(0, 24).map((v) => String(v).slice(0, 80)) : []),
     });
     if (flagged.length) {
       await createModerationTask({
@@ -171,6 +214,7 @@ export async function POST(req) {
     }
     return NextResponse.json({
       id: post.id, persistent: post.persistent,
+      ...(compositionRow ? { postKind: compositionRow.postKind, layout: compositionRow.layout, attachments: compositionRow.attachments } : {}),
       ...(flagged.length
         ? { held: true, note: "your post is saved and paused for a human review" }
         : {}),

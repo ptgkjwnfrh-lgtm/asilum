@@ -22,12 +22,10 @@ import { useEffect, useState } from "react";
 import ModelTag from "./ModelTag.jsx";
 import { PLACE_KINDS, CITIES } from "../../lib/places/registry.js";
 
-const DRAFTS_KEY = "asilum-studio-drafts";
+import { readDrafts, writeDrafts } from "../../lib/studio/drafts.js";
 const KIND_LABEL = { runway: "RUNWAY", "pop-up": "POP-UP", consignment: "CONSIGNMENT", thrift: "THRIFT", shop: "SHOP", exhibition: "EXHIBITION", creator: "CREATOR" };
 const DATED_KINDS = new Set(["runway", "pop-up"]);
 
-function readDrafts() { try { const v = JSON.parse(window.localStorage.getItem(DRAFTS_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch { return []; } }
-function writeDrafts(list) { try { window.localStorage.setItem(DRAFTS_KEY, JSON.stringify(list.slice(0, 50))); } catch {} }
 
 const EMPTY_EVENT = { kind: "pop-up", name: "", organizer: "", address: "", city: "Bowie, Maryland", startsAt: "", endsAt: "", admission: "", price: "", sourceUrl: "", imageRights: false };
 
@@ -64,7 +62,11 @@ export default function Studio({ uid }) {
     addDraft("promotion", { ...promo, label: "SPONSORED", buys: "placement only — never verification, ranking truth, notifications or a partnership label" });
     setPromo({ draftId: "", startsAt: "", endsAt: "", budget: "" }); setNote("promotion request saved as a draft on this device — no advertisement is submitted, nothing is charged");
   }
-  const eventDrafts = drafts.filter((d) => d.kind === "place");
+  // An event/shop draft's `kind` is its VENUE kind — addDraft("place", {...ev})
+  // spreads the form over the record, so "place" never survives. The filter
+  // used to look for "place" and found nothing: the promotion select was empty
+  // for every draft ever saved. (caught 1 Oct, wiring the dock's ad strip)
+  const eventDrafts = drafts.filter((d) => d.kind !== "promotion");
 
   return (
     <div className="studio">

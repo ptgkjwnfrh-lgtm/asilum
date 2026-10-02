@@ -13,19 +13,23 @@ import { readFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 
-test("four destinations, and the account drawers are not destinations", async () => {
+test("four tabs — Front Cover, The Feed, Map, Account — and the account drawers are not tabs", async () => {
+  // V.2 brief (owner, 1 Oct 2026, decision 1): exactly four main tabs; Likes,
+  // Search and Messages are utilities; the Wire is a subview of the Feed.
   const { navFor, ACCOUNT_MENU, currentDestination } = await import("../lib/nav.js");
   const labels = navFor("passport").map((n) => n.label);
-  assert.deepEqual(labels, ["FRONT COVER", "DISCOVER", "THE WIRE", "PASSPORT"]);
+  assert.deepEqual(labels, ["FRONT COVER", "THE FEED", "MAP", "ACCOUNT"]);
   assert.deepEqual(ACCOUNT_MENU.map((m) => m.href), ["/profile", "/orders", "/settings"]);
-  for (const m of ACCOUNT_MENU) assert.ok(!labels.includes(m.label), m.label + " must not be a destination");
+  for (const m of ACCOUNT_MENU) assert.ok(!labels.includes(m.label), m.label + " must not be a tab");
   // the routes that folded in still light their parent
-  assert.equal(currentDestination("passport", "/stats").label, "PASSPORT");
-  assert.equal(currentDestination("passport", "/upload").label, "PASSPORT");
-  assert.equal(currentDestination("passport", "/").label, "THE WIRE", "the stream is home");
-  assert.equal(currentDestination("passport", "/hotlist").label, "THE WIRE");
-  assert.equal(currentDestination("passport", "/discover?tab=places".split("?")[0]).label, "DISCOVER");
-  assert.equal(currentDestination("passport", "/stylist").label, "DISCOVER");
+  assert.equal(currentDestination("passport", "/stats").label, "ACCOUNT");
+  assert.equal(currentDestination("passport", "/upload").label, "ACCOUNT");
+  assert.equal(currentDestination("passport", "/board").label, "ACCOUNT");
+  assert.equal(currentDestination("passport", "/").label, "THE FEED", "the feed is home");
+  assert.equal(currentDestination("passport", "/hotlist").label, "THE FEED");
+  assert.equal(currentDestination("passport", "/discover").label, "THE FEED", "global search answers under the feed");
+  assert.equal(currentDestination("passport", "/stylist").label, "THE FEED");
+  assert.equal(currentDestination("passport", "/map").label, "MAP", "the map is a root of its own");
   assert.equal(currentDestination("passport", "/checkout"), null);
 });
 
@@ -111,7 +115,7 @@ test("the taste network derives evidence it can prove and undoes one step", asyn
 
 test("the one save has one record shape and refuses what it cannot list", async () => {
   const { saveRecord, SAVE_KINDS } = await import("../lib/save.js");
-  assert.deepEqual([...SAVE_KINDS], ["piece", "post", "person", "place", "event", "article"]);
+  assert.deepEqual([...SAVE_KINDS], ["piece", "post", "person", "place", "event", "article", "artist", "designer", "house"]);
   const r = saveRecord({ kind: "place", id: "palais-galliera", title: "Palais Galliera", meta: "EXHIBITION · Paris" });
   assert.equal(r.kind, "place"); assert.equal(r.item, null); assert.match(r.at, /^\d{4}-/);
   assert.throws(() => saveRecord({ kind: "bag", id: "1", title: "x" }), /unknown save kind/);
@@ -139,9 +143,15 @@ test("no gate before the first reward: the sign-up sheet never opens itself", ()
   assert.ok(!/if \(!onboarded && [^\n]*setConnectOpen\(true\)/.test(home), "the connect sheet must not open on first visit");
 });
 
-test("the four destinations are the same four on the thumb bar", () => {
+test("the four tabs are the control center's, read from the nav table", () => {
+  // the dock renders the nav table, not a second list; the shell renders the
+  // account drawers; the old thumb bar and destination row are gone
+  const cc = read("app/components/ControlCenter.jsx");
   const shell = read("app/shell.js");
-  assert.ok(/className="tabbar"/.test(shell));
-  assert.ok(/nav\.map\(\(n\) => \{[\s\S]*?className=\{"tabl"/.test(shell), "the tab bar renders the nav table, not a second list");
+  assert.ok(/className="tabbar"/.test(cc));
+  assert.ok(/nav\.map\(\(n\) => \{[\s\S]*?className=\{"tabl"/.test(cc), "the control center renders the nav table");
+  assert.ok(/<ControlCenter kind=\{accountKind\} pathname=\{pathname\} \/>/.test(shell), "the shell mounts the control center");
+  assert.ok(/<SheetHost \/>/.test(shell), "the shell mounts the one sheet");
+  assert.ok(!/className="topnav"/.test(shell), "no destination row in the header");
   assert.ok(/ACCOUNT_MENU\.map/.test(shell), "the account circle renders ACCOUNT_MENU");
 });

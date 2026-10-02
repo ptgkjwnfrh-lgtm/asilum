@@ -26,6 +26,7 @@ import SaveButton from "../components/SaveButton.jsx";
 import ModelTag from "../components/ModelTag.jsx";
 import { SAMPLE_POSTS } from "../../lib/model/media.js";
 import { discoveryCenter } from "../../lib/location.js";
+import PlacementsBlock from "../components/Placements.jsx";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
@@ -313,6 +314,10 @@ export default function CoverPage() {
           })}
           <a className="cvlink cvmore" href="/">ALL TEN BOOTHS — THE WIRE →</a>
         </section>
+        {/* V.2 (1 Oct): Front Cover carries the business/event placements —
+            the same records the dock's strip runs, visibly apart from the
+            hotlist above (held, never bought). */}
+        <PlacementsBlock />
 
         <section className="cvlooks" aria-label="tonight's looks">
           {/* Only drawn when the ledger was actually read. "READING" was a
@@ -432,7 +437,7 @@ export default function CoverPage() {
 
       <nav className="cvindex" aria-label="subsystem index">
         {SUBSYSTEMS.map((s) => (
-          <a key={s.href} href={s.href}>
+          <a key={s.label} href={s.href}>
             <b>{s.label}</b>
             <span>{s.meta}</span>
           </a>

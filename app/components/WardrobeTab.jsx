@@ -8,6 +8,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { authorizedFetch, postJSON, sendJSON, getUid } from "../../lib/client.js";
 import { dominantPalette } from "../../lib/vision/palette.js";
 import { PHOTO_MAX_BYTES } from "../../lib/wardrobe/photo-contract.js";
+// STAGE C (V.2 brief §8): gifting — a pending digital transfer the recipient
+// must accept. The words both parties see live in one place.
+import { TRANSFER_DISCLAIMER, provenanceLabel } from "../../lib/wardrobe/gifts.js";
+// V.2 §8: the closet — Cover Flow / grid / list with a direct lookup
+import WardrobeFlow from "./WardrobeFlow.jsx";
 
 const CATEGORIES = ["", "outerwear", "tops", "knitwear", "tailoring", "bottoms", "footwear", "accessories", "dresses"];
 
@@ -72,6 +77,47 @@ export function WardrobeTab() {
   const [photoConsent, setPhotoConsent] = useState(false);
   const [busyPhoto, setBusyPhoto] = useState(null);
   const fileInputs = useRef({});
+  // STAGE C: gifts. `gifts` = the four lists from the server; `gifting` =
+  // { id, handle, confirmed } for the one card being offered.
+  const [gifts, setGifts] = useState(null);
+  // the closet view and the piece in hand (V.2 §8)
+  const [view, setView] = useState("flow");
+  const [selectedId, setSelectedId] = useState(null);
+  const [gifting, setGifting] = useState(null);
+  const signedIn = Boolean((getUid() || "").startsWith("sb-"));
+
+  const refreshGifts = useCallback(async () => {
+    if (!(getUid() || "").startsWith("sb-")) { setGifts(null); return; }
+    try {
+      const res = await authorizedFetch(`/api/wardrobe/gifts?user=${encodeURIComponent(getUid() || "")}`);
+      if (!res.ok) { setGifts(null); return; }
+      setGifts(await res.json());
+    } catch { setGifts(null); }
+  }, []);
+  useEffect(() => { refreshGifts(); }, [refreshGifts]);
+
+  async function giftAct(payload) {
+    const res = await postJSON("/api/wardrobe/gifts", { user: getUid(), ...payload }).catch(() => null);
+    const data = res ? await res.json().catch(() => ({})) : {};
+    if (!res || !res.ok) { setNotice(data.message || data.error || "that did not work."); return null; }
+    return data;
+  }
+  async function previewGift() {
+    if (!gifting?.handle.trim()) return;
+    const r = await giftAct({ op: "preview", toHandle: gifting.handle.trim() });
+    if (r?.handle) setGifting({ ...gifting, handle: r.handle, confirmed: true });
+  }
+  async function offerGift() {
+    if (!gifting?.confirmed) return;
+    const key = "g" + Math.abs(Date.now() ^ (gifting.handle.length * 2654435761)).toString(36) + String(gifting.id).slice(0, 8);
+    const r = await giftAct({ op: "offer", id: gifting.id, toHandle: gifting.handle, idempotencyKey: key });
+    if (r?.ok) { setGifting(null); setNotice(`offered to ${r.transfer.toHandle}. ${TRANSFER_DISCLAIMER}`); refreshGifts(); }
+  }
+  async function decideGift(op, transferId) {
+    const r = await giftAct({ op, transferId });
+    if (r?.ok) { setNotice(op === "accept" ? `it is in your wardrobe now. ${TRANSFER_DISCLAIMER}` : op === "decline" ? "declined — nothing changed." : "offer withdrawn."); refresh(); refreshGifts(); }
+    else { refresh(); refreshGifts(); }
+  }
 
   const refresh = useCallback(async (includeRetired = showRetired) => {
     try {
@@ -85,10 +131,10 @@ export function WardrobeTab() {
   }, [showRetired]);
   useEffect(() => {
     refresh();
-    const identityChanged = () => { setPendingDelete(null); setPhotoConsent(false); refresh(); };
+    const identityChanged = () => { setPendingDelete(null); setPhotoConsent(false); setGifting(null); refresh(); refreshGifts(); };
     window.addEventListener("asilum:identity", identityChanged);
     return () => window.removeEventListener("asilum:identity", identityChanged);
-  }, [refresh]);
+  }, [refresh, refreshGifts]);
 
   async function addManual(e) {
     e.preventDefault();
@@ -155,6 +201,8 @@ export function WardrobeTab() {
   }
 
   const visible = (items || []).filter((piece) => showRetired || piece.status === "active");
+  // in the FLOW and GRID views the detail row below is the selected piece's; LIST shows every row
+  const rows = view === "list" ? visible : visible.filter((piece) => String(piece.id) === String(selectedId)).slice(0, 1);
 
   return (
     <div className="wtab">
@@ -200,25 +248,81 @@ export function WardrobeTab() {
         </label>
       )}
       {notice && <div className="amemnote">{notice}</div>}
+      {/* STAGE C (brief §8): offers waiting on me, and offers I made. */}
+      {gifts && gifts.incoming.length ? (
+        <div className="wgifts">
+          <div className="psub">OFFERED TO YOU · {gifts.incoming.length}</div>
+          {gifts.incoming.map((t) => (
+            <div className="wrow wgift" key={t.id}>
+              <div className="winfo">
+                <div className="wttl">{t.item.title}</div>
+                <div className="wmeta">{[t.item.brand, t.item.category, t.item.sizeLabel, `from ${t.fromHandle || "a passenger"}`].filter(Boolean).join(" · ")}{t.note ? ` · “${t.note}”` : ""}</div>
+                <div className="wdisclaimer">{TRANSFER_DISCLAIMER}</div>
+              </div>
+              <button className="wact" onClick={() => decideGift("accept", t.id)}>ACCEPT</button>
+              <button className="wact" onClick={() => decideGift("decline", t.id)}>DECLINE</button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {gifts && gifts.outgoing.length ? (
+        <div className="wgifts">
+          <div className="psub">OFFERED BY YOU · {gifts.outgoing.length}</div>
+          {gifts.outgoing.map((t) => (
+            <div className="wrow wgift" key={t.id}>
+              <div className="winfo">
+                <div className="wttl">{t.item.title}</div>
+                <div className="wmeta">to {t.toHandle} · waiting for them to accept · until {new Date(t.expiresAt).toLocaleDateString()}</div>
+                <div className="wdisclaimer">{TRANSFER_DISCLAIMER}</div>
+              </div>
+              <button className="wact" onClick={() => decideGift("cancel", t.id)}>WITHDRAW</button>
+            </div>
+          ))}
+        </div>
+      ) : null}
       {items === null && <div className="pempty">reading your wardrobe…</div>}
+      {items !== null && visible.length > 0 ? (
+        <WardrobeFlow items={visible} selectedId={selectedId} onSelect={setSelectedId} view={view} onView={setView} />
+      ) : null}
       {items !== null && visible.length === 0 && (
         <div className="pempty">
           nothing here yet — add a piece above, or report a purchase ticket as
           {" "}<b>bought</b> on ORDERS &amp; TICKETS and promote it.
         </div>
       )}
-      {visible.map((piece) => (
+      {rows.map((piece) => (
         <div className="wrow" key={piece.id}>
           {piece.photoUrl ? <img className="wthumb" src={piece.photoUrl} alt={piece.title} /> : null}
           <div className="winfo">
             <div className="wttl">{piece.title}{piece.status === "retired" ? <em> · retired</em> : null}</div>
             <div className="wmeta">
-              {[piece.brand, piece.category, piece.sizeLabel,
-                piece.source === "ticket" ? "from a purchase" : piece.source === "catalog" ? "from the catalog" : "added by you",
-              ].filter(Boolean).join(" · ")}
+              {[piece.brand, piece.category, piece.sizeLabel, provenanceLabel(piece)].filter(Boolean).join(" · ")}
             </div>
+            {gifting && gifting.id === piece.id ? (
+              <div className="wgiftform">
+                {!gifting.confirmed ? (
+                  <>
+                    <input aria-label="gift to — a passenger's handle" placeholder="to — a passenger's handle" value={gifting.handle}
+                      onChange={(e) => setGifting({ ...gifting, handle: e.target.value })}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); previewGift(); } }} />
+                    <button className="wact" disabled={!gifting.handle.trim()} onClick={previewGift}>FIND</button>
+                    <button className="wact" onClick={() => setGifting(null)}>CANCEL</button>
+                  </>
+                ) : (
+                  <>
+                    <span className="wmeta">give <b>{piece.title}</b> to <b>{gifting.handle}</b>? they must accept; until then nothing moves. you keep your purchase record and lose the card.</span>
+                    <span className="wdisclaimer">{TRANSFER_DISCLAIMER}</span>
+                    <button className="wact" onClick={offerGift}>CONFIRM GIFT</button>
+                    <button className="wact" onClick={() => setGifting(null)}>CANCEL</button>
+                  </>
+                )}
+              </div>
+            ) : null}
           </div>
           <a className="amemgo" href={`/stylist?anchor=wardrobe:${piece.id}`}>STYLE IT</a>
+          {signedIn && piece.status === "active" && !(gifting && gifting.id === piece.id) && !(gifts && gifts.outgoing.some((t) => t.itemId === piece.id)) ? (
+            <button className="wact" aria-label={`Gift ${piece.title}`} onClick={() => { setGifting({ id: piece.id, handle: "", confirmed: false }); setNotice(""); }}>GIFT</button>
+          ) : null}
           {uploads.available ? (
             <>
               <input aria-label="upload a photo of this piece"
@@ -256,6 +360,20 @@ export function WardrobeTab() {
           )}
         </div>
       ))}
+      {gifts && gifts.given.length ? (
+        <div className="wgifts">
+          <div className="psub">GIVEN · {gifts.given.length}</div>
+          {gifts.given.map((t) => (
+            <div className="wrow wgift" key={t.id}>
+              <div className="winfo">
+                <div className="wttl">{t.item.title}</div>
+                <div className="wmeta">to {t.toHandle} · {t.decidedAt ? new Date(t.decidedAt).toLocaleDateString() : ""} · your receipt stays with you</div>
+                <div className="wdisclaimer">{TRANSFER_DISCLAIMER}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
       <button className="wact wtoggle" onClick={() => { setShowRetired(!showRetired); refresh(!showRetired); }}>
         {showRetired ? "HIDE RETIRED" : "SHOW RETIRED"}
       </button>

@@ -12,6 +12,7 @@
 // Canvas for the roads (one path per tier per frame), HTML for the pins so
 // they stay real buttons. Reduced motion: no eased zoom.
 
+import { clusterPins } from "../../lib/places/cluster.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const GLYPH = { runway: "R", "pop-up": "P", consignment: "C", thrift: "T", shop: "S", exhibition: "E", creator: "◉" };
@@ -35,8 +36,8 @@ function parsePolys(d) {
 function palette() {
   const light = typeof document !== "undefined" && document.documentElement.dataset.theme === "light";
   return light
-    ? { land: "#eef0ee", minor: "#ffffff", minorCase: "#dcdfdc", second: "#ffffff", secondCase: "#d3d7d3", major: "#fbe9b5", majorCase: "#e6cf8a", ring: "rgba(0,0,0,0.08)" }
-    : { land: "#1c1e21", minor: "#2c3035", minorCase: "#1c1e21", second: "#363b41", secondCase: "#1c1e21", major: "#4a4f57", majorCase: "#2a2e33", ring: "rgba(255,255,255,0.08)" };
+    ? { land: "#eef0ee", minor: "#ffffff", minorCase: "#dcdfdc", second: "#ffffff", secondCase: "#d3d7d3", major: "#fbe9b5", majorCase: "#e6cf8a", ring: "rgba(0,0,0,0.08)", name: "#4a5560" }
+    : { land: "#1c1e21", minor: "#2c3035", minorCase: "#1c1e21", second: "#363b41", secondCase: "#1c1e21", major: "#4a4f57", majorCase: "#2a2e33", ring: "rgba(255,255,255,0.08)", name: "#aab3bc" };
 }
 
 export default function StreetMap({ map, centre, places = [], selectedId = null, onSelect, height = 440 }) {
@@ -44,6 +45,7 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
   const wrapRef = useRef(null);
   const [view, setView] = useState({ scale: 1, tx: 0, ty: 0 }); // map px → screen px
   const [size, setSize] = useState({ w: 800, h: height });
+  const [expanded, setExpanded] = useState(() => new Set());
   const drag = useRef(null);
   const polys = useMemo(() => map ? { major: parsePolys(map.major), secondary: parsePolys(map.secondary), minor: parsePolys(map.minor) } : null, [map]);
 
@@ -77,6 +79,30 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
     draw(polys.minor, 1.2, P.minor); draw(polys.secondary, 2.6, P.second); draw(polys.major, 4.2, P.major);
     // the centre ring
     ctx.beginPath(); ctx.arc(map.w / 2, map.h / 2, 900 / 15.5, 0, Math.PI * 2); ctx.lineWidth = 1 / view.scale; ctx.strokeStyle = P.ring; ctx.stroke();
+    // THE NEIGHBOURHOOD'S NAME (owner sketch, 1 Oct: "DUPONT CIRCLE" set
+    // across the map). The names come with the streets — OpenStreetMap place
+    // nodes in the frame (lib/roads/overpass.js placeNames), nearest the
+    // centre first — so none is invented. The nearest is set large in the
+    // display face; the rest small; all in screen pixels so zoom never
+    // scales the words. Drawn after the roads, under the pins.
+    const names = Array.isArray(map.names) ? map.names : [];
+    if (names.length) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      const big0 = { x: names[0].x * view.scale + view.tx, y: names[0].y * view.scale + view.ty };
+      names.forEach((nm, i) => {
+        const x = nm.x * view.scale + view.tx, y = nm.y * view.scale + view.ty;
+        if (x < -200 || x > size.w + 200 || y < -60 || y > size.h + 60) return;
+        // a small name under the big one's letters is unreadable twice over
+        if (i > 0 && Math.abs(x - big0.x) < 170 && Math.abs(y - big0.y) < 34) return;
+        const big = i === 0;
+        ctx.font = `${big ? 400 : 400} ${big ? 26 : 11}px Michroma, "STM", ui-monospace, monospace`;
+        ctx.lineWidth = big ? 5 : 3; ctx.strokeStyle = P.land; ctx.lineJoin = "round";
+        ctx.fillStyle = P.name;
+        const label = big ? nm.name.toUpperCase() : nm.name;
+        ctx.strokeText(label, x, y); ctx.fillText(label, x, y);
+      });
+    }
   }, [polys, view, size, map]);
 
   // theme changes repaint
@@ -106,7 +132,10 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
   function onWheel(e) { e.preventDefault(); const r = wrapRef.current.getBoundingClientRect(); zoomBy(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - r.left, e.clientY - r.top); }
 
   const pins = places.map((p) => ({ p, at: project(p) })).filter(({ at }) => at && at.x > -30 && at.x < size.w + 30 && at.y > -30 && at.y < size.h + 30);
-  const sel = pins.find(({ p }) => p.id === selectedId);
+  // V.2 §11: overlapping markers cluster (lib/places/cluster.js); tapping a
+  // cluster expands it in place. The camera, zoom and layers are untouched.
+  const marks = clusterPins(pins.map(({ p, at }) => ({ id: p.id, x: at.x, y: at.y, p })), { expanded });
+  const sel = marks.filter((m) => m.kind === "pin").map((m) => ({ p: m.members[0].p, at: { x: m.x, y: m.y } })).find(({ p }) => p.id === selectedId);
 
   return (
     <div className="smap" ref={wrapRef} style={{ height }} role="group" aria-label={centre ? `street map around ${centre.label || "your base city"}` : "street map"}>
@@ -114,13 +143,19 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onWheel} />
       {!map && <div className="smapempty">reading the streets around {centre ? (centre.label || "your city") : "you"}…</div>}
       {centre && map && (() => { const you = project({ lat: centre.lat, lng: centre.lng }); return you ? <span className="smapyou" style={{ left: you.x, top: you.y }} aria-hidden="true" /> : null; })()}
-      {pins.map(({ p, at }) => (
+      {marks.map((m) => m.kind === "cluster" ? (
+        <button key={m.id} type="button" className="smappin smapcluster" style={{ left: m.x, top: m.y }}
+          aria-label={`${m.count} places here — expand`} aria-expanded={false}
+          onClick={() => setExpanded((prev) => new Set([...prev, m.id]))}>
+          <i>{m.count}</i>
+        </button>
+      ) : (() => { const p = m.members[0].p; const at = { x: m.x, y: m.y }; return (
         <button key={p.id} type="button" className={"smappin" + (p.sample ? " sample" : "") + (p.id === selectedId ? " sel" : "") + " " + p.kind}
           style={{ left: at.x, top: at.y }} aria-pressed={p.id === selectedId} aria-label={`${p.name} — ${p.kind}${p.sample ? ", sample fixture" : ""}`}
           onClick={() => onSelect && onSelect(p.id === selectedId ? null : p.id)}>
           <i>{GLYPH[p.kind] || "•"}</i>
         </button>
-      ))}
+      ); })())}
       {sel && (
         <div className="smapcallout" style={{ left: sel.at.x, top: sel.at.y - 30 }} role="status">
           <b>{sel.p.name}</b>

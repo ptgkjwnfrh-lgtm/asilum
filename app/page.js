@@ -23,6 +23,7 @@ import {
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import VerificationBadge from "./components/VerificationBadge.jsx";
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
 import PageMast from "./components/PageMast.jsx";
@@ -31,6 +32,7 @@ import WireComposer from "./components/WireComposer.jsx";
 import WireCard from "./components/WireCard.jsx";
 import HotlistStrip from "./components/HotlistStrip.jsx";
 import { SAMPLE_POSTS, WIRE_CATEGORIES, readWireRefs } from "../lib/model/media.js";
+import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchWire, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 
 const DWELL_FLUSH_MS = 5000;
@@ -117,6 +119,17 @@ export default function Home() {
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
+  // V.2 §12: the listing's verification badge, read when the detail opens —
+  // decided on the server against the listing's CURRENT evidence version.
+  const [modalBadge, setModalBadge] = useState(null);
+  useEffect(() => {
+    if (!modal || !modal.id) { setModalBadge(null); return undefined; }
+    let live = true;
+    fetch("/api/verification/listing?ids=" + encodeURIComponent(modal.id)).then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (live) setModalBadge(d && d.items && d.items[0] ? d.items[0].badge || null : null); })
+      .catch(() => { if (live) setModalBadge(null); });
+    return () => { live = false; };
+  }, [modal && modal.id]);
   // the photograph alone, floating (FloatView): { src, aspect, tilt }
   const [float, setFloat] = useState(null);
   const [modalRel, setModalRel] = useState([]);
@@ -214,6 +227,7 @@ export default function Home() {
   };
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
+
   const gridCols = useColumnCount();
   // Column memories per list, kept across tab round-trips.
   const curatedColsRef = useRef({ count: 0, map: new Map() });
@@ -231,6 +245,58 @@ export default function Home() {
   const [posts, setPosts] = useState(null);
   const [engagement, setEngagement] = useState({});
   const [lane, setLane] = useState("all"); // all | mine | <category id>
+  // THE FEED | THE WIRE (V.2 brief, 1 Oct, decision 1): one destination, two
+  // labelled views with independent state. "/" is the Feed — pieces and Wire
+  // posts in one stream; "/?view=wire" is the Wire — the posts alone, in the
+  // same columns, with its own remembered position (the URL is the state, so
+  // Back restores it and the view-state registry keys on it).
+  const [view, setView] = useState("feed");
+  useEffect(() => {
+    try { setView(new URLSearchParams(window.location.search).get("view") === "wire" ? "wire" : "feed"); } catch {}
+  }, []);
+
+  // FEED PARKING (V.2 brief §2, lib/viewstate.js). The surface's key is the
+  // viewer, the route, the view (feed | wire) and the mode + lane. Leaving —
+  // opening a detail, the page hiding, a navigation — PARKS the anchor card,
+  // its offset, the served order and the cards themselves. Coming back
+  // paints the parked cards first, restores the anchor, then fetches fresh:
+  // the anchor (or its nearest surviving neighbour) is re-found in the fresh
+  // order and the viewport stays on it; whatever the fresh order placed
+  // above it is counted and offered as "N new pieces ↑", never scrolled
+  // into. A parked record that cannot be read is simply absent.
+  const parkedRef = useRef(null);          // the record read on mount, consumed by the first load
+  const parkedOnceRef = useRef(false);
+  const [newAboveCount, setNewAboveCount] = useState(0);
+  const PARK_CARDS = 120;
+  const viewKey = useCallback(() => ({ viewer: uidRef.current || "anon", route: "/", subtab: view, filters: { tab, lane } }), [view, tab, lane]);
+  const park = useCallback(() => {
+    if (typeof window === "undefined" || !itemsRef.current.length) return;
+    const { anchor, offset, y } = currentAnchor(null, ".card[data-id]");
+    const order = itemsRef.current.map((x) => x.id);
+    saveView(viewKey(), { anchor, offset, y, order, extra: { items: itemsRef.current.slice(0, PARK_CARDS) } });
+  }, [viewKey]);
+  useEffect(() => {
+    const onHide = () => park();
+    const onVis = () => { if (document.visibilityState === "hidden") park(); };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVis);
+    return () => { window.removeEventListener("pagehide", onHide); document.removeEventListener("visibilitychange", onVis); };
+  }, [park]);
+  // what the parked record says, applied once the fresh feed has landed
+  const restoreFromPark = useCallback((freshItems) => {
+    const record = parkedRef.current;
+    parkedRef.current = null;
+    if (!record) return;
+    const ids = freshItems.map((x) => x.id);
+    const anchor = restoreAnchor(record, ids);
+    const above = newAbove(record, ids);
+    setNewAboveCount(above.length);
+    // the anchor, or its nearest survivor, kept in place while images and
+    // fonts settle; with nothing of the old order left, the parked pixel
+    // position is the honest fallback
+    settleAnchor({ anchor, offset: record.offset, y: record.y }, null, ".card[data-id]");
+  }, []);
+
   const [pinned, setPinned] = useState(null); // ?post=<id>
   const loadPosts = useCallback(() => {
     fetchWire("user")
@@ -270,6 +336,11 @@ export default function Home() {
     if (list.length < 3) for (const x of lanePosts.slice(pi, pi + 2)) out.push({ id: "post:" + (x.serverId ?? x.id), __post: x });
     mixedCache.current.set(list, { posts, lane, out });
     return out;
+  }
+  // the Wire view: every post of the lane, no pieces between them
+  function feedList(list) {
+    if (view === "wire") return lanePosts.map((x) => ({ id: "post:" + (x.serverId ?? x.id), __post: x }));
+    return mixed(list);
   }
   const weightOf = useCallback((it) => (it.__post ? ((it.__post.image || it.__post.imageUrl) ? 1.95 : 0.85) : cardWeight(it)), [cardWeight]);
   // Which tab is on screen, for handlers that resolve after a switch.
@@ -417,6 +488,19 @@ export default function Home() {
 
   const loadFeed = useCallback(async (user = uidRef.current) => {
     if (!user) return;
+    // the parked record for THIS surface, read once, before the first fetch
+    if (parkedRef.current === null && !parkedOnceRef.current) {
+      parkedOnceRef.current = true;
+      const record = readView({ viewer: user, route: "/", subtab: view, filters: { tab, lane } });
+      if (record && Array.isArray(record.order) && record.order.length) {
+        parkedRef.current = record;
+        const parkedItems = record.extra && Array.isArray(record.extra.items) ? record.extra.items : [];
+        if (parkedItems.length && !itemsRef.current.length) {
+          setItems(parkedItems);
+          settleAnchor(record, null, ".card[data-id]");
+        }
+      }
+    }
     // A reload claims a new feed generation: a slower older response (e.g. a
     // pending personalized feed after a craving/filter change) must never
     // overwrite the feed a newer request owns.
@@ -448,6 +532,7 @@ export default function Home() {
         return;
       }
       setItems(data.items || []);
+      restoreFromPark(data.items || []);
       cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
@@ -868,6 +953,7 @@ export default function Home() {
   // and counts toward the re-chunk, once per piece per page.
   const openedRef = useRef(new Set());
   function openModal(item) {
+    park();
     setModal(item);
     if (item && item.id && !openedRef.current.has(item.id)) {
       openedRef.current.add(item.id);
@@ -911,7 +997,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
-        <PageMast word="THE WIRE" sub="ONE STREAM · PIECES AND CULTURE" />
+        <PageMast word={view === "wire" ? "THE WIRE" : "THE FEED"} sub={view === "wire" ? "CULTURE · THE POSTS ALONE" : "PIECES · THE WIRE · ONE STREAM"} />
         {stamp && (
           <div className="ctmeta">
             LIVE EDIT · {stamp}
@@ -942,6 +1028,10 @@ export default function Home() {
           <span className="cvside cvsider ctsider" aria-hidden="true">
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
+          <nav className="seg feedview" aria-label="feed or wire">
+            <a className={"tab" + (view === "feed" ? " cur" : "")} href="/" aria-current={view === "feed" ? "page" : undefined}>THE FEED</a>
+            <a className={"tab" + (view === "wire" ? " cur" : "")} href="/?view=wire" aria-current={view === "wire" ? "page" : undefined}>THE WIRE</a>
+          </nav>
           <div className="fmodes seg">
             {[["curated", "FOR YOU"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
@@ -1048,7 +1138,12 @@ export default function Home() {
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
-              <Columns count={gridCols} items={mixed(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+              {newAboveCount > 0 && (
+                <button className="newabove" onClick={() => { setNewAboveCount(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                  {newAboveCount} new {newAboveCount === 1 ? "piece" : "pieces"} above ↑
+                </button>
+              )}
+              <Columns count={gridCols} items={feedList(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                   <FragmentCard
                     key={it.id}
                     it={it}
@@ -1075,7 +1170,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <Columns count={gridCols} items={mixed(tabItems)} memo={followingColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+                <Columns count={gridCols} items={feedList(tabItems)} memo={followingColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1099,7 +1194,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <Columns count={gridCols} items={mixed(tabItems)} memo={newColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
+                <Columns count={gridCols} items={feedList(tabItems)} memo={newColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                     <FragmentCard
                       key={it.id}
                       it={it}
@@ -1204,6 +1299,7 @@ export default function Home() {
                 {modal.category ? <span className="cat">{modal.category}</span> : null}
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
+              {modalBadge && modalBadge.state !== "none" ? <div className="vbadgerow"><VerificationBadge badge={modalBadge} /></div> : null}
               <ColorEvidenceLine item={modal} detailed />
               {/* THE SAME PHOTOGRAPH, ELSEWHERE. No button asked for this and
                   none exists — it arrives with the pieces that were already

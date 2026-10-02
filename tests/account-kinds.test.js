@@ -186,20 +186,23 @@ test("the roster splits by kind for the admin terminal", async () => {
 
 // --- the navigation the two kinds are offered -------------------------------
 
-test("a business is offered ANALYTICS and WATCH TOWER, never PASSPORT or DISCOVER", async () => {
+test("a business is offered ANALYTICS with WATCH TOWER inside it, never ACCOUNT's passport", async () => {
+  // V.2 (1 Oct): four tabs for everyone; a business swaps ACCOUNT for
+  // ANALYTICS and reaches WATCH TOWER as its sub-link. MAP stays MAP.
   const { navFor } = await import("../lib/nav.js");
-  const labels = navFor("business").map((n) => n.label);
+  const nav = navFor("business");
+  const labels = nav.map((n) => n.label);
   assert.ok(labels.includes("ANALYTICS"), "the business ledger must be reachable");
-  assert.ok(labels.includes("WATCH TOWER"));
-  assert.ok(!labels.includes("PASSPORT"), "a business has no passport tab");
-  assert.ok(!labels.includes("DISCOVER"), "a business has no discovery tab");
+  assert.ok(nav.some((n) => (n.sub || []).some((s) => s.label === "WATCH TOWER")), "watch tower rides under analytics");
+  assert.ok(!labels.includes("ACCOUNT"), "a business has no passport account tab");
+  assert.ok(labels.includes("MAP"), "a business keeps the map");
 });
 
 test("a passport's navigation is untouched by the split", async () => {
   const { navFor } = await import("../lib/nav.js");
   const labels = navFor("passport").map((n) => n.label);
-  assert.ok(labels.includes("PASSPORT"));
-  assert.ok(labels.includes("DISCOVER"));
+  assert.ok(labels.includes("ACCOUNT"));
+  assert.ok(labels.includes("MAP"));
   assert.ok(!labels.includes("ANALYTICS"));
   assert.ok(!labels.includes("WATCH TOWER"));
   // An unknown kind must render the passport nav, not an empty one.
@@ -215,7 +218,7 @@ test("the swap keeps FOUR slots in the same order — it is a swap, not a subtra
   // The shared slots must sit in identical positions, so the OS is the same
   // building whichever door you came through.
   passport.forEach((entry, i) => {
-    if (["PASSPORT", "DISCOVER"].includes(entry.label)) return;
+    if (["ACCOUNT"].includes(entry.label)) return;
     assert.equal(business[i].label, entry.label, `slot ${i} moved`);
   });
 });
