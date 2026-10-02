@@ -20,6 +20,7 @@
     "steward": "node scripts/steward.mjs",
     "test:live-stripe": "STRIPE_SECRET_KEY=$(grep '^STRIPE_SECRET_KEY=' .env.local | cut -d= -f2-) node --test tests/stripe-live.test.js",
     "docs:codemap": "node scripts/generate-code-map.mjs",
+    "storage:wire": "node scripts/setup-wire-storage.mjs",
     "audit:nav": "node scripts/audit-navigability.mjs",
     "feed:rotation": "node scripts/measure-feed-rotation.mjs",
     "feed:chunks": "node scripts/measure-feed-chunks.mjs",

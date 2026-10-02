@@ -4127,3 +4127,63 @@ body { font-size: 14px; }
 .cvplacements { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
 .cvplacements li { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .cvplacements .cvnearname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---- THE ONE COMPOSER (V.2 brief §6) ---------------------------------- */
+.wckind { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 6px; font-size: 11px; letter-spacing: 0.08em; color: var(--grey); }
+.wckindtag { font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.18em; padding: 3px 9px; border-radius: 9px; border: 1px solid var(--line); color: var(--ink); }
+.wckindtag.post { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.wckindtag.video { color: var(--grey); }
+.wclayout { font-family: var(--mich); font-size: 9px; letter-spacing: 0.16em; color: var(--sig); }
+.wcver { margin-left: auto; font-size: 9.5px; letter-spacing: 0.12em; }
+.wcmedia, .wcpieces { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.wcmedia li { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 10px; }
+.wcmedia img { width: 72px; height: 72px; object-fit: cover; border-radius: 12px; }
+.wcmedia input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; font: inherit; font-size: 13px; padding: 4px 2px; }
+.wcdetached { margin: 8px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.wcdet { display: inline-flex; align-items: center; gap: 6px; }
+.wcdet img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; opacity: 0.7; }
+.wcpieces li { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; font-size: 13px; }
+.wcpieces img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; }
+.wclink, .wcevent { margin: 8px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; display: grid; gap: 3px; font-size: 13px; }
+.wclink b, .wcevent b { font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.04em; }
+.wcadd { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+.wcaddbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--paper);
+  color: var(--sig); cursor: pointer; font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; }
+.wcaddbtn:hover:not(:disabled), .wcaddbtn.on { color: var(--ink); border-color: var(--ink); }
+.wcaddbtn:disabled { opacity: 0.55; cursor: default; }
+.wcpicker { margin: 6px 0 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; }
+.wcpicker input { width: 100%; border: 0; border-bottom: 1px solid var(--line); background: none; font: inherit; font-size: 14px; padding: 6px 2px; }
+.wcpicker ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow: auto; }
+.wcpicker li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; font-size: 13px; padding: 4px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); }
+.wcpicker li img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; }
+.wclayouts { margin: 6px 0 0; }
+.wclayers { display: grid; gap: 6px; margin: 6px 0; }
+.wclayer { display: grid; grid-template-columns: 1fr auto auto auto auto; gap: 6px; align-items: center; }
+.wclayer input, .wclayer select { border: 1px solid var(--line); background: var(--paper); font: inherit; font-size: 12px; padding: 5px 8px; border-radius: 8px; }
+.ccount.over { color: var(--red); }
+/* the card's composition */
+.wpccarousel { display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x mandatory; position: relative; }
+.wpccarousel img { flex: 0 0 86%; aspect-ratio: 4 / 5; object-fit: cover; scroll-snap-align: start; border-radius: 0; }
+.wpccarousel .wpccount { position: absolute; right: 10px; top: 10px; font-family: var(--mich); font-size: 10px; padding: 2px 8px; border-radius: 10px; background: color-mix(in srgb, var(--ink) 70%, transparent); color: var(--paper); }
+.wpcexpose { position: relative; }
+.wpclayer { position: absolute; left: 8%; right: 8%; font-family: var(--mich); font-size: clamp(16px, 2.4vw, 26px); line-height: 1.1; letter-spacing: 0.02em; text-shadow: 0 1px 12px rgba(0,0,0,0.35); }
+.wpclayer.pos-top { top: 8%; } .wpclayer.pos-middle { top: 50%; transform: translateY(-50%); } .wpclayer.pos-bottom { bottom: 8%; }
+.wpclayer.al-left { text-align: left; } .wpclayer.al-center { text-align: center; } .wpclayer.al-right { text-align: right; }
+.wpclayer.col-paper { color: #fff; } .wpclayer.col-ink { color: var(--ink); } .wpclayer.col-red { color: var(--red); } .wpclayer.col-sig { color: var(--sig); }
+.wpclayer.f-mono { font-family: var(--helv); letter-spacing: 0.12em; }
+.wpclayercap { font-size: 11px; letter-spacing: 0.08em; color: var(--grey); padding: 6px 12px 0; }
+.wpcpieces { list-style: none; margin: 0; padding: 10px 12px 0; display: grid; gap: 8px; }
+.wpcpieces.fragment { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.wpcpieces li a { display: grid; gap: 2px; color: var(--ink); text-decoration: none; font-size: 11.5px; }
+.wpcpieces.fragment li a img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--paper); border-radius: 12px; }
+.wpcpieces:not(.fragment) li a { grid-template-columns: 40px 1fr; align-items: center; column-gap: 8px; }
+.wpcpieces:not(.fragment) li a img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; grid-row: 1 / 4; }
+.wpcpieces b { font-family: var(--mich); font-weight: 400; font-size: 10px; letter-spacing: 0.12em; }
+.wpcpieces i { font-style: normal; color: var(--grey); }
+.wpcpieceblank { display: block; aspect-ratio: 1; border: 1px dashed var(--line); border-radius: 12px; }
+.wpcevent, .wpclink { display: grid; gap: 3px; margin: 10px 12px 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; font-size: 13px; }
+.wpcevent b, .wpclink b { font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.04em; }
+.wpclink { grid-template-columns: auto 1fr; align-items: center; column-gap: 12px; }
+.wpclink img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; }
+.wpclinkbody { display: grid; gap: 2px; min-width: 0; }
+.wpclinkbody span:last-child { color: var(--grey); font-size: 12px; }

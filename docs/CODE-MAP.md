@@ -81,13 +81,13 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*30 files, 5,079 lines*
+*30 files, 5,085 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `orders.js` | 492 | The checkout engine (risk campaign §2, phase L2). SERVER-ONLY. |
 | `client.js` | 479 | Browser-side helpers: per-device identity, JSON POST, and deterministic SVG placeholder thumbnails so the moodboard is visual even for items whose |
-| `social.js` | 472 | Client-safe social + marketplace scaffolding: source labels, mock users and editorial stories, the community post store (local state until a posts |
+| `social.js` | 478 | Client-safe social + marketplace scaffolding: source labels, mock users and editorial stories, the community post store (local state until a posts |
 | `globe.js` | 411 | THE PURCHASE GLOBE's renderer (client-safe, no imports). |
 | `products.js` | 399 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
 | `dm.js` | 210 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
@@ -290,14 +290,14 @@ Nothing here may import from `app/`.
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
 
 ### `lib/db/production/`
-*11 files, 4,961 lines*
+*11 files, 4,971 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `corrections.js` | 1049 | WHEN A READER SAYS WE GOT IT WRONG. |
 | `interpretation.js` | 959 | HOW ASTERISK READS, and what it remembers about a person. |
 | `privacy.js` | 632 | WHAT WE HOLD ABOUT YOU, AND HANDING IT BACK. |
-| `editorial.js` | 459 | THE WIRE, and what readers put on it. |
+| `editorial.js` | 469 | THE WIRE, and what readers put on it. |
 | `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
 | `booths.js` | 440 | WHO GETS TO SELL HERE. |
 | `catalog.js` | 393 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
@@ -598,11 +598,15 @@ Nothing here may import from `app/`.
 | `purchase.js` | 6 | Client-safe ownership rule: an owned anchor participates in styling but is never translated back into purchase intent by a bulk bag action. |
 
 ### `lib/wire/`
-*1 file, 110 lines*
+*5 files, 577 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
+| `compose.js` | 155 | THE ONE COMPOSER's law (V.2 brief §6, owner, 1 Oct 2026). Pure and isomorphic: the composer validates with it as the author |
+| `preview.js` | 129 | THE SAFE LINK PREVIEW (V.2 brief §6: "Article previews are fetched through a safe server preview service: allow |
 | `refs.js` | 110 | Hashtags and @mentions on the wire (owner directive, HANDOVER-2026-08-14 backlog 3). Pure text in, structure out — no DOM, |
+| `media.js` | 95 | the Wire's IMAGES (V.2 brief §6 "Add media"), stored server-side in the Supabase Storage bucket "wire". SERVER-ONLY. |
+| `draft.js` | 88 | THE DRAFT (V.2 brief §6): one composition in progress, autosaved on the device with a version, and an ATTACHMENT |
 
 ---
 
@@ -726,11 +730,11 @@ request becomes trusted arguments.
 | `route.js` | 71 | eBay MARKETPLACE ACCOUNT DELETION / CLOSURE notifications — the endpoint every eBay Developers Program keyset must name (or opt out of) before its |
 
 ### `app/api/editorial/`
-*1 file, 255 lines*
+*1 file, 299 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 255 | Editorial as hyperlinked articles + user/ASILUM posts (editorial_posts). Not a heavy magazine backend: title/excerpt/image/link/tags/author, able to |
+| `route.js` | 299 | Editorial as hyperlinked articles + user/ASILUM posts (editorial_posts). Not a heavy magazine backend: title/excerpt/image/link/tags/author, able to |
 
 ### `app/api/editorial/engage/`
 *1 file, 74 lines*
@@ -738,6 +742,20 @@ request becomes trusted arguments.
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `route.js` | 74 | LIKES + SAVES on transmissions (owner directive, HANDOVER-2026-08-14 backlog 2). Person-deduped counters in the popularity style: the |
+
+### `app/api/editorial/media/`
+*1 file, 63 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 63 | the Wire's image upload (V.2 brief §6 "Add media"). POST multipart/form-data: user, photo (client-re-encoded |
+
+### `app/api/editorial/preview/`
+*1 file, 26 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 26 | the safe link preview for the composer (V.2 brief §6). GET ?url= → the plain-text snapshot lib/wire/preview.js produces, or { refused } with the reason. A signe |
 
 ### `app/api/feed/`
 *1 file, 363 lines*
@@ -1066,13 +1084,14 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*48 files, 7,239 lines*
+*48 files, 7,572 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `MailDesk.jsx` | 954 | EVERY CALL HERE GOES THROUGH authorizedFetch, AND THAT IS NOT STYLE. |
 | `AccountSignup.jsx` | 456 | the account hold (mounted in the shell). Real Supabase accounts only (email + password, or a magic link for |
 | `LiquidGlass.jsx` | 395 | LIQUID GLASS, shared: the optics of the header strip (shell.js) and of the item detail (page.js) are one thing — a clear pane whose open edges bend |
+| `WireComposer.jsx` | 365 | THE ONE COMPOSER (V.2 brief §6, owner, 1 Oct 2026). One housing for every post: begin with text, then ADD MEDIA |
 | `roadBuilder.js` | 352 | passport → /upload build animation (upload-station r5, owner decree). At click the overlay shows a still |
 | `DesignConsole.jsx` | 349 | the DESIGN CONSOLE. The owner's hand on the Fashion Intelligence OS: every text size, button |
 | `AsteriskDock.jsx` | 308 | ASTERISK's living form (owner decree, redesign/asterisk-hologram): an interactive 3D hologram entity built |
@@ -1092,18 +1111,17 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `SearchSheet.jsx` | 131 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
 | `PersonOverview.jsx` | 119 | the sourced overview panel (V.2). A knowledge-panel's speed in ASILUM's voice: image with its credit, role, |
 | `TicketFlow.jsx` | 117 | the third-party purchase-assistant flow. Buy/Request → ticket created → availability + price shown → REQUIRED |
+| `WireCard.jsx` | 117 | a transmission as a card in THE STREAM's masonry (V.2 round three): the same column a piece takes, so culture and |
 | `FloatView.jsx` | 108 | THE FLOAT (owner order, 8 Sep, with a Spotify recording): tap the photograph in the item detail and it floats alone in black space — a |
 | `UserBits.jsx` | 105 | Reusable social atoms: monogram avatar, "Who to follow" module, and the user search bar. All follow state is local until real accounts exist. |
 | `PurchaseGlobe.jsx` | 101 | THE PURCHASE GLOBE (owner order, 9 Sep: "replace the asterisk figure with a globe that shows all the places users |
 | `PassportPreview.jsx` | 96 | the bearer's passport, in preview (owner, 9 Sep evening: "in the about me there should be a preview of the |
-| `WireComposer.jsx` | 94 | the composer at the head of THE STREAM (V.2 round three, owner: "merge the wire and the feed together so users |
 | `LikesSheet.jsx` | 92 | LIKES (V.2 brief, owner, 1 Oct 2026, §5). Top subtabs: Pieces \| Wire \| Sold. The one save (lib/save.js) is the |
 | `ParisMap.jsx` | 89 | the real-OSM Paris road hologram, shared (redesign/upload-station). PassportSecurity renders it inside the |
 | `PassportSecurity.jsx` | 86 | UV security artwork for the PASSPORT document (redesign/passport-uv), color-matched to the OS tokens. |
 | `SheetHost.jsx` | 85 | THE ONE SHEET (V.2 brief, owner, 1 Oct 2026, decision 2): secondary surfaces open at about 60% of the available |
 | `FashionMap.jsx` | 75 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
 | `KindGate.jsx` | 69 | the client half of the account-kind split. |
-| `WireCard.jsx` | 55 | a transmission as a card in THE STREAM's masonry (V.2 round three): the same column a piece takes, so culture and |
 | `Placements.jsx` | 53 | the ONE reading of placements the dock's strip and the Front Cover's block share (V.2 brief §1, 1 Oct 2026: |
 | `MessagesSheet.jsx` | 46 | MESSAGES as a utility (V.2 brief, owner, 1 Oct 2026, §1 + §3). The live mail desk (MailDesk.jsx — inbox, |
 | `HotlistStrip.jsx` | 45 | THE HOTLIST beside the stream (V.2 round three). The ten booths for verified independent brands, server |
@@ -1251,7 +1269,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*59 files, 8,096 lines*
+*60 files, 8,112 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1314,7 +1332,8 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `backfill-dense-tags.mjs` | 34 | Backfill dense per-piece tags (lib/tagging/dense.js) into product_tags. Idempotent: rows upsert on (product_id, tag, tag_type) with max-confidence |
 | `db-export-surface.mjs` | 29 | the public surface of lib/db/production.js. |
 | `setup-wardrobe-storage.mjs` | 28 | create the PRIVATE "wardrobe" Storage bucket (idempotent). Run once per environment before enabling |
+| `setup-wire-storage.mjs` | 16 | create (idempotently) the public-read "wire" bucket for Wire images (lib/wire/media.js). Needs |
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ eef45c4 — 436 source files, 72,986 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 1b91843 — 443 source files, 73,951 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
