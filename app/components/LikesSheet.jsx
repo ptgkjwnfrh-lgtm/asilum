@@ -21,7 +21,7 @@ import { useDock, setLikesTab, setQuery } from "../../lib/dockstate.js";
 import { getUid, authorizedFetch } from "../../lib/client.js";
 import ModelTag from "./ModelTag.jsx";
 
-const STATUS_WORD = { available: "", sold: "SOLD", ended: "ENDED", removed: "REMOVED", unavailable: "UNAVAILABLE", price_changed: "PRICE CHANGED", source_unavailable: "SOURCE DOWN", unknown: "" };
+const STATUS_WORD = { available: "AVAILABLE", sold: "SOLD", ended: "ENDED", removed: "REMOVED", unavailable: "UNAVAILABLE", price_changed: "PRICE CHANGED", source_unavailable: "SOURCE DOWN", unknown: "" };
 
 const TABS = [["pieces", "PIECES"], ["wire", "WIRE"], ["sold", "SOLD"]];
 
@@ -105,7 +105,7 @@ export default function LikesSheet() {
                     <a className="liketitle" href={r.href || "#"}>{r.title}</a>
                     {r.meta ? <span className="likemeta">{r.meta}</span> : null}
                     {r.tags && r.tags.length ? <span className="likemeta">{r.tags.slice(0, 3).join(" · ")}</span> : null}
-                    {tab !== "wire" && status[r.id] && (STATUS_WORD[statusOf(r)] || status[r.id].statusEvent) ? (
+                    {tab !== "wire" && status[r.id] && !status[r.id].missing ? (
                       <span className={"likestatus " + statusOf(r)}>
                         {STATUS_WORD[statusOf(r)] || ""}
                         {status[r.id].statusEvent && status[r.id].statusEvent.toStatus === "sold" ? ` · sold ${status[r.id].statusEvent.observedAt.slice(0, 10)} · ${status[r.id].statusEvent.provider}` : ""}

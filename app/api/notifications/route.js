@@ -31,7 +31,10 @@ export async function PATCH(req) {
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const out = {};
   if (Array.isArray(body.read)) out.read = await markNotificationsRead(user, body.read.slice(0, 100));
-  if (body.prefs && typeof body.prefs === "object" && "soldLikes" in body.prefs) out.prefs = await setNotificationPrefs(user, { soldLikes: !!body.prefs.soldLikes });
+  if (body.prefs && typeof body.prefs === "object" && "soldLikes" in body.prefs) {
+    try { out.prefs = await setNotificationPrefs(user, { soldLikes: !!body.prefs.soldLikes }); }
+    catch (e) { return NextResponse.json({ error: String(e.message || e).slice(0, 200) }, { status: 503 }); }
+  }
   if (!("read" in out) && !("prefs" in out)) return NextResponse.json({ error: "nothing to do" }, { status: 400 });
   return NextResponse.json(out);
 }
