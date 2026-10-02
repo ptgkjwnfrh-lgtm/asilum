@@ -31,6 +31,7 @@ import WireComposer from "./components/WireComposer.jsx";
 import WireCard from "./components/WireCard.jsx";
 import HotlistStrip from "./components/HotlistStrip.jsx";
 import { SAMPLE_POSTS, WIRE_CATEGORIES, readWireRefs } from "../lib/model/media.js";
+import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchWire, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 
 const DWELL_FLUSH_MS = 5000;
@@ -214,6 +215,7 @@ export default function Home() {
   };
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
+
   const gridCols = useColumnCount();
   // Column memories per list, kept across tab round-trips.
   const curatedColsRef = useRef({ count: 0, map: new Map() });
@@ -240,6 +242,49 @@ export default function Home() {
   useEffect(() => {
     try { setView(new URLSearchParams(window.location.search).get("view") === "wire" ? "wire" : "feed"); } catch {}
   }, []);
+
+  // FEED PARKING (V.2 brief §2, lib/viewstate.js). The surface's key is the
+  // viewer, the route, the view (feed | wire) and the mode + lane. Leaving —
+  // opening a detail, the page hiding, a navigation — PARKS the anchor card,
+  // its offset, the served order and the cards themselves. Coming back
+  // paints the parked cards first, restores the anchor, then fetches fresh:
+  // the anchor (or its nearest surviving neighbour) is re-found in the fresh
+  // order and the viewport stays on it; whatever the fresh order placed
+  // above it is counted and offered as "N new pieces ↑", never scrolled
+  // into. A parked record that cannot be read is simply absent.
+  const parkedRef = useRef(null);          // the record read on mount, consumed by the first load
+  const parkedOnceRef = useRef(false);
+  const [newAboveCount, setNewAboveCount] = useState(0);
+  const PARK_CARDS = 120;
+  const viewKey = useCallback(() => ({ viewer: uidRef.current || "anon", route: "/", subtab: view, filters: { tab, lane } }), [view, tab, lane]);
+  const park = useCallback(() => {
+    if (typeof window === "undefined" || !itemsRef.current.length) return;
+    const { anchor, offset, y } = currentAnchor(null, ".card[data-id]");
+    const order = itemsRef.current.map((x) => x.id);
+    saveView(viewKey(), { anchor, offset, y, order, extra: { items: itemsRef.current.slice(0, PARK_CARDS) } });
+  }, [viewKey]);
+  useEffect(() => {
+    const onHide = () => park();
+    const onVis = () => { if (document.visibilityState === "hidden") park(); };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVis);
+    return () => { window.removeEventListener("pagehide", onHide); document.removeEventListener("visibilitychange", onVis); };
+  }, [park]);
+  // what the parked record says, applied once the fresh feed has landed
+  const restoreFromPark = useCallback((freshItems) => {
+    const record = parkedRef.current;
+    parkedRef.current = null;
+    if (!record) return;
+    const ids = freshItems.map((x) => x.id);
+    const anchor = restoreAnchor(record, ids);
+    const above = newAbove(record, ids);
+    setNewAboveCount(above.length);
+    // the anchor, or its nearest survivor, kept in place while images and
+    // fonts settle; with nothing of the old order left, the parked pixel
+    // position is the honest fallback
+    settleAnchor({ anchor, offset: record.offset, y: record.y }, null, ".card[data-id]");
+  }, []);
+
   const [pinned, setPinned] = useState(null); // ?post=<id>
   const loadPosts = useCallback(() => {
     fetchWire("user")
@@ -431,6 +476,19 @@ export default function Home() {
 
   const loadFeed = useCallback(async (user = uidRef.current) => {
     if (!user) return;
+    // the parked record for THIS surface, read once, before the first fetch
+    if (parkedRef.current === null && !parkedOnceRef.current) {
+      parkedOnceRef.current = true;
+      const record = readView({ viewer: user, route: "/", subtab: view, filters: { tab, lane } });
+      if (record && Array.isArray(record.order) && record.order.length) {
+        parkedRef.current = record;
+        const parkedItems = record.extra && Array.isArray(record.extra.items) ? record.extra.items : [];
+        if (parkedItems.length && !itemsRef.current.length) {
+          setItems(parkedItems);
+          settleAnchor(record, null, ".card[data-id]");
+        }
+      }
+    }
     // A reload claims a new feed generation: a slower older response (e.g. a
     // pending personalized feed after a craving/filter change) must never
     // overwrite the feed a newer request owns.
@@ -462,6 +520,7 @@ export default function Home() {
         return;
       }
       setItems(data.items || []);
+      restoreFromPark(data.items || []);
       cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
@@ -882,6 +941,7 @@ export default function Home() {
   // and counts toward the re-chunk, once per piece per page.
   const openedRef = useRef(new Set());
   function openModal(item) {
+    park();
     setModal(item);
     if (item && item.id && !openedRef.current.has(item.id)) {
       openedRef.current.add(item.id);
@@ -1065,6 +1125,11 @@ export default function Home() {
               {loading && <div className="empty">thinking…</div>}
               {!loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
+              )}
+              {newAboveCount > 0 && (
+                <button className="newabove" onClick={() => { setNewAboveCount(0); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                  {newAboveCount} new {newAboveCount === 1 ? "piece" : "pieces"} above ↑
+                </button>
               )}
               <Columns count={gridCols} items={feedList(items)} memo={curatedColsRef} weight={weightOf} render={(it) => it.__post ? <WireCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} /> : (
                   <FragmentCard

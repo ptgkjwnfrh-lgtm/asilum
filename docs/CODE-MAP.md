@@ -81,7 +81,7 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*30 files, 5,054 lines*
+*30 files, 5,079 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -92,9 +92,9 @@ Nothing here may import from `app/`.
 | `products.js` | 399 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
 | `dm.js` | 210 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
 | `uilab.js` | 208 | DESIGN CONSOLE registry + persistence (client-safe). |
+| `viewstate.js` | 194 | THE VIEW-STATE REGISTRY (V.2 brief, owner, 1 Oct 2026, §2 "State and feed parking"). |
 | `provenance.js` | 193 | DOES ANYBODY BACK THIS, OR DID A SELLER SAY IT? |
 | `analytics.js` | 177 | The /stats dashboards (owner directive, HANDOVER-2026-08-14 backlog 5). SERVER ONLY — reads the database directly. |
-| `viewstate.js` | 169 | THE VIEW-STATE REGISTRY (V.2 brief, owner, 1 Oct 2026, §2 "State and feed parking"). |
 | `dm-desk.js` | 162 | The mail desk's decisions, as functions. |
 | `vault.js` | 155 | The buyer vault (owner ruling 20 Aug 2026): name, address, and saved-card REFERENCES — Stripe customer/payment-method ids plus brand/last4 display |
 | `save.js` | 151 | ONE SAVE (Live Launch V.2, owner brief 17 Sep 2026). |
@@ -1007,11 +1007,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 3,042 lines*
+*7 files, 3,107 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1549 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1614 ⚠️ | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 1011 | The magazine shell around every page: one fixed top header — wordmark at full size, the always-moving ticker, big search/bag/sign-in — with the |
 | `opengraph-image.js` | 228 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -1066,7 +1066,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*47 files, 7,168 lines*
+*48 files, 7,239 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1082,11 +1082,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `PlacesPanel.jsx` | 243 | AROUND YOU / MY PLACES (V.2). The local and global fashion map with its list, filters and the three |
 | `Studio.jsx` | 208 | STUDIO, inside the Passport (V.2). One account; the business tools appear here, contextually, without a |
 | `BusinessAccount.jsx` | 205 | the passport → business panel (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown |
-| `ControlCenter.jsx` | 192 | THE CONTROL CENTER (V.2 brief, owner, 1 Oct 2026, §1). Centred at the bottom above the safe area, on every |
+| `ControlCenter.jsx` | 186 | THE CONTROL CENTER (V.2 brief, owner, 1 Oct 2026, §1). Centred at the bottom above the safe area, on every |
 | `ProductSignals.jsx` | 180 | the small honest signals on a piece: what colour it VERIFIABLY is, and how it would fit the reader. |
+| `StreetMap.jsx` | 162 | the places map as a STREET MAP in the Apple Maps idiom (V.2 round two, owner: "the map should more similarly copy |
 | `TasteNetwork.jsx` | 151 | FULL READ as a navigable taste network (V.2). Replaces the rotating asterisk on /stats: the ten tags as nodes on a |
 | `ConsentMoment.jsx` | 138 | D4's first-visit consent moment (ruled 20 Aug 2026; spec docs/d4-consent-spec-2026-08-20.md). Shell- |
-| `StreetMap.jsx` | 138 | the places map as a STREET MAP in the Apple Maps idiom (V.2 round two, owner: "the map should more similarly copy |
 | `DiscoverRails.jsx` | 137 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
 | `dismiss.js` | 136 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
 | `SearchSheet.jsx` | 131 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
@@ -1104,6 +1104,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `FashionMap.jsx` | 75 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
 | `KindGate.jsx` | 69 | the client half of the account-kind split. |
 | `WireCard.jsx` | 55 | a transmission as a card in THE STREAM's masonry (V.2 round three): the same column a piece takes, so culture and |
+| `Placements.jsx` | 53 | the ONE reading of placements the dock's strip and the Front Cover's block share (V.2 brief §1, 1 Oct 2026: |
 | `MessagesSheet.jsx` | 46 | MESSAGES as a utility (V.2 brief, owner, 1 Oct 2026, §1 + §3). The live mail desk (MailDesk.jsx — inbox, |
 | `HotlistStrip.jsx` | 45 | THE HOTLIST beside the stream (V.2 round three). The ten booths for verified independent brands, server |
 | `SaveButton.jsx` | 44 | the one SAVE word (V.2). A word, per the button law: SAVE in the signal colour, SAVED in red once it |
@@ -1119,11 +1120,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `ModelTag.jsx` | 10 | the honest tag (V.2). MODEL: simulated in this build. SAMPLE: fixture content, credited. DEVICE: kept on this device only. CONNECTION REQUIRED: a real service |
 
 ### `app/cover/`
-*3 files, 518 lines*
+*3 files, 523 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 450 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
+| `page.js` | 455 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
 | `ledger.js` | 43 | The FRONT COVER's system-ledger folio, as a pure function so it is testable without a browser (same reason /piece/[id]/handoff.js sits beside its page). |
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
@@ -1316,4 +1317,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 3784e9e — 435 source files, 72,820 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ eef45c4 — 436 source files, 72,986 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

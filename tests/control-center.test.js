@@ -125,3 +125,20 @@ test("the feed and the wire are one destination with two labelled views", () => 
   assert.ok(/view === "wire"/.test(feed));
   assert.ok(/function feedList\(/.test(feed));
 });
+
+test("the feed parks and restores through the registry; wire cards carry their id; the cover and the dock read one placements hook", () => {
+  const feed = read("app/page.js");
+  assert.ok(/from "\.\.\/lib\/viewstate\.js"/.test(feed), "the feed imports the registry");
+  assert.ok(/park\(\);\n\s*setModal\(item\);/.test(feed), "opening a detail parks the feed first");
+  assert.ok(/addEventListener\("pagehide", onHide\)/.test(feed), "leaving the page parks it");
+  assert.ok(/restoreFromPark\(data\.items \|\| \[\]\)/.test(feed), "the fresh feed re-finds the anchor");
+  assert.ok(/className="newabove"/.test(feed), "new items above are offered, never scrolled into");
+  const wire = read("app/components/WireCard.jsx");
+  assert.ok(/data-id=\{"post:" \+ \(p\.serverId \?\? p\.id\)\}/.test(wire), "a wire card's data-id is the id the feed lists it under");
+  const cover = read("app/cover/page.js");
+  assert.ok(/<PlacementsBlock \/>/.test(cover), "the cover carries the placements block");
+  const dock = read("app/components/ControlCenter.jsx");
+  assert.ok(/usePlacements\(\)/.test(dock) && !/tickerItems\(/.test(dock), "the dock reads placements through the shared hook, not its own copy");
+  const street = read("app/components/StreetMap.jsx");
+  assert.ok(/map\.names/.test(street) && /strokeText\(label, x, y\)/.test(street), "the neighbourhood names are drawn from the document");
+});

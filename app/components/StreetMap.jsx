@@ -35,8 +35,8 @@ function parsePolys(d) {
 function palette() {
   const light = typeof document !== "undefined" && document.documentElement.dataset.theme === "light";
   return light
-    ? { land: "#eef0ee", minor: "#ffffff", minorCase: "#dcdfdc", second: "#ffffff", secondCase: "#d3d7d3", major: "#fbe9b5", majorCase: "#e6cf8a", ring: "rgba(0,0,0,0.08)" }
-    : { land: "#1c1e21", minor: "#2c3035", minorCase: "#1c1e21", second: "#363b41", secondCase: "#1c1e21", major: "#4a4f57", majorCase: "#2a2e33", ring: "rgba(255,255,255,0.08)" };
+    ? { land: "#eef0ee", minor: "#ffffff", minorCase: "#dcdfdc", second: "#ffffff", secondCase: "#d3d7d3", major: "#fbe9b5", majorCase: "#e6cf8a", ring: "rgba(0,0,0,0.08)", name: "#4a5560" }
+    : { land: "#1c1e21", minor: "#2c3035", minorCase: "#1c1e21", second: "#363b41", secondCase: "#1c1e21", major: "#4a4f57", majorCase: "#2a2e33", ring: "rgba(255,255,255,0.08)", name: "#aab3bc" };
 }
 
 export default function StreetMap({ map, centre, places = [], selectedId = null, onSelect, height = 440 }) {
@@ -77,6 +77,30 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
     draw(polys.minor, 1.2, P.minor); draw(polys.secondary, 2.6, P.second); draw(polys.major, 4.2, P.major);
     // the centre ring
     ctx.beginPath(); ctx.arc(map.w / 2, map.h / 2, 900 / 15.5, 0, Math.PI * 2); ctx.lineWidth = 1 / view.scale; ctx.strokeStyle = P.ring; ctx.stroke();
+    // THE NEIGHBOURHOOD'S NAME (owner sketch, 1 Oct: "DUPONT CIRCLE" set
+    // across the map). The names come with the streets — OpenStreetMap place
+    // nodes in the frame (lib/roads/overpass.js placeNames), nearest the
+    // centre first — so none is invented. The nearest is set large in the
+    // display face; the rest small; all in screen pixels so zoom never
+    // scales the words. Drawn after the roads, under the pins.
+    const names = Array.isArray(map.names) ? map.names : [];
+    if (names.length) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      const big0 = { x: names[0].x * view.scale + view.tx, y: names[0].y * view.scale + view.ty };
+      names.forEach((nm, i) => {
+        const x = nm.x * view.scale + view.tx, y = nm.y * view.scale + view.ty;
+        if (x < -200 || x > size.w + 200 || y < -60 || y > size.h + 60) return;
+        // a small name under the big one's letters is unreadable twice over
+        if (i > 0 && Math.abs(x - big0.x) < 170 && Math.abs(y - big0.y) < 34) return;
+        const big = i === 0;
+        ctx.font = `${big ? 400 : 400} ${big ? 26 : 11}px Michroma, "STM", ui-monospace, monospace`;
+        ctx.lineWidth = big ? 5 : 3; ctx.strokeStyle = P.land; ctx.lineJoin = "round";
+        ctx.fillStyle = P.name;
+        const label = big ? nm.name.toUpperCase() : nm.name;
+        ctx.strokeText(label, x, y); ctx.fillText(label, x, y);
+      });
+    }
   }, [polys, view, size, map]);
 
   // theme changes repaint

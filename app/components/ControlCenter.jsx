@@ -28,10 +28,9 @@ import { useEffect, useRef, useState } from "react";
 import { navFor } from "../../lib/nav.js";
 import { UTILITIES, SEARCH_TOGGLES, scopeFor } from "../../lib/dock.js";
 import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, closeSheet } from "../../lib/dockstate.js";
-import { tickerItems } from "../../lib/placements.js";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
-import { readDrafts } from "../../lib/studio/drafts.js";
+import { usePlacements } from "./Placements.jsx";
 
 const ROTATE_MS = 7000;
 
@@ -42,17 +41,12 @@ const ROTATE_MS = 7000;
  *  blank and never an invented offer. Rotation pauses on hover, focus,
  *  reduced motion, and while the reader types; it is not announced. */
 function AdStrip({ typing }) {
-  const [items, setItems] = useState(null);
+  const items = usePlacements();
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = useRef(false);
   useEffect(() => {
-    let live = true;
     try { reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch {}
-    const today = new Date().toISOString().slice(0, 10);
-    fetch("/api/places?dated=1").then((r) => (r.ok ? r.json() : { places: [] })).catch(() => ({ places: [] }))
-      .then((d) => { if (live) setItems(tickerItems({ placements: [], drafts: readDrafts(), places: d.places || [], today })); });
-    return () => { live = false; };
   }, []);
   useEffect(() => {
     if (!items || items.length < 2 || paused || typing || reduced.current) return undefined;

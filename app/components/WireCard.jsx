@@ -23,7 +23,7 @@ export default function WireCard({ post: p, engagement, onEngage }) {
   const eng = !sample && p.serverId != null && engagement ? engagement[String(p.serverId)] : null;
   const href = sample ? "/" : (p.serverId != null ? "/?post=" + encodeURIComponent(p.serverId) : "/");
   return (
-    <article className={"card wpostcard" + (sample ? " sample" : "")} aria-label={(sample ? "sample editorial: " : "transmission: ") + (p.title || name)}>
+    <article className={"card wpostcard" + (sample ? " sample" : "")} data-id={"post:" + (p.serverId ?? p.id)} aria-label={(sample ? "sample editorial: " : "transmission: ") + (p.title || name)}>
       {image && (
         <figure className="wpcfig">
           <img src={image.src} alt={image.alt || ""} loading="lazy" />

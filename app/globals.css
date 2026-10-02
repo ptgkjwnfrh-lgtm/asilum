@@ -4116,3 +4116,14 @@ body { font-size: 14px; }
   .ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { flex: 1; min-width: 44px; padding: 4px 2px; }
   :root { --cc-row-h: 100px; }
 }
+
+/* the feed's "new above" pill (V.2 brief §2): what a return found above the
+   anchor is offered, never scrolled into */
+.newabove { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 8px 16px; border-radius: 16px;
+  border: 1px solid var(--line); background: var(--paper); color: var(--sig); cursor: pointer; font-family: var(--mich); font-size: 10.5px; letter-spacing: 0.14em; }
+.newabove:hover { color: var(--ink); border-color: var(--ink); }
+/* the cover's placements block — apart from the hotlist */
+.cvsponsored { padding: 12px 0 4px; border-top: 1px solid var(--line); margin-top: 14px; }
+.cvplacements { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.cvplacements li { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.cvplacements .cvnearname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
