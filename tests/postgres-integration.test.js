@@ -4025,9 +4025,11 @@ test("DM stage C: clear history is per viewer, reintroduced by a new message, to
   await dm.sendMessage({ conversationId: convo, senderId: b, body: "also before" });
 
   assert.equal(await dm.clearHistory(b, randomUUID()), null, "a non-member gets the absent answer");
+  // the notice is OFF by default (OWNER-DECISIONS §9); this test turns it on to prove the path
+  process.env.DM_CLEAR_NOTICES = "1";
   const cleared = await dm.clearHistory(a, convo);
   assert.equal(cleared.clearedBeforeId >= Number(m1.id) + 1, true);
-  assert.equal(cleared.noticed, true, "the other participant is told once");
+  assert.equal(cleared.noticed, true, "the other participant is told once, when the switch is on");
 
   // my copy is empty, theirs is whole
   assert.deepEqual((await dm.readThread(a, convo)).messages, []);
@@ -4056,8 +4058,8 @@ test("DM stage C: clear history is per viewer, reintroduced by a new message, to
   assert.equal(again.clearedBeforeId >= Number(m3.id), true);
   assert.equal((await notes.listNotifications("sb-" + b)).filter((n) => n.kind === "dm-cleared" && n.subjectId.startsWith(convo)).length, 2);
 
-  // the switch: off means no notice, and the clear still happens
-  process.env.DM_CLEAR_NOTICES = "0";
+  // the default: off means no notice, and the clear still happens
+  delete process.env.DM_CLEAR_NOTICES;
   try {
     await dm.sendMessage({ conversationId: convo, senderId: b, body: "one more" });
     const quiet = await dm.clearHistory(a, convo);

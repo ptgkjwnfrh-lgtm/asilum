@@ -77,11 +77,12 @@ test("buckets: edits and shares are chatter, search has its own allowance, the c
   assert.notEqual(readBucketFor("search").scope, readBucketFor("inbox").scope, "a search walks every conversation; it does not share the inbox's allowance");
 });
 
-test("the clear notice is on by default and off by one switch", () => {
+test("the clear notice is OFF by default (OWNER-DECISIONS §9) and on by one switch", () => {
   const before = process.env.DM_CLEAR_NOTICES;
   try {
-    delete process.env.DM_CLEAR_NOTICES; assert.equal(clearNoticesEnabled(), true, "the owner's requested behaviour");
-    process.env.DM_CLEAR_NOTICES = "0"; assert.equal(clearNoticesEnabled(), false, "the brief's recommendation, when approved");
+    delete process.env.DM_CLEAR_NOTICES; assert.equal(clearNoticesEnabled(), false, "decided 2 Oct: clearing one's inbox is private");
+    process.env.DM_CLEAR_NOTICES = "1"; assert.equal(clearNoticesEnabled(), true, "the brief's requested behaviour, one variable away");
+    process.env.DM_CLEAR_NOTICES = "0"; assert.equal(clearNoticesEnabled(), false);
   } finally {
     if (before === undefined) delete process.env.DM_CLEAR_NOTICES; else process.env.DM_CLEAR_NOTICES = before;
   }

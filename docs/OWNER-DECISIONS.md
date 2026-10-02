@@ -264,9 +264,9 @@ counsel; 4/9 are register updates until their features go public.
 - **Question:** tell the other participant when a viewer clears their own
   copy of a conversation (the brief's requested behaviour), or suppress it
   (the brief's own recommendation: clearing one's inbox is ordinarily private).
-- **Decided (owner: "fix any recommendations you have"):** SUPPRESSED.
-  `DM_CLEAR_NOTICES=0` on production. The handler stays configurable; the
-  notice is built and one variable away.
+- **Decided (owner: "fix any recommendations you have"):** SUPPRESSED —
+  the code default is OFF (`lib/dm.js clearNoticesEnabled`). The handler stays
+  configurable; `DM_CLEAR_NOTICES=1` turns the notice on.
 
 ## 10. Listing verification reviewers (V.2 §12) — DECIDED 2 Oct 2026
 
