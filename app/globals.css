@@ -3039,7 +3039,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .wflow { display: grid; gap: 8px; }
 .wflowhead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .wflowhead input { font: inherit; font-size: 12px; flex: 1; min-width: 160px; }
-.wstack { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; outline: none; }
+.wstack { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; }
 .wstack:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
 .wstackpos { grid-column: 1 / -1; text-align: center; margin: 0; }
 .wstackcards { list-style: none; margin: 0; padding: 0; position: relative; height: 230px; perspective: 900px; }
