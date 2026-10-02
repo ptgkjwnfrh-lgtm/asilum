@@ -9,6 +9,7 @@
   "scripts": {
     "ebay:feed": "node scripts/stage-ebay-feed.mjs",
     "ebay:publish": "node scripts/publish-ebay-feed.mjs",
+    "ebay:worker": "node scripts/ebay-feed-worker.mjs",
     "dev": "next dev",
     "build": "next build",
     "db:configure-role": "node scripts/configure-database-role.mjs",

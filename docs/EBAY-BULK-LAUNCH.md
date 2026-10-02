@@ -61,15 +61,33 @@ feed the recommender is the EPN Prohibited-AI-Uses question in
 TEMPORARILY_UNAVAILABLE / UNAVAILABLE → `unavailable`; a snapshot's
 ENDED → `ended`, DELETED → `removed`. Nothing here says `sold`.
 
-**Catch-up (planned, not scheduled).** `--plan --since <bootstrap
+**The worker (1 Oct 2026, point 4).** `npm run ebay:worker -- --output
+/durable/ebay --category 11450 [--once | --loop --interval 60] [--dry]
+[--status]` — `lib/ingest/ebayFeedWorker.js`. A pure planner reads a state
+file on the durable host and says what is due: the bootstrap when none is
+applied or it is over 7 days old; then the daily files the window still
+serves (at most 4 per tick), in date order, applied once each; then the
+hourly snapshots from the hour after the latest observation applied, at
+most 6 per tick, never older than the feed's 7-day retention. A tick
+stages and publishes each file and writes the state back after every one;
+a 204 (nothing changed that hour / no new listings that day) is recorded
+as empty; a failure stops the tick, is recorded with its message, and the
+next tick retries the same file — the publisher's checkpoint makes that
+idempotent. A daily date that fell out of the window before it was
+applied is recorded as a GAP; the next bootstrap closes it. The steward's
+`data.ebay-feed` check reads the checkpoints and the lag. Run it on a host
+with disk and time (cron `--once` hourly, or `--loop`), never from a web
+request. Nothing has run: the gates are not granted
+(`docs/EBAY-FEED-ENTITLEMENT.md`).
+
+**Catch-up (the plan the worker uses).** `--plan --since <bootstrap
 Last-Modified>` lists the daily NEWLY_LISTED dates still fetchable (the
 feed serves a daily file only 3–14 days after its date), the ones not yet
 served, and the ones lost to the window — a gap the next bootstrap closes.
 The stager now sends the daily `date` as `yyyyMMdd` on the wire (the first
 cut sent `YYYY-MM-DD`) and can stage an hourly snapshot
 (`feedScope: "SNAPSHOT"`, `snapshotHour: "YYYY-MM-DDTHH"`); the publisher
-reads snapshot rows (`itemSnapshotDate`, `changeMetadata`). A worker loop
-that runs the plan on a schedule does not exist yet.
+reads snapshot rows (`itemSnapshotDate`, `changeMetadata`). The worker above runs the plan.
 
 **Verification:** `tests/ebay-feed-publish.test.js` — memory mode end to
 end over a synthetic gzip TSV fixture; the SQL stale guard mirrors the
