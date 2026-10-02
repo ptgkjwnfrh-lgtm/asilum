@@ -115,7 +115,7 @@ test("the taste network derives evidence it can prove and undoes one step", asyn
 
 test("the one save has one record shape and refuses what it cannot list", async () => {
   const { saveRecord, SAVE_KINDS } = await import("../lib/save.js");
-  assert.deepEqual([...SAVE_KINDS], ["piece", "post", "person", "place", "event", "article"]);
+  assert.deepEqual([...SAVE_KINDS], ["piece", "post", "person", "place", "event", "article", "artist", "designer", "house"]);
   const r = saveRecord({ kind: "place", id: "palais-galliera", title: "Palais Galliera", meta: "EXHIBITION · Paris" });
   assert.equal(r.kind, "place"); assert.equal(r.item, null); assert.match(r.at, /^\d{4}-/);
   assert.throws(() => saveRecord({ kind: "bag", id: "1", title: "x" }), /unknown save kind/);

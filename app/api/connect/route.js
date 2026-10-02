@@ -1,48 +1,45 @@
-// app/api/connect/route.js
-// POST /api/connect  { user, platform }
-// Account linking. Real platform OAuth adapters plug in here (eBay Browse,
-// Pinterest OAuth, Shopify Storefront). Until real credentials + adapters
-// exist, this endpoint honestly reports the connection as unavailable —
-// it must NOT simulate imported purchase history (see CONSTITUTION.md).
+// app/api/connect/route.js — THE CONNECTOR REGISTRY ON THE WIRE (V.2 brief
+// §11). GET → every connector's capabilities and their explicit states for
+// this deployment and (when signed in) this account. POST { user, platform,
+// capability? } → the state of that capability and the sentence beside it —
+// NEVER a token exchange, because no OAuth adapter exists yet, and never a
+// simulated import (CONSTITUTION). The registry is lib/connectors/index.js.
 
 import { NextResponse } from "next/server";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
+import { CONNECTORS, capabilityState, connectSentence, connectorRegistry } from "../../../lib/connectors/index.js";
 
 export const dynamic = "force-dynamic";
 
-const PLATFORMS = new Set(["ebay", "pinterest", "shopify"]);
-
-// Env vars that would power each platform's real adapter, once built.
-const ADAPTER_ENV = {
-  ebay: ["EBAY_CLIENT_ID", "EBAY_CLIENT_SECRET"],
-  pinterest: ["PINTEREST_CLIENT_ID", "PINTEREST_CLIENT_SECRET"],
-  shopify: ["SHOPIFY_STORE_DOMAIN", "SHOPIFY_STOREFRONT_TOKEN"],
-};
+export async function GET(req) {
+  const { searchParams } = new URL(req.url);
+  const user = await resolveRequestUser(req, searchParams.get("user") || "").catch(() => null);
+  return NextResponse.json({ connectors: connectorRegistry({ account: user || null }), oauth: false, note: "no OAuth flow exists yet; states are the approved capabilities and their status here" },
+    { headers: { "cache-control": "private, no-store" } });
+}
 
 export async function POST(req) {
   const quota = await consumeRateLimit({ scope: "connect", subject: requestSubject(req), limit: 30, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   const parsed = await readJsonRequest(req, { maxBytes: 8 * 1024 });
   if (parsed.response) return parsed.response;
-  const body = parsed.body;
+  const body = parsed.body || {};
   const platform = String(body.platform || "").toLowerCase();
-  if (!PLATFORMS.has(platform)) {
-    return NextResponse.json({ error: "unknown platform" }, { status: 400 });
-  }
-
-  const envNeeded = ADAPTER_ENV[platform];
-  const approved = platform !== "ebay" || process.env.EBAY_PARTNERSHIP_APPROVED === "1";
-  const hasCreds = approved && envNeeded && envNeeded.every((k) => process.env[k]);
-  const message = envNeeded
-    ? hasCreds
-      ? `${platform} credentials detected — the OAuth adapter isn't enabled yet. coming soon.`
-      : `${platform} linking is coming soon — it requires source approval and real OAuth setup (${envNeeded.join(", ")}).`
-    : `${platform} linking is coming soon — official API setup is required.`;
-
+  const c = CONNECTORS[platform];
+  if (!c) return NextResponse.json({ error: "unknown platform" }, { status: 400 });
+  const user = await resolveRequestUser(req, String(body.user || "")).catch(() => null);
+  const capability = String(body.capability || Object.keys(c.capabilities)[0]);
+  if (!c.capabilities[capability]) return NextResponse.json({ error: "unknown capability", capabilities: Object.keys(c.capabilities) }, { status: 400 });
+  const state = capabilityState(platform, capability, { account: user || null });
+  const message = connectSentence(platform, capability, state);
+  // 501 for anything that cannot proceed here; 200 only for a capability that
+  // works WITHOUT a connection (the manual stamps) — a connection itself never
+  // succeeds from this route because there is no flow to complete
+  const proceeds = state === "available";
   return NextResponse.json(
-    { error: "not_connected", platform, message },
-    { status: 501 }
-  );
+    { connected: false, platform, capability, state, message, never: c.never, basis: c.basis },
+    { status: proceeds ? 200 : 501 });
 }

@@ -23,6 +23,7 @@ import {
 } from "../lib/social.js";
 import TicketFlow from "./components/TicketFlow.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import VerificationBadge from "./components/VerificationBadge.jsx";
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
 import PageMast from "./components/PageMast.jsx";
@@ -118,6 +119,17 @@ export default function Home() {
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [modal, setModal] = useState(null);
+  // V.2 §12: the listing's verification badge, read when the detail opens —
+  // decided on the server against the listing's CURRENT evidence version.
+  const [modalBadge, setModalBadge] = useState(null);
+  useEffect(() => {
+    if (!modal || !modal.id) { setModalBadge(null); return undefined; }
+    let live = true;
+    fetch("/api/verification/listing?ids=" + encodeURIComponent(modal.id)).then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (live) setModalBadge(d && d.items && d.items[0] ? d.items[0].badge || null : null); })
+      .catch(() => { if (live) setModalBadge(null); });
+    return () => { live = false; };
+  }, [modal && modal.id]);
   // the photograph alone, floating (FloatView): { src, aspect, tilt }
   const [float, setFloat] = useState(null);
   const [modalRel, setModalRel] = useState([]);
@@ -1287,6 +1299,7 @@ export default function Home() {
                 {modal.category ? <span className="cat">{modal.category}</span> : null}
                 {eraLabel(modal.era) ? <span className="era">{eraLabel(modal.era)}</span> : null}
               </div>
+              {modalBadge && modalBadge.state !== "none" ? <div className="vbadgerow"><VerificationBadge badge={modalBadge} /></div> : null}
               <ColorEvidenceLine item={modal} detailed />
               {/* THE SAME PHOTOGRAPH, ELSEWHERE. No button asked for this and
                   none exists — it arrives with the pieces that were already

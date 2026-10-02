@@ -616,6 +616,23 @@ Nothing here may import from `app/`.
 | `purchase.js` | 6 | Client-safe ownership rule: an owned anchor participates in styling but is never translated back into purchase intent by a bulk bag action. |
 | `gifts.js` | — | STAGE C (V.2 §8), client-safe: the transfer disclaimer, the gift state machine, expiry, provenance labels. The transactions are `lib/db/production/wardrobeTransfers.js`; the route is `/api/wardrobe/gifts`. |
 
+### `lib/verification/` (Stage D, V.2 §12)
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `ledger.js` | — | THE BADGE RULES: evidence version (hash of the material fields), source / AI / human checks, stale-missing-expired-failed → no badge, AI confident or a human → verified. Rows: `lib/db/production/verification.js` (schema v61). |
+| `run.js` | — | run the checks on one listing and append the row; the route `/api/verification/listing` and `npm run verify:listings` call it. |
+| `desk.js` | 92 | the comparer the AI check reads (LOCAL RULES, model off). |
+
+### `lib/search/reranker.js`, `lib/places/cluster.js`, `lib/analytics/lostness.js`, `lib/connectors/index.js` (Stage D)
+
+| File | What it is |
+| --- | --- |
+| `lib/search/reranker.js` | THE TASTE RERANKER (V.2 §10 step 6): exact-identity rows pinned, no row added or removed, stamps > inferred > hidden, exposure not preference, diversity + exploration in the top window; each row leaves with `match { reasons, source, uncertainty }`. |
+| `lib/places/cluster.js` | overlapping markers cluster in screen space, deterministic; expand in place; the camera is untouched. |
+| `lib/analytics/lostness.js` | the task-success / lostness vocabulary (Smith's L), `TASK_*` events. |
+| `lib/connectors/index.js` | THE CONNECTOR REGISTRY: per-capability states Available / Requires approval / Unsupported / Disconnected / Syncing / Error, the uses a connection never grants; `/api/connect` serves it. |
+
 ### `lib/dm/`
 *1 file*
 

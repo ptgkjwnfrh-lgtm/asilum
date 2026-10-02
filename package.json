@@ -23,6 +23,8 @@
     "storage:wire": "node scripts/setup-wire-storage.mjs",
     "storage:dm": "node scripts/setup-dm-storage.mjs",
     "dm:archive": "node scripts/dm-archive-sweep.mjs",
+    "verify:listings": "node scripts/verify-listings.mjs",
+    "release:checks": "node scripts/measure-release-checks.mjs",
     "likes:status": "node scripts/listing-status.mjs",
     "audit:nav": "node scripts/audit-navigability.mjs",
     "feed:rotation": "node scripts/measure-feed-rotation.mjs",

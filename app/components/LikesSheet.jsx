@@ -15,6 +15,7 @@
 // subtab's query is its own (lib/dockstate.js keeps one query per sheet
 // life; the subtab change clears it so a Wire query never leaks into Sold).
 
+import VerificationBadge from "./VerificationBadge.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { listSaves, unsave } from "../../lib/save.js";
 import { useDock, setLikesTab, setQuery } from "../../lib/dockstate.js";
@@ -105,6 +106,7 @@ export default function LikesSheet() {
                     <a className="liketitle" href={r.href || "#"}>{r.title}</a>
                     {r.meta ? <span className="likemeta">{r.meta}</span> : null}
                     {r.tags && r.tags.length ? <span className="likemeta">{r.tags.slice(0, 3).join(" · ")}</span> : null}
+                    {tab !== "wire" && status[r.id] && status[r.id].verification ? <VerificationBadge badge={status[r.id].verification} compact /> : null}
                     {tab !== "wire" && status[r.id] && !status[r.id].missing ? (
                       <span className={"likestatus " + statusOf(r)}>
                         {STATUS_WORD[statusOf(r)] || ""}

@@ -33,6 +33,7 @@ import PlacesPanel from "../components/PlacesPanel.jsx";
 import Studio from "../components/Studio.jsx";
 import ModelTag from "../components/ModelTag.jsx";
 import { listSaves, unsave, saveCounts } from "../../lib/save.js";
+import AddStamp from "../components/AddStamp.jsx";
 import { getLocation, basedInLine, confirmBaseCity, setLocation } from "../../lib/location.js";
 
 const TABS = [
@@ -390,6 +391,11 @@ export default function BoardPage() {
             </div>
           </section>
           )}
+          {/* V.2 §11: ADD STAMP — the one housing for places, artists,
+              designers/houses and passengers, with a preview before
+              confirmation and an undo after. Images and Wire posts are
+              stamped where they are seen and listed above. */}
+          {!shared && <AddStamp onStamped={() => setSaves(listSaves())} />}
           {!shared && (
             <>
               <div className="fmodes ppfilters seg">

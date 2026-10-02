@@ -23,6 +23,10 @@ import { bindingOf, snapshotOf, encodeCursor, decodeCursor } from "../../../lib/
 import { POLICY_VERSION } from "../../../lib/brain/policy.js";
 import { sizeWithHints } from "../../../lib/brain/fitHints.js";
 import { getUserRecommendationExclusions } from "../../../lib/db/production.js";
+// V.2 §10 step 6: the taste reranker, only when the reader asked for guidance
+import { getProfile } from "../../../lib/db/index.js";
+import { applyTimeDecay } from "../../../lib/brain/memory.js";
+import { RERANK_VERSION, rerankByTaste } from "../../../lib/search/reranker.js";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +71,24 @@ export async function GET(req) {
     return NextResponse.json({ ...failed.body, q, results: [], total: null }, { status: failed.status });
   }
 
+  // THE TASTE RERANKER (V.2 §10): explicit stamps apart from inferred taste,
+  // inferred already time-decayed, hidden tags against, served ids as
+  // exposure. Exact-identity rows are pinned and no row is added or removed
+  // — the engine's constraints stand. SEARCH_TASTE_RERANK=0 kills it.
+  let reranked = false;
+  if (guidanceEnabled && process.env.SEARCH_TASTE_RERANK !== "0") {
+    try {
+      const raw = await getProfile(userId);
+      const { profile } = applyTimeDecay(raw);
+      const explicit = {}, inferred = {}, negative = {};
+      for (const [t, v] of Object.entries(profile._meta?.manual || {})) if (v && v !== "off") explicit[t] = 1;
+      for (const [t, w] of Object.entries(profile.long || {})) { if (w > 0) inferred[t] = w; else if (w < 0) negative[t] = -w; }
+      const seen = new Set((profile._meta?.seen || []).map(String));
+      out.results = rerankByTaste(out.results, { taste: { explicit, inferred, negative }, seen });
+      reranked = true;
+    } catch (error) { console.error("[search] rerank skipped", requestId, error?.message || error); }
+  }
+
   const resolvedEntities = resolveOverviewForQuery(q, { pool: await getDiscoverablePool().catch(() => null) });
   // the reader's fit hints, when the search is personalised (the same reading the feed serves)
   const fitHints = userId ? (await getUserRecommendationExclusions(userId).catch(() => null))?.fitHints || [] : [];
@@ -102,12 +124,14 @@ export async function GET(req) {
         id: it.id, title: it.title, brand: it.brand, price: it.price,
         currency: it.currency, img: it.img, tags: it.tags, src: sourceFor(it),
         matchReason: it.matchReason, confidenceScore: it.confidenceScore,
+        match: it.match || null,
       });
     }
   }
   const aesthetics = TAGS.filter((t) => t.toLowerCase().includes(q));
 
   return NextResponse.json({
+    taste: { reranked, version: reranked ? RERANK_VERSION : null },
     ...envelope({ count: page.length, requestId }),
     policyVersion: POLICY_VERSION,
     q, brands, items, aesthetics,

@@ -4,7 +4,7 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "60992581-d597-4857-9e2a-38f4846e5daf",
+      "requestId": "6d6e04b2-f3b8-4e34-93f1-68efb1c217b9",
       "outcome": "empty",
       "tickets": []
     }
@@ -14,7 +14,7 @@
     "status": 401,
     "body": {
       "contractVersion": 1,
-      "requestId": "640826a2-2a79-446d-9d10-c64b7dfd402f",
+      "requestId": "7b3da4ff-5769-4f80-8f86-e51d63da9089",
       "outcome": "unauthorized",
       "error": {
         "code": "authentication_required",

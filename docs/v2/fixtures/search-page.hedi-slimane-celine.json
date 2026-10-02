@@ -2,8 +2,12 @@
   "request": "GET /api/search?q=hedi%20slimane%3A%20celine",
   "status": 200,
   "body": {
+    "taste": {
+      "reranked": false,
+      "version": null
+    },
     "contractVersion": 1,
-    "requestId": "8153f6c2-5f11-4ab4-9903-1020e2c2bd05",
+    "requestId": "8ad16926-a854-4ad0-b1bb-f78886027801",
     "outcome": "ok",
     "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
@@ -23,7 +27,8 @@
         },
         "src": "ASILUM Vault",
         "matchReason": "constraint match",
-        "confidenceScore": 0.5
+        "confidenceScore": 0.5,
+        "match": null
       },
       {
         "id": "syn-0260",
@@ -39,7 +44,8 @@
         },
         "src": "ASILUM Vault",
         "matchReason": "constraint match",
-        "confidenceScore": 0.5
+        "confidenceScore": 0.5,
+        "match": null
       },
       {
         "id": "syn-0323",
@@ -55,7 +61,8 @@
         },
         "src": "ASILUM Vault",
         "matchReason": "constraint match",
-        "confidenceScore": 0.5
+        "confidenceScore": 0.5,
+        "match": null
       }
     ],
     "aesthetics": [],

@@ -12,6 +12,7 @@
 // Canvas for the roads (one path per tier per frame), HTML for the pins so
 // they stay real buttons. Reduced motion: no eased zoom.
 
+import { clusterPins } from "../../lib/places/cluster.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const GLYPH = { runway: "R", "pop-up": "P", consignment: "C", thrift: "T", shop: "S", exhibition: "E", creator: "◉" };
@@ -44,6 +45,7 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
   const wrapRef = useRef(null);
   const [view, setView] = useState({ scale: 1, tx: 0, ty: 0 }); // map px → screen px
   const [size, setSize] = useState({ w: 800, h: height });
+  const [expanded, setExpanded] = useState(() => new Set());
   const drag = useRef(null);
   const polys = useMemo(() => map ? { major: parsePolys(map.major), secondary: parsePolys(map.secondary), minor: parsePolys(map.minor) } : null, [map]);
 
@@ -130,7 +132,10 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
   function onWheel(e) { e.preventDefault(); const r = wrapRef.current.getBoundingClientRect(); zoomBy(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - r.left, e.clientY - r.top); }
 
   const pins = places.map((p) => ({ p, at: project(p) })).filter(({ at }) => at && at.x > -30 && at.x < size.w + 30 && at.y > -30 && at.y < size.h + 30);
-  const sel = pins.find(({ p }) => p.id === selectedId);
+  // V.2 §11: overlapping markers cluster (lib/places/cluster.js); tapping a
+  // cluster expands it in place. The camera, zoom and layers are untouched.
+  const marks = clusterPins(pins.map(({ p, at }) => ({ id: p.id, x: at.x, y: at.y, p })), { expanded });
+  const sel = marks.filter((m) => m.kind === "pin").map((m) => ({ p: m.members[0].p, at: { x: m.x, y: m.y } })).find(({ p }) => p.id === selectedId);
 
   return (
     <div className="smap" ref={wrapRef} style={{ height }} role="group" aria-label={centre ? `street map around ${centre.label || "your base city"}` : "street map"}>
@@ -138,13 +143,19 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onWheel} />
       {!map && <div className="smapempty">reading the streets around {centre ? (centre.label || "your city") : "you"}…</div>}
       {centre && map && (() => { const you = project({ lat: centre.lat, lng: centre.lng }); return you ? <span className="smapyou" style={{ left: you.x, top: you.y }} aria-hidden="true" /> : null; })()}
-      {pins.map(({ p, at }) => (
+      {marks.map((m) => m.kind === "cluster" ? (
+        <button key={m.id} type="button" className="smappin smapcluster" style={{ left: m.x, top: m.y }}
+          aria-label={`${m.count} places here — expand`} aria-expanded={false}
+          onClick={() => setExpanded((prev) => new Set([...prev, m.id]))}>
+          <i>{m.count}</i>
+        </button>
+      ) : (() => { const p = m.members[0].p; const at = { x: m.x, y: m.y }; return (
         <button key={p.id} type="button" className={"smappin" + (p.sample ? " sample" : "") + (p.id === selectedId ? " sel" : "") + " " + p.kind}
           style={{ left: at.x, top: at.y }} aria-pressed={p.id === selectedId} aria-label={`${p.name} — ${p.kind}${p.sample ? ", sample fixture" : ""}`}
           onClick={() => onSelect && onSelect(p.id === selectedId ? null : p.id)}>
           <i>{GLYPH[p.kind] || "•"}</i>
         </button>
-      ))}
+      ); })())}
       {sel && (
         <div className="smapcallout" style={{ left: sel.at.x, top: sel.at.y - 30 }} role="status">
           <b>{sel.p.name}</b>

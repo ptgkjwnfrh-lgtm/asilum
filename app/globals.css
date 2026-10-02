@@ -2991,6 +2991,50 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .wgift .wdisclaimer, .wgiftform .wdisclaimer { display: block; font-size: 9px; letter-spacing: .08em; color: var(--grey); margin-top: 3px; }
 .wgiftform { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
 .wgiftform input { font: inherit; font-size: 11px; flex: 1; min-width: 160px; }
+/* the verification asterisk (V.2 brief §12): completed listing checks, never authentication */
+.vbadge { position: relative; display: inline-flex; align-items: center; }
+.vbadgemark { font: inherit; background: none; border: 1px solid var(--line, rgba(127,127,127,.35)); border-radius: 999px; padding: 1px 7px 1px 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; color: var(--ink); line-height: 1.4; }
+.vbadgemark span { font-family: var(--mich, inherit); font-size: 13px; line-height: 1; }
+.vbadgemark small { font-size: 8.5px; letter-spacing: .14em; color: var(--grey); }
+.vbadge.pending .vbadgemark { border-style: dashed; color: var(--grey); }
+.vbadge.ok .vbadgemark span { color: var(--sig, var(--ink)); }
+.vbadgesheet { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; width: min(320px, 80vw); padding: 10px 12px; border: 1px solid var(--line, rgba(127,127,127,.35)); border-radius: 10px; background: var(--paper, #fff); font-size: 11px; line-height: 1.45; color: var(--ink); display: grid; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.vbadgesheet ul { margin: 0; padding-left: 14px; }
+.vbadgesheet em { color: var(--grey); font-style: normal; font-size: 10px; }
+.vbadgerow { margin: 6px 0; }
+.smappin.smapcluster i { font-style: normal; font-size: 10px; font-weight: 600; letter-spacing: 0; }
+/* ADD STAMP (V.2 §11) */
+.addstamp { display: grid; gap: 8px; margin-top: 12px; }
+.stampkinds { display: flex; flex-wrap: wrap; gap: 4px; }
+.addstamp input { font: inherit; font-size: 12px; }
+.stampfound { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.stampfound button { font: inherit; text-align: left; background: none; border: 1px solid var(--line, rgba(127,127,127,.3)); border-radius: 8px; padding: 6px 8px; cursor: pointer; width: 100%; color: inherit; }
+.stampfound button[aria-pressed="true"] { border-color: var(--ink); }
+.stampfound button:disabled { opacity: .55; cursor: default; }
+.stamppreview { display: grid; gap: 4px; padding: 10px 12px; border: 1px dashed var(--line, rgba(127,127,127,.4)); border-radius: 10px; }
+.stamppreview-kind { font-size: 9px; letter-spacing: .14em; color: var(--grey); }
+.stampacts { display: flex; flex-wrap: wrap; gap: 6px; }
+/* CONNECTIONS wheel + list (V.2 §11) */
+.connwheel { display: grid; gap: 8px; margin: 8px 0 14px; }
+.connhead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.connhead input { font: inherit; font-size: 12px; flex: 1; min-width: 160px; }
+.connaz { display: flex; flex-wrap: wrap; gap: 2px; }
+.connaz button { font: inherit; font-size: 10px; letter-spacing: .06em; background: none; border: 0; padding: 2px 4px; cursor: pointer; color: var(--ink); }
+.connaz button:disabled { color: var(--grey); opacity: .5; cursor: default; }
+.connbody { display: grid; gap: 10px; }
+.connbody.withwheel { grid-template-columns: minmax(0, 1fr) 220px; }
+@media (max-width: 719px) { .connbody.withwheel { grid-template-columns: 1fr; } .connring { order: 2; border-top: 1px solid var(--line); padding-top: 8px; } }
+.connlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 320px; overflow: auto; }
+.connlist li { display: flex; align-items: center; gap: 6px; }
+.connlist li.cur .connpick { border-color: var(--ink); }
+.connpick { flex: 1; font: inherit; text-align: left; background: none; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; cursor: pointer; color: inherit; display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.connpick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.connring { display: grid; justify-items: center; gap: 4px; }
+.connslots { list-style: none; margin: 0; padding: 0; height: 168px; display: grid; align-content: center; perspective: 600px; }
+.connslot { font-size: 11px; color: var(--grey); transform: translateY(calc(var(--k) * 2px)) rotateX(calc(var(--k) * -18deg)); opacity: calc(1 - abs(var(--k)) * .22); transition: transform .18s, opacity .18s; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+.connslots.still .connslot { transition: none; transform: none; }
+.connslot.sel { color: var(--ink); font-weight: 600; font-size: 13px; }
+.connsel { font-size: 11px; margin: 0; }
 /* block, beside mute in an accepted thread — law 1's control */
 .mailblock { font-family: var(--mich); font-size: 8.5px; letter-spacing: .14em;
   border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;

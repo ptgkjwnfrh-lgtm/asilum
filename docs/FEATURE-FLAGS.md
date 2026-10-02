@@ -44,6 +44,7 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
 | `DM_MEDIA_ENABLED` | V.2 Stage C: the DM media pipeline (`lib/dm/media.js`, `/api/dm/media`); needs `MESSAGING_ENABLED=1` + storage; gated by OWNER-DECISIONS #3 | absent — `/api/dm/media` and `op=attach` 404; the per-conversation consent toggle still records |
+| `SEARCH_TASTE_RERANK` (default ON; `0` kills) | V.2 Stage D: the taste reranker over a guided search (`brain=1`), exact-identity rows pinned, no row added or removed (`lib/search/reranker.js`) | the engine's own order is served |
 | `DM_CLEAR_NOTICES` (default ON; `0` suppresses) | V.2 Stage C: tell the other participant once, neutrally, when a viewer clears their own copy — the owner's requested behaviour; the brief recommends suppressing | `0` → the clear still happens, no notice is written |
 | `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces (case machinery shipped v18, admin-only and flag-independent; the flag gates future PUBLIC badges) |
 | `EDITORIAL_PUBLISHING_ENABLED` | Restructure Phase 1 (ADR-004): public publishing pipeline | drafts still work; publish action absent |
