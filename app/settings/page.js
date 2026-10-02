@@ -64,6 +64,12 @@ export default function SettingsPage() {
   const [observe, setObserve] = useState(true);
   const [guide, setGuide] = useState(true);
   const [notice, setNotice] = useState("");
+  const [soldNotices, setSoldNotices] = useState(true);
+  useEffect(() => {
+    const uid = getUid();
+    if (!uid) return;
+    authorizedFetch("/api/notifications?user=" + encodeURIComponent(uid)).then((r) => (r.ok ? r.json() : null)).then((d) => { if (d && d.prefs) setSoldNotices(!!d.prefs.soldLikes); }).catch(() => {});
+  }, []);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
   const [iface, setIface] = useState("01");
@@ -159,6 +165,22 @@ export default function SettingsPage() {
             </button>
           </div>
           <div className="rkdesc">hand-edit every text size, button, layout measure, and motion speed — ctrl+shift+D anywhere.</div>
+        </div>
+      </section>
+
+      <section className="rkmod" aria-label="notices">
+        <div className="rkhead"><b>01b</b> NOTICES <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+        <div className="rkrow">
+          <div className="rkname"><span className={"rkled" + (soldNotices ? " on" : "")} aria-hidden="true" />A kept piece sold</div>
+          <div className="rkctl">
+            <button className={"fitbtn" + (soldNotices ? " active" : "")} onClick={() => {
+              const next = !soldNotices; setSoldNotices(next);
+              authorizedFetch("/api/notifications", { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ user: getUid(), prefs: { soldLikes: next } }) })
+                .then((r) => { if (!r.ok) { setSoldNotices(!next); setNotice("the switch did not save — try again"); } else setNotice(next ? "you are told once, in-app, when a piece you kept sells" : "no notices when a kept piece sells"); })
+                .catch(() => { setSoldNotices(!next); setNotice("the switch did not save — try again"); });
+            }}>{soldNotices ? "ON" : "OFF"}</button>
+          </div>
+          <div className="rkdesc">one in-app notice when a listing you kept has a confirmed sale — never a push, never an email (no such channel exists), never from a listing that merely disappeared.</div>
         </div>
       </section>
 
