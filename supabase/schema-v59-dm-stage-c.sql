@@ -90,7 +90,11 @@ CREATE INDEX IF NOT EXISTS dm_attachments_message ON dm_attachments (message_id)
 CREATE OR REPLACE FUNCTION dm_guard_edit() RETURNS TRIGGER AS $$
 DECLARE actor TEXT;
 BEGIN
-  IF NEW.body IS DISTINCT FROM OLD.body AND NEW.unsent_at IS NULL AND OLD.unsent_at IS NULL THEN
+  -- AN EDIT IS A BODY REPLACED BY ANOTHER BODY. A redaction (body → NULL with
+  -- redacted_at set) and an unsend (body → NULL with unsent_at set) are other
+  -- acts with their own guards; CI's v48 test writes a redaction with no actor.
+  IF NEW.body IS NOT NULL AND OLD.body IS NOT NULL AND NEW.body IS DISTINCT FROM OLD.body
+     AND NEW.unsent_at IS NULL AND OLD.unsent_at IS NULL AND NEW.redacted_at IS NULL THEN
     actor := current_setting('asilum.dm_actor', true);
     IF actor IS NULL OR actor = '' OR actor::uuid <> OLD.sender_account_id THEN
       RAISE EXCEPTION 'dm: an edit is the sender''s act' USING ERRCODE='42501';
