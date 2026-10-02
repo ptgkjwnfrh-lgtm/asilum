@@ -59,7 +59,11 @@ test("complete gzip is atomically staged with manifest, never published", async 
   assert.equal(result.status, "staged_not_published");
   assert.equal(result.aiProcessing, false);
   assert.deepEqual(await readFile(join(result.directory, "items.tsv.gz")), archive);
-  assert.equal(JSON.parse(await readFile(join(result.directory, "manifest.json"))).compressedBytes, archive.length);
+  const manifest = JSON.parse(await readFile(join(result.directory, "manifest.json")));
+  assert.equal(manifest.compressedBytes, archive.length);
+  // the generation time is its own validated field, never the ETag (brief §15.4)
+  assert.equal(manifest.lastModified, "2026-10-01T00:00:00.000Z");
+  assert.equal(manifest.revision, "Thu, 01 Oct 2026 00:00:00 GMT");
   assert.equal((await readdir(root)).length, 1);
 });
 
@@ -76,6 +80,25 @@ test("small range responses are assembled without gaps", async t => {
   }});
   assert.ok(calls > 1);
   assert.deepEqual(await readFile(join(result.directory, "items.tsv.gz")), archive);
+  assert.equal(result.revision, '"v1"');
+  assert.equal(result.lastModified, null, "no Last-Modified offered → null, never the ETag");
+});
+
+test("a Last-Modified that is not a date, or that changes mid-download, is refused", async t => {
+  for (const bad of ["not-a-date", "changing"]) {
+    const root = await fixture(t);
+    let calls = 0;
+    await assert.rejects(stageEbayFeed(options(root), { tokenProvider, fetchImpl: async (url, init) => {
+      calls++;
+      const start = Number(/^bytes=(\d+)-/.exec(init.headers.Range)[1]);
+      const end = Math.min(start + 9, archive.length - 1);
+      return new Response(archive.subarray(start, end + 1), { status: 206, headers: {
+        "content-range": `bytes ${start}-${end}/${archive.length}`, etag: '"v1"',
+        "last-modified": bad === "not-a-date" ? "yesterday" : `Thu, 0${calls} Oct 2026 00:00:00 GMT`,
+      }});
+    }}), /Last-Modified/);
+    assert.deepEqual(await readdir(root), []);
+  }
 });
 
 for (const failure of ["truncated", "invalid-gzip", "changed-revision", "wrong-range", "too-large", "expanded-limit", "forbidden"]) {
