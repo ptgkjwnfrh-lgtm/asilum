@@ -11,7 +11,7 @@ import { dmStoreSource, dmFunctionSource } from "./helpers/dm-source.mjs";
 import assert from "node:assert/strict";
 
 import {
-  BODY_MAX, FOLDERS, decodeCursor, describeRefusal, dmMediaEnabled, encodeCursor,
+  BODY_MAX, DM_TEXT_MAX_GRAPHEMES, FOLDERS, bodyRefusal, decodeCursor, describeRefusal, dmMediaEnabled, encodeCursor,
   foldersForNewConversation, messagingEnabled, normalizeBody, rateBucketFor, readBucketFor,
 } from "../lib/dm.js";
 
@@ -173,7 +173,14 @@ test("a body is stripped, bounded, and an empty one stays empty", () => {
   assert.equal(normalizeBody("\r\nx\r\n"), "x");
   assert.equal(normalizeBody("   "), "");
   assert.equal(normalizeBody(null), "");
-  assert.equal(normalizeBody("x".repeat(BODY_MAX + 500)).length, BODY_MAX);
+  // 1 Oct (V.2 brief §3): an over-long body is REFUSED with its count, never cut.
+  const long = "x".repeat(BODY_MAX + 500);
+  assert.equal(normalizeBody(long).length, BODY_MAX + 500, "normalizeBody no longer truncates");
+  assert.equal(bodyRefusal(long).code, "too-long");
+  assert.equal(bodyRefusal(long).graphemes, BODY_MAX + 500);
+  assert.equal(bodyRefusal("x".repeat(DM_TEXT_MAX_GRAPHEMES)), null, "exactly at the limit sends");
+  assert.equal(bodyRefusal("👩‍👩‍👧".repeat(100)), null, "100 family clusters: 100 graphemes, 1,800 bytes — sends");
+  assert.equal(bodyRefusal("👩‍👩‍👧".repeat(DM_TEXT_MAX_GRAPHEMES)).code, "too-many-bytes", "1,000 clusters count once each but weigh 18,000 bytes — the byte ceiling refuses");
 });
 
 test("the inbox cursor carries a tiebreaker AND a snapshot", () => {
