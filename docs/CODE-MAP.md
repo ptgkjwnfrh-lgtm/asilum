@@ -286,8 +286,10 @@ Nothing here may import from `app/`.
 | `activity.js` | 218 | READ RECEIPTS AND TYPING. |
 | `settings.js` | 182 | A PERSON'S OWN CONTROLS. |
 | `reactions.js` | 159 | MARKS ON A MESSAGE, AND TAKING ONE BACK. |
-| `core.js` | 70 | WHAT EVERY MAIL-DESK MODULE STANDS ON. |
+| `core.js` | 70 | WHAT EVERY MAIL-DESK MODULE STANDS ON. (+ `stageCApplied`, the v59 probe) |
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
+| `edits.js` | — | STAGE C (v59): edit inside the hour, clear my copy, search my history, share a passenger as a card. |
+| `attachments.js` | — | STAGE C (v59): an image in a thread — consent in the transaction, per-conversation dedupe, signed URLs per read, the six-month archive. Reached only when `DM_MEDIA_ENABLED=1`. |
 
 ### `lib/db/production/`
 *12 files, 5,132 lines*
@@ -612,6 +614,14 @@ Nothing here may import from `app/`.
 | `index.js` | 172 | the ownership model (handoff Feature C, Phase 3a). A wardrobe row exists ONLY because the user said so: manual add, a catalog |
 | `photo-contract.js` | 8 | Client/server shared garment-photo limits. Keep this module dependency-free so browser code never pulls the server-only Storage or Postgres layers into |
 | `purchase.js` | 6 | Client-safe ownership rule: an owned anchor participates in styling but is never translated back into purchase intent by a bulk bag action. |
+| `gifts.js` | — | STAGE C (V.2 §8), client-safe: the transfer disclaimer, the gift state machine, expiry, provenance labels. The transactions are `lib/db/production/wardrobeTransfers.js`; the route is `/api/wardrobe/gifts`. |
+
+### `lib/dm/`
+*1 file*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `media.js` | — | THE DM MEDIA PIPELINE (V.2 §3), built and gated OFF: sharp inspect → orient → strip → WebP display + thumbnail, sha256 of the original, the PRIVATE `dm` bucket, signed reads. |
 
 ### `lib/wire/`
 *5 files, 577 lines*

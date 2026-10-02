@@ -43,6 +43,8 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
+| `DM_MEDIA_ENABLED` | V.2 Stage C: the DM media pipeline (`lib/dm/media.js`, `/api/dm/media`); needs `MESSAGING_ENABLED=1` + storage; gated by OWNER-DECISIONS #3 | absent — `/api/dm/media` and `op=attach` 404; the per-conversation consent toggle still records |
+| `DM_CLEAR_NOTICES` (default ON; `0` suppresses) | V.2 Stage C: tell the other participant once, neutrally, when a viewer clears their own copy — the owner's requested behaviour; the brief recommends suppressing | `0` → the clear still happens, no notice is written |
 | `BRAND_VERIFICATION_ENABLED` | G | no badge surfaces (case machinery shipped v18, admin-only and flag-independent; the flag gates future PUBLIC badges) |
 | `EDITORIAL_PUBLISHING_ENABLED` | Restructure Phase 1 (ADR-004): public publishing pipeline | drafts still work; publish action absent |
 | `MIXED_FEEDS_ENABLED` | Restructure Phase 2 (ADR-005): TODAY/Editorial candidate feeds | existing home feed unchanged |

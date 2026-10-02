@@ -2958,6 +2958,39 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailsignals { display: block; font-size: 10px; color: var(--grey); line-height: 1.5;
   border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; cursor: pointer; }
 .mailsignals input { margin-right: 6px; }
+/* STAGE C of the mail desk (V.2 brief §3–§4): the counter, EDIT, CLEAR, the
+   message search and its hits, the profile card, the archived image. Quiet
+   words, same glass; nothing here adds light. */
+.mailchars { font-size: 10px; letter-spacing: .08em; color: var(--grey); align-self: center; white-space: nowrap; }
+.mailchars.over { color: var(--red, #c42); }
+.mailedited { font-size: 10px; color: var(--grey); font-style: normal; letter-spacing: .06em; }
+.mailedit { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.mailedit textarea { font: inherit; width: 100%; min-height: 56px; }
+.mailclear { font: inherit; font-size: 10px; letter-spacing: .12em; background: none; border: 0; color: var(--grey); cursor: pointer; padding: 2px 4px; }
+.mailclear.cur, .mailclear:hover { color: var(--ink); }
+.mailsearch { margin-top: 4px; }
+.mailhits .mailtime { display: block; font-size: 10px; color: var(--grey); letter-spacing: .06em; }
+.mailthread li.hit .mailmsg { outline: 1px solid var(--grey); outline-offset: 2px; }
+.mailcard { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; align-items: baseline; padding: 8px 10px; border: 1px solid var(--line, rgba(127,127,127,.3)); border-radius: 10px; max-width: 320px; }
+.mailcard.off { color: var(--grey); }
+.mailcardmark { font-family: var(--display, inherit); font-size: 18px; line-height: 1; grid-row: span 2; }
+.mailcardwho { font-weight: 600; letter-spacing: .04em; text-decoration: none; color: inherit; }
+.mailcardbio { font-size: 11px; color: var(--grey); line-height: 1.4; }
+.mailcardkind { grid-column: 2; font-size: 9px; letter-spacing: .14em; color: var(--grey); }
+.mailshare { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+.mailshare input { flex: 1; font: inherit; font-size: 11px; }
+.mailimage { display: flex; flex-direction: column; gap: 4px; max-width: 320px; }
+.mailimage img { max-width: 100%; height: auto; border-radius: 8px; display: block; }
+.mailimage img.thumb { filter: saturate(.6); opacity: .85; }
+.mailarchived, .mailsave { font: inherit; font-size: 10px; letter-spacing: .12em; background: none; border: 0; color: var(--grey); cursor: pointer; text-align: left; padding: 0; text-decoration: none; }
+.mailarchived:hover, .mailsave:hover { color: var(--ink); }
+.mailcaption { font-size: 11px; }
+.mailnote { white-space: pre-line; }
+/* wardrobe gifting (V.2 brief §8) */
+.wgifts { margin: 10px 0; }
+.wgift .wdisclaimer, .wgiftform .wdisclaimer { display: block; font-size: 9px; letter-spacing: .08em; color: var(--grey); margin-top: 3px; }
+.wgiftform { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.wgiftform input { font: inherit; font-size: 11px; flex: 1; min-width: 160px; }
 /* block, beside mute in an accepted thread — law 1's control */
 .mailblock { font-family: var(--mich); font-size: 8.5px; letter-spacing: .14em;
   border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;

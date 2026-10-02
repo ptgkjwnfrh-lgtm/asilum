@@ -296,3 +296,29 @@ test("the panel is a thread that receives, and a desk that leads with the mail",
   assert.match(panel, /role="dialog"/);
   assert.match(panel, /aria-live="polite"/, "and a failure is announced, not just drawn");
 });
+
+// ---------------------------------------------------------------------------
+// STAGE C (V.2 brief §3): which controls a row shows, and what the counter says.
+// ---------------------------------------------------------------------------
+import { composerCount, messageControls } from "../lib/dm-desk.js";
+
+test("EDIT and UNSEND show only on my own live text inside the hour; a card can be unsent but not edited", () => {
+  const sent = Date.parse("2026-10-02T10:00:00.000Z");
+  const row = (over = {}) => ({ id: 1, mine: true, unsent: false, redacted: false, kind: "text", at: "2026-10-02T10:00:00.000Z", body: "x", ...over });
+  assert.deepEqual(messageControls(row(), sent + 3_599_999), { edit: true, unsend: true }, "59:59");
+  assert.deepEqual(messageControls(row(), sent + 3_600_000), { edit: false, unsend: false }, "60:00");
+  assert.deepEqual(messageControls(row({ mine: false }), sent), { edit: false, unsend: false });
+  assert.deepEqual(messageControls(row({ unsent: true }), sent), { edit: false, unsend: false });
+  assert.deepEqual(messageControls(row({ redacted: true }), sent), { edit: false, unsend: false });
+  assert.deepEqual(messageControls(row({ kind: "profile-card" }), sent), { edit: false, unsend: true });
+  assert.deepEqual(messageControls(row({ kind: undefined }), sent), { edit: true, unsend: true }, "a v48 row with no kind is text");
+  assert.deepEqual(messageControls(null), { edit: false, unsend: false });
+});
+
+test("the counter appears 100 under the limit, counts clusters, and says over", () => {
+  assert.deepEqual(composerCount("hello"), { count: 5, limit: 1000, show: false, over: false });
+  assert.equal(composerCount("x".repeat(899)).show, false);
+  assert.equal(composerCount("x".repeat(900)).show, true);
+  assert.deepEqual(composerCount("x".repeat(1001)), { count: 1001, limit: 1000, show: true, over: true });
+  assert.equal(composerCount("👩‍👩‍👧".repeat(950)).count, 950, "a family is one cluster to a person");
+});

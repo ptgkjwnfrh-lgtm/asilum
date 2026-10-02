@@ -47,9 +47,12 @@ import { authorizedFetch, getUid } from "../../lib/client.js";
 // lib/dm-desk.js — all three answer the same complaint from the 23 Aug
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
-  composerKey, mergeFolderItems, NO_SIGNAL, pageIsCurrent, reactionsAcross,
+  composerCount, composerKey, mergeFolderItems, messageControls, NO_SIGNAL, pageIsCurrent, reactionsAcross,
   shouldPollActivity, startSummaryPolling,
 } from "../../lib/dm-desk.js";
+// STAGE C (V.2 brief §3–§4): the limit the server also keeps, so the
+// composer can say the count before the route refuses it.
+import { bodyRefusal } from "../../lib/dm.js";
 
 const POLL_MS = 45000;
 
@@ -100,6 +103,20 @@ export default function MailDesk() {
   const typingSentAt = useRef(0);
   const [cursor, setCursor] = useState("");
   const [loadingMore, setLoadingMore] = useState(false);
+  // STAGE C. `editing` = { id, version, text } for the one row being edited;
+  // `clearing` = the confirmation is open; `searchQ`/`hits` = the message
+  // search (the brief's syntax); `jumpTo` = the message a hit asked to land
+  // on; `sharing` = my own profile-sharing switch; `shareHandle` = the
+  // passenger about to be shared into this thread; `loaded` = archived
+  // images the reader explicitly loaded.
+  const [editing, setEditing] = useState(null);
+  const [clearing, setClearing] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
+  const [hits, setHits] = useState(null);
+  const [jumpTo, setJumpTo] = useState(null);
+  const [sharing, setSharing] = useState(true);
+  const [shareHandle, setShareHandle] = useState("");
+  const [loaded, setLoaded] = useState({});
   const [older, setOlder] = useState([]);   // pages loaded above the newest
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
@@ -121,6 +138,9 @@ export default function MailDesk() {
     setThreadId(id);
     setThread(null);
     setOlder([]);
+    setEditing(null);
+    setClearing(false);
+    setShareHandle("");
     // A new thread knows nothing about the other person yet. Carrying the last
     // thread's signal here is how a quiet conversation printed "read" under a
     // message nobody had read — dm_messages.id is a GLOBAL bigserial, so a
@@ -158,6 +178,7 @@ export default function MailDesk() {
       });
       if (typeof data.activitySignals === "boolean") setSignalsOn(data.activitySignals);
       if (typeof data.dmsOpen === "boolean") setDoorOpen(data.dmsOpen);
+      if (typeof data.profileSharing === "boolean") setSharing(data.profileSharing);
     } catch {
       setAvailable(true); setFault(true);
     }
@@ -313,6 +334,43 @@ export default function MailDesk() {
     return () => { cancelled = true; clearTimeout(timer); };
   }, [query]);
 
+  // STAGE C: the message search, debounced like the handle search. The
+  // syntax is parsed on the server (lib/dm.js parseDmSearch); the desk only
+  // carries the words. Three characters, or a star, before anything is asked.
+  useEffect(() => {
+    const q = searchQ.trim();
+    if (q.length < 3 && !q.startsWith("*")) { setHits(null); return undefined; }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const r = await authorizedFetch(`/api/dm?op=search&q=${encodeURIComponent(q)}&user=`
+          + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+        if (!r.ok) { if (!cancelled) setHits({ mode: "messages", hits: [], failed: true }); return; }
+        const data = await r.json();
+        if (!cancelled) setHits({ mode: data.mode, hits: data.hits || [], hasMore: Boolean(data.hasMore) });
+      } catch { if (!cancelled) setHits({ mode: "messages", hits: [], failed: true }); }
+    }, 300);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [searchQ]);
+
+  // STAGE C: a search hit opens its conversation AT THE MESSAGE. Pages are
+  // walked up (bounded) until the id is on screen, then it is scrolled to.
+  useEffect(() => {
+    if (!jumpTo || !thread || openThreadRef.current !== jumpTo.conversationId) return;
+    const all = [...older.flatMap((page) => page.messages), ...thread.messages];
+    if (all.some((m) => m.id === jumpTo.messageId)) {
+      const el = document.getElementById("mailmsg-" + jumpTo.messageId);
+      if (el) { el.scrollIntoView({ block: "center" }); }
+      const done = jumpTo;
+      const t = setTimeout(() => setJumpTo((cur) => (cur === done ? null : cur)), 2500);
+      return () => clearTimeout(t);
+    }
+    const anchor = older.length ? older[0].olderBefore : thread.olderBefore;
+    if (anchor && older.length < 12 && !loadingMore) loadOlder();
+    return undefined;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jumpTo, thread, older, loadingMore]);
+
   // Activity polling is the expensive part of this whole feature: a few
   // seconds is the only cadence at which a typing indicator means anything.
   // So it runs ONLY while a thread is open, ONLY while the tab is visible, and
@@ -447,6 +505,8 @@ export default function MailDesk() {
   async function startWith(handle) {
     const text = draft.trim();
     if (!text) { setNote("write the first message before you send it."); return; }
+    const tooLong = bodyRefusal(text);
+    if (tooLong) { setNote(tooLong.message); return; }
     setSending(true);
     const opId = "s" + Math.abs(Date.now() ^ (text.length * 2654435761)).toString(36) + handle.slice(0, 8);
     const result = await act("send", { toHandle: handle, body: text, clientOperationId: opId });
@@ -461,6 +521,9 @@ export default function MailDesk() {
   async function send() {
     const text = draft.trim();
     if (!text || sending || !threadId) return;
+    // REFUSED WITH ITS COUNT, never cut: the same rule the route applies.
+    const tooLong = bodyRefusal(text);
+    if (tooLong) { setNote(tooLong.message); return; }
     setSending(true);
     // A client operation id makes a retry idempotent: the store resolves it by
     // SELECT before inserting, so a lost response cannot double-send.
@@ -482,6 +545,38 @@ export default function MailDesk() {
 
   // Every page in the thread, newest first — what a reaction lookup must span.
   const pages = thread ? [thread, ...older] : older;
+  // STAGE C: the character counter, shown from 100 under the limit.
+  const counter = composerCount(draft);
+
+  /** STAGE C: save an edit. The version the row rendered rides with it. */
+  async function saveEdit() {
+    if (!editing || !threadId) return;
+    const text = editing.text.trim();
+    if (!text) { setNote("an empty message is not a message. UNSEND it instead."); return; }
+    const tooLong = bodyRefusal(text);
+    if (tooLong) { setNote(tooLong.message); return; }
+    const r = await act("edit", { messageId: editing.id, body: text, version: editing.version });
+    if (r?.ok) { setEditing(null); await loadThread(threadId); }
+  }
+
+  /** STAGE C: share a passenger into this thread, by handle. */
+  async function shareProfile() {
+    const handle = shareHandle.trim().toLowerCase().replace(/^\*/, "");
+    if (!handle || !threadId) return;
+    const opId = "p" + Math.abs(Date.now() ^ (handle.length * 2654435761)).toString(36) + threadId.slice(0, 8);
+    const r = await act("share-profile", { conversationId: threadId, handle, clientOperationId: opId });
+    if (r?.delivered) { setShareHandle(""); await loadThread(threadId); await poll(); }
+  }
+
+  /** STAGE C: the explicit load of an archived image. */
+  async function loadArchived(m) {
+    try {
+      const r = await authorizedFetch(`/api/dm/media?op=load&c=${encodeURIComponent(threadId)}&m=${m.id}&user=` + encodeURIComponent(getUid() || ""), { cache: "no-store" });
+      if (!r.ok) { setNote("that image could not be loaded."); return; }
+      const data = await r.json();
+      if (data.displayUrl) setLoaded((prev) => ({ ...prev, [m.id]: data.displayUrl }));
+    } catch { setNote("that image could not be loaded."); }
+  }
 
   if (available !== true) return null;
 
@@ -549,6 +644,17 @@ export default function MailDesk() {
                 }}
               >{thread.muted ? "MUTED" : "MUTE"}</button>
             ) : null}
+            {/* STAGE C: clear MY copy. The confirmation below says exactly what
+                happens to whom — the other participant keeps their copy and is
+                told, once, that this one was cleared. */}
+            {thread && thread.folder !== "requests" ? (
+              <button
+                className={"mailclear" + (clearing ? " cur" : "")}
+                aria-expanded={clearing}
+                title="clear history — your copy only"
+                onClick={() => setClearing((v) => !v)}
+              >CLEAR</button>
+            ) : null}
             {/* LAW 1 NEEDS A CONTROL. The only path that ever made a block was
                 DECLINE + BLOCK on a pending request, and that branch never
                 renders again once a request is accepted — so harassment that
@@ -572,6 +678,28 @@ export default function MailDesk() {
           {note ? <p className="mailnote" role="status" aria-live="polite">{note}</p> : null}
           {thread === null ? <p className="mailnote">opening…</p> : (
             <>
+              {clearing ? (
+                <div className="mailreq" role="group" aria-label="clear history">
+                  <p className="mailhint">
+                    clear your copy of this conversation? messages before now
+                    disappear from your view only — the other passenger keeps
+                    theirs, and is told once that you cleared your own copy.
+                    nothing of theirs is deleted. a new message brings the
+                    conversation back, without the history.
+                  </p>
+                  <div className="mailacts">
+                    <button className="btn" onClick={async () => {
+                      const r = await act("clear", { conversationId: threadId });
+                      setClearing(false);
+                      if (r?.ok) { await loadThread(threadId); await loadFolder(folder); await poll(); }
+                    }}>CLEAR MY COPY</button>
+                    <button className="btn ghost" onClick={() => setClearing(false)}>KEEP</button>
+                  </div>
+                </div>
+              ) : null}
+              {thread.clearedAt && thread.messages.length === 0 && older.length === 0 ? (
+                <p className="mailhint">you cleared your copy. the conversation returns when either of you writes.</p>
+              ) : null}
               {thread.folder === "requests" ? (
                 <div className="mailreq">
                   <p className="mailhint">
@@ -611,8 +739,60 @@ export default function MailDesk() {
                   .slice()
                   .sort((x, y) => x.id - y.id)
                   .map((m) => (
-                  <li key={m.id} className={m.mine ? "mine" : "theirs"}>
+                  <li key={m.id} id={"mailmsg-" + m.id}
+                      className={(m.mine ? "mine" : "theirs") + (jumpTo && jumpTo.messageId === m.id ? " hit" : "")}>
                     <div className="mailmsg">
+                      {editing && editing.id === m.id ? (
+                        <span className="mailedit">
+                          <textarea
+                            aria-label="edit this message"
+                            value={editing.text}
+                            autoFocus
+                            onChange={(e) => setEditing({ ...editing, text: e.target.value })}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); saveEdit(); }
+                              if (e.key === "Escape") { e.stopPropagation(); setEditing(null); }
+                            }}
+                          />
+                          <span className="mailacts">
+                            <button type="button" className="btn" onClick={saveEdit}>SAVE</button>
+                            <button type="button" className="btn ghost" onClick={() => setEditing(null)}>CANCEL</button>
+                          </span>
+                        </span>
+                      ) : m.kind === "profile-card" ? (
+                        /* STAGE C (brief §4): a passenger as a card, rendered
+                           from their LIVE state for this viewer — never a
+                           stored copy. Unavailable when they switched sharing
+                           off, unpublished, or a block stands. */
+                        <span className={"mailcard" + (m.sharedProfile && m.sharedProfile.available ? "" : " off")}>
+                          {m.sharedProfile && m.sharedProfile.available ? (
+                            <>
+                              <span className="mailcardmark" aria-hidden="true">*</span>
+                              <a className="mailcardwho" href={"/profile/" + encodeURIComponent(m.sharedProfile.handle)}>{m.sharedProfile.handle}</a>
+                              {m.sharedProfile.statement ? <span className="mailcardbio">{m.sharedProfile.statement}</span> : <span className="mailcardbio"><em>no statement yet</em></span>}
+                              <span className="mailcardkind">PASSENGER</span>
+                            </>
+                          ) : (
+                            <em>this passenger&apos;s profile is not available.</em>
+                          )}
+                        </span>
+                      ) : m.kind === "attachment" && m.attachment ? (
+                        /* STAGE C: the thumbnail always; the display inside six
+                           months, or on an explicit load after. SAVE IMAGE is
+                           the device's own download, apart from loading. */
+                        <span className={"mailimage" + (m.attachment.archived ? " archived" : "")}>
+                          {(loaded[m.id] || m.attachment.displayUrl)
+                            ? <img src={loaded[m.id] || m.attachment.displayUrl} alt={m.body && m.body !== "[image]" ? m.body : "an image in this conversation"} />
+                            : <img src={m.attachment.thumbUrl || ""} alt="archived image preview" className="thumb" />}
+                          {m.attachment.archived && !loaded[m.id] ? (
+                            <button type="button" className="mailarchived" onClick={() => loadArchived(m)}>ARCHIVED IMAGE · TAP TO LOAD</button>
+                          ) : null}
+                          {(loaded[m.id] || m.attachment.displayUrl) ? (
+                            <a className="mailsave" href={loaded[m.id] || m.attachment.displayUrl} download>SAVE IMAGE</a>
+                          ) : null}
+                          {m.body && m.body !== "[image]" ? <span className="mailcaption">{m.body}</span> : null}
+                        </span>
+                      ) : (
                       <span className={"mailbody" + (m.unsent || m.redacted ? " gone" : "")}>
                         {/* Three different absences, three different words.
                             Collapsing them would tell a reader that a person
@@ -621,7 +801,9 @@ export default function MailDesk() {
                         {m.unsent ? <em>unsent</em>
                           : m.redacted ? <em>removed</em>
                           : m.body === null ? <em>hidden</em> : m.body}
+                        {m.edited ? <em className="mailedited" title={m.editedAt ? "edited " + new Date(m.editedAt).toLocaleString() : "edited"}> · edited</em> : null}
                       </span>
+                      )}
 
                       {reactionsAcross(pages, m.id).length ? (
                         <span className="mailreacts">
@@ -655,7 +837,18 @@ export default function MailDesk() {
                               }}
                             >{emoji}</button>
                           ))}
-                          {m.mine ? (
+                          {/* STAGE C: EDIT and UNSEND only inside the owner's
+                              hour (lib/dm-desk.js messageControls); the server
+                              measures the hour again on its own clock. */}
+                          {messageControls(m).edit ? (
+                            <button
+                              type="button"
+                              className="mailunsend"
+                              aria-label="edit this message"
+                              onClick={() => setEditing({ id: m.id, version: m.editVersion || 0, text: m.body || "" })}
+                            >EDIT</button>
+                          ) : null}
+                          {messageControls(m).unsend ? (
                             <button
                               type="button"
                               className="mailunsend"
@@ -716,17 +909,40 @@ export default function MailDesk() {
                 <textarea
                   aria-label="write a message"
                   value={draft}
-                  maxLength={2000}
                   placeholder="write…"
                   onChange={(e) => { setDraft(e.target.value); noteTyping(); }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
                   }}
                 />
-                <button className="btn" disabled={sending || !draft.trim()} onClick={send}>
+                {/* THE COUNTER (brief §3): near the limit, in clusters as a
+                    person counts them. Over it, SEND is refused — never cut. */}
+                {counter.show ? (
+                  <span className={"mailchars" + (counter.over ? " over" : "")} aria-live="polite">
+                    {counter.count} / {counter.limit}
+                  </span>
+                ) : null}
+                <button className="btn" disabled={sending || !draft.trim() || counter.over} onClick={send}>
                   {sending ? "…" : "SEND →"}
                 </button>
               </div>
+              {/* STAGE C (brief §4): share a passenger into this thread. The
+                  server checks their switch, their visibility and any block
+                  between you — and answers with the owner's words when it
+                  refuses. */}
+              {thread.folder !== "requests" ? (
+                <div className="mailshare">
+                  <input
+                    type="search"
+                    aria-label="share a passenger by handle"
+                    value={shareHandle}
+                    placeholder="share a passenger… (handle)"
+                    onChange={(e) => setShareHandle(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); shareProfile(); } }}
+                  />
+                  <button type="button" className="btn ghost" disabled={!shareHandle.trim()} onClick={shareProfile}>SHARE PROFILE</button>
+                </div>
+              ) : null}
             </>
           )}
           </>
@@ -743,6 +959,18 @@ export default function MailDesk() {
                 value={query}
                 placeholder="find a handle…"
                 onChange={(e) => { setQuery(e.target.value); setNote(""); }}
+              />
+            </label>
+            {/* STAGE C (brief §3): search my messages. *handle → their
+                conversations; words → messages; *handle: words → messages
+                with them; "quoted" → the exact phrase. */}
+            <label className="mailfind mailsearch">
+              <input
+                type="search"
+                aria-label="search messages — *handle, words, *handle: words, or a quoted phrase"
+                value={searchQ}
+                placeholder="search messages… *handle: words"
+                onChange={(e) => { setSearchQ(e.target.value); setNote(""); }}
               />
             </label>
             <div className="mailtabs" role="tablist">
@@ -772,7 +1000,29 @@ export default function MailDesk() {
 
           {note ? <p className="mailnote" role="status" aria-live="polite">{note}</p> : null}
 
-          {found !== null ? (
+          {hits !== null && found === null ? (
+            <div className="mailfound mailhits">
+              {hits.failed ? <p className="mailnote">search is unavailable right now.</p>
+                : hits.hits.length === 0 ? <p className="mailnote">nothing in your messages matches that.</p>
+                : (
+                <ul className="maillist">
+                  {hits.hits.map((h) => (
+                    <li key={(h.messageId || "c") + ":" + h.conversationId}>
+                      <button type="button" onClick={() => {
+                        setJumpTo(h.messageId ? { conversationId: h.conversationId, messageId: h.messageId } : null);
+                        showThread(h.conversationId);
+                      }}>
+                        <span className="mailwho">{h.handle || <em className="mailnohandle">an account with no public room</em>}{h.mine ? <span className="mailkind">YOU</span> : null}</span>
+                        <span className="mailtime">{h.at ? new Date(h.at).toLocaleString() : ""}</span>
+                        <span className="mailprev">{h.excerpt || <em>no preview</em>} <b>{h.messageId ? "OPEN AT MESSAGE →" : "OPEN →"}</b></span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {hits.hasMore ? <p className="mailhint">more than shown — narrow the words, or name the passenger: *handle: words</p> : null}
+            </div>
+          ) : found !== null ? (
             <div className="mailfound">
               {found.length === 0 ? (
                 <p className="mailnote">
@@ -798,10 +1048,10 @@ export default function MailDesk() {
                     <textarea
                       aria-label="your first message"
                       value={draft}
-                      maxLength={2000}
                       placeholder="your first message…"
                       onChange={(e) => setDraft(e.target.value)}
                     />
+                    {counter.show ? <span className={"mailchars" + (counter.over ? " over" : "")}>{counter.count} / {counter.limit}</span> : null}
                   </div>
                   <p className="mailnote">
                     one message until they reply — that is the whole of a first
@@ -901,6 +1151,29 @@ export default function MailDesk() {
               reciprocal: with this off you will not see anyone else&apos;s either.
               it stops you sending those signals — it cannot hide from someone
               you are already talking to that you stopped.
+            </span>
+          </label>
+
+          {/* STAGE C (brief §4): may others share my profile into their
+              threads? Off = the server refuses the card with the owner's
+              words, and cards already sent go unavailable. */}
+          <label className="mailsignals">
+            <input
+              type="checkbox"
+              checked={sharing}
+              onChange={async (e) => {
+                const on = e.target.checked;
+                setSharing(on);
+                const result = await act("settings", { profileSharing: on });
+                if (typeof result?.profileSharing === "boolean") setSharing(result.profileSharing);
+                else if (!result) setSharing(!on);
+              }}
+            />
+            let people share my profile in messages
+            <span className="agenote">
+              with this off, nobody can send your profile as a card — and cards
+              already sent stop showing it. you are told, without names, when
+              it is shared.
             </span>
           </label>
 

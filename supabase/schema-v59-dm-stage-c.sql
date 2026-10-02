@@ -84,7 +84,9 @@ CREATE TABLE IF NOT EXISTS dm_attachments (
 CREATE INDEX IF NOT EXISTS dm_attachments_message ON dm_attachments (message_id);
 
 -- the edit law, in the database too: only the sender, only inside the hour,
--- only a live message, and the version climbs by exactly one
+-- only a live message, and the version climbs by exactly one. The same
+-- trigger closes the UNSEND window: v48's guard names the actor, this one
+-- names the clock, and both fire BEFORE UPDATE on the row.
 CREATE OR REPLACE FUNCTION dm_guard_edit() RETURNS TRIGGER AS $$
 DECLARE actor TEXT;
 BEGIN
@@ -105,6 +107,11 @@ BEGIN
     IF NEW.edited_at IS NULL THEN
       RAISE EXCEPTION 'dm: an edit must be stamped' USING ERRCODE='P0006';
     END IF;
+  END IF;
+  -- the unsend window, the owner's hour (v48 named the actor; this names the clock)
+  IF NEW.unsent_at IS NOT NULL AND OLD.unsent_at IS NULL
+     AND OLD.created_at < clock_timestamp() - interval '1 hour' THEN
+    RAISE EXCEPTION 'dm: the unsend window is one hour' USING ERRCODE='P0007';
   END IF;
   RETURN NEW;
 END $$ LANGUAGE plpgsql;

@@ -23,7 +23,8 @@ import {
 // never the unit being limited. JS drops extra arguments without a word.
 import { requestSubject } from "../../../lib/security/request.js";
 import {
-  describeRefusal, messagingEnabled, normalizeBody, rateBucketFor, readBucketFor,
+  bodyRefusal, describeRefusal, dmMediaEnabled, messagingEnabled, normalizeBody, parseDmSearch,
+  rateBucketFor, readBucketFor,
 } from "../../../lib/dm.js";
 import {
   MessageRefused, MessagingUnavailable,
@@ -37,6 +38,8 @@ import {
   sendMessage, setDmSettings, setMediaConsent, setMuted,
   unblockByConversation, unblockByHandle,
   unreadSummary,
+  // STAGE C (v59)
+  clearHistory, editMessage, readProfileSharing, searchMessages, sendProfileCard,
 } from "../../../lib/db/dm.js";
 
 export const dynamic = "force-dynamic";
@@ -71,6 +74,7 @@ async function caller(req, claimed) {
  *   find      start-a-thread search over PUBLISHED profile rooms only.
  *   activity  typing and presence. Polled every 3s while a thread is open.
  *   blocks    who this account has blocked.
+ *   search    STAGE C — the brief's syntax over my own visible history.
  *
  * An unknown op is 400. Absent entirely unless MESSAGING_ENABLED=1 — a 404,
  * not a polite 200.
@@ -138,7 +142,17 @@ export async function GET(req) {
         ...counts,
         dmsOpen: await readDmsOpen(me),
         activitySignals: await readActivitySignals(me),
+        profileSharing: await readProfileSharing(me),
       });
+    }
+    if (op === "search") {
+      // STAGE C (brief §3). The syntax is parsed here, deterministically, and
+      // the store answers with ONE access predicate: my conversations, after
+      // my clear cutoff, never an unsent body, never a request-folder knock.
+      // No model reads a DM to search it.
+      const q = String(url.searchParams.get("q") || "").slice(0, 200);
+      const result = await searchMessages(me, parseDmSearch(q));
+      return NextResponse.json({ mode: result.mode, hits: result.hits, hasMore: result.hasMore, parsed: result.parsed });
     }
     if (op === "inbox") {
       const folder = ["inbox", "requests", "archived"].includes(url.searchParams.get("folder"))
@@ -222,7 +236,10 @@ export async function GET(req) {
  *   mute      silence the BADGE only — never delivery, and undetectable by
  *             the sender. Do not "improve" it into a delivery block.
  *   typing    emit a typing signal (carries an expiry, not a flag).
- *   settings  the reciprocal activity-signals switch.
+ *   settings  the reciprocal activity-signals switch (+ profile sharing).
+ *   edit / clear / share-profile          STAGE C (v59): my words inside the
+ *             hour, my copy cleared, a passenger shared as a card.
+ *   attach    absent unless DM_MEDIA_ENABLED=1; bytes go to /api/dm/media.
  *
  * An unknown op is 400. Absent entirely unless MESSAGING_ENABLED=1.
  *
@@ -288,6 +305,11 @@ export async function POST(req) {
     if (op === "send") {
       const text = normalizeBody(body.body);
       if (!text) return NextResponse.json({ error: "nothing to send" }, { status: 400 });
+      // THE TEXT LIMIT (brief §3): 1,000 grapheme clusters and 8 KiB, both
+      // checked here and in the database, neither ever truncating. The
+      // refusal carries the count so the composer can say it.
+      const tooLong = bodyRefusal(text);
+      if (tooLong) return NextResponse.json({ delivered: false, error: tooLong.message, ...tooLong }, { status: 400 });
 
       let conversationId = String(body.conversationId || "");
       // ADDRESSED BY HANDLE, NEVER BY UUID. Accepting a raw account id would
@@ -434,9 +456,62 @@ export async function POST(req) {
       }
     }
     if (op === "unsend") {
-      // One answer for "not yours", "no such message" and "already gone":
-      // distinguishing them describes a message the caller has no claim to.
+      // One answer for "not yours", "no such message", "already gone" and
+      // "older than an hour": distinguishing the first three describes a
+      // message the caller has no claim to; the hour they can read off their
+      // own message's time, and the desk hides the control past it.
       return NextResponse.json({ ok: await unsendMessage(me, body.messageId) });
+    }
+    if (op === "edit") {
+      // STAGE C: my own words, inside the hour, carrying the version I saw.
+      const text = normalizeBody(body.body);
+      if (!text) return NextResponse.json({ error: "nothing to send" }, { status: 400 });
+      const tooLong = bodyRefusal(text);
+      if (tooLong) return NextResponse.json({ ok: false, error: tooLong.message, ...tooLong }, { status: 400 });
+      try {
+        const edited = await editMessage(me, body.messageId, text, body.version);
+        return NextResponse.json({ ok: true, ...edited });
+      } catch (error) {
+        return failure(error);
+      }
+    }
+    if (op === "clear") {
+      // STAGE C: clear MY copy. A non-member gets the absent answer every
+      // other op gives. The response says whether the other participant was
+      // told, because the confirmation promised them that.
+      try {
+        const cleared = await clearHistory(me, String(body.conversationId || ""));
+        if (!cleared) return absent();
+        return NextResponse.json({ ok: true, ...cleared });
+      } catch (error) {
+        return failure(error);
+      }
+    }
+    if (op === "share-profile") {
+      // STAGE C (brief §4): a passenger as a card, by HANDLE, into a thread I
+      // am in. The passenger's switch, their visibility and any block between
+      // us are the store's refusals; the owner's words come back verbatim.
+      try {
+        const sent = await sendProfileCard(me, String(body.conversationId || ""), String(body.handle || ""), {
+          clientOperationId: body.clientOperationId ? String(body.clientOperationId) : null,
+        });
+        return NextResponse.json({ delivered: true, ...sent });
+      } catch (error) {
+        let mine = false;
+        if (error instanceof MessageRefused && error.code !== "DM_SHARE_REFUSED" && error.code !== "DM_NO_SUCH_PASSENGER") {
+          const peer = await peerOf(me, String(body.conversationId || "")).catch(() => null);
+          if (peer) mine = await iBlocked(me, peer).catch(() => false);
+        }
+        return failure(error, { callerBlockedThem: mine });
+      }
+    }
+    if (op === "attach") {
+      // THE MEDIA PIPELINE IS ABSENT UNLESS DM_MEDIA_ENABLED=1 (OWNER-DECISIONS
+      // #3). Absent means absent: the same 404 as the feature flag, not a
+      // "coming soon". When it is on, bytes go to /api/dm/media (multipart);
+      // this JSON route carries no image.
+      if (!dmMediaEnabled()) return absent();
+      return NextResponse.json({ error: "attachments are posted to /api/dm/media" }, { status: 400 });
     }
     if (op === "mute") {
       const muted = await setMuted(me, String(body.conversationId || ""), body.muted !== false);
@@ -458,11 +533,14 @@ export async function POST(req) {
         await setDmSettings(me, {
           activitySignals: typeof body.activitySignals === "boolean" ? body.activitySignals : null,
           dmsOpen: typeof body.dmsOpen === "boolean" ? body.dmsOpen : null,
+          // STAGE C (brief §4): may others share my profile into their threads?
+          profileSharing: typeof body.profileSharing === "boolean" ? body.profileSharing : null,
         });
         return NextResponse.json({
           ok: true,
           dmsOpen: await readDmsOpen(me),
           activitySignals: await readActivitySignals(me),
+          profileSharing: await readProfileSharing(me),
         });
       } catch (error) {
         // A business trying to close its door is refused by the v40 trigger.
