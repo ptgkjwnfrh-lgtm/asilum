@@ -27,6 +27,54 @@ The existing OAuth helper now caches separately for scope, environment and
 credentials. Browse still defaults to its original scope; Feed requests
 `https://api.ebay.com/oauth/api_scope/buy.item.feed`.
 
+## The publisher (1 Oct 2026, owner brief §15 points 2–5)
+
+`npm run ebay:publish -- --dir /durable/ebay/ebay-feed-XXXX [--limit N] [--dry]`
+
+`lib/ingest/ebayFeedPublish.js` streams a staged `items.tsv.gz` (gunzip →
+lines, never the file in memory), reads the documented Feed Beta columns by
+name (`buy_feed_v1_beta_oas3.json`, Item and ItemSnapshot schemas; the
+Title quoting rule; base64 `localizedAspects`), maps each row through the
+catalog's one normalizer and writes in batches of 500 through a
+STALE-GUARDED upsert (`lib/db/production/ebayFeed.js`, schema v56): a row is
+written only when its observation is newer than the row's, or the same
+moment with a `sellerItemRevision` that is not older. An older bootstrap
+re-run after a daily file cannot roll a price back; the count of rows it
+would have rolled back is reported as `rowsStale`.
+
+Every file has a checkpoint keyed by the manifest's sha256
+(`ebay_feed_checkpoints`): rows read, upserted, stale, rejected BY REASON,
+and the last line. A killed run resumes; a finished file re-run is a
+no-op; `--limit` bounds a run and leaves the checkpoint `running`.
+
+**Not an AI path.** The mapper hands the normalizer `tags: {}` — no
+`inferTags` over eBay text; it never calls `verifyProductColors`, never
+fetches an image, never names a brand from a title (the `brand` column or
+"Unknown"), never assigns an era. The typed `product_tags` it writes are
+the source's own facts (brand, category, condition, material) through the
+vocabulary. Rows therefore carry no aesthetic vector: they reach the
+catalog lane and search, not the taste ranking. Whether eBay rows may ever
+feed the recommender is the EPN Prohibited-AI-Uses question in
+`docs/epn-terms-check-2026-08-22.md`, unchanged by this.
+
+**Availability words stay apart**: AVAILABLE → `available`;
+TEMPORARILY_UNAVAILABLE / UNAVAILABLE → `unavailable`; a snapshot's
+ENDED → `ended`, DELETED → `removed`. Nothing here says `sold`.
+
+**Catch-up (planned, not scheduled).** `--plan --since <bootstrap
+Last-Modified>` lists the daily NEWLY_LISTED dates still fetchable (the
+feed serves a daily file only 3–14 days after its date), the ones not yet
+served, and the ones lost to the window — a gap the next bootstrap closes.
+The stager now sends the daily `date` as `yyyyMMdd` on the wire (the first
+cut sent `YYYY-MM-DD`) and can stage an hourly snapshot
+(`feedScope: "SNAPSHOT"`, `snapshotHour: "YYYY-MM-DDTHH"`); the publisher
+reads snapshot rows (`itemSnapshotDate`, `changeMetadata`). A worker loop
+that runs the plan on a schedule does not exist yet.
+
+**Verification:** `tests/ebay-feed-publish.test.js` — memory mode end to
+end over a synthetic gzip TSV fixture; the SQL stale guard mirrors the
+pure `observationWins` the tests pin. No live feed file has been read.
+
 ## Access needed
 
 Configure production credentials securely, `EBAY_ENV=PRODUCTION`, the existing

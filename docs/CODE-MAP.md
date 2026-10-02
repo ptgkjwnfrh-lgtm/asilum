@@ -239,13 +239,13 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 1,022 lines*
+*9 files, 1,031 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
 | `accountKinds.js` | 171 | account_kinds + account_kind_events (schema v37). SERVER-ONLY. |
-| `index.js` | 124 | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
+| `index.js` | 133 | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
 | `dm.js` | 108 | THE MAIL DESK. SERVER-ONLY. (schema v40-v43) |
 | `imageFingerprints.js` | 96 | Storage + collision scan for image fingerprints (schema-v33). SERVER-ONLY. The scan reads all rows (capped) and compares in JS — hamming distance has |
 | `accountAges.js` | 77 | account_ages (schema v39). SERVER-ONLY. |
@@ -286,7 +286,7 @@ Nothing here may import from `app/`.
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
 
 ### `lib/db/production/`
-*11 files, 4,961 lines*
+*12 files, 5,130 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -298,6 +298,7 @@ Nothing here may import from `app/`.
 | `booths.js` | 440 | WHO GETS TO SELL HERE. |
 | `catalog.js` | 393 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
 | `tickets.js` | 259 | SOMEBODY WANTS TO BUY SOMETHING. |
+| `ebayFeed.js` | 169 | the eBay feed publisher's two writers (schema v56): the STALE-GUARDED item upsert and the per-file CHECKPOINT. |
 | `records.js` | 133 | user_records (v53): the four kinds of record Live Launch V.2 kept on the device alone, now persisted per identity. |
 | `store.js` | 108 | THE SHARED IN-MEMORY STORE, and nothing else. |
 | `moderation.js` | 74 | THE QUEUE A HUMAN READS. |
@@ -350,24 +351,25 @@ Nothing here may import from `app/`.
 | `dhash.js` | 60 | PERCEPTUAL HASHING, and nothing else. |
 
 ### `lib/ingest/`
-*7 files, 715 lines*
+*8 files, 1,067 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
+| `ebayFeedPublish.js` | 329 | THE PUBLISHER: a staged eBay feed file (lib/ingest/ebayFeed.js) → rows in the existing catalog. Owner brief §15, |
 | `ebay.js` | 174 | eBay source adapter — the OFFICIAL Browse API path (never scraping). Server-side only: reads EBAY_CLIENT_ID / EBAY_CLIENT_SECRET / EBAY_ENV from |
+| `ebayFeed.js` | 170 | Approved Feed Beta downloads, staged on disk, never sent into ASTERISK. A complete gzip + manifest is promoted atomically; interrupted downloads |
 | `colorEvidence.js` | 163 | Conservative product-color verification. A color becomes a product tag only when the merchant explicitly states it and the actual listing images |
-| `ebayFeed.js` | 147 | Approved Feed Beta downloads, staged on disk, never sent into ASTERISK. A complete gzip + manifest is promoted atomically; interrupted downloads |
 | `sources.js` | 93 | Ingestion adapters. IMPORTANT POLICY: this layer only pulls from sources that PERMIT programmatic access. It never scrapes hotlink-protected or |
 | `intake.js` | 71 | Validation for OPERATOR-SUPPLIED real inventory (risk campaign phase L1). The checkout engine's own honesty gate (refusalReason) is the validator — |
 | `catalog.js` | 49 | Asilum seed catalog — 915 listings, stored as JSON (catalog.json) so the server parses data instead of executing a half-megabyte JS literal. |
 | `inferTags.js` | 18 | ONE text-to-taste bridge for every ingestion path. |
 
 ### `lib/ingest/adapters/`
-*6 files, 645 lines*
+*6 files, 650 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `normalize.js` | 217 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
+| `normalize.js` | 222 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
 | `woocommerceAdapter.js` | 134 | WooCommerce Store API adapter. The Store API is officially documented and unauthenticated, but ASILUM still requires explicit merchant approval before |
 | `ebayAdapter.js` | 103 | The one adapter with a real implementation today: eBay's OFFICIAL Browse API (lib/ingest/ebay.js). Enabled only when EBAY_CLIENT_ID/SECRET are set. |
 | `types.js` | 69 | Source adapter contract (JSDoc — this codebase is plain JS; lib/db/types.js set the precedent). Every marketplace adapter implements the same interface |
@@ -1225,7 +1227,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*60 files, 8,121 lines*
+*61 files, 8,166 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1282,6 +1284,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `seed-mappings.mjs` | 52 | Idempotent: (1) upserts the curated search mappings into search_mappings, (2) backfills the typed product_tags layer + production source fields for |
 | `comment-attachment.mjs` | 51 | did the split move code without its comment? |
 | `seed-supabase.mjs` | 50 | Optional demo seeding after schema-v1 through schema-v10 have been applied. Upserts the synthetic catalog into items through the application DB path. |
+| `publish-ebay-feed.mjs` | 45 | publish ONE staged feed directory into the catalog (lib/ingest/ebayFeedPublish.js), or plan the daily catch-up. |
 | `compile-culture-research.mjs` | 42 | Compile APPROVED culture-entity proposals (learned_facts) into lib/asterisk/culture.research.json — the ONLY way research reaches the |
 | `diag-rerank-sims.mjs` | 35 | one-off diagnostic for r5 tuning: what do voyage sims actually look like for the failing storm/hike probes, target |
 | `extract-fashionpedia.mjs` | 35 | reproducible extraction of the Fashionpedia ontology (r13). Reads an official annotation file |
@@ -1292,4 +1295,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 2f05f68 — 423 source files, 71,840 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 00c7566 — 426 source files, 72,420 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
