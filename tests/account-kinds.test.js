@@ -35,14 +35,16 @@ test("the capability matrix is TOTAL — no kind may be missing a row", () => {
 });
 
 test("the two kinds actually differ, and in the direction the owner specified", () => {
-  // A passport reads; a business sells. Asserted explicitly because a refactor
+  // Both kinds may sell through the one native Storefront; business remains a
+  // distinct analytics/watchtower choice. Asserted explicitly because a refactor
   // that made both rows identical would pass every other test in this file.
   assert.equal(can("passport", "passport"), true);
   assert.equal(can("passport", "stylist"), true);
   assert.equal(can("passport", "discover"), true);
   assert.equal(can("passport", "analytics"), false);
   assert.equal(can("passport", "watchtower"), false);
-  assert.equal(can("passport", "storefront"), false);
+  assert.equal(can("passport", "storefront"), true,
+    "opening a native Storefront must not trade away the Passport");
 
   assert.equal(can("business", "passport"), false, "a business has no passport tab");
   assert.equal(can("business", "stylist"), false, "a business has no stylist");
@@ -62,8 +64,8 @@ test("a passport may switch DMs off; a business may not", () => {
 });
 
 test("an unknown or absent kind is a passport, never a business", () => {
-  // Defaulting the other way would hand storefront and analytics surfaces to
-  // every account that predates this table.
+  // Defaulting the other way would hand analytics/watchtower surfaces to
+  // every account that predates this table and remove its Passport.
   assert.equal(normalizeKind(undefined), "passport");
   assert.equal(normalizeKind(""), "passport");
   assert.equal(normalizeKind("BUSINESS"), "passport", "the check is exact, not case-folded");

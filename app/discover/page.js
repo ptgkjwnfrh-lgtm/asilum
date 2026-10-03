@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { confidenceBand } from "../../lib/asterisk/confidence.js";
-import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor } from "../../lib/client.js";
+import { getUid, postJSON, authorizedFetch, thumbFor, bagAdd, brainEnabled, aspectFor, newOperationId } from "../../lib/client.js";
 import { followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL } from "../../lib/social.js";
 import { readConstraints, releaseConstraint } from "../../lib/search/constraints.js";
 import TicketFlow from "../components/TicketFlow.jsx";
@@ -37,9 +37,41 @@ export default function DiscoverPage() {
 
   // Real checkout (18 Aug): only reachable from a server-stamped
   // purchasable item; refusals render the server's own words.
-  function startPurchase(item) {
-    // The housing (/checkout) is the ONE buyer flow — fee, ticket, source
-    // hand-off, with the piece on screen throughout (owner order, 20 Aug).
+  const nativeCheckoutKeysRef = useRef(new Map());
+  async function startPurchase(item) {
+    if (item?.commerce_rail === "native_storefront") {
+      if (item.native_checkout_ready !== true) {
+        setBuyNote("Native Storefront checkout is not enabled for this seller yet.");
+        return;
+      }
+      const operation = `${item.id}:${item.default_variant_id || "default"}:1`;
+      let idempotencyKey = nativeCheckoutKeysRef.current.get(operation);
+      if (!idempotencyKey) {
+        idempotencyKey = newOperationId();
+        nativeCheckoutKeysRef.current.set(operation, idempotencyKey);
+      }
+      try {
+        const response = await postJSON("/api/checkout", {
+          user: getUid(), itemId: item.id,
+          variantId: item.default_variant_id || null,
+          quantity: 1, idempotencyKey,
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.error || "Native checkout is unavailable.");
+        if (body.commerceRail !== "native_storefront") {
+          throw new Error("The server did not return a native Storefront checkout.");
+        }
+        const target = new URL(String(body.url || ""));
+        if (target.protocol !== "https:" || target.hostname !== "checkout.stripe.com") {
+          throw new Error("The payment provider returned an unsafe checkout address.");
+        }
+        window.location.assign(target.href);
+      } catch (error) {
+        setBuyNote(error?.message || "Native checkout is unavailable.");
+      }
+      return;
+    }
+    // Existing external records retain their ticket/source hand-off rail.
     window.location.href = "/checkout?item=" + encodeURIComponent(item.id);
   }
   const [baggedIds, setBaggedIds] = useState(() => new Set());
@@ -324,6 +356,10 @@ export default function DiscoverPage() {
     }).catch(() => {});
   }
 
+  const demoOnly = items.length > 0 && items.every(isDemoItem);
+  const hasDemo = items.some(isDemoItem);
+  const hasNative = items.some((item) => item.commerce_rail === "native_storefront");
+
   return (
     <div className="wrap">
       <PageMast word="DISCOVER" sub={dtab === "places" ? "AROUND YOU" : "SEARCH · THE OPEN INDEX"} />
@@ -336,7 +372,10 @@ export default function DiscoverPage() {
       )}
       {dtab === "search" && (<>
       <p className="demoline" role="note">
-        <b>DEMO ARCHIVE</b> — synthetic sample records with placeholder imagery; nothing is real inventory or for sale. the search is real; the clothes are not.
+        {demoOnly ? <><b>DEMO ARCHIVE</b> — these results are synthetic sample records with placeholder imagery, not inventory.</>
+          : hasDemo ? <><b>MIXED OPEN INDEX</b> — native Storefront inventory appears beside clearly marked synthetic sample records.</>
+            : hasNative ? <><b>NATIVE OPEN INDEX</b> — Storefront products use the shared catalog, bag and product detail.</>
+              : <><b>OPEN INDEX</b> — every result names its source and availability.</>}
         {" "}{guideOn ? "The Asterisk system is using your Passport to route every search toward your style." : "The Asterisk system is paused, so results stay general."}{" "}{total ? total + " pieces." : ""}
       </p>
       <div className={"searchguide " + (guideOn ? "on" : "off")}>

@@ -8,10 +8,10 @@
 // one obvious home.
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
-  thumbFor, bagList, bagRemove, clearFitProfile, getUid, setUid, brainEnabled,
-  authorizedFetch, SIGN_OUT_NOTICE,
+  thumbFor, bagList, bagRemove, bagSetQuantity, clearFitProfile, getUid, setUid, brainEnabled,
+  authorizedFetch, postJSON, newOperationId, SIGN_OUT_NOTICE,
 } from "../lib/client.js";
 import {
   searchUsers, sourceFor, followedBrands, followedUsers,
@@ -95,10 +95,13 @@ const DOME_SCALES = [3.2, 3.7, 4.2]; // px of pull at full strength, R/G/B — 2
 export default function Shell({ children }) {
   const fit = useFitBrain();
   const pathname = usePathname();
-  const router = useRouter();
   const [bag, setBag] = useState([]);
   const [bagOpen, setBagOpen] = useState(false);
   const [bagHow, setBagHow] = useState(false);
+  const [bagCheckout, setBagCheckout] = useState({});
+  // A retry after an interrupted response must carry the same client key.
+  // Quantity is part of the logical request, so changing it gets a new key.
+  const bagCheckoutKeysRef = useRef(new Map());
   // LIQUID GLASS (owner order, 8 Sep, fourth pass — "exactly like Apple's").
   // Three things live here, all as CSS variables and attributes so nothing
   // re-renders:
@@ -327,33 +330,9 @@ export default function Shell({ children }) {
   const deviceIdentityRef = useRef(null);
 
   useEffect(() => {
-    // Landing law (owner order, 19 Aug): on DESKTOP the terminal opens on
-    // the FRONT COVER — the magazine leads; mobile opens straight to the
-    // rack (CATALOG). This lives in the SHELL because the shell mounts
-    // exactly once per hard entry and persists across soft navs (the page
-    // mounts in a later Suspense commit, so a page-level check loses the
-    // race to this stamp — measured, not assumed). Only a true entry
-    // landing on "/" redirects: the sessionStorage stamp survives
-    // refreshes mid-visit, in-app CATALOG clicks never re-run this effect,
-    // and deep links (?item=, ?board=, any query) never bounce.
-    // replace(), not push — back must leave the site, not loop.
-    try {
-      const entered = window.sessionStorage.getItem("asilum-entered");
-      window.sessionStorage.setItem("asilum-entered", "1");
-      if (!entered && pathname === "/" && !window.location.search) {
-        // innerWidth reads 0 while a restoring/backgrounded tab has no
-        // layout yet (measured here, not assumed) — a zero must defer the
-        // desktop/mobile call, never decide it. Bounded frames; if layout
-        // never reports, mobile's answer (stay on the rack) is the safe one.
-        let frames = 0;
-        const decide = () => {
-          const width = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
-          if (!width && frames++ < 60) { window.requestAnimationFrame(decide); return; }
-          if (width > 760) router.replace("/cover");
-        };
-        decide();
-      }
-    } catch {}
+    // Fresh launches stay on THE FEED at "/" on every viewport. Front Cover
+    // remains a first-class tab, but the shell never redirects into it; this
+    // now matches lib/dock.js's V.2 launch contract and preserves deep links.
     // Clear the stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
@@ -695,9 +674,61 @@ export default function Shell({ children }) {
     }, 180);
   }
 
-  // Bag is intent only; checkout, fees, and shipping belong to source sites.
-  const subtotal = bag.reduce((s, x) => s + (x.price || 0), 0);
+  // Display snapshot only. Native checkout re-resolves integer price, stock,
+  // seller and policy server-side; no local total is payment authority.
+  const subtotalCents = bag.reduce((sum, line) =>
+    sum + (Number.isSafeInteger(line.price_cents) ? line.price_cents : 0) * (line.quantity || 1), 0);
   const nSources = new Set(bag.map((x) => sourceFor(x))).size;
+  const nativeLines = bag.filter((x) => x.commerce_rail === "native_storefront");
+  const externalLines = bag.filter((x) => x.commerce_rail !== "native_storefront");
+
+  async function startNativeBagCheckout(line) {
+    const lineKey = line.bag_key || line.id;
+    const quantity = Math.max(1, Math.min(25, Math.trunc(Number(line.quantity)) || 1));
+    const operation = `${lineKey}:${quantity}`;
+    let idempotencyKey = bagCheckoutKeysRef.current.get(operation);
+    if (!idempotencyKey) {
+      idempotencyKey = newOperationId();
+      bagCheckoutKeysRef.current.set(operation, idempotencyKey);
+    }
+    if (!authUser) {
+      setBagCheckout((current) => ({
+        ...current,
+        [lineKey]: { status: "error", error: "Sign in to open native Storefront checkout." },
+      }));
+      window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }));
+      return;
+    }
+    setBagCheckout((current) => ({ ...current, [lineKey]: { status: "pending", error: "" } }));
+    try {
+      const response = await postJSON("/api/checkout", {
+        user: getUid(),
+        itemId: line.id,
+        variantId: line.default_variant_id || line.variantId || null,
+        quantity,
+        idempotencyKey,
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body.error || "Native checkout is unavailable.");
+      if (body.commerceRail !== "native_storefront") {
+        throw new Error("The server did not return a native Storefront checkout.");
+      }
+      const target = new URL(String(body.url || ""));
+      if (target.protocol !== "https:" || target.hostname !== "checkout.stripe.com") {
+        throw new Error("The payment provider returned an unsafe checkout address.");
+      }
+      setBagCheckout((current) => ({
+        ...current,
+        [lineKey]: { status: "redirecting", error: "", quote: body.quote || null },
+      }));
+      window.location.assign(target.href);
+    } catch (error) {
+      setBagCheckout((current) => ({
+        ...current,
+        [lineKey]: { status: "error", error: error?.message || "Native checkout is unavailable." },
+      }));
+    }
+  }
 
   // Ticker: the brands and people you follow, clickable — brands land on
   // DISCOVER pre-searched, people land on their page. Default copy until you
@@ -935,30 +966,74 @@ export default function Shell({ children }) {
           ) : (
             <>
               {bag.map((x) => (
-                <div className="bagrow" key={x.id}>
+                <div className="bagrow" key={x.bag_key || x.id}>
                   <img src={x.img || thumbFor(x)} alt="" />
                   <div className="baginfo">
                     <div className="bagttl">{x.title}</div>
                     <div className="bagprice">{sourceFor(x)} · {x.currency || "USD"} {x.price}</div>
+                    {x.commerce_rail === "native_storefront" && (
+                      <div className="bagrail">
+                        NATIVE STOREFRONT · {x.storefront_name || x.storefront_slug || "SELLER"}
+                      </div>
+                    )}
+                    <div className="bagqty" aria-label={`quantity for ${x.title || "item"}`}>
+                      <button type="button" aria-label="decrease quantity" disabled={(x.quantity || 1) <= 1}
+                        onClick={() => bagSetQuantity(x.bag_key || x.id, (x.quantity || 1) - 1)}>−</button>
+                      <span>{x.quantity || 1}</span>
+                      <button type="button" aria-label="increase quantity"
+                        disabled={x.commerce_rail === "native_storefront" && (x.quantity || 1) >= 25}
+                        onClick={() => bagSetQuantity(x.bag_key || x.id, (x.quantity || 1) + 1)}>+</button>
+                    </div>
+                    {x.commerce_rail === "native_storefront" && (
+                      <div className="bagcheckout">
+                        <button
+                          type="button"
+                          className="btn wide"
+                          disabled={x.native_checkout_ready !== true || bagCheckout[x.bag_key || x.id]?.status === "pending"}
+                          onClick={() => startNativeBagCheckout(x)}
+                        >
+                          {x.native_checkout_ready !== true
+                            ? "CHECKOUT NOT ENABLED"
+                            : bagCheckout[x.bag_key || x.id]?.status === "pending"
+                              ? "OPENING SECURE CHECKOUT…"
+                              : bagCheckout[x.bag_key || x.id]?.status === "redirecting"
+                                ? "REDIRECTING…"
+                                : "CHECK OUT THIS SELLER →"}
+                        </button>
+                        <small>
+                          {x.native_checkout_ready === true
+                            ? "Stripe shows the server-calculated ASiLUM passenger fee before payment."
+                            : "This seller’s verified test payment path is not enabled yet."}
+                        </small>
+                        {bagCheckout[x.bag_key || x.id]?.error && (
+                          <span role="alert">{bagCheckout[x.bag_key || x.id].error}</span>
+                        )}
+                      </div>
+                    )}
                     <ColorEvidenceLine item={x} />
                     <OriginLine item={x} />
                     <ProductFitLine item={x} fit={fit} />
                   </div>
-                  <button className="bagx" onClick={() => bagRemove(x.id)}>×</button>
+                  <button className="bagx" aria-label={`remove ${x.title || "item"}`} onClick={() => bagRemove(x.bag_key || x.id)}>×</button>
                 </div>
               ))}
               <div className="bagfees">
-                <div><span>SUBTOTAL</span><b>USD {Math.round(subtotal)}</b></div>
+                <div><span>DISPLAY SUBTOTAL</span><b>USD {(subtotalCents / 100).toFixed(2)}</b></div>
                 <div><span>SOURCES</span><b>{nSources}</b></div>
-                <div className="bagfinal"><span>CHECKOUT</span><b>ON SOURCE SITES</b></div>
+                {nativeLines.length > 0 && <div><span>NATIVE UNITS</span><b>{nativeLines.reduce((n, x) => n + (x.quantity || 1), 0)}</b></div>}
+                {externalLines.length > 0 && <div><span>EXTERNAL UNITS</span><b>{externalLines.reduce((n, x) => n + (x.quantity || 1), 0)}</b></div>}
+                <div className="bagfinal"><span>CHECKOUT</span><b>{nativeLines.length ? "PARTITIONED BY SELLER" : "ON SOURCE SITES"}</b></div>
               </div>
               <button className="btn ghost wide" onClick={() => setBagHow((v) => !v)}>
                 HOW PURCHASES WORK
               </button>
               {bagHow && (
                 <Notice onDismiss={() => setBagHow(false)}>
-                  ASILUM does not charge or ship. Open a piece to view its
-                  source or create a purchase request.
+                  External pieces stay on their named source. Native Storefront
+                  pieces remain in this same bag and are partitioned by seller;
+                  the server rechecks price and stock, then shows the ASiLUM
+                  passenger fee before payment. Storefront checkout stays off
+                  until that seller&apos;s test-mode payment path is verified.
                 </Notice>
               )}
             </>
@@ -1007,4 +1082,3 @@ function OsStatus({ bagCount, guideOn, pathname }) {
     </footer>
   );
 }
-

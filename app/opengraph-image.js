@@ -56,7 +56,7 @@ const MICHROMA = readFileSync(join(FONT_DIR, "michroma.ttf"));
 const STM = readFileSync(join(FONT_DIR, "sharetech.ttf"));
 
 export const alt =
-  "*ASILUM magazine — personalized fashion terminal. A demo archive of synthetic sample records.";
+  "*ASILUM magazine — personalized fashion terminal. Native Storefronts and a labeled demo archive.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -210,7 +210,7 @@ export default function OpengraphImage() {
             </div>
             <div style={{ display: "flex", height: 1, marginTop: 22, background: FAINT, opacity: 0.7 }} />
             <div style={{ display: "flex", marginTop: 18, fontSize: 22, letterSpacing: 3, color: GREY }}>
-              A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS
+              NATIVE STOREFRONTS + LABELED DEMO ARCHIVE
             </div>
           </div>
         </div>

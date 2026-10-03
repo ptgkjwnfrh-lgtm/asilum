@@ -61,6 +61,15 @@ export async function POST(req) {
   const quota = await consumeRateLimit({ scope: "checkout", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
 
+  // Native Storefront goods have their own connected-account rail and exact
+  // passenger-fee policy. They must never create a historical referral ticket
+  // or inherit its Founders fee, even if a client calls this route directly.
+  const item = await resolveProduct(itemId);
+  if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
+  if (item.commerce_rail === "native_storefront") {
+    return NextResponse.json({ error: "native Storefront items require native checkout" }, { status: 409 });
+  }
+
   // First-purchase identity: accepted only while the vault holds none.
   if (body.profile && typeof body.profile === "object") {
     const existing = await getBuyerProfile(user);
@@ -85,7 +94,6 @@ export async function POST(req) {
   if (result.status !== 200) {
     return NextResponse.json({ error: result.error }, { status: result.status });
   }
-  const item = await resolveProduct(itemId);
   const pub = item ? publicProduct(item) : null;
   return NextResponse.json({
     order: result.orderId,
@@ -133,6 +141,9 @@ export async function GET(req) {
   if (itemParam) {
     const item = await resolveProduct(itemParam);
     if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
+    if (item.commerce_rail === "native_storefront") {
+      return NextResponse.json({ error: "native Storefront items require native checkout" }, { status: 409 });
+    }
     const pub = publicProduct(item);
     const amountCents = Math.round(Number(item.price) * 100);
     const feeCents = ticketFeeCents(amountCents);

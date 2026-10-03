@@ -37,6 +37,7 @@ import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
+import StorefrontTab from "../components/StorefrontTab.jsx";
 import {
   ColorEvidenceLine, OriginLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
@@ -107,10 +108,14 @@ export default function ProfilePage() {
     return () => window.removeEventListener("asilum:follow", read);
   }, []);
 
-  // The shell's ACCOUNT link lands on /profile#access — open that tab, on
-  // fresh mounts AND on hash-only changes while already here.
+  // ACCOUNT and the one native STOREFRONT live as Profile subviews. Open a
+  // named subview on fresh mounts and hash-only changes while already here;
+  // every other fragment keeps the normal POSTS default.
   useEffect(() => {
-    const onHash = () => { if (window.location.hash === "#access") setTab("account"); };
+    const onHash = () => {
+      if (window.location.hash === "#access") setTab("account");
+      if (window.location.hash === "#storefront") setTab("storefront");
+    };
     onHash();
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -290,6 +295,7 @@ export default function ProfilePage() {
             {[
               ["posts", "POSTS"], ["bag", "CLOSET"], ["brands", "BRANDS"],
               ["wardrobe", "WARDROBE"], ["room", "ROOM"], ["sizing", "SIZING"],
+              ["storefront", "STOREFRONT"],
               ["account", "ACCOUNT"],
             ].map(([k, label]) => (
               <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
@@ -335,6 +341,7 @@ export default function ProfilePage() {
             {tab === "wardrobe" && <WardrobeTab />}
             {tab === "room" && <RoomEditor />}
             {tab === "sizing" && <MeasurementsEditor />}
+            {tab === "storefront" && <StorefrontTab />}
             {tab === "account" && (
               <>
                 <ProfileAccess />

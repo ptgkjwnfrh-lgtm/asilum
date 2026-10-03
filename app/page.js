@@ -17,7 +17,8 @@ import { fitPhrase } from "../lib/brain/sizing.js";
 import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor, bagAdd, safeExternalUrl,
-  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
+  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON,
+  newOperationId } from "../lib/client.js";
 import {
   observationOn, followedBrands, setFollowBrand, isDemoItem, DEMO_LABEL, DEMO_NOTE,
 } from "../lib/social.js";
@@ -34,6 +35,7 @@ import HotlistStrip from "./components/HotlistStrip.jsx";
 import { SAMPLE_POSTS, WIRE_CATEGORIES, readWireRefs } from "../lib/model/media.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchWire, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
+import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -50,7 +52,11 @@ const DWELL_MIN_MS = 2000;
 // was only half visible is never marked examined).
 const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.innerHeight);
 
-const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
+const GARMENT_CATEGORIES = new Set(["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories", "clothing"]);
+const CATEGORIES = [
+  "tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories",
+  ...STOREFRONT_CATEGORIES.map((category) => category.id),
+];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 const BRIDGE_REASON = {
@@ -157,6 +163,7 @@ export default function Home() {
   const promptRef = useRef("");
   const boardParamRef = useRef("");
   const uidRef = useRef(null);
+  const nativeCheckoutKeysRef = useRef(new Map());
   const loadingMoreRef = useRef(false);
   const feedGenRef = useRef(0);
   const sentinelRef = useRef(null);
@@ -929,9 +936,43 @@ export default function Home() {
   // purchasable:true — the gate's verdict, never re-derived client-side.
   // The redirect goes to Stripe's hosted page; refusals show the server's
   // own words.
-  function startPurchase(item) {
-    // The housing (/checkout) is the ONE buyer flow — fee, ticket, source
-    // hand-off, with the piece on screen throughout (owner order, 20 Aug).
+  async function startPurchase(item) {
+    if (item?.commerce_rail === "native_storefront") {
+      if (item.native_checkout_ready !== true) {
+        setNotice("Native Storefront checkout is not enabled for this seller yet.");
+        return;
+      }
+      const operation = `${item.id}:${item.default_variant_id || "default"}:1`;
+      let idempotencyKey = nativeCheckoutKeysRef.current.get(operation);
+      if (!idempotencyKey) {
+        idempotencyKey = newOperationId();
+        nativeCheckoutKeysRef.current.set(operation, idempotencyKey);
+      }
+      try {
+        const response = await postJSON("/api/checkout", {
+          user: uidRef.current,
+          itemId: item.id,
+          variantId: item.default_variant_id || null,
+          quantity: 1,
+          idempotencyKey,
+        });
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(body.error || "Native checkout is unavailable.");
+        if (body.commerceRail !== "native_storefront") {
+          throw new Error("The server did not return a native Storefront checkout.");
+        }
+        const target = new URL(String(body.url || ""));
+        if (target.protocol !== "https:" || target.hostname !== "checkout.stripe.com") {
+          throw new Error("The payment provider returned an unsafe checkout address.");
+        }
+        window.location.assign(target.href);
+      } catch (error) {
+        setNotice(error?.message || "Native checkout is unavailable.");
+      }
+      return;
+    }
+    // Existing external records keep their ticket/source hand-off housing.
+    // Native records never enter that legacy fee rail.
     window.location.href = "/checkout?item=" + encodeURIComponent(item.id);
   }
 
@@ -990,6 +1031,9 @@ export default function Home() {
     },
     { core: 0, discovery: 0, reach: 0, catalog: 0, related: 0 },
   );
+  const demoOnly = items.length > 0 && items.every(isDemoItem);
+  const hasDemo = items.some(isDemoItem);
+  const hasNative = items.some((item) => item.commerce_rail === "native_storefront");
 
   return (
     <div className="wrap ctr">
@@ -1007,13 +1051,16 @@ export default function Home() {
           </div>
         )}
       </header>
-      {/* DEMO MODE banner (owner ruling, Aug 16). Deliberately in normal flow
+      {/* Catalog honesty banner. Deliberately in normal flow
           directly under the masthead rather than inside `.cthead`, which is a
           laid-out row — dropped in there it fought the headline for the same
           space. A per-card DEMO flag tells you about one record; only a
           page-level statement tells you the whole shelf is sample data. */}
       <p className="demoline" role="note">
-        <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
+        {demoOnly ? <><b>DEMO CATALOG</b> — this pass contains synthetic sample records with placeholder imagery; they are not inventory or for sale.</>
+          : hasDemo ? <><b>MIXED CATALOG</b> — native Storefront inventory is offered beside clearly marked synthetic sample records. Only server-stamped native listings can check out.</>
+            : hasNative ? <><b>NATIVE CATALOG</b> — these Storefront records share the Feed, search, bag and product detail; payment readiness is stated on each listing.</>
+              : <><b>CATALOG SOURCES</b> — each piece names what backs it; no missing source is treated as inventory.</>}
         {" "}{guideOn ? "The Asterisk system routed this edit through your Passport." : "The Asterisk system is paused — a general edit."}
       </p>
 
@@ -1097,7 +1144,11 @@ export default function Home() {
           <div className="filters">
             <select aria-label="filter by category"
               value={filters.category}
-              onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
+              onChange={(e) => setFilters((f) => ({
+                ...f,
+                category: e.target.value,
+                fitsMe: e.target.value && !GARMENT_CATEGORIES.has(e.target.value) ? false : f.fitsMe,
+              }))}
             >
               <option value="">all categories</option>
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -1108,10 +1159,12 @@ export default function Home() {
               value={filters.maxPrice}
               onChange={(e) => setFilters((f) => ({ ...f, maxPrice: e.target.value }))}
             />
-            <label className="toggle" title={fit.usualSize ? "" : "set your size in PROFILE first"}>
+            <label className="toggle" title={filters.category && !GARMENT_CATEGORIES.has(filters.category)
+              ? "fit applies to clothing only"
+              : (fit.usualSize ? "" : "set your size in PROFILE first")}>
               <input
                 type="checkbox"
-                disabled={!fit.usualSize}
+                disabled={!fit.usualSize || !!(filters.category && !GARMENT_CATEGORIES.has(filters.category))}
                 checked={filters.fitsMe}
                 onChange={(e) => setFilters((f) => ({ ...f, fitsMe: e.target.checked }))}
               />
@@ -1374,6 +1427,10 @@ export default function Home() {
                     is part of the sample record, but the row says what it is. */}
                 {isDemoItem(modal) ? (
                   <span className="demoflag">{DEMO_NOTE}</span>
+                ) : modal.commerce_rail === "native_storefront" ? (
+                  <span className="demoflag">
+                    {modal.native_checkout_ready === true ? "native Storefront checkout" : "native Storefront checkout pending verification"}
+                  </span>
                 ) : (
                   <>
                     <button className="buy" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "inherit" }}

@@ -29,13 +29,14 @@ const PASSPORT_MANIFEST = [
   "moodboards + saved pieces",
   "wardrobe + measurements",
   "follows, corrections, purchase tickets",
+  "one free native Storefront draft when you are ready to sell",
 ];
 
 // What each kind actually gets. Written as the difference, not as a pitch:
-// someone choosing here is choosing which half of the product exists for them,
-// and the storefront half REMOVES things.
+// someone choosing here is choosing Passport surfaces or the business
+// analytics/watchtower. Native Storefront no longer forces that trade.
 const BUSINESS_MANIFEST = [
-  "a storefront profile you lay out yourself",
+  "one free native Storefront profile, also available to Passport accounts",
   "analytics — reach, clicks, follows, foot traffic, earnings",
   "the watch tower — what this catalog's readers already wear",
   "direct messages, always open (readers can close theirs; you cannot)",
@@ -43,7 +44,7 @@ const BUSINESS_MANIFEST = [
 
 const KINDS = [
   { id: "passport", icon: "✚", name: "PASSPORT", what: "you are here to look" },
-  { id: "business", icon: "▤", name: "BUSINESS", what: "you are here to sell" },
+  { id: "business", icon: "▤", name: "BUSINESS", what: "you operate a brand" },
 ];
 
 function markSeen() {
@@ -214,8 +215,8 @@ export default function AccountSignup() {
         // The kind is recorded AFTER the account exists and is NOT allowed to
         // fail the signup. If this call does not land the account is a
         // passport, which is the safe direction — a business can be corrected
-        // at the desk, whereas silently handing someone a storefront they did
-        // not ask for cannot be undone by them.
+        // at the desk, whereas silently removing Passport surfaces in favor of
+        // analytics/watchtower cannot be undone by them here.
         markSeen();
         const uuid = data.session.user?.id || data.user?.id;
         await recordAge(uuid);
@@ -331,7 +332,7 @@ export default function AccountSignup() {
           <>
             <div className="psub">{creating ? "OPEN AN ACCOUNT" : "SIGN IN"}</div>
             <h2>
-              {creating && business ? "Open a storefront" : "Hold your Passport"}
+              {creating && business ? "Open a business ledger" : "Hold your Passport"}
               <span style={{ color: "var(--red)" }}>.</span>
             </h2>
 
@@ -356,8 +357,8 @@ export default function AccountSignup() {
 
             <p className="deck">
               {creating && business
-                ? "a storefront account trades the passport for a ledger: who reaches you, what they already wear, and what they buy. you get analytics and the watch tower instead of the stylist and discovery."
-                : "an account keeps your Passport — the map of taste this device is building — safe across devices. private by default, inspectable any time, erasable in one move."}
+                ? "a business account trades Passport discovery and stylist surfaces for a brand ledger: who reaches you, what they already wear, and what they buy. Native Storefront itself is free and available to either account kind."
+                : "an account keeps your Passport — the map of taste this device is building — safe across devices. It can also open one free native Storefront without giving the Passport up."}
             </p>
 
             <ul className="signuplist">

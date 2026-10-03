@@ -9,11 +9,9 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 // og:url below resolve; without it Next emits them relative and they are
 // worthless to a crawler.
 //
-// The description says "synthetic sample records" because they are. The
-// catalog is a demo (owner ruling, #212) and every piece carries a DEMO label
-// on the page — so the sentence a search result shows must not promise
-// inventory the site does not have. "The taste engine is real; the clothes are
-// not" is the same claim the catalog makes to a reader's face.
+// The catalog can now contain both native Storefront inventory and the older
+// demo archive. Metadata names both; each product surface carries the more
+// specific provenance and checkout-readiness disclosure.
 //
 // Product JSON-LD is deliberately absent (the catalog is synthetic). og:image
 // is NOT absent any more — app/opengraph-image.js generates it. See
@@ -25,12 +23,12 @@ export const metadata = {
     template: "%s · *ASILUM magazine",
   },
   description:
-    "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records — the learning is real; the clothes are not.",
+    "A personalized culture and style terminal with native Storefront goods and clearly labeled synthetic sample records, routed through your optional Asterisk Passport.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "*ASILUM magazine — personalized fashion terminal",
     description:
-      "A personalized fashion terminal that learns what you wear and what you are looking for. The catalog is a demo archive of synthetic sample records.",
+      "A personalized culture and style terminal with native Storefront goods and clearly labeled synthetic sample records.",
     url: siteUrl("/"),
     siteName: "*ASILUM magazine",
     type: "website",

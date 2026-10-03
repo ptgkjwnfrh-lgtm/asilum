@@ -191,6 +191,24 @@ export default function MailDesk() {
 
   useEffect(() => startSummaryPolling(poll, { intervalMs: POLL_MS }), [poll]);
 
+  // Public profile/storefront surfaces open the existing mail desk rather
+  // than growing a second composer. The handle is only a search seed; the DM
+  // API still resolves the account, permissions, blocks and delivery rules.
+  useEffect(() => {
+    function openToHandle(event) {
+      const handle = String(event?.detail?.handle || "").trim().toLowerCase().replace(/^\*/, "");
+      if (!/^[a-z0-9-]{3,24}$/.test(handle)) return;
+      showThread(null);
+      setFolder("inbox");
+      setSearchQ("");
+      setQuery(handle);
+      setNote("");
+      setOpen(true);
+    }
+    window.addEventListener("asilum:dm-open", openToHandle);
+    return () => window.removeEventListener("asilum:dm-open", openToHandle);
+  }, [showThread]);
+
   const loadFolder = useCallback(async (which, more = "") => {
     // Every request carries a token, and only the CURRENT one may be applied.
     // Without it, a MORE ↓ page for the inbox could land after a switch to
