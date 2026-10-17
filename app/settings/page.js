@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, authorizedFetch, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
+import { hapticsEnabled, setHapticsEnabled, haptic } from "../../lib/haptics.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 // The rack's sign-in/log-out row (owner order, Aug 13): module 03 shows
@@ -72,17 +73,17 @@ export default function SettingsPage() {
   }, []);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
-  const [iface, setIface] = useState("01");
   const [theme, setTheme] = useState("system");
+  const [haptics, setHaptics] = useState(true);
 
   useEffect(() => {
     setUid(getUid() || "");
     setObserve(observationOn());
-    setIface(document.documentElement.dataset.model || "01");
     // "system" = no stored pick; the shell follows the device preference.
     let storedTheme = null;
     try { storedTheme = window.localStorage.getItem("asilum-theme"); } catch {}
     setTheme(storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system");
+    setHaptics(hapticsEnabled());
     // Clear stale flags: the old simulated-import "connected" marker, and
     // the boot-sweep opt-out left behind when the boot sweep was deleted.
     try {
@@ -115,11 +116,6 @@ export default function SettingsPage() {
     setNotice(`personalization deleted; retained: ${(data.retained || []).join(", ")}`);
   }
 
-  function setInterfaceMode(mode) {
-    setIface(mode);
-    document.documentElement.dataset.model = mode;
-    try { window.localStorage.setItem("asilum-model", mode); } catch {}
-  }
   function setThemeMode(mode) {
     setTheme(mode);
     if (mode === "system") {
@@ -141,21 +137,21 @@ export default function SettingsPage() {
       <section className="rkmod" aria-label="appearance">
         <div className="rkhead"><b>01</b> APPEARANCE <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
         <div className="rkrow">
-          <div className="rkname">Interface mode</div>
-          <div className="rkctl">
-            <button className={"fitbtn" + (iface === "01" ? " active" : "")} onClick={() => setInterfaceMode("01")}>MODULE RAIL</button>
-            <button className={"fitbtn" + (iface === "02" ? " active" : "")} onClick={() => setInterfaceMode("02")}>ORB HUB</button>
-          </div>
-          <div className="rkdesc">MODULE RAIL is the standard instrument stack; ORB HUB softens the surfaces.</div>
-        </div>
-        <div className="rkrow">
           <div className="rkname">Theme</div>
           <div className="rkctl">
             <button className={"fitbtn" + (theme === "system" ? " active" : "")} onClick={() => setThemeMode("system")}>MATCH DEVICE</button>
-            <button className={"fitbtn" + (theme === "dark" ? " active" : "")} onClick={() => setThemeMode("dark")}>PHOSPHOR DARK</button>
-            <button className={"fitbtn" + (theme === "light" ? " active" : "")} onClick={() => setThemeMode("light")}>ICE LIGHT</button>
+            <button className={"fitbtn" + (theme === "dark" ? " active" : "")} onClick={() => setThemeMode("dark")}>DARK</button>
+            <button className={"fitbtn" + (theme === "light" ? " active" : "")} onClick={() => setThemeMode("light")}>LIGHT</button>
           </div>
-          <div className="rkdesc">MATCH DEVICE follows your system; or pin phosphor dark / ice light.</div>
+          <div className="rkdesc">MATCH DEVICE follows your system; or pin dark / light.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Haptics</div>
+          <div className="rkctl">
+            <button className={"fitbtn" + (haptics ? " active" : "")} aria-pressed={haptics} onClick={() => { setHapticsEnabled(true); setHaptics(true); haptic("toggle"); }}>ON</button>
+            <button className={"fitbtn" + (!haptics ? " active" : "")} aria-pressed={!haptics} onClick={() => { setHapticsEnabled(false); setHaptics(false); }}>OFF</button>
+          </div>
+          <div className="rkdesc">The disc's ticks and the keys' presses as vibration, where the device has a motor. OFF keeps every action and its visual press.</div>
         </div>
         <div className="rkrow">
           <div className="rkname">Design console</div>

@@ -41,7 +41,11 @@ test("no CRT: scanlines, the grid, the glow and the wash are gone from the token
     assert.match(body, /--backlight:\s*none;/, block + " --backlight");
     assert.match(body, /--wash:\s*none;/, block + " --wash");
   }
-  assert.match(rules, /\.os-crt, \.os-blob, \.os-plus, \.os-frame, \.os-status \{ display: none !important; \}/);
+  // (second pass, 17 Oct) the chrome's rules are DELETED, not hidden — and so
+  // are the header's, the old thumb bar's and the ORB HUB second interface's
+  for (const sel of [".os-crt", ".os-blob", ".os-plus", ".os-frame", ".os-status", ".tophead", ".thbar", ".marquee", ".snav", ".acctpanel", ".bagpanel", ".searchpanel", "[data-model", "--tabbar-h"]) {
+    assert.ok(!rules.includes(sel), sel + " must be gone from globals.css");
+  }
   // code, not comments: the shell's header explains what left and names it
   const shell = read("app/shell.js").replace(/\{\/\*[\s\S]*?\*\/\}/g, "").split("\n").filter((l) => !/^\s*\/\//.test(l)).join("\n");
   for (const cls of ["os-crt", "os-blob", "os-plus", "os-frame", "OsStatus", "tophead", "marquee"]) {

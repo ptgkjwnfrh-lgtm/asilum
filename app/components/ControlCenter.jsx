@@ -25,14 +25,23 @@
 // key beside it opens the honest MessagesSheet. CSS hides whichever is
 // not needed (.cckey-mail:has(.maildesk) .ccfallback).
 //
-// The POST disc opens the one composer as a sheet in this slice. Slice 2
-// turns it into Post Selection (the six types on the disc) and, inside a
-// popup, the session dial.
+// THE POST DISC HAS TWO LIVES (blueprint 1.25, 1.26): with no popup up it
+// opens Post Selection — the six types on the disc; while a popup is up it
+// IS the session indicator, with the `01/10` counter, and a tap opens the
+// session hub. A long hold on it opens the compact menu (New Session).
+// Posting is unavailable inside a popup; the passenger closes it first.
+//
+// THE FEED KEY, TWICE (1.13): the first tap on the active tab dismisses the
+// popup and reveals the tab where it was; the second refreshes the tab,
+// which starts at the top (1.14).
 
 import { useEffect, useRef, useState } from "react";
 import { deckFor } from "../../lib/nav.js";
 import { DECK, HOUSE_LINES, SEARCH_TOGGLES, scopeFor } from "../../lib/dock.js";
-import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, closeSheet } from "../../lib/dockstate.js";
+import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
+import { counter, activeSession } from "../../lib/sessions.js";
+import { LONG_PRESS_MS } from "../../lib/disc.js";
+import { haptic } from "../../lib/haptics.js";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
 import { usePlacements } from "./Placements.jsx";
@@ -121,8 +130,39 @@ export default function ControlCenter({ kind, pathname }) {
       setTimeout(() => fieldRef.current && fieldRef.current.focus(), 30);
       return;
     }
-    if (id === "post") { if (dock.sheet && dock.sheet.id === "post") closeSheet(); else openSheet("post"); return; }
+    if (id === "post") {
+      if (popupUp) { haptic("press"); toggleHub(); return; }
+      if (dock.sheet && (dock.sheet.id === "postselect" || dock.sheet.id === "post")) { closeSheet(); return; }
+      openSheet("postselect");
+      return;
+    }
     if (id === "messages") { openSheet("messages"); return; }
+  }
+
+  const popupUp = !!dock.sheet || !!dock.hub.hubOpen;
+  const active = activeSession(dock.hub);
+  const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
+  const [menu, setMenu] = useState(false);
+  const hold = useRef(null);
+  function holdStart(e) {
+    if (e.button) return;
+    hold.current = { fired: false, t: setTimeout(() => { hold.current.fired = true; haptic("press"); setMenu(true); }, LONG_PRESS_MS) };
+  }
+  function holdEnd() {
+    const h = hold.current; hold.current = null;
+    if (!h) return;
+    clearTimeout(h.t);
+    if (!h.fired) press("post");
+  }
+  function holdCancel() { const h = hold.current; hold.current = null; if (h) clearTimeout(h.t); }
+
+  function feedTap(e, dest) {
+    if (dock.sheet || dock.hub.hubOpen) { e.preventDefault(); closeSheet(); return; }
+    if ((pathname || "/") === dest.href && dest.href === "/") {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent("asilum:feed-refresh"));
+      try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { window.scrollTo(0, 0); }
+    }
   }
 
   const sheetIs = (id) => !!(dock.sheet && dock.sheet.id === id);
@@ -132,19 +172,42 @@ export default function ControlCenter({ kind, pathname }) {
       const dest = k.id === "feed" ? feed : account;
       const cur = dest.match(pathname || "/") && !dock.sheet;
       return (
-        <a key={k.id} className={"tabl" + (cur ? " cur" : "")} href={dest.href} aria-current={cur ? "page" : undefined}>
+        <a key={k.id} className={"tabl" + (cur ? " cur" : "")} href={dest.href} aria-current={cur ? "page" : undefined} onClick={k.id === "feed" ? (e) => feedTap(e, dest) : undefined}>
           <Icon name={dest.icon} size={22} />
           <span className="tbl">{dest.label}</span>
         </a>
       );
     }
     if (k.kind === "disc") {
-      const cur = sheetIs("post");
+      const cur = sheetIs("post") || sheetIs("postselect") || !!dock.hub.hubOpen;
+      const indicator = popupUp;
       return (
-        <button key={k.id} type="button" className={"tabl ccpost" + (cur ? " cur" : "")} onClick={() => press("post")} aria-label="post" aria-pressed={cur}>
-          <span className="ccdisc"><Icon name="post" size={24} /></span>
-          <span className="tbl">{k.label}</span>
-        </button>
+        <span key={k.id} className="ccpostwrap">
+          <button
+            type="button"
+            className={"tabl ccpost" + (cur ? " cur" : "") + (indicator ? " ccsessions" : "")}
+            aria-label={indicator ? "sessions " + sessionCount : "post"}
+            aria-pressed={cur}
+            onPointerDown={holdStart}
+            onPointerUp={holdEnd}
+            onPointerLeave={holdCancel}
+            onPointerCancel={holdCancel}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <span className="ccdisc">
+              <Icon name={indicator ? "disc" : "post"} size={24} />
+              {indicator && sessionCount ? <b className="cccount" aria-hidden="true">{sessionCount}</b> : null}
+            </span>
+            <span className="tbl">{indicator ? "SESSIONS" : k.label}</span>
+          </button>
+          {menu ? (
+            <div className="ccmenu" role="menu" aria-label="session actions">
+              <button type="button" role="menuitem" onClick={() => { setMenu(false); haptic("confirm"); newSession(); }}>NEW SESSION</button>
+              <button type="button" role="menuitem" onClick={() => { setMenu(false); openHub(); }}>SESSIONS</button>
+              <button type="button" role="menuitem" onClick={() => setMenu(false)}>CANCEL</button>
+            </div>
+          ) : null}
+        </span>
       );
     }
     if (k.id === "messages") {

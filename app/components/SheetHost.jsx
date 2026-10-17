@@ -1,20 +1,28 @@
 "use client";
 
-// app/components/SheetHost.jsx — THE ONE SHEET (V.2 brief, owner, 1 Oct
-// 2026, decision 2): secondary surfaces open at about 60% of the available
-// height over the root, which stays visible behind a muted teal backdrop
-// (the primary reference's modal atmosphere, used ONLY here). One sheet
-// exists at a time; details navigate inside it with Back; opening another
-// replaces it. It grows to the full height for the keyboard, large text
-// and long editing (the EXPAND control, and automatically when a field
-// inside it takes focus). Escape, the scrim and Close all close it
-// (components/dismiss.js); focus is trapped while it is open.
+// app/components/SheetHost.jsx — THE POPUP (V.2 Blueprint, owner, 17 Oct
+// 2026, chapter 1; the 1 Oct brief decision 2 where the blueprint is
+// silent). Secondary surfaces open at about 60% of the available height
+// over the root, which stays visible behind the scrim. One popup is on
+// screen at a time; a new one replaces it and the previous stays in the
+// session's history (1.1). The gesture grammar (1.2): Back and a swipe
+// right restore the previous popup; a swipe down from the header dismisses;
+// tapping outside dismisses lightweight popups and never a checkout or an
+// edit in progress. Dismissing keeps the session (1.3). It grows to the
+// full height for the keyboard, large text and long editing (EXPAND, and
+// automatically when a field inside it takes focus). Escape closes it
+// (components/dismiss.js); focus is trapped while it is open. While a popup
+// is up the fixtures shrink and go translucent (1.12) — `data-popup` on the
+// root does that in CSS.
 //
-// The host knows nothing about what a sheet shows: it renders the view the
-// dock state names (lib/dockstate.js) from the table below.
+// The host knows nothing about what a popup shows: it renders the view the
+// hub names (lib/dockstate.js, lib/sessions.js) from the table below. The
+// session carousel is the "sessions" view, opened from the deck's session
+// indicator.
 
 import { useEffect, useRef, useState } from "react";
-import { useDock, closeSheet, backSheet } from "../../lib/dockstate.js";
+import { useDock, closeSheet, backSheet, closeHub, hydrateHub } from "../../lib/dockstate.js";
+import { counter } from "../../lib/sessions.js";
 import { useEscape, useFocusTrap } from "./dismiss.js";
 import Icon from "./Icons.jsx";
 import LikesSheet from "./LikesSheet.jsx";
@@ -24,10 +32,9 @@ import OverviewSheet from "./OverviewSheet.jsx";
 import BagSheet from "./BagSheet.jsx";
 import NoticesSheet from "./NoticesSheet.jsx";
 import WireComposer from "./WireComposer.jsx";
+import SessionCarousel from "./SessionCarousel.jsx";
+import PostSelection from "./PostSelection.jsx";
 
-// V.2 (blueprint, 17 Oct 2026): BAG and NOTICES open from the Info Dock;
-// POST is the deck's center disc and opens the one composer here until the
-// disc becomes Post Selection in slice 2.
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
   search: { title: "SEARCH", render: (p) => <SearchSheet {...p} /> },
@@ -35,24 +42,39 @@ const VIEWS = {
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
   bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },
   notices: { title: "NOTICES", render: (p) => <NoticesSheet {...p} /> },
-  post: { title: "POST", render: (p) => <WireComposer compact {...p} /> },
+  post: { title: "POST", render: (p) => <WireComposer compact {...p} />, heavy: true },
+  postselect: { title: "POST", render: (p) => <PostSelection {...p} />, roomy: true },
+  sessions: { title: "SESSIONS", render: (p) => <SessionCarousel {...p} />, roomy: true },
+  // a payment page is never dismissed by a tap outside (1.2); the route
+  // itself arrives with native commerce
+  checkout: { title: "CHECKOUT", render: () => null, heavy: true },
 };
+
+const SWIPE_DOWN = 70;
+const SWIPE_BACK = 80;
 
 export default function SheetHost() {
   const dock = useDock();
   const ref = useRef(null);
   const [tall, setTall] = useState(false);
-  const open = !!dock.sheet;
-  const top = open ? dock.sheet.stack[dock.sheet.stack.length - 1] : null;
+  const hubOpen = !!dock.hub.hubOpen;
+  const popup = dock.sheet;
+  const open = hubOpen || !!popup;
+  const top = hubOpen ? { view: "sessions", props: {} } : popup ? popup.top : null;
   const view = top ? VIEWS[top.view] : null;
-  const hasBack = open && dock.sheet.stack.length > 1;
+  const hasBack = !hubOpen && !!popup && popup.stack.length > 1;
+  const headSwipe = useRef(null);
+  const bodySwipe = useRef(null);
 
-  useEscape(() => (hasBack ? backSheet() : closeSheet()), open);
+  useEffect(() => { hydrateHub(); }, []);
+
+  const dismiss = () => (hubOpen ? closeHub() : closeSheet());
+  useEscape(() => (hasBack ? backSheet() : dismiss()), open);
   useFocusTrap(ref, open);
 
-  // a new sheet opens at its initial height; a field taking focus inside it
+  // a new popup opens at its initial height; a field taking focus inside it
   // lifts it to the full height so the keyboard never covers the input
-  useEffect(() => { setTall(false); }, [dock.sheet && dock.sheet.id]);
+  useEffect(() => { setTall(false); }, [popup && popup.sessionId, top && top.view]);
   useEffect(() => {
     if (!open || !ref.current) return undefined;
     const node = ref.current;
@@ -61,32 +83,53 @@ export default function SheetHost() {
     return () => node.removeEventListener("focusin", onFocus);
   }, [open]);
 
-  // the page behind is inert while a sheet is up: no scroll-through
+  // the page behind is inert while a popup is up: no scroll-through; the
+  // fixtures shrink and go translucent (1.12)
   useEffect(() => {
-    if (!open || typeof document === "undefined") return undefined;
+    if (typeof document === "undefined") return undefined;
+    if (!open) { delete document.documentElement.dataset.popup; return undefined; }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    document.documentElement.dataset.popup = "1";
+    return () => { document.body.style.overflow = prev; delete document.documentElement.dataset.popup; };
   }, [open]);
 
   if (!open || !view) return null;
   const title = top.props && top.props.title ? top.props.title : view.title;
+  const lightweight = !view.heavy;
+  const sessionCount = hubOpen || !popup ? "" : counter(dock.hub, popup.sessionId);
+
+  // swipe down from the header dismisses; swipe right on the body goes back
+  function headDown(e) { headSwipe.current = { y: e.clientY }; }
+  function headUp(e) {
+    const s = headSwipe.current; headSwipe.current = null;
+    if (s && e.clientY - s.y > SWIPE_DOWN) dismiss();
+  }
+  function bodyDown(e) { bodySwipe.current = { x: e.clientX, y: e.clientY }; }
+  function bodyUp(e) {
+    const s = bodySwipe.current; bodySwipe.current = null;
+    if (!s || !hasBack) return;
+    if (e.clientX - s.x > SWIPE_BACK && Math.abs(e.clientY - s.y) < 40) backSheet();
+  }
+
   return (
-    <div className="sheetscrim" onMouseDown={(e) => { if (e.target === e.currentTarget) closeSheet(); }}>
-      <section ref={ref} className={"sheet" + (tall ? " tall" : "")} role="dialog" aria-modal="true" aria-label={title}>
-        <header className="sheethead">
+    <div className="sheetscrim" onMouseDown={(e) => { if (e.target === e.currentTarget && lightweight) dismiss(); }}>
+      <section ref={ref} className={"sheet" + (tall ? " tall" : "") + (view.roomy ? " roomy" : "") + (hubOpen ? " hubsheet" : "")} role="dialog" aria-modal="true" aria-label={title}>
+        <header className={"sheethead" + (hasBack ? " hasback" : "")} onPointerDown={headDown} onPointerUp={headUp}>
           {hasBack ? (
             <button className="sheetbtn" onClick={backSheet} aria-label="back"><Icon name="back" size={20} /><span>BACK</span></button>
           ) : <span className="sheetgrip" aria-hidden="true" />}
-          <h2 className="sheettitle">{title}</h2>
+          <h2 className="sheettitle">{title}{sessionCount ? <small className="sheetcount" aria-label={"session " + sessionCount}>{sessionCount}</small> : null}</h2>
           <div className="sheetacts">
-            <button className="sheetbtn" onClick={() => setTall((t) => !t)} aria-label={tall ? "shrink the sheet" : "expand the sheet"} aria-pressed={tall}>
-              <Icon name={tall ? "minus" : "plus"} size={20} /><span>{tall ? "SHRINK" : "EXPAND"}</span>
-            </button>
-            <button className="sheetbtn" onClick={closeSheet} aria-label="close"><Icon name="close" size={20} /><span>CLOSE</span></button>
+            {!hubOpen ? (
+              <button className="sheetbtn" onClick={() => setTall((t) => !t)} aria-label={tall ? "shrink the popup" : "expand the popup"} aria-pressed={tall}>
+                <Icon name={tall ? "minus" : "plus"} size={20} /><span>{tall ? "SHRINK" : "EXPAND"}</span>
+              </button>
+            ) : null}
+            <button className="sheetbtn" onClick={dismiss} aria-label="close"><Icon name="close" size={20} /><span>CLOSE</span></button>
           </div>
         </header>
-        <div className="sheetbody">{view.render(top.props || {})}</div>
+        <div className="sheetbody" onPointerDown={bodyDown} onPointerUp={bodyUp}>{view.render(top.props || {})}</div>
       </section>
     </div>
   );

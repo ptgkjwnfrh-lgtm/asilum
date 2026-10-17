@@ -260,113 +260,7 @@ button { font-family: var(--helv); }
 @property --cy { syntax: "<length-percentage>"; inherits: true; initial-value: 70%; }
 @property --cs { syntax: "<number>"; inherits: true; initial-value: 0; }
 @property --gs { syntax: "<number>"; inherits: true; initial-value: 0; }
-.tophead {
-  /* a clean STRIP across the whole top, not a bubble (owner, 8 Sep) */
-  position: fixed; top: var(--glass-inset-y, 0px); left: var(--glass-inset-x, 0px); right: var(--glass-inset-x, 0px); z-index: 45;
-  display: flex; flex-direction: column;
-  border-radius: var(--ed-glass-rad, 0px);
-  background: var(--glass);
-  /* CRYSTAL CLEAR in the middle (owner, 8 Sep: "the centre is oddly cloudy,
-     it should fully be crystal clear") — no blur; only the bezel lenses */
-  -webkit-backdrop-filter: saturate(160%);
-  backdrop-filter: saturate(160%);
-  box-shadow: var(--glass-shadow), var(--glass-lip);
-  transition: background 0.4s ease, --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-    --ls 0.45s ease, --gs 0.5s ease;
-  overflow: hidden;
-  isolation: isolate;
-}
-/* Chromium: the bezel lens lives in the SVG filter (shell.js) */
-.tophead[data-refract="1"] {
-  -webkit-backdrop-filter: url(#lg-refract) saturate(160%);
-  backdrop-filter: url(#lg-refract) saturate(160%);
-}
-.tophead[data-glass="deep"] { background: var(--glass-deep); }
-.tophead::before, .tophead::after, .modal.lg::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
-}
-/* the edge: no band of its own (unseen) — a 7px zone, blurred, sharp at the
-   pane's edge, that only REFLECTS what is near it: the pointer's white, the
-   lit word's colour (the lamp seen in the lip). */
-.tophead::after {
-  padding: 7px;
-  background:
-    radial-gradient(300px 150px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--glass-rim-catch) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
-    radial-gradient(260px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 30%), transparent), transparent 70%),
-    var(--glass-rim);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  filter: blur(3px);
-}
-/* the gloss: a soft reflection from the top-left, and the pointer's shine —
-   a tight specular core set a little up and left of the cursor (towards the
-   light), a faint wide sheen around it; both fade when the pointer leaves */
-.tophead::before, .modal.lg::before {
-  background:
-    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
-      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
-      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
-    radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
-    var(--glass-sheen);
-}
-.tophead[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); }
-[data-theme="light"] .tophead[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); }
-.glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
-/* THE LAMPS under the glass. Same rect as the pane (shell.js keeps it in
-   step), one layer below it, so the pane's backdrop-filter blurs and bends
-   this light. --cx/--cy: the current destination. --lx/--ly/--ls: the hovered
-   word, gliding. --gx/--gy/--gs: the pointer. */
-.glass-light {
-  position: fixed; z-index: 44; pointer-events: none;
-  border-radius: var(--ed-glass-rad, 0px);
-  overflow: hidden;
-  /* the pane above is crystal clear, so the lamps soften themselves */
-  filter: blur(14px);
-  /* each lamp is three lights: a small near-white core, the coloured halo,
-     a wide faint spill — under the frost they fuse into one submerged glow */
-  background:
-    radial-gradient(90px 38px at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--lamp-pointer) calc(var(--gs) * 100%), transparent), transparent 70%),
-    radial-gradient(48px 18px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-core) calc(var(--ls) * 100%), transparent), transparent 70%),
-    radial-gradient(150px 56px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 100%), transparent), transparent 70%),
-    radial-gradient(320px 130px at var(--lx) var(--ly), color-mix(in srgb, var(--lamp-hot) calc(var(--ls) * 12%), transparent), transparent 70%),
-    radial-gradient(44px 16px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp-core) calc(var(--cs) * 50%), transparent), transparent 70%),
-    radial-gradient(140px 52px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 100%), transparent), transparent 70%),
-    radial-gradient(300px 120px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 12%), transparent), transparent 70%);
-  transition: --lx 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), --ly 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
-    --ls 0.45s ease, --cx 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cy 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
-    --cs 0.6s ease, --gs 0.5s ease;
-}
-.glass-light[data-lamp="red"] { --lamp-hot: rgba(255, 56, 56, 0.4); --lamp-core: rgba(255, 200, 200, 0.5); }
-[data-theme="light"] .glass-light[data-lamp="red"] { --lamp-hot: rgba(204, 34, 25, 0.25); --lamp-core: rgba(255, 214, 210, 0.5); }
-/* THE MENISCUS: the hovered word is seen through a shallow dome the cursor
-   pulls in the surface (#lg-ripple, shell.js) — Chromium only, like the
-   bezel; the pull is a pixel or two, eased, trailing the pointer */
-.tophead[data-refract="1"] [data-ripple="1"] { filter: url(#lg-ripple); }
-/* the words keep their own glow; the light under them is the lamp's */
-.tophead .snav:hover, .tophead .tbtn:hover, .tophead .mailbtn:hover { text-shadow: var(--glow); }
 
-@media (prefers-reduced-motion: reduce) {
-  .tophead { transition: none; }
-  .tophead::before, .modal.lg::before { background: var(--glass-sheen); }
-  .tophead::after { background: var(--glass-rim); }
-  .glass-light { transition: --ls 0.3s ease, --cs 0.3s ease; }
-}
-.thbar {
-  height: var(--mq-h); display: flex; align-items: center; gap: 18px;
-  border-bottom: 1px solid var(--line); padding: 0 16px;
-}
-.marquee {
-  flex: 1; min-width: 0; height: 100%;
-  overflow: hidden;
-  display: flex; align-items: center;
-}
-.mq { display: flex; white-space: nowrap; animation: mq var(--ed-mq-dur, 24s) linear infinite; }
-.mq span, .mq a { font-family: var(--mich); font-size: var(--ed-fs-mq, 10px); font-weight: 400; letter-spacing: 0.14em; padding-right: 8px; white-space: pre; }
-.mq a:hover { color: var(--sig); text-shadow: var(--glow); }
-.mqlink:hover { color: var(--red); }
-.mqhome { color: var(--red); }
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 .wordmark { flex: none; font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); font-weight: 400; letter-spacing: 0.04em; line-height: 1;
@@ -399,71 +293,20 @@ button { font-family: var(--helv); }
    Recompute if the wordmark size or the tagline text changes. */
 .wordmark small { display: flex; justify-content: space-between; font-family: var(--helv); font-size: 8px;
   letter-spacing: 0; margin-top: 5px; -webkit-text-fill-color: var(--faint); text-shadow: none; }
-
-/* destination row — the seven buttons ride directly under the ticker */
-.topnav {
-  height: var(--nav-h); display: flex; align-items: stretch; gap: 4px;
-  border-bottom: 1px solid var(--line); padding: 0 10px;
-  overflow-x: auto; scrollbar-width: none;
-}
-.topnav::-webkit-scrollbar { display: none; }
-.snavs { flex: 1; display: flex; align-items: stretch; gap: 4px; justify-content: safe center; min-width: 0; overflow-x: auto; scrollbar-width: none; }
-.snavs::-webkit-scrollbar { display: none; }
-.snavwrap { display: flex; align-items: center; gap: 6px; flex: none; }
-/* progressive compression rules live at the END of this file — they must
-   come after every base rule they override, or the cascade eats them. */
-.snav {
-  display: grid; grid-template-columns: 16px 1fr auto; grid-template-rows: auto auto; gap: 0 6px;
-  align-items: center; align-content: center; padding: var(--ed-snav-pad-y, 3px) 10px;
-  border: 1px solid transparent; border-radius: var(--ed-snav-rad, 10px); align-self: center;
-  font-family: var(--mich); font-size: var(--ed-fs-nav, 10.5px); font-weight: 400; letter-spacing: 0.13em;
-  background: none; cursor: pointer; text-align: left; position: relative; white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s;
-}
-.snav .nic { grid-row: 1 / 3; font-family: var(--helv); font-size: 14px; color: var(--grey); text-align: center; }
-.snav .nmeta { grid-column: 2 / 4; font-family: var(--helv); font-size: var(--ed-fs-navmeta, 8.5px); letter-spacing: 0.15em; color: var(--grey); }
-.snav .nled { grid-row: 1 / 3; width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--grey); justify-self: end; }
-.snav:hover { border-color: var(--line); background: var(--bg3); color: var(--sig); }
-.snav.cur { background: var(--bg3); border-color: var(--line); color: var(--sig); text-shadow: var(--glow); }
-.snav.cur .nic { color: var(--sig); }
-.snav.cur .nled { background: var(--red); border-color: var(--red); box-shadow: 0 0 8px var(--red); animation: osblink 1.6s steps(2) infinite; }
-.snav.cur::before { content: ""; position: absolute; left: 4px; top: 7px; bottom: 7px; width: 2px; border-radius: 2px; background: var(--red); box-shadow: 0 0 8px var(--red); }
-.snavsub { display: flex; gap: 6px; }
-.snavsub a { font-size: 8.5px; letter-spacing: 0.16em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
-.snavsub a:hover, .snavsub a.cur { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 @keyframes osblink { 50% { opacity: 0.35; } }
-
-.topright {
-  flex: none; display: flex; align-items: center; gap: 10px;
-  margin-left: auto;
-}
-.tbtn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: none; cursor: pointer; color: var(--ink);
-  font-size: var(--ed-fs-tbtn, 13px); font-weight: 700; letter-spacing: 0.18em; padding: 10px 10px;
-}
-.tbtn svg { width: 17px; height: 17px; flex: none; }
-.tbtn:hover { color: var(--sig); text-shadow: var(--glow); }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
   font-size: 13px; padding: 5px 2px; outline: none; background: transparent;
   font-family: var(--helv);
 }
 
-
 .search:focus { border-bottom-color: var(--sig); }
 .panel {
   position: fixed; z-index: 60; width: 330px; max-height: 70vh; overflow-y: auto;
   background: var(--paper); border: 1px solid var(--line); padding: 16px;
 }
-.bagpanel { top: calc(var(--head-h) + 8px); right: 10px; }
-.acctpanel { bottom: 16px; left: 12px; }
-.phead { font-size: 13px; font-weight: 900; letter-spacing: 0.12em; border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 10px; }
-.psub { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--grey); margin: 16px 0 6px; }
 .pempty { font-family: var(--serif); font-style: italic; color: var(--grey); font-size: 13px; padding: 8px 0; }
-.acctid { font-size: 11px; color: var(--grey); }
 .acctline { font-size: 12px; font-weight: 700; }
-.platformrow { display: flex; flex-wrap: wrap; gap: 6px; }
 .platform {
   border: 1px solid var(--line); background: var(--paper); cursor: pointer;
   font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
@@ -479,7 +322,6 @@ button { font-family: var(--helv); }
 .bagprice { font-size: 12px; color: var(--grey); }
 .bagx { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--grey); }
 .bagx:hover { color: var(--red); }
-.bagtotal { display: flex; justify-content: space-between; padding: 12px 0; font-size: 12px; letter-spacing: 0.08em; }
 
 .main { padding: calc(var(--head-h) + 26px) var(--ed-main-pad-x, 30px) 90px; min-height: 100vh; }
 .wrap { max-width: var(--ed-wrap-w, 1500px); margin: 0 auto; }
@@ -806,9 +648,6 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .fmodes .txtbtn { margin-left: auto; }
 .cravingline { margin: 0 0 14px; }
 .cravnote { font-size: 10px; color: var(--grey); margin: 0 0 8px; }
-
-/* the wire (POST sub-page) — floating transmissions, no boxes, no counters */
-.fwire { max-width: 760px; }
 .fpost { margin: 0 0 18px; }
 .fpost:nth-of-type(even) { margin-left: 26px; }
 .fposttext { margin: 0 0 3px; font-size: 14.5px; line-height: 1.5; max-width: 56ch; }
@@ -984,17 +823,6 @@ a.dz:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
   .mimg img { min-height: 0; max-height: 46vh; }
 }
 
-/* ---- Sizing form (account panel) ---- */
-.fitform { display: flex; flex-wrap: wrap; gap: 12px; }
-.fitform label {
-  display: flex; flex-direction: column; gap: 4px;
-  font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey);
-}
-.fitform select, .fitform input {
-  min-width: 84px; padding: 7px 8px; border: 1px solid var(--line);
-  background: var(--paper); color: var(--ink); font-size: 13px; font-family: var(--helv);
-}
-
 /* ---- Hotlist / editorial ---- */
 .hlrow {
   display: flex; align-items: center; gap: 20px;
@@ -1017,7 +845,6 @@ div.hlrow.static { cursor: default; }
   padding: var(--ed-pad-fitbtn-y, 7px) var(--ed-pad-fitbtn-x, 14px); border: 1px solid var(--line); background: var(--paper); cursor: pointer;
 }
 .fitbtn:hover, .fitbtn.active { background: var(--ink); color: var(--paper); }
-.fitnote { font-size: 12px; color: var(--grey); }
 .fitnote.dim { color: var(--faint); }
 
 .statshead { margin: 30px 0 8px; font-size: var(--ed-fs-statshead, 12px); font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -1069,7 +896,6 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .tab.cur { color: var(--red); }
 .tab.cur::after { content: " *"; }
 
-
 /* (The home modules band — cubes, observation lines, the slide — left with
    the Aug 12 catalog strip-down; .modmore survives for UserBits pagers.) */
 .modmore { background: none; border: none; cursor: pointer; font-size: 10px; font-weight: 800; letter-spacing: 0.1em; color: var(--grey); padding: 6px 0 0; }
@@ -1097,42 +923,10 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 }
 .usearch input:focus { border-color: var(--sig); }
 .usearchhits { margin-top: 4px; }
-
-/* ---- Multi-search dropdown ---- */
-.searchpanel {
-  position: fixed; top: var(--head-h); right: 10px; z-index: 70; width: 360px;
-  max-height: 65vh; overflow-y: auto;
-  background: var(--paper); border: 1px solid var(--line); padding: 12px 14px;
-}
-.shit { display: block; padding: 6px 0; font-size: 13px; font-weight: 700; border-bottom: 1px solid var(--line); }
-.shit:hover { color: var(--red); }
-.shit.item { display: flex; align-items: center; gap: 10px; }
-.shit.item img { width: 30px; height: 40px; object-fit: cover; flex: none; }
-.shit.item span { flex: 1; min-width: 0; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.shit.item em { font-style: normal; font-size: 10px; color: var(--grey); flex: none; }
-.searchguide {
-  display: flex; align-items: center; gap: 7px; width: fit-content; max-width: 100%;
-  border-left: 2px solid var(--line); padding: 4px 0 4px 10px; margin: 8px 0 12px;
-  font-size: 10px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase;
-}
-
-/* Honest search disclosure (Aug 5): words the catalog could not match are
-   said out loud instead of silently dropped. Same voice as .searchguide,
-   lower contrast — it reports, it does not shout. Tokens only. */
-.searchnote {
-  display: flex; align-items: baseline; gap: 7px; width: fit-content; max-width: 100%;
-  border-left: 1px solid var(--line); padding: 4px 0 4px 9px; margin: -6px 0 12px;
-  font-size: 10px; letter-spacing: 0.06em; color: var(--grey); text-transform: lowercase;
-}
-.searchguide span { color: var(--grey); font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
-.searchguide a { margin-left: auto; border-bottom: 1px solid var(--sig); }
-.searchguide.off { border-left-style: dashed; color: var(--grey); }
-.searchpanel .searchguide { width: 100%; margin: 0 0 8px; }
 .asearchtoggle {
   flex: none; min-width: 44px; padding: 5px 9px; margin-left: auto;
   font-size: 9px; letter-spacing: 0.1em;
 }
-.topright .asearchtoggle { margin-left: 4px; white-space: nowrap; }
 
 /* ---- Bag fees ---- */
 .bagfees { padding: 10px 0 2px; }
@@ -1177,15 +971,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .elmast { font-family: var(--mich); font-size: clamp(30px, 5vw, 60px); font-weight: 700; letter-spacing: 0.02em; line-height: 1; text-transform: uppercase; margin: 10px 0 2px; }
 .elnote { display: flex; align-items: center; gap: 8px; font-size: 10.5px; color: var(--grey); margin: 0 0 14px; }
 .elhot { margin-bottom: 46px; }
-/* clean vertical placement — the hotlist never staggers (owner order,
-   Aug 13) */
-.elrow { display: flex; align-items: center; gap: 18px; padding: 10px 0; }
 .elnum { font-family: var(--helv); font-size: clamp(34px, 4.5vw, 56px); line-height: 1; color: color-mix(in srgb, var(--ink) 22%, transparent); text-shadow: none; flex: none; width: 1.5em; }
-.elthumb { width: 84px; height: 106px; object-fit: cover; flex: none; }
-.elinfo { flex: 1; min-width: 0; }
-.elttl { font-family: var(--mich); font-size: clamp(15px, 2vw, 22px); letter-spacing: 0.04em; line-height: 1.2; }
-.elbrand { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; margin-top: 2px; }
-.elstat { font-family: var(--helv); font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.08em; flex: none; text-align: right; }
 .elhouse { margin-bottom: 44px; }
 .elhousenote { font-size: 12.5px; color: var(--grey); max-width: 56ch; margin: 8px 0 14px; }
 .elpiece { margin: 0 0 18px; }
@@ -1201,7 +987,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .elad b { font-size: 9px; letter-spacing: 0.22em; font-weight: 400; color: var(--grey); }
 .elad em { font-style: italic; font-size: 11px; color: var(--faint); }
 .elad .adstar { font-size: 26px; }
-.elfloor { margin-bottom: 44px; max-width: 760px; }
 /* the graded ladder (owner order, Aug 13): descending visibility is
    carried by TYPE SCALE, not just content — the masthead is rung 1,
    then each rung's header steps down until the outside world whispers */
@@ -1210,7 +995,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .elh3 { font-size: 15px; letter-spacing: 0.12em; }
 .elh4 { font-size: 12px; letter-spacing: 0.16em; }
 .elh5 { font-size: 9.5px; letter-spacing: 0.24em; color: var(--grey); }
-.elfloornote { font-size: 10px; color: var(--faint); letter-spacing: 0.06em; margin-top: 14px; }
 .elext { padding-top: 14px; border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); }
 .elextrow { display: flex; align-items: baseline; gap: 10px; padding: 3px 0; }
 .elextpub { font-size: 7.5px; letter-spacing: 0.2em; color: var(--faint); flex: none; width: 110px; }
@@ -1219,7 +1003,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .elextnote { font-size: 9px; color: var(--faint); margin-top: 10px; }
 @media (max-width: 700px) {
   .elnum { width: 1.2em; }
-  .elthumb { width: 64px; height: 82px; }
   .eladrow { gap: 16px; }
 }
 
@@ -1239,14 +1022,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 
 /* ---- Settings ---- */
 .setrow { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--line); padding: 12px 0; }
-.seticon {
-  width: 34px; height: 34px; border: 1px solid var(--line); flex: none;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 15px;
-}
-.setinfo { flex: 1; min-width: 0; }
 .setname { font-size: var(--ed-fs-setname, 14.5px); font-weight: 900; letter-spacing: 0.03em; }
-.setstatus { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: var(--grey); border: 1px solid var(--line); padding: 3px 8px; flex: none; }
 .setstatus.on { color: var(--paper); background: var(--red); border-color: var(--red); }
 .legal { font-family: var(--serif); font-size: var(--ed-fs-legal, 14.5px); font-weight: 500; line-height: 1.7; color: var(--ink); max-width: 640px; }
 
@@ -1276,7 +1052,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .accountemail input { display: block; width: 100%; box-sizing: border-box; margin-top: 4px; border: 1px solid var(--line); padding: 10px; background: var(--paper); font: 700 13px var(--helv); }
 .accountnotice { margin-top: 8px; color: var(--grey); }
 .measurehead { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
-.measurehead .psub { color: var(--red); margin: 0 0 4px; }
 .measurehead h2 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: -0.03em; }
 .measurehead .deck { margin: 4px 0 14px; max-width: 650px; }
 .unitpick { display: flex; border: 1px solid var(--ink); }
@@ -1289,25 +1064,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .measureactions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 .measurestatus { color: var(--grey); font: italic 13px var(--serif); }
 @media (max-width: 900px) { .measuregrid { grid-template-columns: repeat(2, minmax(120px, 1fr)); } .accountgrid { grid-template-columns: 1fr; } }
-
-/* ---- Twitter-style composer ---- */
-.composer2 { display: flex; gap: 12px; border: 1px solid var(--line); padding: 14px; margin: 0 0 14px; }
-.composer2 .cright { flex: 1; min-width: 0; }
-.composer2 textarea {
-  width: 100%; border: none; resize: none; outline: none;
-  font-family: var(--helv); font-size: 16px; font-weight: 500; background: transparent;
-}
-.composer2 textarea:focus { outline: 2px solid var(--sig); outline-offset: 2px; }
-.cbar { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
-.cicons { display: flex; gap: 10px; }
-.cicons button { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--grey); padding: 0; }
-.cicons button:hover { color: var(--red); }
 .ccount { margin-left: auto; font-size: 10px; color: var(--faint); letter-spacing: 0.08em; }
-.composer2 .btn { padding: 8px 16px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .mq, .pulse { animation: none; }
-}
 
 /* ---- search autocomplete (discover + shell) — hairline dropdown, red left star ---- */
 .sugwrap { position: relative; display: inline-block; }
@@ -1373,8 +1130,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .amemconfirm:focus { outline: none; border-color: var(--red); }
 @media (max-width: 760px) {
   .amemlbl { flex-basis: 84px; }
-  .searchguide { align-items: flex-start; flex-wrap: wrap; }
-  .searchguide span { width: 100%; }
 }
 
 /* ── Wardrobe (Feature C, Phase 3a) ─────────────────────────────────────── */
@@ -1535,8 +1290,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .signupalts { display: flex; gap: 8px; flex-wrap: wrap; }
 .signupalts .btn, .signupactions .btn { font-size: 11px; }
 .signupnote { margin-top: 12px; }
-/* The top-bar ACCOUNT link wears the same button skin as SEARCH/BAG. */
-a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 
 /* Synergy phase 1b: ONE text-button grammar. The five borderless grey
    action-text buttons (.railact/.wact/.amemhide/.modmore/.roomreport) now
@@ -1557,94 +1310,14 @@ a.tbtn { color: inherit; text-decoration: none; display: inline-block; }
 .notice-body { flex: 1; }
 .notice-x { border: none; background: none; cursor: pointer; font-size: 15px; line-height: 1; color: inherit; padding: 0 2px; }
 .notice-x:hover { opacity: 0.6; }
-/* inline: compact panel hint (default) */
-.notice-inline { font-size: 12px; font-weight: 700; padding: 8px 0; }
-.notice-inline.notice-info { color: var(--ink); }
-.notice-inline.notice-error { color: var(--red); }
-/* banner: the editorial red-left-border box (formerly .autonote) */
-.notice-banner {
-  margin: 8px 0 14px; padding: 10px 14px;
-  border: 1px solid var(--line); border-left: 4px solid var(--red);
-  font-family: var(--serif); font-style: italic; font-size: 14.5px; font-weight: 600;
-}
-.notice-banner.notice-error { color: var(--red); }
-
-
-/* ================================================================
-   OS LAYER — personalized-fashion-terminal chrome (redesign/os-shell).
-   Atmosphere, status bar, ASTERISK dock, surface polish.
-   ================================================================ */
-
-/* looking through glass: scanlines + vignette above everything, never blocking */
-.os-crt { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
-.os-crt::before { content: ""; position: absolute; inset: 0;
-  /* 0.315 = the Aug shipping strength (0.45) less thirty percent — owner order, 8 Sep. */
-  background: repeating-linear-gradient(0deg, transparent 0 2px, var(--scan) 2px 4px); opacity: var(--ed-scan-op, 0.315); }
-.os-crt::after { content: ""; position: absolute; inset: 0; border-radius: 18px;
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.42), inset 0 0 8px rgba(0, 0, 0, 0.3); }
-[data-theme="light"] .os-crt::after { box-shadow: inset 0 0 80px rgba(60, 170, 210, 0.2), inset 0 0 8px rgba(60, 170, 210, 0.12); }
-.os-roll { position: absolute; left: 0; right: 0; height: 16vh;
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.045), transparent);
-  /* 0.2 = the shipped strength less eighty percent — owner order, 8 Sep. */
-  opacity: var(--ed-roll-op, 0.2);
-  animation: osroll var(--ed-roll-dur, 9s) linear infinite; }
 @keyframes osroll { from { top: -18vh; } to { top: 104vh; } }
-
-/* THE PLUS FIELD (owner, 9 Sep: "a lot of small holographic rainbow plus
-   signs scattered in the background, matching the light and dark colours, 5%
-   opacity — I should hardly be able to see them"). One fixed layer: a
-   holographic gradient in the theme's own hues (--holo), seen only through
-   a mask of small pluses — two tilings at different pitches and offsets, so
-   the field reads scattered rather than gridded (three read as "too many",
-   owner, 9 Sep). Opacity through the design
-   console (--ed-plus-op, shipped 0.05). Static: nothing moves, nothing to
-   reduce. */
-.os-plus { position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  /* phosphor takes 75% of the knob (owner, 9 Sep: "on dark mode lower the
-     opacity of the pluses by 25 percent"); ice takes it whole */
-  opacity: calc(var(--ed-plus-op, 0.05) * var(--plus-k, 0.75));
-  background: var(--holo);
-  -webkit-mask-image: var(--plus), var(--plus);
-  mask-image: var(--plus), var(--plus);
-  -webkit-mask-size: 96px 96px, 137px 137px;
-  mask-size: 96px 96px, 137px 137px;
-  -webkit-mask-position: 0 0, 41px 63px;
-  mask-position: 0 0, 41px 63px;
-  -webkit-mask-repeat: repeat; mask-repeat: repeat; }
 /* the colour wash: one fixed layer, never tiled */
 body::before {
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: var(--wash);
 }
-/* drifting hue haze under the content */
-.os-blob { position: fixed; border-radius: 50%; filter: blur(70px); pointer-events: none; z-index: 0; opacity: var(--ed-blob-op, 1); }
-/* Owner order, 8 Sep: a little more colour in the haze. Dark breathes
-   fuchsia with softer purples and blues; ice carries faded pinks and yellows. */
-.os-blob.b1 { width: 44vw; height: 38vh; left: -8vw; top: -6vh; background: rgba(90, 130, 255, 0.08); animation: osdrift1 46s ease-in-out infinite alternate; }
-.os-blob.b2 { width: 36vw; height: 42vh; right: -6vw; top: 12vh; background: rgba(255, 70, 200, 0.06); animation: osdrift2 58s ease-in-out infinite alternate; }
-.os-blob.b3 { width: 30vw; height: 30vh; left: 24vw; bottom: -10vh; background: rgba(160, 110, 255, 0.08); animation: osdrift1 52s ease-in-out infinite alternate-reverse; }
-.os-blob.b4 { width: 22vw; height: 22vh; right: 18vw; bottom: 6vh; background: rgba(215, 95, 255, 0.04); animation: osdrift2 40s ease-in-out infinite alternate-reverse; }
-[data-theme="light"] .os-blob { opacity: calc(var(--ed-blob-op, 1) * 1.3); }
-[data-theme="light"] .os-blob.b1 { background: rgba(80, 210, 245, 0.16); }
-[data-theme="light"] .os-blob.b2 { background: rgba(255, 150, 205, 0.09); }
-[data-theme="light"] .os-blob.b3 { background: rgba(170, 140, 255, 0.07); }
-[data-theme="light"] .os-blob.b4 { background: rgba(90, 220, 245, 0.1); }
-[data-theme="light"] .os-blob.b3 { background: rgba(255, 190, 175, 0.09); }
-[data-theme="light"] .os-blob.b4 { background: rgba(255, 240, 175, 0.08); }
 @keyframes osdrift1 { to { transform: translate(6vw, 4vh) scale(1.15); } }
 @keyframes osdrift2 { to { transform: translate(-5vw, -3vh) scale(0.9); } }
-
-/* status bar — real readouts only */
-.os-status { position: fixed; left: 0; right: 0; bottom: 0; height: var(--status-h);
-  border-top: 1px solid var(--line); background: var(--bg2); backdrop-filter: blur(10px);
-  display: flex; align-items: center; z-index: 44; font-size: var(--ed-fs-status, 9.5px); color: var(--grey);
-  letter-spacing: 0.12em; overflow: hidden; white-space: nowrap; }
-.os-status .st { padding: 0 11px; border-right: 1px solid var(--line); display: flex; align-items: center; gap: 6px; height: 100%; }
-.os-status .st b { color: var(--ink); font-weight: 400; }
-.os-status .st:last-child { margin-left: auto; border-right: none; border-left: 1px solid var(--line); }
-.os-rec { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); animation: osblink 1.2s steps(2) infinite; }
-.os-rec.off { background: var(--faint); box-shadow: none; animation: none; }
-.os-clock { font-family: var(--helv); font-size: var(--ed-fs-clock, 14px); color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
 
 /* ASTERISK dock — the engine's living form */
 .os-dock { border-top: 1px solid var(--line); padding: 8px 2px 4px; display: flex; gap: 10px; align-items: center; }
@@ -1654,27 +1327,6 @@ body::before {
 .os-holo:active { cursor: grabbing; }
 .os-dock .t { font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); line-height: 1.7; }
 .os-dock .t b { color: var(--p2); font-weight: 400; text-shadow: var(--glow-p); }
-
-/* page frame — thin non-uniform hairlines + small outline squares slightly
-   bordering the page (owner reference language, Aug 12: Aphex SAW poster /
-   State 3.0 stills). Decoration only; never blocks a click. */
-/* under the header (45) and every panel, over page content */
-/* the frame starts BELOW the header strip (the strip is clear glass across
-   the whole top now, and the frame's corner squares showed through it) */
-.os-frame { position: fixed; inset: 0; top: var(--head-h); pointer-events: none; z-index: 40; }
-.os-frame::before { content: ""; position: absolute; inset: 7px;
-  border: 1px solid color-mix(in srgb, var(--ink) 13%, transparent); }
-.os-frame::after { content: ""; position: absolute; top: 12px; left: 12px; bottom: 12px; width: 34%;
-  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent); border-right: none; }
-.os-frame i { position: absolute; display: block; }
-.os-frame i:nth-child(1) { right: 22px; top: 18px; width: 9px; height: 9px;
-  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent); }
-.os-frame i:nth-child(2) { right: 36px; top: 22px; width: 5px; height: 5px;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
-.os-frame i:nth-child(3) { left: 20px; bottom: 40px; width: 9px; height: 9px;
-  border: 1px solid color-mix(in srgb, var(--ink) 26%, transparent); }
-.os-frame i:nth-child(4) { left: 12px; bottom: 52px; right: 62%; height: 0;
-  border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); }
 
 /* surface polish: pills, radius, glow — applied to existing magazine classes */
 .main { padding-bottom: calc(var(--status-h) + 70px); }
@@ -1696,25 +1348,12 @@ button.soon, a.soon, .btn.soon, .btn.ghost.soon, .fitbtn.soon, .platform.soon { 
 .headsub { display: block; font-family: var(--mich); font-size: var(--ed-fs-headline, clamp(38px, 6vw, 84px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase;
   color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; margin: 0 0 10px; }
 @media (max-width: 760px) { .headsub { font-size: clamp(26px, 8vw, 48px); } }
-.statshead, .phead, .psub { font-family: var(--mich); font-weight: 400; letter-spacing: 0.18em; }
 .deck { font-style: normal; color: var(--grey); font-size: var(--ed-fs-deck, 13px); }
-.searchpanel, .bagpanel { border-radius: 0 0 var(--ed-panel-rad, 14px) var(--ed-panel-rad, 14px); }
 .search { border-bottom-color: var(--sig); caret-color: var(--sig); }
 .red { color: var(--red); text-shadow: var(--glow-r); }
 ::selection { background: var(--red); color: #fff; }
 img { filter: saturate(var(--ed-img-sat, 0.92)); }
 .bagrow { border-bottom: 1px solid var(--line); }
-.bagrow img, .shit img { border-radius: 6px; }
-
-/* ORB HUB — the second interface: same OS, pill nav + softer surfaces
-   (rebased onto the top-nav shell; the rail skeleton it dressed is gone) */
-[data-model="02"] .snav { border-radius: 999px; border: 2px solid var(--line);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--sig) 9%, transparent), color-mix(in srgb, var(--bg3) 60%, transparent));
-  padding: 4px 16px; }
-[data-model="02"] .snav .nic { display: none; }
-[data-model="02"] .snav.cur { background: linear-gradient(180deg, color-mix(in srgb, var(--sig) 24%, transparent), color-mix(in srgb, var(--sig) 5%, transparent)); box-shadow: var(--glow); }
-[data-model="02"] .snav.cur::before { display: none; }
-[data-model="02"] .autonote { border-radius: 18px; }
 
 /* form controls never fall back to UA defaults (white boxes on dark) */
 input, select, textarea { background-color: var(--bg3); color: var(--ink); border-color: var(--line); }
@@ -1814,8 +1453,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    Aug 13) */
 .cvhotrow { display: flex; align-items: baseline; gap: 14px; padding: 7px 0; }
 .cvhotnum { font-family: var(--helv); font-size: 30px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; flex: none; width: 44px; }
-.cvhotttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
-.cvhotttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
 /* booth preview rows are NOT links — same cut as cvhotttl, no teal */
 .cvboothttl { font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; line-height: 1.35; }
 .cvboothttl i { display: block; font-style: normal; font-family: var(--helv); font-size: 9.5px; letter-spacing: 0.14em; color: var(--grey); text-shadow: none; }
@@ -1862,7 +1499,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvstory:nth-of-type(even) { margin-left: 26px; }
 .cvpub { font-size: 8.5px; letter-spacing: 0.22em; color: var(--red); text-shadow: var(--glow-r); }
 .cvstoryttl { display: block; font-family: var(--mich); font-size: 13px; letter-spacing: 0.05em; margin: 3px 0; }
-.cvstorysum { display: block; font-size: 11px; color: var(--grey); max-width: 52ch; }
 
 /* subsystem index — words only, one non-uniform hairline pair above */
 .cvindex { position: relative; display: flex; flex-wrap: wrap; gap: 10px 34px; padding-top: 18px; border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); }
@@ -1924,19 +1560,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    the floor's transmissions (caption = header), and the hotlist's ten
    booths — every booth honestly OPEN until business accounts exist ---- */
 .wcomposer { margin: 6px 0 26px; }
-.wmodes { display: flex; gap: 18px; margin-bottom: 14px; align-items: center; }
 .wcompose { display: flex; gap: 12px; }
 .wcright { flex: 1; min-width: 0; }
 .wcright .wcap, .wedit .wcap { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
 .wcright textarea, .wedit textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .wcright .wcap:focus, .wcright textarea:focus, .wedit .wcap:focus, .wedit textarea:focus { border-bottom-color: var(--sig); }
-.wsoonpanel { font-size: 12.5px; color: var(--grey); max-width: 60ch; line-height: 1.7; padding: 6px 0 2px; }
-.wsoonpanel b { color: var(--ink); letter-spacing: 0.08em; }
-.wsoonpanel em { font-style: normal; color: var(--red); letter-spacing: 0.12em; text-transform: uppercase; font-size: 10px; }
-.wfloor { margin-top: 8px; }
 /* permalink focus — one transmission pinned above the wire */
 .wfocus { margin: 4px 0 30px; }
-.wfocusback { display: inline-block; font-size: 10px; letter-spacing: 0.16em; margin-bottom: 12px; }
 .wfocuspost .wposthead { font-size: 19px; }
 .wfocuspost .fposttext { font-size: 15px; }
 .wpost { margin-bottom: 22px; }
@@ -1947,7 +1577,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    DELETE swaps the WHOLE signal to red — never red text in a teal blur.
    The edited stamp is quiet grey: an honesty label, not a control. */
 .wedited { margin-left: 6px; font-style: normal; font-size: 10px; color: var(--grey); letter-spacing: 0.06em; }
-.wctls { display: inline-flex; gap: 14px; margin-left: 12px; vertical-align: baseline; }
 .wctl { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--mich); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
 .wctl.warn {
   color: var(--red);
@@ -1967,7 +1596,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    and nothing else — no chips, no boxes, no weight change. The text
    around them must stay the author's own voice. */
 .wtag, .wmention { text-decoration: none; }
-.wengage { display: inline-flex; gap: 14px; margin-left: 12px; vertical-align: baseline; }
 .weng { border: 0; background: none; padding: 0; cursor: pointer; font-family: var(--mich); font-size: 10px; font-weight: 800; letter-spacing: 0.14em; }
 .weng b { margin-left: 5px; font-weight: 800; }
 .weng.on {
@@ -2012,10 +1640,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   background: none; border: none; cursor: pointer; font-size: 13px; line-height: 1;
   color: var(--grey); padding: 4px 6px; }
 .pweye:hover { color: var(--sig); text-shadow: var(--glow); }
-.tbav { padding: 6px 8px; }
-.tbavatar { display: inline-grid; place-items: center; width: 26px; height: 26px;
-  border-radius: 50%; border: 1px solid var(--sig); color: var(--sig);
-  text-shadow: var(--glow); font-family: var(--mich); font-size: 12px; }
 
 /* EDITORIAL's field + gutters (owner order, Aug 13) — same zero-height
    magazine furniture, ladder-specific placements; 2 thick of 7 */
@@ -2101,10 +1725,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .phead2 { padding: 14px 4px; }
 .pcounts { gap: 26px; }
 .pcounts b { font-family: var(--helv); font-size: 17px; font-weight: 400; color: var(--sig); text-shadow: var(--glow); margin-right: 5px; }
-
-@media (prefers-reduced-motion: reduce) {
-  .os-roll, .os-blob, .mq { animation: none !important; }
-}
 
 /* ---- DESIGN CONSOLE (redesign/ui-editor) — the owner's hand on the OS.
    An industrial side instrument: every slider writes one --ed-* token.
@@ -2223,9 +1843,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pvstars text { fill: var(--red); font-family: var(--helv); font-size: 15px; }
 .pvstars-hot { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 13px var(--red)); }
 .pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
-.pv-s { stroke: var(--sig); opacity: 0.55; }
-.pv-p { stroke: var(--p2); opacity: 0.5; }
-.pv-r { stroke: var(--red); opacity: 0.75; }
 .ppmicro { border-top: 1px solid var(--line); padding: 2px 0 1px; overflow: hidden;
   white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
   opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
@@ -2234,10 +1851,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppterrain { position: relative; flex: 1; min-height: 210px; z-index: 2; }
 .pposm { position: absolute; right: 14px; bottom: 8px; font-size: 6.5px;
   letter-spacing: 0.18em; color: var(--faint); }
-/* Place de l'Étoile hologram — streets as glowing hairlines */
-.pvparislbl { fill: var(--grey); font-family: var(--helv); font-size: 10px;
-  letter-spacing: 0.14em; opacity: 0.85; }
-.pvistar path { stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; fill: none; opacity: 0.9; }
 .ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--helv);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
 /* nation line — where a passport names its country */
@@ -2264,7 +1877,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* machine zone tinting: data glows, chevron filler reads as the red thread */
 .ppmrz b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
 .ppmrz i { font-style: normal; color: var(--red); opacity: 0.75; text-shadow: var(--glow-r); }
-[data-theme="light"] .pvroad-minor line, [data-theme="light"] .pvroad-minor polyline { stroke-width: 1; }
 @media (max-width: 760px) {
   .ppterrain { min-height: 170px; }
   .ppmrz { font-size: 13px; letter-spacing: 0.1em; }
@@ -2272,19 +1884,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .ppid { grid-template-columns: 1fr 1fr; }
   .ppid .sp3, .ppid .sp2, .ppid > div:nth-child(3) { grid-column: 1 / -1; }
 }
-
-/* ---- UPLOAD TO MOODBOARD (redesign/upload-station) ------------------------
-   Passport foot button + the build: the map never moves — a full-viewport
-   Paris assembles chunk by chunk from the document on the way to /upload
-   (canvases injected by roadBuilder.js). */
-.ppupload {
-  position: relative; z-index: 2; width: 100%; border: none; cursor: pointer;
-  border-top: 1px solid var(--line); background: var(--bg3);
-  font-family: var(--mich); font-size: 10.5px; letter-spacing: 0.26em;
-  color: var(--ink); padding: 12px 0 13px; text-shadow: var(--glow-ink);
-  transition: background 0.15s, color 0.15s;
-}
-.ppupload:hover { background: var(--bg2); color: var(--sig); text-shadow: var(--glow); }
 .ppwarp { display: none; position: fixed; inset: 0; z-index: 400; pointer-events: none; }
 /* the veil drops fast so the still frame reads as the passport's own map
    isolated — the base the build expands from */
@@ -2322,7 +1921,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   background: color-mix(in srgb, var(--p2) 14%, transparent); }
 .gxb2 { width: 38vw; height: 36vh; left: -8vw; bottom: -6vh;
   background: color-mix(in srgb, var(--sig) 10%, transparent); }
-.gxhero { position: relative; z-index: 1; margin-bottom: 18px; }
 .gxcard {
   position: relative; z-index: 1; margin: 0 0 16px; padding: 22px;
   border: 1px solid var(--line); border-radius: 22px;
@@ -2343,12 +1941,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxdropmark { font-size: 30px; color: var(--sig); text-shadow: var(--glow); line-height: 1; }
 .gxdrop.over, .gxdrop:hover { border-color: var(--sig); background: color-mix(in srgb, var(--sig) 5%, transparent); }
 .gxdrop.busy { opacity: 0.6; pointer-events: none; }
-.gxtext {
-  width: 100%; border: 1px solid var(--line); border-radius: 14px;
-  background: var(--bg3); color: var(--ink); font-family: var(--helv);
-  font-size: 14px; line-height: 1.6; padding: 13px 15px; resize: vertical; outline: none;
-}
-.gxtext:focus { border-color: var(--sig); }
 .gxrow { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
 .gxbtn {
   border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
@@ -2358,7 +1950,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxbtn:hover:not(:disabled) { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 .gxbtn:disabled { opacity: 0.4; cursor: default; }
 .gxbtn.ghost { background: none; }
-.gxhint { font-size: 10px; color: var(--faint); letter-spacing: 0.1em; }
 .gxchips { display: flex; flex-wrap: wrap; gap: 8px; }
 .gxchip {
   border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
@@ -2410,8 +2001,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxside { position: sticky; top: calc(var(--head-h) + 22px); }
 .gxside .gxcard { margin: 0; }
 .gxasterisk { display: flex; flex-direction: column; }
-.gxdock { border-top: none; padding: 0; justify-content: center; }
-.gxdock canvas { width: 200px; height: 200px; }
 .gxlinks { margin: 16px 0 0; }
 @media (max-width: 900px) {
   .gxlayout { grid-template-columns: 1fr; }
@@ -2450,17 +2039,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 .gxchip.on .gxchipx:hover { color: var(--red); }
 .gxchip.on .gxchipx:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
-/* floating plug-ins: gentle idle drift, honest coming-soon skin */
-.gxplugs { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-.gxplug { border-radius: 999px; font-family: var(--mich); font-size: 8px;
-  letter-spacing: 0.2em; padding: 8px 15px; cursor: pointer; background: var(--bg3);
-  animation: gxfloat 5.2s ease-in-out infinite; }
 .gxplug.p2 { animation-duration: 6.1s; }
 .gxplug.p3 { animation-duration: 5.6s; }
 .gxplug.p4 { animation-duration: 6.7s; }
 @keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
-@media (prefers-reduced-motion: reduce) { .gxplug { animation: none; } }
+
 /* /stats: the asterisk entity at reading size (replaced BrainViz) */
 .statsdock { border-top: none; justify-content: center; padding: 16px 0; }
 .statsdock canvas { width: 220px; height: 220px; }
@@ -2521,60 +2105,15 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .rkrow { grid-template-columns: 1fr; }
   .rkctl { grid-row: auto; grid-column: 1; justify-content: flex-start; margin-top: 6px; }
 }
-
-/* ---- CLICKABLE WORDS (owner rule, Aug 12, recolored same day: "not
-   black, it's ugly"): a word you are meant to click is painted the logo
-   gradient's teal (--sig — phosphor green dark / teal light) with a glow
-   and a slight horizontal motion blur — the site-wide clickability signal.
-   Red-law elements (buy, home, reset) keep red with the same treatment.
-   Hover states keep their own glow (higher specificity or later wins). ---- */
-.tbtn, .snav, .snavsub a, .txtbtn, .railact, .wact, .amemhide, .modmore,
-.roomreport, .shit, .mqlink, .tab,
-.dhint, .amemgo, .actions2 button, .cacts button, .cardacts button,
-.chip.clickable, .apill, .achip,
-.cvlink, .cvhotttl, .cvstoryttl, .cvindex a b, .cvfilm b, .postbtn, .fmode, .elttl,
-.whandle, .wperma, .wfocusback, .bizapply, .wctl, .weng, .wtag, .wmention,
-.hlttl, .card .ttl, .actions button, .locline a, .otfttl,
-.sugopt, .wchip, .legal a, .outcomes button, .searchguide a {
-  color: var(--sig);
-  text-shadow: var(--word-smear);
-}
-/* red hover states swap the WHOLE signal to red — never red text inside
-   a teal blur */
-.hlrow:hover .hlttl, .card .ttl:hover, .shit:hover, .otfitem:hover .otfttl {
-  text-shadow:
-    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
-    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
-    var(--glow-r);
-}
-.buy, .mqhome, .resetlink {
-  text-shadow:
-    -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
-    4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
-    var(--glow-r);
-}
 /* a disabled POST never advertises a click — the smear ignites only
    when there is something to post (both wire composers) */
 .postbtn:disabled { color: var(--grey); text-shadow: none; }
 
 /* ---- HEADER COMPRESSION (must stay LAST — these override OS-layer base
    rules by cascade order; the row never paints over its neighbours) ---- */
-@media (max-width: 1460px) {
-  .snav .nmeta { display: none; }
-}
-@media (max-width: 1360px) {
-  .snavs { gap: 2px; }
-  .snav { grid-template-columns: 1fr auto; }
-  .snav .nic { display: none; }
-  .snav .nled { grid-row: 1; }
-}
-@media (max-width: 1100px) {
-  .snav { font-size: 9.5px; padding: 4px 8px; }
-  .snav .nled { display: none; }
-}
+
 @media (max-width: 760px) {
   :root { --mq-h: 54px; --nav-h: 36px; }
-  .thbar { gap: 8px; padding: 0 10px; }
   /* MAGAZINE STAYS. The name is "*ASILUM magazine" and the word is never
      dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
      so the corner logo read a bare "*ASILUM" on every phone and every narrow
@@ -2586,22 +2125,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   .wordmark { font-size: var(--ed-fs-wordmark-mobile, 15px); }
   .wordmark em { font-size: 7.5px; margin-top: 2px; }
   .wordmark small { display: none; }
-  .topright { gap: 0; }
-  .tbtn { font-size: 9.5px; padding: 8px 4px; gap: 4px; letter-spacing: 0.06em; }
-  .tbtn svg { width: 14px; height: 14px; }
-  .snavs { justify-content: flex-start; }
-  .snav { padding: 4px 8px; font-size: 8.5px; }
-  .snav .nmeta, .snav .nled, .snav .nic { display: none; }
-  /* The envelope keeps its place at the right end of the row; the word goes,
-     the way every other label in this row does at this width. */
-  .topnav .mailword { display: none; }
-  .topnav .mailbtn { padding: 5px 6px; gap: 4px; }
-  .snav.cur::before { display: none; }
-  .os-status { display: none; }
 }
-@media (max-width: 560px) {
-  .marquee { display: none; }
-}
+
 .gxasterisk .resetlink { margin-top: 14px; align-self: start; }
 
 /* ---- THE CHECKOUT HOUSING (owner order 20 Aug 2026) — the §6 room.
@@ -2831,7 +2356,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    the rest, and `align-self: center` so the envelope sits on the tabs' optical
    line rather than stretching the 40px row. */
 .maildesk { position: relative; display: inline-flex; flex: none; align-self: center; }
-.topnav .mailbtn { border-radius: var(--ed-snav-rad, 10px); padding: 5px 10px; }
 .mailbtn {
   display: inline-flex; align-items: center; gap: 6px;
   background: none; border: 1px solid transparent; color: var(--ink);
@@ -3094,37 +2618,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .sugopt:hover, .achip:hover, .apill:hover, .wchip.cur {
   box-shadow: var(--glow-box-ink);
 }
-
-/* ---- LIQUID GLASS, the parts that must come AFTER their base rules
-   (the cascade: a later rule of equal specificity wins). ---- */
-.thbar { border-bottom-color: rgba(255, 255, 255, 0.08); }
-.topnav { border-bottom: none; }
 /* an overlay is FIXED wherever it is rendered. `.ctr > *` (the centred
    column's children) sits later in the cascade at the same specificity and
    was turning every overlay rendered inside it relative — the item detail
    opened inline at whatever scroll position the page was at. */
 .ctr > .overlay, .overlay, .ctr > .float, .float { position: fixed; }
-/* the header's words, respectively bolder (owner, 8 Sep). Michroma ships one
-   weight, so a faux bold would smear it; a hairline stroke thickens the
-   letter the way a heavier cut would. The mono meta and the big buttons
-   have weights to move to. The wordmark is a gradient clipped to text and a
-   stroke would paint over it — untouched. */
-.tophead .snav { -webkit-text-stroke: 0.4px currentColor; }
-.tophead .mq span, .tophead .mq a { -webkit-text-stroke: 0.3px currentColor; }
-.tophead .tbtn { font-weight: 800; }
-.tophead .snav .nmeta { font-weight: 600; -webkit-text-stroke: 0; }
-.tophead .snavsub a { font-weight: 600; }
-/* the current destination: a pill of the same glass, not a box */
-.snav.cur {
-  background: var(--glass-pill); border-color: transparent; border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--glass-pill-rim), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-.snav:hover { background: var(--glass-pill); border-color: transparent; border-radius: 999px; }
-@media (max-width: 760px) {
-  .tophead { --glass-inset-y: 0px; --glass-inset-x: 0px; border-radius: 0; }
-  .glass-light { border-radius: 0; }
-}
-
 
 /* ==== THE PASSPORT IN LIQUID GLASS (owner order, 8 Sep). The document is a
    clear pane over the page — the same glass as the strip and the item
@@ -3272,27 +2770,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 }
 [data-theme="light"] .btn:disabled { box-shadow: none; }
 
-/* ==== THE HEADER'S WORDS ARE JUST WORDS — BOTH THEMES (owner, 9 Sep, from
-   a Safari recording of ice: "take away the glow when hovering — it looks
-   ugly and breaks the seamlessness of the header bar; the buttons themselves
-   should just be the words"; then "give the same header bar treatment to
-   dark mode"). No pill on a hovered or current header word, no lamps under
-   the glass, no pointer shine or rim catch on the pane, no meniscus. The
-   current destination keeps its red LED and red bar. On phosphor a word's
-   RESTING light (the teal law's smear) stays and a hover changes nothing;
-   on ice the header's words carry no glow at all. ==== */
-.snav:hover, .snav.cur, [data-model="02"] .snav.cur { background: transparent; border-color: transparent; box-shadow: none; }
-[data-model="02"] .snav { border-color: transparent; }
-.tophead .snav:hover, .snav.cur, .tophead .tbtn:hover, .tophead .mailbtn:hover, .tophead .mq a:hover { text-shadow: var(--word-smear); }
-.snav.cur, .snav:hover { color: var(--sig); }
-.glass-light { display: none; }
-.tophead { --glass-rim-catch: transparent; --glass-spot: transparent; --glass-spot-wide: transparent; --lamp-hot: transparent; }
-.tophead[data-refract="1"] [data-ripple="1"] { filter: none; }
-/* ice: no glow on the header's words at all — at rest or hovered */
-[data-theme="light"] .tophead .snav, [data-theme="light"] .tophead .tbtn, [data-theme="light"] .tophead .mailbtn,
-[data-theme="light"] .tophead .mq a, [data-theme="light"] .tophead .snavsub a, [data-theme="light"] .snav.cur { text-shadow: none; }
-[data-theme="light"] .snav.cur, [data-theme="light"] .snav:hover { color: var(--ink); }
-
 /* (the 9 Sep evening PHOSPHOR block — icons/LEDs/meta hidden, words lit,
    dark only — lived here; the WORDS ARE THE BUTTONS block at the end of
    this file now says it for both themes and retired it.) */
@@ -3412,8 +2889,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
    and video take the same card the day the media pipeline lands; until
    then the composer's modes stay honestly coming-soon. ==== */
 .wlayout { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 26px; align-items: start; }
-.wfeed { min-width: 0; display: grid; gap: 14px; align-content: start; }
-.wfeed > * { max-width: 760px; width: 100%; }
 .wrail { display: grid; gap: 16px; min-width: 0; }
 .wire2 .wcomposer { margin: 0; }
 .wire2 .wmodes { margin-bottom: 10px; }
@@ -3422,14 +2897,11 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
 .wcard { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; padding: 16px 18px 14px; border-radius: 18px;
   background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
 .wcard .uavatar { width: 40px; height: 40px; font-size: 12px; }
-.wcbody { min-width: 0; display: grid; gap: 5px; }
-.wctop { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .wctop .fposthandle { font-size: 11px; }
 .wctop .whandle { font-family: var(--mich); font-size: 11px; letter-spacing: 0.1em; }
 .wire2 .wpost { margin: 0; }
 .wcard .wposthead { font-size: 14px; margin: 2px 0 0; }
 .wcard .fposttext { max-width: none; font-size: 14.5px; margin: 0; }
-.wacts { display: flex; gap: 22px; align-items: baseline; margin-top: 6px; flex-wrap: wrap; }
 .wire2 .wengage, .wire2 .wctls { margin-left: 0; }
 .wire2 .wfloor .empty { padding: 30px 0; }
 .whot .elmast { font-size: clamp(22px, 2.4vw, 30px); margin: 0 0 4px; }
@@ -3472,43 +2944,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
     -4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
     4px 0 5px color-mix(in srgb, var(--red) 20%, transparent),
     var(--glow-r);
-}
-
-/* --- the header: seven words, three words, the sub-words, MAIL — one voice --- */
-.tophead .snav .nic, .tophead .snav .nled, .tophead .snav.cur::before,
-.tophead .tbtn svg, .tophead .mailbtn .mailglyph { display: none; }
-/* the spacing of ice: the words sit where ice's icon + LED + word sat —
-   26px a side reproduces ice's ~56px word-to-word gap with words alone */
-.tophead .snav { grid-template-columns: 1fr; grid-template-rows: auto; gap: 0; padding: 3px 26px; position: relative; }
-/* the description rises under the hovered word — out of the flow, so the
-   row never moves; the compression rules' display:none is outranked here */
-.tophead .snav .nmeta { display: block; grid-column: 1; position: absolute; left: 50%; top: calc(100% - 3px); transform: translateX(-50%);
-  white-space: nowrap; font-size: 7.5px; letter-spacing: 0.2em; line-height: 1; color: var(--grey); font-weight: 600; -webkit-text-stroke: 0;
-  text-shadow: none; opacity: 0; transition: opacity 0.18s ease; pointer-events: none; }
-.tophead .snav:hover .nmeta, .tophead .snav:focus-visible .nmeta { opacity: 1; }
-.tophead .snav, .tophead .snav:hover, .tophead .snav:focus-visible,
-.tophead .tbtn, .tophead .tbtn:hover, .tophead .mailbtn, .tophead .mailbtn:hover, .tophead .mailbtn.cur,
-.tophead .snavsub a, .tophead .snavsub a:hover {
-  color: var(--sig); text-shadow: var(--glow); background: none; border-color: transparent; box-shadow: none; }
-/* the corner words in the destinations' voice: Michroma, one size, one tracking */
-.tophead .tbtn { font-family: var(--mich); font-size: var(--ed-fs-nav, 10.5px); font-weight: 400; letter-spacing: 0.13em;
-  -webkit-text-stroke: 0.4px currentColor; padding: 10px 12px; gap: 0; }
-.tophead .tbtn.tbav { -webkit-text-stroke: 0; }
-.tophead .mailbtn { font-family: var(--mich); font-size: var(--ed-fs-nav, 10.5px); letter-spacing: 0.13em; -webkit-text-stroke: 0.4px currentColor; padding: 3px 12px; gap: 0; }
-.tophead .snavsub a { border: 0; padding: 2px 0; font-family: var(--mich); font-weight: 600; }
-/* the current destination is the one red word, both themes */
-.tophead .snav.cur, .tophead .snav.cur:hover, .tophead .snavsub a.cur, .tophead .mailbtn.cur { color: var(--red); text-shadow: var(--glow-r); }
-/* ice: the same words, unlit (the header's own rule from the Safari recording) */
-[data-theme="light"] .tophead .snav, [data-theme="light"] .tophead .snav:hover, [data-theme="light"] .tophead .snav.cur,
-[data-theme="light"] .tophead .tbtn, [data-theme="light"] .tophead .tbtn:hover, [data-theme="light"] .tophead .mailbtn,
-[data-theme="light"] .tophead .snavsub a, [data-theme="light"] .tophead .snavsub a.cur { text-shadow: none; }
-/* ORB HUB draws the destination as a bordered pill: not here */
-[data-model="02"] .tophead .snav, [data-model="02"] .tophead .snav.cur { border-color: transparent; background: none; box-shadow: none; }
-@media (max-width: 1100px) { .tophead .snav { padding: 4px 14px; } }
-@media (max-width: 760px) {
-  .tophead .snav { padding: 4px 8px; }
-  .tophead .snav .nmeta { display: none; }
-  .tophead .tbtn { padding: 8px 4px; font-size: 8.5px; letter-spacing: 0.06em; }
 }
 
 /* --- every other button, every page: the same word --- */
@@ -3557,7 +2992,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
   --ed-fs-deck: 14px; --ed-fs-btn: 14px; --ed-fs-chip: 13px;
   --ed-fs-headline: clamp(24px, 2.6vw, 34px); --ed-fs-cardttl: 15px; --ed-fs-cardprice: 15px;
   --ed-fs-covermast: clamp(34px, 4.6vw, 64px);
-  --tabbar-h: 62px;
 }
 body { font-size: 14px; }
 /* the masthead, compact: the word and its faint second line on ONE row, so
@@ -3572,37 +3006,6 @@ body { font-size: 14px; }
 .cvmastblock { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 0.28em; }
 .cvmast { margin-bottom: 2px; }
 .cvherorow { margin: 8px 0 28px; }
-/* the header words at a readable size, the way the brief measured them */
-.tophead .snav { padding: 3px 22px; }
-.tophead .tbtn { font-size: var(--ed-fs-tbtn, 13.5px); -webkit-text-stroke: 0.3px currentColor; }
-.tophead .tbtn.tbav .tbavatar { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--line); font-family: var(--mich); font-size: 12px; -webkit-text-stroke: 0; }
-.tophead .tbtn.tbav.on .tbavatar { border-color: var(--red); color: var(--red); box-shadow: 0 0 10px color-mix(in srgb, var(--red) 40%, transparent); }
-/* the account circle's drawers */
-.acctpanel { top: calc(var(--head-h) + 8px); right: 10px; width: 300px; padding: 10px 0 6px; }
-.acctpanel .phead { padding: 6px 16px 10px; font-size: 10px; color: var(--grey); letter-spacing: 0.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.acctrow { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 10px 16px; background: none; border: 0; border-top: 1px solid var(--line); cursor: pointer; color: var(--ink); }
-.acctrow b { font-family: var(--mich); font-weight: 400; font-size: 13px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--word-smear); }
-.acctrow span { font-size: 11px; letter-spacing: 0.14em; color: var(--grey); }
-.acctrow:hover b { color: var(--ink); }
-.acctrow.cur b { color: var(--red); text-shadow: var(--word-smear-r); }
-[data-theme="light"] .acctrow b { text-shadow: none; }
-/* the thumb bar */
-.tabbar { display: none; }
-@media (max-width: 760px) {
-  .topnav { display: none; }
-  :root { --nav-h: 0px; }
-  .tabbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 66; height: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg3); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border-top: 1px solid var(--line); }
-  .tabbar .tabl { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 44px;
-    font-family: var(--mich); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--word-smear); text-decoration: none; }
-  .tabbar .tbi { font-family: var(--helv); font-size: 17px; line-height: 1; }
-  .tabbar .tabl.cur { color: var(--red); text-shadow: var(--word-smear-r); }
-  [data-theme="light"] .tabbar .tabl { text-shadow: none; }
-  .main { padding-bottom: calc(var(--tabbar-h) + 40px); }
-  .os-frame { bottom: var(--tabbar-h); }
-}
 /* ONE SAVE — the word, and the first-save moment */
 .savew { background: none; border: 0; cursor: pointer; font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--word-smear); padding: 4px 6px; }
 .savew:hover:not(:disabled) { color: var(--ink); }
@@ -3615,12 +3018,7 @@ body { font-size: 14px; }
 .saveprompt .savepromptacts { display: flex; gap: 14px; margin-left: auto; }
 .saveprompt .txtbtn { font-family: var(--mich); font-size: 11px; letter-spacing: 0.16em; }
 @media (max-width: 760px) {
-  .saveprompt { bottom: calc(var(--tabbar-h) + 12px); }
   :root { --ed-fs-covermast: clamp(22px, 7vw, 30px); }
-  .tophead .tbtn { font-size: 9.5px; padding: 8px 5px; letter-spacing: 0.08em; }
-  .tophead .tbtn.tbsignin { display: none; }
-  .tophead .tbtn.tbav .tbavatar { width: 26px; height: 26px; font-size: 11px; }
-  .tabbar .tabl { font-size: 8.5px; letter-spacing: 0.06em; white-space: nowrap; }
 }
 /* MODEL labels: the honest tag on anything simulated or device-only */
 .modeltag { display: inline-block; font-family: var(--helv); font-size: 9px; letter-spacing: 0.22em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 1px 7px; vertical-align: middle; margin-left: 6px; }
@@ -3815,20 +3213,8 @@ body { font-size: 14px; }
 .wintents { display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: center; margin: 4px 0 2px; }
 .wintentmeans { font-size: 11px; color: var(--grey); letter-spacing: 0.04em; }
 .wcats { display: flex; flex-wrap: wrap; gap: 0 10px; margin: 0 0 8px; }
-.wlanes { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 10px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
 .wlanes .tab { font-family: var(--mich); font-size: 11px; letter-spacing: 0.18em; background: none; border: 0; cursor: pointer; padding: 6px 0; }
 .wcard.wpiece { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: start; }
-.wpieceimg { display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 10px; border: 1px solid var(--line); }
-.wpieceimg img { width: 100%; height: 100%; object-fit: cover; }
-.wpiecettl { display: block; font-family: var(--mich); font-size: 14px; color: var(--ink); text-decoration: none; margin: 4px 0 2px; }
-.wpiecemeta { font-size: 11.5px; color: var(--grey); letter-spacing: 0.08em; margin-bottom: 6px; }
-.wsample .wctop { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.wby { font-size: 11px; letter-spacing: 0.12em; color: var(--grey); }
-.wby b { color: var(--ink); font-weight: 400; }
-.wfig { margin: 8px 0 10px; }
-.wfig img { width: 100%; max-height: 520px; object-fit: cover; border-radius: 12px; border: 1px solid var(--line); display: block; }
-.wfig figcaption { font-size: 9.5px; letter-spacing: 0.1em; color: var(--grey); margin-top: 4px; }
-.wfig figcaption a { color: inherit; text-decoration: none; }
 .cvlead { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 26px; align-items: end; margin: 8px 0 22px; }
 .cvleadimg { display: block; aspect-ratio: 4 / 5; max-height: 560px; overflow: hidden; border: 1px solid var(--line); }
 .cvleadimg img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.15) contrast(1.05); }
@@ -3887,7 +3273,6 @@ body { font-size: 14px; }
 .ppbtn:active { transform: scale(0.98); }
 .ppbtn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .ppbtn.primary:hover { background: var(--sig); border-color: var(--sig); }
-.ppupload { display: none; }
 .ppgeonote { font-size: 12.5px; color: var(--grey); margin: 2px 0 8px; line-height: 1.5; }
 /* the street map, Apple's idiom */
 .smap { position: relative; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); background: #eef0ee; touch-action: none; user-select: none; }
@@ -3987,10 +3372,7 @@ body { font-size: 14px; }
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: 26px;
 }
-.tophead.slim { --mq-h: 48px; }
-.tophead.slim .thbar { min-height: 48px; }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
-.os-frame { bottom: var(--cc-space); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
 /* ---- the dock ------------------------------------------------------- */
@@ -4016,7 +3398,6 @@ body { font-size: 14px; }
 .ccenter .tabl.cur { color: var(--red); text-shadow: none; }
 .ccenter .tabl.cur .ic { color: var(--red); }
 .ccenter .tabl .tbl { white-space: nowrap; }
-.ccutil { display: flex; gap: 2px; padding-left: var(--cc-gap); border-left: 1px solid var(--line); }
 .cckey {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0; background: none; cursor: pointer;
@@ -4026,9 +3407,6 @@ body { font-size: 14px; }
 .cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .cckey.cur .ic { color: var(--red); }
-/* the MESSAGES key is the mail desk's own button when the desk exists */
-.cckey-mail { display: inline-flex; }
-.cckey-mail:has(.maildesk) .ccfallback { display: none; }
 .ccenter .maildesk { position: static; }
 .ccenter .mailbtn { flex-direction: column; gap: 4px; min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0;
   font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); justify-content: center; }
@@ -4099,12 +3477,12 @@ body { font-size: 14px; }
 .sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
 @keyframes sheetin { from { transform: translateY(24px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
-.sheethead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.sheethead { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
 .sheetgrip { justify-self: start; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin-left: 8px; }
 /* `.sheet h2` (the old sheet rule) outranks a bare class; the title is named
    on the element so the deck's sheets keep their 12px Michroma heading */
-.sheet h2.sheettitle, .sheettitle { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-align: center; white-space: nowrap; }
+.sheet h2.sheettitle, .sheettitle { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-align: center; white-space: nowrap; }
 .sheetbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 14px; background: none; color: var(--sig); cursor: pointer;
   font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; text-shadow: none; }
 .sheetbtn:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
@@ -4176,7 +3554,6 @@ body { font-size: 14px; }
   .maptool { flex: 1; min-height: 64px; }
   .ccenter .tabl { font-size: 8px; }
   .cckey, .ccenter .mailbtn { min-width: 46px; font-size: 8px; }
-  .ccutil { padding-left: 6px; }
   .ccscope { display: none; }
   .ccrow { gap: 6px; }
   .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - 12px); }
@@ -4194,14 +3571,12 @@ body { font-size: 14px; }
 @media (max-width: 760px) {
   .ccrow { flex-wrap: wrap; gap: 2px; }
   .cctabs { flex: 1 1 100%; }
-  .ccutil { flex: 1 1 100%; justify-content: space-around; padding-left: 0; border-left: 0; border-top: 1px solid var(--line); padding-top: 2px; }
   .ccenter .tabl { min-height: 50px; }
   .cckey, .ccenter .mailbtn { min-height: 44px; flex-direction: row; gap: 6px; }
   /* in search mode the seven keys shrink to their glyphs on ONE row — the
      targets stay 44px (7 × 44 = 308px inside a 355px dock) */
   .ccenter.ccsearching .ccrow { flex-wrap: nowrap; gap: 0; }
   .ccenter.ccsearching .cctabs { flex: 4 1 auto; }
-  .ccenter.ccsearching .ccutil { flex: 3 1 auto; border-top: 0; border-left: 1px solid var(--line); padding: 0 0 0 4px; }
   .ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { flex: 1; min-width: 44px; padding: 4px 2px; }
   :root { --cc-row-h: 100px; }
 }
@@ -4298,7 +3673,6 @@ body { font-size: 14px; }
 .eosources { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; }
 .ovp-line { grid-template-columns: 1fr; }
 
-
 /* =====================================================================
    V.2 FIXTURES (owner's blueprint, 17 Oct 2026 — Foundations "Screen map",
    "Design system"). The Info Dock (top left) and the Passport Button (top
@@ -4377,8 +3751,103 @@ body { font-size: 14px; }
 .noticewhen { font: 9px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); white-space: nowrap; }
 .bagsheet { display: grid; gap: 10px; }
 
-/* THE OS CHROME OF THE PREVIOUS LANGUAGE IS RETIRED (no CRT): scanlines,
-   the vignette, the drifting blobs, the plus field, the frame, the status
-   bar. The shell no longer renders them; this holds for any page that
-   still does. */
-.os-crt, .os-blob, .os-plus, .os-frame, .os-status { display: none !important; }
+/* ---- V.2 slice 2: the popup grammar, the Disc, the session hub ------- */
+/* while a popup is up the fixtures shrink and go translucent (blueprint 1.12) */
+[data-popup] .fixture { transform: scale(0.92); opacity: 0.55; transition: transform 0.22s, opacity 0.22s; }
+[data-popup] .fixture:hover { opacity: 0.9; }
+.fixture { transition: transform 0.22s, opacity 0.22s; }
+/* a phone's header has no room for BACK, the title, the counter and two
+   labelled buttons: with BACK up the action buttons keep their glyphs only */
+@media (max-width: 480px) { .sheethead.hasback .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+.sheetcount { display: inline-block; margin-left: 10px; padding: 1px 6px; border-radius: 8px; border: 1px solid var(--line); font: 9px/14px var(--mich); letter-spacing: 0.1em; color: var(--grey); vertical-align: middle; }
+.sheet.roomy { height: min(74vh, 660px); }
+.sheet.hubsheet .sheetbody { display: flex; flex-direction: column; padding: 10px 14px 18px; }
+
+/* the Post disc's second life: the session indicator (1.25) */
+.ccpostwrap { position: relative; display: inline-flex; flex: 0 0 auto; }
+.cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
+.ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }
+.ccmenu, .hubmenu {
+  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 70; min-width: 180px;
+  display: grid; gap: 2px; padding: 6px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg);
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--ink) 22%, transparent);
+  animation: sheetin 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ccmenu button, .hubmenu button { display: block; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 10px/1.2 var(--mich); letter-spacing: 0.14em; }
+.ccmenu button:hover, .hubmenu button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); }
+.ccmenu button:disabled, .hubmenu button:disabled { color: var(--grey); cursor: not-allowed; }
+
+/* THE DISC (chapter 2) */
+.discwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.disc {
+  --disc: 220px; position: relative; width: var(--disc); height: var(--disc); border-radius: 50%; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; outline-offset: 4px;
+}
+.disc:active { cursor: grabbing; }
+.discface {
+  position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--line);
+  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--paper) 92%, transparent), color-mix(in srgb, var(--bg2) 92%, transparent) 72%, color-mix(in srgb, var(--bg3) 92%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent), inset 0 -10px 24px color-mix(in srgb, var(--ink) 8%, transparent), 0 16px 40px color-mix(in srgb, var(--ink) 16%, transparent);
+}
+.discface::before { content: ""; position: absolute; inset: 14%; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent); pointer-events: none; }
+.discring { position: absolute; inset: 0; will-change: transform; }
+.discslot { position: absolute; left: 50%; top: 50%; width: 0; height: 0; display: flex; align-items: center; justify-content: center; transform-origin: 0 0; }
+.discslotlbl { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; color: var(--grey); white-space: nowrap; transition: color 0.18s; }
+.discslotlbl i { font: 8px/1 var(--mich); font-style: normal; letter-spacing: 0.12em; }
+.discslot.sel .discslotlbl { color: var(--red); }
+.discmark { position: absolute; top: 4px; left: 50%; width: 2px; height: 10px; margin-left: -1px; border-radius: 1px; background: var(--red); }
+.disccenter {
+  position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; border: 1px solid var(--line); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--ink);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 96%, transparent), color-mix(in srgb, var(--bg2) 96%, transparent));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent);
+  touch-action: none; transition: transform 0.12s;
+}
+.disccenter:active { transform: scale(0.94); }
+.disccenterlbl { font: 8px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
+.discprog { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); color: var(--red); transform: rotate(-90deg); pointer-events: none; }
+.discbadge { position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
+.disctoggle { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 12px; background: none; color: var(--grey); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+.disctoggle:hover { color: var(--sig); border-color: var(--sig); }
+/* the disc turned off (2.7–2.10): a slim slider */
+.discslider { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 8px; width: min(100%, 320px); min-height: 56px; }
+.discslider input[type="range"] { width: 100%; accent-color: var(--red); }
+.discarrow { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.discarrow .flip { transform: scaleX(-1); }
+.discgo { min-height: 36px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--ink); color: var(--paper); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+@media (prefers-reduced-motion: reduce) { .discring, .ccmenu, .hubmenu { animation: none; transition: none; } }
+
+/* POST SELECTION */
+.postsel { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
+.postsel .deck { margin: 0; text-align: center; }
+.postsoon { max-width: 320px; text-align: center; margin: 0; }
+
+/* THE SESSION HUB (chapter 1) */
+.hub { position: relative; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
+.hubnote, .hubundo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 14px; font-size: 12px; color: var(--ink); }
+.hubundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--bg); border-color: var(--red); box-shadow: 0 12px 30px color-mix(in srgb, var(--ink) 18%, transparent); }
+.hubnote .txtbtn, .hubundo .txtbtn { font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); }
+.hubempty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 0; color: var(--grey); }
+.hubstage { position: relative; height: 176px; flex: none; }
+.hubpanels { position: absolute; inset: 0; perspective: 900px; }
+.sesspanel {
+  position: absolute; left: 50%; top: 50%; width: 164px; height: 150px; margin: -75px 0 0 -82px; padding: 12px; border-radius: 18px; border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
+  display: flex; flex-direction: column; gap: 6px; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  transform: translateX(calc(var(--k) * 96px)) translateZ(calc(var(--ak) * -120px)) rotateY(calc(var(--k) * -18deg));
+  opacity: calc(1 - var(--ak) * 0.22); z-index: calc(10 - var(--ak));
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s;
+}
+.sesspanel.sel { border-color: var(--red); }
+.sesspanel.hidden .sessthumb { filter: blur(6px); }
+.sessthumb { position: relative; display: flex; align-items: center; justify-content: center; height: 64px; border-radius: 12px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+.sessveil { position: absolute; inset: auto 0 6px; text-align: center; font: 8px/1 var(--mich); letter-spacing: 0.16em; color: var(--grey); filter: none; }
+.sesstitle b { display: block; font: 10px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sesstitle input { width: 100%; min-height: 28px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: 10px/1.3 var(--mich); letter-spacing: 0.1em; }
+.sessmeta { font: 8px/1.3 var(--mich); letter-spacing: 0.12em; color: var(--grey); }
+.sessx { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--grey); cursor: pointer; font: 16px/1 var(--helv); display: inline-flex; align-items: center; justify-content: center; }
+.sessx:hover { color: var(--red); border-color: var(--red); }
+.hubcounter { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); font: 10px/1 var(--mich); letter-spacing: 0.12em; color: var(--ink); }
+.hubdial { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.hubhint { margin: 0; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .sesspanel { transition: none; } }
