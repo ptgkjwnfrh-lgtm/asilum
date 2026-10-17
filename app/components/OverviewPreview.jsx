@@ -1,6 +1,6 @@
 "use client";
 
-// app/components/OverviewPreview.jsx — the ASiLUM OVERVIEW card in search,
+// app/components/OverviewPreview.jsx — the ASILUM OVERVIEW card in search,
 // cut to the primary reference (IMG_0999, V.2 brief, 1 Oct 2026): the
 // portrait at the left with the lettering *ASILUM OVERVIEW behind its
 // shoulder and a soft fade at its lower edge; the name, the SUMMARY FROM

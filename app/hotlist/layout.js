@@ -9,11 +9,11 @@ export const metadata = {
     "Posts and the hotlist — what the magazine is reading and wearing right now.",
   alternates: { canonical: "/hotlist" },
   openGraph: {
-    title: "THE WIRE · *ASILUM magazine",
+    title: "THE WIRE · *ASILUM",
     description:
       "Posts and the hotlist — what the magazine is reading and wearing right now.",
     url: siteUrl("/hotlist"),
-    siteName: "*ASILUM magazine",
+    siteName: "*ASILUM",
     type: "website",
     locale: "en_US",
   },

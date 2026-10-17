@@ -1,27 +1,64 @@
 "use client";
 
-// app/components/WireCard.jsx — a transmission as a card in THE STREAM's
-// masonry (V.2 round three): the same column a piece takes, so culture and
-// commerce share one flow. A real post carries its byline, its permalink
-// and the people-counted LIKE; a sample carries its credit and the SAMPLE
-// tag. SAVE is the one save. Tags lead into DISCOVER.
+// app/components/WireCard.jsx — a post as a card in THE ONE FEED (V.2
+// Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing
+// types). The card wears its type — TRANSM · STILL · MOTION · BRDCST —
+// read from what it carries (lib/feed/types.js postType), the same column
+// a LISTING takes, and a STILL or MOTION takes the full width (Tetris
+// weight 70%). Tapping the media enlarges it over the Feed (MediaFloat,
+// the "media" popup). A post that carries an event wears the BRDCST
+// FOOTER: collapsed to the title and the date with a discreet expander
+// (5.2); expanded inline, downward, staying attached to the post (5.3),
+// with the essentials, the map shortcut and the tickets link to the
+// organizer's own site (5.4–5.6). A real post carries its byline, its
+// permalink and the people-counted LIKE; a sample carries its credit and
+// the SAMPLE tag. STAMP is the one save.
 
+import { useState } from "react";
 import TransmissionText from "./TransmissionText.jsx";
 import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
+import Icon from "./Icons.jsx";
 import { Avatar } from "./UserBits.jsx";
 import { timeAgo } from "../../lib/social.js";
-import { WIRE_CATEGORIES, readWireRefs } from "../../lib/model/media.js";
+import { readWireRefs } from "../../lib/model/media.js";
+import { postType } from "../../lib/feed/types.js";
+import { openSheet } from "../../lib/dockstate.js";
+import { haptic } from "../../lib/haptics.js";
 
-const CAT_LABEL = (id) => (WIRE_CATEGORIES.find((c) => c.id === id) || {}).label || "";
+const LAYOUT_WORD = { single: "", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "" };
 
-const LAYOUT_WORD = { single: "", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "EVENT" };
+/** The BRDCST footer (blueprint 5.2–5.6). */
+export function BrdcstFooter({ event }) {
+  const [open, setOpen] = useState(false);
+  if (!event) return null;
+  const when = event.startsAt ? event.startsAt + (event.endsAt && event.endsAt !== event.startsAt ? " → " + event.endsAt : "") : "";
+  return (
+    <div className={"brdcst" + (open ? " open" : "")}>
+      <button type="button" className="brdcsthead" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
+        <span className="typechip brd">BRDCST</span>
+        <b>{event.name}</b>
+        <span className="brdcstwhen">{when}{event.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        <span className="brdcstexp" aria-hidden="true">{open ? "−" : "+"}</span>
+      </button>
+      {open ? (
+        <div className="brdcstbody">
+          <span className="fine">{String(event.kind || "").toUpperCase()}{event.city ? " · " + event.city : ""}{event.status ? " · " + String(event.status).toUpperCase() : ""}{event.admission ? " · " + event.admission : ""}</span>
+          <div className="brdcstacts">
+            <a className="txtbtn" href={"/map?pin=" + encodeURIComponent(event.id)}>PASSPORT MAP →</a>
+            {event.sourceUrl ? <a className="txtbtn" href={event.sourceUrl} target="_blank" rel="noopener noreferrer">TICKETS · THE ORGANIZER ↗</a> : <span className="fine">tickets: no organizer link on record</span>}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
-/** The composition's attachments (V.2 brief §6), rendered by layout. Every
- *  image carries the author's alt; an exposé's layers are text over the
- *  image AND a readable caption beneath it; pieces, the event and the link
- *  are the snapshots the server stored — never fetched HTML. */
-function Attachments({ p }) {
+/** The composition's attachments, rendered by layout. Every image carries
+ *  the author's alt; an exposé's layers are text over the image AND a
+ *  readable caption beneath it; pieces, the event and the link are the
+ *  snapshots the server stored — never fetched HTML. */
+function Attachments({ p, onMedia }) {
   const a = p.attachments || {};
   const media = Array.isArray(a.media) ? a.media : [];
   const urls = media.map((m) => m.url || (p.imageUrl && media.indexOf(m) === 0 ? p.imageUrl : null)).filter(Boolean);
@@ -30,7 +67,7 @@ function Attachments({ p }) {
     <>
       {layout === "expose" && urls[0] && (
         <figure className="wpcfig wpcexpose">
-          <img src={urls[0]} alt={media[0].alt || a.alt || ""} loading="lazy" />
+          <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={urls[0]} alt={media[0].alt || a.alt || ""} loading="lazy" /></button>
           {(a.layers || []).map((l, i) => (
             <span key={i} className={`wpclayer pos-${l.position || "bottom"} al-${l.align || "left"} col-${l.color || "paper"} f-${l.font || "display"}`} aria-hidden="true">{l.text}</span>
           ))}
@@ -38,11 +75,11 @@ function Attachments({ p }) {
         </figure>
       )}
       {(layout === "single" || (layout === "event" && urls.length === 1)) && urls[0] && layout !== "expose" && (
-        <figure className="wpcfig"><img src={urls[0]} alt={media[0] && media[0].alt || a.alt || ""} loading="lazy" /></figure>
+        <figure className="wpcfig"><button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={urls[0]} alt={media[0] && media[0].alt || a.alt || ""} loading="lazy" /></button></figure>
       )}
       {layout === "carousel" && urls.length > 0 && (
         <div className="wpccarousel" role="group" aria-label={`${urls.length} images`}>
-          {urls.map((u, i) => <img key={u} src={u} alt={media[i] && media[i].alt || ""} loading="lazy" />)}
+          {urls.map((u, i) => <button key={u} type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={u} alt={media[i] && media[i].alt || ""} loading="lazy" /></button>)}
           <span className="wpccount" aria-hidden="true">{urls.length}</span>
         </div>
       )}
@@ -50,20 +87,13 @@ function Attachments({ p }) {
         <ul className={"wpcpieces" + (layout === "fragment" ? " fragment" : "")} aria-label="tagged pieces">
           {a.pieces.map((pc) => (
             <li key={pc.id}>
-              <a href={"/?item=" + encodeURIComponent(pc.id)}>
+              <button type="button" onClick={() => openSheet("listing", { id: pc.id, title: "LISTING" })}>
                 {pc.img ? <img src={pc.img} alt="" loading="lazy" /> : <span className="wpcpieceblank" aria-hidden="true" />}
                 <b>{pc.brand}</b><span>{pc.title}</span>{pc.price != null ? <i>{pc.currency || "USD"} {pc.price}</i> : null}
-              </a>
+              </button>
             </li>
           ))}
         </ul>
-      )}
-      {a.event && (
-        <a className="wpcevent" href={"/map?pin=" + encodeURIComponent(a.event.id)}>
-          <span className="cclbl">EVENT · {String(a.event.kind || "").toUpperCase()}{a.event.sample ? " · SAMPLE FIXTURE" : ""}</span>
-          <b>{a.event.name}</b>
-          <span>{a.event.city}{a.event.startsAt ? " · " + a.event.startsAt : ""}{a.event.endsAt && a.event.endsAt !== a.event.startsAt ? " → " + a.event.endsAt : ""}{a.event.status ? " · " + String(a.event.status).toUpperCase() : ""}</span>
-        </a>
       )}
       {a.link && (
         <a className="wpclink" href={a.link.url} target="_blank" rel="noreferrer">
@@ -71,24 +101,27 @@ function Attachments({ p }) {
           <span className="wpclinkbody"><span className="cclbl">{a.link.site || a.link.host} ↗</span><b>{a.link.title || a.link.url}</b>{a.link.description ? <span>{a.link.description}</span> : null}</span>
         </a>
       )}
+      {a.event && <BrdcstFooter event={a.event} />}
     </>
   );
 }
 
 export default function WireCard({ post: p, engagement, onEngage }) {
   const sample = !!p.sample;
+  const type = postType(p);
   const refs = sample ? { category: p.category, intent: p.intent } : readWireRefs(p.tags || []);
   const composed = !sample && p.attachments && Object.keys(p.attachments).length > 0;
   const image = sample ? p.image : (!composed && p.imageUrl ? { src: p.imageUrl, alt: "", credit: "", url: "" } : null);
   const name = sample ? p.name : (p.name || p.handle);
   const eng = !sample && p.serverId != null && engagement ? engagement[String(p.serverId)] : null;
   const href = sample ? "/" : (p.serverId != null ? "/?post=" + encodeURIComponent(p.serverId) : "/");
+  const onMedia = (type === "STILL" || type === "MOTION") ? () => { haptic("press"); openSheet("media", sample ? { id: p.id, sample: true, title: type } : { id: p.serverId, title: type }); } : undefined;
   return (
-    <article className={"card wpostcard" + (sample ? " sample" : "")} data-id={"post:" + (p.serverId ?? p.id)} aria-label={(sample ? "sample editorial: " : "transmission: ") + (p.title || name)}>
-      {composed && <Attachments p={p} />}
+    <article className={"card wpostcard type-" + type.toLowerCase() + (sample ? " sample" : "")} data-id={"post:" + (p.serverId ?? p.id)} data-type={type} aria-label={type.toLowerCase() + (sample ? " (sample editorial): " : ": ") + (p.title || name)}>
+      {composed && <Attachments p={p} onMedia={onMedia} />}
       {image && (
         <figure className="wpcfig">
-          <img src={image.src} alt={image.alt || ""} loading="lazy" />
+          <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={image.src} alt={image.alt || ""} loading="lazy" /></button>
           {image.credit && <figcaption><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></figcaption>}
         </figure>
       )}
@@ -97,16 +130,16 @@ export default function WireCard({ post: p, engagement, onEngage }) {
           {sample ? <Avatar name={name} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)}><Avatar name={name} /></a>}
           <span className="wpcwho">
             <b>{name}</b>
-            <span>{[refs.intent && refs.intent.toUpperCase(), CAT_LABEL(refs.category), !sample && p.layout && LAYOUT_WORD[p.layout] ? LAYOUT_WORD[p.layout] : null, !sample && p.at ? timeAgo(p.at) : null].filter(Boolean).join(" · ")}</span>
+            <span><span className="typechip">{type}</span>{[refs.intent && refs.intent.toUpperCase(), !sample && p.layout && LAYOUT_WORD[p.layout] ? LAYOUT_WORD[p.layout] : null, !sample && p.at ? timeAgo(p.at) : null].filter(Boolean).map((s) => " · " + s).join("")}</span>
           </span>
           {sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}
         </div>
         {p.title ? <a className="wposthead wpcttl" href={href}>{p.title}</a> : null}
         <TransmissionText text={p.text} className="wpctext" />
         <div className="cardacts">
-          <SaveButton kind="post" id={sample ? p.id : String(p.serverId ?? p.id)} title={p.title || (p.text || "").slice(0, 80)} image={image ? image.src : ""} href={href} meta={name} tags={sample ? p.tags : (p.tags || [])} />
+          <SaveButton kind="post" id={sample ? p.id : String(p.serverId ?? p.id)} title={p.title || (p.text || "").slice(0, 80)} image={image ? image.src : ""} href={href} meta={name} tags={sample ? p.tags : (p.tags || [])} labels={["STAMP", "STAMPED ✓"]} />
           {eng && (
-            <button className={"weng" + (eng.youLike ? " on" : "")} onClick={() => onEngage && onEngage(p, "like")}>LIKE{eng.likes > 0 ? <b> {eng.likes}</b> : null}</button>
+            <button className={"weng" + (eng.youLike ? " on" : "")} onClick={() => onEngage && onEngage(p, "like")}><Icon name="heart" size={14} /> LIKE{eng.likes > 0 ? <b> {eng.likes}</b> : null}</button>
           )}
           {(sample ? p.tags : []).slice(0, 2).map((t) => <a key={t} className="txtbtn" href={"/discover?q=" + encodeURIComponent(String(t).toLowerCase())}>{t}</a>)}
         </div>

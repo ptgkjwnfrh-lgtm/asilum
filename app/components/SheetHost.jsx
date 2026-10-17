@@ -34,6 +34,9 @@ import NoticesSheet from "./NoticesSheet.jsx";
 import WireComposer from "./WireComposer.jsx";
 import SessionCarousel from "./SessionCarousel.jsx";
 import PostSelection from "./PostSelection.jsx";
+import ListingSheet from "./ListingSheet.jsx";
+import MediaFloat from "./MediaFloat.jsx";
+import EchoViewer from "./EchoRail.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -45,6 +48,11 @@ const VIEWS = {
   post: { title: "POST", render: (p) => <WireComposer compact {...p} />, heavy: true },
   postselect: { title: "POST", render: (p) => <PostSelection {...p} />, roomy: true },
   sessions: { title: "SESSIONS", render: (p) => <SessionCarousel {...p} />, roomy: true },
+  // THE ONE FEED (slice 3): the LISTING popup over the softened Feed; STILL
+  // and MOTION enlarged with the caption on the media; the ECHO viewer
+  listing: { title: "LISTING", render: (p) => <ListingSheet {...p} />, roomy: true },
+  media: { title: "STILL", render: (p) => <MediaFloat {...p} />, tall: true },
+  echo: { title: "ECHO", render: (p) => <EchoViewer {...p} />, tall: true },
   // a payment page is never dismissed by a tap outside (1.2); the route
   // itself arrives with native commerce
   checkout: { title: "CHECKOUT", render: () => null, heavy: true },
@@ -74,7 +82,7 @@ export default function SheetHost() {
 
   // a new popup opens at its initial height; a field taking focus inside it
   // lifts it to the full height so the keyboard never covers the input
-  useEffect(() => { setTall(false); }, [popup && popup.sessionId, top && top.view]);
+  useEffect(() => { setTall(!!(top && VIEWS[top.view] && VIEWS[top.view].tall)); }, [popup && popup.sessionId, top && top.view]);
   useEffect(() => {
     if (!open || !ref.current) return undefined;
     const node = ref.current;

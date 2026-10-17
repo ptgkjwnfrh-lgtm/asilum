@@ -9,10 +9,10 @@
 //
 // Honesty: the composer (lib/wire/compose.js) derives transmission / post /
 // video from what is attached, so TRANSM, STILL and MOTION all open it with
-// a hint; BRDCST opens it on the event attachment. LISTING is the native
-// storefront (blueprint chapter 7, a later slice) and ECHO is the story
-// viewer (chapter 3's feed work): both say so with the house `soon` class
-// and never pretend.
+// a hint; BRDCST opens it on the event attachment; ECHO opens it marked
+// temporary (24 hours). LISTING is the native storefront (blueprint
+// chapter 7, a later slice): it says so with the house `soon` class and
+// never pretends.
 
 import { useState } from "react";
 import { pushSheet } from "../../lib/dockstate.js";
@@ -30,7 +30,6 @@ export const POST_TYPES = Object.freeze([
 
 const SOON = {
   listing: "LISTING arrives with the native storefront — SELL and DROP, the payment-page reservation, offers. Not this slice.",
-  echo: "ECHO arrives with the one Feed — the story viewer and its horizontal carousel. Not this slice.",
 };
 
 export default function PostSelection() {

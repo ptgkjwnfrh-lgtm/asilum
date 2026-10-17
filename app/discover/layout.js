@@ -9,11 +9,11 @@ export const metadata = {
     "The open index. A demo archive of synthetic sample records — the search is real; the clothes are not.",
   alternates: { canonical: "/discover" },
   openGraph: {
-    title: "DISCOVER · *ASILUM magazine",
+    title: "DISCOVER · *ASILUM",
     description:
       "The open index. A demo archive of synthetic sample records — the search is real; the clothes are not.",
     url: siteUrl("/discover"),
-    siteName: "*ASILUM magazine",
+    siteName: "*ASILUM",
     type: "website",
     locale: "en_US",
   },

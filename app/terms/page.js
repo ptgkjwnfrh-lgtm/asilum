@@ -1,12 +1,12 @@
 // app/terms/page.js — TERMS OF SERVICE.
 // Constitution §7 launch dependency. Describes the product as it actually
-// is: a discovery magazine with external checkout — ASiLUM is never the
+// is: a discovery magazine with external checkout — ASILUM is never the
 // seller. Version 1.0 — drafted 2026-07-19; counsel review pending
 // (governing-law venue is a flagged counsel decision).
 
 export const metadata = {
-  title: "*ASILUM magazine — terms of service",
-  description: "The agreement for using ASiLUM magazine.",
+  title: "*ASILUM — terms of service",
+  description: "The agreement for using ASILUM.",
 };
 
 export default function TermsPage() {
@@ -15,14 +15,14 @@ export default function TermsPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>TERMS OF SERVICE</h1>
       <p className="deck">
-        the agreement for using ASiLUM magazine. version 1.2 — effective
+        the agreement for using ASILUM. version 1.2 — effective
         august 20, 2026 (adds the founders fee, purchase-info storage, and
         the first-visit observation question; under legal review).
       </p>
 
       <h2 className="statshead">THE SERVICE</h2>
       <p className="legal">
-        ASiLUM magazine is a fashion discovery service: an editorial magazine,
+        ASILUM is a fashion discovery service: an editorial magazine,
         a product catalog, a personal taste engine named Asterisk, a stylist,
         and private tools like moodboards and a wardrobe. by using
         asilummagazine.com you agree to these terms and to the{" "}
@@ -41,10 +41,10 @@ export default function TermsPage() {
 
       <h2 className="statshead">SHOPPING HAPPENS ELSEWHERE</h2>
       <p className="legal">
-        ASiLUM is a discovery and routing service, not a store. product
+        ASILUM is a discovery and routing service, not a store. product
         listings name their source, and the purchase of a piece — its price,
         shipping, and tax — happens on the source merchant&apos;s own site
-        under that merchant&apos;s terms. ASiLUM is not the seller of listed
+        under that merchant&apos;s terms. ASILUM is not the seller of listed
         pieces and is not a party to that purchase. listings can go stale
         between our checks; price, availability, and condition are the
         merchant&apos;s to confirm. purchase tickets open under the
@@ -54,9 +54,9 @@ export default function TermsPage() {
 
       <h2 className="statshead">THE FOUNDERS FEE</h2>
       <p className="legal">
-        opening a purchase ticket carries ASiLUM&apos;s founders fee: 1% of
-        the listed piece price, with a $0.50 minimum, charged by ASiLUM as
-        its own transaction — your card statement will show two lines, ASiLUM
+        opening a purchase ticket carries ASILUM&apos;s founders fee: 1% of
+        the listed piece price, with a $0.50 minimum, charged by ASILUM as
+        its own transaction — your card statement will show two lines, ASILUM
         (the fee) and the merchant (the piece). the fee and the total are
         itemized on the checkout screen before you pay, and nothing is
         charged without your consent to the ticket disclaimer. the fee buys
@@ -71,7 +71,7 @@ export default function TermsPage() {
         if you buy, the name and address you enter are stored once, in a
         purchase-info vault kept apart from the catalog and your taste
         record, so checkout never asks twice. your card is held by our
-        payment processor, Stripe — ASiLUM keeps only a reference and the
+        payment processor, Stripe — ASILUM keeps only a reference and the
         last four digits, never a card number. you can edit these details,
         remove the saved card, or erase everything in{" "}
         <a href="/settings">Settings → PURCHASE INFO</a>; the privacy
@@ -82,7 +82,7 @@ export default function TermsPage() {
       <h2 className="statshead">YOUR CONTENT</h2>
       <p className="legal">
         content you add — moodboards, wardrobe entries, garment photos, posts
-        — remains yours. you grant ASiLUM a non-exclusive license to host and
+        — remains yours. you grant ASILUM a non-exclusive license to host and
         process it solely to operate the service for you, ending when you
         delete the content. you promise you have the rights to what you
         upload. we may remove content that is unlawful or breaks these terms.
@@ -114,8 +114,8 @@ export default function TermsPage() {
 
       <h2 className="statshead">INTELLECTUAL PROPERTY</h2>
       <p className="legal">
-        the ASiLUM name, design, and original editorial content belong to
-        ASiLUM. our editorial summaries are original writing that links to
+        the ASILUM name, design, and original editorial content belong to
+        ASILUM. our editorial summaries are original writing that links to
         publications rather than reproducing them. product names, images, and
         trademarks belong to their owners; their appearance here is
         identification, not endorsement or partnership.
@@ -126,7 +126,7 @@ export default function TermsPage() {
         the service is provided &quot;as is&quot; and &quot;as
         available&quot;, without warranties of any kind, express or implied,
         including merchantability, fitness for a particular purpose, and
-        non-infringement. to the fullest extent the law allows, ASiLUM is not
+        non-infringement. to the fullest extent the law allows, ASILUM is not
         liable for indirect, incidental, special, consequential, or punitive
         damages, or for loss of profits, data, or goodwill, arising from your
         use of the service or any third-party listing or merchant; our total

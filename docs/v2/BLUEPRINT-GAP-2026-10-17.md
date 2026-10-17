@@ -2,7 +2,7 @@
 
 **Authority.** The owner's V.2 Blueprint of 17 October 2026 (the published
 spec: 18 chapters, 345 build clauses, Terms of Service, Foundations) supersedes
-the 1 October brief (`~/Documents/ASiLUM_V2_Claude_Prompt.txt`) wherever the
+the 1 October brief (`~/Documents/ASILUM_V2_Claude_Prompt.txt`) wherever the
 two differ. The 1 October brief's Stages A–D landed on `main` on 2 October
 (#478–#483). This matrix maps every blueprint chapter to what `main` already
 has, so the build order below is grounded in the code rather than the spec
@@ -28,7 +28,7 @@ must rule.
 | Tag grammar `LEFT: RIGHT`, three visible, rest behind the product, ASTERISK-only | `lib/tagging/vocabulary.js` facets; `DESIGNER: HOUSE` pair search (`lib/search/pair.js`, `lib/people/careers.js`); provenance sticker | **BUILD** the tag renderer and selector on top of the facets; the left-side hierarchy (MAKER→HOUSE→SCENE→AESTHETIC→MATERIAL→ERA→PLACE) maps onto existing facets `brand/designer/subculture/mood/material/era/origin` |
 | Friend asterisk on mutual follow | `lib/social.js` follows are one-way; no followers tracked ("ASILUM does not track followers") | **DECIDE** — mutual follow needs follower knowledge server-side; the blueprint requires it |
 | ASTERISK governance: admins supersede, logs, pause per function, audits, 90% cap, 65% split, 75% collective, 5 min | `lib/asterisk/` deterministic reading; `lib/verification/ledger.js` caps local rules at 0.5; `/admin`; steward with hands and a ledger | **ADAPT** — the ledger/steward are the admin console seed; the confidence cap and the agent split are new policy in `lib/asterisk/` |
-| Passenger Score, ASiLUM Credit, \|A\| Protection, SELL/DROP | none on main; `codex/native-storefront` (unpushed, 10.7k lines, schema v62) has storefronts, native listings, variants, reservations, Stripe Connect | **BUILD** on top of the storefront branch once it is pushed and reviewed |
+| Passenger Score, ASILUM Credit, \|A\| Protection, SELL/DROP | none on main; `codex/native-storefront` (unpushed, 10.7k lines, schema v62) has storefronts, native listings, variants, reservations, Stripe Connect | **BUILD** on top of the storefront branch once it is pushed and reviewed |
 
 ## 1. Navigation and popup sessions (1.1–1.35)
 
@@ -65,13 +65,13 @@ must rule.
 | --- | --- | --- |
 | Spotify / Apple Music connect, like-sync, catalog search, + import | `lib/connectors/index.js`: Spotify `taste-import` **unsupported**, `display-link` requires approval; OWNER-DECISIONS §7 Spotify manual-only; `lib/music-mapping` curated artists | **DECIDE** — the blueprint assumes Spotify/Apple Music APIs for likes and catalog search; the repository's rights register and the 27 Aug ruling block Spotify profiling. Apple Music (MusicKit) is unexamined. Build the seam with honest unavailable states; real sync needs approvals |
 
-## 5. BRDCST distribution, billing and ASiLUM Credit (5.1–5.32)
+## 5. BRDCST distribution, billing and ASILUM Credit (5.1–5.32)
 
 | Blueprint | On main | Status |
 | --- | --- | --- |
 | BRDCST footer on posts, +1–5, pagination, map popup, ticket links | event attachments on posts (`lib/wire/compose.js` event layout), placements on the cover and ticker, `/api/places?dated=1` | **ADAPT** the attachment into the footer; **BUILD** pagination and the outreach rule |
 | Taste-then-distance outreach, 50 mi, paid radius and taste expansion, itemized quote, presets, scheduling, per-day billing, refunds, credit bonus | `lib/placements.js` (no money), `lib/hotlist.js` program, Stripe wrapper `lib/payments/stripe.js` | **BUILD** `lib/brdcst/` (targeting, pricing, campaigns) + migration |
-| ASiLUM Credit: site-wide, refunds and gifts only, 2FA + device auth gifting, chosen amount at checkout | none; `lib/vault.js` buyer vault; Stripe refunds exist | **BUILD** `lib/credit/` ledger + migration |
+| ASILUM Credit: site-wide, refunds and gifts only, 2FA + device auth gifting, chosen amount at checkout | none; `lib/vault.js` buyer vault; Stripe refunds exist | **BUILD** `lib/credit/` ledger + migration |
 
 ## 6. Protection, returns and the Passenger Score (6.1–6.35)
 
@@ -86,7 +86,7 @@ must rule.
 
 | Blueprint | On main | Status |
 | --- | --- | --- |
-| SELL single-item, DROP multi-variant, native only, no integrations | `codex/native-storefront`: storefronts, native_listings, variants, inventory, Stripe Connect checkout, fees (unpushed) | **ADAPT** the branch: SELL/DROP modes, drop manager; **DECIDE** eBay-sourced discovery inventory (1 Oct §15 eBay-first) vs "only sold if from ASiLUM" (blueprint 7.1). Reading: eBay listings remain discovery with external purchase tickets; only native listings sell through ASiLUM checkout |
+| SELL single-item, DROP multi-variant, native only, no integrations | `codex/native-storefront`: storefronts, native_listings, variants, inventory, Stripe Connect checkout, fees (unpushed) | **ADAPT** the branch: SELL/DROP modes, drop manager; **DECIDE** eBay-sourced discovery inventory (1 Oct §15 eBay-first) vs "only sold if from ASILUM" (blueprint 7.1). Reading: eBay listings remain discovery with external purchase tickets; only native listings sell through ASILUM checkout |
 | Payment-page reservation, no timer, lost on inactivity, first server request wins, queue = notification only | `inventory_reservations` in v62 | **ADAPT** to the page-based rule |
 | Offers, counteroffers, 24 h restart, reminders, presets, discounts 24 h manual renew, threshold alerts | none (Wardrobe private offers are DM-first per chapter 13; no listing offers) | **BUILD** `lib/offers/` + migration |
 | Relisting with confirmation, engagement preserved | listing status events v58 | **ADAPT** |
@@ -141,7 +141,7 @@ tests and leaves the app runnable with no database (mem mode) and no keys.
 6. **Native commerce.** Review and land `codex/native-storefront`, then
    SELL/DROP modes, the payment-page reservation, offers and discounts,
    relisting, the queue.
-7. **Protection, returns, Passenger Score, ASiLUM Credit.**
+7. **Protection, returns, Passenger Score, ASILUM Credit.**
 8. **BRDCST outreach and billing.**
 9. **Media: video housing, music, captions.** Needs the media worker.
 10. **Passport onboarding, Behind the Upload, Exploration Active indicator,
@@ -157,7 +157,7 @@ tests and leaves the app runnable with no database (mem mode) and no keys.
    masthead, not a deck key.
 3. **eBay inventory** (slice 3 and 6): keep eBay-sourced pieces as discovery
    with external purchase tickets, while only native SELL/DROP listings sell
-   through ASiLUM checkout. Blueprint 7.1 forbids storefront *integrations*;
+   through ASILUM checkout. Blueprint 7.1 forbids storefront *integrations*;
    it does not have to forbid *discovery* inventory. Needs the owner's word.
 4. **Fees** (slice 6): $1 + 1.5% buyer fee, 0% seller, $30 activation
    (blueprint and the storefront branch) replace the live 1% founders fee

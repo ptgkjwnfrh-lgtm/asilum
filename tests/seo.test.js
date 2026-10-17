@@ -44,7 +44,7 @@ test("the root layout can resolve a canonical at all", () => {
   // "magazine" is part of the name and is never dropped (owner directive,
   // 17 Aug). This assertion went red when that rule landed, which is what a
   // load-bearing test does. tests/brand-name.test.js is the rule itself.
-  assert.match(layout, /template:\s*"%s · \*ASILUM magazine"/);
+  assert.match(layout, /template:\s*"%s · \*ASILUM"/);
   assert.match(layout, /alternates:\s*\{\s*canonical:\s*"\/"/);
 });
 
@@ -80,7 +80,7 @@ test("every public destination carries a canonical and a social card", () => {
     assert.match(src, new RegExp(`url:\\s*siteUrl\\("/${route}"\\)`),
       `${route} og:url resolves through lib/site.js`);
     assert.equal(siteUrl(`/${route}`), `https://www.asilummagazine.com/${route}`);
-    assert.match(src, /siteName:\s*"\*ASILUM magazine"/);
+    assert.match(src, /siteName:\s*"\*ASILUM"/);
   }
 });
 

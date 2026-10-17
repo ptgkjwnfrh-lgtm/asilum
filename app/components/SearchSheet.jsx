@@ -9,10 +9,10 @@
 // WIRE posts (the editorial endpoint, matched on text and tags), each
 // behind its toggle. ASTERISK on asks the discover endpoint for the
 // Passport-guided order (brain=1); off is plain relevance, never random.
-// "Search all ASiLUM" leads to the full /discover page with the same query.
+// "Search all ASILUM" leads to the full /discover page with the same query.
 //
 // The overview preview keeps the primary reference's shape: portrait over
-// the ASiLUM OVERVIEW lettering, the title and summary beside it, the
+// the ASILUM OVERVIEW lettering, the title and summary beside it, the
 // source link visible, Read more → the detail inside this sheet (Back
 // returns here with the query intact).
 

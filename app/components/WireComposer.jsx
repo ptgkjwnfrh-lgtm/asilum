@@ -63,7 +63,10 @@ async function prepImage(file) {
   return { blob, w: canvas.width, h: canvas.height };
 }
 
-export default function WireComposer({ onPublished, compact = false }) {
+// `kind` is Post Selection's hint (V.2 slice 3): transm · still · motion ·
+// brdcst · echo. STILL opens the image picker's tool row, BRDCST the event
+// picker, ECHO marks the composition temporary (24 hours; lib/wire/compose.js).
+export default function WireComposer({ onPublished, compact = false, kind = null }) {
   // the draft lives in localStorage, which the server cannot read: start from
   // an empty draft on both sides and adopt the device's after mount, or the
   // first paint and the hydration disagree (caught 1 Oct: "a draft is
@@ -81,6 +84,14 @@ export default function WireComposer({ onPublished, compact = false }) {
   const fileRef = useRef(null);
   const c = draft.composition;
   const status = useMemo(() => describe(draft), [draft]);
+  // the hint: the tool that type needs is open; an ECHO is marked at once
+  useEffect(() => {
+    if (!kind) return;
+    setOpen(true);
+    if (kind === "brdcst") setTool("event");
+    if (kind === "echo") setDraft((d) => writeDraft({ ...d, composition: { ...d.composition, echo: true } }));
+    if (kind !== "echo") setDraft((d) => d.composition.echo ? writeDraft({ ...d, composition: { ...d.composition, echo: false } }) : d);
+  }, [kind]);
 
   useEffect(() => {
     const check = () => setAnon(!(getUid() || "").startsWith("sb-"));
@@ -123,7 +134,7 @@ export default function WireComposer({ onPublished, compact = false }) {
     const refs = `#${intent} #${category}`;
     const text = c.text.trim();
     const body = text.includes(refs) ? text : (text ? `${text}\n\n${refs}` : refs);
-    const composition = { media: c.media, pieces: (c.pieces || []).map((p) => p.id), link: c.link ? { url: c.link.url } : null, event: c.event ? { id: c.event.id } : null, layout: c.layout, layers: c.layers, alt: c.alt };
+    const composition = { media: c.media, pieces: (c.pieces || []).map((p) => p.id), link: c.link ? { url: c.link.url } : null, event: c.event ? { id: c.event.id } : null, layout: c.layout, layers: c.layers, alt: c.alt, echo: !!c.echo };
     setBusy("publishing…");
     postJSON("/api/editorial", { user: getUid(), handle: info.handle || info.name, text: body, title: c.title || undefined, composition })
       .then(async (res) => {
@@ -153,7 +164,8 @@ export default function WireComposer({ onPublished, compact = false }) {
       ) : (
         <>
           <div className="wckind" role="status">
-            <span className={"wckindtag " + status.kind}>{status.kind.toUpperCase()}</span>
+            <span className={"wckindtag " + status.kind}>{c.echo ? "ECHO" : status.kind.toUpperCase()}</span>
+            {c.echo ? <span className="wclayout">GONE IN 24H</span> : null}
             {status.kind === "post" && status.layout ? <span className="wclayout">{LAYOUT_LABEL[status.layout]}</span> : null}
             <span className="wckindwhy">{status.kind === "transmission" ? "words alone — attach an image and it becomes a post" : status.kind === "post" ? "the words are the caption" : ""}</span>
             {draft.version ? <span className="wcver">draft v{draft.version}</span> : null}
@@ -236,6 +248,7 @@ export default function WireComposer({ onPublished, compact = false }) {
                 <button className={"wcaddbtn" + (tool === "pieces" ? " on" : "")} onClick={() => setTool(tool === "pieces" ? null : "pieces")}><Icon name="feed" size={16} /> ADD PIECES</button>
                 <button className={"wcaddbtn" + (tool === "link" ? " on" : "")} onClick={() => setTool(tool === "link" ? null : "link")}><Icon name="link" size={16} /> ADD LINK</button>
                 <button className={"wcaddbtn" + (tool === "event" ? " on" : "")} onClick={() => setTool(tool === "event" ? null : "event")}><Icon name="map" size={16} /> ADD EVENT</button>
+                <button className={"wcaddbtn" + (c.echo ? " on" : "")} aria-pressed={!!c.echo} onClick={() => apply((d) => ({ ...d, composition: { ...d.composition, echo: !d.composition.echo } }))} title="an echo is a temporary post — gone after 24 hours"><Icon name="disc" size={16} /> ECHO</button>
                 <button className="wcaddbtn soon" disabled title="video needs the media worker (transcoding, duration limits) — not on this deployment yet"><Icon name="cover" size={16} /> VIDEO <ModelTag kind="device">SOON</ModelTag></button>
               </div>
               {uploads && !uploads.available && <p className="fine">images: {uploads.reason}</p>}

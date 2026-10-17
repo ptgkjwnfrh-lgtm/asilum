@@ -1,6 +1,6 @@
 "use client";
 
-// app/components/EntityOverview.jsx — the ASiLUM OVERVIEW for any entity in
+// app/components/EntityOverview.jsx — the ASILUM OVERVIEW for any entity in
 // the graph (V.2 brief §9): a designer (PersonOverview's card, plus the
 // houses in chronological order as scrollable labelled chips with role and
 // dates), a house (name, origin as editorial knowledge or sourced fact,

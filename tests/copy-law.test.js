@@ -52,15 +52,7 @@ test("the app is a personalized fashion terminal, and nothing calls it the old n
 
   // Positive: the descriptor a reader meets in prose and metadata.
   assert.match(read("app/layout.js"), /personalized fashion terminal/);
-  // The wordmark LOCKUP is shortened to "FASHION TERMINAL" (owner order, 17 Aug)
-  // — a lockup is not a sentence, and the three-word version could not be spaced
-  // cleanly inside the ASILUM width. The prose descriptor above is unchanged.
-  // (V.2, 17 Oct) the lockup left the shell's header with the header and
-  // lives in app/components/Wordmark.jsx, printed on the Feed's masthead.
-  assert.match(read("app/components/Wordmark.jsx"), /"FASHION TERMINAL"\.split\(""\)/);
-  // Split per CHARACTER: per-word gave two huge gaps and tight words.
-  assert.ok(!/"FASHION TERMINAL"\.split\(" "\)/.test(read("app/components/Wordmark.jsx")),
-    "the lockup must spread per glyph, not per word");
+  // (17 Oct) the wordmark is "*ASILUM" alone — tests/brand-name.test.js owns the lockup.
   assert.match(read("app/page.js"), /<Wordmark \/>/, "the feed prints the wordmark");
 });
 

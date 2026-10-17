@@ -94,7 +94,12 @@ export async function GET(req) {
   const quota = await consumeRateLimit({ scope: "editorial-read", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
   if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
   try {
-    const posts = (await listEditorialPosts({ kind, limit, handle, id, authorId })).map(({ authorId: _a, ...post }) => post);
+    // An expired ECHO is never served live (V.2 Terms 5.4): filtered here,
+    // after the store, so the memory and the Postgres backends agree.
+    const now = Date.now();
+    const posts = (await listEditorialPosts({ kind, limit, handle, id, authorId }))
+      .map(({ authorId: _a, ...post }) => post)
+      .filter((post) => !(post.attachments && post.attachments.echo) || Number(post.attachments.echo.expiresAt) > now);
     // The permalink read answers 404 when the transmission is not on the
     // wire — deleted, held for review, or never published. A dead link
     // that pretends to be a page would be a lie (owner directive, Aug 14).

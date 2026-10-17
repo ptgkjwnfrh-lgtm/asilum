@@ -49,6 +49,24 @@ and tactility) are the law; what follows is the shipped reading.
   `navigator.vibrate`, behind one On/Off key (`asilum-haptics`, Settings).
   A device without a motor is not an error. Compact buttons depress 4%.
 
+## The one Feed (app/page.js, lib/feed/types.js)
+- There is no Wire. Posts are braided into the pieces (one after every
+  third piece), PLACE cards after every ninth, live ECHOs on the rail
+  above the stream. Eight card types: TRANSM · STILL · MOTION · BRDCST ·
+  LISTING · ECHO · PLACE · SONG (SONG waits for a music catalog).
+- Tetris packing by the blueprint's weights: STILL and MOTION (70%) take
+  the full width and break the columns; LISTING (45%) and TRANSM take a
+  column; PLACE (20%) is compact until opened; a standalone BRDCST (10%)
+  is a strip. The wheel overlaps six pixels.
+- A piece opens the LISTING popup (`ListingSheet.jsx`): carousel, LIKE,
+  OFFER (`soon`), BAG, STAMP, sizes, price, three tags, BEHIND THE
+  PRODUCT for the rest and the depth (origin, evidence, ASTERISK's why,
+  goes-with). STILL and MOTION enlarge in the "media" popup with the
+  caption on the media and its ink read from the photograph. PLACE
+  expands in place. A BRDCST footer collapses to title and date.
+- ECHO lives 1–24 hours; expired echoes are never served; the viewer is
+  sequential, tap for next and previous, hold to pause.
+
 ## Still the law from before
 - Suffix grammar on actions: "→" navigates in-app, "↗" leaves or
   publishes, "✓" confirms state. One glyph, right side.

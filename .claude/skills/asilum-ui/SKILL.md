@@ -54,6 +54,10 @@ slice-*.md` says what landed. Non-negotiables when touching UI:
 10. DESIGN CONSOLE (knowledge/ui/design-console.md): owner-editable sizes
     route through `var(--ed-*, shipped)` with a registry entry in
     `lib/uilab.js`; never route color. Checks pass with no overrides set.
-11. Delete what a slice supersedes. Retired chrome leaves no CSS, no
+11. THE ONE FEED: no Wire, no second stream. Every card is one of the
+    eight types in `lib/feed/types.js`; the packer decides the span, the
+    components only draw. A piece opens the LISTING popup, media the
+    "media" popup, an echo the "echo" popup — never a page-local modal.
+12. Delete what a slice supersedes. Retired chrome leaves no CSS, no
     component and no test behind; `tests/v2-shell.test.js` lists the
     selectors that must stay gone.

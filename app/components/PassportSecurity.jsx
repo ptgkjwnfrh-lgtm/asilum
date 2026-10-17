@@ -78,7 +78,7 @@ export default function PassportSecurity({ topTag, topWeight, roads = true, map:
 
       {/* microprint band above the machine zone, like security print */}
       <div className="ppmicro" aria-hidden="true">
-        {("*ASILUM MAGAZINE · PERSONALIZED FASHION TERMINAL · ").repeat(24)}
+        {("*ASILUM · PERSONALIZED FASHION TERMINAL · ").repeat(24)}
       </div>
     </>
   );

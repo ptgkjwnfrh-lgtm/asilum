@@ -30,7 +30,7 @@ allowed product domains (§4) may not be implemented before that approval.
 
 ## 1. Mission
 
-ASiLUM becomes the place where fashion is discovered, interpreted,
+ASILUM becomes the place where fashion is discovered, interpreted,
 discussed, styled, and purchased across the internet — one compounding
 journey across six prongs, not five disconnected features:
 
@@ -128,7 +128,7 @@ owner/legal gates are met. One phase = multiple reviewed PRs.
 
 ## 5. *ASTERISK doctrine
 
-Asterisk is ASiLUM's personal fashion editor and travel agent: one
+Asterisk is ASILUM's personal fashion editor and travel agent: one
 orchestrator over bounded, typed tools (ADR-007) — never one omnipotent
 model with database access. Its laws:
 

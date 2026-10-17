@@ -19,7 +19,7 @@ crawler must not be told anything the page would not tell a person.**
 
 - **`metadataBase`** on the root layout. Without it every relative canonical and
   `og:url` resolves relative and is worthless to a crawler.
-- **A title template** — `%s · *ASILUM magazine`. Before this, 13 of 17 routes inherited
+- **A title template** — `%s · *ASILUM`. Before this, 13 of 17 routes inherited
   the root title, so every page in a search result read
   "*ASILUM — fashion intelligence OS" with no way to tell them apart.
 - **Canonicals on every route.** Public routes point at themselves; so do the
@@ -125,7 +125,7 @@ returns `content-type: image/png`, a valid PNG signature, and 1200×630 read out
 the IHDR chunk. Next emits `og:image`, `:type`, `:width`, `:height` and `:alt`
 absolutely, through `metadataBase`.
 
-### The name is "*ASILUM magazine"
+### The name is "*ASILUM"
 
 Owner directive, 17 August: **the word magazine is never dropped.** It was being
 dropped in fourteen metadata strings — the title template, every segment layout's
@@ -272,7 +272,7 @@ while the catalog is synthetic.
 whole point: it can export `generateMetadata`, and `/?item=<id>` never could.
 
 - **Per-piece preview.** `/piece/syn-0911` serves
-  `<title>Y/Project — slip dress · *ASILUM magazine</title>`, a matching `og:title` and
+  `<title>Y/Project — slip dress · *ASILUM</title>`, a matching `og:title` and
   `og:url`, and a self-referential canonical.
 - **The demo warning travels with the card.** The description reads
   *"dresses · 2020s. A synthetic sample record — not real inventory, not for

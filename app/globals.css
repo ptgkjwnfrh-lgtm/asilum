@@ -268,31 +268,6 @@ button { font-family: var(--helv); }
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 6px rgba(70, 255, 150, 0.25)); }
 .wordmark i { font-style: normal; -webkit-text-fill-color: var(--red); text-shadow: var(--glow-r); }
-/* MAGAZINE is set flush to the width of ASILUM above it, not tracked by hand.
-   `letter-spacing: 0.56em` only matched at ONE font-size, and it stopped
-   matching the moment the face changed (VT323 -> STM) or the mobile size did.
-   space-between puts the first and last letters exactly on the box edges, and
-   the box is sized by ASILUM — so the two lines agree at every breakpoint and
-   at any --ed-fs-wordmark the design console dials in. letter-spacing must stay
-   0 here or the trailing space pushes the last letter off the edge. */
-/* THE BOX IS SIZED BY "ASILUM" AND NOTHING ELSE. `width: 0` keeps these two out
-   of the wordmark's shrink-to-fit measurement — before it, "FASHION
-   INTELLIGENCE OS" was the widest child at 147px and MAGAZINE justified to the
-   TAGLINE's width, overshooting ASILUM by 22px on the right. `min-width: 100%`
-   then stretches both back across whatever ASILUM measured. */
-.wordmark em, .wordmark small { width: 0; min-width: 100%; }
-.wordmark em { display: flex; justify-content: space-between; font-family: var(--helv); font-style: normal;
-  font-weight: 400; font-size: 10px; letter-spacing: 0; margin-top: 3px; -webkit-text-fill-color: var(--grey);
-  text-shadow: var(--mag-glow); }
-/* Spread by WORD rather than by letter — three words across the same width, so
-   the spaces do the work and the tagline stays readable at 8px. */
-/* 8px, no tracking. "FASHION TERMINAL" is 16 glyph slots including the space:
-   16 x (8 x 0.540) = 69px inside a 125px box, leaving ~56px spread evenly over
-   15 gaps (~3.7px each, about 0.46em). The word gap is the space glyph plus a
-   gap either side, so it reads as two words without a hole in the middle.
-   Recompute if the wordmark size or the tagline text changes. */
-.wordmark small { display: flex; justify-content: space-between; font-family: var(--helv); font-size: 8px;
-  letter-spacing: 0; margin-top: 5px; -webkit-text-fill-color: var(--faint); text-shadow: none; }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -698,27 +673,12 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
    popup takes up space. The scrim is clear; the pane carries the darkening.
    40% (the owner's first number) left the catalog's words as bright as the
    record's own — illegible in the owner's recording; 75% reads. */
-.modal.lg {
-  background: color-mix(in srgb, var(--bg) 75%, transparent); border: none; border-radius: 22px;
-  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
-  box-shadow: var(--glass-shadow), var(--glass-lip);
-  overflow: hidden; isolation: isolate;
-}
 [data-theme="light"] .modal.lg { background: color-mix(in srgb, var(--bg) 75%, transparent); }
-.modal.lg[data-refract="1"] {
-  -webkit-backdrop-filter: var(--lg-filter) saturate(160%);
-  backdrop-filter: var(--lg-filter) saturate(160%);
-}
-.mscroll { position: relative; flex: 1; min-width: 0; display: flex; overflow-y: auto; max-height: 90vh; }
 /* the photograph is a button now: tap it and it floats alone */
-.modal.lg .mimg { padding: 0; background: none; border: 0; border-right: 1px solid var(--line); cursor: zoom-in; display: block; text-align: left; font: inherit; color: inherit; }
-.modal.lg .mimg:focus-visible { outline: 2px solid var(--sig); outline-offset: -2px; }
 /* the photograph stands on paper: a placeholder has clear ground, and the
    live page must not show through the picture */
-.modal.lg .mimg { background: var(--paper); }
 /* the pane clips (overflow hidden) where the old modal scrolled sideways, so
    the body must be allowed to shrink to the pane */
-.modal.lg .mbody { min-width: 0; }
 
 /* THE FLOAT (FloatView.jsx): black space, the photograph as a card tilting
    with the phone or the cursor, a shadow that slides the other way, a glare
@@ -757,10 +717,6 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   background: none; border: none; color: var(--ink); font-size: 26px; cursor: pointer; line-height: 1;
 }
 .mclose:hover { color: var(--red); }
-.mimg { flex: 0 0 46%; border-right: 1px solid var(--line); }
-.mimg img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 400px; }
-.mbody { flex: 1; padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; }
-.mbody .ttl { margin: 0; font-size: var(--ed-fs-modalttl, 17px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
 .brand2 { font-size: 13px; font-weight: 800; color: var(--grey); }
 .pricerow { display: flex; align-items: baseline; gap: 10px; }
 .price { font-size: 14px; font-weight: 800; }
@@ -1567,8 +1523,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wcright .wcap:focus, .wcright textarea:focus, .wedit .wcap:focus, .wedit textarea:focus { border-bottom-color: var(--sig); }
 /* permalink focus — one transmission pinned above the wire */
 .wfocus { margin: 4px 0 30px; }
-.wfocuspost .wposthead { font-size: 19px; }
-.wfocuspost .fposttext { font-size: 15px; }
 .wpost { margin-bottom: 22px; }
 .wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
 .wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
@@ -2114,7 +2068,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 
 @media (max-width: 760px) {
   :root { --mq-h: 54px; --nav-h: 36px; }
-  /* MAGAZINE STAYS. The name is "*ASILUM magazine" and the word is never
+  /* MAGAZINE STAYS. The name is "*ASILUM" and the word is never
      dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
      so the corner logo read a bare "*ASILUM" on every phone and every narrow
      window while the desktop header was correct. That is the same failure as
@@ -2123,8 +2077,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
      `small` (the PERSONALIZED FASHION TERMINAL line) is a tagline, not the
      name, and still goes — that is what buys the room. */
   .wordmark { font-size: var(--ed-fs-wordmark-mobile, 15px); }
-  .wordmark em { font-size: 7.5px; margin-top: 2px; }
-  .wordmark small { display: none; }
 }
 
 .gxasterisk .resetlink { margin-top: 14px; align-self: start; }
@@ -2512,7 +2464,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .vbadgesheet { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; width: min(320px, 80vw); padding: 10px 12px; border: 1px solid var(--line, rgba(127,127,127,.35)); border-radius: 10px; background: var(--paper, #fff); font-size: 11px; line-height: 1.45; color: var(--ink); display: grid; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
 .vbadgesheet ul { margin: 0; padding-left: 14px; }
 .vbadgesheet em { color: var(--grey); font-style: normal; font-size: 10px; }
-.vbadgerow { margin: 6px 0; }
 .smappin.smapcluster i { font-style: normal; font-size: 10px; font-weight: 600; letter-spacing: 0; }
 /* ADD STAMP (V.2 §11) */
 .addstamp { display: grid; gap: 8px; margin-top: 12px; }
@@ -2893,7 +2844,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
 .wire2 .wcomposer { margin: 0; }
 .wire2 .wmodes { margin-bottom: 10px; }
 .wire2 .wfloor { margin: 0; max-width: none; display: grid; gap: 12px; }
-.wire2 .wfocus { margin: 0; }
 .wcard { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; padding: 16px 18px 14px; border-radius: 18px;
   background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
 .wcard .uavatar { width: 40px; height: 40px; font-size: 12px; }
@@ -2904,15 +2854,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
 .wcard .fposttext { max-width: none; font-size: 14.5px; margin: 0; }
 .wire2 .wengage, .wire2 .wctls { margin-left: 0; }
 .wire2 .wfloor .empty { padding: 30px 0; }
-.whot .elmast { font-size: clamp(22px, 2.4vw, 30px); margin: 0 0 4px; }
-.whot .elnote { font-size: 9.5px; margin-bottom: 10px; line-height: 1.6; }
-.whot .booth { gap: 12px; padding: 7px 0; }
-.whot .booth .elnum { font-size: 20px; width: 1.4em; }
-.whot .boothbody b { font-size: 10.5px; }
-.whot .boothbody span { font-size: 9px; }
-.whot .boothtag { display: none; }
-.whot .elsubmit { margin-top: 14px; }
-.whot .paidrail { margin-bottom: 8px; }
 .wire2 .fwho { margin: 0; max-width: none; }
 .wire2 .elhouse, .wire2 .elads, .wire2 .elext, .wire2 .elhot { margin: 0; }
 .wire2 .eladrow { flex-direction: column; gap: 10px; }
@@ -3307,15 +3248,12 @@ body { font-size: 14px; }
    ===================================================================== */
 .streamlayout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 26px; align-items: start; }
 @media (min-width: 1200px) { .streamlayout.withrail { grid-template-columns: minmax(0, 1fr) 300px; } }
-.streamrail { position: sticky; top: calc(var(--head-h) + 18px); display: grid; gap: 14px; }
-@media (max-width: 1199px) { .streamrail { display: none; } }
 .streamcompose { margin: 4px 0 14px; padding: 12px 16px; }
 .streamcompose.closed { padding: 8px 14px; }
 .streamopen { display: flex; align-items: center; gap: 12px; width: 100%; background: none; border: 0; cursor: pointer; color: var(--grey); font: inherit; text-align: left; padding: 4px 0; }
 .streamopen span { flex: 1; font-size: 13px; letter-spacing: 0.02em; }
 .streamopen b { font-family: var(--mich); font-weight: 400; font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); }
 .streamcompose .wcright textarea { font-size: 14px; }
-.streamlanes { margin: 2px 0 8px; }
 /* a transmission in the masonry */
 .card.wpostcard { display: flex; flex-direction: column; }
 .card.wpostcard .wpcfig { margin: 0; }
@@ -3331,13 +3269,6 @@ body { font-size: 14px; }
 .wpctext { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; margin: 0 0 8px; }
 .card.wpostcard .cardacts { flex-wrap: wrap; }
 /* the hotlist strip */
-.hotstrip { padding: 14px 16px; }
-.hotstripmast { font-size: 20px; margin: 0 0 4px; }
-.hotstriprows { list-style: none; margin: 8px 0; padding: 0; }
-.hotstriprows li { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline; padding: 6px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); font-size: 12px; }
-.hotstriprows .elnum { font-family: var(--mich); font-size: 10px; color: var(--grey); }
-.hotstriprows .boothopen { font-family: var(--mich); font-size: 10px; letter-spacing: 0.18em; color: var(--grey); }
-.hotstriprows .boothsite { font-family: var(--mich); font-size: 11px; letter-spacing: 0.12em; }
 .wlayout.hotlistonly { grid-template-columns: minmax(0, 760px); }
 .wfocus { margin: 0 0 16px; max-width: 520px; }
 /* the stream's head on a phone: media in the first screen (owner: "a
@@ -3532,8 +3463,6 @@ body { font-size: 14px; }
   .ovpport { min-height: 200px; max-width: 220px; }
 }
 /* the feed | wire selector */
-.feedview { margin-bottom: 4px; }
-.feedview .tab { font-size: 12px !important; letter-spacing: 0.18em !important; padding: 8px 16px !important; }
 
 /* ---- the map root --------------------------------------------------- */
 .maplayout { display: grid; grid-template-columns: 1fr 92px; gap: 16px; align-items: start; }
@@ -3851,3 +3780,110 @@ body { font-size: 14px; }
 .hubdial { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .hubhint { margin: 0; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .sesspanel { transition: none; } }
+
+/* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
+/* the vertical wheel with slight overlap (blueprint "Two scrolling systems"):
+   each packed segment rides a few pixels over the one before it */
+.feedwheel { display: flex; flex-direction: column; }
+.feedwheel > * + * { margin-top: -6px; }
+.feedfull { position: relative; z-index: 1; margin: 0 0 var(--ed-card-gap, 26px); }
+.feedfull .card { margin: 0; }
+.feedfull .card.wpostcard .wpcfig img, .feedfull .wpccarousel img { aspect-ratio: 4 / 3; }
+.feedstrip { margin: 0 0 14px; }
+.feedstrip .card { margin: 0; }
+.feedstrip .card .body { padding-top: 4px; }
+.typechip { display: inline-block; padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; font: 8px/1.5 var(--mich); letter-spacing: 0.14em; color: var(--grey); vertical-align: middle; }
+.typechip.brd { color: var(--red); border-color: var(--red); }
+.card.wpostcard .wpcwho > span .typechip { margin-right: 2px; }
+/* media in a card is a button: tap enlarges (MediaFloat) */
+.wpcmedia { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.wpcmedia img { width: 100%; display: block; }
+.wpccarousel .wpcmedia { flex: 0 0 86%; scroll-snap-align: start; }
+.wpccarousel .wpcmedia img { aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; }
+.wpcpieces li button { display: grid; gap: 2px; width: 100%; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; font-size: 11.5px; }
+.wpcpieces:not(.fragment) li button { grid-template-columns: 40px 1fr; align-items: center; column-gap: 8px; }
+.wpcpieces:not(.fragment) li button img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; grid-row: 1 / span 3; }
+.wpcpieces.fragment li button img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--paper); border-radius: 8px; }
+/* the BRDCST footer (5.2–5.6): collapsed to title and date; expands inline */
+.brdcst { margin: 8px 0 0; border: 1px solid var(--line); border-radius: 12px; }
+.brdcsthead { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; width: 100%; padding: 8px 10px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.brdcsthead b { font: 10px/1.3 var(--mich); letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brdcstwhen { grid-column: 2; font: 8px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
+.brdcstexp, .placeexp { grid-row: 1 / span 2; font: 14px/1 var(--helv); color: var(--sig); }
+.brdcstbody { display: grid; gap: 6px; padding: 0 10px 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+.brdcstacts, .placeacts { display: flex; flex-wrap: wrap; gap: 14px; }
+/* PLACE: compact until opened, then in place */
+.card.placecard { border: 1px solid var(--line); border-radius: 14px; padding: 0; }
+.placehead { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: center; width: 100%; padding: 10px 12px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.placehead .typechip { grid-row: 1; }
+.placename { grid-column: 2; font: 10.5px/1.3 var(--mich); letter-spacing: 0.08em; }
+.placemeta { grid-column: 1 / span 2; font: 8px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
+.placebody { display: grid; gap: 6px; padding: 0 12px 12px; }
+.placedesc { margin: 0; font-size: 13px; line-height: 1.45; }
+.placeline { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+/* the ECHO rail: the nested horizontal carousel */
+.echorail { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 0 8px; scroll-snap-type: x proximity; }
+.echoring { flex: none; display: grid; justify-items: center; gap: 4px; width: 64px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; scroll-snap-align: start; position: relative; }
+.echoringface { display: inline-flex; padding: 3px; border-radius: 50%; background: conic-gradient(from 200deg, var(--red), var(--sig), var(--red)); }
+.echoringface .avatar, .echoringface .av { width: 48px; height: 48px; border: 2px solid var(--bg); }
+.echoname { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 8px/1.3 var(--mich); letter-spacing: 0.08em; }
+.echocount { position: absolute; top: 0; right: 2px; min-width: 16px; padding: 0 4px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/16px var(--mich); text-align: center; }
+/* the ECHO viewer */
+.echoview { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.echobars { display: flex; gap: 4px; }
+.echobar { flex: 1; height: 3px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 14%, transparent); overflow: hidden; position: relative; }
+.echobar.done { background: var(--ink); }
+.echobar.cur::after { content: ""; position: absolute; inset: 0; width: calc(var(--p, 0) * 100%); background: var(--ink); }
+.echohead { display: flex; align-items: center; gap: 10px; font: 10px/1.3 var(--mich); letter-spacing: 0.1em; }
+.echohead .avatar, .echohead .av { width: 28px; height: 28px; }
+.echostage { position: relative; flex: 1; min-height: 320px; border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, transparent); touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: pointer; }
+.echostage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.echotext { padding: 16px; font-size: 15px; line-height: 1.5; }
+.echotext b { display: block; font: 12px/1.4 var(--mich); letter-spacing: 0.1em; margin-bottom: 6px; }
+.echotext.onmedia { position: absolute; left: 0; right: 0; bottom: 0; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, 0.6)); padding-top: 40px; }
+.echonav { display: flex; align-items: center; justify-content: space-between; }
+.echonav button { min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: none; color: var(--ink); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+.echonav button:disabled { color: var(--grey); cursor: not-allowed; }
+/* THE LISTING POPUP */
+.listing { display: grid; gap: 14px; }
+@media (min-width: 700px) { .listing { grid-template-columns: minmax(0, 46%) minmax(0, 1fr); align-items: start; } }
+.lstmedia { position: relative; }
+.lstimg { display: block; width: 100%; padding: 0; border: 0; background: var(--paper); border-radius: 14px; overflow: hidden; cursor: zoom-in; }
+.lstimg img { width: 100%; display: block; object-fit: cover; }
+.lstdots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
+.lstdot { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: 1px solid var(--paper); background: color-mix(in srgb, var(--ink) 40%, transparent); cursor: pointer; }
+.lstdot.cur { background: var(--red); }
+.lstbadge { position: absolute; top: 10px; left: 10px; }
+.lstbody { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.lstttl { margin: 0; font: 400 16px/1.3 var(--mich); letter-spacing: 0.02em; text-transform: uppercase; }
+.lstbrand { font: 10px/1.4 var(--mich); letter-spacing: 0.12em; color: var(--sig); text-decoration: none; }
+.lstacts button, .lstacts .savebtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.12em; }
+.lstacts button.soon { color: var(--red); }
+.lstbuy { gap: 14px; }
+.lsttags .t { display: inline-block; padding: 3px 8px; border: 1px solid var(--line); border-radius: 8px; font: 9px/1.4 var(--mich); letter-spacing: 0.12em; color: var(--ink); text-decoration: none; }
+.lstbehind { align-self: flex-start; padding: 6px 0; border: 0; background: none; color: var(--sig); cursor: pointer; font: 10px/1 var(--mich); letter-spacing: 0.14em; }
+.lstbehind small { font: 9px/1 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
+.lstdepth { display: grid; gap: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+/* STILL and MOTION enlarged: the caption on the media, the ink by its light */
+.mediafloat { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.mfstage { position: relative; flex: 1; min-height: 320px; border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.mfstage img { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+.mfblank { display: grid; place-items: center; height: 100%; font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
+.mfarrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4); background: rgba(0, 0, 0, 0.35); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.mfarrow.prev { left: 8px; } .mfarrow.next { right: 8px; } .mfarrow .flip { transform: scaleX(-1); }
+.mfcount { position: absolute; top: 10px; right: 10px; font: 9px/1 var(--mich); letter-spacing: 0.1em; color: #fff; background: rgba(0, 0, 0, 0.4); padding: 4px 6px; border-radius: 8px; }
+.mfcaption { position: absolute; left: 0; right: 0; bottom: 0; display: block; width: 100%; max-height: 38%; padding: 40px 14px 12px; border: 0; text-align: left; cursor: pointer; overflow: hidden; transition: max-height 0.22s;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55)); color: #fff; }
+.mfcaption.up { max-height: 85%; overflow-y: auto; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75) 30%); }
+.ink-black .mfcaption { color: #000; background: linear-gradient(transparent, rgba(255, 255, 255, 0.72)); }
+.ink-black .mfcaption.up { background: linear-gradient(transparent, rgba(255, 255, 255, 0.9) 30%); }
+.ink-gray .mfcaption { color: #e8eff1; background: linear-gradient(transparent, rgba(40, 48, 52, 0.7)); }
+.mfwho { display: block; font: 10px/1.4 var(--mich); letter-spacing: 0.12em; }
+.mfttl { display: block; font: 12px/1.4 var(--mich); letter-spacing: 0.06em; margin-top: 2px; }
+.mftext { font-size: 14px; line-height: 1.45; margin-top: 4px; }
+.mfcredit { display: block; margin-top: 6px; font-size: 9px; letter-spacing: 0.1em; opacity: 0.8; }
+.mfacts { display: flex; gap: 2px; border-top: 1px solid var(--line); padding-top: 6px; }
+.mfacts button, .mfacts .savebtn { flex: 1; display: inline-flex; flex-direction: column; align-items: center; gap: 4px; min-height: 48px; padding: 6px 0; border: 0; background: none; color: var(--ink); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+.mfacts button.on { color: var(--red); }
+.mfacts button.soon { color: var(--red); opacity: 0.7; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) { .mfcaption { transition: none; } }

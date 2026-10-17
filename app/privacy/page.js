@@ -5,8 +5,8 @@
 // announcement. Update the version line with every substantive change.
 
 export const metadata = {
-  title: "*ASILUM magazine — privacy policy",
-  description: "What ASiLUM magazine collects, why, and the controls you hold.",
+  title: "*ASILUM — privacy policy",
+  description: "What ASILUM collects, why, and the controls you hold.",
 };
 
 export default function PrivacyPage() {
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
 
       <h2 className="statshead">WHO WE ARE</h2>
       <p className="legal">
-        ASiLUM magazine (&quot;ASiLUM&quot;, &quot;we&quot;) operates
+        ASILUM (&quot;ASILUM&quot;, &quot;we&quot;) operates
         asilummagazine.com — a fashion discovery magazine with a personal
         taste engine. Privacy questions and requests:{" "}
         <a href="mailto:legal@asilummagazine.com">legal@asilummagazine.com</a>.

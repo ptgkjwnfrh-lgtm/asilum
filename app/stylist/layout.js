@@ -9,11 +9,11 @@ export const metadata = {
     "Looks cut from synthetic sample records. The reasoning is real; the garments are placeholders.",
   alternates: { canonical: "/stylist" },
   openGraph: {
-    title: "STYLIST · *ASILUM magazine",
+    title: "STYLIST · *ASILUM",
     description:
       "Looks cut from synthetic sample records. The reasoning is real; the garments are placeholders.",
     url: siteUrl("/stylist"),
-    siteName: "*ASILUM magazine",
+    siteName: "*ASILUM",
     type: "website",
     locale: "en_US",
   },

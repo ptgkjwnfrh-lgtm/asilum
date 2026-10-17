@@ -9,7 +9,7 @@
 
 import KindGate from "../components/KindGate.jsx";
 
-export const metadata = { title: "ANALYTICS" }; // the layout appends " · *ASILUM magazine"
+export const metadata = { title: "ANALYTICS" }; // the layout appends " · *ASILUM"
 
 const PANELS = [
   { name: "REACH", what: "impressions of your pieces, by surface" },

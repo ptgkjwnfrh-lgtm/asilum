@@ -144,11 +144,9 @@ test("the card's type hierarchy is the site's, read off globals.css", () => {
   // follows it rather than inventing a treatment.
   assert.match(css, /\.headline \{ font-family: var\(--mich\)/);
 
-  // Wordmark and kicker in Michroma; the page-body voice carries the rest.
-  // .wordmark em is the site's own treatment of the word MAGAZINE — heavily
-  // tracked, in the main font since the OSD face was retired. The card's
-  // "magazine.com" follows it rather than importing the comp's grotesque.
-  assert.match(css, /\.wordmark em \{ display: flex; [^}]*font-family: var\(--helv\)/);
+  // Wordmark and kicker in Michroma; the page-body voice carries the rest
+  // (the sub-line "asilum.com" is Inter, like the page body; the MAGAZINE
+  // lockup line it once followed is retired — owner, 17 Oct 2026).
 
   const michromaUses = [...src.matchAll(/fontFamily: "Michroma"/g)].length;
   assert.equal(michromaUses, 4, "the kicker, the asterisk, the wordmark, the strip");

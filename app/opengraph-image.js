@@ -30,7 +30,7 @@
 //      ("get rid of the digi cam font"). The comp's INTENT is matched with the
 //      house's own materials rather than importing new ones.
 //
-// THE NAME IS "*ASILUM magazine" AND THE WORD magazine IS NEVER DROPPED (owner
+// THE NAME IS "*ASILUM" — the word magazine is retired (owner, 17 Oct 2026;
 // directive, 17 August). It was being dropped in fourteen metadata strings —
 // title template, siteName, og/twitter titles — while the shell wordmark had it
 // right all along. tests/brand-name.test.js is that rule, executable.
@@ -63,7 +63,7 @@ const MICHROMA = readFileSync(join(FONT_DIR, "michroma.ttf"));
 const INTER = readFileSync(join(FONT_DIR, "inter.ttf"));
 
 export const alt =
-  "*ASILUM magazine — personalized fashion terminal. A demo archive of synthetic sample records.";
+  "*ASILUM — personalized fashion terminal. A demo archive of synthetic sample records.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -146,7 +146,7 @@ export default function OpengraphImage() {
                 fontFamily: "Inter", fontSize: 62, letterSpacing: 2, color: SIG,
               }}
             >
-              magazine.com
+              asilum.com
             </div>
           </div>
 

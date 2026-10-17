@@ -22,7 +22,7 @@ test("the Info Dock's utilities are Likes, Bag, Notices — sheets, not tabs; th
 });
 
 test("search scopes carry the brief's exact placeholders and never widen on their own", () => {
-  assert.equal(SEARCH_SCOPES.global.placeholder, "Search ASiLUM");
+  assert.equal(SEARCH_SCOPES.global.placeholder, "Search ASILUM");
   assert.equal(SEARCH_SCOPES.map.placeholder, "Search places and events");
   assert.equal(SEARCH_SCOPES.messages.placeholder, "Search your messages");
   assert.equal(SEARCH_SCOPES["likes-pieces"].placeholder, "Search liked pieces");
@@ -32,7 +32,7 @@ test("search scopes carry the brief's exact placeholders and never widen on thei
   assert.equal(scopeFor({ pathname: "/", sheet: "messages" }).id, "messages");
   assert.equal(scopeFor({ pathname: "/map", sheet: "likes", likesTab: "sold" }).id, "likes-sold", "a sheet's scope beats the page's");
   assert.equal(scopeFor({ pathname: "/cover" }).id, "global");
-  for (const k of Object.keys(SEARCH_SCOPES)) if (k !== "global") assert.equal(SEARCH_SCOPES[k].wide, true, k + " offers Search all ASiLUM as an explicit action");
+  for (const k of Object.keys(SEARCH_SCOPES)) if (k !== "global") assert.equal(SEARCH_SCOPES[k].wide, true, k + " offers Search all ASILUM as an explicit action");
   assert.equal(SEARCH_SCOPES.global.wide, false);
 });
 
@@ -126,17 +126,18 @@ test("the theme follows the device unless a pick is pinned (blueprint 2.24)", ()
   assert.deepEqual([...HOUSE_LINES], ["ARE YOU SEEKING A S I L U M", "DISCOVERY - COMMERCE - COMMUNITY", "DISCOVER FROM ARCHIVES ACROSS THE WORLD"]);
 });
 
-test("the feed and the wire are one destination with two labelled views", () => {
+test("there is no Wire: one Feed, the posts braided in, the listing a popup (blueprint, 17 Oct)", () => {
   const feed = read("app/page.js");
-  assert.ok(/href="\/\?view=wire"/.test(feed), "the wire view is a URL");
-  assert.ok(/view === "wire"/.test(feed));
-  assert.ok(/function feedList\(/.test(feed));
+  assert.ok(!/view=wire|view === "wire"|streamlanes|HotlistStrip/.test(feed), "the selector, the lanes and the rail are gone");
+  assert.ok(/function feedList\(/.test(feed) && /braid\(list, streamPosts, places\)/.test(feed), "the posts are braided into the pieces");
+  assert.ok(/openSheet\("listing", \{ item, title: "LISTING" \}\)/.test(feed), "a piece opens the LISTING popup");
+  assert.ok(/<EchoRail groups=\{rail\} \/>/.test(feed), "the echo rail rides above the stream");
 });
 
 test("the feed parks and restores through the registry; wire cards carry their id; the cover and the dock read one placements hook", () => {
   const feed = read("app/page.js");
   assert.ok(/from "\.\.\/lib\/viewstate\.js"/.test(feed), "the feed imports the registry");
-  assert.ok(/park\(\);\n\s*setModal\(item\);/.test(feed), "opening a detail parks the feed first");
+  assert.ok(/park\(\);\n\s*openSheet\("listing"/.test(feed), "opening a listing parks the feed first");
   assert.ok(/addEventListener\("pagehide", onHide\)/.test(feed), "leaving the page parks it");
   assert.ok(/restoreFromPark\(data\.items \|\| \[\]\)/.test(feed), "the fresh feed re-finds the anchor");
   assert.ok(/className="newabove"/.test(feed), "new items above are offered, never scrolled into");
