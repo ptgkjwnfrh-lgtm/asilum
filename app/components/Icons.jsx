@@ -28,6 +28,13 @@ const GLYPHS = {
   minus: <g {...P}><path d="M5 12h14" /></g>,
   locate: <g {...P}><circle cx="12" cy="12" r="4" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></g>,
   bag: <g {...P}><path d="M5 8h14l-1.2 12H6.2z" /><path d="M8.8 8V6.8a3.2 3.2 0 0 1 6.4 0V8" /></g>,
+  // V.2 fixtures (blueprint, 17 Oct 2026): the globe is the Passport Button,
+  // the bell is NOTICES on the Info Dock, post is the center disc, disc is
+  // the session dial's own glyph.
+  globe: <g {...P}><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5c2.6 2.6 2.6 14.4 0 17M12 3.5c-2.6 2.6-2.6 14.4 0 17" /></g>,
+  bell: <g {...P}><path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5h-14z" /><path d="M10 20a2 2 0 0 0 4 0" /></g>,
+  post: <g {...P}><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></g>,
+  disc: <g {...P}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="3" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></g>,
 };
 
 export default function Icon({ name, size = 22, className = "" }) {

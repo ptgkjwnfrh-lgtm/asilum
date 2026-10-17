@@ -187,34 +187,36 @@ test("the roster splits by kind for the admin terminal", async () => {
 // --- the navigation the two kinds are offered -------------------------------
 
 test("a business is offered ANALYTICS with WATCH TOWER inside it, never ACCOUNT's passport", async () => {
-  // V.2 (1 Oct): four tabs for everyone; a business swaps ACCOUNT for
-  // ANALYTICS and reaches WATCH TOWER as its sub-link. MAP stays MAP.
-  const { navFor } = await import("../lib/nav.js");
+  // V.2 (blueprint, 17 Oct): FEED, PASSPORT and ACCOUNT for a passenger; a
+  // business swaps ACCOUNT for ANALYTICS, reaches WATCH TOWER as its
+  // sub-link, and has no PASSPORT (the globe) because the guard closes /board.
+  const { navFor, deckFor } = await import("../lib/nav.js");
   const nav = navFor("business");
   const labels = nav.map((n) => n.label);
   assert.ok(labels.includes("ANALYTICS"), "the business ledger must be reachable");
   assert.ok(nav.some((n) => (n.sub || []).some((s) => s.label === "WATCH TOWER")), "watch tower rides under analytics");
-  assert.ok(!labels.includes("ACCOUNT"), "a business has no passport account tab");
-  assert.ok(labels.includes("MAP"), "a business keeps the map");
+  assert.ok(!labels.includes("ACCOUNT"), "a business has no passport account key");
+  assert.ok(!labels.includes("PASSPORT"), "a business has no passport, so no globe");
+  assert.deepEqual(deckFor("business").map((n) => n.label), ["FEED", "ANALYTICS"]);
 });
 
 test("a passport's navigation is untouched by the split", async () => {
   const { navFor } = await import("../lib/nav.js");
   const labels = navFor("passport").map((n) => n.label);
   assert.ok(labels.includes("ACCOUNT"));
-  assert.ok(labels.includes("MAP"));
+  assert.ok(labels.includes("PASSPORT"));
   assert.ok(!labels.includes("ANALYTICS"));
   assert.ok(!labels.includes("WATCH TOWER"));
   // An unknown kind must render the passport nav, not an empty one.
   assert.deepEqual(navFor("nonsense").map((n) => n.label), labels);
 });
 
-test("the swap keeps FOUR slots in the same order — it is a swap, not a subtraction", async () => {
-  const { navFor } = await import("../lib/nav.js");
-  const passport = navFor("passport"), business = navFor("business");
-  assert.equal(passport.length, 4, "Live Launch V.2: four destinations");
+test("the swap keeps the deck's slots in the same order — it is a swap, not a subtraction", async () => {
+  const { deckFor } = await import("../lib/nav.js");
+  const passport = deckFor("passport"), business = deckFor("business");
+  assert.equal(passport.length, 2, "V.2: two routes on the deck, FEED and ACCOUNT");
   assert.equal(business.length, passport.length,
-    "a business must not simply lose destinations");
+    "a business must not simply lose deck keys");
   // The shared slots must sit in identical positions, so the OS is the same
   // building whichever door you came through.
   passport.forEach((entry, i) => {

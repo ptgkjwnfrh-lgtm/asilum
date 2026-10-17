@@ -21,12 +21,21 @@ import LikesSheet from "./LikesSheet.jsx";
 import SearchSheet from "./SearchSheet.jsx";
 import MessagesSheet from "./MessagesSheet.jsx";
 import OverviewSheet from "./OverviewSheet.jsx";
+import BagSheet from "./BagSheet.jsx";
+import NoticesSheet from "./NoticesSheet.jsx";
+import WireComposer from "./WireComposer.jsx";
 
+// V.2 (blueprint, 17 Oct 2026): BAG and NOTICES open from the Info Dock;
+// POST is the deck's center disc and opens the one composer here until the
+// disc becomes Post Selection in slice 2.
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
   search: { title: "SEARCH", render: (p) => <SearchSheet {...p} /> },
   messages: { title: "MESSAGES", render: (p) => <MessagesSheet {...p} /> },
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
+  bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },
+  notices: { title: "NOTICES", render: (p) => <NoticesSheet {...p} /> },
+  post: { title: "POST", render: (p) => <WireComposer compact {...p} /> },
 };
 
 export default function SheetHost() {

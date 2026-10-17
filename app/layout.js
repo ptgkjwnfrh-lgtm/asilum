@@ -61,15 +61,14 @@ export const metadata = {
 
 // Theme + interface mode are applied before first paint so a returning
 // light-theme or ORB HUB user never sees a flash of the wrong chrome.
-// Theme default is the pale icy surface (V.2 brief, 1 Oct 2026: the primary
-// reference's light surfaces; "do not reproduce the dark outer backdrop as the
-// default background of every screen"). Only an explicit SETTINGS pick
-// ("dark"/"light" in asilum-theme) changes it; the device's own scheme no
-// longer decides (it did from Aug 12 to 1 Oct).
+// The theme follows the device by default, with Light, Dark and System in
+// Settings (V.2 Blueprint, owner, 17 Oct 2026, clause 2.24 — supersedes the
+// 1 Oct "always light" default). Only an explicit pick ("dark"/"light" in
+// asilum-theme) overrides the device.
 // DESIGN CONSOLE hand edits (asilum-uilab) ride the same train: --ed-* vars
 // land inline on <html> so an edited layout never flashes the shipped one.
 // Key/value grammar mirrors lib/uilab.js validValue — keep them in sync.
-const PREPAINT = `try{var r=document.documentElement;var t=localStorage.getItem("asilum-theme");if(t!=="dark"&&t!=="light")t="light";r.dataset.theme=t;r.dataset.model=localStorage.getItem("asilum-model")||"01";var o=JSON.parse(localStorage.getItem("asilum-uilab")||"{}");for(var k in o){if((/^--ed-[a-z-]+$/.test(k)||k==="--glow-ink")&&/^(none|-?\\d+(\\.\\d+)?(px|em|s|%)?)$/.test(o[k]))r.style.setProperty(k,o[k]);}}catch(e){}`;
+const PREPAINT = `try{var r=document.documentElement;var t=localStorage.getItem("asilum-theme");if(t!=="dark"&&t!=="light")t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";r.dataset.theme=t;r.dataset.model=localStorage.getItem("asilum-model")||"01";var o=JSON.parse(localStorage.getItem("asilum-uilab")||"{}");for(var k in o){if((/^--ed-[a-z-]+$/.test(k)||k==="--glow-ink")&&/^(none|-?\\d+(\\.\\d+)?(px|em|s|%)?)$/.test(o[k]))r.style.setProperty(k,o[k]);}}catch(e){}`;
 
 export default function RootLayout({ children }) {
   return (

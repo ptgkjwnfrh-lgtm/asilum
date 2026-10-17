@@ -1,5 +1,9 @@
 // tests/type-stack.test.js — two faces, and the digi-cam face never comes back.
 //
+// V.2 (owner's blueprint, 17 Oct 2026, "Visual constitution"): Michroma is
+// the primary face, Inter the secondary for body text. Share Tech Mono
+// (STM) retired with the CRT language; its files are gone too.
+//
 // Owner directive, 17 August: "get rid of the digi cam font, only the main font
 // from now on." The digi-cam face was OSD (VT323), an LCD/pixel face that had
 // spread to TWENTY-FIVE rules — counters, clocks, wire handles, the passport
@@ -26,13 +30,18 @@ const read = (p) => readFileSync(ROOT + p, "utf8");
 test("the type stack is exactly two faces", () => {
   const css = read("app/globals.css");
   const faces = [...css.matchAll(/@font-face \{ font-family: "([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(faces.sort(), ["Michroma", "STM"],
+  assert.deepEqual(faces.sort(), ["Inter", "Michroma"],
     "a third @font-face means a face was added without a decision");
 
-  // Michroma is the display voice, STM is everything else.
+  // Michroma is the display voice, Inter is everything else.
   assert.match(css, /--mich:\s*"Michroma", var\(--helv\)/);
-  assert.match(css, /--helv:\s*"STM"/);
-  assert.match(css, /--serif:\s*"STM"/);
+  assert.match(css, /--helv:\s*"Inter"/);
+  assert.match(css, /--serif:\s*"Inter"/);
+  assert.ok(!/"STM"/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "Share Tech Mono is retired");
+  for (const f of ["sharetech.woff2", "sharetech.ttf", "OFL-sharetechmono.txt"]) {
+    assert.ok(!existsSync(ROOT + "public/fonts/" + f), `public/fonts/${f} must be deleted`);
+  }
+  assert.ok(existsSync(ROOT + "public/fonts/inter.woff2") && existsSync(ROOT + "public/fonts/OFL-inter.txt"), "Inter ships with its licence");
 });
 
 test("the digi-cam face is gone, by name and by file", () => {
@@ -90,8 +99,8 @@ test("nothing in app/ or lib/ still asks for it", () => {
 test("the font files that ship are only the two faces, in both formats", () => {
   const shipped = readdirSync(ROOT + "public/fonts").sort();
   assert.deepEqual(shipped, [
-    "OFL-michroma.txt", "OFL-sharetechmono.txt",
+    "OFL-inter.txt", "OFL-michroma.txt",
+    "inter.ttf", "inter.woff2",
     "michroma.ttf", "michroma.woff2",
-    "sharetech.ttf", "sharetech.woff2",
   ].sort(), "public/fonts must hold exactly the two faces and their licences");
 });

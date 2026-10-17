@@ -1,62 +1,66 @@
-/* app/globals.css — *ASILUM — FASHION INTELLIGENCE OS.
-   Phosphor dark native / ice light optional (data-theme on <html>).
-   Red is the alert/identity accent; clickable words speak teal (Aug 12). */
+/* app/globals.css — *ASILUM — the V.2 look (owner's blueprint, 17 Oct 2026,
+   Foundations "Visual constitution"): white space, delicate borders,
+   precision and restrained rainbow Liquid Glass. Michroma is the primary
+   face for labels, headings, prices and navigation; Inter carries body text.
+   Light: white, blue, gray, green, teal and black. Dark: black, slate, a very
+   subtle phosphorus green and dark green teal. NO CRT: no scanlines, grid,
+   tube texture or glow — those layers are retired below, not just hidden.
+   The theme rides data-theme on <html>; the device decides unless pinned.
+
+   TOKEN NAMES ARE HISTORY: --red is the accent (teal in light, phosphorus
+   green in dark), --sig is the link and chosen colour (blue), --helv is
+   Inter. The names stay so four thousand lines of rules keep working; the
+   values are the blueprint's. */
 
 @font-face { font-family: "Michroma"; src: url("/fonts/michroma.woff2") format("woff2"); font-display: swap; }
-@font-face { font-family: "STM"; src: url("/fonts/sharetech.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 
 :root {
   /* legacy magazine tokens, remapped onto the OS — every old rule still works */
-  --ink: #d4ffe8;
-  --paper: #0b1216;
-  --grey: #56937a;
-  --faint: #2f5947;
-  --line: rgba(120, 255, 190, 0.24);
-  --red: #ff3838;
-  --helv: "STM", ui-monospace, Menlo, monospace;
-  --serif: "STM", ui-monospace, Menlo, monospace;
+  --ink: #e8eff1;
+  --paper: #070b0c;
+  --grey: #8a9ba3;
+  --faint: #2a3a41;
+  --line: rgba(140, 170, 185, 0.22);
+  --red: #8cf0a6;
+  --helv: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
   /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
      header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
   --mq-h: var(--ed-mq-h, 62px);
   --nav-h: 46px;
-  --head-h: calc(var(--mq-h) + var(--nav-h) + var(--glass-inset-y, 0px) + 6px);
+  /* V.2: no header. The band above the page is the fixtures' — the Info
+     Dock and the Passport Button — plus the phone's top inset. */
+  --head-h: calc(66px + env(safe-area-inset-top, 0px));
   /* OS tokens */
-  --bg: #070b10;
-  --bg2: rgba(15, 23, 27, 0.85);
-  --bg3: rgba(9, 15, 18, 0.92);
+  --bg: #070b0c;
+  --bg2: rgba(14, 21, 24, 0.85);
+  --bg3: rgba(13, 20, 23, 0.92);
   --mich: "Michroma", var(--helv);
-  --sig: #46ff96;
+  --sig: #6e9cff;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
-  --glow: 0 0 7px rgba(70, 255, 150, 0.5), 0 0 20px rgba(70, 255, 150, 0.16);
-  --glow-r: 0 0 7px rgba(255, 56, 56, 0.55), 0 0 20px rgba(255, 56, 56, 0.2);
-  --glow-p: 0 0 7px rgba(176, 136, 255, 0.45);
-  --glow-ink: 0 0 5px rgba(212, 255, 232, 0.28);
+  --glow: none;
+  --glow-r: none;
+  --glow-p: none;
+  --glow-ink: none;
   /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
      line ONLY — ASILUM above it is left exactly as it shipped. Purely
      horizontal: the blur radius grows while the vertical offset stays 0, so the
      light pulls sideways out of the letters instead of haloing them. No hard
      offset copy — the first version had one and read as a misprint rather than
      a glow. Static, so no reduced-motion escape hatch is owed. */
-  --mag-glow:
-    0 0 5px rgba(70, 255, 150, 0.30),
-    11px 0 16px rgba(70, 255, 150, 0.26),
-    -11px 0 16px rgba(70, 255, 150, 0.26),
-    28px 0 34px rgba(70, 255, 150, 0.13),
-    -28px 0 34px rgba(70, 255, 150, 0.13);
-  --grid-ln: rgba(120, 255, 190, 0.012);
-  --scan: rgba(2, 8, 6, 0.11);
-  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(150, 235, 210, 0.07), transparent 68%);
+  --mag-glow: none;
+  --grid-ln: transparent;
+  --scan: transparent;
+  --backlight: none;
   /* The colour wash is its OWN fixed layer (body::before) — a second and third
      gradient inside --backlight inherited the grid's 140px background-size and
      tiled into a checkerboard (the owner saw it, 8 Sep). Fuchsia, soft purple,
      soft blue: big, blurred, breathing. */
-  --wash:
-    radial-gradient(ellipse 62% 54% at 78% 16%, rgba(235, 70, 200, 0.05), transparent 70%),
-    radial-gradient(ellipse 58% 50% at 16% 84%, rgba(120, 110, 255, 0.055), transparent 70%),
-    radial-gradient(ellipse 48% 42% at 52% 60%, rgba(90, 140, 255, 0.035), transparent 72%);
+  --wash: none;
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
   /* Filled controls carry no glow on phosphor — the fill is the light. */
   --glow-box-ink: none;
@@ -103,16 +107,13 @@
   /* the clickable word's resting light (the teal law, Aug 12): a horizontal
      smear and the glow — a token, so a hovered header word can keep exactly
      what it had at rest (owner, 9 Sep: the header's words are just words) */
-  --word-smear:
-    -4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
-    4px 0 5px color-mix(in srgb, var(--sig) 22%, transparent),
-    var(--glow);
+  --word-smear: none;
   /* the plus field: a small plus, and the theme's holographic sweep —
      phosphor green, soft purple, the red, the blue of the wash, and round */
   /* one small plus (7 units wide, arms 1.2) centred in a 56-unit tile, so
      at the tilings below the pluses are 8, 11 and 15px with air between */
   --plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cpath d='M27.4 24.5h1.2v2.9h2.9v1.2h-2.9v2.9h-1.2v-2.9h-2.9v-1.2h2.9z' fill='%23000'/%3E%3C/svg%3E");
-  --holo: linear-gradient(118deg, #46ff96 0%, #5a8cff 22%, #b088ff 44%, #ff3838 62%, #eb46c8 80%, #46ff96 100%);
+  --holo: linear-gradient(118deg, #8cf0a6 0%, #6e9cff 25%, #b088ff 50%, #ff8fb1 75%, #8cf0a6 100%);
 }
 [data-theme="light"] {
   --plus-k: 1;
@@ -146,11 +147,11 @@
      text law is 4.5; the first bright teal, #0a8494, read 4.02 and failed
      it) — is the reading colour, the filled control colour, and the colour
      that glows. */
-  --ink: #0c7795;
+  --ink: #0b1416;
   --paper: #ffffff;
-  --grey: #4f8a9c;
-  --faint: #9ec9d6;
-  --line: rgba(13, 119, 158, 0.3);
+  --grey: #5e6e76;
+  --faint: #cfdce3;
+  --line: rgba(16, 60, 80, 0.14);
   /* THE ALERT/IDENTITY ACCENT, DARKENED TO PASS (owner ruling, Aug 16).
      #e5342b measured 3.92:1 on --bg and 4.32:1 on white — under AA, and --red
      is not decoration: it carries alerts, selection, the ASTERISK mark, and
@@ -161,10 +162,10 @@
      deepens. Same red, read as the same colour; if the owner wants the exact
      old hue back it has to come with a lighter BACKGROUND, not a lighter red.
      Dark theme's #ff3838 already measures 5.52:1 and is untouched. */
-  --red: #cc2219;
-  --bg: #e6f4fa;
-  --bg2: rgba(240, 250, 254, 0.8);
-  --bg3: rgba(236, 248, 253, 0.92);
+  --red: #0c7a73;
+  --bg: #ffffff;
+  --bg2: rgba(245, 249, 251, 0.85);
+  --bg3: rgba(255, 255, 255, 0.92);
   /* THE INTERACTION VOICE, DARKENED TO PASS (owner ruling, Aug 16, answering
      the launch audit's contrast finding). --sig paints every clickable word in
      the house, so it is body text in practice — and at #0e93a5 it measured
@@ -176,37 +177,28 @@
      4.90:1 on --bg, 5.40:1 on white, 5.16:1 on --bg3.
      The dark theme's --sig (#46ff96) already measures 15:1 and is untouched;
      this is a light-theme-only correction. */
-  --sig: #0d779e;
+  --sig: #1d5fd6;
   /* The secondary graphic accent — strokes, gradients, the dock label. It read
      as text in at least one place (.os-dock .t b), and at #3e8fd0 measured
      3.15:1 on --bg. #286da4, same hue and saturation, is 5.00:1. Dark theme's
      #b088ff already measures 7.34:1 and is untouched. */
-  --p2: #805ac1;
-  --glow: 0 0 6px rgba(0, 190, 235, 0.42), 0 0 16px rgba(0, 190, 235, 0.16);
-  --glow-r: 0 0 6px rgba(204, 34, 25, 0.3);
-  --glow-p: 0 0 6px rgba(128, 90, 193, 0.3);
-  --glow-ink: 0 0 5px rgba(0, 190, 235, 0.38), 0 0 14px rgba(0, 190, 235, 0.14);
-  --glow-box-ink: 0 0 10px rgba(0, 190, 235, 0.36), 0 0 26px rgba(0, 190, 235, 0.14);
+  --p2: #4a52b5;
+  --glow: none;
+  --glow-r: none;
+  --glow-p: none;
+  --glow-ink: none;
+  --glow-box-ink: none;
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
-  --mag-glow:
-    0 0 4px rgba(0, 190, 235, 0.26),
-    9px 0 13px rgba(0, 190, 235, 0.2),
-    -9px 0 13px rgba(0, 190, 235, 0.2),
-    22px 0 28px rgba(0, 190, 235, 0.1),
-    -22px 0 28px rgba(0, 190, 235, 0.1);
-  --grid-ln: rgba(13, 119, 158, 0.018);
-  --scan: rgba(90, 180, 210, 0.06);
+  --mag-glow: none;
+  --grid-ln: transparent;
+  --scan: transparent;
   /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
-  --backlight: radial-gradient(ellipse 75% 62% at 50% 44%, rgba(255, 255, 255, 0.7), transparent 70%);
-  --wash:
-    radial-gradient(ellipse 64% 54% at 80% 18%, rgba(70, 205, 245, 0.22), transparent 70%),
-    radial-gradient(ellipse 58% 50% at 12% 78%, rgba(90, 215, 240, 0.18), transparent 70%),
-    radial-gradient(ellipse 50% 44% at 18% 18%, rgba(255, 165, 215, 0.09), transparent 70%),
-    radial-gradient(ellipse 44% 40% at 62% 60%, rgba(170, 140, 255, 0.07), transparent 72%);
+  --backlight: none;
+  --wash: none;
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 60%);
-  --glass: rgba(205, 240, 252, 0.22);
-  --glass-deep: rgba(205, 240, 252, 0.32);
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-deep: rgba(255, 255, 255, 0.82);
   --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   --glass-rim: none;
   --glass-rim-catch: rgba(255, 255, 255, 0.35);
@@ -216,7 +208,7 @@
     linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
   --glass-spot: rgba(255, 255, 255, 0.22);
   --glass-spot-wide: rgba(255, 255, 255, 0.03);
-  --glass-shadow: 0 16px 44px rgba(0, 150, 200, 0.14), 0 1px 2px rgba(0, 150, 200, 0.08);
+  --glass-shadow: 0 12px 36px rgba(11, 20, 22, 0.08), 0 1px 2px rgba(11, 20, 22, 0.05);
   --glass-pill: rgba(225, 248, 255, 0.5);
   --glass-pill-rim: rgba(255, 255, 255, 0.6);
   --lamp-core: rgba(220, 250, 255, 0.55);
@@ -224,27 +216,22 @@
   --lamp-hot: rgba(0, 190, 235, 0.32);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
-  --holo: linear-gradient(118deg, #0d779e 0%, #46cdf5 22%, #ffa5d7 44%, #805ac1 62%, #5ad7f0 82%, #0d779e 100%);
+  --holo: linear-gradient(118deg, #0c7a73 0%, #1d5fd6 25%, #4a52b5 50%, #ff8fb1 75%, #0c7a73 100%);
 }
 
 * { box-sizing: border-box; }
 html, body {
   margin: 0;
   padding: 0;
-  background:
-    var(--backlight),
-    linear-gradient(var(--grid-ln) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-ln) 1px, transparent 1px),
-    var(--bg);
-  background-size: 100% 100%, var(--ed-grid-cell, 140px) var(--ed-grid-cell, 140px), var(--ed-grid-cell, 140px) var(--ed-grid-cell, 140px), 100% 100%;
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--helv);
-  text-shadow: var(--glow-ink);
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
-::selection { background: var(--red); color: #fff; }
+::selection { background: var(--red); color: var(--paper); }
 button { font-family: var(--helv); }
 
 /* ---- Shell: one fixed top header — wordmark row + destination row ---- */
@@ -4115,7 +4102,9 @@ body { font-size: 14px; }
 .sheethead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
 .sheetgrip { justify-self: start; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin-left: 8px; }
-.sheettitle { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-align: center; white-space: nowrap; }
+/* `.sheet h2` (the old sheet rule) outranks a bare class; the title is named
+   on the element so the deck's sheets keep their 12px Michroma heading */
+.sheet h2.sheettitle, .sheettitle { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 12px; letter-spacing: 0.2em; color: var(--ink); text-align: center; white-space: nowrap; }
 .sheetbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 14px; background: none; color: var(--sig); cursor: pointer;
   font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; text-shadow: none; }
 .sheetbtn:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
@@ -4308,3 +4297,88 @@ body { font-size: 14px; }
 .eoquote cite { display: block; font-style: normal; font-size: 11px; letter-spacing: 0.12em; color: var(--grey); margin-top: 4px; }
 .eosources { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; }
 .ovp-line { grid-template-columns: 1fr; }
+
+
+/* =====================================================================
+   V.2 FIXTURES (owner's blueprint, 17 Oct 2026 — Foundations "Screen map",
+   "Design system"). The Info Dock (top left) and the Passport Button (top
+   right) are Liquid Glass pills on the fixture band; the deck below carries
+   the same glass. The rainbow is a MATERIAL effect on the fixtures' edges
+   only: a faint conic sheen masked to a one-pixel rim, never a wash.
+   ===================================================================== */
+.fixture {
+  position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); z-index: 66;
+  display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg3) 86%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+}
+.infodock { left: max(12px, env(safe-area-inset-left, 0px)); }
+.passportbtn { right: max(12px, env(safe-area-inset-right, 0px)); width: 46px; height: 46px; justify-content: center; color: var(--grey); text-decoration: none; transition: color 0.18s, transform 0.12s; }
+.passportbtn.cur, .passportbtn:hover { color: var(--red); }
+.idkey {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 38px; border: 0; border-radius: 999px; background: none; color: var(--grey); cursor: pointer;
+  transition: background 0.18s, color 0.18s, transform 0.12s;
+}
+.idkey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.idkey.cur { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
+.idkey:active, .passportbtn:active { transform: scale(0.94); }
+.idcount {
+  position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  background: var(--red); color: var(--paper); font: 9px/16px var(--mich); letter-spacing: 0; text-align: center;
+}
+.idlabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* the rainbow rim (blueprint 2.11 "hybrid optical behaviour", restrained) */
+.fixture::after, .ccenter::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  opacity: var(--iris, 0.32);
+  background: conic-gradient(from 200deg at 30% 0%, rgba(255, 80, 160, 0.5), rgba(60, 200, 255, 0.55), rgba(140, 255, 180, 0.5), rgba(255, 210, 80, 0.45), rgba(170, 120, 255, 0.5), rgba(255, 80, 160, 0.5));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+[data-theme="light"] { --iris: 0.42; }
+@media (prefers-reduced-transparency: reduce) {
+  .fixture, .ccenter { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
+}
+
+/* the POST disc at the center of the deck */
+.ccenter .tabl.ccpost { flex: 0 0 auto; min-width: 66px; }
+.ccdisc {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line); color: var(--ink);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 85%, transparent), color-mix(in srgb, var(--bg2) 85%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent), 0 6px 18px color-mix(in srgb, var(--ink) 12%, transparent);
+  transition: transform 0.12s, color 0.18s, border-color 0.18s;
+}
+.ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
+.ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
+.ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
+/* a key is a key whether it is an <a> or a <button> */
+.ccenter button.tabl { border: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
+.ccenter .cctabs .tabl { font-family: var(--mich); }
+
+/* the deck's keys and the sheet buttons press like compact buttons (blueprint
+   "compact buttons feel tactile"): a tiny depression, a spring back */
+.ccenter .tabl:active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
+.ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
+
+/* the feed's masthead wears the wordmark */
+.feedmark { display: block; width: 100%; clear: both; margin: 0 0 18px; }
+.feedmark .wordmark { display: inline-flex; }
+
+/* notices (the bell's sheet) */
+.notices { display: grid; gap: 8px; }
+.noticerow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 10px 12px; border: 1px solid var(--line); border-radius: 14px; font-size: 13px; }
+.noticerow.unread { border-color: var(--red); }
+.noticekind { font: 9px/1.4 var(--mich); letter-spacing: 0.12em; color: var(--grey); white-space: nowrap; }
+.noticewhen { font: 9px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); white-space: nowrap; }
+.bagsheet { display: grid; gap: 10px; }
+
+/* THE OS CHROME OF THE PREVIOUS LANGUAGE IS RETIRED (no CRT): scanlines,
+   the vignette, the drifting blobs, the plus field, the frame, the status
+   bar. The shell no longer renders them; this holds for any page that
+   still does. */
+.os-crt, .os-blob, .os-plus, .os-frame, .os-status { display: none !important; }

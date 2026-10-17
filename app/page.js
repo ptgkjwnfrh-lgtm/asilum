@@ -27,6 +27,7 @@ import VerificationBadge from "./components/VerificationBadge.jsx";
 import { useLiquidGlass } from "./components/LiquidGlass.jsx";
 import FloatView, { askTilt } from "./components/FloatView.jsx";
 import PageMast from "./components/PageMast.jsx";
+import Wordmark from "./components/Wordmark.jsx";
 import SaveButton from "./components/SaveButton.jsx";
 import WireComposer from "./components/WireComposer.jsx";
 import WireCard from "./components/WireCard.jsx";
@@ -997,6 +998,7 @@ export default function Home() {
         {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
       </div>
       <header className="cthead">
+        <div className="feedmark"><Wordmark /></div>
         <PageMast word={view === "wire" ? "THE WIRE" : "THE FEED"} sub={view === "wire" ? "CULTURE · THE POSTS ALONE" : "PIECES · THE WIRE · ONE STREAM"} />
         {stamp && (
           <div className="ctmeta">
