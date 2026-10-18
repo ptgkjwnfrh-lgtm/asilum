@@ -455,6 +455,8 @@ export default function Home() {
       restoreFromPark(data.items || []);
       cursorRef.current = data.chunk?.catalog?.nextCursor || null;
       setEpsilonAuto(!!data.epsilonAuto);
+      // V.2 14.9 (slice 10c): the Info Dock shows |A| while exploration is active
+      try { window.dispatchEvent(new CustomEvent("asilum:exploration", { detail: data.exploration || { active: !!data.epsilonActive, auto: !!data.epsilonAuto, off: false } })); } catch {}
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
       else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
       dwellRef.current = { vis: new Map(), sent: new Set() };

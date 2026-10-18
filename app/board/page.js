@@ -11,6 +11,7 @@
 // Milestones are STAMPS for real acts (first collection, taste defined,
 // first transmission) — there is no streak and no timer.
 
+import { openSheet } from "../../lib/dockstate.js";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
@@ -163,6 +164,18 @@ export default function BoardPage() {
   useEffect(() => {
     const user = getUid();
     setUid(user);
+    // V.2 14.11 (slice 10c): on first opening, the Passport asks its five to
+    // seven questions in a popup — once per session until they are answered
+    // or skipped; LATER keeps the place
+    if (user) {
+      let asked = false;
+      try { asked = !!window.sessionStorage.getItem("asilum-onboarding-asked"); } catch {}
+      if (!asked && !new URLSearchParams(window.location.search).get("id")) {
+        authorizedFetch("/api/passport/onboarding?user=" + encodeURIComponent(user)).then((r) => (r.ok ? r.json() : null)).then((d) => {
+          if (d && d.progress && !d.progress.done) { try { window.sessionStorage.setItem("asilum-onboarding-asked", "1"); } catch {} openSheet("onboarding"); }
+        }).catch(() => {});
+      }
+    }
     const sp = new URLSearchParams(window.location.search);
     const id = sp.get("id");
     if (id) {
