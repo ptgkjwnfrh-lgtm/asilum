@@ -4261,3 +4261,16 @@ body { font-size: 14px; }
 
 /* ---- the friend asterisk (Foundations; slice 10d): a plain Michroma * before a friend's name, never the boxed |A| ---- */
 .friendmark { font-style: normal; font-family: var(--mich); color: var(--red); margin-right: 1px; }
+
+/* V.2 slice 12: the map popup (5.5) and the overview's BRDCST line (16.3) */
+.mapsheet { display: grid; gap: 10px; }
+.mapsheet .fmap { width: 100%; height: auto; }
+.mapsheetrow { display: grid; gap: 2px; font-family: var(--mich); font-size: 11px; letter-spacing: .06em; }
+.mapsheetrow b { font-weight: 700; color: var(--ink); }
+.mapsheetacts { display: flex; flex-wrap: wrap; gap: 14px; }
+.srchbrdcst { list-style: none; margin: 4px 0 10px; padding: 0; font-family: var(--mich); font-size: 10px; letter-spacing: .08em; }
+.srchbrdcst a { color: var(--red); text-decoration: none; }
+.bdatt { display: grid; gap: 4px; margin: 8px 0; font-family: var(--mich); font-size: 10px; letter-spacing: .08em; }
+.bdatt .sub { color: var(--grey); font-family: var(--helv); letter-spacing: 0; font-size: 11px; }
+.vline { font-family: var(--helv); font-size: 12px; color: var(--grey); margin: 4px 0; }
+.vline b { color: var(--ink); font-family: var(--mich); font-size: 10px; letter-spacing: .08em; margin-right: 6px; }

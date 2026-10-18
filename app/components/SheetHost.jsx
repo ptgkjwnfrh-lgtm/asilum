@@ -40,6 +40,7 @@ import MediaFloat from "./MediaFloat.jsx";
 import EchoViewer from "./EchoRail.jsx";
 import ScoreSheet from "./ScoreSheet.jsx";
 import Onboarding from "./Onboarding.jsx";
+import MapSheet from "./MapSheet.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -63,6 +64,8 @@ const VIEWS = {
   score: { title: "PASSENGER SCORE", render: (p) => <ScoreSheet {...p} /> },
   // the Passport's onboarding (14.11, slice 10c): five to seven questions on first opening; an edit in progress is heavy
   onboarding: { title: "PASSPORT", render: (p) => <Onboarding {...p} />, heavy: true },
+  // the map above a post (5.5, slice 12): a BRDCST's event pinned, the ring around it
+  map: { title: "MAP", render: (p) => <MapSheet {...p} />, roomy: true },
 };
 
 const SWIPE_DOWN = 70;

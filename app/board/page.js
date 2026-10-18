@@ -13,6 +13,8 @@
 
 import { openSheet } from "../../lib/dockstate.js";
 import BehindUploads from "../components/BehindUploads.jsx";
+import AttendanceBlock from "../components/AttendanceBlock.jsx";
+import { ScoreLine } from "../components/ScoreSheet.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
@@ -511,6 +513,9 @@ export default function BoardPage() {
                 <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
               </div>
               <BehindUploads uid={uid} />
+              {/* slice 12: the Passenger Score on the Passport (6.18) and where you went (17.19) */}
+              <div className="bdatt"><b>PASSENGER SCORE</b><ScoreLine subject={uid} /></div>
+              <AttendanceBlock uid={uid} />
               {recognized.length > 0 && (
                 <div className="stampknow">
                   <span className="stampknow-mark" aria-hidden="true">✳</span>

@@ -47,7 +47,8 @@ function BrdcstEvent({ event, open, onToggle }) {
         <div className="brdcstbody">
           <span className="fine">{String(event.kind || "").toUpperCase()}{event.city ? " · " + event.city : ""}{event.status ? " · " + String(event.status).toUpperCase() : ""}{event.admission ? " · " + event.admission : ""}</span>
           <div className="brdcstacts">
-            <a className="txtbtn" href={"/map?pin=" + encodeURIComponent(event.id)}>PASSPORT MAP →</a>
+            {/* 5.5 (slice 12): the map opens above the post as a popup */}
+            <button type="button" className="txtbtn" onClick={() => { haptic("press"); openSheet("map", { pin: event.id, title: "MAP" }); }}>PASSPORT MAP →</button>
             {event.sourceUrl ? <a className="txtbtn" href={event.sourceUrl} target="_blank" rel="noopener noreferrer">TICKETS · THE ORGANIZER ↗</a> : <span className="fine">tickets: no organizer link on record</span>}
           </div>
         </div>

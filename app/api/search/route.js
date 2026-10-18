@@ -142,7 +142,8 @@ export async function GET(req) {
     nextCursor,
     snapshotId,
     candidatesTruncated: !!out.candidatesTruncated,
-    overview: resolvedEntities.overview,
+    // 16.3 (slice 12): the overview carries the BRDCSTs in this viewer's reach that name the entity
+    overview: resolvedEntities.overview ? { ...resolvedEntities.overview, brdcst: await (async () => { try { const { brdcstsForEntity } = await import("../../../lib/db/production/brdcst.js"); const viewer = userId || await resolveRequestUser(req, searchParams.get("user") || "").catch(() => null); return await brdcstsForEntity({ viewerId: viewer, entity: resolvedEntities.overview }); } catch { return []; } })() } : resolvedEntities.overview,
     related: resolvedEntities.related,
     entities: resolvedEntities.entities,
     query: resolvedEntities.query,

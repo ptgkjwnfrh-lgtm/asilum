@@ -7,7 +7,7 @@
       "version": null
     },
     "contractVersion": 1,
-    "requestId": "c1790d6f-fc07-4d61-b470-332fa1f8bc30",
+    "requestId": "05b96fd0-b2cd-4cf3-86c6-e5cf1c16db18",
     "outcome": "ok",
     "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
@@ -321,7 +321,8 @@
         }
       ],
       "origin": null,
-      "reference": false
+      "reference": false,
+      "brdcst": []
     },
     "related": [
       {

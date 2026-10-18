@@ -38,6 +38,20 @@ import { getUid } from "../../lib/client.js";
 import { isNativeItem, startNativeCheckout } from "../../lib/storefront/client.js";
 import { postJSON } from "../../lib/client.js";
 import TagRow from "./TagChip.jsx";
+
+/** Chapter 11 (slice 12): the valuation read — comparables ASILUM recorded, else rank × era in words, else the stake. Says which rung answered. */
+function ValuationLine({ item }) {
+  const [v, setV] = useState(null);
+  useEffect(() => {
+    let live = true;
+    if (!item || !item.id || isDemoItem(item)) { setV(null); return undefined; }
+    fetch("/api/valuation?item=" + encodeURIComponent(item.id)).then((r) => (r.ok ? r.json() : null)).then((d) => { if (live) setV(d && d.valuation ? d.valuation : null); }).catch(() => { if (live) setV(null); });
+    return () => { live = false; };
+  }, [item && item.id]);
+  if (!v) return null;
+  const rung = v.basis === "comparables" ? "COMPARABLES" : v.basis === "rank-era" ? "RANK × ERA" : "THE STAKE";
+  return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b>{v.line}</p>;
+}
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 function eraLabel(era) {
@@ -243,6 +257,7 @@ export default function ListingSheet({ item: given, id }) {
               </div>
             ) : null}
             <OriginLine item={item} detailed />
+            <ValuationLine item={item} />
             {item.designers && item.designers.length ? (
               <div className="designers">{item.designers.map((d) => <a className="dz" key={d} href={"/discover?q=" + encodeURIComponent(d)}>{d}</a>)}</div>
             ) : null}

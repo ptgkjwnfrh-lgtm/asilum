@@ -82,7 +82,7 @@ export default function SearchSheet() {
           if (d.overview && d.overview.name) {
             const srcs = Object.fromEntries((d.overview.sources || []).map((x) => [x.id, { url: x.url, publisher: x.publisher }]));
             const first = (d.overview.sources || [])[0];
-            out.person = { id: d.overview.id, name: d.overview.name, summary: d.overview.overview && d.overview.overview.summary ? d.overview.overview.summary.text : "", image: d.overview.image || null, sources: srcs, facts: first ? [{ source: first.id }] : [], registry: true };
+            out.person = { id: d.overview.id, name: d.overview.name, summary: d.overview.overview && d.overview.overview.summary ? d.overview.overview.summary.text : "", image: d.overview.image || null, sources: srcs, facts: first ? [{ source: first.id }] : [], registry: true, brdcst: Array.isArray(d.overview.brdcst) ? d.overview.brdcst : [] };
           }
           out.note = d.note || d.engineNote || null;
         } else out.error = "the index did not answer";
@@ -129,7 +129,15 @@ export default function SearchSheet() {
       {!q && <p className="srchfine">Handles, pieces, places, eras, a feeling. Nothing is searched until you type.</p>}
 
       {q && show("people") && overview && (
-        <OverviewPreview person={overview} onOpen={() => pushSheet("overview", { entity: overview, title: overview.name.toUpperCase() })} />
+        <>
+          <OverviewPreview person={overview} onOpen={() => pushSheet("overview", { entity: overview, title: overview.name.toUpperCase() })} />
+          {/* 16.3: the BRDCSTs in reach that name this entity, one line each, under the overview */}
+          {overview.brdcst && overview.brdcst.length ? (
+            <ul className="srchbrdcst" aria-label="broadcasts in your reach">
+              {overview.brdcst.slice(0, 3).map((b) => <li key={b.id}><a href={b.href}>{b.line} →</a></li>)}
+            </ul>
+          ) : null}
+        </>
       )}
       {q && show("people") && queryRows.length > 0 && (
         <ul className="srchqs" aria-label="searches the registry knows">
