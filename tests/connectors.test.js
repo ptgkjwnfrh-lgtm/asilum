@@ -16,7 +16,10 @@ test("every capability reports one of the six states, and nothing is ever 'conne
   const reg = withEnv({}, () => connectorRegistry());
   assert.ok(reg.length >= 5);
   for (const c of reg) for (const cap of c.capabilities) assert.ok(CONNECTOR_STATES.includes(cap.state), `${c.id}.${cap.id} = ${cap.state}`);
-  assert.equal(JSON.stringify(reg).includes('"connected"'), false);
+  // the music seams (slice 13) carry a per-connector `connected` FLAG, false with nothing stored;
+  // no capability ever reports a STATE of "connected" — a stored connection reads "available"
+  for (const c of reg) assert.equal(c.connected, false, `${c.id} connected with nothing stored`);
+  for (const c of reg) for (const cap of c.capabilities) assert.notEqual(cap.state, "connected");
 });
 
 test("Spotify: manual artist stamps are available, profiling is unsupported, display needs approval", () => {
@@ -40,7 +43,7 @@ test("eBay: Browse follows the keys AND the partnership; purchase history is a s
   assert.equal(capabilityState("ebay", "all-historical-purchases"), "unsupported");
   assert.equal(capabilityState("ebay", "nope"), "unsupported");
   assert.match(connectSentence("ebay", "all-historical-purchases", "unsupported"), /unsupported/);
-  assert.match(connectSentence("ebay", "browse", "disconnected"), /not written yet/);
+  assert.match(connectSentence("ebay", "browse", "disconnected"), /no flow exists/);
 });
 
 test("TikTok and Pinterest never promise what their APIs do not expose; the admin status reader still works", () => {

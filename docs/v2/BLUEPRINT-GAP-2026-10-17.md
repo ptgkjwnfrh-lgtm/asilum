@@ -146,6 +146,16 @@ tests and leaves the app runnable with no database (mem mode) and no keys.
 9. **Media: video housing, music, captions.** Needs the media worker.
 10. **Passport onboarding, Behind the Upload, Exploration Active indicator,
     friend asterisk, offline-first.**
+11. **Money in motion** (18 Oct): payouts and top-ups, Credit at the fee,
+    Wardrobe private sales, the hourly sweeps, the review screen —
+    `docs/v2/slice-11-money-2026-10-18.md`.
+12. **The map above a post, substantiated attendance, the valuation
+    hierarchy, the overview's BRDCST line** —
+    `docs/v2/slice-12-map-attendance-valuation-2026-10-18.md`.
+13. **The music seams, last** (owner's order): Spotify PKCE and the MusicKit
+    developer token behind honest 503s, sealed tokens, and the two prepared
+    developer applications the owner submits —
+    `docs/v2/slice-13-music-seams-2026-10-18.md`, `docs/v2/applications/`.
 
 ## Decisions the owner must make before the affected slice
 

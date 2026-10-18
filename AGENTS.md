@@ -45,14 +45,12 @@ date once, telling agents the UI was locked after the owner had unlocked it.
 - Persistence: lib/db/index.js (brain tables) + lib/db/production.js
   (production tables) — Postgres via `DATABASE_URL` (Supabase), in-memory
   fallback otherwise. Migrations are `supabase/schema-v*.sql`, applied with
-  `scripts/apply-schema.mjs`; live schema is **v53** as of 19 Sep 2026 (the
-  ledger also holds v51 asterisk-stream and v52 cutouts from branches that are
-  not yet on main — READ `app_schema_migrations` on the live database before
-  numbering a migration); `schema-v62`–`schema-v67` (the native storefront,
-  ASTERISK governance, native commerce, after the sale, BRDCST, the media
-  worker's `motion_assets` and the `media` record kind) are STAGED on
-  `v2/build`, not applied, and
-  `schema-alpha.sql` is still STAGED, not applied. Read
+  `scripts/apply-schema.mjs`; live schema is **v61** (READ
+  `app_schema_migrations` on the live database before numbering a migration);
+  `schema-v62`–`schema-v72` (the native storefront, ASTERISK governance, native
+  commerce, after the sale, BRDCST, the media worker, identity, the Passport,
+  money, attendance, the music tokens) are STAGED on `v2/build`, not applied,
+  and `schema-alpha.sql` is still STAGED, not applied. Read
   `.claude/skills/database-safety` before touching schema or production rows.
 - **The two backends must agree.** mem mode is what preview deploys, local
   dev, and nearly every test run on, so a mem/pg divergence ships green.
