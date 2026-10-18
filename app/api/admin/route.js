@@ -45,6 +45,12 @@
 //   aftersale.refund { id } · aftersale.dispatch { order, extensionDays, approved }
 //   score.penalty { propose, userId, reason } | { id, penaltyAction } · score.mark { review, excluded?, refunded? }
 //   score.read { subject } · credit.void { userId, amountCents, note } · credit.read { userId }
+//   brdcst.list { state? } — every campaign (V.2 chapter 5; slice 8)
+//   brdcst.interrupt { id, reason: "interrupted"|"event_cancelled"|"policy", note? }
+//     — ASILUM stops a campaign: unused days refund as credit with the bonus;
+//     a policy reason parks it under review
+//   brdcst.review { id, refund: true|false, note } — decide a policy review
+//   brdcst.sweep — send the three-hourly failed-payment reminders now
 //   steward.report — the board, the repairs the hands would make, the ledger
 //   steward.act { confirm?: [actionId], dryRun? } — make the delegated
 //     repairs (lib/steward/decisions.js); `confirm` is a person's yes, for
@@ -612,6 +618,29 @@ export async function POST(req) {
         const Cr = await import("../../../lib/db/production/credit.js");
         const userId = String(body.userId || "");
         return NextResponse.json({ userId, balanceCents: await Cr.creditBalance(userId), ledger: await Cr.creditLedger(userId, { limit: body.limit || 100 }) });
+      }
+      // ---- BRDCST (V.2 chapter 5; slice 8) --------------------------------------------
+      case "brdcst.list": {
+        const B = await import("../../../lib/db/production/brdcst.js");
+        const { stateAt, usage } = await import("../../../lib/brdcst/index.js");
+        const now = Date.now();
+        const all = (await B.listCampaigns({ limit: body.limit || 200 })).map((c) => ({ ...c, state: stateAt(c, now), usage: usage(c, now) }));
+        return NextResponse.json({ campaigns: body.state ? all.filter((c) => c.state === body.state) : all });
+      }
+      case "brdcst.interrupt": {
+        const B = await import("../../../lib/db/production/brdcst.js");
+        const reason = ["interrupted", "event_cancelled", "policy"].includes(body.reason) ? body.reason : "interrupted";
+        try { return NextResponse.json(await B.cancelCampaign({ campaignId: String(body.id || ""), by: "admin", reason, refundTo: "credit", bonusAs: "days" })); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "brdcst.review": {
+        const B = await import("../../../lib/db/production/brdcst.js");
+        try { return NextResponse.json({ campaign: await B.decideReview({ campaignId: String(body.id || ""), refund: body.refund === true, note: body.note || "", actor: adminActor() }) }); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "brdcst.sweep": {
+        const B = await import("../../../lib/db/production/brdcst.js");
+        return NextResponse.json({ reminders: await B.sweepPaymentReminders() });
       }
       case "steward.report":
       case "steward.act":

@@ -186,5 +186,25 @@ const tickets = await loadRoute("app/api/tickets/route.js");
   });
 }
 
+// ---- BRDCST (slice 8): the public quote and forecast, a draft, the idle payment --------
+{
+  const brdcst = await loadRoute("app/api/brdcst/route.js");
+  const { listPlaces } = await import("../lib/places/registry.js");
+  const { eventLive } = await import("../lib/brdcst/index.js");
+  const ev = listPlaces({ dated: true }).find((p) => !p.sample && eventLive(p));
+  const quote = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", radiusMi: "100", tasteBreadth: "0.25", durationDays: "7", eventId: ev.id, tags: "ARCHIVAL" } });
+  const me = newDevice();
+  const created = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [ev.id], radiusMi: 100, tasteBreadth: 0.25, durationDays: 7 } });
+  const idle = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "pay", id: created.body.campaign.id, creditCents: 0 } });
+  const ticker = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { ticker: "1" } });
+  const scrub = (c) => ({ ...c, id: "<uuid>", ownerId: "<uid>", createdAt: "<iso>", updatedAt: "<iso>" });
+  write("brdcst.json", {
+    quote: { request: `GET /api/brdcst?quote=1&radiusMi=100&tasteBreadth=0.25&durationDays=7&eventId=${ev.id}&tags=ARCHIVAL`, status: quote.status, body: quote.body },
+    create: { request: "POST /api/brdcst { action: create, eventIds, radiusMi, tasteBreadth, durationDays }", status: created.status, body: { campaign: scrub(created.body.campaign) } },
+    payIdle: { request: "POST /api/brdcst { action: pay, id, creditCents: 0 } with no STRIPE_SECRET_KEY", status: idle.status, body: idle.body },
+    ticker: { request: "GET /api/brdcst?ticker=1 (anonymous: no taste to match)", status: ticker.status, body: ticker.body },
+  });
+}
+
 write("registry-coverage.json", { coverage: registryCoverage(), provenance: CAREER_PROVENANCE });
 console.log("done");

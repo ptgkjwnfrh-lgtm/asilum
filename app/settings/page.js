@@ -76,9 +76,11 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState("system");
   const [haptics, setHaptics] = useState(true);
   const [credit, setCredit] = useState(null);
+  const [brdcst, setBrdcst] = useState(null);
   useEffect(() => {
-    const uid = getUid(); if (!uid) { setCredit(false); return; }
+    const uid = getUid(); if (!uid) { setCredit(false); setBrdcst(false); return; }
     authorizedFetch("/api/credit?user=" + encodeURIComponent(uid)).then((r) => (r.ok ? r.json() : null)).then((d) => setCredit(d || false)).catch(() => setCredit(false));
+    authorizedFetch("/api/brdcst?user=" + encodeURIComponent(uid)).then((r) => (r.ok ? r.json() : null)).then((d) => setBrdcst(d || false)).catch(() => setBrdcst(false));
   }, []);
 
   useEffect(() => {
@@ -179,6 +181,11 @@ export default function SettingsPage() {
           <div className="rkname">ASILUM Credit</div>
           <div className="rkctl rkmono">{credit === null ? "…" : credit === false ? "UNREAD" : `USD ${(credit.balanceCents / 100).toFixed(2)}`}</div>
           <div className="rkdesc">site-wide money from refunds and gifts only; it cannot be bought, never expires while the account is in good standing, and is applied at checkout only in the amount you choose. gifting runs through Direct Messages once two-factor and device authentication exist — neither does yet, so the gift control says so.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">BRDCST bonus</div>
+          <div className="rkctl rkmono">{brdcst === null ? "…" : brdcst === false ? "UNREAD" : `${brdcst.bonus.days} DAY${brdcst.bonus.days === 1 ? "" : "S"} · ${brdcst.bonus.miles} MI`}</div>
+          <div className="rkdesc">extra advertising days or miles of reach, earned when a BRDCST refund is taken as Credit (two days or 45 miles) and in proportion to the share of a BRDCST paid with Credit, rounded down. banked here, never expiring, redeemed on a campaign whenever you choose. {brdcst && brdcst.campaigns ? `${brdcst.campaigns.length} campaign${brdcst.campaigns.length === 1 ? "" : "s"} in the Studio.` : ""}</div>
         </div>
         <div className="rkrow">
           <div className="rkname">|A| Protection</div>

@@ -30,11 +30,14 @@ import Icon from "./Icons.jsx";
 import ModelTag from "./ModelTag.jsx";
 import { getUid, postJSON, authorizedFetch, thumbFor } from "../../lib/client.js";
 import { getProfileInfo, addPost } from "../../lib/social.js";
+import BrdcstOptions, { DEFAULT_TARGETING, money } from "./BrdcstOptions.jsx";
+import { quote as brdcstQuote } from "../../lib/brdcst/index.js";
+import { extractRefs } from "../../lib/wire/refs.js";
 import { WIRE_CATEGORIES, WIRE_INTENTS } from "../../lib/model/media.js";
 import { TRANSMISSION_MAX, CAPTION_MAX, MAX_IMAGES, MAX_PIECES, LAYOUTS, LAYER_ALIGNS, LAYER_POSITIONS, LAYER_COLORS, graphemeCount } from "../../lib/wire/compose.js";
 import {
   newDraft, readDraft, writeDraft, clearDraft, attachMedia, detachMedia, restoreMedia, discardMedia,
-  setText, setTitle, setLayout, setLink, setEvent, setPieces, setLayers, describe,
+  setText, setTitle, setLayout, setLink, setEvent, addEvent, removeEvent, setPieces, setLayers, describe,
 } from "../../lib/wire/draft.js";
 
 const LAYOUT_LABEL = { single: "SINGLE", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "EVENT" };
@@ -81,6 +84,10 @@ export default function WireComposer({ onPublished, compact = false, kind = null
   const [busy, setBusy] = useState("");
   const [tool, setTool] = useState(null);       // "pieces" | "link" | "event" | "layers" | null
   const [uploads, setUploads] = useState(null); // { available, reason }
+  // BRDCST targeting (slice 8): the composer's panel; a campaign is created
+  // as a DRAFT the moment the post publishes, paid as a separate step
+  const [targeting, setTargeting] = useState({ ...DEFAULT_TARGETING });
+  const [brdcstPlan, setBrdcstPlan] = useState("draft"); // "draft" | "pay"
   const fileRef = useRef(null);
   const c = draft.composition;
   const status = useMemo(() => describe(draft), [draft]);
@@ -142,15 +149,32 @@ export default function WireComposer({ onPublished, compact = false, kind = null
         setBusy("");
         if (!res.ok) { setNote((d && (d.error || d.note)) || "the wire did not accept that"); return; }
         addPost(body, info, c.title, { postKind: d.postKind, layout: d.layout, attachments: d.attachments, imageUrl: c.media[0] ? c.media[0].url : "" });
-        setNote(d && d.held ? (d.note || "saved and paused for a human review") : "");
-        setDraft(clearDraft()); setTool(null);
+        let note = d && d.held ? (d.note || "saved and paused for a human review") : "";
+        // the BRDCST campaign: a draft on the server, named to the post; a
+        // sample fixture cannot be promoted and the route says so
+        const evs = (c.events && c.events.length ? c.events : c.event ? [c.event] : []).filter((e) => !e.sample);
+        if (evs.length && d && d.id != null) {
+          try {
+            const created = await postJSON("/api/brdcst", { user: getUid(), action: "create", postId: d.id, eventIds: evs.map((e) => e.id), tags: extractRefs(body).hashtags, radiusMi: targeting.radiusMi, tasteBreadth: targeting.tasteBreadth, durationDays: targeting.durationDays, scheduledStart: targeting.scheduledStart || null });
+            const cj = await created.json().catch(() => null);
+            if (!created.ok) note = (note ? note + " · " : "") + "the BRDCST was not saved: " + ((cj && cj.error) || created.status);
+            else if (brdcstPlan === "pay") {
+              const paid = await postJSON("/api/brdcst", { user: getUid(), action: "pay", id: cj.campaign.id });
+              const pj = await paid.json().catch(() => null);
+              if (paid.ok && pj && pj.checkoutUrl) { window.location.assign(pj.checkoutUrl); return; }
+              note = (note ? note + " · " : "") + (paid.ok && pj && pj.paid ? "the BRDCST is paid with Credit and " + (pj.campaign.state === "scheduled" ? "scheduled" : "live") : "the BRDCST waits in the Studio's drafts — " + ((pj && pj.error) || "payment did not start"));
+            } else note = (note ? note + " · " : "") + "the BRDCST is saved as a draft in the Studio — pay it there to send it";
+          } catch { note = (note ? note + " · " : "") + "the BRDCST could not be saved — the post is published"; }
+        } else if ((c.events && c.events.length) || c.event) note = (note ? note + " · " : "") + "a sample fixture cannot be promoted — the event rides on the post for you alone";
+        setNote(note);
+        setDraft(clearDraft()); setTool(null); setTargeting({ ...DEFAULT_TARGETING }); setBrdcstPlan("draft");
         if (onPublished) onPublished();
       })
       .catch(() => { setBusy(""); setNote("the shared wire could not be reached — nothing was published"); });
   }
 
   const count = status.kind === "transmission" ? `${graphemeCount(c.text)}/${TRANSMISSION_MAX}` : `${c.text.length}/${CAPTION_MAX}`;
-  const layoutChoices = LAYOUTS.filter((l) => l !== "event" || c.event).filter((l) => l !== "expose" || c.media.length)
+  const layoutChoices = LAYOUTS.filter((l) => l !== "event" || c.event || (c.events && c.events.length)).filter((l) => l !== "expose" || c.media.length)
     .filter((l) => (l !== "single" && l !== "carousel") || c.media.length).filter((l) => l !== "fragment" || c.pieces.length);
 
   return (
@@ -231,13 +255,23 @@ export default function WireComposer({ onPublished, compact = false, kind = null
                   <button className="txtbtn" onClick={() => apply((d) => setLink(d, null))}>REMOVE</button>
                 </div>
               )}
-              {c.event && (
-                <div className="wcevent">
-                  <span className="cclbl">EVENT · {String(c.event.kind || "").toUpperCase()}{c.event.sample ? " · SAMPLE FIXTURE" : ""}</span>
-                  <b>{c.event.name}</b><span>{c.event.city}{c.event.startsAt ? " · " + c.event.startsAt : ""}</span>
-                  <button className="txtbtn" onClick={() => apply((d) => setEvent(d, null))}>REMOVE</button>
+              {(c.events && c.events.length ? c.events : c.event ? [c.event] : []).map((ev) => (
+                <div className="wcevent" key={ev.id}>
+                  <span className="cclbl">BRDCST · {String(ev.kind || "").toUpperCase()}{ev.sample ? " · SAMPLE FIXTURE" : ""}</span>
+                  <b>{ev.name}</b><span>{ev.city}{ev.startsAt ? " · " + ev.startsAt : ""}</span>
+                  <button className="txtbtn" onClick={() => apply((d) => removeEvent(d, ev.id))}>REMOVE</button>
                 </div>
-              )}
+              ))}
+              {((c.events && c.events.length) || c.event) ? (
+                <>
+                  <BrdcstOptions value={targeting} onChange={setTargeting} eventId={(c.events && c.events[0] ? c.events[0].id : c.event && c.event.id) || null} tags={extractRefs(c.text || "").hashtags} compact />
+                  <div className="brdplan seg" role="group" aria-label="when to pay">
+                    <button type="button" className={"chip clickable" + (brdcstPlan === "draft" ? " cur" : "")} aria-pressed={brdcstPlan === "draft"} onClick={() => setBrdcstPlan("draft")}>SAVE THE BRDCST AS A DRAFT</button>
+                    <button type="button" className={"chip clickable" + (brdcstPlan === "pay" ? " cur" : "")} aria-pressed={brdcstPlan === "pay"} onClick={() => setBrdcstPlan("pay")}>PAY {money(brdcstQuote(targeting).totalCents)} ON PUBLISH →</button>
+                  </div>
+                  <p className="fine">until it is paid the broadcast waits in the Studio's drafts; the post itself publishes now. a BRDCST reaches passports whose taste matches, inside the radius; a block suppresses it.</p>
+                </>
+              ) : null}
 
               {/* THE ADD ROW */}
               <div className="wcadd" role="group" aria-label="add to the post">
@@ -254,7 +288,7 @@ export default function WireComposer({ onPublished, compact = false, kind = null
               {uploads && !uploads.available && <p className="fine">images: {uploads.reason}</p>}
               {tool === "pieces" && <PiecePicker chosen={c.pieces} onPick={(p) => apply((d) => setPieces(d, [...d.composition.pieces.filter((x) => x.id !== p.id), p]))} />}
               {tool === "link" && <LinkPicker onPick={(snap) => { apply((d) => setLink(d, snap)); setTool(null); }} />}
-              {tool === "event" && <EventPicker onPick={(ev) => { apply((d) => setEvent(d, ev)); setTool(null); }} />}
+              {tool === "event" && <EventPicker onPick={(ev) => { apply((d) => addEvent(d, ev)); setTool(null); }} />}
 
               {/* LAYOUT, for a post */}
               {(status.kind === "post" || c.pieces.length > 0) && (

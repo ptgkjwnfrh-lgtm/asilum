@@ -19,7 +19,8 @@ import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity
 import { sanitizeStatement, screenStatement } from "../../../lib/profile/rooms.js";
 import { extractRefs } from "../../../lib/wire/refs.js";
 import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
-import { validateComposition, attachmentsFor } from "../../../lib/wire/compose.js";
+import { validateComposition, attachmentsFor, eventsOf } from "../../../lib/wire/compose.js";
+import { deliverPosts } from "../../../lib/db/production/brdcst.js";
 import { fetchPreview } from "../../../lib/wire/preview.js";
 import { wireImageUrl } from "../../../lib/wire/media.js";
 import { resolveProduct } from "../../../lib/products.js";
@@ -98,7 +99,14 @@ export async function GET(req) {
     // An expired ECHO is never served live (V.2 Terms 5.4): filtered here,
     // after the store, so the memory and the Postgres backends agree.
     const now = Date.now();
-    const posts = (await listEditorialPosts({ kind, limit, handle, id, authorId }))
+    // BRDCST delivery (V.2 5.13–5.15, 9.13; slice 8): a post's event footer
+    // rides only on a live campaign in reach of THIS viewer; on the feed
+    // path a viewer whose taste does not match does not see the promoted
+    // post at all; a permalink or a poster's page shows it bare instead.
+    const viewerId = authorId || (await resolveRequestUser(req, String(searchParams.get("user") || "")).catch(() => null));
+    const lat = searchParams.get("lat"), lng = searchParams.get("lng");
+    const delivered = await deliverPosts(await listEditorialPosts({ kind, limit, handle, id, authorId }), { viewerId, lat, lng, now, hide: id == null && !handle && !authorId }).catch((e) => { console.error("[editorial] delivery failed", e?.message || e); return null; });
+    const posts = (delivered || await listEditorialPosts({ kind, limit, handle, id, authorId }))
       .map(({ authorId: _a, ...post }) => post)
       .filter((post) => !(post.attachments && post.attachments.echo) || Number(post.attachments.echo.expiresAt) > now);
     // The permalink read answers 404 when the transmission is not on the
@@ -168,11 +176,13 @@ export async function POST(req) {
         price: it.price ?? null, currency: it.currency || "USD", source: sourceFor(it),
       });
     }
-    let eventSnapshot = null;
-    if (composition.event) {
-      const row = listPlaces({ dated: true }).find((pl) => pl.id === String(composition.event.id));
+    // every BRDCST on the post resolves to a map record (5.9–5.10); the
+    // snapshot never carries coordinates — the campaign keeps the centre
+    const eventSnapshots = [];
+    for (const ev of eventsOf(composition)) {
+      const row = listPlaces({ dated: true }).find((pl) => pl.id === String(ev.id));
       if (!row) return NextResponse.json({ error: "the event must be one the map knows" }, { status: 400 });
-      eventSnapshot = { id: row.id, name: row.name, kind: row.kind, city: row.city, startsAt: row.startsAt || null, endsAt: row.endsAt || null, tz: row.tz || null, status: row.status, admission: row.admission || null, sourceUrl: row.sourceUrl || null, sample: !!row.sample };
+      eventSnapshots.push({ id: row.id, name: row.name, kind: row.kind, city: row.city, startsAt: row.startsAt || null, endsAt: row.endsAt || null, tz: row.tz || null, status: row.status, admission: row.admission || null, sourceUrl: row.sourceUrl || null, sample: !!row.sample });
     }
     let linkSnapshot = null;
     if (composition.link) {
@@ -182,7 +192,7 @@ export async function POST(req) {
       linkSnapshot = snap.refused ? { url, title: "", description: "", image: "", host: new URL(url).hostname.replace(/^www\./, ""), refused: snap.refused, fetchedAt: new Date().toISOString() } : snap;
     }
     let attachments;
-    try { attachments = attachmentsFor(composition, { pieceSnapshots, eventSnapshot, linkSnapshot }); }
+    try { attachments = attachmentsFor(composition, { pieceSnapshots, eventSnapshots, linkSnapshot }); }
     catch (e) { return NextResponse.json({ error: String(e.message).slice(0, 300) }, { status: 400 }); }
     compositionRow = { postKind: v.kind, layout: v.layout, attachments,
       imageUrl: attachments.media && attachments.media[0] ? wireImageUrl(attachments.media[0].path) : safeImageUrl(body.imageUrl),

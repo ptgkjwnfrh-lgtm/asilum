@@ -58,6 +58,9 @@ const PANELS = [
     note: "one pass over the live machine, worst first — and, since 3 sep, hands. the checks only read. what the hands would do is listed under HANDS before it is done; ACT makes the delegated repairs (reversible, capped, ledgered before each one), CONFIRM is your yes to a money-adjacent one for this run only, and the never tier is reported and left. every repair is a ledger row you can REVERT. a check that could not run is shown as UNMEASURABLE and counts against the board: a dark light is not a green one." },
   { id: "governance", n: "10", title: "ASTERISK GOVERNANCE", read: { action: "asterisk.functions" },
     note: "ASTERISK runs ASILUM; you sit above it (V.2 blueprint, slice 5). seven functions, each with its safe outcome under 75%. PAUSE stops one in seconds — its new work waits in the queue below. every decision is on the ledger with its evidence, confidence (never above 90%) and reasoning; OVERRIDE supersedes one and your word becomes ground truth. GRADE audits a function over the last seven days; two poor grades in a row hand its decisions to the queue until it passes. a thin ledger grades U — unmeasured, not a pass." },
+  { id: "brdcst", n: "11", title: "BRDCST", read: { action: "brdcst.list" },
+    filter: { key: "state", label: "STATE", options: ["", "draft", "scheduled", "active", "ended", "cancelled", "under_review"] },
+    note: "every BRDCST campaign (V.2 chapter 5, slice 8): targeting, the quote as shown, the schedule a payment fixed, usage by full days. INTERRUPT stops one and refunds its completely unused days as Credit with the bonus; EVENT CANCELLED does the same on the organizer's word; POLICY parks it under review, where REFUND or REFUSE decides (15.5). SWEEP sends the three-hourly failed-payment reminders now." },
   { id: "ontology", n: "08", title: "ONTOLOGY", read: { action: "asterisk.ontology", limit: 500 },
     filter: { key: "tagType", label: "TYPE", options: ["", "aesthetic", "category", "material", "silhouette", "color", "era", "mood"] },
     note: "the canonical tag space, seeded from the LIVE vocabularies so it extends rather than forks (§6). SYNC is idempotent and additive — merges and deprecations are versioned rows, never silent renames." },
@@ -455,6 +458,40 @@ export default function AdminDeskPage() {
                 <div className="rkname">{c.brandName || c.subjectId}</div>
                 <div className="rkctl rkmono">{c.status}</div>
                 <div className="rkdesc">{c.kind} · {c.id}{c.decidedBy ? <> · decided by {c.decidedBy}</> : null}</div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* ---- 11 BRDCST ---- */}
+        {panel === "brdcst" && data && (
+          <>
+            <div className="rkrow">
+              <div className="rkname">REMINDERS</div>
+              <div className="rkctl"><button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.sweep" }, "sweep")}>SWEEP NOW</button></div>
+              <div className="rkdesc">a failed BRDCST payment notifies at once and every three hours until resolved; a passenger may mute theirs.</div>
+            </div>
+            {(data.campaigns || []).length === 0 && <div className="empty">no campaigns.</div>}
+            {(data.campaigns || []).map((c) => (
+              <div className="rkrow deskrow" key={c.id}>
+                <div className="rkname"><span className={"rkled" + (c.state === "active" ? " on" : "")} aria-hidden="true" />{c.eventName || c.id}</div>
+                <div className="rkctl">
+                  <span className="rkmono">{String(c.state).toUpperCase()} · {c.radiusMi} MI · taste +{Math.round(c.tasteBreadth * 100)}% · {c.durationDays}d · {(c.totalCents / 100).toFixed(2)} ({(c.creditCents / 100).toFixed(2)} credit) · used {c.usage.usedDays} / unused {c.usage.unusedDays}</span>
+                  {["active", "scheduled"].includes(c.state) ? <>
+                    <button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.interrupt", id: c.id, reason: "interrupted" }, c.id)}>INTERRUPT</button>
+                    <button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.interrupt", id: c.id, reason: "event_cancelled" }, c.id)}>EVENT CANCELLED</button>
+                    <button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.interrupt", id: c.id, reason: "policy" }, c.id)}>POLICY</button>
+                  </> : null}
+                  {c.state === "under_review" ? <>
+                    <button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.review", id: c.id, refund: true, note: "refunded at the desk" }, c.id)}>REFUND</button>
+                    <button className="fitbtn" disabled={busy !== ""} onClick={() => act({ action: "brdcst.review", id: c.id, refund: false, note: "refused at the desk" }, c.id)}>REFUSE</button>
+                  </> : null}
+                </div>
+                <div className="rkdesc">
+                  {c.ownerId} · post {c.postId || "—"} · events {c.eventIds.join(", ")} · {c.paidAt ? `paid ${String(c.paidAt).slice(0, 10)} via ${c.paidVia}` : "unpaid"}{c.startsAt ? ` · ${String(c.startsAt).slice(0, 10)} → ${String(c.endsAt).slice(0, 10)}` : ""}
+                  {c.paymentFailedAt ? ` · payment failed ${String(c.paymentFailedAt).slice(0, 16)}${c.remindersMuted ? " (muted)" : ""}` : ""}
+                  {c.refund ? ` · refund ${JSON.stringify(c.refund).slice(0, 160)}` : ""}
+                </div>
               </div>
             ))}
           </>

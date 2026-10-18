@@ -22,6 +22,7 @@ import Icon from "./Icons.jsx";
 import { Avatar } from "./UserBits.jsx";
 import { timeAgo } from "../../lib/social.js";
 import { readWireRefs } from "../../lib/model/media.js";
+import { footerPages } from "../../lib/brdcst/index.js";
 import { postType } from "../../lib/feed/types.js";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
@@ -30,18 +31,16 @@ import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 const LAYOUT_WORD = { single: "", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "" };
 
-/** The BRDCST footer (blueprint 5.2–5.6). */
-export function BrdcstFooter({ event }) {
-  const [open, setOpen] = useState(false);
-  if (!event) return null;
+const STATE_WORD = { draft: "DRAFT · UNPAID", scheduled: "SCHEDULED", active: "LIVE", ended: "ENDED", cancelled: "CANCELLED", under_review: "UNDER REVIEW" };
+
+/** One event inside the footer: collapsed to its title and date until tapped (5.11). */
+function BrdcstEvent({ event, open, onToggle }) {
   const when = event.startsAt ? event.startsAt + (event.endsAt && event.endsAt !== event.startsAt ? " → " + event.endsAt : "") : "";
   return (
-    <div className={"brdcst" + (open ? " open" : "")}>
-      <button type="button" className="brdcsthead" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
-        <span className="typechip brd">BRDCST</span>
+    <li className={"brdcstev" + (open ? " open" : "")}>
+      <button type="button" className="brdcstevhead" aria-expanded={open} onClick={() => { haptic("press"); onToggle(); }}>
         <b>{event.name}</b>
         <span className="brdcstwhen">{when}{event.sample ? " · SAMPLE FIXTURE" : ""}</span>
-        <span className="brdcstexp" aria-hidden="true">{open ? "−" : "+"}</span>
       </button>
       {open ? (
         <div className="brdcstbody">
@@ -51,6 +50,49 @@ export function BrdcstFooter({ event }) {
             {event.sourceUrl ? <a className="txtbtn" href={event.sourceUrl} target="_blank" rel="noopener noreferrer">TICKETS · THE ORGANIZER ↗</a> : <span className="fine">tickets: no organizer link on record</span>}
           </div>
         </div>
+      ) : null}
+    </li>
+  );
+}
+
+/**
+ * The BRDCST footer (blueprint 5.2–5.6, 5.10–5.12; slice 8): the white is
+ * the post, the broadcast hangs from it. Collapsed: the soonest event's
+ * title and date, "+N" when more ride along, the expander. Expanded: five
+ * soonest-first, each collapsed until tapped, the next five on a discreet
+ * control. `brdcst` is the server's delivery note — the author sees the
+ * campaign's state; a reader in reach sees the radius.
+ */
+export function BrdcstFooter({ event, events = null, brdcst = null }) {
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [openId, setOpenId] = useState(null);
+  const all = Array.isArray(events) && events.length ? events : event ? [event] : [];
+  if (!all.length) return null;
+  const pages = footerPages(all, { page });
+  const first = pages.visible[0] || all[0];
+  const when = first.startsAt ? first.startsAt + (first.endsAt && first.endsAt !== first.startsAt ? " → " + first.endsAt : "") : "";
+  const meta = brdcst ? (brdcst.yours ? (STATE_WORD[brdcst.state] || String(brdcst.state).toUpperCase()) + (brdcst.radiusMi ? ` · ${brdcst.radiusMi} MI` : "") : brdcst.radiusMi ? `BRDCST: ${brdcst.radiusMi} MI` : null) : null;
+  return (
+    <div className={"brdcst" + (open ? " open" : "")}>
+      <button type="button" className="brdcsthead" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
+        <span className="typechip brd">BRDCST{pages.more > 0 ? ` +${pages.more}` : ""}</span>
+        <b>{first.name}</b>
+        <span className="brdcstwhen">{when}{first.sample ? " · SAMPLE FIXTURE" : ""}{meta ? " · " + meta : ""}</span>
+        <span className="brdcstexp" aria-hidden="true">{open ? "−" : "+"}</span>
+      </button>
+      {open ? (
+        <ul className="brdcstlist" aria-label={`${pages.total} event${pages.total === 1 ? "" : "s"}`}>
+          {pages.visible.map((ev) => <BrdcstEvent key={ev.id} event={ev} open={openId === ev.id || (pages.total === 1)} onToggle={() => setOpenId(openId === ev.id ? null : ev.id)} />)}
+          {pages.pages > 1 ? (
+            <li className="brdcstpage">
+              <span className="fine">{pages.page + 1}/{pages.pages}</span>
+              {pages.page > 0 ? <button type="button" className="txtbtn" onClick={() => setPage(pages.page - 1)}>← PREVIOUS FIVE</button> : null}
+              {pages.next ? <button type="button" className="txtbtn" onClick={() => setPage(pages.page + 1)}>NEXT FIVE →</button> : null}
+            </li>
+          ) : null}
+          {brdcst && brdcst.yours && brdcst.state === "draft" ? <li className="brdcstpage"><a className="txtbtn" href="/board?tab=studio">PAY THE BRDCST IN THE STUDIO →</a></li> : null}
+        </ul>
       ) : null}
     </div>
   );
@@ -104,7 +146,7 @@ function Attachments({ p, onMedia }) {
           <span className="wpclinkbody"><span className="cclbl">{a.link.site || a.link.host} ↗</span><b>{a.link.title || a.link.url}</b>{a.link.description ? <span>{a.link.description}</span> : null}</span>
         </a>
       )}
-      {a.event && <BrdcstFooter event={a.event} />}
+      {(a.event || (a.events && a.events.length)) && <BrdcstFooter event={a.event} events={a.events} brdcst={a.brdcst || null} />}
     </>
   );
 }

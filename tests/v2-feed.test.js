@@ -94,7 +94,9 @@ test("PLACE expands in place with the record's own facts and never a rating it d
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {
-  assert.match(card, /export function BrdcstFooter\(\{ event \}\)/);
+  // slice 8: the footer carries every attached event (5.10–5.12) and the server's delivery note
+  assert.match(card, /export function BrdcstFooter\(\{ event, events = null, brdcst = null \}\)/);
+  assert.match(card, /footerPages\(all, \{ page \}\)/, "five soonest-first per page, +N beside the expander");
   assert.match(card, /PASSPORT MAP →/);
   assert.match(card, /TICKETS · THE ORGANIZER ↗/);
   assert.ok(!/stripe|checkout/i.test(card), "ASILUM never sells the ticket");
