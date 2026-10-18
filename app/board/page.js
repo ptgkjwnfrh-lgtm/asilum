@@ -12,6 +12,7 @@
 // first transmission) — there is no streak and no timer.
 
 import { openSheet } from "../../lib/dockstate.js";
+import BehindUploads from "../components/BehindUploads.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Notice from "../components/Notice.jsx";
@@ -281,7 +282,7 @@ export default function BoardPage() {
       uploadId: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10),
     })
       .then((r) => (r && r.ok ? r.json() : null))
-      .then((d) => { if (d && d.recognized?.length) setRecognized(d.recognized); })
+      .then((d) => { if (d && d.recognized?.length) setRecognized(d.recognized); try { window.dispatchEvent(new CustomEvent("asilum:upload")); } catch {} })
       .catch(() => {});
     const seen = [...new Set(merged.palette.map((s) => s.name))].slice(0, 3).join(", ");
     setNotice(analyses.length
@@ -509,6 +510,7 @@ export default function BoardPage() {
                 <button className="btn ghost" onClick={() => fileRef.current && fileRef.current.click()}>UPLOAD IMAGES</button>
                 <input ref={fileRef} type="file" accept="image/*" multiple hidden aria-label="upload images to train the passport" onChange={onUpload} />
               </div>
+              <BehindUploads uid={uid} />
               {recognized.length > 0 && (
                 <div className="stampknow">
                   <span className="stampknow-mark" aria-hidden="true">✳</span>
