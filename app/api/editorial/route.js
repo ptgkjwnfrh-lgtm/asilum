@@ -145,7 +145,7 @@ export async function POST(req) {
   // may post. This only establishes that an account is required at all.
   if (!accountIdFromIdentity(user)) {
     return NextResponse.json({
-      error: "posting to the wire requires a signed-in account",
+      error: "posting to the Feed requires a signed-in account",
       note: "sign in on PROFILE — a device on its own cannot publish",
     }, { status: 403 });
   }

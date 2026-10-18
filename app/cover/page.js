@@ -30,7 +30,7 @@ import PlacementsBlock from "../components/Placements.jsx";
 
 const SUBSYSTEMS = [
   { href: "/", label: "CATALOG", meta: "your curated edit" },
-  { href: "/", label: "THE WIRE", meta: "posts + the hotlist" },
+  { href: "/", label: "THE FEED", meta: "posts, pieces and places" },
   { href: "/board", label: "PASSPORT", meta: "train the brain" },
   { href: "/discover", label: "DISCOVER", meta: "the open index" },
   { href: "/profile", label: "PROFILE", meta: "your public record" },
@@ -211,7 +211,7 @@ export default function CoverPage() {
           <span className="cvleadcred"><a href={lead.image.url} target="_blank" rel="noreferrer">{lead.image.credit} · {lead.image.license}</a></span>
           <div className="cvleadacts">
             <SaveButton kind="post" id={lead.id} title={lead.title} image={lead.image.src} href="/" meta={lead.name} tags={lead.tags} />
-            <a className="txtbtn" href="/">READ ON THE WIRE →</a>
+            <a className="txtbtn" href="/">READ IN THE FEED →</a>
           </div>
         </div>
       </section>
@@ -309,7 +309,7 @@ export default function CoverPage() {
               </div>
             );
           })}
-          <a className="cvlink cvmore" href="/">ALL TEN BOOTHS — THE WIRE →</a>
+          <a className="cvlink cvmore" href="/">ALL TEN BOOTHS — THE FEED →</a>
         </section>
         {/* V.2 (1 Oct): Front Cover carries the business/event placements —
             the same records the dock's strip runs, visibly apart from the
@@ -365,8 +365,8 @@ export default function CoverPage() {
       </div>
 
       <div className="cvband2">
-        <section className="cvwire" aria-label="the wire">
-          <div className="cvkick">THE WIRE — WHAT ARE YOU WEARING?</div>
+        <section className="cvwire" aria-label="the feed">
+          <div className="cvkick">THE FEED — WHAT ARE YOU WEARING?</div>
           <div className="cvcompose">
             <Avatar name={getProfileInfo().name} />
             <div className="cvcomposebox">
@@ -408,7 +408,7 @@ export default function CoverPage() {
             </div>
           )}
           {posts && postsLive && posts.length === 0 && (
-            <div className="pempty">no transmissions yet — yours opens the wire.</div>
+            <div className="pempty">no transmissions yet — yours opens the Feed.</div>
           )}
         </section>
 
@@ -428,7 +428,7 @@ export default function CoverPage() {
               <span className="cvstoryttl">{st.beat} ↗</span>
             </a>
           ))}
-          <a className="cvlink cvmore" href="/">THE FULL WIRE →</a>
+          <a className="cvlink cvmore" href="/">THE FULL FEED →</a>
         </section>
       </div>
 

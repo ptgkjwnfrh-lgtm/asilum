@@ -220,7 +220,7 @@ export default function WireComposer({ onPublished, compact = false, kind = null
       .then(async (res) => {
         const d = await res.json().catch(() => null);
         setBusy("");
-        if (!res.ok) { setNote((d && (d.error || d.note)) || "the wire did not accept that"); return; }
+        if (!res.ok) { setNote((d && (d.error || d.note)) || "the Feed did not accept that"); return; }
         addPost(body, info, c.title, { postKind: d.postKind, layout: d.layout, attachments: d.attachments, imageUrl: c.media[0] ? c.media[0].url : (c.video && c.video.poster) || "" });
         let note = d && d.held ? (d.note || "saved and paused for a human review") : "";
         // the BRDCST campaign: a draft on the server, named to the post; a

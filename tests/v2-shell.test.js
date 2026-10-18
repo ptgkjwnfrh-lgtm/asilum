@@ -74,3 +74,24 @@ test("the fixtures are glass pills with the restrained rainbow rim, and the post
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s);
   assert.match(rules, /prefers-reduced-transparency: reduce/, "reduced transparency drops the blur");
 });
+
+// THE WIRE DOES NOT EXIST (owner, 18 Oct 2026: "THE WIRE DOESN'T EXIST
+// ANYMORE"). It is the Feed. No visible word may say otherwise: every page,
+// layout and component under app/ (the API's own messages included) and the
+// deck's data, read with the comments stripped. Identifiers (WireCard,
+// fetchWire, WIRE_UPLOADS_ENABLED, the "wire" data keys) are code, not copy,
+// and the word boundaries leave them alone.
+test("the Wire does not exist: no visible WIRE / Wire / the wire / wire post anywhere in the app", async () => {
+  const { readdirSync, statSync } = await import("node:fs");
+  const files = [];
+  const walk = (d) => { for (const f of readdirSync(new URL("../" + d, import.meta.url))) { const p = d + "/" + f; if (statSync(new URL("../" + p, import.meta.url)).isDirectory()) walk(p); else if (/\.(jsx?|mjs)$/.test(f)) files.push(p); } };
+  walk("app");
+  files.push("lib/dock.js", "lib/nav.js");
+  const strip = (s) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1");
+  const hits = [];
+  for (const f of files) {
+    strip(read(f)).split("\n").forEach((line, i) => { if (/\bWIRE\b|\bWire\b|\bthe wire\b|\bwire posts?\b/.test(line)) hits.push(`${f}:${i + 1}: ${line.trim().slice(0, 100)}`); });
+  }
+  assert.deepEqual(hits, [], "the Wire is the Feed now");
+  assert.ok(files.length > 100, "the sweep read the app (" + files.length + " files)");
+});

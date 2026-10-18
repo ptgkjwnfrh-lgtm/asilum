@@ -26,7 +26,7 @@ test("search scopes carry the brief's exact placeholders and never widen on thei
   assert.equal(SEARCH_SCOPES.map.placeholder, "Search places and events");
   assert.equal(SEARCH_SCOPES.messages.placeholder, "Search your messages");
   assert.equal(SEARCH_SCOPES["likes-pieces"].placeholder, "Search liked pieces");
-  assert.equal(SEARCH_SCOPES["likes-wire"].placeholder, "Search liked Wire posts");
+  assert.equal(SEARCH_SCOPES["likes-wire"].placeholder, "Search liked posts");
   assert.equal(SEARCH_SCOPES["likes-sold"].placeholder, "Search sold likes");
   assert.equal(scopeFor({ pathname: "/map" }).id, "map");
   assert.equal(scopeFor({ pathname: "/", sheet: "messages" }).id, "messages");

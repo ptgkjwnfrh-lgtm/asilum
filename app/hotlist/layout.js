@@ -4,12 +4,12 @@
 import { siteUrl } from "../../lib/site.js";
 
 export const metadata = {
-  title: "THE WIRE",
+  title: "THE HOTLIST",
   description:
     "Posts and the hotlist — what the magazine is reading and wearing right now.",
   alternates: { canonical: "/hotlist" },
   openGraph: {
-    title: "THE WIRE · *ASILUM",
+    title: "THE HOTLIST · *ASILUM",
     description:
       "Posts and the hotlist — what the magazine is reading and wearing right now.",
     url: siteUrl("/hotlist"),

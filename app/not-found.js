@@ -30,7 +30,7 @@ const DESTINATIONS = [
   { href: "/cover", label: "FRONT COVER", meta: "the landing edition" },
   { href: "/", label: "CATALOG", meta: "your curated edit" },
   { href: "/discover", label: "DISCOVER", meta: "the open index" },
-  { href: "/hotlist", label: "THE WIRE", meta: "posts + the hotlist" },
+  { href: "/hotlist", label: "THE HOTLIST", meta: "the booths and the ladder" },
 ];
 
 export default function NotFound() {

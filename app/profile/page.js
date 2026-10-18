@@ -311,7 +311,7 @@ export default function ProfilePage() {
             {tab === "posts" && (
               <>
                 {posts.length === 0 && (
-                  <div className="empty">no transmissions yet — the composer lives on <a className="wperma" href="/hotlist">THE WIRE →</a></div>
+                  <div className="empty">no transmissions yet — the POST disc on the deck publishes one into <a className="wperma" href="/">THE FEED →</a></div>
                 )}
                 {/* the grid (Instagram): one square per transmission — the
                     caption header, the text clamped, the time. A server post's

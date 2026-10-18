@@ -15,7 +15,7 @@ const PANELS = [
   { name: "REACH", what: "impressions of your pieces, by surface" },
   { name: "CLICKS", what: "opens, and what was open when they left" },
   { name: "FOLLOWS", what: "who started following, and from where" },
-  { name: "FOOT TRAFFIC", what: "booth visits through THE WIRE" },
+  { name: "FOOT TRAFFIC", what: "booth visits through the Feed" },
   { name: "EARNINGS", what: "tickets, fees, rent — against the ledger" },
   { name: "WHO", what: "the taste of the people who reach you, in cohorts" },
 ];
