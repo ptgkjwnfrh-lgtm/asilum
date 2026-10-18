@@ -985,7 +985,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 /* ---- Profile ---- */
 .pbanner {
   height: 130px; border: 1px solid var(--line); position: relative; overflow: hidden;
-  background: repeating-linear-gradient(115deg, var(--paper), var(--paper) 26px, #f3f2ee 26px, #f3f2ee 27px);
+  background: var(--paper);
 }
 .pbanner span { position: absolute; right: 14px; top: -46px; font-size: 160px; font-weight: 900; color: var(--red); opacity: 0.14; }
 .phead2 { display: flex; gap: 18px; align-items: flex-start; margin: -30px 0 20px; padding: 0 20px; flex-wrap: wrap; position: relative; z-index: 2; }
@@ -1323,31 +1323,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    deliberately absent: content sits on the page ground. All .cv* classes
    are cover-only; shared classes get overridden only under .cvr scope. */
 .cvr { position: relative; }
-/* content children stack above the hairline field by DOM order */
+/* content children stack by DOM order (the hairline field is gone — A6: no lines) */
 .cvr > * { position: relative; }
-
-/* the hairline field — horizontal + vertical contrast lines (owner
-   order, Aug 13: diagonals swapped for verticals); a few thick, most
-   thin; a few visible, most barely there. */
-/* the whole field runs at 85% (owner order, Aug 13: overall opacity
-   down 15%) — per-line values keep their ratios under it */
-.cvlines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.85; }
-.cvlines i { position: absolute; display: block; height: 0; border-top: 1px solid var(--ink); }
-/* per-line rules ride under .cvlines so they outrank the `.cvlines i`
-   base (0,1,1) — bare .cvln-* (0,1,0) silently loses its widths */
-.cvlines .cvln-h1 { top: 9%; left: -3%; width: 55%; opacity: 0.30; }
-.cvlines .cvln-h2 { top: 21%; left: 30%; width: 68%; opacity: 0.07; }
-.cvlines .cvln-h3 { top: 38%; left: -2%; width: 40%; border-top-width: 4px; opacity: 0.10; }
-.cvlines .cvln-h4 { top: 55%; left: 48%; width: 54%; opacity: 0.05; }
-.cvlines .cvln-h5 { top: 71%; left: -4%; width: 82%; opacity: 0.12; }
-.cvlines .cvln-h6 { top: 88%; left: 22%; width: 30%; border-top-width: 6px; opacity: 0.22; }
-.cvlines .cvln-v1, .cvlines .cvln-v2, .cvlines .cvln-v3, .cvlines .cvln-v4, .cvlines .cvln-v5 {
-  height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
-.cvlines .cvln-v1 { top: 6%; left: 24%; height: 30%; opacity: 0.26; }
-.cvlines .cvln-v2 { top: 18%; left: 58%; height: 55%; opacity: 0.06; }
-.cvlines .cvln-v3 { top: 42%; left: 8%; height: 34%; border-left-width: 4px; opacity: 0.09; }
-.cvlines .cvln-v4 { top: 30%; left: 82%; height: 48%; opacity: 0.04; }
-.cvlines .cvln-v5 { top: 62%; left: 40%; height: 33%; opacity: 0.13; }
 
 .cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
 .cvmastblock { display: grid; }
@@ -1382,8 +1359,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvheroimg { position: relative; width: min(44%, 420px); margin-left: 11%; aspect-ratio: 4 / 5; overflow: hidden; }
 .cvheroimg img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cvheroimg::after { content: ""; position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.10) 3px 4px),
-    radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.12), transparent 60%); }
+  background: radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.12), transparent 60%); }
 .cvherotext { position: absolute; left: calc(11% + min(44%, 420px) - 90px); bottom: 8%; display: grid; gap: 6px; max-width: 46ch; }
 .cvherobrand { font-family: var(--mich); font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; letter-spacing: 0.02em; line-height: 0.98; text-transform: uppercase; text-shadow: 0 0 18px var(--bg); }
 .cvherottl { font-size: 13px; letter-spacing: 0.04em; text-shadow: 0 0 12px var(--bg); }
@@ -1495,7 +1471,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    page's first 1500px so infinite scroll runs past it clean. ---- */
 .ctr { position: relative; }
 .ctr > * { position: relative; }
-.ctr .cvlines { position: absolute; inset: auto; top: 0; left: 0; right: 0; height: 1500px; }
 .ctr .cvside { position: absolute; }
 .cthead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .ctmeta { font-size: 8.5px; letter-spacing: 0.2em; color: var(--grey); text-align: right; line-height: 1.9; }
@@ -1503,14 +1478,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ctside { top: 470px; left: -26px; }
 .ctsider { top: 700px; }
 /* the field's lines — 2 thick of 7, most barely there (law ratios) */
-.cvlines .ctln-h1 { top: 58px; left: -2%; width: 34%; opacity: 0.20; }
-.cvlines .ctln-h2 { top: 208px; left: 46%; width: 56%; border-top-width: 3px; opacity: 0.07; }
-.cvlines .ctln-h3 { top: 860px; left: -3%; width: 52%; opacity: 0.05; }
-.cvlines .ctln-h4 { top: 1380px; left: 30%; width: 60%; opacity: 0.10; }
-.cvlines .ctln-v1, .cvlines .ctln-v2, .cvlines .ctln-v3 { height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
-.cvlines .ctln-v1 { left: 23%; top: 96px; height: 130px; opacity: 0.16; }
-.cvlines .ctln-v2 { left: 97.5%; top: 260px; height: 520px; opacity: 0.12; }
-.cvlines .ctln-v3 { left: 1.5%; top: 420px; height: 640px; border-left-width: 4px; opacity: 0.06; }
 
 /* ---- THE WIRE (owner overhaul, Aug 13): the composer's three modes,
    the floor's transmissions (caption = header), and the hotlist's ten
@@ -1599,22 +1566,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    magazine furniture, ladder-specific placements; 2 thick of 7 */
 .elside { top: 300px; left: -26px; }
 .elsider { top: 1150px; }
-.cvlines .elln-h1 { top: 90px; left: 40%; width: 62%; opacity: 0.22; }
-.cvlines .elln-h2 { top: 340px; left: -3%; width: 44%; border-top-width: 4px; opacity: 0.08; }
-.cvlines .elln-h3 { top: 780px; left: 25%; width: 70%; opacity: 0.05; }
-.cvlines .elln-h4 { top: 1240px; left: -2%; width: 58%; opacity: 0.11; }
-.cvlines .elln-v1, .cvlines .elln-v2, .cvlines .elln-v3 { height: auto; width: 0; border-top: none; border-left: 1px solid var(--ink); }
-.cvlines .elln-v1 { left: 96.5%; top: 60px; height: 420px; opacity: 0.15; }
-.cvlines .elln-v2 { left: 2%; top: 520px; height: 560px; border-left-width: 3px; opacity: 0.06; }
-.cvlines .elln-v3 { left: 55%; top: 940px; height: 380px; opacity: 0.04; }
 
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
    Aug 12 (owner order: more Grailed — square-cut floating images, no card
    border, no hover box; the red reach frame and INSPECT badge stay) ---- */
 .imgwrap { position: relative; border-radius: var(--ed-img-rad, 0px); overflow: hidden; }
 .imgwrap::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(0, 0, 0, 0.09) 3px 4px),
-    radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
+  background: radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
 .card:hover .imgwrap::before { content: "◉ INSPECT →"; position: absolute; right: 7px; bottom: 7px; z-index: 2;
   font-size: 8.5px; letter-spacing: 0.2em; color: var(--red); text-shadow: var(--glow-r); }
 
@@ -1826,8 +1784,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppphoto img { filter: saturate(0.55) contrast(1.12) brightness(0.96); }
 .ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
-    repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 3px); }
+    linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)); }
 /* machine zone tinting: data glows, chevron filler reads as the red thread */
 .ppmrz b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
 .ppmrz i { font-style: normal; color: var(--red); opacity: 0.75; text-shadow: var(--glow-r); }
@@ -3203,10 +3160,6 @@ body { font-size: 14px; }
   border-radius: 16px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); background: color-mix(in srgb, var(--ink) 4%, var(--bg)); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
 .ppworld.card { display: grid; grid-template-columns: auto 1fr; gap: 10px 34px; align-items: center; padding: 14px 18px; margin: 4px 0 14px; }
 /* fewer accent lines, thicker (owner: "less accent lines and the lines we do have make them thicker") */
-.cvlines i:nth-child(n+4) { display: none; }
-.cvlines i { border-top-width: 3px; opacity: 0.22; }
-.cvlines i[class*="-v"] { border-left-width: 3px; }
-.cvlines i[class*="-h3"], .cvlines i[class*="-h6"] { border-top-width: 5px; }
 /* the document's two buttons */
 .ppdocacts { display: flex; gap: 10px; justify-content: flex-end; padding: 10px 14px 14px; position: relative; z-index: 3; }
 .ppbtn { font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; padding: 11px 18px; border-radius: 12px; cursor: pointer;
@@ -3671,7 +3624,7 @@ body { font-size: 14px; }
 .ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
 
 /* the feed's masthead wears the wordmark */
-.feedmark { display: block; width: 100%; clear: both; margin: 0 0 18px; }
+.feedmark { display: block; width: 100%; clear: both; margin: 0 0 6px; }
 .feedmark .wordmark { display: inline-flex; }
 
 /* notices (the bell's sheet) */

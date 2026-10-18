@@ -76,10 +76,6 @@ function PostByline({ p }) {
 
 // The wire's hairline field (magazine treatment, Aug 13): pinned to the
 // page's first stretch, hand-placed and deterministic.
-const EL_HAIRLINES = [
-  "elln-h1", "elln-h2", "elln-h3", "elln-h4",
-  "elln-v1", "elln-v2", "elln-v3",
-];
 
 const BOOTHS = Array.from({ length: 10 }, (_, i) => i + 1);
 
@@ -356,9 +352,6 @@ export default function TheWirePage() {
 
   return (
     <div className="wrap elr ctr wire2">
-      <div className="cvlines ellines" aria-hidden="true">
-        {EL_HAIRLINES.map((c) => <i key={c} className={c} />)}
-      </div>
       {posts !== null && (
         <span className="cvside elside" aria-hidden="true">
           {posts.length} TRANSMISSION{posts.length === 1 ? "" : "S"} ON THE WIRE

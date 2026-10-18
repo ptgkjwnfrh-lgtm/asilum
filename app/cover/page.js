@@ -178,9 +178,6 @@ export default function CoverPage() {
 
   return (
     <div className="wrap cvr">
-      <div className="cvlines" aria-hidden="true">
-        {HAIRLINES.map((c) => <i key={c} className={c} />)}
-      </div>
 
       <header className="cvmast" aria-label="front cover masthead">
         {/* The masthead is styled spans, so the route had no semantic heading.

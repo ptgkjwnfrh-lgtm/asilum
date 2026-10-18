@@ -3,7 +3,7 @@
 // the braid. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { postType, weightOf, spanOf, packFeed, echoLive, echoRail, braid, WEIGHT, FULL_AT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
+import { postType, weightOf, spanOf, packFeed, MIN_RUN, echoLive, echoRail, braid, WEIGHT, FULL_AT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
 
 const post = (extra = {}) => ({ id: "p1", serverId: 1, handle: "a", at: 1000, text: "x", attachments: {}, ...extra });
 
@@ -30,7 +30,7 @@ test("Tetris weights follow the blueprint and decide the span", () => {
   assert.equal(spanOf({ __post: post() }), "column", "a TRANSM takes one column");
 });
 
-test("packFeed: runs of column cards become one grid; a full card breaks it; a standalone BRDCST is a strip", () => {
+test("packFeed: a full card or a strip waits until the columns hold a balanced run (MIN_RUN), then follows it in order; no card-sized hole", () => {
   const list = [
     { id: "a" }, { id: "b" },
     { id: "s", __post: post({ imageUrl: "/x.jpg" }) },
@@ -39,11 +39,16 @@ test("packFeed: runs of column cards become one grid; a full card breaks it; a s
     { id: "d" },
   ];
   const segs = packFeed(list);
-  assert.deepEqual(segs.map((s) => s.kind), ["grid", "full", "grid", "strip", "grid"]);
-  assert.deepEqual(segs[0].items.map((x) => x.id), ["a", "b"]);
-  assert.equal(segs[1].item.id, "s");
-  assert.deepEqual(segs[2].items.map((x) => x.id), ["c", "pl"]);
-  assert.equal(segs[3].item.id, "e");
+  // four column cards is short of MIN_RUN, so the run flushes at the end and the full and the strip follow it, in order
+  assert.deepEqual(segs.map((s) => s.kind), ["grid", "full", "strip"]);
+  assert.deepEqual(segs[0].items.map((x) => x.id), ["a", "b", "c", "pl", "d"]);
+  assert.equal(segs[1].item.id, "s"); assert.equal(segs[2].item.id, "e");
+  const long = [];
+  for (let i = 0; i < 14; i++) { long.push({ id: "k" + i }); if (i === 2 || i === 8) long.push({ id: "f" + i, __post: post({ imageUrl: "/x.jpg" }) }); }
+  const packed = packFeed(long);
+  assert.deepEqual(packed.map((s) => s.kind), ["grid", "full", "grid", "full", "grid"]);
+  assert.equal(packed[0].items.length, MIN_RUN, "the first full card waits for six column cards"); assert.equal(packed[1].item.id, "f2");
+  assert.equal(packed[2].items.length, MIN_RUN); assert.equal(packed[3].item.id, "f8"); assert.equal(packed[4].items.length, 2);
   assert.deepEqual(packFeed([]), []);
 });
 

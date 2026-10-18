@@ -67,13 +67,6 @@ const PLATFORMS = ["ebay", "pinterest", "shopify"];
 // PRIVACY GATE inside the dwell flusher below is separate and stays.)
 
 // The catalog's hairline field (magazine treatment, owner order Aug 13):
-// pinned to the page's first stretch so infinite scroll runs past it;
-// hand-placed, deterministic, and the masonry keeps the floor — the
-// furniture costs zero height.
-const CT_HAIRLINES = [
-  "ctln-h1", "ctln-h2", "ctln-h3", "ctln-h4",
-  "ctln-v1", "ctln-v2", "ctln-v3",
-];
 
 export default function Home() {
   const [epsilon, setEpsilon] = useState(false);
@@ -874,9 +867,6 @@ export default function Home() {
 
   return (
     <div className="wrap ctr">
-      <div className="cvlines ctlines" aria-hidden="true">
-        {CT_HAIRLINES.map((c) => <i key={c} className={c} />)}
-      </div>
       <header className="cthead">
         <div className="feedmark"><Wordmark /></div>
         <PageMast word="THE FEED" sub="DISCOVERY · PUBLISHING · COMMERCE" />
