@@ -3888,6 +3888,14 @@ body { font-size: 14px; }
 @keyframes tagfade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .tag.state .tr { animation: none; } .tag { transition: none; } }
 .lstdepth { display: grid; gap: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+/* OFFER on a native listing (slice 6): a 24-hour offer, sent from the popup */
+.lstoffer { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--glass-pill); }
+.lstofferrow { display: flex; gap: 8px; align-items: center; }
+.lstofferrow input { flex: 1; min-width: 0; }
+/* the seller's OFFERS & DISCOUNTS panel */
+.sfcounter { width: 110px; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); padding: 6px 8px; font: 12px/1.3 var(--helv); }
+.sfcommerceitem { flex-wrap: wrap; }
+.sfrelist { grid-column: 1 / -1; margin-top: 8px; }
 /* STILL and MOTION enlarged: the caption on the media, the ink by its light */
 .mediafloat { display: flex; flex-direction: column; gap: 10px; height: 100%; }
 .mfstage { position: relative; flex: 1; min-height: 320px; border-radius: 16px; overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, transparent); }

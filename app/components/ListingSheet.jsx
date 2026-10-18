@@ -36,6 +36,7 @@ import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import { getUid } from "../../lib/client.js";
 import { isNativeItem, startNativeCheckout } from "../../lib/storefront/client.js";
+import { postJSON } from "../../lib/client.js";
 import TagRow from "./TagChip.jsx";
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
@@ -59,6 +60,11 @@ export default function ListingSheet({ item: given, id }) {
   const [ticket, setTicket] = useState(false);
   const [notice, setNotice] = useState("");
   const [buying, setBuying] = useState(false);
+  // NATIVE COMMERCE (slice 6): an OFFER on a native listing is real — a
+  // 24-hour offer the seller accepts, declines or counters (7.20); a
+  // reserved listing offers the waiting queue instead (7.10).
+  const [offer, setOffer] = useState({ open: false, amount: "", state: "" });
+  const [queue, setQueue] = useState(null);
   const [liked, setLiked] = useState(false);
   const [bagged, setBagged] = useState(false);
   const [slide, setSlide] = useState(0);
@@ -107,6 +113,30 @@ export default function ListingSheet({ item: given, id }) {
     haptic("press"); setBagged(true);
     await bag(item);
   }
+  const native = isNativeItem(item);
+  const reserved = native && Number.isSafeInteger(item.inventory_available) && item.inventory_available <= 0 && item.availability_status !== "sold";
+  async function sendOffer() {
+    const cents = Math.round(Number(offer.amount) * 100);
+    if (!(cents > 0)) { setOffer((o) => ({ ...o, state: "a whole price, please" })); return; }
+    setOffer((o) => ({ ...o, state: "sending…" }));
+    try {
+      const r = await postJSON("/api/storefront/offers", { user: getUid(), listingId: item.native_listing_id, variantId: item.default_variant_id || null, amountCents: cents });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) { setOffer((o) => ({ ...o, state: body.error || "the offer could not be sent" })); if (r.status === 401 || r.status === 403) openSheet("account", { title: "ACCOUNT" }); return; }
+      setOffer({ open: false, amount: "", state: "" });
+      setNotice(body.autoAccepted ? "offer accepted — your price holds at checkout for 24 hours" : "offer sent — the seller has 24 hours; you cannot withdraw it");
+    } catch { setOffer((o) => ({ ...o, state: "the offer could not be sent" })); }
+  }
+  async function joinWait() {
+    haptic("press");
+    try {
+      const r = await postJSON("/api/storefront/queue", { user: getUid(), listingId: item.native_listing_id, join: true });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) { setNotice(body.error || "could not join the queue"); return; }
+      setQueue(body);
+      setNotice(`in the queue — ${body.position} of ${body.waiting}. a release is a courtesy alert, not a hold.`);
+    } catch { setNotice("could not join the queue"); }
+  }
 
   return (
     <div className="listing" data-id={item.id}>
@@ -141,12 +171,30 @@ export default function ListingSheet({ item: given, id }) {
 
         <div className="actions lstacts">
           <button type="button" className={liked ? "on" : ""} onClick={like} aria-pressed={liked}><Icon name="heart" size={16} /> LIKE</button>
-          <button type="button" className="soon" disabled title="OFFER arrives with native commerce — SELL and DROP, the payment-page reservation">OFFER</button>
+          {native
+            ? <button type="button" className={offer.open ? "on" : ""} aria-pressed={offer.open} onClick={() => { haptic("press"); setOffer((o) => ({ ...o, open: !o.open })); }}>OFFER</button>
+            : <button type="button" className="soon" disabled title="OFFER is for native Storefront listings — an external listing is bought at its source">OFFER</button>}
           <button type="button" className={bagged ? "on" : ""} onClick={toBag} aria-pressed={bagged}><Icon name="bag" size={16} /> {bagged ? "IN BAG ✓" : "BAG"}</button>
           <SaveButton kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />
         </div>
+        {offer.open && native ? (
+          <form className="lstoffer" onSubmit={(e) => { e.preventDefault(); sendOffer(); }}>
+            <label className="fine" htmlFor="lstoffer-amount">your offer, {item.currency || "USD"} — 24 hours for the seller to accept, decline or counter; it cannot be withdrawn</label>
+            <div className="lstofferrow">
+              <input id="lstoffer-amount" className="wcap" inputMode="decimal" value={offer.amount} onChange={(e) => setOffer((o) => ({ ...o, amount: e.target.value }))} aria-label="offer amount" />
+              <button type="submit" className="buy">send ✓</button>
+            </div>
+            {offer.state ? <span className="fine" role="status">{offer.state}</span> : null}
+          </form>
+        ) : null}
         <div className="pricerow lstbuy">
-          {demo ? <span className="demoflag">{DEMO_NOTE}</span> : isNativeItem(item) ? (
+          {demo ? <span className="demoflag">{DEMO_NOTE}</span> : reserved ? (
+            // 7.9–7.11: every unit is in someone's checkout; others can view, not buy — they wait
+            <>
+              <button type="button" className="buy" onClick={joinWait} disabled={!!queue}>{queue ? `in the queue · ${queue.position} of ${queue.waiting}` : "temporarily reserved — join the queue"}</button>
+              <span className="fine">a release alerts everyone waiting; it stays first come, first served</span>
+            </>
+          ) : isNativeItem(item) ? (
             // NATIVE COMMERCE (slice 6): a Storefront listing buys HERE — Stripe's
             // hosted checkout through the one client, never the referral ticket.
             // The server stamps readiness; an unready seller is said, not faked.

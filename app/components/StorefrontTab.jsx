@@ -87,9 +87,105 @@ function normalizeEnvelope(raw = {}) {
     orders: Array.isArray(raw.orders) ? raw.orders : [],
     fee,
     capabilities: raw.capabilities && typeof raw.capabilities === "object" ? raw.capabilities : {},
+    // slice 6: the seller's offer settings, the offers on their listings, the
+    // running discounts and the waiting queues, all server truth
+    commerce: raw.commerce && typeof raw.commerce === "object" ? raw.commerce : null,
     termsVersion: raw.termsVersion || raw.currentTermsVersion
       || raw.capabilities?.termsVersion || STOREFRONT_TERMS_VERSION,
   };
+}
+
+/**
+ * OFFERS, DISCOUNTS, RELISTING, SELL / DROP (V.2 Blueprint chapters 7 and 8;
+ * slice 6). A client for /api/storefront's commerce actions; every amount
+ * and every state shown is the server's. The law is lib/storefront/commerce.js.
+ */
+function CommercePanel({ listings, commerce, capabilities, busy, mutate }) {
+  const settings = commerce?.offerSettings || {};
+  const offers = Array.isArray(commerce?.offers) ? commerce.offers : [];
+  const discounts = commerce?.discounts || {};
+  const queues = commerce?.queues || {};
+  const [counter, setCounter] = useState({});
+  const [percent, setPercent] = useState({});
+  const [relist, setRelist] = useState({});
+  const canManage = capabilities.canManageListings !== false;
+  const open = offers.filter((o) => o.liveState === "open" && o.by === "buyer");
+  const titleOf = (id) => listings.find((l) => listingId(l) === id)?.title || id;
+  const money = (cents, cur = "USD") => formatMoney(cents, cur);
+  const setting = (key, value) => mutate({ action: "offer_settings", settings: { ...settings, [key]: value } }, "offer settings saved");
+  return (
+    <div className="sfmanagegrid sfcommerce">
+      <section className="sfledger" aria-label="offer settings">
+        <div className="sfsectionhead"><div><span className="sfeyebrow">OFFERS</span><h3>HOW YOU TAKE OFFERS</h3></div></div>
+        <p className="fine">a buyer&apos;s offer stands for 24 hours; accept, decline or counter — every counter restarts the 24 hours for the other side (7.25). acceptance unlocks checkout at the agreed price for that buyer only, for 24 hours, and reserves nothing (7.21). nothing sent can be withdrawn (8.9).</p>
+        <div className="sfform">
+          <label className="sfcheck"><input type="checkbox" checked={settings.acceptOffers !== false} disabled={!!busy} onChange={(e) => setting("acceptOffers", e.target.checked)} /><span>take offers on active listings</span></label>
+          <label className="sfcheck"><input type="checkbox" checked={settings.offersDuringDiscount !== false} disabled={!!busy} onChange={(e) => setting("offersDuringDiscount", e.target.checked)} /><span>take offers while a discount runs (7.19)</span></label>
+          <label className="sfcheck"><input type="checkbox" checked={!!settings.discountsStack} disabled={!!busy} onChange={(e) => setting("discountsStack", e.target.checked)} /><span>let a running discount stack on an accepted offer (7.19, 8.11)</span></label>
+          <label><span>AUTO-ACCEPT AT OR ABOVE (USD, blank = off)</span>
+            <input inputMode="decimal" defaultValue={settings.autoAcceptCents ? (settings.autoAcceptCents / 100).toFixed(2) : ""} disabled={!!busy} aria-label="auto-accept threshold"
+              onBlur={(e) => { const v = e.target.value.trim(); const cents = v ? Math.round(Number(v) * 100) : null; if (cents !== settings.autoAcceptCents) setting("autoAcceptCents", cents); }} /></label>
+        </div>
+        <div className="sfsectionhead"><div><span className="sfeyebrow">WAITING</span><h3>{open.length} OPEN OFFER{open.length === 1 ? "" : "S"}</h3></div></div>
+        {!offers.length ? <div className="empty">no offers yet.</div> : null}
+        {offers.map((o) => (
+          <article className="sflistingrow sfoffer" key={o.id}>
+            <div><b>{money(o.amountCents, o.currency)} · {titleOf(o.listingId)}</b>
+              <span>{o.by === "buyer" ? "buyer's offer" : "your counter"} · {o.liveState}{o.acceptedUntil && o.liveState === "accepted" ? ` · holds until ${String(o.acceptedUntil).slice(0, 16).replace("T", " ")}` : o.liveState === "open" ? ` · until ${String(o.expiresAt).slice(0, 16).replace("T", " ")}` : ""}</span></div>
+            {o.liveState === "open" && o.by === "buyer" ? (
+              <div className="sfrowactions">
+                <button className="txtbtn" type="button" disabled={!!busy} onClick={() => mutate({ action: "offer_respond", offerId: o.id, offerAction: "accept" }, "offer accepted — the buyer has 24 hours at that price")}>ACCEPT</button>
+                <button className="txtbtn danger" type="button" disabled={!!busy} onClick={() => mutate({ action: "offer_respond", offerId: o.id, offerAction: "decline" }, "offer declined")}>DECLINE</button>
+                <input className="sfcounter" inputMode="decimal" placeholder="counter, USD" aria-label={"counter offer for " + titleOf(o.listingId)} value={counter[o.id] || ""} onChange={(e) => setCounter({ ...counter, [o.id]: e.target.value })} />
+                <button className="txtbtn" type="button" disabled={!!busy || !(Number(counter[o.id]) > 0)} onClick={() => mutate({ action: "offer_respond", offerId: o.id, offerAction: "counter", amountCents: Math.round(Number(counter[o.id]) * 100) }, "counter sent — the buyer has 24 hours")}>COUNTER</button>
+              </div>
+            ) : null}
+          </article>
+        ))}
+      </section>
+      <section className="sflist" aria-label="discounts, modes and relisting">
+        <div className="sfsectionhead"><div><span className="sfeyebrow">PER LISTING</span><h3>DISCOUNTS · SELL / DROP · RELIST</h3></div></div>
+        <p className="fine">a discount runs 24 hours and restores the price itself; renew it by hand (7.31–7.32). every application and renewal tells everyone who liked the piece, above their own threshold (7.33–7.34, 8.1). the discounted price shows with the percent off; the original is never the headline (8.6). a relist needs your confirmation and the condition confirmed; a changed condition needs new details and photographs; discounts do not survive it; likes do (7.14–7.18, 8.12).</p>
+        {!listings.length ? <div className="empty">no listings yet.</div> : null}
+        {listings.map((l) => {
+          const id = listingId(l);
+          const d = discounts[id];
+          const r = relist[id] || {};
+          const status = listingStatus(l);
+          return (
+            <article className="sflistingrow sfcommerceitem" key={id}>
+              <div><b>{l.title}</b>
+                <span>{status.replaceAll("_", " ")} · {money(listingPriceCents(l), l.currency)}{d ? ` · ${d.percent}% off until ${String(d.endsAt).slice(0, 16).replace("T", " ")}` : ""} · {listingQuantity(l)} available · queue {queues[id] || 0}</span>
+                <span>mode: {(l.mode || "sell").toUpperCase()}{(l.mode || "sell") === "drop" ? " — authenticated before release" : " — live as STATUS: PENDING"}</span></div>
+              <div className="sfrowactions">
+                <button className="txtbtn" type="button" disabled={!!busy || !canManage} onClick={() => mutate({ action: "set_mode", listingId: id, mode: (l.mode || "sell") === "sell" ? "drop" : "sell" }, "mode set")}>{(l.mode || "sell") === "sell" ? "MAKE IT A DROP" : "MAKE IT A SELL"}</button>
+                <input className="sfcounter" inputMode="numeric" placeholder="% off" aria-label={"discount percent for " + l.title} value={percent[id] || ""} onChange={(e) => setPercent({ ...percent, [id]: e.target.value })} />
+                <button className="txtbtn" type="button" disabled={!!busy || !canManage || !(Number(percent[id]) >= 1)} onClick={() => mutate({ action: "discount_apply", listingId: id, percent: Number(percent[id]), renew: !!d }, d ? "discount renewed — 24 hours more, likers told again" : "discount applied — 24 hours, likers told")}>{d ? "RENEW" : "DISCOUNT"}</button>
+                {d ? <button className="txtbtn danger" type="button" disabled={!!busy} onClick={() => mutate({ action: "discount_cancel", listingId: id }, "discount cancelled — price restored")}>CANCEL</button> : null}
+                <button className="txtbtn" type="button" disabled={!!busy || !canManage} aria-expanded={!!r.open} onClick={() => setRelist({ ...relist, [id]: { ...r, open: !r.open } })}>RELIST…</button>
+              </div>
+              {r.open ? (
+                <form className="sfform sfrelist" onSubmit={(e) => { e.preventDefault(); mutate({ action: "relist_listing", listingId: id, confirm: !!r.confirm, conditionConfirmed: !!r.conditionConfirmed, conditionChanged: !!r.conditionChanged, condition: r.condition || null, photos: r.photo ? [r.photo] : [], priceCents: r.price ? Math.round(Number(r.price) * 100) : null, quantity: Number(r.quantity) || 1 }, "relisted — the queue is told it is back"); }}>
+                  <label className="sfcheck"><input type="checkbox" checked={!!r.confirm} onChange={(e) => setRelist({ ...relist, [id]: { ...r, confirm: e.target.checked } })} /><span>I confirm this relisting (7.14)</span></label>
+                  <label className="sfcheck"><input type="checkbox" checked={!!r.conditionConfirmed} onChange={(e) => setRelist({ ...relist, [id]: { ...r, conditionConfirmed: e.target.checked } })} /><span>the condition is as stated (7.15)</span></label>
+                  <label className="sfcheck"><input type="checkbox" checked={!!r.conditionChanged} onChange={(e) => setRelist({ ...relist, [id]: { ...r, conditionChanged: e.target.checked } })} /><span>the condition changed — new details and a new photograph follow (7.16)</span></label>
+                  {r.conditionChanged ? (<>
+                    <label><span>UPDATED CONDITION</span><input value={r.condition || ""} onChange={(e) => setRelist({ ...relist, [id]: { ...r, condition: e.target.value } })} /></label>
+                    <label><span>NEW PHOTOGRAPH (HTTPS URL)</span><input value={r.photo || ""} onChange={(e) => setRelist({ ...relist, [id]: { ...r, photo: e.target.value } })} /></label>
+                  </>) : null}
+                  <div className="sfformgrid">
+                    <label><span>NEW PRICE (USD) — previous prices stay private</span><input inputMode="decimal" value={r.price || ""} onChange={(e) => setRelist({ ...relist, [id]: { ...r, price: e.target.value } })} /></label>
+                    <label><span>UNITS</span><input inputMode="numeric" value={r.quantity || "1"} onChange={(e) => setRelist({ ...relist, [id]: { ...r, quantity: e.target.value } })} /></label>
+                  </div>
+                  <button className="btn" type="submit" disabled={!!busy}>RELIST ✓</button>
+                </form>
+              ) : null}
+            </article>
+          );
+        })}
+      </section>
+    </div>
+  );
 }
 
 function reasonText(capabilities) {
@@ -765,12 +861,13 @@ export default function StorefrontTab() {
         <>
           <CheckoutStatus capabilities={capabilities} storefront={storefront} />
           <nav className="sfmanagenav" aria-label="storefront management views">
-            {[["products", "PRODUCTS"], ["orders", "ORDERS"], ["earnings", "EARNINGS / FEE"], ["details", "STORE DETAILS"]].map(([id, label]) => (
+            {[["products", "PRODUCTS"], ["commerce", "OFFERS & DISCOUNTS"], ["orders", "ORDERS"], ["earnings", "EARNINGS / FEE"], ["details", "STORE DETAILS"]].map(([id, label]) => (
               <button type="button" key={id} className={section === id ? "cur" : ""}
                 aria-current={section === id ? "page" : undefined} onClick={() => setSection(id)}>{label}</button>
             ))}
           </nav>
           {section === "products" ? <ProductsPanel listings={listings} capabilities={capabilities} busy={busy} mutate={mutate} /> : null}
+          {section === "commerce" ? <CommercePanel listings={listings} commerce={envelope.commerce} capabilities={capabilities} busy={busy} mutate={mutate} /> : null}
           {section === "orders" ? <OrdersPanel orders={orders} capabilities={capabilities} storefront={storefront} /> : null}
           {section === "earnings" ? <EarningsPanel fee={fee} orders={orders} /> : null}
           {section === "details" ? <DetailsPanel storefront={storefront} capabilities={capabilities} busy={busy} mutate={mutate} /> : null}

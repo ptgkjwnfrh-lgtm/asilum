@@ -48,7 +48,8 @@ test("every card wears its type; media enlarges over the Feed; a piece opens the
 test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three tags and BEHIND THE PRODUCT", () => {
   assert.match(listing, /visibleTags\(tagsFor\(item, \{ typed, state: \{ verification: /, "the three come from the grammar (slice 4)");
   assert.match(listing, /className="lstdots"/, "the photo carousel's dots");
-  assert.match(listing, /className="soon" disabled title="OFFER arrives with native commerce/, "OFFER never pretends");
+  assert.match(listing, /className="soon" disabled title="OFFER is for native Storefront listings/, "OFFER on an external listing never pretends; on a native one it is real (slice 6)");
+  assert.match(listing, /postJSON\("\/api\/storefront\/offers"/, "a native OFFER is sent");
   assert.match(listing, /BEHIND THE PRODUCT/);
   assert.match(listing, /<AsteriskWhy item=\{item\} onNotice=\{setNotice\} \/>/, "the depth moved with the modal");
   assert.match(listing, /<TicketFlow item=\{item\}/, "the purchase request is the real ticket flow");
