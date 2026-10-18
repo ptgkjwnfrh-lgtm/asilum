@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDock, closeSheet, backSheet, closeHub, hydrateHub } from "../../lib/dockstate.js";
 import { counter } from "../../lib/sessions.js";
 import { useEscape, useFocusTrap } from "./dismiss.js";
+import { watchOfflineQueue } from "../../lib/client.js";
 import Icon from "./Icons.jsx";
 import LikesSheet from "./LikesSheet.jsx";
 import SearchSheet from "./SearchSheet.jsx";
@@ -69,6 +70,7 @@ const SWIPE_BACK = 80;
 
 export default function SheetHost() {
   const dock = useDock();
+  useEffect(() => { watchOfflineQueue(); }, []);
   const ref = useRef(null);
   const [tall, setTall] = useState(false);
   const hubOpen = !!dock.hub.hubOpen;

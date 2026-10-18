@@ -19,7 +19,7 @@ import TransmissionText from "./TransmissionText.jsx";
 import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
 import Icon from "./Icons.jsx";
-import { Avatar } from "./UserBits.jsx";
+import { Avatar, FriendName } from "./UserBits.jsx";
 import { timeAgo } from "../../lib/social.js";
 import { readWireRefs } from "../../lib/model/media.js";
 import { registerFeedVideo, feedPolicy } from "../../lib/media/feedplay.js";
@@ -200,7 +200,7 @@ export default function WireCard({ post: p, engagement, onEngage }) {
         <div className="wpcby">
           {sample ? <Avatar name={name} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)}><Avatar name={name} /></a>}
           <span className="wpcwho">
-            <b>{name}</b>
+            <b>{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</b>
             <span><span className="typechip">{type}</span>{[refs.intent && refs.intent.toUpperCase(), !sample && p.layout && LAYOUT_WORD[p.layout] ? LAYOUT_WORD[p.layout] : null, !sample && p.at ? timeAgo(p.at) : null].filter(Boolean).map((s) => " · " + s).join("")}</span>
           </span>
           {sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}

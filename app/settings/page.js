@@ -64,6 +64,7 @@ import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import PageMast from "../components/PageMast.jsx";
 import AMark from "../components/AMark.jsx";
 import TwoFactor, { IdentityRow } from "../components/TwoFactor.jsx";
+import OfflineRow from "../components/OfflineRow.jsx";
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
@@ -338,6 +339,7 @@ export default function SettingsPage() {
 
       <section className="rkmod" aria-label="data">
         <div className="rkhead"><b>04</b> DATA <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+        <OfflineRow />
         <div className="rkrow">
           <div className="rkname">Delete personalization data</div>
           <div className="rkctl"><button className="fitbtn" onClick={() => setDeleteOpen(true)}>DELETE DATA</button></div>
