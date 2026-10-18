@@ -126,7 +126,7 @@ function MotionMedia({ video, id, onMedia, label }) {
         </video>
         <span className="wpcmotiontag" aria-hidden="true">MOTION · {Math.round((video.durationMs || 0) / 1000)}s{policy && !policy.autoplay ? " · " + policy.reason : ""}</span>
       </button>
-      {video.generated ? <figcaption>SAMPLE MOTION · GENERATED TEST PATTERN, NO SOUND</figcaption> : null}
+      {video.generated ? <figcaption>SAMPLE MOTION · GENERATED TEST PATTERN AND TEST TONE</figcaption> : null}
     </figure>
   );
 }

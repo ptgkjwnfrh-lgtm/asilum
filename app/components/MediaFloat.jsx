@@ -127,7 +127,7 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
           {post.title ? <span className="mfttl">{post.title}</span> : null}
           <TransmissionText text={post.text} className="mftext" />
           {cur && cur.credit ? <small className="mfcredit">{cur.credit}</small> : null}
-          {video && video.generated ? <small className="mfcredit">SAMPLE MOTION · GENERATED TEST PATTERN · {video.width}×{video.height} · {video.codec} · no sound</small> : null}
+          {video && video.generated ? <small className="mfcredit">SAMPLE MOTION · GENERATED TEST PATTERN · {video.width}×{video.height} · {video.codec} · a generated test tone</small> : null}
         </button>
       </div>
       <div className="mfacts" role="group" aria-label="actions">

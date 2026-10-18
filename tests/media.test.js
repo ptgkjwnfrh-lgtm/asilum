@@ -100,13 +100,13 @@ test("the probe reads a WebM's own header, and reports a recording that declares
   assert.equal(L.admitMotion(live).code, "duration-unknown", "refused by name, never guessed");
 });
 
-test("the generated sample the repository ships is what its label says: H.264 MP4, 320×180, six seconds, no audio, fast start", () => {
+test("the generated sample the repository ships is what its label says: H.264 MP4, 320×180, six seconds, a test tone, fast start", () => {
   const bytes = fs.readFileSync(path.join(process.cwd(), "public", "model", "motion-test-pattern.mp4"));
   const p = L.probeVideo(bytes);
-  assert.equal(p.ok, true); assert.equal(p.codec, "avc1"); assert.equal(p.durationMs, 6000); assert.deepEqual([p.width, p.height, p.audio, p.fastStart], [320, 180, false, true]);
+  assert.equal(p.ok, true); assert.equal(p.codec, "avc1"); assert.equal(p.durationMs, 6000); assert.deepEqual([p.width, p.height, p.audio, p.fastStart], [320, 180, true, true]);
   const v = L.admitMotion(p, { bytes: bytes.length });
   assert.equal(v.ok, true); assert.equal(v.facts.bytes, bytes.length);
-  assert.deepEqual([SAMPLE_MOTION.durationMs, SAMPLE_MOTION.width, SAMPLE_MOTION.height, SAMPLE_MOTION.codec, SAMPLE_MOTION.audio, SAMPLE_MOTION.generated], [6000, 320, 180, "avc1", false, true], "the sample's declared facts are the file's");
+  assert.deepEqual([SAMPLE_MOTION.durationMs, SAMPLE_MOTION.width, SAMPLE_MOTION.height, SAMPLE_MOTION.codec, SAMPLE_MOTION.audio, SAMPLE_MOTION.generated], [6000, 320, 180, "avc1", true, true], "the sample's declared facts are the file's");
   assert.ok(bytes.length < 60 * 1024, "a fixture, not a film");
   const vtt = fs.readFileSync(path.join(process.cwd(), "public", "model", "motion-test-pattern.vtt"), "utf8");
   assert.equal(L.parseVtt(vtt).ok, true); assert.equal(L.parseVtt(vtt).cues.length, 3);

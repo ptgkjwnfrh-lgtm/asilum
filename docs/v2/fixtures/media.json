@@ -87,9 +87,9 @@
       "width": 320,
       "height": 180,
       "codec": "avc1",
-      "audio": false,
+      "audio": true,
       "rotation": 0,
-      "tracks": 1
+      "tracks": 2
     },
     "verdict": {
       "ok": true,
@@ -101,9 +101,9 @@
         "width": 320,
         "height": 180,
         "rotation": 0,
-        "audio": false,
+        "audio": true,
         "fastStart": true,
-        "bytes": 26879
+        "bytes": 46133
       },
       "note": null
     }
@@ -112,7 +112,7 @@
     "request": "GET /api/editorial/motion?captions=<id>&lang=en",
     "status": 200,
     "contentType": "text/vtt; charset=utf-8",
-    "text": "WEBVTT\n\nNOTE a creator-provided caption on the generated test pattern (slice 9): there is no speech and no music to transcribe, so the cues describe what is on screen.\n\n00:00.000 --> 00:02.000\nA generated test pattern. No sound.\n\n00:02.000 --> 00:04.000\nA white bar crosses a slow hue sweep.\n\n00:04.000 --> 00:06.000\nThe lower third stays dark for the caption's ink.\n"
+    "text": "WEBVTT\n\nNOTE a creator-provided caption on the generated test pattern (slice 9): there is no speech and no music to transcribe — the sound is a generated test tone — so the cues describe what is on screen.\n\n00:00.000 --> 00:02.000\nA generated test pattern. A test tone swells and fades.\n\n00:02.000 --> 00:04.000\nA white bar crosses a slow hue sweep.\n\n00:04.000 --> 00:06.000\nThe lower third stays dark for the caption's ink.\n"
   },
   "mine": {
     "request": "GET /api/editorial/motion?user=<uid>",
@@ -183,13 +183,13 @@
           "container": "mp4",
           "mime": "video/mp4",
           "declaredBytes": 26879,
-          "bytes": 26879,
+          "bytes": 46133,
           "durationMs": 6000,
           "width": 320,
           "height": 180,
           "rotation": 0,
           "codec": "avc1",
-          "audio": false,
+          "audio": true,
           "fastStart": true,
           "poster": null,
           "captions": [
