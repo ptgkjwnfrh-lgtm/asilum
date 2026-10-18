@@ -17,10 +17,10 @@ import { getUid, authorizedFetch, postJSON } from "../../lib/client.js";
 import Notice from "./Notice.jsx";
 import { normalizeShopifyDomain, validBrandName, STATEMENT_MAX } from "../../lib/business.js";
 
-const LAW = "a passport account becomes a BUSINESS account by verifying " +
-  "itself: your brand, your Shopify storefront, and your own website, " +
-  "reviewed by a human. only business accounts get a chance at one of " +
-  "THE WIRE's ten booths.";
+const LAW = "Native Storefront does not require this upgrade. A passport " +
+  "becomes a BUSINESS account only for the separate verified-brand program: " +
+  "your Shopify source and website are reviewed by a human, and approved " +
+  "businesses may enter THE WIRE's ten-booth program.";
 
 export default function BusinessAccountPanel() {
   const [state, setState] = useState(null);   // server truth

@@ -1,7 +1,8 @@
 // app/terms/page.js — TERMS OF SERVICE.
 // Constitution §7 launch dependency. Describes the product as it actually
-// is: a discovery magazine with external checkout — ASILUM is never the
-// seller. Version 1.0 — drafted 2026-07-19; counsel review pending
+// is: a discovery and routing service with external checkout plus a gated
+// native Storefront draft surface. Version 1.3 — drafted 2026-10-02, the name
+// ruled *ASILUM on 2026-10-17; counsel review pending
 // (governing-law venue is a flagged counsel decision).
 
 export const metadata = {
@@ -15,9 +16,8 @@ export default function TermsPage() {
       <div className="locline"><a href="/settings">← SETTINGS</a><span>/ THE FINE PRINT</span></div>
       <h1 className="headline"><span className="red">*</span>TERMS OF SERVICE</h1>
       <p className="deck">
-        the agreement for using ASILUM. version 1.2 — effective
-        august 20, 2026 (adds the founders fee, purchase-info storage, and
-        the first-visit observation question; under legal review).
+        the agreement for using ASILUM. version 1.3 — effective
+        october 17, 2026 (adds native Storefront draft terms; under legal review).
       </p>
 
       <h2 className="statshead">THE SERVICE</h2>
@@ -39,7 +39,7 @@ export default function TermsPage() {
         impersonation.
       </p>
 
-      <h2 className="statshead">SHOPPING HAPPENS ELSEWHERE</h2>
+      <h2 className="statshead">EXTERNAL SHOPPING HAPPENS ELSEWHERE</h2>
       <p className="legal">
         ASILUM is a discovery and routing service, not a store. product
         listings name their source, and the purchase of a piece — its price,
@@ -50,6 +50,34 @@ export default function TermsPage() {
         merchant&apos;s to confirm. purchase tickets open under the
         disclaimer shown when you create one — they are not an order,
         escrow, or guarantee of the merchant&apos;s sale.
+      </p>
+
+      <h2 className="statshead" id="storefront-terms">NATIVE STOREFRONT DRAFTS</h2>
+      <p className="legal">
+        an account holder may create one native Storefront draft inside their
+        ASILUM profile without a creation charge, subscription, tier, separate
+        website, or ASILUM commission on merchandise sales. the seller is
+        responsible for accurate product facts, inventory, fulfillment, and
+        having rights to the content they publish. ASILUM may review, pause,
+        reject, or remove a Storefront or listing that is unsafe, unlawful,
+        misleading, or outside the permitted catalog.
+      </p>
+      <p className="legal">
+        if native ordering is later enabled for that Storefront, the buyer is
+        shown an ASILUM passenger fee before payment: $1 per item or unit plus
+        1.5% of that unit&apos;s merchandise value, excluding shipping,
+        handling, and tax. Storefront creation remains free. ASILUM&apos;s
+        one-time $30 Storefront fee is collected only from available seller
+        proceeds after payment processing, starting with the first sale; any
+        unpaid remainder carries forward and never becomes a buyer charge or
+        a negative seller payout. payment processing charges may still apply.
+      </p>
+      <p className="legal">
+        accepting storefront-terms-v1-2026-10-02 creates only the draft and
+        records this version. it does not enable payment acceptance. native
+        checkout, return, refund, tax, payout, and launch-region terms remain
+        gated and will require the applicable disclosures and any required
+        updated acceptance before live ordering is enabled.
       </p>
 
       <h2 className="statshead">THE FOUNDERS FEE</h2>

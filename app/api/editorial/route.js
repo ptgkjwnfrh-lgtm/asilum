@@ -22,7 +22,8 @@ import { safeExternalUrl, safeImageUrl } from "../../../lib/url.js";
 import { validateComposition, attachmentsFor } from "../../../lib/wire/compose.js";
 import { fetchPreview } from "../../../lib/wire/preview.js";
 import { wireImageUrl } from "../../../lib/wire/media.js";
-import { getItem } from "../../../lib/db/index.js";
+import { resolveProduct } from "../../../lib/products.js";
+import { sourceFor } from "../../../lib/social.js";
 import { listPlaces } from "../../../lib/places/registry.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
@@ -157,9 +158,15 @@ export async function POST(req) {
     const pieceSnapshots = [];
     for (const ref of (composition.pieces || []).slice(0, 10)) {
       const id = typeof ref === "string" ? ref : ref && ref.id;
-      const it = await getItem(String(id)).catch(() => null);
-      if (!it) return NextResponse.json({ error: `piece ${id} is not a listing this catalog holds` }, { status: 400 });
-      pieceSnapshots.push({ id: it.id, title: it.title, brand: it.brand, img: it.img || null, price: it.price ?? null, currency: it.currency || "USD", source: it.source_name || it.source || null });
+      // Resolve through the same discoverability authority as Feed/search.
+      // A known id is not enough: draft, moderated, removed and sold-out
+      // native inventory must never become public through a Wire attachment.
+      const it = await resolveProduct(String(id)).catch(() => null);
+      if (!it) return NextResponse.json({ error: `piece ${id} is not an active catalog listing` }, { status: 400 });
+      pieceSnapshots.push({
+        id: it.id, title: it.title, brand: it.brand, img: it.img || null,
+        price: it.price ?? null, currency: it.currency || "USD", source: sourceFor(it),
+      });
     }
     let eventSnapshot = null;
     if (composition.event) {

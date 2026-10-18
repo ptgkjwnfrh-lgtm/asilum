@@ -31,6 +31,7 @@ import Wordmark from "./components/Wordmark.jsx";
 import SaveButton from "./components/SaveButton.jsx";
 import WireCard from "./components/WireCard.jsx";
 import TagRow from "./components/TagChip.jsx";
+import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
 import { tagsFor, visibleTags } from "../lib/tagging/grammar.js";
 import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
@@ -51,7 +52,11 @@ const DWELL_MIN_MS = 2000;
 // was only half visible is never marked examined).
 const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.innerHeight);
 
-const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories"];
+// The departments the filter offers: the garment catalog's eight, then the
+// native Storefront's categories (slice 6) — a jewelry or furniture listing
+// is filterable where it lives, in the one Feed.
+const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories",
+  ...STOREFRONT_CATEGORIES.map((c) => c.id).filter((c) => c !== "clothing")];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 

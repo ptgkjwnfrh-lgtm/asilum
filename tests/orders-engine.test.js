@@ -45,6 +45,20 @@ test("refusalReason: a live-sourced, available, priced item passes", () => {
   assert.equal(refusalReason(REAL_ITEM), null);
 });
 
+test("refusalReason: native rows require explicit inventory, integer price and checkout readiness", () => {
+  const native = {
+    id: "native-one", commerce_rail: "native_storefront", source_name: "asilum-native",
+    native_listing_id: "lst-one", price_cents: 1_000, inventory_available: 1,
+    native_checkout_ready: true, availability_status: "available",
+  };
+  assert.equal(refusalReason(native), null);
+  assert.match(refusalReason({ ...native, inventory_available: 0 }), /availability/);
+  assert.match(refusalReason({ ...native, native_checkout_ready: false }), /not enabled/);
+  assert.match(refusalReason({ ...native, price_cents: 10.5 }), /authoritative price/);
+  assert.match(refusalReason({ ...native, commerce_rail: null }), /demo archive/,
+    "missing URLs stay demo unless the full native discriminator is present");
+});
+
 test("startCheckout without a key answers 503 before touching anything", async () => {
   const result = await startCheckout({ user: "u-t", itemId: "whatever" });
   assert.equal(result.status, 503);
@@ -216,4 +230,29 @@ test("webhook: completed settles by session id, unknown types are untouched, orp
   });
   assert.equal(orphan.handled, false);
   assert.equal(orphan.orphan, true);
+});
+
+test("a native order can never fall through the legacy Checkout webhook transition", async () => {
+  const order = await createOrderWithEvent({
+    user: "sb-11111111-1111-4111-8111-111111111111",
+    itemId: "native:guard-fixture",
+    amountCents: 20_000,
+    feeCents: 400,
+    currency: "usd",
+  });
+  // Memory-store fixture only: durable native writes use the dedicated
+  // checkout transaction. The shared reference lets this test exercise the
+  // dispatcher guard without pretending to create native money in memory.
+  order.commerce_rail = "native_storefront";
+  await attachOrderSession(order.id, "cs_test_native_legacy_guard");
+
+  await assert.rejects(
+    applyStripeWebhook({
+      id: "evt_native_legacy_guard",
+      type: "checkout.session.completed",
+      data: { object: { id: "cs_test_native_legacy_guard", metadata: {} } },
+    }),
+    /not claimed by the native reconciler/,
+  );
+  assert.equal((await getOrder(order.id)).status, "awaiting_payment");
 });

@@ -59,14 +59,14 @@ test("the card declares the size a large summary card needs", () => {
   assert.match(src, /export const alt =/);
 });
 
-test("the card carries the same honesty the catalog page does", () => {
+test("the card distinguishes native inventory from the labeled demo archive", () => {
   const src = card();
   // A shared link reaches people who have not seen the page's DEMO banner, so
   // the disclosure rides on the card. The owner's comp REPLACED the longer
   // "taste engine is real" line with the DISCOVERY/COMMERCE/COMMUNITY strip but
   // kept this one — so this is the line that is load-bearing, and if it ever has
   // to go, docs/seo-notes.md changes in the same commit.
-  assert.match(src, /A DEMO ARCHIVE OF SYNTHETIC SAMPLE RECORDS/);
+  assert.match(src, /NATIVE STOREFRONTS \+ LABELED DEMO ARCHIVE/);
   // And it must not claim inventory. `real` appears in the honest sentence, so
   // the check is for the specific promises, not for a bare word.
   for (const claim of ["shop now", "buy now", "in stock", "free shipping"]) {

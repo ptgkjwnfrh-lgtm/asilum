@@ -34,6 +34,8 @@ import AsteriskWhy from "./AsteriskWhy.jsx";
 import Icon from "./Icons.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
+import { getUid } from "../../lib/client.js";
+import { isNativeItem, startNativeCheckout } from "../../lib/storefront/client.js";
 import TagRow from "./TagChip.jsx";
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
@@ -56,6 +58,7 @@ export default function ListingSheet({ item: given, id }) {
   const [float, setFloat] = useState(null);
   const [ticket, setTicket] = useState(false);
   const [notice, setNotice] = useState("");
+  const [buying, setBuying] = useState(false);
   const [liked, setLiked] = useState(false);
   const [bagged, setBagged] = useState(false);
   const [slide, setSlide] = useState(0);
@@ -143,7 +146,19 @@ export default function ListingSheet({ item: given, id }) {
           <SaveButton kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />
         </div>
         <div className="pricerow lstbuy">
-          {demo ? <span className="demoflag">{DEMO_NOTE}</span> : (
+          {demo ? <span className="demoflag">{DEMO_NOTE}</span> : isNativeItem(item) ? (
+            // NATIVE COMMERCE (slice 6): a Storefront listing buys HERE — Stripe's
+            // hosted checkout through the one client, never the referral ticket.
+            // The server stamps readiness; an unready seller is said, not faked.
+            <>
+              <button type="button" className={"buy" + (item.native_checkout_ready === true ? "" : " soon")} disabled={item.native_checkout_ready !== true || buying}
+                title={item.native_checkout_ready === true ? "opens Stripe's secure checkout; the passenger fee is shown before payment" : "this seller's payment path is not enabled yet"}
+                onClick={async () => { haptic("press"); setBuying(true); const r = await startNativeCheckout(item, { user: getUid() }); if (!r.ok) { setBuying(false); setNotice(r.error); if (r.status === 401) openSheet("account", { title: "ACCOUNT" }); } }}>
+                {item.native_checkout_ready === true ? (buying ? "opening checkout…" : "buy ↗") : "checkout not enabled"}
+              </button>
+              <span className="fine">native storefront{item.storefront_name ? " · " + item.storefront_name : ""}{Number.isSafeInteger(item.inventory_available) ? ` · ${item.inventory_available} available` : ""}</span>
+            </>
+          ) : (
             <>
               <button type="button" className="buy" onClick={() => setTicket(true)}>request purchase</button>
               {safeExternalUrl(item.url) ? <a className="buy" href={safeExternalUrl(item.url)} target="_blank" rel="noopener noreferrer">view source ↗</a> : null}
