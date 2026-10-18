@@ -7,7 +7,7 @@
       "version": null
     },
     "contractVersion": 1,
-    "requestId": "8ad16926-a854-4ad0-b1bb-f78886027801",
+    "requestId": "21c0a95d-bf46-41a6-80ba-59de5a201ecd",
     "outcome": "ok",
     "policyVersion": "2026-09-19.2",
     "q": "hedi slimane: celine",
@@ -498,6 +498,8 @@
         ],
         "served": true
       },
+      "tag": null,
+      "pins": [],
       "assist": null,
       "exclusions": [],
       "priceSort": null,

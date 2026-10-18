@@ -4,13 +4,13 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "c2bdfd0a-4099-4091-93dc-a597d8ec6b67",
+      "requestId": "a0c1081a-16d1-4293-b883-e99e2e72314d",
       "outcome": "ok",
       "total": 185,
       "totalIsExact": true,
       "candidatesTruncated": false,
       "offset": 0,
-      "nextCursor": "eyJ2IjoxLCJvIjo1LCJzIjoiOGFlMWEwNWRlMzk2YTQwZDBmMjhkZjMzIiwiYiI6ImQ2ZDE3N2RhN2Y1ZDc0YTEwNjlmZWMxYiJ9.BfP7bjp8MOvkV9LvQuGoq64tjhe",
+      "nextCursor": "eyJ2IjoxLCJvIjo1LCJzIjoiOGFlMWEwNWRlMzk2YTQwZDBmMjhkZjMzIiwiYiI6ImNmZDBhY2RhNjhkNDJmODNhYWJlNzk1ZSJ9.A28mlrMAABXVJY2y2FCWOuPUfik",
       "snapshotId": "8ae1a05de396a40d0f28df33",
       "demo": true,
       "sources": [
@@ -42,6 +42,8 @@
         "brandSpelling": null,
         "designerCredit": null,
         "pair": null,
+        "tag": null,
+        "pins": [],
         "assist": null,
         "exclusions": [],
         "priceSort": null,
@@ -196,13 +198,13 @@
     "status": 200,
     "body": {
       "contractVersion": 1,
-      "requestId": "903dbbae-5b3e-4230-a179-be11435d9124",
+      "requestId": "11711d18-c083-48ec-83c5-8a04abe0b70f",
       "outcome": "ok",
       "total": 185,
       "totalIsExact": true,
       "candidatesTruncated": false,
       "offset": 5,
-      "nextCursor": "eyJ2IjoxLCJvIjoxMCwicyI6IjhhZTFhMDVkZTM5NmE0MGQwZjI4ZGYzMyIsImIiOiJkNmQxNzdkYTdmNWQ3NGExMDY5ZmVjMWIifQ.9ajdoZddgNRc063HmqiurLtwMmv",
+      "nextCursor": "eyJ2IjoxLCJvIjoxMCwicyI6IjhhZTFhMDVkZTM5NmE0MGQwZjI4ZGYzMyIsImIiOiJjZmQwYWNkYTY4ZDQyZjgzYWFiZTc5NWUifQ.-bvCwuFBQ-Kcgimz4kY7qU5FiYB",
       "snapshotId": "8ae1a05de396a40d0f28df33",
       "demo": true,
       "sources": [
@@ -234,6 +236,8 @@
         "brandSpelling": null,
         "designerCredit": null,
         "pair": null,
+        "tag": null,
+        "pins": [],
         "assist": null,
         "exclusions": [],
         "priceSort": null,
@@ -389,7 +393,7 @@
     "status": 409,
     "body": {
       "contractVersion": 1,
-      "requestId": "6c84af12-b16f-42a4-88f5-56d290c82f66",
+      "requestId": "12666ff3-5d33-4983-ac1a-6b1e31f6195e",
       "outcome": "stale_cursor",
       "error": {
         "code": "cursor_context",
@@ -403,7 +407,7 @@
     "status": 400,
     "body": {
       "contractVersion": 1,
-      "requestId": "ebd5d025-f60f-4037-8c39-dd3bb74859e3",
+      "requestId": "ea5ce316-1bbb-4811-a466-3634d699149b",
       "outcome": "invalid",
       "error": {
         "code": "cursor_signature",

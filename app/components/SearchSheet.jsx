@@ -17,7 +17,8 @@
 // returns here with the query intact).
 
 import { useEffect, useState } from "react";
-import { useDock, pushSheet } from "../../lib/dockstate.js";
+import { useDock, pushSheet, unpinTag } from "../../lib/dockstate.js";
+import { TagChip } from "./TagChip.jsx";
 import { authorizedFetch, getUid, thumbFor } from "../../lib/client.js";
 import { fetchWire } from "../../lib/social.js";
 import { findEntity } from "../../lib/entities/graph.js";
@@ -28,10 +29,22 @@ import OverviewPreview from "./OverviewPreview.jsx";
 
 const PIECES = 12, POSTS = 8;
 
+/** The filter chips a long-press pinned; a tap unpins. */
+function PinnedRow({ pins }) {
+  return (
+    <div className="tagrow popup pins" role="list" aria-label="pinned filters">
+      {pins.map((p) => <span role="listitem" key={p.key}><TagChip tag={{ ...p, family: "pin" }} pinned onUnpin={unpinTag} /></span>)}
+    </div>
+  );
+}
+
 export default function SearchSheet() {
   const dock = useDock();
   const q = String(dock.q || "").trim();
   const { pieces: wantPieces, wire: wantWire, asterisk } = dock.toggles;
+  // tags pinned by a long-press ride the request as filters (blueprint, Tag grammar)
+  const pins = dock.pins || [];
+  const pinKey = pins.map((p) => p.key).join("|");
   const [res, setRes] = useState({ q: "", items: [], total: 0, posts: [], note: null, loading: false, error: "" });
 
   useEffect(() => {
@@ -43,6 +56,7 @@ export default function SearchSheet() {
       try {
         if (wantPieces) {
           const qs = new URLSearchParams({ q, limit: String(PIECES) });
+          if (pins.length) qs.set("pins", pins.map((p) => p.text).join("|"));
           if (asterisk) { qs.set("brain", "1"); const uid = getUid(); if (uid) qs.set("user", uid); }
           const r = await authorizedFetch("/api/discover?" + qs.toString());
           if (r.ok) { const d = await r.json(); out.items = d.items || []; out.total = d.total || out.items.length; out.note = d.note || d.engineNote || null; }
@@ -57,7 +71,7 @@ export default function SearchSheet() {
       if (live) setRes(out);
     })();
     return () => { live = false; };
-  }, [q, wantPieces, wantWire, asterisk]);
+  }, [q, wantPieces, wantWire, asterisk, pinKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // an entity overview is eligible regardless of the content toggles (brief, decision 4)
   const overview = q ? findEntity(q) : null;
@@ -66,6 +80,7 @@ export default function SearchSheet() {
     return (
       <div className="srch">
         <p className="deck">Type above. Handles, pieces, places, eras, a feeling.</p>
+        {pins.length ? <PinnedRow pins={pins} /> : null}
         <p className="fine">Pieces and Wire are the content toggles; ASTERISK orders by your Passport when it is on. Nothing is searched until you type.</p>
       </div>
     );
@@ -77,6 +92,7 @@ export default function SearchSheet() {
         <span className="cclbl">RESULTS FOR “{q}”</span>
         <a className="txtbtn" href={"/discover?q=" + encodeURIComponent(q)}>SEARCH ALL ASILUM →</a>
       </div>
+      {pins.length ? <PinnedRow pins={pins} /> : null}
       {overview && (
         <OverviewPreview person={overview} onOpen={() => pushSheet("overview", { entity: overview, title: overview.name.toUpperCase() })} />
       )}

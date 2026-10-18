@@ -7,10 +7,12 @@
 // replaces the feed page's item modal (July–October): the same depth, in
 // the session hub, so Back returns to it and the Feed keeps its place.
 //
-// Three tags are visible; BEHIND THE PRODUCT opens the rest with the
+// THE TAGS (slice 4, lib/tagging/grammar.js): LEFT: RIGHT over the record
+// and the typed rows ASTERISK's tagger wrote; three visible, all certain, a
+// state that matters now (PRODUCT: SOLD) in the third slot; the + beside
+// the third opens BEHIND THE PRODUCT — every other tag, then the
 // provenance, the evidence lines, ASTERISK's why, the designers and the
-// pieces it goes with (the owner's tag law, 17 Oct; the renderer proper
-// arrives with slice 4).
+// pieces it goes with. Tap a side to search it; long-press to pin it.
 //
 // Honesty: OFFER says `soon` (native commerce, slice 6); the purchase
 // request is the real ticket flow; a demo record has no purchase control
@@ -32,8 +34,8 @@ import AsteriskWhy from "./AsteriskWhy.jsx";
 import Icon from "./Icons.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
-
-const VISIBLE_TAGS = 3;
+import TagRow from "./TagChip.jsx";
+import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 function eraLabel(era) {
   if (!era) return null;
@@ -48,6 +50,7 @@ export default function ListingSheet({ item: given, id }) {
   const [rel, setRel] = useState([]);
   const [evidence, setEvidence] = useState(null);
   const [sameShot, setSameShot] = useState(null);
+  const [typed, setTyped] = useState([]);
   const [badge, setBadge] = useState(null);
   const [behind, setBehind] = useState(false);
   const [float, setFloat] = useState(null);
@@ -65,11 +68,11 @@ export default function ListingSheet({ item: given, id }) {
   useEffect(() => {
     if (!itemId) return undefined;
     let live = true;
-    setRel([]); setEvidence(null); setSameShot(null); setBehind(false); setSlide(0);
+    setRel([]); setEvidence(null); setSameShot(null); setTyped([]); setBehind(false); setSlide(0);
     fetch("/api/related?item=" + encodeURIComponent(itemId) + "&limit=6").then((r) => r.json()).then((d) => {
       if (!live) return;
       if (d.item && !given) setItem(d.item);
-      setRel(d.items || []); setEvidence(d.evidence || null); setSameShot(d.sameShot || null);
+      setRel(d.items || []); setEvidence(d.evidence || null); setSameShot(d.sameShot || null); setTyped(Array.isArray(d.typedTags) ? d.typedTags : []);
     }).catch(() => {});
     fetch("/api/verification/listing?ids=" + encodeURIComponent(itemId)).then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (live) setBadge(d && d.items && d.items[0] ? d.items[0].badge || null : null); }).catch(() => { if (live) setBadge(null); });
@@ -85,9 +88,9 @@ export default function ListingSheet({ item: given, id }) {
   if (!item) return <p className="deck">reading the listing…</p>;
 
   const images = Array.isArray(item.images) && item.images.length > 1 ? item.images : [item.img || thumbFor(item)];
+  // the taste keys the STAMP inherits as evidence (identity, never state)
   const tags = Object.keys(item.tags || {});
-  const shown = tags.slice(0, VISIBLE_TAGS);
-  const rest = tags.slice(VISIBLE_TAGS);
+  const { shown, behind: rest } = visibleTags(tagsFor(item, { typed, state: { verification: badge && badge.state !== "none" ? badge.state : null } }));
   const demo = isDemoItem(item);
   const following = followedBrands().includes(item.brand);
   const fitLine = fitPhrase(item.size, fitBrain);
@@ -148,17 +151,12 @@ export default function ListingSheet({ item: given, id }) {
           )}
         </div>
 
-        <div className="tags lsttags" aria-label="tags">
-          {shown.map((t) => <a key={t} className="t" href={"/discover?q=" + encodeURIComponent(t.toLowerCase())}>{t}</a>)}
-          {tags.length === 0 ? <span className="fine">no tags yet — ASTERISK assigns them</span> : null}
-        </div>
-        <button type="button" className="lstbehind" aria-expanded={behind} onClick={() => { haptic("press"); setBehind((b) => !b); }}>
-          {behind ? "− BEHIND THE PRODUCT" : "+ BEHIND THE PRODUCT"}{rest.length ? <small> · {rest.length} more {rest.length === 1 ? "tag" : "tags"}</small> : null}
-        </button>
+        <TagRow tags={shown} size="popup" more={() => setBehind((b) => !b)} open={behind} empty="no tags yet — ASTERISK assigns them" />
 
         {behind ? (
-          <div className="lstdepth">
-            {rest.length ? <div className="tags">{rest.map((t) => <a key={t} className="t" href={"/discover?q=" + encodeURIComponent(t.toLowerCase())}>{t}</a>)}</div> : null}
+          <div className="lstdepth" aria-label="behind the product">
+            <div className="cclbl">BEHIND THE PRODUCT{rest.length ? ` · ${rest.length} more ${rest.length === 1 ? "tag" : "tags"}` : ""}</div>
+            {rest.length ? <TagRow tags={rest} size="popup" label="every other tag" /> : null}
             <ColorEvidenceLine item={item} detailed />
             {sameShot ? (
               <div className="shotline">

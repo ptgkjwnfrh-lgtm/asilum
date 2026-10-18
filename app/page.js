@@ -30,6 +30,8 @@ import PageMast from "./components/PageMast.jsx";
 import Wordmark from "./components/Wordmark.jsx";
 import SaveButton from "./components/SaveButton.jsx";
 import WireCard from "./components/WireCard.jsx";
+import TagRow from "./components/TagChip.jsx";
+import { tagsFor, visibleTags } from "../lib/tagging/grammar.js";
 import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchWire, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
@@ -1160,6 +1162,8 @@ function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, onPass }
           ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
           : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
         {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
+        {/* the Feed card shows the same first three as the listing (slice 4) */}
+        <TagRow tags={visibleTags(tagsFor(it)).shown} size="card" />
         <ColorEvidenceLine item={it} />
         <OriginLine item={it} />
         {fitLine ? <div className="fitline">{fitLine}</div> : null}

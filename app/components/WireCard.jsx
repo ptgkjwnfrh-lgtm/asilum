@@ -25,6 +25,8 @@ import { readWireRefs } from "../../lib/model/media.js";
 import { postType } from "../../lib/feed/types.js";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
+import TagRow from "./TagChip.jsx";
+import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 const LAYOUT_WORD = { single: "", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "" };
 
@@ -91,6 +93,7 @@ function Attachments({ p, onMedia }) {
                 {pc.img ? <img src={pc.img} alt="" loading="lazy" /> : <span className="wpcpieceblank" aria-hidden="true" />}
                 <b>{pc.brand}</b><span>{pc.title}</span>{pc.price != null ? <i>{pc.currency || "USD"} {pc.price}</i> : null}
               </button>
+              <TagRow tags={visibleTags(tagsFor(pc)).shown} size="card" />
             </li>
           ))}
         </ul>

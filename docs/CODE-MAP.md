@@ -81,7 +81,7 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*33 files, 5,763 lines*
+*33 files, 5,777 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -97,9 +97,9 @@ Nothing here may import from `app/`.
 | `uilab.js` | 193 | DESIGN CONSOLE registry + persistence (client-safe). |
 | `dm-desk.js` | 185 | The mail desk's decisions, as functions. |
 | `analytics.js` | 177 | The /stats dashboards (owner directive, HANDOVER-2026-08-14 backlog 5). SERVER ONLY — reads the database directly. |
+| `dockstate.js` | 165 | the control deck's live state, shared by the deck, the fixtures, the sheets and the roots without a React context (the |
 | `vault.js` | 155 | The buyer vault (owner ruling 20 Aug 2026): name, address, and saved-card REFERENCES — Stripe customer/payment-method ids plus brand/last4 display |
 | `save.js` | 152 | ONE SAVE (Live Launch V.2, owner brief 17 Sep 2026). |
-| `dockstate.js` | 151 | the control deck's live state, shared by the deck, the fixtures, the sheets and the roots without a React context (the |
 | `location.js` | 150 | the three location concepts, on the device (V.2). |
 | `dock.js` | 138 | THE CENTRAL CONTROL DECK as DATA (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief §1 where the |
 | `identity.js` | 135 | WHO THE CALLER IS. The root of trust for the whole app. |
@@ -518,11 +518,11 @@ Nothing here may import from `app/`.
 | `overpass.js` | 190 | THE READER'S OWN STREET MAP (V.2, owner: "instead of the Paris street map, their street map is the background for the |
 
 ### `lib/search/`
-*26 files, 4,984 lines*
+*26 files, 5,055 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 1864 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
+| `index.js` | 1935 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
 | `era.js` | 365 | era comprehension for the search engine (Aug 21). |
 | `size.js` | 227 | the size the reader asked for (Aug 21). |
 | `negation.js` | 218 | the engine stops serving the thing you excluded. |
@@ -580,10 +580,11 @@ Nothing here may import from `app/`.
 | `drafts.js` | 20 | the Studio's DEVICE-LOCAL drafts (events, shops, promotion requests): one key, one reader, one writer, shared by the |
 
 ### `lib/tagging/`
-*2 files, 382 lines*
+*3 files, 738 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
+| `grammar.js` | 356 | THE TAG GRAMMAR: `LEFT: RIGHT` (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar"; slice 4 of the build order in |
 | `vocabulary.js` | 206 | ONE VOCABULARY FOR EVERY TAG ON A PIECE. |
 | `dense.js` | 176 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
 
@@ -745,11 +746,11 @@ request becomes trusted arguments.
 | `route.js` | 61 | the consent moment's server half (D4). GET reads the state (null = unanswered = unobserved, enforced at every |
 
 ### `app/api/discover/`
-*1 file, 197 lines*
+*1 file, 203 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 197 | GET /api/discover?q=&source=&tag=&category=&sort=new&offset=&limit=&user=&brain= The full site inventory — ranked through the user's Passport only when |
+| `route.js` | 203 | GET /api/discover?q=&source=&tag=&category=&sort=new&offset=&limit=&user=&brain= The full site inventory — ranked through the user's Passport only when |
 
 ### `app/api/discover/rails/`
 *1 file, 61 lines*
@@ -955,11 +956,11 @@ request becomes trusted arguments.
 | `route.js` | 103 | the reader's own records (v53, V.2). |
 
 ### `app/api/related/`
-*1 file, 61 lines*
+*1 file, 71 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 61 | GET /api/related?item=<id>&limit=<n> Pinterest-style "more like this": co-engagement graph neighbors first |
+| `route.js` | 71 | GET /api/related?item=<id>&limit=<n> Pinterest-style "more like this": co-engagement graph neighbors first |
 
 ### `app/api/reset/`
 *1 file, 30 lines*
@@ -1110,11 +1111,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 1,891 lines*
+*7 files, 1,895 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1180 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `page.js` | 1184 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
 | `shell.js` | 282 | The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Three fixtures and nothing else: the INFO DOCK at the top left (likes, bag, |
 | `opengraph-image.js` | 175 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
@@ -1169,7 +1170,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*66 files, 10,162 lines*
+*67 files, 10,268 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1186,22 +1187,22 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `Disc.jsx` | 257 | THE DISC (V.2 Blueprint, owner, 17 Oct 2026, chapter 2). One rotary component, reused for Post Selection, the session |
 | `AsteriskMemory.jsx` | 247 | Asterisk memory surface (contract ADR-001 v2). MemorySections = the shared section renderer /asterisk uses, so the read |
 | `PlacesPanel.jsx` | 243 | AROUND YOU / MY PLACES (V.2). The local and global fashion map with its list, filters and the three |
-| `ListingSheet.jsx` | 218 | THE LISTING POPUP (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "LISTING opens as a floating popup over |
+| `ListingSheet.jsx` | 216 | THE LISTING POPUP (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "LISTING opens as a floating popup over |
 | `Studio.jsx` | 208 | STUDIO, inside the Passport (V.2). One account; the business tools appear here, contextually, without a |
 | `BusinessAccount.jsx` | 205 | the passport → business panel (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown |
 | `ProductSignals.jsx` | 180 | the small honest signals on a piece: what colour it VERIFIABLY is, and how it would fit the reader. |
 | `StreetMap.jsx` | 173 | the places map as a STREET MAP in the Apple Maps idiom (V.2 round two, owner: "the map should more similarly copy |
 | `SessionCarousel.jsx` | 162 | THE SESSION HUB's face (V.2 Blueprint, owner, 17 Oct 2026, clauses 1.4–1.8, 1.21–1.25, 1.29–1.35). |
 | `AddStamp.jsx` | 154 | ADD STAMP (V.2 brief §11): the one housing at the bottom of the personal Passport for everything a passenger may |
+| `WireCard.jsx` | 153 | a post as a card in THE ONE FEED (V.2 Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing |
 | `TasteNetwork.jsx` | 151 | FULL READ as a navigable taste network (V.2). Replaces the rotating asterisk on /stats: the ten tags as nodes on a |
-| `WireCard.jsx` | 150 | a post as a card in THE ONE FEED (V.2 Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing |
+| `SearchSheet.jsx` | 148 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
 | `SheetHost.jsx` | 145 | THE POPUP (V.2 Blueprint, owner, 17 Oct 2026, chapter 1; the 1 Oct brief decision 2 where the blueprint is |
 | `ConsentMoment.jsx` | 138 | D4's first-visit consent moment (ruled 20 Aug 2026; spec docs/d4-consent-spec-2026-08-20.md). Shell- |
 | `DiscoverRails.jsx` | 137 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
 | `dismiss.js` | 136 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
 | `EntityOverview.jsx` | 135 | the ASILUM OVERVIEW for any entity in the graph (V.2 brief §9): a designer (PersonOverview's card, plus the |
 | `LikesSheet.jsx` | 133 | LIKES (V.2 brief, owner, 1 Oct 2026, §5). Top subtabs: Pieces \| Wire \| Sold. The one save (lib/save.js) is the |
-| `SearchSheet.jsx` | 132 | GLOBAL SEARCH's answer (V.2 brief, owner, 1 Oct 2026, §1 + §9–10). The dock's field holds the query; this |
 | `MediaFloat.jsx` | 128 | STILL and MOTION, enlarged (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "STILL and MOTION enlarge |
 | `PersonOverview.jsx` | 119 | the sourced overview panel (V.2). A knowledge-panel's speed in ASILUM's voice: image with its credit, role, |
 | `TicketFlow.jsx` | 117 | the third-party purchase-assistant flow. Buy/Request → ticket created → availability + price shown → REQUIRED |
@@ -1213,6 +1214,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `WardrobeFlow.jsx` | 97 | THE CLOSET (V.2 brief §8): isolated item cards in a closet-like Cover Flow stack — one selected card centred and |
 | `PassportPreview.jsx` | 96 | the bearer's passport, in preview (owner, 9 Sep evening: "in the about me there should be a preview of the |
 | `ParisMap.jsx` | 89 | the real-OSM Paris road hologram, shared (redesign/upload-station). PassportSecurity renders it inside the |
+| `TagChip.jsx` | 89 | a tag on screen (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar" and its Typesetting; slice 4). The law lives in |
 | `PassportSecurity.jsx` | 86 | UV security artwork for the PASSPORT document (redesign/passport-uv), color-matched to the OS tokens. |
 | `AsteriskWhy.jsx` | 79 | ASTERISK's "why this" panel (Day 11), moved out of the feed page with V.2 slice 3 so the LISTING popup |
 | `FashionMap.jsx` | 75 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
@@ -1447,4 +1449,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ e983d76 — 500 source files, 80,212 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 81c5b3d — 502 source files, 80,779 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
