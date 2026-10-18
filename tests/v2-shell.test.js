@@ -116,3 +116,24 @@ test("page gradients: a --bg-grad in both palettes, worn by the page, tinted per
     assert.deepEqual(read(f).match(/#[0-9a-fA-F]{3,8}\b/g) || [], [], f + " carries no literal colour");
   }
 });
+
+// THE DARK POPUP BACKDROP (owner, 18 Oct 2026: "on dark mode if there is a
+// popup the background should be darker, not a cloudy white"). The scrim was
+// --ink at 42% — near-white in the dark palette. It is --scrim now: a deep
+// translucent black in dark (on :root, under the device's dark and under the
+// pinned dark alike), the reference's slate wash in light (unchanged, so the
+// search popup of 6.jpg does not move). Shadows mix from --shade, black in dark.
+test("dark popup backdrop: the scrim deepens the page in dark on both dark paths; light keeps the slate wash; no shadow glows white", () => {
+  const block = (name) => { const i = css.indexOf(name); return css.slice(i, css.indexOf("\n}", i)); };
+  const darkScrim = /--scrim:\s*rgba\((\d+),\s*(\d+),\s*(\d+),\s*(0?\.\d+)\);/;
+  const m = block(":root {").match(darkScrim);
+  assert.ok(m, ":root (dark) defines --scrim as an rgba");
+  assert.ok(Math.max(+m[1], +m[2], +m[3]) <= 16, "the dark scrim is near-black, not a wash of the light ink");
+  assert.ok(+m[4] >= 0.6, "and deep enough to lower the page");
+  assert.match(block('[data-theme="light"] {'), /--scrim:\s*color-mix\(in srgb, #253749 42%, transparent\);/, "light keeps the 42% slate wash of the reference");
+  assert.match(rules, /@media \(prefers-color-scheme: dark\) \{ :root:not\(\[data-theme="light"\]\) \{ --shade: #000000; --scrim: rgba\(1, 3, 4, 0\.74\); \} \}/, "the device's dark");
+  assert.match(rules, /\n\[data-theme="dark"\] \{ --shade: #000000; --scrim: rgba\(1, 3, 4, 0\.74\); \}/, "the pinned dark");
+  assert.match(rules, /\.sheetscrim \{[^}]*background: var\(--scrim\);/s, "the popup's scrim is the token");
+  const shadows = rules.match(/box-shadow:[^;}]*/g) || [];
+  assert.deepEqual(shadows.filter((d) => /color-mix\(in srgb, var\(--ink\)/.test(d)), [], "no shadow is mixed from the light ink");
+});

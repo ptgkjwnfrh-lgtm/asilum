@@ -136,6 +136,14 @@
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 16%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 10%, transparent), transparent 64%),
     linear-gradient(180deg, #070b0c 0%, #0b1417 52%, #070b0c 100%);
+  /* SHADE AND SCRIM (owner, 18 Oct 2026: "on dark mode if there is a popup
+     the background should be darker, not a cloudy white"). The popup's scrim
+     and every shadow were mixed from --ink, which is near-white in the dark
+     palette, so a popup washed the page in a grey-white fog and the shadows
+     glowed. In dark they are BLACK: the page behind a popup goes deeper, the
+     fixtures' and the popup's shadows fall dark. */
+  --shade: #000000;
+  --scrim: rgba(1, 3, 4, 0.74);
 }
 [data-theme="light"] {
   --plus-k: 1;
@@ -243,6 +251,9 @@
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 12%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 7%, transparent), transparent 64%),
     linear-gradient(180deg, #f4f8fb 0%, #e8f0f6 52%, #f1f6fa 100%);
+  /* light keeps the reference's slate wash under a popup (6.jpg) */
+  --shade: #253749;
+  --scrim: color-mix(in srgb, #253749 42%, transparent);
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
   --holo: linear-gradient(118deg, #0c7a73 0%, #1d5fd6 25%, #4a52b5 50%, #ff8fb1 75%, #0c7a73 100%);
 }
@@ -3191,7 +3202,7 @@ body { font-size: 14px; }
   background: none; color: var(--grey); text-shadow: none; box-shadow: none; transition: background 0.18s, color 0.18s; text-decoration: none; }
 [data-theme] .seg > .tab:hover, [data-theme] .seg > .fmode:hover { color: var(--ink); }
 [data-theme] .seg > .tab.cur, [data-theme] .seg > .fmode.cur, [data-theme] .seg > .tab.cur:hover, [data-theme] .seg > .fmode.cur:hover {
-  background: var(--bg); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.18), 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent); }
+  background: var(--bg); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.18), 0 0 0 1px color-mix(in srgb, var(--shade) 10%, transparent); }
 [data-theme] .seg > .tab.cur::after, [data-theme] .seg > .fmode.cur::after { content: ""; display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--red); margin-left: 8px; vertical-align: middle; }
 .seg .plsep { display: none; }
 .seg .wintentmeans { flex-basis: 100%; padding: 4px 10px 2px; font-size: 11px; }
@@ -3296,7 +3307,7 @@ body { font-size: 14px; }
   border-radius: var(--sheet-radius); border: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg3) 88%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
 }
 .ccenter .tabbar { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 6px; position: static; height: auto; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .ccrow { display: flex; align-items: stretch; gap: var(--cc-gap); }
@@ -3326,14 +3337,14 @@ body { font-size: 14px; }
 .ccenter .mailbtn:hover, .ccenter .mailbtn.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); border: 0; }
 .ccenter .mailword { font-weight: 400; }
 .ccenter .mailpanel { position: absolute; top: auto; bottom: calc(100% + 10px); left: 0; right: 0; width: auto; max-height: 60vh; overflow-y: auto;
-  border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 50px color-mix(in srgb, var(--ink) 16%, transparent); }
+  border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent); }
 /* search mode: the field takes the row; the keys keep their targets, lose their words */
 .ccsearch { display: flex; align-items: center; gap: 8px; }
 .ccfield {
   flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 46px;
   padding: 4px 8px 4px 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--paper); color: var(--grey);
 }
-.ccfield:focus-within { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 12%, transparent); }
+.ccfield:focus-within { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--shade) 12%, transparent); }
 .ccfield input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); }
 /* the field's ring is drawn on the pill (.ccfield:focus-within above), so the
    input's own outline would double it */
@@ -3377,14 +3388,14 @@ body { font-size: 14px; }
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
   position: fixed; inset: 0; z-index: 64; display: flex; align-items: flex-end; justify-content: center;
-  background: color-mix(in srgb, var(--ink) 42%, transparent);
+  background: var(--scrim);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
 .sheet {
   width: var(--cc-w); height: 60vh; max-height: calc(100vh - 24px - var(--cc-space));
   margin-bottom: var(--cc-space); display: flex; flex-direction: column; min-height: 0;
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--sheet-radius);
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--ink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   animation: sheetin 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
@@ -3597,7 +3608,7 @@ body { font-size: 14px; }
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg3) 86%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--ink) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--shade) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
 }
 .infodock { left: max(12px, env(safe-area-inset-left, 0px)); }
 .passportbtn { right: max(12px, env(safe-area-inset-right, 0px)); width: 46px; height: 46px; justify-content: center; color: var(--grey); text-decoration: none; transition: color 0.18s, transform 0.12s; }
@@ -3635,7 +3646,7 @@ body { font-size: 14px; }
   display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
   border: 1px solid var(--line); color: var(--ink);
   background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 85%, transparent), color-mix(in srgb, var(--bg2) 85%, transparent));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent), 0 6px 18px color-mix(in srgb, var(--ink) 12%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent), 0 6px 18px color-mix(in srgb, var(--shade) 12%, transparent);
   transition: transform 0.12s, color 0.18s, border-color 0.18s;
 }
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
@@ -3684,7 +3695,7 @@ body { font-size: 14px; }
 .ccmenu, .hubmenu {
   position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 70; min-width: 180px;
   display: grid; gap: 2px; padding: 6px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg);
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--ink) 22%, transparent);
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--shade) 22%, transparent);
   animation: sheetin 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .ccmenu button, .hubmenu button { display: block; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 10px/1.2 var(--mich); letter-spacing: 0.14em; }
@@ -3700,7 +3711,7 @@ body { font-size: 14px; }
 .discface {
   position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--line);
   background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--paper) 92%, transparent), color-mix(in srgb, var(--bg2) 92%, transparent) 72%, color-mix(in srgb, var(--bg3) 92%, transparent));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent), inset 0 -10px 24px color-mix(in srgb, var(--ink) 8%, transparent), 0 16px 40px color-mix(in srgb, var(--ink) 16%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent), inset 0 -10px 24px color-mix(in srgb, var(--shade) 8%, transparent), 0 16px 40px color-mix(in srgb, var(--shade) 16%, transparent);
 }
 .discface::before { content: ""; position: absolute; inset: 14%; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent); pointer-events: none; }
 .discring { position: absolute; inset: 0; will-change: transform; }
@@ -3713,7 +3724,7 @@ body { font-size: 14px; }
   position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 50%; border: 1px solid var(--line); cursor: pointer;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--ink);
   background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 96%, transparent), color-mix(in srgb, var(--bg2) 96%, transparent));
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent);
   touch-action: none; transition: transform 0.12s;
 }
 .disccenter:active { transform: scale(0.94); }
@@ -3738,7 +3749,7 @@ body { font-size: 14px; }
 /* THE SESSION HUB (chapter 1) */
 .hub { position: relative; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
 .hubnote, .hubundo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 14px; font-size: 12px; color: var(--ink); }
-.hubundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--bg); border-color: var(--red); box-shadow: 0 12px 30px color-mix(in srgb, var(--ink) 18%, transparent); }
+.hubundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--bg); border-color: var(--red); box-shadow: 0 12px 30px color-mix(in srgb, var(--shade) 18%, transparent); }
 .hubnote .txtbtn, .hubundo .txtbtn { font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); }
 .hubempty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 0; color: var(--grey); }
 .hubstage { position: relative; height: 176px; flex: none; }
@@ -3746,7 +3757,7 @@ body { font-size: 14px; }
 .sesspanel {
   position: absolute; left: 50%; top: 50%; width: 164px; height: 150px; margin: -75px 0 0 -82px; padding: 12px; border-radius: 18px; border: 1px solid var(--line);
   background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  box-shadow: 0 14px 36px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   display: flex; flex-direction: column; gap: 6px; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none;
   transform: translateX(calc(var(--k) * 96px)) translateZ(calc(var(--ak) * -120px)) rotateY(calc(var(--k) * -18deg));
   opacity: calc(1 - var(--ak) * 0.22); z-index: calc(10 - var(--ak));
@@ -4403,3 +4414,8 @@ body { font-size: 14px; }
 [data-page="passport"] { --page-tint: var(--red); }
 [data-page="account"] { --page-tint: var(--p2); }
 [data-page="map"] { --page-tint: color-mix(in srgb, var(--sig) 55%, var(--red)); }
+/* ---- the dark popup backdrop: both dark paths say it explicitly — the
+   device's dark (unpinned) and the pinned dark — so a popup in dark always
+   deepens the page behind it, never a white fog (slice 14) ---- */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --shade: #000000; --scrim: rgba(1, 3, 4, 0.74); } }
+[data-theme="dark"] { --shade: #000000; --scrim: rgba(1, 3, 4, 0.74); }
