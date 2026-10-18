@@ -49,6 +49,15 @@ export default function Shell({ children }) {
     window.addEventListener("asilum:identity", hydrateMediaPreferences);
   }, []);
 
+  // PAGE GRADIENTS (owner, 18 Oct 2026): the page names itself on <html> so
+  // its gradient takes the destination's own light (--page-tint in
+  // globals.css). The Feed is the default; nothing else reads the attribute.
+  useEffect(() => {
+    const p = String(pathname || "/");
+    const page = p === "/" ? "feed" : p.startsWith("/passport") || p.startsWith("/board") ? "passport" : p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/analytics") ? "account" : p.startsWith("/map") ? "map" : "other";
+    document.documentElement.dataset.page = page;
+  }, [pathname]);
+
   // Theme follows the device unless the owner picked one in SETTINGS
   // (blueprint 2.24). The pre-paint script (app/layout.js) resolves the
   // first frame; this listener keeps an un-pinned session in step with a

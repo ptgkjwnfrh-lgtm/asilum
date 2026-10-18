@@ -126,6 +126,16 @@
   --radius-key: 14px;
   /* the ink over a photograph (the post card's handle, caption and actions) */
   --on-media: #ffffff;
+  /* PAGE GRADIENTS (owner, 18 Oct 2026: "I want page gradients too"). --bg
+     stays the base colour; --bg-grad is the page itself: a soft light from
+     the top corner in the page's own tint (--page-tint, set per destination
+     at the end of this file), a faint counter-light low on the other side,
+     over a gentle vertical fall of the ground. Cards sit on it. */
+  --page-tint: var(--sig);
+  --bg-grad:
+    radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 16%, transparent), transparent 62%),
+    radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 10%, transparent), transparent 64%),
+    linear-gradient(180deg, #070b0c 0%, #0b1417 52%, #070b0c 100%);
 }
 [data-theme="light"] {
   --plus-k: 1;
@@ -227,15 +237,25 @@
   --lamp: rgba(0, 190, 235, 0.3);
   --lamp-hot: rgba(0, 190, 235, 0.32);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
+  /* the light page: the icy ground of the 18 Oct reference falling a shade
+     cooler towards the middle, the tinted light from the top corner */
+  --bg-grad:
+    radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 12%, transparent), transparent 62%),
+    radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 7%, transparent), transparent 64%),
+    linear-gradient(180deg, #f4f8fb 0%, #e8f0f6 52%, #f1f6fa 100%);
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
   --holo: linear-gradient(118deg, #0c7a73 0%, #1d5fd6 25%, #4a52b5 50%, #ff8fb1 75%, #0c7a73 100%);
 }
 
 * { box-sizing: border-box; }
+/* the page gradient: on <html> so it spans the page, fixed where the engine
+   allows it (WebKit on iOS falls back to scroll and the gradient stretches
+   over the page's height, which this one survives); body is clear above it */
+html { background-color: var(--bg); background-image: var(--bg-grad); background-attachment: fixed; background-repeat: no-repeat; min-height: 100%; }
+body { background: transparent; }
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--ink);
   font-family: var(--helv);
   font-size: 15px;
@@ -4378,3 +4398,8 @@ body { font-size: 14px; }
 .lstprice { display: block; margin: 4px 0 8px; font: 400 clamp(24px, 6.6vw, 32px)/1.1 var(--mich); letter-spacing: 0; }
 /* a narrow column: a long tag wraps inside its chip instead of spilling past the card */
 .card.piece .tag .tl, .card.piece .tag .tr { white-space: normal; overflow-wrap: anywhere; }
+
+/* ---- page gradients: each destination's own light (slice 14) ---- */
+[data-page="passport"] { --page-tint: var(--red); }
+[data-page="account"] { --page-tint: var(--p2); }
+[data-page="map"] { --page-tint: color-mix(in srgb, var(--sig) 55%, var(--red)); }

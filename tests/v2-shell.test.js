@@ -95,3 +95,24 @@ test("the Wire does not exist: no visible WIRE / Wire / the wire / wire post any
   assert.deepEqual(hits, [], "the Wire is the Feed now");
   assert.ok(files.length > 100, "the sweep read the app (" + files.length + " files)");
 });
+
+// PAGE GRADIENTS (owner, 18 Oct 2026: "I want page gradients too"): --bg
+// stays the base; --bg-grad is defined in both palettes and is what the page
+// wears; each destination tints its own light through --page-tint, which the
+// shell names on <html>. Cards keep their own ground on top of it.
+test("page gradients: a --bg-grad in both palettes, worn by the page, tinted per destination", () => {
+  const block = (name) => { const i = css.indexOf(name); return css.slice(i, css.indexOf("\n}", i)); };
+  for (const b of [":root {", '[data-theme="light"] {']) {
+    assert.match(block(b), /--bg-grad:\s*radial-gradient\([^;]*var\(--page-tint\)[^;]*linear-gradient\(/s, b + " defines the page gradient from the page's tint");
+    assert.match(block(b), /--bg:\s*#[0-9a-f]{6};/, b + " keeps --bg as the base");
+  }
+  assert.match(rules, /\nhtml \{ background-color: var\(--bg\); background-image: var\(--bg-grad\);/, "the page wears it");
+  assert.match(rules, /\nbody \{ background: transparent; \}/, "body is clear above it");
+  // the shared html, body block must not reset the page's background with a shorthand (it did, in the first cut)
+  assert.ok(!/html, body \{[^}]*background\s*:/s.test(rules), "nothing after the page rule resets <html>'s background");
+  assert.match(rules, /\[data-page="passport"\] \{ --page-tint: var\(--red\); \}/);
+  assert.match(read("app/shell.js"), /document\.documentElement\.dataset\.page = page;/, "the shell names the page");
+  for (const f of ["app/components/WireCard.jsx", "app/components/PlaceCard.jsx", "app/components/MapSheet.jsx", "app/components/ListingSheet.jsx"]) {
+    assert.deepEqual(read(f).match(/#[0-9a-fA-F]{3,8}\b/g) || [], [], f + " carries no literal colour");
+  }
+});
