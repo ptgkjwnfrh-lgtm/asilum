@@ -332,6 +332,18 @@ for the Passport's identity anchors; the onboarding questions of 14.11 use
 them. The no-faking law, branch + PR, build-must-pass and the report format
 are untouched by this.
 
+**A6 addendum — THE LOOK (Oct 18, 2026).** The owner's search-popup
+reference picture of 18 October is the primary reference for how the app,
+and the search popup in particular, looks: Michroma for headings and names;
+the description face — Share Tech Mono, restored from the 1 October build —
+for decks, tabs, meta and the search field; Inter for reading paragraphs
+and results; an icy white-blue ground with slate ink, blue links and a true
+red accent (the asterisk, the active tab, the |A| when on) in light; the
+blueprint's dark palette stays. No lines of any kind: no scanlines, no
+hairline fields, no grid. Where the 17 October blueprint's "Inter secondary"
+differs, this addendum wins (the latest explicit correction beats the
+earlier text).
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

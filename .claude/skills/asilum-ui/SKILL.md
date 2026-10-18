@@ -37,12 +37,15 @@ slice-*.md` says what landed. Non-negotiables when touching UI:
    that swaps in a slim slider. Never a second rotary.
 4. Haptics go through `lib/haptics.js` (`haptic("tick"|"press"|"confirm"|
    "error"|"toggle")`), behind the one On/Off key; never a dependency.
-5. Red (`--red`, the green-teal accent in V.2's palette) is the only
-   accent: activity, alert, selection, ASTERISK. `--sig` paints links.
+5. Red (`--red`: a true red in light per the owner's 18 Oct reference, the
+   phosphor green in dark) is the only accent: activity, alert, selection,
+   ASTERISK. `--sig` paints links.
    Colors ONLY through tokens; a literal hex in a component is a defect.
    Theme follows the device unless pinned; no CRT, no grid, no scanline.
-6. Michroma for labels and headings (`--mich`), Inter for reading
-   (`--helv`). Compact buttons depress 4% on press.
+6. Michroma for labels and headings (`--mich`), Share Tech Mono (`--mono`)
+   for decks, tabs, meta and the search field — the description face of the
+   owner's 18 Oct reference — Inter for reading (`--helv`). Compact buttons
+   depress 4% on press. No lines: no scanlines, hairline fields or grids.
 7. Suffix grammar: → in-app, ↗ external/publish, ✓ confirm. Coming-soon
    controls use class `soon` and say what they wait for — never a dead or
    fake-success button, never a request that pretends.

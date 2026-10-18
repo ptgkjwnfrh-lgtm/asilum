@@ -14,6 +14,8 @@
 
 @font-face { font-family: "Michroma"; src: url("/fonts/michroma.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Inter"; src: url("/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+/* the description face (owner reference, 18 Oct 2026: the search popup's deck, tabs and meta): Share Tech Mono, OFL, restored from the 1 Oct build */
+@font-face { font-family: "Share Tech Mono"; src: url("/fonts/sharetech.ttf") format("truetype"); font-display: swap; }
 
 :root {
   /* legacy magazine tokens, remapped onto the OS — every old rule still works */
@@ -39,6 +41,7 @@
   --bg2: rgba(14, 21, 24, 0.85);
   --bg3: rgba(13, 20, 23, 0.92);
   --mich: "Michroma", var(--helv);
+  --mono: "Share Tech Mono", ui-monospace, Menlo, Consolas, monospace;
   --sig: #6e9cff;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
@@ -147,9 +150,9 @@
      text law is 4.5; the first bright teal, #0a8494, read 4.02 and failed
      it) — is the reading colour, the filled control colour, and the colour
      that glows. */
-  --ink: #0b1416;
+  --ink: #253749;
   --paper: #ffffff;
-  --grey: #5e6e76;
+  --grey: #5c6d7c;
   --faint: #cfdce3;
   --line: rgba(16, 60, 80, 0.14);
   /* THE ALERT/IDENTITY ACCENT, DARKENED TO PASS (owner ruling, Aug 16).
@@ -162,8 +165,8 @@
      deepens. Same red, read as the same colour; if the owner wants the exact
      old hue back it has to come with a lighter BACKGROUND, not a lighter red.
      Dark theme's #ff3838 already measures 5.52:1 and is untouched. */
-  --red: #0c7a73;
-  --bg: #ffffff;
+  --red: #c9372a;
+  --bg: #f4f8fb;
   --bg2: rgba(245, 249, 251, 0.85);
   --bg3: rgba(255, 255, 255, 0.92);
   /* THE INTERACTION VOICE, DARKENED TO PASS (owner ruling, Aug 16, answering
@@ -4188,3 +4191,48 @@ body { font-size: 14px; }
 .onbanchors b { font: 400 13px/1.3 var(--mich); }
 .onbacts { display: flex; gap: 12px; }
 .idkey.idexplore .amark { font-size: 15px; }
+
+/* ---- THE SEARCH POPUP, to the owner's reference (18 Oct 2026) ---- */
+.srchref { display: grid; gap: 14px; padding-top: 4px; }
+.sheet h2.srchhead, .srchhead { margin: 0; font: 400 clamp(20px, 5.2vw, 28px)/1.2 var(--mich); letter-spacing: 0.005em; color: var(--ink); text-transform: none; }
+.srchdeck { margin: -4px 0 6px; font: 14px/1.5 var(--mono); color: var(--grey); letter-spacing: 0.01em; }
+.srchfield { display: flex; align-items: center; gap: 14px; padding: 8px 2px 12px; border-bottom: 1px solid color-mix(in srgb, var(--sig) 40%, var(--line)); color: var(--ink); }
+.srchfield input { flex: 1; min-width: 0; border: 0; background: none; font: 18px/1.3 var(--mono); color: var(--ink); }
+.srchfield:focus-within { border-bottom-color: var(--sig); }
+.srchfield input:focus-visible { outline: 2px solid transparent; outline-offset: 0; }
+.srchfield input::placeholder { color: var(--grey); }
+.srchfield input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.srchtabs { display: flex; flex-wrap: wrap; gap: 22px; padding: 2px 0 4px; }
+.srchtab { border: 0; background: none; padding: 4px 0; font: 15px/1.3 var(--mono); color: var(--grey); cursor: pointer; letter-spacing: 0.02em; }
+.srchtab.cur { color: var(--red); }
+.srchtab:hover { color: var(--ink); }
+.srchfine { margin: 0; font: 13px/1.5 var(--mono); color: var(--grey); }
+.srchlbl { font: 11px/1.4 var(--mono); letter-spacing: 0.16em; color: var(--grey); margin: 0 0 6px; }
+.srchqs { list-style: none; margin: 0; padding: 0; display: grid; }
+.srchq { border-top: 1px solid var(--line); }
+.srchq:first-child { border-top: 0; }
+.srchqbtn { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 14px 6px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; text-decoration: none; font: 17px/1.3 var(--helv); }
+.srchqbtn:hover .srchqtext { color: var(--sig); }
+.srchqtext { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.srchqmeta { font: 11px/1.3 var(--mono); letter-spacing: 0.1em; color: var(--grey); }
+.srchqgo { font: 18px/1 var(--helv); color: var(--sig); }
+.srchall { justify-self: start; font: 11px/1.4 var(--mich); letter-spacing: 0.16em; color: var(--sig); text-decoration: none; padding-top: 6px; }
+/* the overview card inside search: the reference's soft icy card, the lettering behind the portrait's shoulder */
+.srchref .ovp { border-radius: 20px; padding: 18px 18px 14px 14px; background: color-mix(in srgb, var(--sig) 7%, var(--paper)); border-color: color-mix(in srgb, var(--sig) 18%, var(--line)); }
+.srchref .ovpname { font-size: clamp(26px, 6vw, 34px); }
+.srchref .ovpsrc { font: 11px/1.4 var(--mono); letter-spacing: 0.14em; }
+.srchref .ovpsrc a { color: var(--ink); }
+.srchref .ovptext { font-size: 17px; line-height: 1.5; }
+.srchref .ovpmore { font-size: 16px; color: var(--ink); }
+.srchref .ovpletter { font-size: 26px; }
+/* the popup surface in the light theme is the reference's icy glass */
+[data-theme="light"] .sheet { background: linear-gradient(180deg, #eef6fb, #e5eef5); border-color: color-mix(in srgb, var(--sig) 16%, transparent); }
+[data-theme="light"] .sheethead { border-bottom-color: color-mix(in srgb, var(--sig) 12%, transparent); }
+@media (max-width: 560px) { .srchref .ovp { grid-template-columns: 1fr; } .srchtabs { gap: 14px; } .srchtab { font-size: 14px; } }
+
+.srchamark { flex: none; border: 0; background: none; padding: 4px; color: var(--grey); cursor: pointer; font-size: 18px; line-height: 1; }
+.srchamark.on { color: var(--red); }
+.ovp-noimage { grid-template-columns: 1fr; }
+.ovpkick { font: 400 12px/1.3 var(--mich); letter-spacing: 0.14em; color: var(--ink); }
+.ovpkick i { font-style: normal; color: var(--red); }
+.srchref .ovpsrc a { white-space: nowrap; }

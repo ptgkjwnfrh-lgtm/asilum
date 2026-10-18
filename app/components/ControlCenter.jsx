@@ -103,6 +103,9 @@ export default function ControlCenter({ kind, pathname }) {
   const feed = routes[0];
   const account = routes[routes.length - 1];
   const inSearch = dock.mode === "search";
+  // the search popup (owner reference, 18 Oct 2026) holds its own field and the |A|; while it is up the deck keeps only its keys
+  const searchPopupUp = !!(dock.sheet && dock.sheet.id === "search");
+  const deckField = inSearch && !searchPopupUp;
   const scope = scopeFor({ pathname, sheet: dock.sheet && dock.sheet.id, likesTab: dock.likesTab });
   const fieldRef = useRef(null);
 
@@ -126,8 +129,8 @@ export default function ControlCenter({ kind, pathname }) {
   function press(id) {
     if (id === "search") {
       setMode("search");
-      if (dock.sheet && dock.sheet.id !== "search") closeSheet();
-      setTimeout(() => fieldRef.current && fieldRef.current.focus(), 30);
+      // the search popup holds its own field (owner reference, 18 Oct 2026): the key opens it at once
+      if (!dock.sheet || dock.sheet.id !== "search") openSheet("search");
       return;
     }
     if (id === "post") {
@@ -232,7 +235,7 @@ export default function ControlCenter({ kind, pathname }) {
   return (
     <div className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
       <nav className="tabbar" aria-label="control deck">
-        {inSearch && (
+        {deckField && (
           <form className="ccsearch" role="search" onSubmit={submit}>
             <label className="ccfield">
               <Icon name="search" size={18} />
@@ -257,7 +260,7 @@ export default function ControlCenter({ kind, pathname }) {
             {DECK.map((k) => key(k))}
           </div>
         </div>
-        {inSearch && scope.id === "global" && (
+        {deckField && scope.id === "global" && (
           <div className="cctoggles" role="group" aria-label="search controls">
             {SEARCH_TOGGLES.map((t) => (
               <button key={t.id} className={"cctog" + (dock.toggles[t.id] ? " on" : "")} aria-pressed={!!dock.toggles[t.id]} onClick={() => flipToggle(t.id)}>

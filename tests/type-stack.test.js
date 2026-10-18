@@ -27,20 +27,19 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const read = (p) => readFileSync(ROOT + p, "utf8");
 
-test("the type stack is exactly two faces", () => {
+test("the type stack is three faces: Michroma, Inter, and the description face Share Tech Mono (owner reference, 18 Oct 2026)", () => {
   const css = read("app/globals.css");
   const faces = [...css.matchAll(/@font-face \{ font-family: "([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(faces.sort(), ["Inter", "Michroma"],
+  assert.deepEqual(faces.sort(), ["Inter", "Michroma", "Share Tech Mono"],
     "a third @font-face means a face was added without a decision");
 
   // Michroma is the display voice, Inter is everything else.
   assert.match(css, /--mich:\s*"Michroma", var\(--helv\)/);
   assert.match(css, /--helv:\s*"Inter"/);
   assert.match(css, /--serif:\s*"Inter"/);
-  assert.ok(!/"STM"/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "Share Tech Mono is retired");
-  for (const f of ["sharetech.woff2", "sharetech.ttf", "OFL-sharetechmono.txt"]) {
-    assert.ok(!existsSync(ROOT + "public/fonts/" + f), `public/fonts/${f} must be deleted`);
-  }
+  assert.match(css, /--mono:\s*"Share Tech Mono"/, "the description face has its token");
+  assert.ok(!/"STM"/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "the old STM alias stays retired — the face is named in full");
+  assert.ok(existsSync(ROOT + "public/fonts/sharetech.ttf") && existsSync(ROOT + "public/fonts/OFL-sharetechmono.txt"), "Share Tech Mono ships with its licence");
   assert.ok(existsSync(ROOT + "public/fonts/inter.woff2") && existsSync(ROOT + "public/fonts/OFL-inter.txt"), "Inter ships with its licence");
 });
 
@@ -96,11 +95,12 @@ test("nothing in app/ or lib/ still asks for it", () => {
   assert.deepEqual(offenders, [], "these still reference the retired face");
 });
 
-test("the font files that ship are only the two faces, in both formats", () => {
+test("the font files that ship are the three faces and their licences", () => {
   const shipped = readdirSync(ROOT + "public/fonts").sort();
   assert.deepEqual(shipped, [
-    "OFL-inter.txt", "OFL-michroma.txt",
+    "OFL-inter.txt", "OFL-michroma.txt", "OFL-sharetechmono.txt",
     "inter.ttf", "inter.woff2",
     "michroma.ttf", "michroma.woff2",
-  ].sort(), "public/fonts must hold exactly the two faces and their licences");
+    "sharetech.ttf",
+  ].sort(), "public/fonts must hold exactly the three faces and their licences");
 });

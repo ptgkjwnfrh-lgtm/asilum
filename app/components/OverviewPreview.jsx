@@ -37,12 +37,15 @@ export default function OverviewPreview({ person, onOpen }) {
   const image = person.image ? { src: person.image, alt: (person.imageCredit && person.imageCredit.alt) || person.name } : null;
   if (!person.summary && o && o.intro) person = { ...person, summary: o.intro.text };
   return (
-    <article className="ovp" aria-label={"ASILUM overview: " + person.name}>
-      <div className="ovpport">
-        <span className="ovpletter" aria-hidden="true"><i>*</i>ASILUM<br />OVERVIEW</span>
-        {image ? <img className="ovpimg" src={image.src} alt={image.alt} loading="lazy" /> : <span className="ovpimg blank" aria-hidden="true" />}
-      </div>
+    <article className={"ovp" + (image ? "" : " ovp-noimage")} aria-label={"ASILUM overview: " + person.name}>
+      {image ? (
+        <div className="ovpport">
+          <span className="ovpletter" aria-hidden="true"><i>*</i>ASILUM<br />OVERVIEW</span>
+          <img className="ovpimg" src={image.src} alt={image.alt} loading="lazy" />
+        </div>
+      ) : null}
       <div className="ovpbody">
+        {!image ? <span className="ovpkick" aria-hidden="true"><i>*</i>ASILUM OVERVIEW</span> : null}
         <h3 className="ovpname">{person.name}</h3>
         <p className="ovpsrc">
           SUMMARY FROM {src ? <a href={src.url} target="_blank" rel="noreferrer">{src.publisher.toUpperCase()} ↗</a> : <span>ASILUM</span>}

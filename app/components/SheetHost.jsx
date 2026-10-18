@@ -42,7 +42,7 @@ import Onboarding from "./Onboarding.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
-  search: { title: "SEARCH", render: (p) => <SearchSheet {...p} /> },
+  search: { title: "SEARCH", render: (p) => <SearchSheet {...p} />, roomy: true },
   messages: { title: "MESSAGES", render: (p) => <MessagesSheet {...p} /> },
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
   bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },

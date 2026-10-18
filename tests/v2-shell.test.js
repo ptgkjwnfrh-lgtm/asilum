@@ -54,14 +54,15 @@ test("no CRT: scanlines, the grid, the glow and the wash are gone from the token
   assert.ok(!/text-shadow:\s*var\(--glow-ink\)/.test(rules.split("html, body {")[1].split("}")[0]), "body text carries no glow");
 });
 
-test("the palette is the blueprint's: white ground with blue links and a teal accent in light; black ground, slate, phosphorus green in dark", () => {
+test("the palette: the owner's reference in light (18 Oct 2026) — an icy ground, slate ink, blue links, a true red accent; the blueprint's black ground, slate, phosphorus green in dark", () => {
   const block = (name) => { const i = css.indexOf(name); return css.slice(i, css.indexOf("\n}", i)); };
   const light = block('[data-theme="light"] {');
   const dark = block(":root {");
-  assert.match(light, /--bg:\s*#ffffff;/);
+  assert.match(light, /--bg:\s*#f4f8fb;/, "the icy ground of the reference");
   assert.match(light, /--paper:\s*#ffffff;/);
   assert.match(light, /--sig:\s*#1d5fd6;/, "links and chosen things are blue");
-  assert.match(light, /--red:\s*#0c7a73;/, "the accent is teal");
+  assert.match(light, /--red:\s*#c9372a;/, "the accent is the reference's red (the asterisk, the active tab)");
+  assert.match(light, /--ink:\s*#253749;/, "slate ink, as the reference reads");
   assert.match(dark, /--bg:\s*#070b0c;/);
   assert.match(dark, /--red:\s*#8cf0a6;/, "the dark accent is a subtle phosphorus green");
   assert.match(dark, /--sig:\s*#6e9cff;/);
