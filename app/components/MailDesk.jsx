@@ -41,7 +41,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEscape, useClickAway, useFocusTrap } from "./dismiss.js";
-import { authorizedFetch, getUid } from "../../lib/client.js";
+import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 // The desk's decisions live in a module because there is no DOM harness in
 // this repo: a rule inside this file is a rule no test can reach. See
 // lib/dm-desk.js — all three answer the same complaint from the 23 Aug
@@ -543,6 +543,28 @@ export default function MailDesk() {
     }
   }
 
+  // V.2 chapter 13 (slice 11): the offer panel — the counterpart's offerable pieces and one amount.
+  const [offering, setOffering] = useState(false);
+  const [offerPieces, setOfferPieces] = useState(null);
+  const [offerAmount, setOfferAmount] = useState({});
+  async function openOffer(handle) {
+    if (offering) { setOffering(false); return; }
+    setOffering(true); setOfferPieces(null);
+    try {
+      const r = await authorizedFetch(`/api/wardrobe?handle=${encodeURIComponent(handle)}&offerable=1&user=${encodeURIComponent(getUid() || "")}`, { cache: "no-store" });
+      const d = r.ok ? await r.json() : null;
+      setOfferPieces(d && Array.isArray(d.items) ? d.items : []);
+    } catch { setOfferPieces([]); }
+  }
+  async function makeOffer(item) {
+    const amountCents = Math.round(Number(offerAmount[item.id] || 0) * 100);
+    if (!(amountCents > 0) || !threadId) { setNote("an offer needs an amount"); return; }
+    const res = await postJSON("/api/wardrobe/offers", { user: getUid(), action: "offer", itemId: item.id, amountCents, conversationId: threadId });
+    const d = await res.json().catch(() => null);
+    if (res.ok) { setNote(`offered USD ${(amountCents / 100).toFixed(2)} for ${item.title} — the owner has 72 hours; you will be told`); setOffering(false); }
+    else setNote((d && d.error) || "the offer did not go through");
+  }
+
   async function send() {
     const text = draft.trim();
     if (!text || sending || !threadId) return;
@@ -656,6 +678,11 @@ export default function MailDesk() {
                   : <em>an account with no public room</em>}
               </span>
             ) : null}
+            {/* V.2 13.4 (slice 11): a Wardrobe offer starts from the conversation it belongs to.
+                The control lists the pieces this passenger takes offers on; none → it says so. */}
+            {thread && thread.with ? (
+              <button className={"mailmute" + (offering ? " cur" : "")} aria-pressed={offering} onClick={() => openOffer(thread.with)}>OFFER</button>
+            ) : null}
             {thread ? (
               <button
                 className={"mailmute" + (thread.muted ? " cur" : "")}
@@ -700,6 +727,17 @@ export default function MailDesk() {
             ) : null}
           </div>
 
+          {offering ? (
+            <div className="mailoffer" role="group" aria-label="make a Wardrobe offer">
+              {offerPieces === null ? <em>looking at their Wardrobe…</em> : offerPieces.length === 0 ? <em>{thread?.with} is not taking offers on any piece right now</em> : offerPieces.map((it) => (
+                <div className="mailofferrow" key={it.id}>
+                  <span><b>{it.title}</b>{it.category ? ` · ${it.category}` : ""}</span>
+                  <input className="mailofferamt" inputMode="decimal" placeholder="USD" aria-label={`Offer for ${it.title}`} value={offerAmount[it.id] || ""} onChange={(e) => setOfferAmount((p) => ({ ...p, [it.id]: e.target.value }))} />
+                  <button className="mailmute" onClick={() => makeOffer(it)}>OFFER →</button>
+                </div>
+              ))}
+            </div>
+          ) : null}
           {note ? <p className="mailnote" role="status" aria-live="polite">{note}</p> : null}
           {thread === null ? <p className="mailnote">opening…</p> : (
             <>

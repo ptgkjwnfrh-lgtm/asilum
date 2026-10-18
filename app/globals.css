@@ -1107,6 +1107,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .wttl em { font-style: normal; color: var(--grey); font-weight: 400; font-size: 11px; }
 .wmeta { font-size: 11px; color: #666; }
 .wact { border: none; background: none; font: inherit; font-size: 10px; font-weight: 900; letter-spacing: 0.12em; color: var(--grey); cursor: pointer; }
+.wact.on { color: var(--red); }
 .wact:hover { color: var(--red); }
 .wtoggle { justify-self: start; border: 1px solid var(--line); padding: 5px 10px; }
 .wbtn { margin-top: 6px; font-size: 10px; }
@@ -2055,6 +2056,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .chkline { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding: 6px 0; font-size: 12px; letter-spacing: .06em; }
 .chkline span { color: var(--grey); }
 .chktotal { border-top: 2px solid var(--ink); font-size: 13px; }
+.chkcredit { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--grey); }
+.chkcredit input { accent-color: var(--red); margin: 0; }
 .chkpay { border: 1px solid var(--line); padding: 16px; background: var(--paper); }
 .chkhead { font-size: 11px; letter-spacing: .14em; font-weight: 700; margin-bottom: 8px; }
 .chkform { display: grid; gap: 8px; margin: 10px 0; }
@@ -2304,6 +2307,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* who the thread is with, beside the back button */
 .mailwith { font-size: 11px; letter-spacing: .06em; margin-left: 8px; }
 .mailwith b { color: var(--sig); font-weight: 700; }
+/* V.2 13.4: the offer panel under the thread header */
+.mailoffer { padding: 8px 12px; border-bottom: 1px solid var(--line); font-family: var(--helv); font-size: 12px; }
+.mailoffer em { color: var(--grey); font-style: italic; }
+.mailofferrow { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.mailofferrow span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mailofferamt { width: 72px; background: none; border: 1px solid var(--line); color: var(--ink); font-family: var(--mono); font-size: 12px; padding: 3px 6px; }
 .mailnohandle { color: var(--grey); font-style: italic; font-size: 10px; }
 .mailwith em { color: var(--grey); font-style: italic; font-size: 10px; }
 .mailtabs { display: flex; gap: 6px; margin-top: 6px; }

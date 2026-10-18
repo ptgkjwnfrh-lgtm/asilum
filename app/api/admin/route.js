@@ -51,6 +51,9 @@
 //     a policy reason parks it under review
 //   brdcst.review { id, refund: true|false, note } — decide a policy review
 //   brdcst.sweep — send the three-hourly failed-payment reminders now
+//   payouts.list { state? } · payouts.release { order } · payouts.deduct { order, returnId, amountCents } — 10.12–10.13, 6.7 (slice 11)
+//   topups.list { state? } · topups.settle { id } — the platform's Credit top-ups (5.32)
+//   wardrobe.offers { limit? } — every Wardrobe private-sale negotiation (chapter 13)
 //   verification.appeals { state? } · verification.appeal.decide { id, upheld, decision } — 12.9, a human decides
 //   identity.read { accountId } — the home town and whether an ethnicity is on record (never the value)
 //   steward.report — the board, the repairs the hands would make, the ledger
@@ -653,6 +656,33 @@ export async function POST(req) {
         const I = await import("../../../lib/db/production/identity.js");
         const row = await I.getIdentity(String(body.accountId || ""));
         return NextResponse.json({ identity: row ? { hometown: row.hometown, ethnicityOnRecord: !!row.ethnicity, updatedAt: row.updatedAt } : null, devices: (await I.listDevices(String(body.accountId || ""))).length });
+      }
+      case "payouts.list": {
+        const M = await import("../../../lib/db/production/money.js");
+        return NextResponse.json({ payouts: await M.listPayouts({ state: body.state || null, limit: body.limit || 200 }) });
+      }
+      case "payouts.release": {
+        const M = await import("../../../lib/db/production/money.js");
+        try { return NextResponse.json(await M.releasePayout({ orderId: String(body.order || ""), by: adminActor() })); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "payouts.deduct": {
+        const M = await import("../../../lib/db/production/money.js");
+        try { return NextResponse.json({ payout: await M.deductFromPayout({ orderId: String(body.order || ""), returnId: String(body.returnId || ""), amountCents: Number(body.amountCents) }) }); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "topups.list": {
+        const M = await import("../../../lib/db/production/money.js");
+        return NextResponse.json({ topups: await M.listTopUps({ state: body.state || null, limit: body.limit || 200 }) });
+      }
+      case "topups.settle": {
+        const M = await import("../../../lib/db/production/money.js");
+        try { return NextResponse.json(await M.settleTopUp({ id: body.id })); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "wardrobe.offers": {
+        const M = await import("../../../lib/db/production/money.js");
+        return NextResponse.json({ offers: await M.listWardrobeOffers({ limit: body.limit || 200 }) });
       }
       case "brdcst.sweep": {
         const B = await import("../../../lib/db/production/brdcst.js");
