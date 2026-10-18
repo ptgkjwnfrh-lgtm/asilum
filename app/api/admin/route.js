@@ -27,6 +27,19 @@
 //     is the account's verify token served by its claimed domains?
 //   business.link-source { accountId, sourceName } — verified business ↔
 //     inventory namespace, unique, one time each.
+//   asterisk.functions — ASTERISK governance (V.2, slice 5): every function's
+//     state (paused, grade, standing, settings), the open queue counts
+//   asterisk.pause { function, paused, note? } — stop or resume one function;
+//     a paused function's new work waits in the admin queue
+//   asterisk.ledger { function?, limit? } — every logged decision with its
+//     evidence, confidence and reasoning, overrides marked
+//   asterisk.override { id, outcome: {answer?, ...}, note? } — supersede a
+//     decision; the override is a new row, ground truth
+//   asterisk.queue.list { status?, function? } · asterisk.queue.decide { id, decision }
+//   asterisk.grade { function } — audit one function over its ledger and set
+//     its standing (two poor grades hand it to the queue)
+//   asterisk.threshold { category, amount } — the high-value gate per category
+//   verification.replica.confirm { house, pattern, note? } — add to the library
 //   steward.report — the board, the repairs the hands would make, the ledger
 //   steward.act { confirm?: [actionId], dryRun? } — make the delegated
 //     repairs (lib/steward/decisions.js); `confirm` is a person's yes, for
@@ -459,6 +472,80 @@ export async function POST(req) {
       // tier one named in `confirm` (a person's yes for THIS run). revert =
       // undo one ledger row. Every write goes through lib/steward/index.js,
       // where the ledger row precedes the mutation in one transaction.
+      // ---- ASTERISK governance (V.2 Blueprint, Part I; slice 5) -------------
+      case "asterisk.functions": {
+        const [gov, G] = await Promise.all([import("../../../lib/db/production/asterisk.js"), import("../../../lib/asterisk/governance.js")]);
+        const states = await gov.getFunctionStates();
+        const backlog = await gov.countOpenQueue();
+        return NextResponse.json({
+          policy: { confidenceCap: G.CONFIDENCE_CAP, splitUnder: G.SPLIT_UNDER, collectiveBar: G.COLLECTIVE_BAR, maxAgents: G.MAX_AGENTS, taskBudgetMs: G.TASK_BUDGET_MS },
+          functions: G.FUNCTION_IDS.map((fn) => ({ ...states.get(fn), label: G.FUNCTIONS[fn].label, safe: G.FUNCTIONS[fn].safe, prevents: G.FUNCTIONS[fn].prevents, implementedBy: G.FUNCTIONS[fn].implementedBy, backlog: backlog[fn] || 0 })),
+        });
+      }
+      case "asterisk.pause": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        const { isFunction } = await import("../../../lib/asterisk/governance.js");
+        if (!isFunction(body.function)) return NextResponse.json({ error: "function must be one of the seven" }, { status: 400 });
+        const state = await gov.setFunctionPaused(body.function, body.paused !== false, { actor: adminActor(), note: body.note ? String(body.note).slice(0, 300) : null });
+        return NextResponse.json({ state });
+      }
+      case "asterisk.ledger": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        const { isFunction } = await import("../../../lib/asterisk/governance.js");
+        const fn = body.function && isFunction(body.function) ? body.function : null;
+        return NextResponse.json({ actions: await gov.listAsteriskActions({ fn, limit: body.limit || 50 }) });
+      }
+      case "asterisk.override": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        if (!body.id) return NextResponse.json({ error: "id required" }, { status: 400 });
+        const outcome = body.outcome && typeof body.outcome === "object" ? body.outcome : null;
+        if (!outcome) return NextResponse.json({ error: "outcome (an object) required — an override states what stands" }, { status: 400 });
+        const r = await gov.overrideAsteriskAction(String(body.id), { outcome, note: body.note ? String(body.note).slice(0, 300) : null, actor: adminActor() });
+        return NextResponse.json(r, { status: r.ok ? 200 : 409 });
+      }
+      case "asterisk.queue.list": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        const { isFunction } = await import("../../../lib/asterisk/governance.js");
+        const status = ["open", "decided", "all"].includes(body.status) ? body.status : "open";
+        return NextResponse.json({ cases: await gov.listAdminQueue({ status, fn: isFunction(body.function) ? body.function : null, limit: body.limit || 100 }) });
+      }
+      case "asterisk.queue.decide": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        if (!body.id) return NextResponse.json({ error: "id required" }, { status: 400 });
+        const decision = body.decision && typeof body.decision === "object" ? body.decision : null;
+        if (!decision) return NextResponse.json({ error: "decision (an object) required" }, { status: 400 });
+        const r = await gov.decideAdminCase(String(body.id), { decision, actor: adminActor() });
+        return NextResponse.json(r, { status: r.ok ? 200 : 409 });
+      }
+      case "asterisk.grade": {
+        const [gov, G] = await Promise.all([import("../../../lib/db/production/asterisk.js"), import("../../../lib/asterisk/governance.js")]);
+        if (!G.isFunction(body.function)) return NextResponse.json({ error: "function must be one of the seven" }, { status: 400 });
+        const windowMs = 7 * 86_400_000;
+        const since = new Date(Date.now() - windowMs).toISOString();
+        const rows = await gov.listAsteriskActions({ fn: body.function, limit: 500, since });
+        const decisions = rows.filter((r) => r.actor === "asterisk" && r.outcome !== "queued").map((r) => ({ ...r.decision, overridden: r.overridden }));
+        const backlog = (await gov.countOpenQueue())[body.function] || 0;
+        const audit = G.auditFunction(body.function, { decisions, backlog, windowMs });
+        const prev = await gov.getFunctionState(body.function);
+        const standing = G.standingAfter(prev, audit.grade);
+        const state = standing.changed ? await gov.setFunctionStanding(body.function, { ...standing, audit }) : prev;
+        const calibration = G.calibrate(decisions.filter((d) => Number.isFinite(Number(d.confidence))).map((d) => ({ confidence: d.confidence, correct: !d.overridden })));
+        return NextResponse.json({ audit, standing, state, calibration });
+      }
+      case "asterisk.threshold": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        const category = String(body.category || "").trim().toLowerCase().slice(0, 40);
+        const amount = Number(body.amount);
+        if (!category || !Number.isFinite(amount) || amount < 0) return NextResponse.json({ error: "category and a non-negative amount" }, { status: 400 });
+        const cur = await gov.getFunctionState("authentication");
+        const state = await gov.setFunctionSettings("authentication", { highValue: { ...((cur.settings || {}).highValue || {}), [category]: amount } });
+        return NextResponse.json({ state });
+      }
+      case "verification.replica.confirm": {
+        const gov = await import("../../../lib/db/production/asterisk.js");
+        const r = await gov.confirmReplicaPattern({ house: body.house, pattern: body.pattern, note: body.note ? String(body.note).slice(0, 300) : null, actor: adminActor() });
+        return NextResponse.json(r, { status: r.ok ? 200 : 400 });
+      }
       case "steward.report":
       case "steward.act":
       case "steward.revert": {

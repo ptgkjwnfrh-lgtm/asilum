@@ -2460,6 +2460,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .vbadgemark span { font-family: var(--mich, inherit); font-size: 13px; line-height: 1; }
 .vbadgemark small { font-size: 8.5px; letter-spacing: .14em; color: var(--grey); }
 .vbadge.pending .vbadgemark { border-style: dashed; color: var(--grey); }
+.vbadge.unverified .vbadgemark { color: var(--grey); }
+.vbadge.unverified .vbadgemark span { text-decoration: line-through; }
 .vbadge.ok .vbadgemark span { color: var(--sig, var(--ink)); }
 .vbadgesheet { position: absolute; z-index: 5; top: calc(100% + 6px); left: 0; width: min(320px, 80vw); padding: 10px 12px; border: 1px solid var(--line, rgba(127,127,127,.35)); border-radius: 10px; background: var(--paper, #fff); font-size: 11px; line-height: 1.45; color: var(--ink); display: grid; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
 .vbadgesheet ul { margin: 0; padding-left: 14px; }

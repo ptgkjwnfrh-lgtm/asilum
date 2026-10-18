@@ -153,16 +153,17 @@ Nothing here may import from `app/`.
 | `outcome.js` | 63 | the typed outcome every V.2 route in the engine lane returns (docs/v2/CONTRACTS.md § Common behavior). |
 
 ### `lib/asterisk/`
-*18 files, 2,676 lines*
+*20 files, 3,133 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `orchestrator.js` | 392 | Asterisk AI — universal interpretation orchestrator (handoff Feature A, Phase 1). Deterministic, layered, and honest: |
+| `governance.js` | 356 | ASTERISK GOVERNANCE, the policy as numbers (V.2 Blueprint, owner, 17 Oct 2026, Part I "ASTERISK governance"; Terms |
 | `explain.js` | 296 | Asterisk AI — the explanation system. Every recommendation can answer "why am I seeing this?" with reasons built ONLY from real, named signals: |
 | `research.js` | 207 | Asterisk AI — research-ingestion pipeline (docs/ASTERISK-AI.md §9, P2 v1). The controlled path from web research to culture records — and the only |
 | `houses.js` | 193 | where the houses are from. |
 | `memory.js` | 191 | the Asterisk memory READ FACADE (ADR-001, v2). One versioned contract that Home, Discover, Stylist, Moodboard, Profile, |
-| `tagAudit.js` | 167 | Asterisk AI — the secondary audit of every tagged product. Dual tagging: Base Tags (items fields + product_tags: retailer/seller/admin) |
+| `tagAudit.js` | 184 | Asterisk AI — the secondary audit of every tagged product. Dual tagging: Base Tags (items fields + product_tags: retailer/seller/admin) |
 | `confidence.js` | 145 | Asterisk AI — separated, honest confidence (handoff Feature A rules). Four independent values, NEVER averaged into one impressive number: |
 | `culture.js` | 142 | Asterisk AI — curated cultural knowledge v1 (films, music, cities, decades). These are EDITORIAL STYLE READINGS, not factual claims: no designer credits, |
 | `cultureSchema.js` | 138 | One schema boundary for both staged proposals and checked-in research. Keeping normalization here prevents the database gate and module loader |
@@ -172,6 +173,7 @@ Nothing here may import from `app/`.
 | `ontology.js` | 100 | Asterisk AI — canonical fashion ontology v1 (the shared fashion language). Every tag has ONE defined meaning: a canonical id ("<type>.<slug>"), a |
 | `facts.js` | 98 | Asterisk AI — learned-fact pipeline. External research / model output lands here as STAGED claims with sources and scores; it NEVER writes directly to |
 | `trends.js` | 91 | Asterisk AI — trend lifecycle intelligence (docs/ASTERISK-AI.md §4, P4 v1). THE single source of truth for trend claims, reconciling the two layers |
+| `governor.js` | 84 | RUN A TASK UNDER GOVERNANCE (V.2 Blueprint, Part I "ASTERISK governance"; slice 5). SERVER-ONLY: the glue between the |
 | `margin.js` | 70 | THE MARGIN ASTERISK IS ALLOWED TO ASSUME WITHIN. |
 | `queryRouter.js` | 61 | Asterisk AI — query classification + entity resolution v1. A search box entry may be a brand, a garment, an aesthetic, a film, a |
 | `interpretationSchema.js` | 60 | Asterisk AI — the versioned interpretation contract (handoff Feature A). One shape every consumer (search, drawer, rails, eval harness) can pin. |
@@ -302,7 +304,7 @@ Nothing here may import from `app/`.
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
 
 ### `lib/db/production/`
-*15 files, 5,658 lines*
+*16 files, 5,944 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -313,6 +315,7 @@ Nothing here may import from `app/`.
 | `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
 | `booths.js` | 440 | WHO GETS TO SELL HERE. |
 | `catalog.js` | 393 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
+| `asterisk.js` | 274 | ASTERISK GOVERNANCE'S ROWS (V.2 Blueprint, Part I "ASTERISK governance"; schema v63). SERVER-ONLY; memory mode |
 | `wardrobeTransfers.js` | 262 | THE GIFT'S TRANSACTIONS (V.2 brief §8, schema v60). SERVER-ONLY; memory mode mirrors every law. |
 | `tickets.js` | 259 | SOMEBODY WANTS TO BUY SOMETHING. |
 | `ebayFeed.js` | 191 | the eBay feed publisher's two writers (schema v56): the STALE-GUARDED item upsert and the per-file CHECKPOINT. |
@@ -320,7 +323,7 @@ Nothing here may import from `app/`.
 | `records.js` | 133 | user_records (v53): the four kinds of record Live Launch V.2 kept on the device alone, now persisted per identity. |
 | `store.js` | 108 | THE SHARED IN-MEMORY STORE, and nothing else. |
 | `moderation.js` | 74 | THE QUEUE A HUMAN READS. |
-| `verification.js` | 60 | THE VERIFICATION LEDGER'S ROWS (V.2 brief §12, schema v61). SERVER-ONLY; memory mode mirrors it. Append-only: |
+| `verification.js` | 72 | THE VERIFICATION LEDGER'S ROWS (V.2 brief §12, schema v61). SERVER-ONLY; memory mode mirrors it. Append-only: |
 
 ### `lib/discover/`
 *3 files, 258 lines*
@@ -561,14 +564,14 @@ Nothing here may import from `app/`.
 | `multipart.js` | 72 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
 
 ### `lib/steward/`
-*6 files, 1,497 lines*
+*6 files, 1,538 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `checks.js` | 628 | what the Asterisk watches when nobody is looking. |
+| `checks.js` | 663 | what the Asterisk watches when nobody is looking. |
 | `index.js` | 330 | the Asterisk steward: one pass over the live machine, and — since 3 September 2026 — hands to act on what it finds. |
 | `actions.js` | 229 | the steward's hands. |
-| `decisions.js` | 194 | what the steward may decide on its own. |
+| `decisions.js` | 200 | what the steward may decide on its own. |
 | `instruments.js` | 98 | the eight instruments, run as one movement. |
 | `cronGate.js` | 18 | who may fire the steward from outside. |
 
@@ -580,11 +583,11 @@ Nothing here may import from `app/`.
 | `drafts.js` | 20 | the Studio's DEVICE-LOCAL drafts (events, shops, promotion requests): one key, one reader, one writer, shared by the |
 
 ### `lib/tagging/`
-*3 files, 738 lines*
+*3 files, 754 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `grammar.js` | 356 | THE TAG GRAMMAR: `LEFT: RIGHT` (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar"; slice 4 of the build order in |
+| `grammar.js` | 372 | THE TAG GRAMMAR: `LEFT: RIGHT` (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar"; slice 4 of the build order in |
 | `vocabulary.js` | 206 | ONE VOCABULARY FOR EVERY TAG ON A PIECE. |
 | `dense.js` | 176 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
 
@@ -603,13 +606,14 @@ Nothing here may import from `app/`.
 | `index.js` | 145 | TikTok-inspired layer: cross-user feed intelligence. Learn not only from one user's actions but from what SIMILAR users save, buy, skip, favorite, |
 
 ### `lib/verification/`
-*3 files, 239 lines*
+*4 files, 393 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `ledger.js` | 131 | THE VERIFICATION LEDGER'S RULES (V.2 brief §12). SERVER-SIDE (node:crypto for the version hash) and pure: the same |
+| `ledger.js` | 211 | THE VERIFICATION LEDGER'S RULES (V.2 brief §12). SERVER-SIDE (node:crypto for the version hash) and pure: the same |
 | `desk.js` | 93 | THE VERIFICATION DESK's comparer (V.2). |
-| `run.js` | 15 | RUN THE CHECKS on one listing and append the row (V.2 brief §12). SERVER-ONLY. The route and the script both call this; |
+| `run.js` | 47 | RUN THE CHECKS on one listing and append the row (V.2 brief §12; slice 5 governance). SERVER-ONLY. The route and the |
+| `replicas.js` | 42 | THE REPLICA LIBRARY'S READER (V.2 Blueprint, "Hard gates against authenticating replicas"; slice 5). Pure. |
 
 ### `lib/vision/`
 *5 files, 861 lines*
@@ -683,11 +687,11 @@ request becomes trusted arguments.
 | `route.js` | 97 | GET  → this account's kind + the capabilities it opens. POST → choose a kind. Chosen once at signup; changing it afterwards is an |
 
 ### `app/api/admin/`
-*1 file, 654 lines*
+*1 file, 741 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 654 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
+| `route.js` | 741 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
 
 ### `app/api/asterisk/memory/`
 *1 file, 68 lines*
@@ -1068,11 +1072,11 @@ request becomes trusted arguments.
 | `route.js` | 24 | GET /api/verification?limit=&status=archivalist\|flagged\|agreed\|pending The verification desk over the catalog: source claims beside a LOCAL-RULES |
 
 ### `app/api/verification/listing/`
-*1 file, 64 lines*
+*1 file, 77 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 64 | THE BADGE AND ITS BREAKDOWN (V.2 brief §12). |
+| `route.js` | 77 | THE BADGE AND ITS BREAKDOWN (V.2 brief §12). |
 
 ### `app/api/wardrobe/`
 *1 file, 108 lines*
@@ -1131,11 +1135,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `page.js` | 73 | ACCESSIBILITY STATEMENT. ADA Title III alignment, WCAG 2.1 AA target. Claims here must track what |
 
 ### `app/admin/`
-*2 files, 692 lines*
+*2 files, 816 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 673 | THE DESK (owner directive, HANDOVER-2026-08-14 backlog 4). The operator surface for /api/admin, which has been |
+| `page.js` | 797 | THE DESK (owner directive, HANDOVER-2026-08-14 backlog 4). The operator surface for /api/admin, which has been |
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/analytics/`
@@ -1170,7 +1174,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*67 files, 10,268 lines*
+*67 files, 10,275 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1222,8 +1226,8 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `NoticesSheet.jsx` | 73 | NOTICES, the bell's sheet (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Info Dock"). Reads the |
 | `KindGate.jsx` | 69 | the client half of the account-kind split. |
 | `ConnectionsRack.jsx` | 68 | EXTERNAL CONNECTIONS, each with its explicit state (V.2 brief §11): Available · Requires approval · |
+| `VerificationBadge.jsx` | 66 | THE CARD'S ASTERISK (V.2 brief §12). |
 | `InfoDock.jsx` | 59 | THE INFO DOCK (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map" and the fixtures sketch, Figure 19). The |
-| `VerificationBadge.jsx` | 59 | THE CARD'S ASTERISK (V.2 brief §12). |
 | `OverviewPreview.jsx` | 56 | the ASILUM OVERVIEW card in search, cut to the primary reference (IMG_0999, V.2 brief, 1 Oct 2026): the |
 | `PlaceCard.jsx` | 56 | THE PLACE CARD (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "PLACE expands in place inside the Feed with a |
 | `PostSelection.jsx` | 56 | POST SELECTION on the disc (V.2 Blueprint, owner, 17 Oct 2026: the six publishing types TRANSM · STILL · |
@@ -1449,4 +1453,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 81c5b3d — 502 source files, 80,779 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ 651a932 — 506 source files, 81,964 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

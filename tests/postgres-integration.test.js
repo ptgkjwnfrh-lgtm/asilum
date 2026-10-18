@@ -350,6 +350,31 @@ test("mem and Postgres agree on the whole adoption scenario",
   assert.deepEqual(mem.accountSeen, ["acct-a", "dev-a"], "the _meta rings merge, not overwrite");
 });
 
+// ASTERISK governance (slice 5) has a mem branch and a Postgres branch for
+// every function in lib/db/production/asterisk.js; the unit battery runs mem.
+test("mem and Postgres agree on the ASTERISK governance scenario", { skip: !databaseUrl }, async () => {
+  const scenario = path.join(process.cwd(), "tests", "helpers", "governance-scenario.mjs");
+  const memRun = await run(process.execPath, [scenario, `mem${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: "", TEST_DATABASE_URL: "" },
+  });
+  const pgRun = await run(process.execPath, [scenario, `pg${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: databaseUrl },
+  });
+  const mem = JSON.parse(memRun.stdout.trim().split("\n").pop());
+  const pg = JSON.parse(pgRun.stdout.trim().split("\n").pop());
+  assert.equal(mem.error, undefined, mem.error);
+  assert.equal(pg.error, undefined, pg.error);
+  for (const key of Object.keys(mem)) {
+    assert.deepEqual(pg[key], mem[key],
+      `backends diverge on "${key}":\n  mem = ${JSON.stringify(mem[key])}\n  pg  = ${JSON.stringify(pg[key])}`);
+  }
+  assert.deepEqual(Object.keys(pg).sort(), Object.keys(mem).sort());
+  // guard the guard
+  assert.equal(mem.override.ok, true); assert.equal(mem.overrideTwice, false);
+  assert.deepEqual(mem.queueOrder, ["-b", "-a"], "fraud before value");
+  assert.equal(mem.paused.queued, true); assert.equal(mem.paused.ran, 0);
+});
+
 // The §6 export has a mem branch and a Postgres branch, and AGENTS.md makes
 // mem/pg parity a hard rule — the unit battery in tests/privacy-export.test.js
 // runs mem, so a Postgres-only fault in the export would ship green.
