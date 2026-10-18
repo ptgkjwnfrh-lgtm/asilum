@@ -15,6 +15,7 @@
 // never stack), and the shell's SIGN IN button opens it on demand from any
 // page via the "asilum:signup-open" event.
 
+import { ETHNICITY_OPTIONS, ETHNICITY_WHY } from "../../lib/identity/commerce.js";
 import { useEffect, useRef, useState } from "react";
 import { useOverlayDismiss } from "./dismiss.js";
 import { UNDER_AGE_MESSAGE, checkAge } from "../../lib/age.js";
@@ -57,6 +58,10 @@ export default function AccountSignup() {
   const [mode, setMode] = useState("create"); // create | signin
   const [kind, setKind] = useState("passport"); // passport | business
   const [birthDate, setBirthDate] = useState(""); // "YYYY-MM-DD", creation only
+  // slice 10b (A6 (7), 14.11): the home town for the Passport's anchors; an optional, consented ethnicity
+  const [hometown, setHometown] = useState("");
+  const [ethnicity, setEthnicity] = useState("");
+  const [ethnicityConsent, setEthnicityConsent] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -165,6 +170,17 @@ export default function AccountSignup() {
     } catch { /* the gate already refused under-age; this is the record */ }
   }
 
+  /** The home town and the ethnicity ride to the account's identity row (v68) AFTER the account exists; a refusal is the record's, not the account's. */
+  async function recordIdentity(accountUuid) {
+    if (!accountUuid || (!hometown.trim() && !ethnicity)) return;
+    try {
+      await authorizedFetch("/api/account/identity", {
+        method: "PUT", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ user: "sb-" + accountUuid, hometown: hometown.trim() ? { name: hometown.trim() } : null, ethnicity: ethnicity || null, ethnicityConsent }),
+      });
+    } catch { /* the account exists; the Passport asks again in onboarding */ }
+  }
+
   async function recordKind(accountUuid) {
     if (kind === "passport") return; // the default; nothing to record
     if (!accountUuid) return;
@@ -221,6 +237,7 @@ export default function AccountSignup() {
         const uuid = data.session.user?.id || data.user?.id;
         await recordAge(uuid);
         await recordKind(uuid);
+        await recordIdentity(uuid);
         setDone("created");
       } else if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
         // Supabase returns a stub user for an address that already holds an
@@ -385,6 +402,35 @@ export default function AccountSignup() {
                   you need to be 13 or older. we keep the date so the check stays
                   true as you get older — nothing else.
                 </span>
+              </label>
+            ) : null}
+
+            {creating ? (
+              <label className="accountemail">home town — where you grew up
+                <input
+                  type="text"
+                  value={hometown}
+                  placeholder="city, country"
+                  maxLength={120}
+                  onChange={(event) => setHometown(event.target.value)}
+                />
+                <span className="agenote">
+                  the Passport asks what 12-year-old you listened to on the bus; your home town and birthday pick the suggestions. never shown to anyone.
+                </span>
+              </label>
+            ) : null}
+
+            {creating ? (
+              <label className="accountemail">ethnicity — optional
+                <select value={ethnicity} onChange={(event) => { setEthnicity(event.target.value); if (!event.target.value) setEthnicityConsent(false); }} aria-label="ethnicity, optional">
+                  <option value="">prefer not to say</option>
+                  {ETHNICITY_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+                {ethnicity ? (
+                  <span className="agenote">
+                    <input type="checkbox" checked={ethnicityConsent} onChange={(event) => setEthnicityConsent(event.target.checked)} aria-label="consent to storing ethnicity" /> {ETHNICITY_WHY}
+                  </span>
+                ) : null}
               </label>
             ) : null}
 

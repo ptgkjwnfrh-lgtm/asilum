@@ -2,6 +2,7 @@
 // refused: storefront, inventory and fee obligations belong to an account.
 
 import { NextResponse } from "next/server";
+import { gate } from "../../../lib/identity/gate.js";
 
 import {
   archiveStorefrontListing,
@@ -108,7 +109,8 @@ async function handlePOST(req) {
       throw new StorefrontRefused("LISTING_WRITES_DISABLED", "storefront listing writes are disabled", 503);
     }
     switch (body.action) {
-      case "create_store":
+      case "create_store": {
+        const g = await gate(req, String(body.user || ""), { needs: ["sell"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); // 6.34, Terms 2.2
         return result(await createStorefront({
           accountId: identity.accountId,
           name: body.name,
@@ -119,17 +121,22 @@ async function handlePOST(req) {
           acceptedTermsVersion: body.acceptedTermsVersion,
           accepted: body.accepted,
         }), 201);
+      }
       case "update_store":
         return result(await updateStorefront(identity.accountId, body));
-      case "create_listing":
+      case "create_listing": {
+        const g = await gate(req, String(body.user || ""), { needs: [body.mode === "drop" ? "drop" : "sell"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status });
         return result(await createStorefrontListing(identity.accountId, body), 201);
+      }
       case "update_listing":
         return result(await updateStorefrontListing(identity.accountId, body.listingId, body));
       case "archive_listing":
         return result(await archiveStorefrontListing(identity.accountId, body.listingId, body.version));
       // ---- slice 6: native commerce --------------------------------------------
-      case "set_mode":
+      case "set_mode": {
+        if (body.mode === "drop") { const g = await gate(req, String(body.user || ""), { needs: ["drop"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); } // 6.34: enhanced checks for a DROP
         return result(await setListingMode(identity.accountId, body.listingId, body.mode));
+      }
       case "offer_settings":
         return result({ offerSettings: await setOfferSettings(identity.accountId, body.settings || {}) });
       case "offer_respond": {

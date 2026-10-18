@@ -51,6 +51,8 @@
 //     a policy reason parks it under review
 //   brdcst.review { id, refund: true|false, note } — decide a policy review
 //   brdcst.sweep — send the three-hourly failed-payment reminders now
+//   verification.appeals { state? } · verification.appeal.decide { id, upheld, decision } — 12.9, a human decides
+//   identity.read { accountId } — the home town and whether an ethnicity is on record (never the value)
 //   steward.report — the board, the repairs the hands would make, the ledger
 //   steward.act { confirm?: [actionId], dryRun? } — make the delegated
 //     repairs (lib/steward/decisions.js); `confirm` is a person's yes, for
@@ -637,6 +639,20 @@ export async function POST(req) {
         const B = await import("../../../lib/db/production/brdcst.js");
         try { return NextResponse.json({ campaign: await B.decideReview({ campaignId: String(body.id || ""), refund: body.refund === true, note: body.note || "", actor: adminActor() }) }); }
         catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "verification.appeals": {
+        const I = await import("../../../lib/db/production/identity.js");
+        return NextResponse.json({ appeals: await I.listAppeals({ state: body.state || "open", limit: body.limit || 100 }) });
+      }
+      case "verification.appeal.decide": {
+        const I = await import("../../../lib/db/production/identity.js");
+        try { return NextResponse.json({ appeal: await I.decideAppeal({ appealId: String(body.id || ""), upheld: body.upheld === true, decision: body.decision || "", actor: adminActor() }) }); }
+        catch (e) { return NextResponse.json({ error: e.message, code: e.code || null }, { status: e.status || 409 }); }
+      }
+      case "identity.read": {
+        const I = await import("../../../lib/db/production/identity.js");
+        const row = await I.getIdentity(String(body.accountId || ""));
+        return NextResponse.json({ identity: row ? { hometown: row.hometown, ethnicityOnRecord: !!row.ethnicity, updatedAt: row.updatedAt } : null, devices: (await I.listDevices(String(body.accountId || ""))).length });
       }
       case "brdcst.sweep": {
         const B = await import("../../../lib/db/production/brdcst.js");

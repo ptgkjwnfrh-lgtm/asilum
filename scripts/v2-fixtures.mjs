@@ -194,14 +194,19 @@ const tickets = await loadRoute("app/api/tickets/route.js");
   const ev = listPlaces({ dated: true }).find((p) => !p.sample && eventLive(p));
   const quote = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", radiusMi: "100", tasteBreadth: "0.25", durationDays: "7", eventId: ev.id, tags: "ARCHIVAL" } });
   const me = newDevice();
-  const created = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [ev.id], radiusMi: 100, tasteBreadth: 0.25, durationDays: 7 } });
-  const idle = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "pay", id: created.body.campaign.id, creditCents: 0 } });
+  // slice 10b (Terms 2.2): a device cannot run a BRDCST — the route refuses with the law's sentence;
+  // the draft and the idle payment are the store's answers for an 18+ account
+  const B = await import("../lib/db/production/brdcst.js");
+  const refused = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [ev.id], radiusMi: 100, tasteBreadth: 0.25, durationDays: 7 } });
+  const draft = await B.createCampaign({ ownerId: "sb-00000000-0000-4000-8000-000000000000", events: [ev], radiusMi: 100, tasteBreadth: 0.25, durationDays: 7 });
+  const idle = await B.payCampaign({ campaignId: draft.id, ownerId: draft.ownerId, creditCents: 0 }).then(() => ({ status: 200, body: {} })).catch((e) => ({ status: e.status, body: { error: e.message, code: e.code } }));
   const ticker = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { ticker: "1" } });
   const scrub = (c) => ({ ...c, id: "<uuid>", ownerId: "<uid>", createdAt: "<iso>", updatedAt: "<iso>" });
   write("brdcst.json", {
     quote: { request: `GET /api/brdcst?quote=1&radiusMi=100&tasteBreadth=0.25&durationDays=7&eventId=${ev.id}&tags=ARCHIVAL`, status: quote.status, body: quote.body },
-    create: { request: "POST /api/brdcst { action: create, eventIds, radiusMi, tasteBreadth, durationDays }", status: created.status, body: { campaign: scrub(created.body.campaign) } },
-    payIdle: { request: "POST /api/brdcst { action: pay, id, creditCents: 0 } with no STRIPE_SECRET_KEY", status: idle.status, body: idle.body },
+    createAsDevice: { request: "POST /api/brdcst { action: create, … } from a device identity", status: refused.status, body: refused.body },
+    draft: { request: "createCampaign for an 18+ account (the store; the route is the same call behind the gate)", campaign: scrub(draft) },
+    payIdle: { request: "payCampaign { creditCents: 0 } with no STRIPE_SECRET_KEY", status: idle.status, body: idle.body },
     ticker: { request: "GET /api/brdcst?ticker=1 (anonymous: no taste to match)", status: ticker.status, body: ticker.body },
   });
 }

@@ -27,6 +27,7 @@ import { resolveRequestUser } from "../../../lib/identity.js";
 import { readJsonRequest, withPrivateCache } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../lib/security/request.js";
+import { gate } from "../../../lib/identity/gate.js";
 import { listPlaces } from "../../../lib/places/registry.js";
 import { reconcileOrder } from "../../../lib/orders.js";
 import { getOrder } from "../../../lib/db/orders.js";
@@ -109,6 +110,7 @@ async function handlePOST(req) {
   try {
     switch (body.action) {
       case "create": {
+        { const g = await gate(req, String(body.user || ""), { needs: ["age"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); } // Terms 2.2: 18+ runs a BRDCST
         const ids = Array.isArray(body.eventIds) ? body.eventIds.map(String).slice(0, 20) : body.eventId ? [String(body.eventId)] : [];
         const rows = eventRows(ids);
         if (!ids.length || rows.some((r) => !r)) return NextResponse.json({ error: "every event must be one the map knows", code: "NO_EVENT" }, { status: 400 });
@@ -118,6 +120,7 @@ async function handlePOST(req) {
       case "attach":
         return NextResponse.json({ campaign: publicCampaign(await attachPost({ campaignId: id, ownerId: user, postId: String(body.postId || "") })) });
       case "pay": {
+        { const g = await gate(req, String(body.user || ""), { needs: ["age"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); }
         const origin = new URL(req.url).origin;
         const r = await payCampaign({ campaignId: id, ownerId: user, creditCents: Number(body.creditCents) || 0, bonusAs: body.bonusAs === "miles" ? "miles" : "days", useBonusDays: Number(body.useBonusDays) || 0, useBonusMiles: Number(body.useBonusMiles) || 0, origin: /^https?:\/\/(localhost|127\.0\.0\.1)/.test(origin) ? origin : null });
         return NextResponse.json({ ...r, campaign: publicCampaign(r.campaign) }, { status: r.paid ? 200 : 202 });

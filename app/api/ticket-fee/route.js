@@ -15,6 +15,7 @@
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { gate } from "../../../lib/identity/gate.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import {
@@ -90,6 +91,7 @@ export async function POST(req) {
     }
   }
 
+  { const g = await gate(req, String(body.user || ""), { needs: ["age"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); } // Terms 2.2: 18+ buys
   const result = await startTicketFee({ user, itemId, consent: body.consent === true });
   if (result.status !== 200) {
     return NextResponse.json({ error: result.error }, { status: result.status });

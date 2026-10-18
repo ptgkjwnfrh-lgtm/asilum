@@ -262,28 +262,30 @@ test("the routes: the quote is public and itemized; campaigns are the owner's; p
   assert.equal((await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", durationDays: "9" } })).body.quote.ok, false);
   assert.equal((await callRoute(brdcst.GET, { path: "/api/brdcst" })).status, 401);
   const me = newDevice();
-  const bad = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: ["nowhere"], radiusMi: 50, durationDays: 7 } });
-  assert.equal(bad.status, 400); assert.equal(bad.body.code, "NO_EVENT");
-  const ended = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [PAST.id], radiusMi: 50, durationDays: 7 } });
-  assert.equal(ended.status, 400); assert.equal(ended.body.code, "EVENT_ENDED");
-  const created = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [LIVE_ROW.id], radiusMi: 50, durationDays: 7 } });
-  assert.equal(created.status, 201); assert.equal(created.body.campaign.state, "draft"); assert.equal(created.body.campaign.can.pay, true);
-  const id = created.body.campaign.id;
+  // slice 10b (Terms 2.2): a device cannot run a BRDCST — it carries no birth date; the
+  // harness cannot mint an 18+ account, so create and pay are held by the store tests
+  // and the route holds the refusal with the law's own sentence
+  const dev = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "create", eventIds: [LIVE_ROW.id], radiusMi: 50, durationDays: 7 } });
+  assert.equal(dev.status, 403); assert.equal(dev.body.code, "ACCOUNT_REQUIRED"); assert.match(dev.body.error, /Terms 2\.2/);
+  const owner = "sb-" + uuid();
+  const c = await B.createCampaign({ ownerId: owner, events: [EV], radiusMi: 50, durationDays: 7 });
+  const id = c.id;
   const mine = await callRoute(brdcst.GET, { path: "/api/brdcst", cookies: me.cookies, query: { user: me.uid } });
-  assert.equal(mine.status, 200); assert.equal(mine.body.campaigns.length, 1); assert.deepEqual(mine.body.bonus, { days: 0, miles: 0 }); assert.match(mine.body.payment, /credit only/);
-  const stranger = newDevice();
-  const notMine = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: stranger.cookies, json: { user: stranger.uid, action: "pay", id, creditCents: 0 } });
-  assert.equal(notMine.status, 403);
-  const idle = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "pay", id, creditCents: 0 } });
-  assert.equal(idle.status, 503); assert.equal(idle.body.code, "PAYMENT_IDLE"); assert.match(idle.body.error, /waits in Drafts/);
-  const short = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "pay", id, creditCents: 2100 } });
-  assert.equal(short.status, 409); assert.equal(short.body.code, "INSUFFICIENT", "credit is never assumed");
+  assert.equal(mine.status, 200); assert.equal(mine.body.campaigns.length, 0, "the device owns nothing"); assert.deepEqual(mine.body.bonus, { days: 0, miles: 0 }); assert.match(mine.body.payment, /credit only/);
+  const notMine = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "pay", id, creditCents: 0 } });
+  assert.equal(notMine.status, 403, "pay is behind the same door");
+  await assert.rejects(() => B.payCampaign({ campaignId: id, ownerId: owner, creditCents: 0 }), /card payment is idle/);
+  await assert.rejects(() => B.payCampaign({ campaignId: id, ownerId: owner, creditCents: 2100 }), /only 0 cents of credit/);
   const preview = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "preview", id } });
-  assert.equal(preview.status, 200); assert.equal(preview.body.totalCents, 2100);
+  assert.equal(preview.status, 403, "not the device's campaign");
+  assert.equal(B.payQuote(c, {}).totalCents, 2100);
   const cancelled = await callRoute(brdcst.POST, { path: "/api/brdcst", cookies: me.cookies, json: { user: me.uid, action: "cancel", id } });
-  assert.equal(cancelled.status, 200); assert.equal(cancelled.body.campaign.state, "cancelled"); assert.equal(cancelled.body.refund, null, "never paid: nothing to refund");
+  assert.equal(cancelled.status, 403);
+  const r = await B.cancelCampaign({ campaignId: id, by: owner });
+  assert.equal(r.campaign.state, "cancelled"); assert.equal(r.refund, null, "never paid: nothing to refund");
   // the feed path: a reader sees an event-bearing post without its footer until a campaign is live
   await createEditorialPost({ authorId: "sb-" + uuid(), authorHandle: "poster", kind: "user", body: "tonight #ARCHIVAL", tags: ["ARCHIVAL"], postKind: "post", layout: "event", attachments: { event: { id: EV.id, name: EV.name } } });
+  const stranger = newDevice();
   const feed = await callRoute(editorial.GET, { path: "/api/editorial", cookies: stranger.cookies, query: { kind: "user", user: stranger.uid } });
   assert.equal(feed.status, 200);
   const served = feed.body.posts.find((p) => p.body === "tonight #ARCHIVAL");

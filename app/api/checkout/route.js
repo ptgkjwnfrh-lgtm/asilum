@@ -14,6 +14,7 @@
 
 import { NextResponse } from "next/server";
 import { resolveRequestUser } from "../../../lib/identity.js";
+import { gate } from "../../../lib/identity/gate.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { startCheckout, reconcileOrder, getOrder } from "../../../lib/orders.js";
@@ -58,6 +59,7 @@ export async function POST(req) {
   if (parsed.response) return parsed.response;
   const body = parsed.body;
   const user = await resolveRequestUser(req, String(body.user || ""));
+  { const g = await gate(req, String(body.user || ""), { needs: ["age"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); } // Terms 2.2: 18+ buys
   if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
   const itemId = String(body.itemId || "").slice(0, 80);
   if (!itemId) return NextResponse.json({ error: "itemId required" }, { status: 400 });

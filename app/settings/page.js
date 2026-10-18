@@ -63,6 +63,7 @@ function SettingsAuthRow() {
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import PageMast from "../components/PageMast.jsx";
 import AMark from "../components/AMark.jsx";
+import TwoFactor, { IdentityRow } from "../components/TwoFactor.jsx";
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
@@ -331,6 +332,8 @@ export default function SettingsPage() {
           <div className="rkdesc">sign in, connect sources, and manage who you follow — identity has one home, on PROFILE.</div>
         </div>
         <SettingsAuthRow />
+        <IdentityRow />
+        <TwoFactor />
       </section>
 
       <section className="rkmod" aria-label="data">
