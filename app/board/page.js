@@ -512,7 +512,7 @@ export default function BoardPage() {
               <p className="deck">imports — pinterest, spotify, apple music, letterboxd — need real OAuth and arrive as secondary setup, never simulated.</p>
               <section className="ppbenefit" aria-label="member benefit example">
                 <div className="cclbl">YOUR MEMBER BENEFIT <ModelTag>EXAMPLE — NOT A LIVE OFFER</ModelTag></div>
-                <p className="stp">On a $600 piece the founders fee is 1%: <b>$6</b>. A funded member credit of <b>$5</b> would make that fee <b>$1</b>. A real, auditable benefit — never a crossed-out price, never an invented markdown. At 1,000 redemptions a $5 credit is up to $5,000 of foregone fee revenue; taste status never buys purchasing power.</p>
+                <p className="stp">On a $600 piece the passenger fee is $1 + 1.5%: <b>$10</b>. A funded member credit of <b>$5</b> would make that fee <b>$5</b>. A real, auditable benefit — never a crossed-out price, never an invented markdown. At 1,000 redemptions a $5 credit is up to $5,000 of foregone fee revenue; taste status never buys purchasing power.</p>
               </section>
             </section>
           )}

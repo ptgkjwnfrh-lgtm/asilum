@@ -52,7 +52,9 @@ test("the law: targeting clamps, the quote itemizes per day, the floor widens wi
   assert.equal(L.normalizeTargeting({ radiusMi: 9999 }).radiusMi, L.MAX_RADIUS_MI);
   assert.equal(L.normalizeTargeting({ durationDays: 5 }).ok, false, "1, 3, 7, 14 or 30");
   const q = L.quote({ radiusMi: 100, tasteBreadth: 0.5, durationDays: 7 });
-  assert.equal(q.perDayCents, 300 + 50 * 2 + 200); assert.equal(q.totalCents, q.perDayCents * 7);
+  assert.equal(q.perDayCents, 300 + 50 * 3 + 250); assert.equal(q.totalCents, q.perDayCents * 7);
+  assert.equal(L.quote({ radiusMi: 50, tasteBreadth: 0, durationDays: 7 }).totalCents, 2100, "a small band's week in the base radius: USD 21 (A6)");
+  assert.equal(L.quote({ radiusMi: 200, tasteBreadth: 0, durationDays: 7 }).totalCents, 5250);
   assert.deepEqual(q.lines.map((l) => l.id), ["base", "duration", "geo", "taste"]);
   assert.equal(L.quote({ radiusMi: 50, tasteBreadth: 0, durationDays: 30 }).totalCents, 300 * 30, "no volume discount — per day (5.23)");
   assert.equal(L.matchFloor(0), L.TASTE_FLOOR); assert.equal(L.matchFloor(1), 0); assert.ok(L.matchFloor(0.5) < L.TASTE_FLOOR);
@@ -143,7 +145,7 @@ test("the store: a draft, the real forecast, credit pays in the exact amount, th
   await assert.rejects(() => B.createCampaign({ ownerId: owner, events: [PAST], radiusMi: 50, durationDays: 7, now: T0 }), /has ended/);
   assert.equal(L.eventLive(PAST, T0), false); assert.equal(L.eventLive(EV, T0), true); assert.equal(L.eventLive({ id: "x" }, T0), true, "an undated row is a venue, always ahead");
   const c = await B.createCampaign({ ownerId: owner, postId: "p1", events: [EV], tags: ["ARCHIVAL"], radiusMi: 100, tasteBreadth: 0, durationDays: 7, now: T0 });
-  assert.equal(c.state, "draft"); assert.equal(c.totalCents, (300 + 100) * 7); assert.deepEqual(c.center, { lat: EV.lat, lng: EV.lng });
+  assert.equal(c.state, "draft"); assert.equal(c.totalCents, (300 + 150) * 7); assert.deepEqual(c.center, { lat: EV.lat, lng: EV.lng });
   assert.equal((await B.estimateAudience({ tags: ["ARCHIVAL"], radiusMi: 100, center: c.center })).audience.counted, 0, "nobody placed yet — the forecast counts, never invents");
   await saveProfile(near, { long: { ARCHIVAL: 0.9 }, session: {} });
   await putUserRecord(near, { kind: "location", recordId: "base", payload: { baseCity: { name: "n", lat: EV.lat + 0.1, lng: EV.lng } } });
@@ -162,8 +164,8 @@ test("the store: a draft, the real forecast, credit pays in the exact amount, th
   assert.equal((await B.liveCampaigns(T0 + D)).length, 1); assert.equal((await B.liveCampaigns(T0 + 8 * D)).length, 0);
   // day three, afternoon: three days used, four refund, as Credit with 45 miles
   const r = await B.cancelCampaign({ campaignId: c.id, by: owner, reason: "voluntary", refundTo: "credit", bonusAs: "miles", now: T0 + 2 * D + 14 * H });
-  assert.equal(r.campaign.state, "cancelled"); assert.equal(r.refund.amountCents, 4 * 400); assert.equal(r.refund.to, "credit"); assert.deepEqual(r.refund.bonus, { kind: "miles", amount: 45 });
-  assert.equal(await C.creditBalance(owner), 5000 - c.totalCents + 1600);
+  assert.equal(r.campaign.state, "cancelled"); assert.equal(r.refund.amountCents, 4 * 450); assert.equal(r.refund.to, "credit"); assert.deepEqual(r.refund.bonus, { kind: "miles", amount: 45 });
+  assert.equal(await C.creditBalance(owner), 5000 - c.totalCents + 1800);
   assert.deepEqual([(await B.bonusBank(owner)).days, (await B.bonusBank(owner)).miles], [2, 45]);
   await assert.rejects(() => B.cancelCampaign({ campaignId: c.id, by: owner, now: T0 + 3 * D }), /already cancelled/);
   const kinds = (await listNotifications(owner)).map((n) => n.kind).sort();
@@ -255,7 +257,7 @@ test("the routes: the quote is public and itemized; campaigns are the owner's; p
   const editorial = await loadRoute("app/api/editorial/route.js");
   assert.ok(LIVE_ROW, "the map holds a sourced event that is still ahead");
   const q = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", radiusMi: "120", tasteBreadth: "0.25", durationDays: "3", eventId: LIVE_ROW.id, tags: "ARCHIVAL" } });
-  assert.equal(q.status, 200); assert.equal(q.body.quote.totalCents, (300 + 70 * 2 + 100) * 3); assert.equal(q.body.forecast.measured, true); assert.match(q.body.forecast.note, /not guaranteed/); assert.equal(q.body.event.id, LIVE_ROW.id); assert.equal(q.body.event.live, true);
+  assert.equal(q.status, 200); assert.equal(q.body.quote.totalCents, (300 + 70 * 3 + 125) * 3); assert.equal(q.body.forecast.measured, true); assert.match(q.body.forecast.note, /not guaranteed/); assert.equal(q.body.event.id, LIVE_ROW.id); assert.equal(q.body.event.live, true);
   assert.equal((await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", eventId: PAST.id } })).body.event.live, false);
   assert.equal((await callRoute(brdcst.GET, { path: "/api/brdcst", query: { quote: "1", durationDays: "9" } })).body.quote.ok, false);
   assert.equal((await callRoute(brdcst.GET, { path: "/api/brdcst" })).status, 401);

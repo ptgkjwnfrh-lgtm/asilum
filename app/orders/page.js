@@ -11,6 +11,7 @@ import Notice from "../components/Notice.jsx";
 import { getUid, authorizedFetch, thumbFor, sendJSON, postJSON } from "../../lib/client.js";
 import { sourceFor } from "../../lib/social.js";
 import PageMast from "../components/PageMast.jsx";
+import AMark from "../components/AMark.jsx";
 
 /**
  * AFTER THE SALE on one paid order (V.2 chapter 6 and 10; slice 7): the
@@ -50,7 +51,7 @@ function OrderAftersale({ order, onNotice }) {
           : "not delivered yet — the 14-day return and review windows start at carrier-confirmed delivery (10.21)"}
       </div>
       <div className="fine">
-        |A| Protection: {facts.election ? (facts.election.elected ? `elected, ${(facts.election.priceCents / 100).toFixed(2)}` : "not elected") : "not offered"}{facts.election && facts.election.offer && facts.election.offer.available === false ? ` — ${facts.election.offer.reason}` : ""}
+        <AMark label="|A|" /> Protection: {facts.election ? (facts.election.elected ? `elected, ${(facts.election.priceCents / 100).toFixed(2)}` : "not elected") : "not offered"}{facts.election && facts.election.offer && facts.election.offer.available === false ? ` — ${facts.election.offer.reason}` : ""}
         {facts.law.creditApplied ? " · paid with Credit: no change-of-mind return without Protection (11.2)" : ""}
         {facts.law.sellerReturnsEnabled ? " · the seller accepts returns" : ""}
       </div>
@@ -199,7 +200,7 @@ export default function OrdersPage() {
             </a>
             <div className="hlbrand">
               {(o.currency || "usd").toUpperCase()} {((o.total_cents ?? o.amount_cents) / 100).toFixed(2)}
-              {o.kind === "ticket_fee" ? " (founders fee)" : ""}
+              {o.kind === "ticket_fee" ? " (passenger fee)" : o.kind === "brdcst" ? " (BRDCST)" : ""}
               {" · "}
               {o.status === "paid" && o.kind === "ticket_fee" ? "FEE PAID — ticket open; the piece is bought at the source"
                 : o.status === "paid" ? "PAID — the designer ships it"

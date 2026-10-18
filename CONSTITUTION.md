@@ -308,6 +308,30 @@ through honestly to the research queue, and a fabricated reading is still a
 violation. A5 says the same thing about a PERSON that that law already says
 about a QUERY.
 
+**A6 — THE V.2 BLUEPRINT SUPERSEDES (Oct 18, 2026).** The owner's V.2
+Blueprint of 17 October 2026 supersedes every older rule in this document,
+in docs/OWNER-DECISIONS.md and in the rights register wherever they differ;
+where a blueprint clause names a figure, the figure is the law, and where it
+names none the owner rules by the word recorded here. Rulings of 18 Oct:
+(1) FEES — the passenger fee is $1 + 1.5% of the merchandise on every
+purchase through ASILUM, buyer-paid, and supersedes the 1% founders fee with
+its 50¢ floor on the ticket lane; the $30 storefront activation applies ONLY
+to DROP (a seller releasing at scale); SELL carries no ASILUM fee on the
+seller's side and is subject only to the processor's own fees, which ASILUM
+does not control. (2) FOLLOWERS are tracked server-side so the friend
+asterisk (a mutual follow) can exist; the earlier refusal is lifted.
+(3) MUSIC — the manual-only ruling of 2 Oct 2026 (OWNER-DECISIONS §7) is
+superseded: Spotify and Apple Music developer access is to be applied for,
+last in the build, on the owner's behalf in preparation and by the owner's
+hand where a service requires the account holder. (4) |A| is a box with the
+letter A in it, nothing more. (5) MOTION limits as declared in slice 9
+stand. (6) The BRDCST price list is set by best judgment: profitable, never
+so expensive that a small band opts out. (7) Account creation collects the
+birth date, the home town and — optional, explained, erasable — ethnicity,
+for the Passport's identity anchors; the onboarding questions of 14.11 use
+them. The no-faking law, branch + PR, build-must-pass and the report format
+are untouched by this.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

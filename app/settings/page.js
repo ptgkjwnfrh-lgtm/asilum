@@ -62,6 +62,7 @@ function SettingsAuthRow() {
 }
 import { AsteriskGuidanceToggle } from "../components/AsteriskMemory.jsx";
 import PageMast from "../components/PageMast.jsx";
+import AMark from "../components/AMark.jsx";
 
 export default function SettingsPage() {
   const [uid, setUid] = useState("");
@@ -244,7 +245,7 @@ export default function SettingsPage() {
           <div className="rkdesc">extra advertising days or miles of reach, earned when a BRDCST refund is taken as Credit (two days or 45 miles) and in proportion to the share of a BRDCST paid with Credit, rounded down. banked here, never expiring, redeemed on a campaign whenever you choose. {brdcst && brdcst.campaigns ? `${brdcst.campaigns.length} campaign${brdcst.campaigns.length === 1 ? "" : "s"} in the Studio.` : ""}</div>
         </div>
         <div className="rkrow">
-          <div className="rkname">|A| Protection</div>
+          <div className="rkname"><AMark label="|A|" /> Protection</div>
           <div className="rkctl rkmono">OFF BY DEFAULT</div>
           <div className="rkdesc">optional purchase protection, quoted per order on value, shipping and destination; never preselected or silently charged. no provider is agreed yet (REDO is proposed), so no quote is shown at checkout.</div>
         </div>

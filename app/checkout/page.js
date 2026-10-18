@@ -4,7 +4,7 @@
 // One clean room for the §6 two-transaction lane: the piece's picture and
 // price stay on screen the whole time the buyer is on ASILUM; name, address,
 // and card are typed ONCE (the vault keeps them — SETTINGS edits them);
-// returning buyers pay with one press. ASILUM charges the founders fee
+// returning buyers pay with one press. ASILUM charges the passenger fee
 // ALONE — the real purchase (the piece, shipping, tax) completes on the
 // source, and the paid fee IS the purchase ticket. Card fields are Stripe's
 // own iframes (Payment Element); card data never touches this codebase.

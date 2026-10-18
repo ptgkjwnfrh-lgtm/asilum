@@ -76,7 +76,7 @@ export default function PrivacyPage() {
         being moved to another device identity or erased as personalization.
       </p>
       <p className="legal">
-        <strong>purchase info.</strong>{" "}if you pay a founders fee, the name
+        <strong>purchase info.</strong>{" "}if you pay a passenger fee, the name
         and address you enter once are stored in a purchase-info vault kept
         apart from the catalog and your taste record, used only to open
         checkout without retyping. your card goes to stripe, our payment

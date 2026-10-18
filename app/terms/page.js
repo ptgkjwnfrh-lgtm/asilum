@@ -82,8 +82,8 @@ export default function TermsPage() {
 
       <h2 className="statshead">THE FOUNDERS FEE</h2>
       <p className="legal">
-        opening a purchase ticket carries ASILUM&apos;s founders fee: 1% of
-        the listed piece price, with a $0.50 minimum, charged by ASILUM as
+        opening a purchase ticket carries ASILUM&apos;s passenger fee: $1 plus
+        1.5% of the listed piece price, charged by ASILUM as
         its own transaction — your card statement will show two lines, ASILUM
         (the fee) and the merchant (the piece). the fee and the total are
         itemized on the checkout screen before you pay, and nothing is

@@ -1,5 +1,5 @@
 // app/api/ticket-fee/route.js
-// The §6 referral lane's money door. ASILUM charges the founders fee ALONE;
+// The §6 referral lane's money door. ASILUM charges the passenger fee ALONE;
 // the real purchase — payment, tax, shipping — completes on the source. The
 // fee buys the purchase ticket. Card data never touches this server: the
 // housing mounts Stripe's Payment Element (their iframes), and returning
@@ -19,7 +19,7 @@ import { readJsonRequest } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import {
   startTicketFee, confirmTicketFeeWithSavedCard, reconcileOrder, getOrder, getTicketByFeeOrder,
-  ticketFeeCents, refusalReason, FOUNDERS_FEE_RATE, ORDER_CURRENCY_DEFAULT,
+  ticketFeeCents, refusalReason, PASSENGER_FEE_RATE, PASSENGER_FEE_FLAT_CENTS, ORDER_CURRENCY_DEFAULT,
 } from "../../../lib/orders.js";
 import { publicBuyerProfile, upsertBuyerIdentity, getBuyerProfile } from "../../../lib/vault.js";
 import { resolveProduct, publicProduct } from "../../../lib/products.js";
@@ -63,7 +63,7 @@ export async function POST(req) {
 
   // Native Storefront goods have their own connected-account rail and exact
   // passenger-fee policy. They must never create a historical referral ticket
-  // or inherit its Founders fee, even if a client calls this route directly.
+  // or inherit its passenger fee, even if a client calls this route directly.
   const item = await resolveProduct(itemId);
   if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
   if (item.commerce_rail === "native_storefront") {
@@ -155,7 +155,8 @@ export async function GET(req) {
         },
         amount_cents: amountCents,
         fee_cents: feeCents,
-        floored: feeCents > Math.round(amountCents * FOUNDERS_FEE_RATE),
+        floored: false,
+        policy: { flatCents: PASSENGER_FEE_FLAT_CENTS, rate: PASSENGER_FEE_RATE, label: "$1 + 1.5% passenger fee" },
         currency: String(item.currency || ORDER_CURRENCY_DEFAULT).toLowerCase(),
         source_name: item.source_name || null,
         refusal: refusalReason(item),
