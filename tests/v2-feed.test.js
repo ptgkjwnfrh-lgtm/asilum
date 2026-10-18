@@ -48,7 +48,11 @@ test("every card wears its type; media enlarges over the Feed; a piece opens the
 test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three tags and BEHIND THE PRODUCT", () => {
   assert.match(listing, /visibleTags\(tagsFor\(item, \{ typed, state: \{ verification: /, "the three come from the grammar (slice 4)");
   assert.match(listing, /className="lstdots"/, "the photo carousel's dots");
-  assert.match(listing, /className="soon" disabled title="OFFER is for native Storefront listings/, "OFFER on an external listing never pretends; on a native one it is real (slice 6)");
+  // slice 14 (reference 5.jpg): OFFER is real on a native listing and a Wardrobe piece that takes offers; elsewhere the word is quiet, never a dead button
+  assert.match(listing, /const offerable = offerMode\(item\);/, "the popup asks the one law what OFFER does");
+  assert.match(listing, /<span className="lstofferword quiet" title=\{offerable\.reason\}/, "a quiet OFFER is a label with its reason");
+  assert.ok(!/OFFER<\/button>[^\n]*disabled|disabled[^\n]*>OFFER</.test(listing), "never a disabled OFFER button");
+  assert.match(listing, /openSheet\("messages", \{ title: "MESSAGES" \}\)/, "a Wardrobe OFFER starts with a message (13.4)");
   assert.match(listing, /postJSON\("\/api\/storefront\/offers"/, "a native OFFER is sent");
   assert.match(listing, /BEHIND THE PRODUCT/);
   assert.match(listing, /<AsteriskWhy item=\{item\} onNotice=\{setNotice\} \/>/, "the depth moved with the modal");
@@ -85,12 +89,43 @@ test("ECHO: 24 hours, stored on the row, filtered when expired, viewed sequentia
   assert.ok(!/echo:/.test(sel.split("const SOON")[1].split("};")[0]), "ECHO is no longer soon");
 });
 
-test("PLACE expands in place with the record's own facts and never a rating it does not have", () => {
-  assert.match(place, /aria-expanded=\{open\}/);
-  assert.match(place, /href=\{"\/map\?pin=" \+ encodeURIComponent\(p\.id\)\}/, "the MAPS link");
-  assert.match(place, /target="_blank" rel="noopener noreferrer">THE LISTING ↗/);
-  assert.ok(!/rating|stars/.test(place), "no rating is drawn");
+test("PLACE: the reference's card (venue mark, distance, name, globe) opens the map popup; a rating only from a real source", () => {
+  assert.match(place, /openSheet\("map", \{ pin: p\.id, title: "MAP" \}\)/, "the card opens the map popup, never a page");
+  assert.match(place, /<Icon name="venue"/); assert.match(place, /<Icon name="globe"/);
+  assert.match(place, /discoveryCenter\(\)/, "the distance only from this device's own centre");
+  assert.ok(!/rating|stars/.test(place), "the card draws no rating");
+  const map = strip(read("app/components/MapSheet.jsx"));
+  assert.match(map, /const rating = placeRating\(place\);/, "the popup asks the registry whether a sourced rating exists");
+  assert.match(map, /\{rating \? \(/, "and draws one only when it does");
+  assert.ok(!/4\.6|24K/.test(map), "never the reference's placeholder figure");
+  assert.match(map, /className="mapspill" href=\{maps\} target="_blank" rel="noopener noreferrer">MAPS ↗/);
   assert.match(page, /fetch\("\/api\/places"\)/);
+});
+
+test("the post card to the reference: media fills the card, handle and caption over it, four outline actions, the BRDCST footer as drawn", () => {
+  assert.match(card, /className="wpcover"/, "handle and caption sit over the media");
+  for (const g of ["heart", "comment", "share"]) assert.match(card, new RegExp('<Icon name="' + g + '"'), g);
+  assert.match(card, /icon="hourglass"/, "the hourglass is STAMP, the one save");
+  assert.match(card, /className="wpcact soon" title="comments are not built yet"/, "the bubble says soon");
+  assert.match(card, /<b className="brdcstword">BRDCST/);
+  assert.match(card, /<span className="brdcstrule" aria-hidden="true" \/>/);
+  assert.match(card, /<i className="brdcstast" aria-hidden="true">\*<\/i>\{first\.name\}/, "*event under the rule");
+  assert.match(card, /<Icon name="chevron"/);
+  assert.match(card, /brdcstWhen\(first\)/, "the date and time from the one law");
+  assert.match(css, /\.wpcover \{[^}]*position: absolute;/);
+  assert.match(css, /\.card\.wpostcard \{[^}]*border-radius: var\(--radius-card\)/);
+});
+
+test("the piece card and the listing popup to the references: rounded photograph, quiet line, × to pass; unverified only from the ledger; ♡ OFFER bag; the lines in Michroma", () => {
+  assert.match(page, /className=\{"card piece"/);
+  assert.match(page, /className="piecepass" onClick=\{onPass\}/);
+  assert.match(listing, /className=\{"lstbadge " \+ badge\.state\}/, "the word on the photograph comes from the ledger's badge");
+  assert.match(listing, /\{badge && badge\.state !== "none" \?/, "nothing without a badge");
+  assert.match(listing, /priceLine\(item\)/);
+  assert.match(listing, /"SIZE: " \+ item\.size\.label/);
+  assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
+  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the *ADs slot is red under the deck");
+  assert.match(strip(read("app/components/ControlCenter.jsx")), /<span className="adslot" aria-hidden="true">\*ADs<\/span>/);
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {

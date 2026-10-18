@@ -3,7 +3,7 @@
 // the braid. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { postType, weightOf, spanOf, packFeed, MIN_RUN, echoLive, echoRail, braid, WEIGHT, FULL_AT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
+import { pieceName, brdcstMoment, brdcstWhen, priceLine, offerMode, postType, weightOf, spanOf, packFeed, MIN_RUN, echoLive, echoRail, braid, WEIGHT, FULL_AT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
 
 const post = (extra = {}) => ({ id: "p1", serverId: 1, handle: "a", at: 1000, text: "x", attachments: {}, ...extra });
 
@@ -73,4 +73,25 @@ test("the ECHO rail groups live echoes by author, latest first; the braid keeps 
   assert.equal(out.filter((x) => x.__post).length, 1);
   assert.equal(out.filter((x) => x.__place).length, 1, "a place after the ninth piece");
   assert.equal(out[3].id, "post:7", "the first post after the third piece");
+});
+
+test("slice 14: the footer's date line, the price line and what OFFER does (owner's references, 18 Oct)", () => {
+  assert.equal(brdcstMoment("2026-10-31"), "OCTOBER 31st", "a date-only string never drifts by zone");
+  assert.equal(brdcstMoment("2026-10-31T22:30:00.000Z"), "OCTOBER 31st 10:30 pm");
+  assert.equal(brdcstMoment("2026-10-31T22:30:00.000Z", { tz: "America/New_York" }), "OCTOBER 31st 6:30 pm", "the event's own zone");
+  assert.equal(brdcstMoment("2026-11-02"), "NOVEMBER 2nd"); assert.equal(brdcstMoment("2026-11-13"), "NOVEMBER 13th"); assert.equal(brdcstMoment("2026-11-23"), "NOVEMBER 23rd");
+  assert.equal(brdcstMoment("nonsense"), ""); assert.equal(brdcstMoment(null), "");
+  assert.equal(brdcstWhen({ startsAt: "2026-09-23", endsAt: "2026-09-25" }), "SEPTEMBER 23rd → SEPTEMBER 25th");
+  assert.equal(brdcstWhen({ startsAt: "2026-09-23", endsAt: "2026-09-23" }), "SEPTEMBER 23rd");
+  assert.equal(priceLine({ price: 35, currency: "USD" }), "35.00 USD");
+  assert.equal(priceLine({ price: "120.5" }), "120.50 USD");
+  assert.equal(priceLine({ price: null }), null);
+  assert.equal(offerMode({ commerce_rail: "native" }).mode, "native");
+  assert.equal(offerMode({ acceptOffers: true, ownerId: "u1" }).mode, "wardrobe");
+  assert.equal(offerMode({ acceptOffers: false, ownerId: "u1" }).mode, "none");
+  assert.equal(offerMode({ id: "ebay-1" }).mode, "none", "an external listing: quiet, never a dead button");
+  assert.ok(offerMode({ id: "x" }).reason.length > 10, "a quiet OFFER says why");
+  assert.equal(pieceName({ brand: "Clark's", title: "Vintage fisherman knit sweater" }), "Clark's: Vintage fisherman knit sweater");
+  assert.equal(pieceName({ brand: "Visvim", title: "Visvim – chore coat" }), "Visvim: chore coat", "a title that repeats the brand is not doubled");
+  assert.equal(pieceName({ brand: "", title: "a coat" }), "a coat");
 });

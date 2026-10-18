@@ -15,20 +15,19 @@ import { useOverlayDismiss } from "./components/dismiss.js";
 import { fitPhrase } from "../lib/brain/sizing.js";
 import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
-  getUid, postJSON, authorizedFetch, thumbFor, bagAdd,
+  getUid, postJSON, authorizedFetch, thumbFor,
   fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
 import {
   observationOn, followedBrands, isDemoItem, DEMO_LABEL,
 } from "../lib/social.js";
-import { ColorEvidenceLine, OriginLine, OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
-import { braid, packFeed, echoRail } from "../lib/feed/types.js";
+import { braid, packFeed, echoRail, pieceName } from "../lib/feed/types.js";
 import { PIECE_EVENT } from "../lib/feed/actions.js";
 import { EchoRail } from "./components/EchoRail.jsx";
 import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
 import Wordmark from "./components/Wordmark.jsx";
-import SaveButton from "./components/SaveButton.jsx";
 import WireCard from "./components/WireCard.jsx";
 import TagRow from "./components/TagChip.jsx";
 import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
@@ -75,7 +74,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitProfile();
-  const [baggedIds, setBaggedIds] = useState(() => new Set());
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
   const [cravingDraft, setCravingDraft] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
@@ -784,14 +782,6 @@ export default function Home() {
     } catch (e) { console.error(e); }
   }
 
-  function addToBag(item) {
-    bagAdd(item);
-    setBaggedIds((prev) => new Set(prev).add(item.id));
-    // react() counts the bag once the server has it — never before, never twice.
-    react(item, "bag");
-  }
-
-
   // Opening a record parks the feed and opens THE LISTING POPUP in the
   // session hub (ListingSheet.jsx; blueprint: "LISTING opens as a floating
   // popup over the softened Feed"). The popup records the open, once.
@@ -830,11 +820,8 @@ export default function Home() {
         key={it.id}
         it={it}
         fitLine={fitPhrase(it.size, fitBrain)}
-        bagged={baggedIds.has(it.id)}
         onOpen={() => openModal(it)}
-        onFavorite={() => react(it, "favorite")}
         onPass={() => react(it, "skip")}
-        onBag={() => addToBag(it)}
       />
     );
   }
@@ -1137,43 +1124,34 @@ function Columns({ items, count, render, children, memo, weight }) {
   );
 }
 
-function FragmentCard({ it, fitLine, bagged, onOpen, onFavorite, onBag, onPass }) {
+function FragmentCard({ it, fitLine, onOpen, onPass }) {
+  // THE PIECE CARD (owner's reference of 18 Oct 2026, 2.jpg): the photograph
+  // fills a rounded card; one quiet line beneath carries the name and the
+  // price; the small × at the corner is PASS. Favourite and bag live in the
+  // LISTING popup the card opens. ONE ACCESSIBLE NAME PER CARD (launch
+  // audit, Aug 16): the title is the real control; the image is
+  // presentational and keeps its pointer affordance.
   return (
-    <div className={"card" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-      {/* ONE ACCESSIBLE NAME PER CARD (launch audit, Aug 16). The image and the
-          title were both bare divs with onClick — the detail opened for a
-          mouse and was unreachable from a keyboard, while the accessibility
-          page claimed "full keyboard operability of navigation and controls".
-          The title is now the real control; the image is presentational and
-          keeps its pointer affordance, so a screen reader announces the piece
-          once rather than twice. */}
+    <div className={"card piece" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
       <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
         <OriginSticker item={it} />
         <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>
-      <div className="body">
-        <button type="button" className="ttl" onClick={onOpen}>{it.title}</button>
-        {/* A demo record says so, and says nothing else about provenance: no
-            source, no "just in". Both would be claims it cannot support. */}
-        {isDemoItem(it)
-          ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
-          : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
-        {it.price ? <div className="price">{it.currency || "USD"} {it.price}</div> : null}
-        {/* the Feed card shows the same first three as the listing (slice 4) */}
-        <TagRow tags={visibleTags(tagsFor(it)).shown} size="card" />
-        <ColorEvidenceLine item={it} />
-        <OriginLine item={it} />
-        {fitLine ? <div className="fitline">{fitLine}</div> : null}
-        <div className="cardacts">
-          <button onClick={onFavorite}>Favorite</button>
-          {/* (7 Sep) the brief's third verb — a reader can pass on a piece
-              without opening it. Same signal the modal's Skip sends. */}
-          {onPass && <button className="pass" onClick={onPass}>Pass</button>}
-          <button className={bagged ? "on" : ""} onClick={onBag}>
-            {bagged ? "In bag ✓" : "Add to bag"}
-          </button>
-        </div>
+      {/* (7 Sep) the brief's third verb — a reader can pass on a piece
+          without opening it. Same signal the modal's Skip sends. */}
+      {onPass && <button type="button" className="piecepass" onClick={onPass} aria-label={"pass on " + (it.title || "this piece")} title="PASS">×</button>}
+      <div className="pieceline">
+        <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
+        {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}
       </div>
+      {/* A demo record says so, and says nothing else about provenance: no
+          source, no "just in". Both would be claims it cannot support. */}
+      {isDemoItem(it)
+        ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
+        : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
+      {fitLine ? <div className="fitline">{fitLine}</div> : null}
+      {/* the Feed card shows the same first three as the listing (slice 4) */}
+      <TagRow tags={visibleTags(tagsFor(it)).shown} size="card" />
     </div>
   );
 }

@@ -14,9 +14,17 @@
 // provenance, the evidence lines, ASTERISK's why, the designers and the
 // pieces it goes with. Tap a side to search it; long-press to pin it.
 //
-// Honesty: OFFER says `soon` (native commerce, slice 6); the purchase
-// request is the real ticket flow; a demo record has no purchase control
-// and says why; "view source" links the real listing.
+// THE LOOK (owner's reference of 18 Oct 2026, docs/v2/references/
+// 2026-10-18-feed/5.jpg): "unverified" on the photograph — only when the
+// verification ledger says so; beneath it ♡ · OFFER · bag; then
+// "brand: title", "SIZE: XL (fit)" and "35.00 USD" in Michroma.
+//
+// Honesty: OFFER is real on a native Storefront listing (slice 6) and on a
+// Wardrobe piece whose owner takes offers (DM first, chapter 13, slice 11);
+// anywhere else the word is QUIET — a label with the reason, never a dead
+// button (lib/feed/types.js offerMode). The purchase request is the real
+// ticket flow; a demo record has no purchase control and says why; "view
+// source" links the real listing.
 
 import { useEffect, useRef, useState } from "react";
 import { useEscape } from "./dismiss.js";
@@ -53,6 +61,7 @@ function ValuationLine({ item }) {
   return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b>{v.line}</p>;
 }
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
+import { priceLine, offerMode, pieceName } from "../../lib/feed/types.js";
 
 function eraLabel(era) {
   if (!era) return null;
@@ -128,6 +137,7 @@ export default function ListingSheet({ item: given, id }) {
     await bag(item);
   }
   const native = isNativeItem(item);
+  const offerable = offerMode(item);
   const reserved = native && Number.isSafeInteger(item.inventory_available) && item.inventory_available <= 0 && item.availability_status !== "sold";
   async function sendOffer() {
     const cents = Math.round(Number(offer.amount) * 100);
@@ -163,33 +173,30 @@ export default function ListingSheet({ item: given, id }) {
             {images.map((src, i) => <button key={src + i} type="button" className={"lstdot" + (i === slide ? " cur" : "")} aria-label={"photograph " + (i + 1)} aria-pressed={i === slide} onClick={() => setSlide(i)} />)}
           </div>
         ) : null}
-        {badge && badge.state !== "none" ? <div className="lstbadge"><VerificationBadge badge={badge} /></div> : null}
+        {/* the ledger's word on the photograph (reference 5.jpg): "unverified" top-left only when the checks did not pass; CHECKED and PENDING keep the mark */}
+        {badge && badge.state !== "none" ? <div className={"lstbadge " + badge.state}><VerificationBadge badge={badge} /></div> : null}
       </div>
 
       <div className="lstbody">
-        <h3 className="lstttl">{item.title}</h3>
-        <a className="lstbrand" href={"/discover?q=" + encodeURIComponent(item.brand || "")} title={"see " + item.brand + " on DISCOVER"}>{item.brand}</a>
+        {/* the three actions beneath the photograph, as drawn: the heart, the boxed OFFER, the bag — and the hourglass, the one save */}
+        <div className="actions lstacts">
+          <button type="button" className={"lstact" + (liked ? " on" : "")} onClick={like} aria-pressed={liked} aria-label="like" title="LIKE"><Icon name="heart" size={24} /></button>
+          {offerable.mode === "native"
+            ? <button type="button" className={"lstofferword" + (offer.open ? " on" : "")} aria-pressed={offer.open} title={offerable.reason} onClick={() => { haptic("press"); setOffer((o) => ({ ...o, open: !o.open })); }}>OFFER</button>
+            : offerable.mode === "wardrobe"
+              ? <button type="button" className="lstofferword" title={offerable.reason} onClick={() => { haptic("press"); setNotice("an offer starts with a message to the owner — the desk opens"); openSheet("messages", { title: "MESSAGES" }); }}>OFFER</button>
+              : <span className="lstofferword quiet" title={offerable.reason} aria-label={"OFFER — " + offerable.reason}>OFFER</span>}
+          <button type="button" className={"lstact" + (bagged ? " on" : "")} onClick={toBag} aria-pressed={bagged} aria-label={bagged ? "in the bag" : "add to the bag"} title={bagged ? "IN BAG ✓" : "BAG"}><Icon name="bag" size={24} /></button>
+          <SaveButton className="lstact lststamp" icon="hourglass" kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />
+        </div>
+        <h3 className="lstttl">{item.brand ? <a className="lstbrand" href={"/discover?q=" + encodeURIComponent(item.brand)} title={"see " + item.brand + " on DISCOVER"}>{pieceName(item)}</a> : pieceName(item)}</h3>
+        {(item.size && item.size.label) || fitLine ? (
+          <span className="lstsize">{item.size && item.size.label ? "SIZE: " + item.size.label : "SIZE"}{fitLine ? <small> ({fitLine})</small> : null}</span>
+        ) : null}
+        {priceLine(item) ? <span className="lstprice">{priceLine(item)}</span> : null}
         <div className="meta">
           {item.category ? <span className="cat">{item.category}</span> : null}
           {eraLabel(item.era) ? <span className="era">{eraLabel(item.era)}</span> : null}
-        </div>
-        <div className="pricerow">
-          {item.price ? <span className="price">{item.currency || "USD"} {item.price}</span> : null}
-          {(item.size && item.size.label) || fitLine ? (
-            <span className="size">
-              {item.size && item.size.label ? <span className="szlabel">SIZE: {item.size.label}</span> : null}
-              {fitLine ? <span className="szfit">{fitLine}</span> : null}
-            </span>
-          ) : null}
-        </div>
-
-        <div className="actions lstacts">
-          <button type="button" className={liked ? "on" : ""} onClick={like} aria-pressed={liked}><Icon name="heart" size={16} /> LIKE</button>
-          {native
-            ? <button type="button" className={offer.open ? "on" : ""} aria-pressed={offer.open} onClick={() => { haptic("press"); setOffer((o) => ({ ...o, open: !o.open })); }}>OFFER</button>
-            : <button type="button" className="soon" disabled title="OFFER is for native Storefront listings — an external listing is bought at its source">OFFER</button>}
-          <button type="button" className={bagged ? "on" : ""} onClick={toBag} aria-pressed={bagged}><Icon name="bag" size={16} /> {bagged ? "IN BAG ✓" : "BAG"}</button>
-          <SaveButton kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />
         </div>
         {offer.open && native ? (
           <form className="lstoffer" onSubmit={(e) => { e.preventDefault(); sendOffer(); }}>

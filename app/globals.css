@@ -117,6 +117,15 @@
      at the tilings below the pluses are 8, 11 and 15px with air between */
   --plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cpath d='M27.4 24.5h1.2v2.9h2.9v1.2h-2.9v2.9h-1.2v-2.9h-2.9v-1.2h2.9z' fill='%23000'/%3E%3C/svg%3E");
   --holo: linear-gradient(118deg, #8cf0a6 0%, #6e9cff 25%, #b088ff 50%, #ff8fb1 75%, #8cf0a6 100%);
+  /* ROUNDED EVERYWHERE (owner, 18 Oct 2026: "everything should be rounded
+     out"; the hand-drawn rounded rectangles of the references): the three
+     radii every shell-visible surface takes — a card or popup, a field, a
+     key or button. Theme-independent, so they live once, here. */
+  --radius-card: 22px;
+  --radius-field: 18px;
+  --radius-key: 14px;
+  /* the ink over a photograph (the post card's handle, caption and actions) */
+  --on-media: #ffffff;
 }
 [data-theme="light"] {
   --plus-k: 1;
@@ -3221,20 +3230,6 @@ body { font-size: 14px; }
 .streamopen span { flex: 1; font-size: 13px; letter-spacing: 0.02em; }
 .streamopen b { font-family: var(--mich); font-weight: 400; font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); }
 .streamcompose .wcright textarea { font-size: 14px; }
-/* a transmission in the masonry */
-.card.wpostcard { display: flex; flex-direction: column; }
-.card.wpostcard .wpcfig { margin: 0; }
-.card.wpostcard .wpcfig img { width: 100%; display: block; aspect-ratio: 4 / 5; object-fit: cover; }
-.card.wpostcard .wpcfig figcaption { font-size: 9px; letter-spacing: 0.1em; color: var(--grey); padding: 4px 12px 0; }
-.card.wpostcard .wpcfig figcaption a { color: inherit; text-decoration: none; }
-.wpcby { display: flex; align-items: center; gap: 10px; margin: 2px 0 8px; }
-.wpcby .avatar, .wpcby .av { width: 28px; height: 28px; }
-.wpcwho { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
-.wpcwho b { font-family: var(--mich); font-weight: 400; font-size: 11px; letter-spacing: 0.14em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wpcwho span { font-size: 9.5px; letter-spacing: 0.16em; color: var(--grey); }
-.wpcttl { display: block; color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.2; margin: 2px 0 6px; }
-.wpctext { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; margin: 0 0 8px; }
-.card.wpostcard .cardacts { flex-wrap: wrap; }
 /* the hotlist strip */
 .wlayout.hotlistonly { grid-template-columns: minmax(0, 760px); }
 .wfocus { margin: 0 0 16px; max-width: 520px; }
@@ -3654,7 +3649,10 @@ body { font-size: 14px; }
 .fixture { transition: transform 0.22s, opacity 0.22s; }
 /* a phone's header has no room for BACK, the title, the counter and two
    labelled buttons: with BACK up the action buttons keep their glyphs only */
-@media (max-width: 480px) { .sheethead.hasback .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+/* (18 Oct) on a phone the header's keys keep their glyphs only — with the
+   labels the title, the session count and EXPAND overlapped at 375px; the
+   aria-label still names each key */
+@media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
 .sheetcount { display: inline-block; margin-left: 10px; padding: 1px 6px; border-radius: 8px; border: 1px solid var(--line); font: 9px/14px var(--mich); letter-spacing: 0.1em; color: var(--grey); vertical-align: middle; }
 .sheet.roomy { height: min(74vh, 660px); }
 .sheet.hubsheet .sheetbody { display: flex; flex-direction: column; padding: 10px 14px 18px; }
@@ -3755,13 +3753,11 @@ body { font-size: 14px; }
 .feedwheel > * + * { margin-top: -6px; }
 .feedfull { position: relative; z-index: 1; margin: 0 0 var(--ed-card-gap, 26px); }
 .feedfull .card { margin: 0; }
-.feedfull .card.wpostcard .wpcfig img, .feedfull .wpccarousel img { aspect-ratio: 4 / 3; }
 .feedstrip { margin: 0 0 14px; }
 .feedstrip .card { margin: 0; }
 .feedstrip .card .body { padding-top: 4px; }
 .typechip { display: inline-block; padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; font: 8px/1.5 var(--mich); letter-spacing: 0.14em; color: var(--grey); vertical-align: middle; }
 .typechip.brd { color: var(--red); border-color: var(--red); }
-.card.wpostcard .wpcwho > span .typechip { margin-right: 2px; }
 /* media in a card is a button: tap enlarges (MediaFloat) */
 .wpcmedia { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .wpcmedia img { width: 100%; display: block; }
@@ -3771,23 +3767,8 @@ body { font-size: 14px; }
 .wpcpieces:not(.fragment) li button { grid-template-columns: 40px 1fr; align-items: center; column-gap: 8px; }
 .wpcpieces:not(.fragment) li button img { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; grid-row: 1 / span 3; }
 .wpcpieces.fragment li button img { width: 100%; aspect-ratio: 1; object-fit: contain; background: var(--paper); border-radius: 8px; }
-/* the BRDCST footer (5.2–5.6): collapsed to title and date; expands inline */
-.brdcst { margin: 8px 0 0; border: 1px solid var(--line); border-radius: 12px; }
-.brdcsthead { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; width: 100%; padding: 8px 10px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
-.brdcsthead b { font: 10px/1.3 var(--mich); letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.brdcstwhen { grid-column: 2; font: 8px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
-.brdcstexp, .placeexp { grid-row: 1 / span 2; font: 14px/1 var(--helv); color: var(--sig); }
 .brdcstbody { display: grid; gap: 6px; padding: 0 10px 10px; border-top: 1px solid var(--line); padding-top: 8px; }
-.brdcstacts, .placeacts { display: flex; flex-wrap: wrap; gap: 14px; }
-/* PLACE: compact until opened, then in place */
-.card.placecard { border: 1px solid var(--line); border-radius: 14px; padding: 0; }
-.placehead { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: center; width: 100%; padding: 10px 12px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
-.placehead .typechip { grid-row: 1; }
-.placename { grid-column: 2; font: 10.5px/1.3 var(--mich); letter-spacing: 0.08em; }
-.placemeta { grid-column: 1 / span 2; font: 8px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
-.placebody { display: grid; gap: 6px; padding: 0 12px 12px; }
-.placedesc { margin: 0; font-size: 13px; line-height: 1.45; }
-.placeline { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+.brdcstacts { display: flex; flex-wrap: wrap; gap: 14px; }
 /* the ECHO rail: the nested horizontal carousel */
 .echorail { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 0 8px; scroll-snap-type: x proximity; }
 .echoring { flex: none; display: grid; justify-items: center; gap: 4px; width: 64px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; scroll-snap-align: start; position: relative; }
@@ -3820,12 +3801,8 @@ body { font-size: 14px; }
 .lstdots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
 .lstdot { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: 1px solid var(--paper); background: color-mix(in srgb, var(--ink) 40%, transparent); cursor: pointer; }
 .lstdot.cur { background: var(--red); }
-.lstbadge { position: absolute; top: 10px; left: 10px; }
 .lstbody { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.lstttl { margin: 0; font: 400 16px/1.3 var(--mich); letter-spacing: 0.02em; text-transform: uppercase; }
-.lstbrand { font: 10px/1.4 var(--mich); letter-spacing: 0.12em; color: var(--sig); text-decoration: none; }
 .lstacts button, .lstacts .savebtn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.12em; }
-.lstacts button.soon { color: var(--red); }
 .lstbuy { gap: 14px; }
 /* TAGS — LEFT: RIGHT (the blueprint's Tag grammar, slice 4; lib/tagging/grammar.js,
    TagChip.jsx). Liquid Glass chip, the fine border, the card radius; Michroma,
@@ -4064,11 +4041,9 @@ body { font-size: 14px; }
 .brdquote .brdtotal { border-top: 1px solid var(--line); padding-top: 4px; margin-top: 2px; }
 .brdquote .brdtotal dd { color: var(--red); }
 .brdforecast { line-height: 1.5; }
-.brdcstlist { list-style: none; margin: 0; padding: 0 0 6px; display: grid; gap: 2px; border-top: 1px solid var(--line); }
 .brdcstev { border-bottom: 1px solid var(--line); }
 .brdcstev:last-of-type { border-bottom: 0; }
 .brdcstevhead { display: grid; gap: 2px; width: 100%; padding: 8px 10px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
-.brdcstevhead b { font: 10px/1.3 var(--mich); letter-spacing: 0.08em; }
 .brdcstev .brdcstbody { border-top: 0; padding-top: 0; }
 .brdcstpage { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 6px 10px 2px; }
 .stcamps { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 10px; }
@@ -4274,3 +4249,132 @@ body { font-size: 14px; }
 .bdatt .sub { color: var(--grey); font-family: var(--helv); letter-spacing: 0; font-size: 11px; }
 .vline { font-family: var(--helv); font-size: 12px; color: var(--grey); margin: 4px 0; }
 .vline b { color: var(--ink); font-family: var(--mich); font-size: 10px; letter-spacing: .08em; margin-right: 6px; }
+
+/* =====================================================================
+   V.2 slice 14: THE FEED TO THE OWNER'S REFERENCES (18 Oct 2026,
+   docs/v2/references/2026-10-18-feed/). Every card is a rounded card; the
+   post's media fills it with the handle, the caption and four outline
+   actions over it; the BRDCST footer hangs from it as drawn; the place card
+   is the venue mark, the distance, the name and the globe; the piece card
+   is the photograph with one quiet line. Michroma for the words that name,
+   Share Tech Mono for the captions and meta, red the only accent.
+   ===================================================================== */
+/* the post card */
+.card.wpostcard { position: relative; display: flex; flex-direction: column; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.wpcstage { position: relative; background: color-mix(in srgb, var(--ink) 8%, var(--paper)); }
+.wpcstage .wpcfig { margin: 0; }
+.wpcstage .wpcfig img, .wpcstage video { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.feedfull .wpcstage .wpcfig img, .feedfull .wpcstage video { max-height: min(80vh, 760px); }
+.wpcstage .wpccarousel { display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; }
+.wpcstage .wpccarousel .wpcmedia { flex: 0 0 100%; }
+.wpcstage .wpccarousel .wpcmedia img { aspect-ratio: 4 / 5; border-radius: 0; }
+.wpcstage .wpcfig figcaption { position: absolute; top: 10px; left: 12px; font: 9px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--on-media); opacity: 0.8; }
+/* the handle, the caption and the actions, over the media */
+.wpcover { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: grid; gap: 3px; padding: 64px 16px 12px; color: var(--on-media); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.1) 25%, rgba(0, 0, 0, 0.58)); pointer-events: none; }
+.wpcover > * { pointer-events: auto; }
+.wpchandle { display: flex; align-items: center; gap: 10px; font: 400 clamp(15px, 4.4vw, 19px)/1.2 var(--mich); letter-spacing: 0.01em; }
+.wpchandle .friendmark { color: var(--on-media); }
+.wpcover .wpcttl { color: inherit; text-decoration: none; font: 400 12px/1.3 var(--mich); letter-spacing: 0.02em; }
+.wpcover .wpccap { margin: 0; max-width: none; font: 13px/1.4 var(--mono); letter-spacing: 0.01em; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.wpcover .wpccap a { color: inherit; }
+.wpcacts { position: relative; display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+.wpcact { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; transition: transform 0.12s, color 0.18s; }
+.wpcact b { font: 400 10px/1 var(--mich); }
+.wpcact:active { transform: scale(0.94); }
+.wpcact.on { color: var(--red); }
+/* the shared .soon rule ([data-theme] :is(… .btn.ghost.soon …), four classes deep) paints a word red; over a photograph the bubble is a quiet white glyph */
+.wpcact.quiet, [data-theme] .wpcacts .wpcact.wpcact.soon { opacity: 0.45; cursor: default; color: inherit; background: none; border: 0; box-shadow: none; text-shadow: none; }
+.wpcact.savew { font: inherit; letter-spacing: 0; text-transform: none; }
+.wpcshared { position: absolute; left: 0; bottom: 100%; font: 9px/1.3 var(--mich); letter-spacing: 0.1em; }
+.wpcorb { margin-left: auto; display: inline-flex; }
+.wpcorb a { display: inline-flex; border-radius: 50%; }
+.wpcorb .uavatar { width: 32px; height: 32px; border: 1.5px solid currentColor; border-radius: 50%; background: transparent; color: inherit; font-size: 10px; }
+/* a TRANSM: the same block, in the card's own ink */
+.wpcbody { display: grid; gap: 6px; padding: 14px 16px 10px; }
+.wpcbody .wpcover { position: static; padding: 0; color: var(--ink); background: none; }
+.wpcbody .wpccap { -webkit-line-clamp: 8; font: 14px/1.5 var(--helv); }
+.wpcbody .wpcorb .uavatar { border-color: var(--line); }
+.wpccredit { display: block; padding: 6px 16px 0; font: 9px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
+.wpccredit a { color: inherit; text-decoration: none; }
+.card.wpostcard .wpcpieces, .card.wpostcard .wpclink { margin: 10px 16px; }
+.card.wpostcard .wpcpieces { list-style: none; padding: 0; display: grid; gap: 8px; }
+/* the BRDCST footer, exactly as drawn: BRDCST · date-time · rule · *event · chevron */
+.brdcst > * { min-width: 0; }
+.brdcst { display: grid; gap: 4px; margin: 0; padding: 10px 16px 10px; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: var(--paper); color: var(--ink); }
+.brdcsthead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0; }
+.brdcstword { flex: none; font: 400 clamp(24px, 6.8vw, 40px)/1 var(--mich); letter-spacing: -0.01em; }
+.brdcstword small { font-size: 11px; margin-left: 8px; color: var(--red); letter-spacing: 0.08em; vertical-align: middle; }
+.brdcst .brdcstwhen { flex: 0 1 auto; min-width: 0; font: 400 clamp(9px, 2.6vw, 12px)/1.3 var(--mich); letter-spacing: 0.02em; color: var(--ink); text-align: right; }
+.brdcstrule { display: block; height: 3px; margin: 2px 0 2px 8px; border-radius: 2px; background: var(--ink); opacity: 0.85; }
+.brdcstname { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 2px 0 0 8px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 clamp(17px, 5vw, 26px)/1.2 var(--mich); letter-spacing: 0; }
+.brdcstname > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brdcstname .ic { flex: none; transition: transform 0.18s; }
+.brdcstname .ic.up { transform: rotate(180deg); }
+.brdcstast { font-style: normal; color: var(--red); margin-right: 1px; }
+.brdcstlist { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
+.brdcstmeta { padding: 0 0 4px 8px; font-family: var(--mich); letter-spacing: 0.08em; }
+.brdcstevhead { padding: 8px 8px; }
+.brdcstevhead b { font: 400 13px/1.3 var(--mich); }
+.brdcstev .brdcstwhen { font: 10px/1.3 var(--mono); color: var(--grey); text-align: left; white-space: normal; }
+.brdcstbody { padding: 0 8px 8px; border-top: 0; }
+@media (prefers-reduced-motion: reduce) { .brdcstname .ic, .wpcact { transition: none; } }
+/* the place card: the venue mark, the distance, the name, the globe */
+.card.placecard { padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); overflow: hidden; }
+.placeopen { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; align-items: start; width: 100%; min-height: 150px; padding: 14px 14px 18px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.placeicon { display: inline-grid; place-items: center; width: 66px; height: 58px; border: 1.5px solid var(--ink); border-radius: 9px; color: var(--ink); }
+.placedist { justify-self: end; font: 400 clamp(20px, 5.4vw, 28px)/1 var(--mich); letter-spacing: 0; text-align: right; color: var(--ink); }
+.placedist.quiet { color: var(--grey); }
+.placename { grid-column: 1 / -1; margin-top: 2px; font: 400 clamp(13px, 3.6vw, 15px)/1.3 var(--mich); letter-spacing: 0; color: var(--ink); }
+.placemeta { grid-column: 1 / -1; padding-right: 28px; font: 10px/1.45 var(--mono); letter-spacing: 0.03em; color: var(--grey); }
+.placeglobe { position: absolute; right: 12px; bottom: 10px; color: var(--ink); line-height: 0; }
+/* the map popup's head (4.jpg): the mark, the distance and MAPS ↗, the name, the kind, the rating slot, the description */
+.mapsheet .placehead { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 14px; align-items: start; padding: 2px 2px 8px; }
+.mapsheet .placeicon { width: 96px; height: 82px; border-radius: 10px; }
+.placeheadright { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+.mapspill { font: 400 11px/1 var(--mich); letter-spacing: 0.06em; padding: 8px 11px; border: 1.5px solid var(--ink); border-radius: 999px; color: var(--ink); text-decoration: none; }
+.mapspill:hover { color: var(--red); border-color: var(--red); }
+.mapsheet .placename { font-size: clamp(18px, 5vw, 24px); margin-top: 6px; padding-right: 28px; }
+.placekind { grid-column: 1 / -1; font: 14px/1.3 var(--mono); color: var(--ink); text-transform: capitalize; }
+.placerating { grid-column: 1 / -1; display: inline-flex; align-items: center; gap: 6px; justify-self: start; font: 400 15px/1 var(--mich); color: var(--ink); text-decoration: none; }
+.placerating small { font: 12px/1 var(--mono); }
+.mapsheet .placeglobe { bottom: 8px; }
+.mapsheet .placedesc { display: grid; gap: 4px; padding: 0 2px 8px; }
+.placedesclbl { font: 400 16px/1.3 var(--mich); color: var(--ink); }
+.mapsheet .placedesc p { margin: 0; font: 13px/1.5 var(--mono); color: var(--ink); }
+.mapsheet .placedesc .fine { font-family: var(--mono); }
+/* the piece card: the photograph, rounded, one quiet line beneath, × to pass */
+.card.piece { position: relative; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.card.piece .imgwrap { border-radius: 0; }
+.piecepass { position: absolute; top: 8px; right: 8px; z-index: 3; width: 28px; height: 28px; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--paper) 72%, transparent); color: var(--ink); font: 15px/1 var(--helv); cursor: pointer; opacity: 0.7; transition: opacity 0.18s, transform 0.12s; }
+.piecepass:hover { opacity: 1; }
+.piecepass:active { transform: scale(0.94); }
+.pieceline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 9px 12px 2px; font: 400 10.5px/1.4 var(--mich); letter-spacing: 0.01em; }
+.pieceline .ttl { min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-transform: none; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pieceline .price { margin: 0; flex: none; font: inherit; }
+.card.piece .fitline { padding: 0 12px; }
+.card.piece .fitline.demoflag { padding: 2px 12px 0; }
+.card.piece .tagrow { margin: 4px 0 0; padding: 0 12px 10px; }
+.card.piece:hover .imgwrap::before { content: none; }
+/* the deck's ad slot wears its name in red, as drawn */
+.adslot { flex: none; font: 400 11px/1 var(--mich); letter-spacing: 0.04em; color: var(--red); }
+/* the listing popup to 5.jpg: the ledger's word on the photograph, ♡ OFFER bag, the lines in Michroma */
+.lstbadge { position: absolute; top: 10px; left: 12px; z-index: 2; }
+.lstbadge.unverified .vbadgemark { background: none; border: 0; padding: 0; color: var(--ink); }
+.lstbadge.unverified .vbadgemark span[aria-hidden] { display: none; }
+.lstbadge.unverified .vbadgemark small { font: 400 15px/1.2 var(--mich); letter-spacing: 0; text-transform: lowercase; color: var(--ink); text-shadow: 0 0 6px var(--paper), 0 0 2px var(--paper); }
+.lstacts { display: flex; align-items: center; gap: 22px; margin: 10px 0 12px; border: 0; padding: 0; }
+.lstacts .lstact { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform 0.12s, color 0.18s; }
+.lstacts .lstact:active { transform: scale(0.94); }
+[data-theme] .lstacts .lstact { color: var(--ink); background: none; border: 0; box-shadow: none; text-shadow: none; }
+[data-theme] .lstacts .lstact.on, [data-theme] .lstacts .lstact[aria-pressed="true"] { color: var(--red); }
+.lstacts .lststamp { margin-left: auto; }
+.lstofferword { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1.5px solid var(--ink); border-radius: var(--radius-key); background: none; color: var(--ink); font: 400 13px/1 var(--mich); letter-spacing: 0.08em; cursor: pointer; }
+.lstofferword.on { color: var(--red); border-color: var(--red); }
+.lstofferword.quiet { opacity: 0.4; cursor: help; }
+.lstttl { margin: 0; font: 400 clamp(18px, 5vw, 24px)/1.25 var(--mich); letter-spacing: 0; text-transform: none; color: var(--ink); }
+.lstttl .lstbrand { color: inherit; text-decoration: none; font: inherit; letter-spacing: inherit; }
+.lstsize { display: block; margin: 6px 0 0 0; font: 400 clamp(13px, 3.6vw, 16px)/1.3 var(--mich); letter-spacing: 0.02em; }
+.lstsize small { font: 11px/1 var(--mono); color: var(--grey); letter-spacing: 0; }
+.lstprice { display: block; margin: 4px 0 8px; font: 400 clamp(24px, 6.6vw, 32px)/1.1 var(--mich); letter-spacing: 0; }
+/* a narrow column: a long tag wraps inside its chip instead of spilling past the card */
+.card.piece .tag .tl, .card.piece .tag .tr { white-space: normal; overflow-wrap: anywhere; }

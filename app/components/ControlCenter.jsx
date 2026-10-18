@@ -72,7 +72,9 @@ function AdStrip({ typing }) {
   const cur = items && items.length ? items[i % items.length] : null;
   const step = (d) => { if (items && items.length) setI((n) => (n + d + items.length) % items.length); };
   return (
-    <div className="adstrip" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+    <div className="adstrip" aria-label="ads and placements" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
+      {/* the slot's name, in red, as the owner drew it (18 Oct 2026: "*ADs") */}
+      <span className="adslot" aria-hidden="true">*ADs</span>
       {cur ? (
         <>
           <a className="adline" href={cur.href} aria-label={cur.label.toLowerCase() + " placement: " + cur.line}>

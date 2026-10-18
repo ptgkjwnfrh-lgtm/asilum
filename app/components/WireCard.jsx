@@ -2,17 +2,25 @@
 
 // app/components/WireCard.jsx — a post as a card in THE ONE FEED (V.2
 // Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing
-// types). The card wears its type — TRANSM · STILL · MOTION · BRDCST —
-// read from what it carries (lib/feed/types.js postType), the same column
-// a LISTING takes, and a STILL or MOTION takes the full width (Tetris
-// weight 70%). Tapping the media enlarges it over the Feed (MediaFloat,
-// the "media" popup). A post that carries an event wears the BRDCST
-// FOOTER: collapsed to the title and the date with a discreet expander
-// (5.2); expanded inline, downward, staying attached to the post (5.3),
-// with the essentials, the map shortcut and the tickets link to the
-// organizer's own site (5.4–5.6). A real post carries its byline, its
-// permalink and the people-counted LIKE; a sample carries its credit and
-// the SAMPLE tag. STAMP is the one save.
+// types), drawn to the owner's references of 18 Oct 2026
+// (docs/v2/references/2026-10-18-feed/2.jpg, 3.jpg): the media FILLS the
+// rounded card; the author's handle and the caption sit over it bottom-left
+// in white; four white outline actions run along the bottom — the heart
+// (LIKE), the comment bubble, the hourglass (STAMP, the one save) and the
+// share arrow — with the author's small circle at the right. A post that
+// carries an event wears the BRDCST FOOTER hanging from the card, exactly as
+// drawn: BRDCST large at the left, the date and time at the right, a rule,
+// then "*event name" with a chevron that expands it inline, downward,
+// staying attached to the post (5.2–5.6), with the essentials, the map
+// popup (5.5) and the tickets link to the organizer's own site.
+//
+// The card wears its type — TRANSM · STILL · MOTION · BRDCST — read from
+// what it carries (lib/feed/types.js postType); a STILL or MOTION takes the
+// full width (Tetris weight 70%). Tapping the media enlarges it over the
+// Feed (MediaFloat, the "media" popup). A real post carries its byline, its
+// permalink and the people-counted LIKE; a sample carries its credit and the
+// SAMPLE tag and never a LIKE. The comment bubble is `soon` — comments are
+// not built — and says so; nothing here pretends.
 
 import { useEffect, useRef, useState } from "react";
 import TransmissionText from "./TransmissionText.jsx";
@@ -20,28 +28,24 @@ import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
 import Icon from "./Icons.jsx";
 import { Avatar, FriendName } from "./UserBits.jsx";
-import { timeAgo } from "../../lib/social.js";
 import { readWireRefs } from "../../lib/model/media.js";
 import { registerFeedVideo, feedPolicy } from "../../lib/media/feedplay.js";
 import { footerPages } from "../../lib/brdcst/index.js";
-import { postType } from "../../lib/feed/types.js";
+import { postType, brdcstWhen } from "../../lib/feed/types.js";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import TagRow from "./TagChip.jsx";
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
-const LAYOUT_WORD = { single: "", carousel: "CAROUSEL", fragment: "WARDROBE FRAGMENT", expose: "EXPOSÉ", event: "" };
-
 const STATE_WORD = { draft: "DRAFT · UNPAID", scheduled: "SCHEDULED", active: "LIVE", ended: "ENDED", cancelled: "CANCELLED", under_review: "UNDER REVIEW" };
 
 /** One event inside the footer: collapsed to its title and date until tapped (5.11). */
 function BrdcstEvent({ event, open, onToggle }) {
-  const when = event.startsAt ? event.startsAt + (event.endsAt && event.endsAt !== event.startsAt ? " → " + event.endsAt : "") : "";
   return (
     <li className={"brdcstev" + (open ? " open" : "")}>
       <button type="button" className="brdcstevhead" aria-expanded={open} onClick={() => { haptic("press"); onToggle(); }}>
-        <b>{event.name}</b>
-        <span className="brdcstwhen">{when}{event.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        <b><i className="brdcstast" aria-hidden="true">*</i>{event.name}</b>
+        <span className="brdcstwhen">{brdcstWhen(event)}{event.sample ? " · SAMPLE FIXTURE" : ""}</span>
       </button>
       {open ? (
         <div className="brdcstbody">
@@ -58,9 +62,10 @@ function BrdcstEvent({ event, open, onToggle }) {
 }
 
 /**
- * The BRDCST footer (blueprint 5.2–5.6, 5.10–5.12; slice 8): the white is
- * the post, the broadcast hangs from it. Collapsed: the soonest event's
- * title and date, "+N" when more ride along, the expander. Expanded: five
+ * The BRDCST footer (blueprint 5.2–5.6, 5.10–5.12; slice 8; the owner's
+ * drawing of 18 Oct): the white is the post, the broadcast hangs from it.
+ * The head reads BRDCST · the soonest event's date and time; under the rule
+ * the event's name with the asterisk and the chevron. Expanded: five
  * soonest-first, each collapsed until tapped, the next five on a discreet
  * control. `brdcst` is the server's delivery note — the author sees the
  * campaign's state; a reader in reach sees the radius.
@@ -73,18 +78,21 @@ export function BrdcstFooter({ event, events = null, brdcst = null }) {
   if (!all.length) return null;
   const pages = footerPages(all, { page });
   const first = pages.visible[0] || all[0];
-  const when = first.startsAt ? first.startsAt + (first.endsAt && first.endsAt !== first.startsAt ? " → " + first.endsAt : "") : "";
   const meta = brdcst ? (brdcst.yours ? (STATE_WORD[brdcst.state] || String(brdcst.state).toUpperCase()) + (brdcst.radiusMi ? ` · ${brdcst.radiusMi} MI` : "") : brdcst.radiusMi ? `BRDCST: ${brdcst.radiusMi} MI` : null) : null;
   return (
     <div className={"brdcst" + (open ? " open" : "")}>
-      <button type="button" className="brdcsthead" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
-        <span className="typechip brd">BRDCST{pages.more > 0 ? ` +${pages.more}` : ""}</span>
-        <b>{first.name}</b>
-        <span className="brdcstwhen">{when}{first.sample ? " · SAMPLE FIXTURE" : ""}{meta ? " · " + meta : ""}</span>
-        <span className="brdcstexp" aria-hidden="true">{open ? "−" : "+"}</span>
+      <div className="brdcsthead">
+        <b className="brdcstword">BRDCST{pages.more > 0 ? <small>+{pages.more}</small> : null}</b>
+        <span className="brdcstwhen">{brdcstWhen(first)}{first.sample ? " · SAMPLE FIXTURE" : ""}</span>
+      </div>
+      <span className="brdcstrule" aria-hidden="true" />
+      <button type="button" className="brdcstname" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
+        <span><i className="brdcstast" aria-hidden="true">*</i>{first.name}</span>
+        <Icon name="chevron" size={20} className={open ? "up" : ""} />
       </button>
       {open ? (
         <ul className="brdcstlist" aria-label={`${pages.total} event${pages.total === 1 ? "" : "s"}`}>
+          {meta ? <li className="brdcstmeta fine">{meta}</li> : null}
           {pages.visible.map((ev) => <BrdcstEvent key={ev.id} event={ev} open={openId === ev.id || (pages.total === 1)} onToggle={() => setOpenId(openId === ev.id ? null : ev.id)} />)}
           {pages.pages > 1 ? (
             <li className="brdcstpage">
@@ -123,11 +131,10 @@ function MotionMedia({ video, id, onMedia, label }) {
   );
 }
 
-/** The composition's attachments, rendered by layout. Every image carries
- *  the author's alt; an exposé's layers are text over the image AND a
- *  readable caption beneath it; pieces, the event and the link are the
- *  snapshots the server stored — never fetched HTML. */
-function Attachments({ p, onMedia }) {
+/** The composition's media, rendered by layout. Every image carries the
+ *  author's alt; an exposé's layers are text over the image AND a readable
+ *  caption beneath it. */
+function Media({ p, onMedia }) {
   const a = p.attachments || {};
   const media = Array.isArray(a.media) ? a.media : [];
   const urls = media.map((m) => m.url || (p.imageUrl && media.indexOf(m) === 0 ? p.imageUrl : null)).filter(Boolean);
@@ -153,8 +160,19 @@ function Attachments({ p, onMedia }) {
           <span className="wpccount" aria-hidden="true">{urls.length}</span>
         </div>
       )}
+    </>
+  );
+}
+
+/** The snapshots a composition carries beneath its media: tagged pieces
+ *  (each opens its LISTING) and the link — the snapshots the server stored,
+ *  never fetched HTML. */
+function Extras({ p }) {
+  const a = p.attachments || {};
+  return (
+    <>
       {Array.isArray(a.pieces) && a.pieces.length > 0 && (
-        <ul className={"wpcpieces" + (layout === "fragment" ? " fragment" : "")} aria-label="tagged pieces">
+        <ul className={"wpcpieces" + (p.layout === "fragment" ? " fragment" : "")} aria-label="tagged pieces">
           {a.pieces.map((pc) => (
             <li key={pc.id}>
               <button type="button" onClick={() => openSheet("listing", { id: pc.id, title: "LISTING" })}>
@@ -172,8 +190,40 @@ function Attachments({ p, onMedia }) {
           <span className="wpclinkbody"><span className="cclbl">{a.link.site || a.link.host} ↗</span><b>{a.link.title || a.link.url}</b>{a.link.description ? <span>{a.link.description}</span> : null}</span>
         </a>
       )}
-      {(a.event || (a.events && a.events.length)) && <BrdcstFooter event={a.event} events={a.events} brdcst={a.brdcst || null} />}
     </>
+  );
+}
+
+/** The four outline actions (the reference's heart, bubble, hourglass,
+ *  arrow) and the author's circle. A sample carries no LIKE and no share of
+ *  its own; the bubble is soon. */
+function Actions({ p, eng, onEngage, sample, href, name, image }) {
+  const [shared, setShared] = useState("");
+  async function share() {
+    haptic("press");
+    const url = window.location.origin + href;
+    try {
+      if (navigator.share) await navigator.share({ url, title: p.title || name });
+      else await navigator.clipboard.writeText(url);
+      setShared("link copied ✓");
+    } catch { setShared(""); }
+    setTimeout(() => setShared(""), 1800);
+  }
+  return (
+    <div className="wpcacts" role="group" aria-label="post actions">
+      {eng
+        ? <button type="button" className={"wpcact" + (eng.youLike ? " on" : "")} aria-pressed={!!eng.youLike} onClick={() => { haptic("press"); onEngage && onEngage(p, "like"); }} aria-label={"like" + (eng.likes > 0 ? ", " + eng.likes : "")} title="LIKE"><Icon name="heart" size={22} />{eng.likes > 0 ? <b>{eng.likes}</b> : null}</button>
+        : <span className="wpcact quiet" title={sample ? "a sample carries no LIKE" : "LIKE arrives with the post's record"} aria-hidden="true"><Icon name="heart" size={22} /></span>}
+      <span className="wpcact soon" title="comments are not built yet" aria-label="comments — not built yet"><Icon name="comment" size={22} /></span>
+      <SaveButton className="wpcact" icon="hourglass" kind="post" id={sample ? p.id : String(p.serverId ?? p.id)} title={p.title || (p.text || "").slice(0, 80)} image={image ? image.src : ""} href={href} meta={name} tags={sample ? p.tags : (p.tags || [])} labels={["STAMP", "STAMPED ✓"]} />
+      {sample
+        ? <span className="wpcact quiet" title="a sample has no link of its own" aria-hidden="true"><Icon name="share" size={22} /></span>
+        : <button type="button" className="wpcact" onClick={share} aria-label="share the post" title={shared || "SHARE"}><Icon name="share" size={22} /></button>}
+      {shared ? <span className="wpcshared" role="status">{shared}</span> : null}
+      <span className="wpcorb">
+        {sample ? <Avatar name={name} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)} aria-label={"the author, " + name}><Avatar name={name} /></a>}
+      </span>
+    </div>
   );
 }
 
@@ -182,40 +232,44 @@ export default function WireCard({ post: p, engagement, onEngage }) {
   const type = postType(p);
   const refs = sample ? { category: p.category, intent: p.intent } : readWireRefs(p.tags || []);
   const composed = !sample && p.attachments && Object.keys(p.attachments).length > 0;
+  const a = p.attachments || {};
   const image = sample ? p.image : (!composed && p.imageUrl ? { src: p.imageUrl, alt: "", credit: "", url: "" } : null);
   const name = sample ? p.name : (p.name || p.handle);
   const eng = !sample && p.serverId != null && engagement ? engagement[String(p.serverId)] : null;
   const href = sample ? "/" : (p.serverId != null ? "/?post=" + encodeURIComponent(p.serverId) : "/");
-  const onMedia = (type === "STILL" || type === "MOTION") ? () => { haptic("press"); openSheet("media", sample ? { id: p.id, sample: true, title: type } : { id: p.serverId, title: type }); } : undefined;
+  const hasMedia = type === "STILL" || type === "MOTION";
+  const onMedia = hasMedia ? () => { haptic("press"); openSheet("media", sample ? { id: p.id, sample: true, title: type } : { id: p.serverId, title: type }); } : undefined;
+  const events = a.event || (a.events && a.events.length) ? <BrdcstFooter event={a.event} events={a.events} brdcst={a.brdcst || null} /> : null;
+  const caption = (
+    <div className="wpcover">
+      <span className="wpchandle">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}{sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}</span>
+      {p.title ? <a className="wpcttl" href={href}>{p.title}</a> : null}
+      <TransmissionText text={p.text} className="wpccap" />
+      <Actions p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
+    </div>
+  );
   return (
-    <article className={"card wpostcard type-" + type.toLowerCase() + (sample ? " sample" : "")} data-id={"post:" + (p.serverId ?? p.id)} data-type={type} aria-label={type.toLowerCase() + (sample ? " (sample editorial): " : ": ") + (p.title || name)}>
-      {composed && <Attachments p={p} onMedia={onMedia} />}
-      {sample && p.video && <MotionMedia video={p.video} id={p.id} onMedia={onMedia} label={"open the sample motion: " + (p.title || "")} />}
-      {image && !p.video && (
-        <figure className="wpcfig">
-          <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={image.src} alt={image.alt || ""} loading="lazy" /></button>
-          {image.credit && <figcaption><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></figcaption>}
-        </figure>
-      )}
-      <div className="body">
-        <div className="wpcby">
-          {sample ? <Avatar name={name} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)}><Avatar name={name} /></a>}
-          <span className="wpcwho">
-            <b>{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</b>
-            <span><span className="typechip">{type}</span>{[refs.intent && refs.intent.toUpperCase(), !sample && p.layout && LAYOUT_WORD[p.layout] ? LAYOUT_WORD[p.layout] : null, !sample && p.at ? timeAgo(p.at) : null].filter(Boolean).map((s) => " · " + s).join("")}</span>
-          </span>
-          {sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}
-        </div>
-        {p.title ? <a className="wposthead wpcttl" href={href}>{p.title}</a> : null}
-        <TransmissionText text={p.text} className="wpctext" />
-        <div className="cardacts">
-          <SaveButton kind="post" id={sample ? p.id : String(p.serverId ?? p.id)} title={p.title || (p.text || "").slice(0, 80)} image={image ? image.src : ""} href={href} meta={name} tags={sample ? p.tags : (p.tags || [])} labels={["STAMP", "STAMPED ✓"]} />
-          {eng && (
-            <button className={"weng" + (eng.youLike ? " on" : "")} onClick={() => onEngage && onEngage(p, "like")}><Icon name="heart" size={14} /> LIKE{eng.likes > 0 ? <b> {eng.likes}</b> : null}</button>
+    <article className={"card wpostcard type-" + type.toLowerCase() + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "")} data-id={"post:" + (p.serverId ?? p.id)} data-type={type} aria-label={type.toLowerCase() + (sample ? " (sample editorial): " : ": ") + (p.title || name)}>
+      {hasMedia ? (
+        <div className="wpcstage">
+          {composed && <Media p={p} onMedia={onMedia} />}
+          {sample && p.video && <MotionMedia video={p.video} id={p.id} onMedia={onMedia} label={"open the sample motion: " + (p.title || "")} />}
+          {image && !p.video && (
+            <figure className="wpcfig">
+              <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={image.src} alt={image.alt || ""} loading="lazy" /></button>
+            </figure>
           )}
-          {(sample ? p.tags : []).slice(0, 2).map((t) => <a key={t} className="txtbtn" href={"/discover?q=" + encodeURIComponent(String(t).toLowerCase())}>{t}</a>)}
+          {caption}
         </div>
-      </div>
+      ) : (
+        <div className="wpcbody">
+          <span className="typechip">{type}{refs.intent ? " · " + refs.intent.toUpperCase() : ""}</span>
+          {caption}
+        </div>
+      )}
+      {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
+      {composed ? <Extras p={p} /> : null}
+      {events}
     </article>
   );
 }

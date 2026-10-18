@@ -28,7 +28,7 @@ import { createEditorialPost } from "../lib/db/production/editorial.js";
 import { saveProfile } from "../lib/db/core/profiles.js";
 import { putUserRecord } from "../lib/db/production/records.js";
 import { listNotifications, resetMemoryListingStatus } from "../lib/db/production/listingStatus.js";
-import { listPlaces } from "../lib/places/registry.js";
+import { listPlaces, PLACES, placeRating, mapsUrl, milesLabel } from "../lib/places/registry.js";
 import { eventsOf, validateComposition, attachmentsFor } from "../lib/wire/compose.js";
 import { addEvent, removeEvent, newDraft } from "../lib/wire/draft.js";
 import { callRoute, loadRoute, newDevice } from "./helpers/route.js";
@@ -293,4 +293,14 @@ test("the routes: the quote is public and itemized; campaigns are the owner's; p
   assert.equal(served.authorId, undefined, "the author id never leaves the server");
   const ticker = await callRoute(brdcst.GET, { path: "/api/brdcst", query: { ticker: "1" } });
   assert.equal(ticker.status, 200); assert.deepEqual(ticker.body.placements, []);
+});
+
+test("slice 14: a place's rating is drawn only from a named source with a count and a link; MAPS is the place's own coordinates", () => {
+  for (const p of PLACES) assert.equal(placeRating(p), null, p.id + " carries no sourced rating, so none is drawn");
+  assert.equal(placeRating({ rating: { value: 4.6, count: 24000 } }), null, "a figure without a source is never printed");
+  assert.equal(placeRating({ rating: { value: 9, count: 3, source: "x", url: "https://x" } }), null, "out of range");
+  assert.deepEqual(placeRating({ rating: { value: 4.63, count: 24000, source: "a review source", url: "https://example.org/r" } }), { value: 4.6, count: 24000, source: "a review source", url: "https://example.org/r" });
+  assert.match(mapsUrl({ lat: 38.9605, lng: -76.8701 }), /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=38\.96050%2C-76\.87010$/);
+  assert.equal(mapsUrl({ lat: null, lng: 1 }), null);
+  assert.equal(milesLabel(305.4), "305 mi"); assert.equal(milesLabel(0.4), "under a mile"); assert.equal(milesLabel(NaN), "");
 });
