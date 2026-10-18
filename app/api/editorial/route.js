@@ -23,6 +23,8 @@ import { validateComposition, attachmentsFor, eventsOf } from "../../../lib/wire
 import { deliverPosts } from "../../../lib/db/production/brdcst.js";
 import { fetchPreview } from "../../../lib/wire/preview.js";
 import { wireImageUrl } from "../../../lib/wire/media.js";
+import { getMotionAsset, motionForPost } from "../../../lib/db/production/media.js";
+import { motionUrls } from "../../../lib/media/worker.js";
 import { resolveProduct } from "../../../lib/products.js";
 import { sourceFor } from "../../../lib/social.js";
 import { listPlaces } from "../../../lib/places/registry.js";
@@ -191,11 +193,21 @@ export async function POST(req) {
       const snap = await fetchPreview(url);
       linkSnapshot = snap.refused ? { url, title: "", description: "", image: "", host: new URL(url).hostname.replace(/^www\./, ""), refused: snap.refused, fetchedAt: new Date().toISOString() } : snap;
     }
+    // a MOTION resolves to ITS OWN admitted asset (slice 9): the row must be
+    // the author's and ready; the facts stored are the worker's, never the body's
+    let videoSnapshot = null;
+    if (composition.video) {
+      const asset = await getMotionAsset(String(composition.video.id || "")).catch(() => null);
+      if (!asset || asset.ownerId !== user) return NextResponse.json({ error: "the video is not an upload of yours", code: "VIDEO_NOT_YOURS" }, { status: 400 });
+      if (asset.state !== "ready") return NextResponse.json({ error: asset.state === "refused" ? `the video was refused: ${asset.refusalNote || asset.refusalCode}` : `the video is ${asset.state}, not admitted`, code: "VIDEO_NOT_READY" }, { status: 400 });
+      videoSnapshot = motionForPost(asset, motionUrls(asset));
+      composition.video = { ...composition.video, id: asset.id, state: asset.state, durationMs: asset.durationMs };
+    }
     let attachments;
-    try { attachments = attachmentsFor(composition, { pieceSnapshots, eventSnapshots, linkSnapshot }); }
+    try { attachments = attachmentsFor(composition, { pieceSnapshots, eventSnapshots, linkSnapshot, videoSnapshot }); }
     catch (e) { return NextResponse.json({ error: String(e.message).slice(0, 300) }, { status: 400 }); }
     compositionRow = { postKind: v.kind, layout: v.layout, attachments,
-      imageUrl: attachments.media && attachments.media[0] ? wireImageUrl(attachments.media[0].path) : safeImageUrl(body.imageUrl),
+      imageUrl: attachments.media && attachments.media[0] ? wireImageUrl(attachments.media[0].path) : videoSnapshot && videoSnapshot.poster ? videoSnapshot.poster : safeImageUrl(body.imageUrl),
       externalUrl: linkSnapshot ? linkSnapshot.url : safeExternalUrl(body.externalUrl),
       productRefs: pieceSnapshots.map((p) => p.id) };
   } else if (!text) return NextResponse.json({ error: "text required" }, { status: 400 });

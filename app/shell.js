@@ -31,6 +31,8 @@ import SavePrompt from "./components/SavePrompt.jsx";
 import ControlCenter from "./components/ControlCenter.jsx";
 import SheetHost from "./components/SheetHost.jsx";
 import InfoDock from "./components/InfoDock.jsx";
+import { MusicHost } from "./components/MusicCircle.jsx";
+import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import PassportButton from "./components/PassportButton.jsx";
 
 export default function Shell({ children }) {
@@ -42,6 +44,9 @@ export default function Shell({ children }) {
     // Clear the stale "connected" flag from the old simulated import — no
     // real connection exists until a real OAuth adapter ships.
     try { window.localStorage.removeItem("asilum-connected"); } catch {}
+    // the media preferences' account copy wins a fresh device (3.10, slice 9)
+    hydrateMediaPreferences();
+    window.addEventListener("asilum:identity", hydrateMediaPreferences);
   }, []);
 
   // Theme follows the device unless the owner picked one in SETTINGS
@@ -265,6 +270,7 @@ export default function Shell({ children }) {
           sheet (Likes, Bag, Notices, Search, Messages, Post, an overview)
           rises over the root from SheetHost. */}
       <InfoDock />
+      <MusicHost />
       <PassportButton kind={accountKind} pathname={pathname} />
       <ControlCenter kind={accountKind} pathname={pathname} />
       <SheetHost />

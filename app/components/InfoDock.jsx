@@ -4,7 +4,8 @@
 // 2026, Foundations "Screen map" and the fixtures sketch, Figure 19). The
 // top-left fixture on every page but Direct Messages: LIKES, BAG and the
 // bell (NOTICES), each opening its sheet over the root. The music circle
-// and the |A| exploration indicator join it in later slices.
+// joins it while audio plays (slice 9, 3.17: contextual — MusicCircle.jsx);
+// the |A| exploration indicator is a later slice.
 //
 // It is a fixture, not navigation: nothing here is a route. The utilities
 // are data in lib/dock.js so the tests read the same table. The glyphs are
@@ -17,6 +18,7 @@ import { bagList } from "../../lib/client.js";
 import { UTILITIES } from "../../lib/dock.js";
 import { useDock, openSheet, closeSheet } from "../../lib/dockstate.js";
 import Icon from "./Icons.jsx";
+import MusicCircle from "./MusicCircle.jsx";
 
 export default function InfoDock() {
   const dock = useDock();
@@ -53,6 +55,7 @@ export default function InfoDock() {
           </button>
         );
       })}
+      <MusicCircle />
     </div>
   );
 }

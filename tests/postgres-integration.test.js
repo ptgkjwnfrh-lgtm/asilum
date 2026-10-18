@@ -441,6 +441,28 @@ test("mem and Postgres agree on the BRDCST scenario", { skip: !databaseUrl }, as
   assert.equal(mem.delivery.near.footer, true); assert.equal(mem.delivery.far.footer, false); assert.equal(mem.cancelled.unused, 4); assert.equal(mem.late.billedDays, 5);
 });
 
+// MOTION assets (slice 9) have a mem branch and a Postgres branch for every
+// function in lib/db/production/media.js; the unit battery runs mem.
+test("mem and Postgres agree on the MOTION asset scenario", { skip: !databaseUrl }, async () => {
+  const scenario = path.join(process.cwd(), "tests", "helpers", "media-scenario.mjs");
+  const memRun = await run(process.execPath, [scenario, `mem${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: "", TEST_DATABASE_URL: "" },
+  });
+  const pgRun = await run(process.execPath, [scenario, `pg${randomUUID().slice(0, 8)}`], {
+    env: { ...process.env, DATABASE_URL: databaseUrl },
+  });
+  const mem = JSON.parse(memRun.stdout.trim().split("\n").pop());
+  const pg = JSON.parse(pgRun.stdout.trim().split("\n").pop());
+  assert.equal(mem.error, undefined, mem.error);
+  assert.equal(pg.error, undefined, pg.error);
+  for (const key of Object.keys(mem)) {
+    assert.deepEqual(pg[key], mem[key],
+      `backends diverge on "${key}":\n  mem = ${JSON.stringify(mem[key])}\n  pg  = ${JSON.stringify(pg[key])}`);
+  }
+  assert.deepEqual(Object.keys(pg).sort(), Object.keys(mem).sort());
+  assert.equal(mem.ready.state, "ready"); assert.equal(mem.refused.code, "codec"); assert.equal(mem.captions.length, 2); assert.equal(mem.foreignCaptions, "NOT_YOURS");
+});
+
 // The §6 export has a mem branch and a Postgres branch, and AGENTS.md makes
 // mem/pg parity a hard rule — the unit battery in tests/privacy-export.test.js
 // runs mem, so a Postgres-only fault in the export would ship green.

@@ -206,5 +206,32 @@ const tickets = await loadRoute("app/api/tickets/route.js");
   });
 }
 
+// ---- MOTION (slice 9): the worker's gate and law, a device refused, an
+// admitted asset's captions served as text/vtt, the probe over the sample ----
+{
+  const motion = await loadRoute("app/api/editorial/motion/route.js");
+  const M = await import("../lib/db/production/media.js");
+  const { probeVideo, admitMotion } = await import("../lib/media/index.js");
+  const gate = await callRoute(motion.GET, { path: "/api/editorial/motion" });
+  const me = newDevice();
+  const begin = await callRoute(motion.POST, { path: "/api/editorial/motion", cookies: me.cookies, json: { user: me.uid, action: "begin", mime: "video/mp4", bytes: 26879, durationMs: 6000 } });
+  const asset = await M.createMotionAsset({ ownerId: me.uid, path: `${me.uid}/00000000-0000-4000-8000-000000000000.mp4`, container: "mp4", mime: "video/mp4", declaredBytes: 26879 });
+  const bytes = fs.readFileSync(path.join(process.cwd(), "public", "model", "motion-test-pattern.mp4"));
+  const probe = probeVideo(bytes);
+  const verdict = admitMotion(probe, { bytes: bytes.length });
+  await M.admitMotionAsset({ id: asset.id, ownerId: me.uid, facts: verdict.facts });
+  await M.setMotionCaptions({ id: asset.id, ownerId: me.uid, tracks: [{ lang: "en", label: "English", default: true, vtt: fs.readFileSync(path.join(process.cwd(), "public", "model", "motion-test-pattern.vtt"), "utf8") }] });
+  const vtt = await callRoute(motion.GET, { path: "/api/editorial/motion", query: { captions: asset.id, lang: "en" } });
+  const mine = await callRoute(motion.GET, { path: "/api/editorial/motion", cookies: me.cookies, query: { user: me.uid } });
+  const scrub = (a) => ({ ...a, id: "<uuid>", ownerId: "<uid>", path: "<uid>/<uuid>.mp4", createdAt: "<iso>", updatedAt: "<iso>", verifiedAt: "<iso>" });
+  write("media.json", {
+    gate: { request: "GET /api/editorial/motion (no WIRE_VIDEO_ENABLED)", status: gate.status, body: gate.body },
+    beginDevice: { request: "POST /api/editorial/motion { action: begin, mime, bytes, durationMs } as a device", status: begin.status, body: begin.body },
+    probeSample: { file: "public/model/motion-test-pattern.mp4", probe, verdict },
+    captions: { request: "GET /api/editorial/motion?captions=<id>&lang=en", status: vtt.status, contentType: vtt.response.headers.get("content-type"), text: vtt.text },
+    mine: { request: "GET /api/editorial/motion?user=<uid>", status: mine.status, body: { ...mine.body, mine: mine.body.mine.map(scrub) } },
+  });
+}
+
 write("registry-coverage.json", { coverage: registryCoverage(), provenance: CAREER_PROVENANCE });
 console.log("done");

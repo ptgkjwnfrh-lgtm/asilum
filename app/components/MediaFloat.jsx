@@ -12,18 +12,29 @@
 // photograph's own luminance where the browser lets us read it (same-origin
 // images; a cross-origin upload taints the canvas and the scrim keeps white
 // legible instead). COMMENT says `soon` — comments are not built; the
-// audio button is absent because no post carries audio yet. Immersive
-// MOTION (the vertical stream) is the media slice.
+// audio button beside SHARE appears only when audio exists — a MOTION whose
+// track carries sound — and it hands the soundtrack to the music circle
+// (3.14). A MOTION plays in the housing (MotionHousing.jsx, slice 9): the
+// controls, the captions, the speed, PiP, and the ink read from the frame.
 
 import { useEffect, useRef, useState } from "react";
 import { fetchPost, fetchEngagement, toggleEngagement } from "../../lib/social.js";
 import { SAMPLE_POSTS } from "../../lib/model/media.js";
 import { captionInk } from "../../lib/feed/caption.js";
+import MotionHousing from "./MotionHousing.jsx";
 import { postType } from "../../lib/feed/types.js";
 import SaveButton from "./SaveButton.jsx";
 import TransmissionText from "./TransmissionText.jsx";
 import Icon from "./Icons.jsx";
 import { haptic } from "../../lib/haptics.js";
+
+/** The MOTION a post carries: the sample's own clip, or the admitted asset. */
+function videoOf(p) {
+  if (!p) return null;
+  if (p.sample) return p.video || null;
+  const v = p.attachments && p.attachments.video;
+  return v && v.url ? v : null;
+}
 
 function mediaOf(p) {
   if (!p) return [];
@@ -78,6 +89,7 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
   if (!post) return <p className="deck">reading the post…</p>;
   const media = mediaOf(post);
   const type = postType(post);
+  const video = videoOf(post);
   const name = post.sample ? post.name : (post.name || post.handle);
   const cur = media[slide] || media[0];
   const href = post.sample ? "/" : (post.serverId != null ? "/?post=" + encodeURIComponent(post.serverId) : "/");
@@ -100,7 +112,9 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
   return (
     <div className={"mediafloat ink-" + ink} data-type={type}>
       <div className="mfstage">
-        {cur ? <img ref={imgRef} src={cur.src} alt={cur.alt || ""} crossOrigin={/^https?:\/\//.test(cur.src) && !cur.src.startsWith(window.location.origin) ? "anonymous" : undefined} onLoad={sampleInk} /> : <div className="mfblank">{type} · no media</div>}
+        {video ? <MotionHousing video={video} postId={post.sample ? post.id : post.serverId} sample={!!post.sample} title={post.title || ""} by={name} onInk={(l) => setInk(captionInk(l))} /> : null}
+        {!video && cur ? <img ref={imgRef} src={cur.src} alt={cur.alt || ""} crossOrigin={/^https?:\/\//.test(cur.src) && !cur.src.startsWith(window.location.origin) ? "anonymous" : undefined} onLoad={sampleInk} /> : null}
+        {!video && !cur ? <div className="mfblank">{type} · no media</div> : null}
         {media.length > 1 ? (
           <>
             <button type="button" className="mfarrow prev" aria-label="previous photograph" onClick={() => setSlide((s) => (s - 1 + media.length) % media.length)}><Icon name="back" size={18} /></button>
@@ -113,6 +127,7 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
           {post.title ? <span className="mfttl">{post.title}</span> : null}
           <TransmissionText text={post.text} className="mftext" />
           {cur && cur.credit ? <small className="mfcredit">{cur.credit}</small> : null}
+          {video && video.generated ? <small className="mfcredit">SAMPLE MOTION · GENERATED TEST PATTERN · {video.width}×{video.height} · {video.codec} · no sound</small> : null}
         </button>
       </div>
       <div className="mfacts" role="group" aria-label="actions">

@@ -48,8 +48,9 @@ date once, telling agents the UI was locked after the owner had unlocked it.
   `scripts/apply-schema.mjs`; live schema is **v53** as of 19 Sep 2026 (the
   ledger also holds v51 asterisk-stream and v52 cutouts from branches that are
   not yet on main — READ `app_schema_migrations` on the live database before
-  numbering a migration); `schema-v62`–`schema-v66` (the native storefront,
-  ASTERISK governance, native commerce, after the sale, BRDCST) are STAGED on
+  numbering a migration); `schema-v62`–`schema-v67` (the native storefront,
+  ASTERISK governance, native commerce, after the sale, BRDCST, the media
+  worker's `motion_assets` and the `media` record kind) are STAGED on
   `v2/build`, not applied, and
   `schema-alpha.sql` is still STAGED, not applied. Read
   `.claude/skills/database-safety` before touching schema or production rows.

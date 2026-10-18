@@ -4115,3 +4115,106 @@ body { font-size: 14px; }
 .stcamps, .stcamp, .stcampacts { min-width: 0; }
 .stcampacts input, .stcampacts select { width: 100%; min-width: 0; box-sizing: border-box; }
 .stcamphead b, .stcamphead .rkmono { overflow-wrap: anywhere; }
+
+/* ---- MOTION: the video housing, the Feed's MOTION card, the music circle
+   (V.2 slice 9, chapter 3). Tokens only; the housing is black because film
+   is, in both themes. ------------------------------------------------------ */
+.motion { position: relative; width: 100%; height: 100%; min-height: 320px; background: #000; overflow: hidden; }
+.motion video { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; cursor: pointer; }
+.motion[data-rotation="90"] video, .motion[data-rotation="270"] video { object-fit: contain; }
+.mocue { position: absolute; left: 8%; right: 8%; bottom: 76px; padding: 6px 10px; border-radius: 6px; color: #fff; text-align: center; font-size: 15px; line-height: 1.35; white-space: pre-line; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+.motion.showing .mocue { bottom: 128px; }
+.monote { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,0.55); color: #fff; font: 10px/1.4 var(--mich); letter-spacing: 0.12em; pointer-events: none; }
+.mohanded { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; background: rgba(0,0,0,0.55); color: #fff; font: 10px/1.6 var(--mich); letter-spacing: 0.12em; }
+.mohanded .txtbtn { color: #fff; }
+.mobig { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; border: 0; background: rgba(0,0,0,0.35); color: #fff; cursor: pointer; font: 10px/1 var(--mich); letter-spacing: 0.12em; }
+.mocontrols { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px 10px; background: linear-gradient(transparent, rgba(0,0,0,0.78)); color: #fff; transition: opacity 0.18s, transform 0.18s; }
+.mocontrols.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.moscrub { display: flex; align-items: center; gap: 10px; }
+.moscrub input[type="range"] { flex: 1; height: 24px; accent-color: var(--red); background: transparent; cursor: pointer; }
+.motime { font: 10px/1 var(--mich); letter-spacing: 0.08em; white-space: nowrap; }
+.morow { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; margin-top: 2px; }
+.morow button { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 48px; min-height: 44px; padding: 4px 6px; border: 0; border-radius: 10px; background: none; color: #fff; cursor: pointer; font: 8px/1 var(--mich); letter-spacing: 0.12em; }
+.morow button:hover, .morow button:focus-visible { background: rgba(255,255,255,0.12); }
+.morow button.on { color: var(--red); }
+.morow button:disabled { opacity: 0.5; cursor: default; }
+.morow .moplay { min-width: 60px; }
+.moglyph { font: 11px/1 var(--mich); letter-spacing: 0.04em; }
+.morow .flip { transform: scaleX(-1); }
+.momenu { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 0 0; }
+.momenu .fine { width: 100%; color: rgba(255,255,255,0.75); margin: 2px 0 0; }
+.momenu .cclbl { color: rgba(255,255,255,0.7); margin-right: 2px; }
+.mocontrols .chip { color: #fff; border-color: rgba(255,255,255,0.35); }
+.mocontrols .chip.cur { color: var(--red); border-color: var(--red); }
+/* on a MOTION the on-media caption collapses to the name, the title and the
+   credit, and moves upward to make room for the housing's controls; a tap
+   opens the words. The creator's caption cue sits above the strip, and
+   steps aside while the words are open. */
+.mfstage:has(.motion) .mfcaption { padding-top: 22px; max-height: 26%; }
+.mfstage:has(.motion) .mfcaption:not(.up) .mftext { display: none; }
+.mfstage:has(.motion.showing) .mfcaption { bottom: 118px; }
+.mfstage:has(.motion.showing) .mfcaption.up { max-height: 60%; }
+.mfstage:has(.motion) .mfcaption.up { max-height: 85%; }
+.mfstage:has(.motion) .mocue { bottom: 92px; }
+.mfstage:has(.motion.showing) .mocue { bottom: 206px; }
+.mfstage:has(.mfcaption.up) .mocue { display: none; }
+/* a phone's overlay is one row of glyphs (the labels stay for assistive
+   technology), so the film keeps its height */
+@media (max-width: 480px) {
+  .morow { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
+  .morow button { min-width: 44px; padding: 4px 2px; }
+  .morow button span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .morow .moplay { min-width: 48px; }
+  .mocontrols { padding: 4px 8px 6px; }
+  .mfstage:has(.motion) .mfcaption { padding-top: 14px; }
+  .mfstage:has(.motion) .mocue { bottom: 112px; }
+  .mfstage:has(.motion.showing) .mfcaption { bottom: 84px; }
+  .mfstage:has(.motion.showing) .mocue { bottom: 192px; }
+  .mfstage:has(.motion.showing):has(.momenu) .mfcaption { bottom: 128px; }
+  .mfstage:has(.motion.showing):has(.momenu) .mocue { bottom: 236px; }
+}
+/* the popup header: EXPAND / SHRINK keeps its glyph and its aria-label; the
+   printed word collided with the session counter beside a six-letter title
+   (found in the browser, 18 Oct, on MOTION at every width) */
+.sheetacts .sheetbtn[aria-label$="the popup"] span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+/* 3.1: while the player's controls show, the fixtures become extremely compact and translucent */
+[data-media] .fixture, [data-media] .ccenter { transform: scale(0.72); opacity: 0.22; }
+[data-media] .fixture:hover, [data-media] .ccenter:hover, [data-media] .fixture:focus-within, [data-media] .ccenter:focus-within { opacity: 0.9; transform: scale(0.92); }
+@media (prefers-reduced-motion: reduce) { .mocontrols { transition: none; } }
+
+/* the MOTION card in the Feed */
+.wpcmotion { position: relative; margin: 0; }
+.wpcmotion video { width: 100%; display: block; background: #000; aspect-ratio: 16 / 9; object-fit: cover; }
+.wpcmotion .wpcmedia { position: relative; }
+.wpcmotiontag { position: absolute; left: 10px; bottom: 10px; padding: 4px 7px; border-radius: 8px; background: rgba(0,0,0,0.55); color: #fff; font: 9px/1 var(--mich); letter-spacing: 0.1em; text-transform: uppercase; }
+.wpcmotion figcaption { font-size: 9px; letter-spacing: 0.1em; color: var(--grey); padding: 4px 0 0; }
+.wpcmotion video::cue { font-size: 14px; background: rgba(0,0,0,0.6); }
+.wcvideo { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; }
+.wcvideo video { width: 100%; max-height: 240px; background: #000; border-radius: 6px; }
+.wcvideorow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.wcvtt { cursor: pointer; }
+.wcaddbtn.off { opacity: 0.7; }
+
+/* the music circle (3.17–3.23): the frame's colour, the pulse, the blend, the fade */
+.musicwrap { position: relative; display: inline-flex; }
+.musichost { position: fixed; width: 1px; height: 1px; opacity: 0; pointer-events: none; left: -9999px; top: 0; }
+.musiccircle { --mc: var(--red); color: var(--mc); }
+.mcdisc { position: relative; display: block; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--mc); background: color-mix(in srgb, var(--mc) 18%, transparent); transition: border-color var(--mc-blend, 180ms) linear, background-color var(--mc-blend, 180ms) linear, transform var(--mc-blend, 180ms), opacity var(--mc-blend, 180ms); }
+.mcwave { position: absolute; inset: 4px; border-radius: 50%; background: var(--mc); opacity: 0.85; transform: scale(0.6); }
+.musiccircle.pulse .mcwave { animation: mcpulse 1.1s ease-in-out infinite; }
+.musiccircle.still .mcwave { transform: scale(0.6); opacity: 0.55; }
+.musiccircle.loading .mcdisc { border-style: dashed; animation: mcspin 1.4s linear infinite; }
+.musiccircle.gone .mcdisc { transform: scale(0.2); opacity: 0; }
+@keyframes mcpulse { 0%, 100% { transform: scale(0.55); opacity: 0.6; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes mcspin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .musiccircle.pulse .mcwave { animation: none; transform: scale(0.9); } .musiccircle.loading .mcdisc { animation: none; } }
+.musicpanel { position: absolute; top: 46px; left: 0; z-index: 67; min-width: 220px; max-width: 280px; display: grid; gap: 6px; padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg3) 92%, transparent); color: var(--ink); }
+.mptitle { font: 11px/1.4 var(--mich); letter-spacing: 0.1em; }
+.mpby { font-size: 12px; color: var(--grey); }
+.mprow { display: flex; flex-wrap: wrap; gap: 6px; }
+.mplink { display: inline-flex; align-items: center; gap: 4px; color: var(--grey); text-decoration: none; }
+/* 3.18: on Direct Messages the Info Dock disappears; the circle stays, small, tucked into the right corner */
+[data-dm] .infodock .idkey:not(.musiccircle) { display: none; }
+[data-dm] .infodock { left: auto; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px)); transition: none; }
+[data-dm] .infodock:not(:has(.musiccircle)) { display: none; }
+[data-dm] .musicpanel { left: auto; right: 0; }

@@ -14,7 +14,7 @@
 // permalink and the people-counted LIKE; a sample carries its credit and
 // the SAMPLE tag. STAMP is the one save.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TransmissionText from "./TransmissionText.jsx";
 import SaveButton from "./SaveButton.jsx";
 import ModelTag from "./ModelTag.jsx";
@@ -22,6 +22,7 @@ import Icon from "./Icons.jsx";
 import { Avatar } from "./UserBits.jsx";
 import { timeAgo } from "../../lib/social.js";
 import { readWireRefs } from "../../lib/model/media.js";
+import { registerFeedVideo, feedPolicy } from "../../lib/media/feedplay.js";
 import { footerPages } from "../../lib/brdcst/index.js";
 import { postType } from "../../lib/feed/types.js";
 import { openSheet } from "../../lib/dockstate.js";
@@ -98,6 +99,29 @@ export function BrdcstFooter({ event, events = null, brdcst = null }) {
   );
 }
 
+/** A MOTION in the Feed (slice 9, 3.3): muted adaptive autoplay — the most
+ *  visible plays, the others pause, captions during muted autoplay, nothing
+ *  when the passenger or the platform says no (lib/media/feedplay.js). The
+ *  tap enlarges it into the housing. A generated sample says so. */
+function MotionMedia({ video, id, onMedia, label }) {
+  const ref = useRef(null);
+  const [policy, setPolicy] = useState(null);
+  useEffect(() => { setPolicy(feedPolicy()); return registerFeedVideo(ref.current, id); }, [id]);
+  const trackSrc = (tr) => (video.generated ? tr.src : `/api/editorial/motion?captions=${encodeURIComponent(video.id)}&lang=${encodeURIComponent(tr.lang)}`);
+  return (
+    <figure className="wpcfig wpcmotion">
+      <button type="button" className="wpcmedia" onClick={onMedia} aria-label={label || "open the motion"}>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <video ref={ref} src={video.url} poster={video.poster || undefined} muted playsInline loop preload="metadata" aria-label={label || "motion"} data-rotation={video.rotation || 0}>
+          {(video.captions || []).map((tr) => <track key={tr.lang} kind="captions" srcLang={tr.lang} label={tr.label || tr.lang} src={trackSrc(tr)} />)}
+        </video>
+        <span className="wpcmotiontag" aria-hidden="true">MOTION · {Math.round((video.durationMs || 0) / 1000)}s{policy && !policy.autoplay ? " · " + policy.reason : ""}</span>
+      </button>
+      {video.generated ? <figcaption>SAMPLE MOTION · GENERATED TEST PATTERN, NO SOUND</figcaption> : null}
+    </figure>
+  );
+}
+
 /** The composition's attachments, rendered by layout. Every image carries
  *  the author's alt; an exposé's layers are text over the image AND a
  *  readable caption beneath it; pieces, the event and the link are the
@@ -109,6 +133,7 @@ function Attachments({ p, onMedia }) {
   const layout = p.layout || (media.length > 1 ? "carousel" : media.length ? "single" : null);
   return (
     <>
+      {a.video && a.video.url && <MotionMedia video={a.video} id={p.serverId ?? p.id} onMedia={onMedia} label={"open the motion: " + (p.title || "")} />}
       {layout === "expose" && urls[0] && (
         <figure className="wpcfig wpcexpose">
           <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={urls[0]} alt={media[0].alt || a.alt || ""} loading="lazy" /></button>
@@ -164,7 +189,8 @@ export default function WireCard({ post: p, engagement, onEngage }) {
   return (
     <article className={"card wpostcard type-" + type.toLowerCase() + (sample ? " sample" : "")} data-id={"post:" + (p.serverId ?? p.id)} data-type={type} aria-label={type.toLowerCase() + (sample ? " (sample editorial): " : ": ") + (p.title || name)}>
       {composed && <Attachments p={p} onMedia={onMedia} />}
-      {image && (
+      {sample && p.video && <MotionMedia video={p.video} id={p.id} onMedia={onMedia} label={"open the sample motion: " + (p.title || "")} />}
+      {image && !p.video && (
         <figure className="wpcfig">
           <button type="button" className="wpcmedia" onClick={onMedia} aria-label="enlarge the photograph"><img src={image.src} alt={image.alt || ""} loading="lazy" /></button>
           {image.credit && <figcaption><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></figcaption>}

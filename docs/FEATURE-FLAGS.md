@@ -53,6 +53,7 @@ live-enablement variables before making a provider request.
 | `ASTERISK_DRAWER_ENABLED` / `ASTERISK_PAGE_ENABLED` | B | nav item hidden |
 | `WARDROBE_UPLOADS_ENABLED` | C photo uploads + private Storage | new uploads/replacements absent; existing-photo erasure remains available |
 | `MESSAGING_ENABLED` | F | feature absent (not "coming soon" fake states in API responses) |
+| `WIRE_VIDEO_ENABLED` | V.2 slice 9: MOTION uploads through the media worker (`lib/media/worker.js`, `/api/editorial/motion`) — a signed direct upload to the Wire bucket, then the server probes its own copy; needs `WIRE_UPLOADS_ENABLED=1` + storage | absent — the composer's VIDEO says why; `begin`/`verify` answer 503; the housing still plays the generated sample and any already-admitted asset |
 | `DM_MEDIA_ENABLED` | V.2 Stage C: the DM media pipeline (`lib/dm/media.js`, `/api/dm/media`); needs `MESSAGING_ENABLED=1` + storage; gated by OWNER-DECISIONS #3 | absent — `/api/dm/media` and `op=attach` 404; the per-conversation consent toggle still records |
 | `SEARCH_TASTE_RERANK` (default ON; `0` kills) | V.2 Stage D: the taste reranker over a guided search (`brain=1`), exact-identity rows pinned, no row added or removed (`lib/search/reranker.js`) | the engine's own order is served |
 | `DM_CLEAR_NOTICES` (default OFF; `1` enables) | V.2 Stage C: tell the other participant once, neutrally, when a viewer clears their own copy — built as the brief requested; **OFF by owner decision (OWNER-DECISIONS §9, 2 Oct 2026)** | the clear happens, no notice is written |

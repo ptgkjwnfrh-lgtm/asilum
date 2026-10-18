@@ -22,7 +22,11 @@ test("every capability reports one of the six states, and nothing is ever 'conne
 test("Spotify: manual artist stamps are available, profiling is unsupported, display needs approval", () => {
   const sp = withEnv({}, () => connectorRegistry()).find((c) => c.id === "spotify");
   const by = Object.fromEntries(sp.capabilities.map((c) => [c.id, c.state]));
-  assert.deepEqual(by, { "artist-stamps": "available", "display-link": "requires-approval", "taste-import": "unsupported" });
+  // slice 9 adds playback and catalog-search (4.13–4.14), both behind the same approved app
+  assert.deepEqual(by, { "artist-stamps": "available", "display-link": "requires-approval", playback: "requires-approval", "catalog-search": "requires-approval", "taste-import": "unsupported" });
+  const am = withEnv({}, () => connectorRegistry()).find((c) => c.id === "apple-music");
+  assert.ok(am && am.capabilities.every((c) => c.state === "requires-approval"), "Apple Music: unexamined terms, nothing offered");
+  assert.match(am.basis, /NOT YET EXAMINED/);
   assert.ok(sp.never.some((n) => /profiling/.test(n)));
   assert.match(sp.capabilities.find((c) => c.id === "artist-stamps").basis, /no Spotify data/);
 });

@@ -149,6 +149,13 @@ export default function MailDesk() {
   }, []);
 
   useEscape(() => setOpen(false), open);
+  // 3.18: on Direct Messages the Info Dock disappears and only the music
+  // circle stays, in the right corner — CSS on `data-dm` (slice 9)
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+    if (open) document.documentElement.dataset.dm = "1"; else delete document.documentElement.dataset.dm;
+    return () => { delete document.documentElement.dataset.dm; };
+  }, [open]);
   useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
   // THE THIRD PART OF THE DISMISSAL CONTRACT, which this panel never took. It
   // is a dialog over the page: Tab walked straight into the catalog behind it,

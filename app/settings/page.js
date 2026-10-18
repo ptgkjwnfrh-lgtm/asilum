@@ -13,6 +13,9 @@ import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, authorizedFetch, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
 import { hapticsEnabled, setHapticsEnabled, haptic } from "../../lib/haptics.js";
+import { useMediaPreferences, setMediaPreferences } from "../../lib/media/preferences.js";
+import { QUALITY_NOTE } from "../../lib/media/index.js";
+import { musicAvailability } from "../../lib/music/index.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
 
 // The rack's sign-in/log-out row (owner order, Aug 13): module 03 shows
@@ -123,6 +126,18 @@ export default function SettingsPage() {
     setNotice(`personalization deleted; retained: ${(data.retained || []).join(", ")}`);
   }
 
+  // MEDIA (slice 9, 3.3, 3.6, 3.9–3.10) and the music providers (4.2): the
+  // preferences every player reads, mirrored to the account's record; the
+  // connector registry's own states for the two streaming services
+  const media = useMediaPreferences();
+  const [music, setMusic] = useState(null);
+  useEffect(() => {
+    authorizedFetch("/api/connect").then((r) => (r.ok ? r.json() : null)).then((d) => setMusic(d ? musicAvailability(d.connectors || []) : null)).catch(() => setMusic(null));
+  }, []);
+  const pick = (name, value, cur, label) => (
+    <button className={"fitbtn" + (cur === value ? " active" : "")} aria-pressed={cur === value} onClick={() => { setMediaPreferences({ [name]: value }); haptic("toggle"); }}>{label}</button>
+  );
+
   function setThemeMode(mode) {
     setTheme(mode);
     if (mode === "system") {
@@ -168,6 +183,47 @@ export default function SettingsPage() {
             </button>
           </div>
           <div className="rkdesc">hand-edit every text size, button, layout measure, and motion speed — ctrl+shift+D anywhere.</div>
+        </div>
+      </section>
+
+      <section className="rkmod" aria-label="media" id="media">
+        <div className="rkhead"><b>01b</b> MEDIA <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+        <div className="rkrow">
+          <div className="rkname">Captions</div>
+          <div className="rkctl">{pick("captions", "auto", media.captions, "AUTO")}{pick("captions", "on", media.captions, "ON")}{pick("captions", "off", media.captions, "OFF")}</div>
+          <div className="rkdesc">AUTO shows the creator's captions during muted autoplay and hides them with sound on; the CC control inside a video overrides for that video. The choice syncs across your devices on an account.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Caption size</div>
+          <div className="rkctl">{pick("captionSize", 0.85, media.captionSize, "SMALL")}{pick("captionSize", 1, media.captionSize, "MEDIUM")}{pick("captionSize", 1.3, media.captionSize, "LARGE")}</div>
+          <div className="rkdesc">Everything else about captions is standardized.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Caption background</div>
+          <div className="rkctl">{pick("captionOpacity", 0.3, media.captionOpacity, "LOW")}{pick("captionOpacity", 0.6, media.captionOpacity, "MID")}{pick("captionOpacity", 0.9, media.captionOpacity, "HIGH")}</div>
+          <div className="rkdesc">How much of the film the caption's box covers.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Video quality</div>
+          <div className="rkctl">{pick("quality", "adaptive", media.quality, "ADAPTIVE")}{pick("quality", "highest", media.quality, "HIGHEST")}{pick("quality", "lowest", media.quality, "LOWEST")}</div>
+          <div className="rkdesc">{QUALITY_NOTE}. The choice is kept and applies the day a ladder exists.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Autoplay in the Feed</div>
+          <div className="rkctl">{pick("autoplay", "adaptive", media.autoplay, "ADAPTIVE")}{pick("autoplay", "off", media.autoplay, "OFF")}</div>
+          <div className="rkdesc">ADAPTIVE plays the most visible MOTION and pauses the others; reduced motion and the browser&apos;s data saver stop it on their own. OFF plays nothing until you open it.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">Feed audio</div>
+          <div className="rkctl">{pick("feedAudio", false, media.feedAudio, "MUTED")}{pick("feedAudio", true, media.feedAudio, "WITH SOUND")}</div>
+          <div className="rkdesc">Autoplay is muted unless you say otherwise; a MOTION opened in its housing plays with sound.</div>
+        </div>
+        <div className="rkrow" id="connections">
+          <div className="rkname">Streaming services</div>
+          <div className="rkctl">
+            {music ? music.providers.map((p) => <span key={p.id} className="chip" title={p.basis}>{p.label.toUpperCase()} · {p.playback.replace("-", " ").toUpperCase()}</span>) : <span className="fine">…</span>}
+          </div>
+          <div className="rkdesc">{music ? music.sentence : "reading the registry…"}. No service is connected: no OAuth app is approved and Apple Music&apos;s terms are not yet examined, so nothing here pretends to sync a library or search a catalog (OWNER-DECISIONS §7). The music circle carries a post&apos;s own audio today.</div>
         </div>
       </section>
 

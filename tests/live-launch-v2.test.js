@@ -128,14 +128,22 @@ test("the one save has one record shape and refuses what it cannot list", async 
   assert.throws(() => saveRecord({ kind: "piece", id: "", title: "x" }), /id and a title/);
 });
 
-test("the sample media is credited, and only the eight licensed files are referenced", async () => {
+test("the sample media is credited, and only the eight licensed files and the one generated clip are referenced", async () => {
   const { SAMPLE_POSTS, SAMPLE_CREDITS } = await import("../lib/model/media.js");
   const credits = JSON.parse(read("public/model/credits.json"));
   for (const sp of SAMPLE_POSTS) {
     assert.equal(sp.sample, true);
+    if (sp.video) {
+      // the sample MOTION (slice 9) is a GENERATED test pattern, not a licensed photograph: it says so, and it is the one clip
+      assert.equal(sp.video.generated, true, sp.id + " must declare itself generated");
+      assert.match(sp.video.url, /^\/model\/motion-test-pattern\.mp4$/);
+      assert.equal(sp.image, undefined, "a MOTION sample carries no photograph");
+      continue;
+    }
     assert.match(sp.image.src, /^\/model\/[a-z0-9-]+\.jpg$/);
     assert.ok(sp.image.credit && sp.image.license, sp.id + " must carry a credit");
   }
+  assert.equal(SAMPLE_POSTS.filter((sp) => sp.video).length, 1);
   for (const key of Object.keys(SAMPLE_CREDITS)) assert.match(SAMPLE_CREDITS[key].license, /Unsplash License|CC BY/);
   assert.ok(Array.isArray(credits.assets) && credits.assets.length >= 7);
 });
