@@ -75,6 +75,11 @@ export default function SettingsPage() {
   const [deleteChecked, setDeleteChecked] = useState(false);
   const [theme, setTheme] = useState("system");
   const [haptics, setHaptics] = useState(true);
+  const [credit, setCredit] = useState(null);
+  useEffect(() => {
+    const uid = getUid(); if (!uid) { setCredit(false); return; }
+    authorizedFetch("/api/credit?user=" + encodeURIComponent(uid)).then((r) => (r.ok ? r.json() : null)).then((d) => setCredit(d || false)).catch(() => setCredit(false));
+  }, []);
 
   useEffect(() => {
     setUid(getUid() || "");
@@ -161,6 +166,24 @@ export default function SettingsPage() {
             </button>
           </div>
           <div className="rkdesc">hand-edit every text size, button, layout measure, and motion speed — ctrl+shift+D anywhere.</div>
+        </div>
+      </section>
+
+      {/* ASILUM CREDIT and |A| PROTECTION (slice 7): the balance from refunds
+          and gifts only, never purchased, never expiring; protection off by
+          default and never preselected — and, until a provider is agreed,
+          never offered. */}
+      <section className="rkmod" aria-label="credit and protection">
+        <div className="rkhead"><b>01½</b> CREDIT &amp; PROTECTION <span className="rkscrew" aria-hidden="true">⊕ ⊕</span></div>
+        <div className="rkrow">
+          <div className="rkname">ASILUM Credit</div>
+          <div className="rkctl rkmono">{credit === null ? "…" : credit === false ? "UNREAD" : `USD ${(credit.balanceCents / 100).toFixed(2)}`}</div>
+          <div className="rkdesc">site-wide money from refunds and gifts only; it cannot be bought, never expires while the account is in good standing, and is applied at checkout only in the amount you choose. gifting runs through Direct Messages once two-factor and device authentication exist — neither does yet, so the gift control says so.</div>
+        </div>
+        <div className="rkrow">
+          <div className="rkname">|A| Protection</div>
+          <div className="rkctl rkmono">OFF BY DEFAULT</div>
+          <div className="rkdesc">optional purchase protection, quoted per order on value, shipping and destination; never preselected or silently charged. no provider is agreed yet (REDO is proposed), so no quote is shown at checkout.</div>
         </div>
       </section>
 

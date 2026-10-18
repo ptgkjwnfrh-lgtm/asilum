@@ -14,6 +14,8 @@ import {
   // slice 6 — native commerce (lib/db/production/commerce.js)
   CommerceRefused, setListingMode, setOfferSettings, getOfferSettings, listOffersForSeller, respondOffer,
   applyDiscount, cancelDiscount, activeDiscount, priceHistory, relistListing, listRelists, queueMembers, expireDiscounts, expireOffers,
+  // slice 7 — after the sale
+  setListingReturns, AftersaleRefused,
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { STOREFRONT_TERMS_VERSION } from "../../../lib/storefront/contracts.js";
@@ -36,6 +38,9 @@ function result(body, status = 200) {
 }
 
 function refused(error) {
+  if (error instanceof AftersaleRefused) {
+    return NextResponse.json({ error: error.message, code: error.code, currentTermsVersion: STOREFRONT_TERMS_VERSION }, { status: error.status });
+  }
   if (error instanceof CommerceRefused) {
     return NextResponse.json({ error: error.message, code: error.code, currentTermsVersion: STOREFRONT_TERMS_VERSION }, { status: error.status });
   }
@@ -152,6 +157,9 @@ async function handlePOST(req) {
         return result(await relistListing(identity.accountId, body.listingId, body));
       case "relists":
         return result({ relists: await listRelists(body.listingId) });
+      case "set_returns":
+        // 6.1, 6.5: enabling returns earns $1 Credit once, after the first completed, non-refunded sale
+        return result(await setListingReturns(identity.accountId, body.listingId, body.enabled === true));
       default:
         return NextResponse.json({ error: "unknown storefront action", code: "UNKNOWN_ACTION" }, { status: 400 });
     }

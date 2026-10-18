@@ -37,6 +37,7 @@ import PostSelection from "./PostSelection.jsx";
 import ListingSheet from "./ListingSheet.jsx";
 import MediaFloat from "./MediaFloat.jsx";
 import EchoViewer from "./EchoRail.jsx";
+import ScoreSheet from "./ScoreSheet.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -56,6 +57,8 @@ const VIEWS = {
   // a payment page is never dismissed by a tap outside (1.2); the route
   // itself arrives with native commerce
   checkout: { title: "CHECKOUT", render: () => null, heavy: true },
+  // the Passenger Score popup (slice 7, 6.18), from Account and Passport only
+  score: { title: "PASSENGER SCORE", render: (p) => <ScoreSheet {...p} /> },
 };
 
 const SWIPE_DOWN = 70;

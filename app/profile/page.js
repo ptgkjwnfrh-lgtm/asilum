@@ -38,6 +38,7 @@ import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
 import StorefrontTab from "../components/StorefrontTab.jsx";
+import { ScoreLine } from "../components/ScoreSheet.jsx";
 import {
   ColorEvidenceLine, OriginLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
@@ -284,6 +285,8 @@ export default function ProfilePage() {
             <p>{info.bio || "taste under construction."}</p>
             <PassportPreview />
             <div className="pfline"><span>HANDLE</span><b>{info.handle || "—"}</b></div>
+            {/* the Passenger Score (slice 7): one five-star score on Account and Passport only */}
+            <div className="pfline"><span>PASSENGER SCORE</span><b><ScoreLine subject={getUid()} name={info.handle || null} /></b></div>
             <div className="pfline"><span>MEMBER SINCE</span><b>{since || "—"}</b></div>
             <div className="pfline"><span>PIECES IN THE CLOSET</span><b>{bagHistory.length}</b></div>
             <div className="pfline"><span>YOUR ROOM</span><b><button type="button" className="wperma" onClick={() => setTab("room")}>OPEN →</button></b></div>

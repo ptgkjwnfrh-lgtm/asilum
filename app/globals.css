@@ -3892,6 +3892,26 @@ body { font-size: 14px; }
 .lstoffer { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--glass-pill); }
 .lstofferrow { display: flex; gap: 8px; align-items: center; }
 .lstofferrow input { flex: 1; min-width: 0; }
+/* THE PASSENGER SCORE popup (slice 7, 6.18) */
+.scoresheet { display: grid; gap: 12px; }
+.scorehead { display: grid; gap: 4px; }
+.scorebig { font: 400 22px/1.2 var(--mich); letter-spacing: 0.04em; }
+.scoredist { display: grid; gap: 4px; }
+.scorebar { display: grid; grid-template-columns: 34px 1fr 28px; align-items: center; gap: 8px; font: 9px/1 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
+.scorebar i { display: block; height: 6px; border-radius: 3px; background: var(--red); min-width: 2px; }
+.scorebar small { text-align: right; font: 9px/1 var(--mich); }
+.scorefilters { display: flex; gap: 14px; }
+.scorefilters .txtbtn.on { color: var(--red); }
+.scorereview { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.scorereview p { margin: 0; font-size: 13px; line-height: 1.45; }
+.scoreresponse { color: var(--grey); }
+.scoreresponse b { font: 9px/1 var(--mich); letter-spacing: 0.12em; margin-right: 6px; color: var(--ink); }
+.scoreline { display: inline-flex; gap: 6px; align-items: baseline; background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); font: 11px/1.4 var(--mich); letter-spacing: 0.08em; }
+.scoreline:hover { color: var(--red); }
+/* after the sale on ORDERS (slice 7) */
+.aftersale { display: grid; gap: 6px; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--glass-pill); font-size: 12px; }
+.aftersale .acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.aftersale select, .aftersale input { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 4px 6px; font: 12px/1.3 var(--helv); }
 /* the seller's OFFERS & DISCOUNTS panel */
 .sfcounter { width: 110px; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); padding: 6px 8px; font: 12px/1.3 var(--helv); }
 .sfcommerceitem { flex-wrap: wrap; }
