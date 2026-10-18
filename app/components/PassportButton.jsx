@@ -10,21 +10,28 @@
 // destination comes from lib/nav.js fixtureFor, which answers null for a
 // kind the route guard would turn away.
 
+import { useRef } from "react";
 import Icon from "./Icons.jsx";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
 import { fixtureFor } from "../../lib/nav.js";
 
 export default function PassportButton({ kind, pathname }) {
   const p = fixtureFor(kind, "passport");
+  // the OG liquid glass (slice 14); the hook runs before the business's early return
+  const glassRef = useRef(null);
+  const glass = useLiquidGlass(glassRef, { id: "lg-passportbtn", strength: 0.8, active: !!p });
   if (!p) return null;
   const cur = p.match(pathname || "/");
   return (
     <a
-      className={"passportbtn fixture" + (cur ? " cur" : "")}
+      ref={glassRef}
+      className={"passportbtn fixture lgrx" + (cur ? " cur" : "")}
       href={p.href}
       aria-label="passport"
       aria-current={cur ? "page" : undefined}
       title={p.label}
     >
+      {glass}
       <Icon name="globe" size={22} />
       <span className="idlabel">{p.label}</span>
     </a>

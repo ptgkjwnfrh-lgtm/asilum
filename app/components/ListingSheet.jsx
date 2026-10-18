@@ -27,6 +27,7 @@
 // source" links the real listing.
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useEscape } from "./dismiss.js";
 import { fitPhrase } from "../../lib/brain/sizing.js";
 import { thumbFor, aspectFor, safeExternalUrl, fitProfileForBrain } from "../../lib/client.js";
@@ -293,8 +294,11 @@ export default function ListingSheet({ item: given, id }) {
         {notice ? <p className="fine" role="status">{notice}</p> : null}
       </div>
 
-      {float ? <FloatView src={float.src} aspect={float.aspect} tilt={float.tilt} onClose={() => setFloat(null)} /> : null}
-      {ticket ? <TicketFlow item={item} onClose={() => setTicket(false)} /> : null}
+      {/* the popup is a pane of glass (a backdrop filter), which would make it the
+          containing block of anything fixed inside it: the photograph that
+          floats and the ticket flow are full-screen, so they render on <body> */}
+      {float ? createPortal(<FloatView src={float.src} aspect={float.aspect} tilt={float.tilt} onClose={() => setFloat(null)} />, document.body) : null}
+      {ticket ? createPortal(<TicketFlow item={item} onClose={() => setTicket(false)} />, document.body) : null}
     </div>
   );
 }

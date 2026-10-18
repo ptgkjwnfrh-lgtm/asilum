@@ -34,6 +34,7 @@ import InfoDock from "./components/InfoDock.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import PassportButton from "./components/PassportButton.jsx";
+import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
 export default function Shell({ children }) {
   const pathname = usePathname();
@@ -48,6 +49,11 @@ export default function Shell({ children }) {
     hydrateMediaPreferences();
     window.addEventListener("asilum:identity", hydrateMediaPreferences);
   }, []);
+
+  // THE REACTIVE RAINBOW (owner, 18 Oct 2026): one listener set for the
+  // whole app drives the glass of the fixtures, the deck and the popup
+  // (LiquidGlass.jsx useGlassReactive); reduced motion keeps it still.
+  useGlassReactive();
 
   // PAGE GRADIENTS (owner, 18 Oct 2026): the page names itself on <html> so
   // its gradient takes the destination's own light (--page-tint in

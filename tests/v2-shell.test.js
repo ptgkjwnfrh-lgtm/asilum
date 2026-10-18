@@ -70,7 +70,8 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
 
 test("the fixtures are glass pills with the restrained rainbow rim, and the post disc is round", () => {
   assert.match(rules, /\.fixture \{[^}]*position: fixed;[^}]*border-radius: 999px;/s);
-  assert.match(rules, /\.fixture::after, \.ccenter::after \{[^}]*conic-gradient/s, "the rainbow is a rim, drawn once for the fixtures and the deck");
+  // (18 Oct) the rim is drawn once for the fixtures, the deck AND every popup, and it follows the hand
+  assert.match(rules, /\.fixture::after, \.ccenter::after, \.sheet::after \{[^}]*conic-gradient\(from var\(--iris-a, 200deg\) at var\(--iris-x, 30%\) var\(--iris-y, 0%\)/s, "the rainbow is a rim that follows the hand, drawn once for the fixtures, the deck and the popup");
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s);
   assert.match(rules, /prefers-reduced-transparency: reduce/, "reduced transparency drops the blur");
 });
@@ -136,4 +137,41 @@ test("dark popup backdrop: the scrim deepens the page in dark on both dark paths
   assert.match(rules, /\.sheetscrim \{[^}]*background: var\(--scrim\);/s, "the popup's scrim is the token");
   const shadows = rules.match(/box-shadow:[^;}]*/g) || [];
   assert.deepEqual(shadows.filter((d) => /color-mix\(in srgb, var\(--ink\)/.test(d)), [], "no shadow is mixed from the light ink");
+});
+
+// THE OG REACTIVE RAINBOW LIQUID GLASS (owner, 18 Oct 2026: "the liquid glass
+// isn't liquid enough — I want the OG reactive rainbow liquid glass you made
+// for ASILUM"). The 8 Sep glass (LiquidGlass.jsx: the displacement map, the
+// pointer's shine) is back on the fixtures, the deck and every popup; one
+// listener set drives the rim from the pointer, the tilt and the scroll,
+// writing only to the glass elements and never reading layout per frame;
+// reduced motion stops it; the popup's scrim is no backdrop root.
+test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every popup; reactive to pointer, tilt and scroll; still under reduced motion", () => {
+  const lg = read("app/components/LiquidGlass.jsx");
+  assert.match(lg, /export function useGlassReactive\(\)/);
+  const hook = lg.slice(lg.indexOf("export function useGlassReactive"));
+  assert.match(hook, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches\) return undefined;/, "reduced motion: nothing listens");
+  for (const ev of ["pointermove", "scroll", "deviceorientation"]) assert.match(hook, new RegExp('addEventListener\\("' + ev + '"'), ev);
+  const tick = hook.slice(hook.indexOf("const tick"), hook.indexOf("const wake"));
+  assert.ok(!/getBoundingClientRect|offsetWidth|offsetHeight|getComputedStyle/.test(tick), "the frame writes; it never reads layout");
+  assert.match(tick, /document\.querySelectorAll\(GLASS_REACTIVE\)/, "it writes to the glass elements, not to <html>");
+  assert.ok(!/documentElement\.style\.setProperty/.test(hook), "never on the root");
+  assert.match(read("app/shell.js"), /useGlassReactive\(\);/, "the shell runs it once");
+  for (const [f, id] of [["app/components/InfoDock.jsx", "lg-infodock"], ["app/components/PassportButton.jsx", "lg-passportbtn"], ["app/components/ControlCenter.jsx", "lg-deck"], ["app/components/SheetHost.jsx", "lg-popup"]]) {
+    const src = read(f);
+    assert.match(src, new RegExp('useLiquidGlass\\(\\w+, \\{ id: "' + id + '"'), f + " is a pane of the OG glass");
+    assert.match(src, /lgrx/, f + " answers the reactive rim");
+  }
+  assert.match(read("app/components/SheetHost.jsx"), /bend: "\.card"/, "where WebKit cannot bend a backdrop, the cards under the popup's edges bend");
+  assert.match(rules, /\.sheetscrim \{ -webkit-backdrop-filter: none; backdrop-filter: none; \}/, "the scrim is no backdrop root, so the popup has a page to bend");
+  assert.match(rules, /\[data-popup\] \.main \{ filter: blur\(5px\);/, "the page softens under its own filter");
+  assert.match(rules, /\.sheet\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
+  assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
+  assert.match(rules, /prefers-reduced-transparency: reduce\) \{[^}]*\.sheet\[data-refract="1"\][^}]*backdrop-filter: none/s, "reduced transparency drops the glass");
+  // the popup's glass would trap a fixed child: the overlays it opens render on <body>
+  const listing = read("app/components/ListingSheet.jsx");
+  assert.match(listing, /createPortal\(<FloatView[^]*document\.body\)/);
+  assert.match(listing, /createPortal\(<TicketFlow[^]*document\.body\)/);
+  assert.match(read("app/components/dismiss.js"), /if \(above && above !== surface\) return;/, "a stacked modal keeps its focus");
+  assert.match(read("app/components/TicketFlow.jsx"), /role="dialog" aria-modal="true" aria-label="purchase request"/);
 });

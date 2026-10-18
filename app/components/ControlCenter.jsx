@@ -45,6 +45,7 @@ import { haptic } from "../../lib/haptics.js";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
 import { usePlacements } from "./Placements.jsx";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
 
 const ROTATE_MS = 7000;
 
@@ -110,6 +111,9 @@ export default function ControlCenter({ kind, pathname }) {
   const deckField = inSearch && !searchPopupUp;
   const scope = scopeFor({ pathname, sheet: dock.sheet && dock.sheet.id, likesTab: dock.likesTab });
   const fieldRef = useRef(null);
+  // the OG liquid glass (slice 14): the deck's bezel bends the Feed scrolling beneath it
+  const glassRef = useRef(null);
+  const glass = useLiquidGlass(glassRef, { id: "lg-deck", strength: 0.8 });
 
   // entering Map puts the dock in search mode — no keyboard
   useEffect(() => {
@@ -235,7 +239,8 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
+    <div ref={glassRef} className={"ccenter lgrx" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
+      {glass}
       <nav className="tabbar" aria-label="control deck">
         {deckField && (
           <form className="ccsearch" role="search" onSubmit={submit}>

@@ -25,6 +25,7 @@ import { useDock, closeSheet, backSheet, closeHub, hydrateHub } from "../../lib/
 import { counter } from "../../lib/sessions.js";
 import { useEscape, useFocusTrap } from "./dismiss.js";
 import { watchOfflineQueue } from "../../lib/client.js";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
 import Icon from "./Icons.jsx";
 import LikesSheet from "./LikesSheet.jsx";
 import SearchSheet from "./SearchSheet.jsx";
@@ -90,6 +91,15 @@ export default function SheetHost() {
   const dismiss = () => (hubOpen ? closeHub() : closeSheet());
   useEscape(() => (hasBack ? backSheet() : dismiss()), open);
   useFocusTrap(ref, open);
+  // THE OG LIQUID GLASS (8 Sep: the item detail in the same glass, the page
+  // bending under it — 8073a74, 7a6abe5, 19a7bd6; slice 14 restores it on
+  // every popup): all four edges lens what lies beneath at half the deck's
+  // pull; where the engine cannot bend a backdrop (WebKit) the cards under
+  // the edges bend instead. The page is lowered and softened by its own
+  // filter while a popup is up ([data-popup] .main), never by a backdrop
+  // blur on the scrim — that would make the scrim a backdrop root and leave
+  // the popup only a flat colour to bend.
+  const glass = useLiquidGlass(ref, { id: "lg-popup", strength: 0.5, active: open, bend: ".card" });
 
   // a new popup opens at its initial height; a field taking focus inside it
   // lifts it to the full height so the keyboard never covers the input
@@ -133,7 +143,8 @@ export default function SheetHost() {
 
   return (
     <div className="sheetscrim" onMouseDown={(e) => { if (e.target === e.currentTarget && lightweight) dismiss(); }}>
-      <section ref={ref} className={"sheet" + (tall ? " tall" : "") + (view.roomy ? " roomy" : "") + (hubOpen ? " hubsheet" : "")} role="dialog" aria-modal="true" aria-label={title}>
+      <section ref={ref} className={"sheet lgrx" + (tall ? " tall" : "") + (view.roomy ? " roomy" : "") + (hubOpen ? " hubsheet" : "")} role="dialog" aria-modal="true" aria-label={title}>
+        {glass}
         <header className={"sheethead" + (hasBack ? " hasback" : "")} onPointerDown={headDown} onPointerUp={headUp}>
           {hasBack ? (
             <button className="sheetbtn" onClick={backSheet} aria-label="back"><Icon name="back" size={20} /><span>BACK</span></button>

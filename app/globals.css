@@ -144,6 +144,12 @@
      fixtures' and the popup's shadows fall dark. */
   --shade: #000000;
   --scrim: rgba(1, 3, 4, 0.74);
+  /* the rim's rainbow, saturated: the OG glass's colours, not a tint */
+  --iris-1: rgba(255, 80, 170, 0.95);
+  --iris-2: rgba(60, 200, 255, 0.95);
+  --iris-3: rgba(130, 255, 180, 0.9);
+  --iris-4: rgba(255, 214, 80, 0.9);
+  --iris-5: rgba(170, 120, 255, 0.95);
 }
 [data-theme="light"] {
   --plus-k: 1;
@@ -3627,15 +3633,21 @@ body { font-size: 14px; }
 }
 .idlabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* the rainbow rim (blueprint 2.11 "hybrid optical behaviour", restrained) */
-.fixture::after, .ccenter::after {
-  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
-  opacity: var(--iris, 0.32);
-  background: conic-gradient(from 200deg at 30% 0%, rgba(255, 80, 160, 0.5), rgba(60, 200, 255, 0.55), rgba(140, 255, 180, 0.5), rgba(255, 210, 80, 0.45), rgba(170, 120, 255, 0.5), rgba(255, 80, 160, 0.5));
+/* THE RAINBOW RIM — reactive (owner, 18 Oct 2026: "the liquid glass isn't
+   liquid enough — I want the OG reactive rainbow liquid glass"; blueprint
+   2.11 "hybrid optical behaviour"). A conic rainbow masked to the rim of
+   every glass surface — the fixtures, the deck and the popup — whose start
+   angle and centre follow the hand: the pointer, the phone's tilt, the
+   scroll (LiquidGlass.jsx useGlassReactive writes --iris-a/--iris-x/--iris-y
+   on the `.lgrx` elements). Reduced motion: the rim stays where it rests. */
+.fixture::after, .ccenter::after, .sheet::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 1.5px); pointer-events: none; z-index: 5;
+  opacity: var(--iris, 0.62);
+  background: conic-gradient(from var(--iris-a, 200deg) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
 }
-[data-theme="light"] { --iris: 0.42; }
+[data-theme="light"] { --iris: 0.72; }
 @media (prefers-reduced-transparency: reduce) {
   .fixture, .ccenter { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
 }
@@ -4419,3 +4431,46 @@ body { font-size: 14px; }
    deepens the page behind it, never a white fog (slice 14) ---- */
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --shade: #000000; --scrim: rgba(1, 3, 4, 0.74); } }
 [data-theme="dark"] { --shade: #000000; --scrim: rgba(1, 3, 4, 0.74); }
+
+/* =====================================================================
+   THE OG LIQUID GLASS, RESTORED (slice 14; 8 Sep 2026: 1d0caa6, 8073a74,
+   7a6abe5, 19a7bd6, 06f80ed). The fixtures, the deck and every popup are
+   panes of glass again: the bezel lenses what passes beneath it through the
+   SVG displacement map (Chromium, --lg-filter, data-refract), each colour a
+   little differently so the edge fringes; a thin gloss and the pointer's
+   shine sit on the face and lean with the tilt; the rainbow rim above
+   follows the hand. The panes are translucent so there is something to
+   bend. While a popup is up the PAGE lowers and softens under its own
+   filter — the scrim carries no backdrop blur, because a backdrop-filter on
+   the scrim makes it a backdrop root and the popup's lens would bend a flat
+   colour (the owner's "no rainbow warp at all", 8 Sep, was this).
+   ===================================================================== */
+.fixture, .ccenter, .sheet { isolation: isolate; }
+.sheet { position: relative; overflow: hidden; }
+.fixture::before, .ccenter::before, .sheet::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    linear-gradient(calc(104deg + var(--tilt-x, 0) * 26deg), transparent 34%, color-mix(in srgb, var(--paper) 9%, transparent) 48%, color-mix(in srgb, var(--paper) 14%, transparent) 52%, transparent 66%),
+    var(--glass-sheen);
+}
+/* the panes: translucent, the backdrop softened after it is bent */
+.fixture { background: color-mix(in srgb, var(--bg3) 58%, transparent); }
+.ccenter { background: color-mix(in srgb, var(--bg3) 66%, transparent); }
+.fixture[data-refract="1"], .ccenter[data-refract="1"] {
+  -webkit-backdrop-filter: var(--lg-filter) blur(10px) saturate(160%); backdrop-filter: var(--lg-filter) blur(10px) saturate(160%);
+}
+.sheet { background: color-mix(in srgb, var(--bg) 80%, transparent); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); }
+.sheet[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); }
+[data-theme="light"] .sheet { background: linear-gradient(180deg, color-mix(in srgb, #eef6fb 84%, transparent), color-mix(in srgb, #e5eef5 84%, transparent)); }
+/* the page under a popup: lowered by the scrim's colour, softened by its own filter */
+.sheetscrim { -webkit-backdrop-filter: none; backdrop-filter: none; }
+[data-popup] .main { filter: blur(5px); transition: filter 0.22s; }
+.glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
+  [data-popup] .main { filter: none; }
+}

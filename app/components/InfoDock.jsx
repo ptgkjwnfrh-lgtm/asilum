@@ -14,7 +14,8 @@
 // assistive technology and as a tooltip, and the fixture stays compact — the
 // blueprint's priority is to spend as little real estate as possible.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
 import { bagList } from "../../lib/client.js";
 import { UTILITIES } from "../../lib/dock.js";
 import { useDock, openSheet, closeSheet } from "../../lib/dockstate.js";
@@ -25,6 +26,9 @@ import { getUid, postJSON } from "../../lib/client.js";
 
 export default function InfoDock() {
   const dock = useDock();
+  // the OG liquid glass (slice 14): the bezel bends what passes beneath, the rim's rainbow answers the hand
+  const glassRef = useRef(null);
+  const glass = useLiquidGlass(glassRef, { id: "lg-infodock", strength: 0.8 });
   const [bagCount, setBagCount] = useState(0);
   const [exploration, setExploration] = useState(null); // { active, auto, off, step, ratio }
   useEffect(() => {
@@ -51,7 +55,8 @@ export default function InfoDock() {
   }
 
   return (
-    <div className="infodock fixture" role="group" aria-label="info dock">
+    <div ref={glassRef} className="infodock fixture lgrx" role="group" aria-label="info dock">
+      {glass}
       {UTILITIES.map((u) => {
         const cur = !!(dock.sheet && dock.sheet.id === u.id);
         return (
