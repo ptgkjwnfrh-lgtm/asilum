@@ -175,3 +175,21 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   assert.match(read("app/components/dismiss.js"), /if \(above && above !== surface\) return;/, "a stacked modal keeps its focus");
   assert.match(read("app/components/TicketFlow.jsx"), /role="dialog" aria-modal="true" aria-label="purchase request"/);
 });
+
+// ROUNDED EVERYWHERE (owner, 18 Oct 2026: "everything should be rounded
+// out"). Three radius tokens on :root; a floor that rounds every button and
+// field unless a rule of its own rounds it otherwise; the shell-visible
+// surfaces on the tokens; no underline-only (hairline) field left squared.
+test("rounded everywhere: three radius tokens, a floor for every key and field, the shell's surfaces on them, no square hairline field", () => {
+  const root = css.slice(css.indexOf(":root {"), css.indexOf("\n}", css.indexOf(":root {")));
+  for (const t of ["--radius-card", "--radius-field", "--radius-key"]) assert.match(root, new RegExp(t + ":\\s*\\d+px;"), t);
+  assert.match(rules, /\nbutton, \.btn, a\.btn \{ border-radius: var\(--radius-key\); \}/, "every button is rounded unless rounded otherwise");
+  assert.match(rules, /\ninput:not\(\[type="checkbox"\]\):not\(\[type="radio"\]\):not\(\[type="range"\]\), select, textarea \{ border-radius: var\(--radius-field\); \}/, "every field");
+  assert.match(rules, /\.card, [^{]*\{ border-radius: var\(--radius-card\); \}/, "every card");
+  assert.match(rules, /--sheet-radius: calc\(var\(--radius-card\) \+ 4px\);/, "the popup and the deck in the same family");
+  assert.match(rules, /\.imgwrap \{ position: relative; border-radius: var\(--ed-img-rad, var\(--radius-card\)\);/, "a card's photograph is rounded by default");
+  // no field is a hairline with square corners any more
+  const squareFields = (rules.match(/\{[^}]*border-bottom:\s*\d+px solid var\(--line\);[^}]*border-radius:\s*0[;\s]/g) || []);
+  assert.deepEqual(squareFields, [], "no underline-only field with square corners");
+  assert.ok(!/border: none; border-bottom: [12]px solid var\(--line\); border-radius: 0;/.test(rules));
+});

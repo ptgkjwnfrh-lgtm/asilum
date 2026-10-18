@@ -2,7 +2,7 @@
 
 ## The V.2 build (17–18 October 2026) — PR #484, `v2/build`
 
-Thirteen vertical slices under the owner's 17 October blueprint and the 18
+Fourteen vertical slices under the owner's 17 October blueprint and the 18
 October ruling (CONSTITUTION A6; OWNER-DECISIONS §12). Each has a write-up in
 `docs/v2/slice-*.md`; the matrix is `docs/v2/BLUEPRINT-GAP-2026-10-17.md`.
 
@@ -16,6 +16,7 @@ October ruling (CONSTITUTION A6; OWNER-DECISIONS §12). Each has a write-up in
 | 11 money in motion | `2ac0858` | payouts, top-ups, Credit at the fee, Wardrobe private sales, the hourly sweeps, the review screen |
 | 12 map, attendance, valuation | this commit | the map popup above a post, substantiated attendance, the valuation hierarchy, the overview's BRDCST line, the score on the Passport |
 | 13 the music seams | this commit | Spotify PKCE and the MusicKit developer token behind honest 503s; sealed tokens; **two prepared applications the owner submits** (`docs/v2/applications/`) |
+| 14 the Feed and the look, to the 18 Oct references | `ef89b1c` `8751674` `0477e80` `461527e` `6a5fd8d` + the rounding commit | the post card, the BRDCST footer, place cards and the map popup's head, the piece card and the listing popup as drawn; the Wire gone from every visible word; page gradients; dark popups deepen the page; the OG reactive rainbow liquid glass on the fixtures, the deck and every popup; rounded everywhere (`docs/v2/slice-14-feed-look-2026-10-18.md`) |
 
 Schema: v61 applied; v62–v72 STAGED on this branch (`scripts/apply-schema.mjs`
 applies them in order; CI applies all to a fresh Postgres for the

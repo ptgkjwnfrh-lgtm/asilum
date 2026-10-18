@@ -1466,7 +1466,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    entry type, a stronger underline, and POST carries the teal
    clickable smear — but only once there is something to post
    (.postbtn:disabled, by the grouped rule) */
-.cvr .cvcomposebox textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
+.cvr .cvcomposebox textarea { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 10px 14px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .cvr .cvcomposebox textarea:focus { border-bottom-color: var(--sig); }
 .cvcomposerow { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
 .cvpost { margin: 0 0 16px; }
@@ -1535,8 +1535,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wcomposer { margin: 6px 0 26px; }
 .wcompose { display: flex; gap: 12px; }
 .wcright { flex: 1; min-width: 0; }
-.wcright .wcap, .wedit .wcap { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
-.wcright textarea, .wedit textarea { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--line); border-radius: 0; padding: 8px 2px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
+.wcright .wcap, .wedit .wcap { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 9px 14px; font-family: var(--mich); font-size: 13px; letter-spacing: 0.04em; outline: none; }
+.wcright textarea, .wedit textarea { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 10px 14px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .wcright .wcap:focus, .wcright textarea:focus, .wedit .wcap:focus, .wedit textarea:focus { border-bottom-color: var(--sig); }
 /* permalink focus — one transmission pinned above the wire */
 .wfocus { margin: 4px 0 30px; }
@@ -1597,7 +1597,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .bizfields .cclbl:first-child { margin-top: 0; }
 .bizreject { font-size: 12px; color: var(--red); text-shadow: var(--glow-r); max-width: 56ch; }
 .bizform { display: grid; gap: 10px; margin-top: 10px; }
-.bizform input, .bizform textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; padding: 7px 2px; font: inherit; font-size: 13px; outline: none; }
+.bizform input, .bizform textarea { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 9px 14px; font: inherit; font-size: 13px; outline: none; }
 .bizform input:focus, .bizform textarea:focus { border-bottom-color: var(--sig); }
 .bizrow { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
 
@@ -1620,7 +1620,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
    Aug 12 (owner order: more Grailed — square-cut floating images, no card
    border, no hover box; the red reach frame and INSPECT badge stay) ---- */
-.imgwrap { position: relative; border-radius: var(--ed-img-rad, 0px); overflow: hidden; }
+.imgwrap { position: relative; border-radius: var(--ed-img-rad, var(--radius-card)); overflow: hidden; }
 .imgwrap::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
 .card:hover .imgwrap::before { content: "◉ INSPECT →"; position: absolute; right: 7px; bottom: 7px; z-index: 2;
@@ -2057,8 +2057,8 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .adminkey { min-width: 280px; }
 .decknote { min-width: 220px; }
 .adminkey, .decknote {
-  background: transparent; border: none; border-bottom: 1px solid var(--line);
-  border-radius: 0; padding: 6px 2px; font-family: var(--mich); font-size: 13px;
+  border: 0; background: var(--field-fill); border-radius: var(--radius-field);
+  padding: 9px 14px; font-family: var(--mich); font-size: 13px;
   letter-spacing: 0.04em; outline: none;
 }
 .adminkey:focus, .decknote:focus { border-bottom-color: var(--sig); }
@@ -3300,7 +3300,7 @@ body { font-size: 14px; }
   --cc-gap: 10px;
   --cc-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
-  --sheet-radius: 26px;
+  --sheet-radius: calc(var(--radius-card) + 4px);
 }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
@@ -3407,7 +3407,7 @@ body { font-size: 14px; }
 .sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
 @keyframes sheetin { from { transform: translateY(24px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
-.sheethead { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
 .sheetgrip { justify-self: start; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin-left: 8px; }
 /* `.sheet h2` (the old sheet rule) outranks a bare class; the title is named
@@ -4408,8 +4408,9 @@ body { font-size: 14px; }
 .lstacts { display: flex; align-items: center; gap: 22px; margin: 10px 0 12px; border: 0; padding: 0; }
 .lstacts .lstact { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform 0.12s, color 0.18s; }
 .lstacts .lstact:active { transform: scale(0.94); }
-[data-theme] .lstacts .lstact { color: var(--ink); background: none; border: 0; box-shadow: none; text-shadow: none; }
-[data-theme] .lstacts .lstact.on, [data-theme] .lstacts .lstact[aria-pressed="true"] { color: var(--red); }
+/* the shared button rule's :is() list carries four classes of specificity; the glyphs are ink, as drawn */
+[data-theme] .listing .lstacts .lstact.lstact { color: var(--ink); background: none; border: 0; box-shadow: none; text-shadow: none; }
+[data-theme] .listing .lstacts .lstact.lstact.on, [data-theme] .listing .lstacts .lstact.lstact[aria-pressed="true"] { color: var(--red); }
 .lstacts .lststamp { margin-left: auto; }
 .lstofferword { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1.5px solid var(--ink); border-radius: var(--radius-key); background: none; color: var(--ink); font: 400 13px/1 var(--mich); letter-spacing: 0.08em; cursor: pointer; }
 .lstofferword.on { color: var(--red); border-color: var(--red); }
@@ -4474,3 +4475,27 @@ body { font-size: 14px; }
   .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
   [data-popup] .main { filter: none; }
 }
+
+/* =====================================================================
+   ROUNDED EVERYWHERE (owner, 18 Oct 2026: "everything should be rounded
+   out"; the hand-drawn rounded rectangles of the references). Three radii,
+   defined once on :root: --radius-card (cards, popups — the popup and the
+   deck at four more), --radius-field (fields), --radius-key (keys and
+   buttons). This block is the floor: every button and every field is
+   rounded unless a rule of its own rounds it differently (a pill, a disc);
+   the element selectors here lose to any class, so a round key stays round.
+   The underline-only fields are gone with it — they were the hairline
+   fields the owner retired; a field is a soft filled shape now.
+   ===================================================================== */
+:root { --field-fill: color-mix(in srgb, var(--ink) 6%, transparent); }
+button, .btn, a.btn { border-radius: var(--radius-key); }
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { border-radius: var(--radius-field); }
+.card, .noticerow, .likerow, .mapdrawer, .lstdepth, .modal, .overlay > .modal { border-radius: var(--radius-card); }
+.sheetbtn, .ccenter .tabl, .ccenter .mailbtn, .cckey, .cctog, .adtag, .typechip, .lstofferword { border-radius: var(--radius-key); }
+/* the small stickers on a card's photograph (DEMO / SAMPLE / origin) */
+.ostick { border-radius: 8px; }
+.ccfield, .ccsearch input, .onbinput, .behindcap { border-radius: var(--radius-field); }
+.sheethead .sheettitle { padding: 0 6px; }
+.sheethead .sheetacts { gap: 4px; }
+/* a phone: the grip and the title's tracking give the title and its session count the room the keys took */
+@media (max-width: 480px) { .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } .sheethead .sheetcount { margin-left: 6px; } }
