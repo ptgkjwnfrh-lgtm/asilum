@@ -1,0 +1,64 @@
+# COMMITTED AND EVALUATED — but it SKIPS until someone turns it on, and skipped
+# is the honest state, not a broken one. See "two owner actions" below.
+#
+# This file spent a day as a paste-me snippet in docs/steward-schedule.md,
+# because the stored gh OAuth token carries `repo` scope only and GitHub
+# refuses any push or Contents-API write that touches a workflow file. It got
+# here the way the drift workflow did: committed through the GitHub web UI on a
+# branch, then merged normally — merging a PR that carries a workflow change is
+# NOT blocked, only writing one directly is. Editing this file takes the same
+# route; a normal push cannot touch it.
+#
+# The neighbouring drift workflow shipped with its snippet header intact and
+# spent two days declaring itself not yet activated while it fired every six
+# hours, which is why this header leads with what is true today rather than
+# with how the file was written. (Paraphrased on purpose: the exact wording it
+# used is a string tests/steward.test.js forbids in this file.)
+
+name: Steward
+
+# The steward answers "is anything wrong?" against the LIVE machine, so unlike
+# CI it needs a database to read. It runs every morning and on demand.
+#
+# WHY THE JOB IS GUARDED RATHER THAN ALWAYS-ON. Without DATABASE_URL every
+# check returns `unmeasurable` and the run exits 2 — correct behaviour for the
+# CLI (a dark board is not a green one) and useless behaviour for a schedule,
+# because a job that fails every morning for a reason nobody can fix teaches
+# everyone to ignore it. So the job is SKIPPED when it is not configured, and
+# GitHub shows skipped as skipped. It never reports a pass it did not earn.
+#
+# TWO OWNER ACTIONS TURN IT ON (Settings -> Secrets and variables -> Actions):
+#   1. Secrets: add DATABASE_URL (and DATABASE_SSL_CA if the deploy uses one).
+#   2. Variables: add STEWARD_ENABLED = true.
+# BOTH are required, and the guard reads only the second — so adding the secret
+# alone leaves this skipping silently. The steward only ever reads: no writes,
+# no migrations, no deletions, no external calls.
+#
+# Exit codes, from scripts/steward.mjs: 0 nothing needs a person · 1 a blocker
+# · 2 something is warn or could not be measured. Anything but 0 fails the run.
+
+on:
+  schedule:
+    - cron: "23 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: ${{ vars.STEWARD_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: read the board
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_SSL_CA: ${{ secrets.DATABASE_SSL_CA }}
+        run: npm run steward

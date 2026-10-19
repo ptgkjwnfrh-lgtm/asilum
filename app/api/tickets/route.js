@@ -1,0 +1,208 @@
+// app/api/tickets/route.js
+// The third-party purchase-assistant ticket flow. ASILUM never fulfills:
+// the original marketplace/seller confirms, ships, tracks, and services.
+//
+// POST  { user, itemId }                        → create ticket + availability check
+// GET   ?user=<id>                              → the user's tickets
+// PATCH { id, action: "consent"|"cancel", consent? } → consent gate / cancel
+//
+// Consent is REQUIRED before any checkout step; the server stamps the current
+// disclaimer version. No card data, shipping PII, or external passwords—ever.
+
+import { NextResponse } from "next/server";
+import {
+  createTicket, updateTicket, transitionTicket, listTickets, getTicket, reportTicketOutcome,
+  recordAvailabilityCheck,
+} from "../../../lib/db/production.js";
+import { getAdapter } from "../../../lib/ingest/adapters/index.js";
+import { DISCLAIMER_TEXT, DISCLAIMER_VERSION, DISCLAIMER_CHECKBOX } from "../../../lib/tickets.js";
+import { resolveRequestUser } from "../../../lib/identity.js";
+import { resolveProduct } from "../../../lib/products.js";
+import { safeExternalUrl } from "../../../lib/url.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { buildEvent, EVENTS } from "../../../lib/events/index.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
+import { envelope, failure } from "../../../lib/api/outcome.js";
+import { learnFromPurchaseQuietly } from "../../../lib/brain/purchase.js";
+import { consentState } from "../../../lib/consent.js";
+
+export const dynamic = "force-dynamic";
+
+async function handlePOST(req) {
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const itemId = String(body.itemId || "").slice(0, 80);
+  if (!itemId) return NextResponse.json({ error: "itemId required" }, { status: 400 });
+  const item = await resolveProduct(itemId);
+  if (!item) return NextResponse.json({ error: "product not found" }, { status: 404 });
+  const sourceUrl = safeExternalUrl(item.source_product_url || item.url);
+  const sourceName = item.source_name || item.source || "seed";
+  if (!sourceUrl || sourceName.includes("seed") || sourceName === "Asilum synthetic seed") {
+    return NextResponse.json(
+      { error: "demo inventory cannot create a purchase ticket; use a live source listing" },
+      { status: 409 }
+    );
+  }
+  const quota = await consumeRateLimit({ scope: "tickets", subject: user, limit: 10, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) {
+    return NextResponse.json(rateLimitResponse(quota), {
+      status: 429, headers: { "Retry-After": String(Math.ceil(quota.retryAfterMs / 1000)) },
+    });
+  }
+
+  try {
+    let ticket = await createTicket({
+      userId: user,
+      productId: item.id,
+      sourceName,
+      sourceProductId: item.source_product_id || null,
+      sourceProductUrl: sourceUrl,
+      itemPriceAtRequest: item.price ?? null,
+      availabilityStatus: item.availability_status || "unknown",
+      idempotencyKey: body.operationId,
+    });
+
+    if (ticket.duplicate && ticket.status !== "requested") {
+      return NextResponse.json({
+        ticket,
+        item: { id: item.id, title: item.title, brand: item.brand, price: ticket.currentPriceChecked ?? item.price, currency: item.currency },
+        disclaimer: { text: DISCLAIMER_TEXT, checkbox: DISCLAIMER_CHECKBOX, version: DISCLAIMER_VERSION },
+        duplicate: true,
+      });
+    }
+
+    // Availability check through the source adapter when one is live;
+    // demo/seed inventory is honestly labeled available demo stock.
+    const adapter = getAdapter(item.source_name);
+    let availability = item.availability_status || "unknown";
+    let currentPrice = item.price ?? null;
+    if (adapter && adapter.enabled().enabled && item.source_product_id) {
+      const check = await adapter.checkAvailability(item.source_product_id);
+      availability = check.availability_status;
+      if (check.price != null) currentPrice = check.price;
+      await recordAvailabilityCheck({
+        productId: item.id, availabilityStatus: availability,
+        previousPrice: item.price ?? null, currentPrice,
+        sourceResponseStatus: check.source_response_status ?? null,
+      }).catch(() => {});
+    }
+
+    ticket = await updateTicket(ticket.id, {
+      status: ["sold", "removed"].includes(availability) ? "unavailable" : "awaiting_user_consent",
+      availabilityStatus: availability,
+      currentPriceChecked: currentPrice,
+    }) || ticket;
+
+    return NextResponse.json({
+      ticket,
+      item: { id: item.id, title: item.title, brand: item.brand, price: currentPrice, currency: item.currency },
+      disclaimer: { text: DISCLAIMER_TEXT, checkbox: DISCLAIMER_CHECKBOX, version: DISCLAIMER_VERSION },
+    });
+  } catch (error) {
+    console.error("[tickets] create failed", error?.message || error);
+    const failed = failure("unavailable", "ticket_create_failed", "the ticket desk could not record this — retry", { status: 500 });
+    return NextResponse.json(failed.body, { status: failed.status });
+  }
+}
+
+async function handleGET(req) {
+  const { searchParams } = new URL(req.url);
+  const user = await resolveRequestUser(req, searchParams.get("user") || "");
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "tickets-read", subject: user, limit: 60, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  try {
+    const tickets = await listTickets(user);
+    return NextResponse.json({ ...envelope({ count: tickets.length }), tickets });
+  } catch (error) {
+    // A DOWN DESK IS NOT AN EMPTY DESK (19 Sep 2026). This answered a database
+    // failure with `{ tickets: [] }` and HTTP 200, indistinguishable from
+    // "you have no tickets". Typed, retryable 503 instead.
+    console.error("[tickets] list failed", error?.message || error);
+    const failed = failure("unavailable", "tickets_unavailable", "your tickets could not be read — retry");
+    return NextResponse.json({ ...failed.body, tickets: null }, { status: failed.status });
+  }
+}
+
+async function handlePATCH(req) {
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
+  const id = body.id;
+  const action = body.action;
+  if (!id || !action) return NextResponse.json({ error: "id and action required" }, { status: 400 });
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const ticket = await getTicket(id).catch(() => null);
+  // Ownership: only the requesting user may consent to or cancel their ticket.
+  if (!ticket || ticket.userId !== user) {
+    return NextResponse.json({ error: "ticket not found" }, { status: 404 });
+  }
+  const quota = await consumeRateLimit({ scope: "ticket-mutate", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+
+  if (action === "cancel") {
+    const updated = await transitionTicket(id, user, "cancel");
+    if (!updated) {
+      return NextResponse.json(
+        { error: "ticket can no longer be canceled here; use the source marketplace for an active checkout" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json({ ticket: updated });
+  }
+  if (action === "consent") {
+    if (body.consent !== true) {
+      return NextResponse.json({ error: "user consent is required before checkout", code: "consent_required" }, { status: 400 });
+    }
+    if (ticket.status !== "awaiting_user_consent") {
+      return NextResponse.json({ error: "ticket is not awaiting consent" }, { status: 409 });
+    }
+    const continueUrl = safeExternalUrl(ticket.sourceProductUrl);
+    if (!continueUrl) {
+      return NextResponse.json({ error: "this ticket has no verified source checkout URL" }, { status: 409 });
+    }
+    const updated = await transitionTicket(id, user, "consent", {
+      disclaimerVersion: DISCLAIMER_VERSION,
+      notes: "checkout continues on the source site — the source handles confirmation, tracking, returns",
+    });
+    if (!updated) {
+      return NextResponse.json({ error: "ticket state changed; refresh before continuing" }, { status: 409 });
+    }
+    return NextResponse.json({ ticket: updated, continueUrl });
+  }
+  if (action === "outcome") {
+    const outcome = String(body.outcome || "");
+    const eventType = {
+      bought: EVENTS.USER_REPORTED_PURCHASE,
+      kept: EVENTS.USER_REPORTED_KEEP,
+      returned: EVENTS.USER_REPORTED_RETURN,
+      "not-bought": EVENTS.USER_REPORTED_NO_PURCHASE,
+    }[outcome];
+    if (!eventType) return NextResponse.json({ error: "unknown outcome" }, { status: 400 });
+    const result = await reportTicketOutcome(
+      id, user, outcome,
+      buildEvent(user, eventType, { ticketId: Number(id), itemId: ticket.productId, sourceName: ticket.sourceName })
+    );
+    if (!result) {
+      return NextResponse.json({ error: "outcomes can be reported only after source checkout starts" }, { status: 409 });
+    }
+    // A REPORTED PURCHASE TEACHES THE BRAIN (19 Sep 2026): bought or kept, once
+    // per ticket, under this request's consent; a return or a no-purchase is
+    // not a taste signal. Fire-and-forget — the outcome is already recorded.
+    if (!result.duplicate && (outcome === "bought" || outcome === "kept")) {
+      learnFromPurchaseQuietly({ userId: user, itemId: ticket.productId, kind: "reported", ref: `ticket-${id}`, consent: consentState(req) });
+    }
+    return NextResponse.json(result);
+  }
+  return NextResponse.json({ error: "unknown action" }, { status: 400 });
+}
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const POST = withPrivateCache(handlePOST);
+export const GET = withPrivateCache(handleGET);
+export const PATCH = withPrivateCache(handlePATCH);

@@ -1,0 +1,86 @@
+// app/api/stylist/route.js
+// The AI-ready stylist service endpoint (UI-independent; /stylist page and
+// /api/outfits keep working unchanged).
+// POST { user, kind:"request", requestText?, occasion?, mood?, budgetMin?,
+//        budgetMax?, sizePreferences?, colorPreferences?, excludedTags?,
+//        useMoodBoardBrain? }
+//   → persists the request, generates outfits (local rules today, model seam
+//     when enabled), persists each outfit with its reasoning, returns them.
+// POST { user, kind:"feedback", outfitId, feedbackType, feedbackNotes?,
+//        saved?, rejected?, purchased? }
+//   → records feedback on an outfit the user owns (fuels avoided_tags).
+// Identity: resolveRequestUser proof on every call.
+
+import { NextResponse } from "next/server";
+import { resolveRequestUser } from "../../../lib/identity.js";
+import {
+  generateStylistOutfits, recordStylistFeedback, getStylistOutfit,
+} from "../../../lib/ai/stylistReasoningEngine.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { publicProduct } from "../../../lib/products.js";
+
+export const dynamic = "force-dynamic";
+
+const num = (v) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null);
+const strList = (v, cap) => (Array.isArray(v) ? v.slice(0, cap).map((x) => String(x).slice(0, 40)) : []);
+
+export async function POST(req) {
+  const parsed = await readJsonRequest(req);
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "stylist", subject: user, limit: 30, windowMs: 60 * 60 * 1000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+
+  if (body.kind === "feedback") {
+    const outfit = await getStylistOutfit(body.outfitId).catch(() => null);
+    if (!outfit || outfit.userId !== user) {
+      return NextResponse.json({ error: "outfit not found" }, { status: 404 });
+    }
+    try {
+      const rec = await recordStylistFeedback({
+        userId: user, stylistOutfitId: outfit.id,
+        feedbackType: String(body.feedbackType || "note"),
+        feedbackNotes: body.feedbackNotes ? String(body.feedbackNotes) : null,
+        saved: body.saved === true, rejected: body.rejected === true, purchased: body.purchased === true,
+      });
+      return NextResponse.json({ ok: true, id: rec.id, persistent: rec.persistent });
+    } catch {
+      return NextResponse.json({ error: "feedback write failed" }, { status: 500 });
+    }
+  }
+
+  // Default: outfit request.
+  const request = {
+    requestText: body.requestText ? String(body.requestText).slice(0, 400) : null,
+    occasion: body.occasion ? String(body.occasion).slice(0, 80) : null,
+    mood: body.mood ? String(body.mood).slice(0, 80) : null,
+    budgetMin: num(body.budgetMin),
+    budgetMax: num(body.budgetMax),
+    sizePreferences: strList(body.sizePreferences, 8),
+    colorPreferences: strList(body.colorPreferences, 8),
+    excludedTags: strList(body.excludedTags, 16),
+    useMoodBoardBrain: body.useMoodBoardBrain !== false,
+    aiConsent: body.aiConsent === true,
+  };
+  const result = await generateStylistOutfits(user, request);
+  if (!result.ok) {
+    return NextResponse.json(
+      { error: result.error, requestId: result.requestId || null },
+      { status: /no available|no coherent/.test(result.error) ? 200 : 500 }
+    );
+  }
+  return NextResponse.json({
+    ok: true, requestId: result.requestId, source: result.source,
+    outfits: result.outfits.map((o) => ({
+      id: o.id, name: o.outfitName, summary: o.outfitSummary,
+      productIds: (o.items || []).map((it) => it.id),
+      items: (o.items || []).map(publicProduct).filter(Boolean), matchedTags: o.matchedTags,
+      colorLogic: o.colorLogic, silhouetteLogic: o.silhouetteLogic,
+      aestheticLogic: o.aestheticLogic, matchScore: o.matchScore,
+      warnings: o.warnings || [], persistent: o.persistent,
+    })),
+  });
+}

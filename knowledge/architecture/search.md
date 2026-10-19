@@ -1,0 +1,248 @@
+# Search
+
+Engine v1 (lib/search/): deterministic, explainable.
+1. Intent: brand | designer-similar ("like X" penalizes X's own brand) |
+   text.
+2. Expansion through curated search_mappings.
+3. GARMENT_CATEGORY alignment is decisive for garment nouns
+   ("trashed jeans" → bottoms only).
+4. product_tags layer + availability sink, then confidenceScore /
+   matchReason / matchedTags on every hit.
+5. Optional brain nudge — asilum-brain-off localStorage pauses
+   personalization (searchguide shows GUIDING / PAUSED).
+6. /api/suggest: levenshtein autocomplete incl. "like <designer>".
+GET search is side-effect-free; query logging only via explicit POST.
+
+Embeddings: v0 = tag-space cosine (live, lib/embeddings). v1 real vectors
+are LIVE (Voyage via EMBEDDINGS_PROVIDER/EMBEDDINGS_API_KEY; provider
+adapter also speaks openai / EMBEDDINGS_URL self-hosted). Catalog vectors
+(text-v1, 1024-dim voyage-3.5-lite) live in the Supabase embeddings table;
+backfill = scripts/embed-catalog.mjs (idempotent, 429-backoff). Recall
+channel "semantic match" is APPEND-ONLY: sim floor 0.45, cap 12, conf
+≤ 0.5 — inert without the env key. Measured (Aug 3, 6-probe paraphrase
+battery, PR #101): bridges vocabulary the literal engine cannot
+("something slinky for a night out" → slip dress), contributes 0 on
+garment-noun queries because literal ranking already covers the category.
+
+Semantic re-ranking (r5): fires ONLY on garment-noun queries with ≥2
+modifier tokens. The garment noun is stripped from the embedded query —
+measured Aug 3: the noun's lexical pull ranks varsity jackets above
+GORE-TEX shells, the modifiers alone rank shells first. Nudge =
+min(2, max(0, sim − 0.30) × 10) on _score, order-only (confidence and
+matchReason untouched); every other query class is byte-identical to the
+append-only design, and unkeyed stays inert. Measured (scripts/
+measure-rerank.mjs, criteria declared pre-run): mountain-pants probe
+swept climbing pants into all of top 3; storm/hike probes needed r6.
+
+Generic garment nouns (r6): GENERIC_GARMENT_NOUNS (jacket/coat →
+outerwear, shoes → footwear, dress → dresses) name the CATEGORY, not a
+subtype — for these nouns only, (a) the title-token hit extends to every
+item of the category and (b) the noun is EXCLUDED from the typed
+product_tags query. Measured root cause: the noun triple-counted —
+title-token bonus (+0.625) AND typed tag layer (up to +4, the dominant
+term in the DB-backed path) AND category bonus — so "hardshell parka"
+started ~5 points behind any "* jacket" title on "jacket that survives
+a storm". Subtype nouns (jeans, parka, bomber, hoodie…) keep literal
+matching and tag credit: "trashed jeans" must rank jeans above trousers
+WITHIN bottoms. Kill-switch SEARCH_GARMENT_TITLE_EQUIV=0. Measured
+(same declared-criteria battery, r5+r6): 3/3 improve probes — storm and
+hike put GORE-TEX shells/hardshells at rank 1 (from rank 98), climbing
+pants sweep holds; 0 hold regressions, canonical probes byte-identical,
+163/163 tests.
+
+Semantic tie-breaking (r7): equal literal scores order by sim to the
+query instead of arbitrary pool order — sort key (_score, sim), scores
+never mutated, so items CANNOT cross score clusters by construction.
+Fires whenever embeddings are engaged ("slip dress" 11-way conf-1 tie,
+the r6-levelled "jacket" 112-way tie); inert unkeyed; kill-switch
+SEARCH_SEMANTIC_TIEBREAK=0. Measured (scripts/measure-tiebreak.mjs,
+criteria declared pre-run): 0 invariance breaks / 0 assert fails / 0
+determinism breaks over 7 probes at FULL-list resolution. HARNESS LAW
+learned here: measure order-invariance on the full result list — a
+windowed check fakes breaks when a tie cluster straddles the limit.
+Generic-noun coverage + category truth (r8): GENERIC_GARMENT_NOUNS +=
+knit → knitwear. "sweater" was measured and REJECTED — the declared
+beanie guard fired (balaclava beanies, then miscategorized as knitwear,
+topped the sweater probes); the catalog cleanup below unblocks its
+retest. "top" is documented out (tokenizer splits "high-top").
+GARMENT_CATEGORY now follows the CATALOG, not garment taxonomy:
+hoodie → tops, fleece → outerwear (all 19 hoodies and all 14 fleeces
+live there; the old knitwear mappings ranked the first real hoodie 47th
+and fleece 92nd on modifier queries — plain-noun queries masked it
+because name match +6 dwarfs the −2). Catalog cleanup shipped in the
+same change: 10 balaclava beanies → accessories, 10 tabi boots →
+footwear, catalog.json + prod items + re-embedded (delete rows + rerun
+embed-catalog — idempotent fill). Measured (scripts/
+measure-noun-coverage.mjs, two-arm baseline/after, criteria + all
+amendments declared): 2/2 improve (knit targets rank 14→1, 21→1), 4/4
+defect fixed, 0 hold breaks, canonical asserts pass.
+Sweater retest (r9): GENERIC_GARMENT_NOUNS += sweater → knitwear,
+re-measured on the cleaned catalog under the same declared guard that
+rejected it in r8 (scripts/measure-sweater.mjs): 2/2 improve, 0 holds
+broken, no beanies in any probe top-10.
+Generic-noun consistency guard (CI): tests/
+generic-noun-consistency.test.js asserts, on every push, that the two
+tables agree (GENERIC_GARMENT_NOUNS vs GARMENT_CATEGORY), that every
+generic-noun category is populated, and that every item in a
+generic-noun category has a classifiable title head noun whose class
+matches the category — closed coverage, so new title vocabulary in
+those categories fails CI until it is consciously classified. This is
+the r8 beanie miscategorization made impossible to reintroduce
+silently.
+Fan-tribe study + cultural fallback + Passport assumption (r10):
+11 curated culture records (provenance curated-image-informed-2026-08,
+fan-tribe readings derived from the owner-supplied fan-portrait image
+series — what the FANS wear, not stage costume): marilyn manson, the
+casualties, p diddy, arctic monkeys, oasis, klaxons, merle haggard,
+jimmy buffett, m.i.a, rod stewart, gossip. Measured need
+(scripts/measure-disciples.mjs, 366 deterministic variants/term × 18
+terms, criteria + amendments declared in the script): recognition for
+the 11 was 0/366 (baseline) → 366/366; the 7 pre-existing artist terms
+held at 366/366. The battery also surfaced that bare cultural queries
+returned an EMPTY rack even for KNOWN entities (36 zero-result
+variants) — the culture catalog only reached results through a clicked
+interpretation pill. Three engine changes, all kill-switchable:
+(1) cultural fallback (SEARCH_CULTURE_FALLBACK=0): when the literal
+engine and compositional read both come up empty — or the rack carries
+zero query evidence (every reason "moodboard brain": the personal
+nudge alone admits items, so guided unmatched queries used to return
+query-independent taste noise) — the query interprets through the
+asterisk orchestrator and the pool ranks by the reading's tag slate
+(tagRank; deterministic id tie-break), labeled "cultural read", conf
+≤ 0.45; guided users get the taste-favored reading (influenced),
+anonymous users the top-confidence reading (broad).
+(2) Passport influenced-assumption clause (SEARCH_PASSPORT_ASSUMPTION=0,
+lib/search/passportAssumption.js): on the discover route, a broad
+garment-noun-free cultural query narrows the slate to the guided
+user's taste-favored reading (tasteAffinity > 0 required; explicit
+pills override; never below a 6-item floor; anonymous inert —
+measured byte-identical). Surfaced in the response `assumption` field
+and a discover-page areadnote.
+(3) `cultural:{engaged,entity,interpretationId,label,personalized}`
+rides in every search response beside `semantic`.
+Zero-result variants 36 → 0; alignment improved for all 11 new terms
+with all holds intact. Declared-criterion miss reported honestly:
+probe-vs-probe slate differential measured 5/18 route-layer (3/18
+engine) vs declared ≥6 — structural, 16/18 records are
+single-reading; differential influence needs multi-reading records.
+Stem-indexed vocabulary (r11): lib/search/vocab.js (words/stemmer,
+MIT) replaces the strip-trailing-s heuristic for GARMENT_CATEGORY +
+GENERIC_GARMENT_NOUNS lookups — tables indexed by the Porter stems of
+their own keys at load, exact key always wins, -ves irregulars
+("scarves") handled, stems never displayed or stored. Newly resolving:
+trouser, sneaker, loafer, cargo, boot, jean, scarves, gowns, hoodies…
+Measured (scripts/measure-stems.mjs): improve 7/10 → 9/10 probes
+category-correct top-3, holds 8/8 full-list set+score invariant incl.
+canonical asserts and the r10 cultural read. The remaining probe
+("trouser" bare) is catalog truth, not a defect: items titled "pleated
+wool trouser" are FILED UNDER TAILORING and product-name match rightly
+outranks category evidence.
+Literal-engine typo bridge (r12): lib/search/typo.js
+(fastest-levenshtein, MIT) corrects unknown 5+ char tokens at
+interpretation time — before category evidence, title matching, the
+tag layer, and single-word mapping hits. Known tokens (exact or r11
+stem) are NEVER corrected; distance ties correct nothing; brands
+excluded; corrections ride interpreted.typoCorrections + the response
+note. SEARCH_TYPO_BRIDGE=0 kills it. The brain's compositional typo
+bridge (asterisk-boost r2) is separate and untouched. Measured
+(scripts/measure-typo.mjs): typo probes 1/8 → 7/8 category-correct
+with clean-slate overlap, holds 7/7 set+score invariant, zero
+corrections on clean probes. Residual ("sweter" bare): category-
+correct but different slice of the 90-item generic-noun tie cluster —
+the phrase-level bonus can't apply to a misspelled phrase.
+Fashionpedia vocabulary (r13): lib/search/fashionpedia-ontology.json
+is a CC BY 4.0 ontology extract (46 categories + 294 attributes, names
+only — no images/annotations; attribution in NOTICE; reproducible via
+scripts/extract-fashionpedia.mjs). The curated crosswalk
+lib/search/ontology.js spreads ~40 single-word garment nouns into
+GARMENT_CATEGORY (windbreaker, sweatshirt, sweatpants, leggings,
+culottes, trench, camisole, kaftan…). The landmine list is explicit
+and tested: top, tie, crop, halter, sheath, jumper, and all garment
+PARTS are excluded with reasons. Attribute vocabulary (silhouette/
+textile/pattern) is vendored unused — a future dense-layer round.
+Measured (scripts/measure-ontology.mjs): improve 4/10 → 10/10
+category-correct top-3, holds 10/10 set+score invariant incl. the
+landmine phrases (tie dye tee, canvas high-top, crop top).
+
+HARNESS LAWS (accumulated, binding for future ranking measurement):
+1. Measure the KEYED DB path — the in-memory store lacks _textRank and
+   the tag layer (r6).
+2. Order-invariance on the FULL result list — windows fake breaks when
+   tie clusters straddle the limit (r7).
+3. Cross-process comparison uses CLUSTER INVARIANCE, never byte
+   identity — provider re-embeds jitter and flip r7 tie-break order
+   inside flat clusters; semantic-append confidences are sim-derived
+   and need ±0.01 tolerance (r8).
+4. The capped append slate DISPLACES: a changed item leaving the top-12
+   pulls the next candidate in — one-for-one untouched membership
+   change is the change under test, not a regression (r8).
+
+Users/boards embeddings + pgvector migration are deliberate later steps.
+
+## Honest disclosure (Aug 5, 2026 — owner-reported defect)
+
+Owner report: "I'd search different things and get the same result."
+Reproduced on production — `wool sweater` and `knitted scarf` returned a
+BYTE-IDENTICAL knitwear rack; `leather jacket` returned all 170 outerwear
+items in raw catalog order. Cause chain, all three parts real:
+
+1. **The catalog cannot answer attribute queries.** `material`, `color`,
+   `colors`, `fit`, `silhouette` and `subcategory` are NULL on all 915 items,
+   and there are only 67 distinct product names. No item is silk, black, or
+   plaid; no leather jacket exists. Words like those match nothing anywhere.
+2. **The engine hid that.** An unmatchable word contributed no score, so
+   every item in the garment category tied — and ties fell to POOL order
+   (DB row order in production, catalog order locally: the same query
+   returned different orders on different backends). Every row was still
+   labelled `garment match` with a confidence score.
+3. **Three layers actively corrupted queries**: the r12 typo bridge rewrote
+   real vocabulary (`shift`→`shirt`, `plaid`→`plain`, `smock`→`sock`); the
+   r11 stem index resolved `-ed`/`-ing` modifiers into decisive category
+   evidence (`coated`→outerwear, `knitted`→knitwear); and `warm` was mapped
+   to warm-weather, hard-filtering 94 of 170 outerwear items — every FW
+   puffer and parka — out of `warm coat`.
+
+The round's law: **the engine may return a category browse, but it must
+never call it a match.** Unmatched tokens ride the response
+(`unmatchedTokens`), the note says them out loud ("no piece here matches
+"wool" — showing knitwear instead"), rows admitted only by category report
+`category browse`, and ties break on id so order is stable across backends.
+Ranking weights are deliberately UNCHANGED — this round is disclosure and
+de-corruption, not re-ranking. Battery: scripts/measure-search-honesty.mjs
+(7 declared criteria + the canonical probes; 15/15 after, 6/15 before).
+
+What this does NOT fix: attribute search itself. Until items carry real
+material/colour data, "silk blouse" has no right answer — the engine now
+says so instead of implying one.
+
+## Vibe sweep (Aug 5, 2026 — owner-directed 1000-query verification)
+
+Owner directive after merging the honesty round: run 1000 cross-domain
+searches (fruit, city, musical artist, celebrity, object, movie, season,
+designer, designer piece…) and verify each yields pieces tagged to the vibe.
+Battery: scripts/measure-vibe-sweep.mjs — 1169 unique queries over all 607
+culture entities, every brand, every product name, plus unknown/nonsense
+controls. Declared outcome classes: A vibe-served (interpretation engaged AND
+≥70% of top-12 carry the slate) / B literal-served / C honest-miss / D defect.
+
+Run 1 found 82 defects in four families; all fixed, four classifier
+amendments declared in the script. Final: **679 A / 313 B / 177 C / 0 D.**
+
+Laws this added to the engine:
+- **Entity precedence**: a query that IS a known cultural reference routes to
+  the curated read when the literal rack is empty or weak — the compositional
+  lexicon guess no longer blocks the cultural tier by producing junk racks
+  from proper-noun fragments ("miley cyrus" → minimal/tailored was wrong in
+  kind, not degree). The guess remains the fallback for unknown queries and
+  the last resort when an entity's tags match nothing.
+- **The typo bridge may never rewrite known vocabulary**: garment tables,
+  brain tags, mapping words, the declared stoplist, every word of every
+  culture entity name/alias, and every word of the catalog's own titles and
+  brands ("liner"→"linen" corrupted a search for an actual product name).
+  Corrections of system-unknown words remain, disclosed in the note.
+- **All token/phrase title matching sits on word boundaries**: "ross" must
+  not match inside "crossbody", "deco" not inside "deconstructed", "tens"
+  not inside "Noten". Substring junk was both mislabeling racks and blocking
+  the cultural tier by making them look grounded.
+- **Subtype disclosure**: a subtype garment noun with zero title hits says so
+  ("no trench pieces here — showing outerwear") instead of a silent slab.

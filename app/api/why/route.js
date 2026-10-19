@@ -1,0 +1,92 @@
+// app/api/why/route.js
+// Asterisk AI explanation + correction endpoint.
+// GET  ?item=<id>&user=<uid> → honest "why am I seeing this" (identity-gated;
+//      reasons from real signals only, uncertainty stated).
+// POST { productId, code, note? } → structured correction (identity-gated).
+//      Preference codes retrain, standing exclusions filter recommendations,
+//      and wrong-* codes open moderation tasks.
+
+import { NextResponse } from "next/server";
+import { resolveRequestUser } from "../../../lib/identity.js";
+import { explainProduct, recordCorrection, undoCorrection, CORRECTION_CODES } from "../../../lib/asterisk/explain.js";
+import { CORRECTION_SCOPES } from "../../../lib/asterisk/correctionSignals.js";
+import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { readJsonRequest } from "../../../lib/security/json.js";
+import { withPrivateCache } from "../../../lib/security/json.js";
+
+export const dynamic = "force-dynamic";
+
+function validProductId(value) {
+  return typeof value === "string" && value.length >= 1 && value.length <= 80 &&
+    !/[\u0000-\u001f\u007f]/.test(value);
+}
+
+async function handleGET(req) {
+  const { searchParams } = new URL(req.url);
+  const user = await resolveRequestUser(req, searchParams.get("user") || "");
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "why-read", subject: user, limit: 120, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  const item = searchParams.get("item") || "";
+  if (!validProductId(item)) {
+    return NextResponse.json({ error: "item required" }, { status: 400 });
+  }
+  const r = await explainProduct(user, item);
+  if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status || 500 });
+  return NextResponse.json({ explanation: r.explanation });
+}
+
+async function handlePOST(req) {
+  const parsed = await readJsonRequest(req, { maxBytes: 16 * 1024 });
+  if (parsed.response) return parsed.response;
+  const body = parsed.body;
+  const user = await resolveRequestUser(req, String(body.user || ""));
+  if (!user) return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  const quota = await consumeRateLimit({ scope: "why-correct", subject: user, limit: 30, windowMs: 60_000 });
+  if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+  // UNDO (V.2): { undoOf } takes one correction back; the row stays as the
+  // record that it was made and withdrawn, and every effect it had is gone.
+  if (body.undoOf != null) {
+    const r = await undoCorrection(user, body.undoOf);
+    if (!r.ok) return NextResponse.json({ error: r.error }, { status: r.status || 400 });
+    return NextResponse.json({
+      undone: { id: r.correction.id, code: r.correction.code, lane: r.lane },
+      profileUpdated: r.profileUpdated,
+    });
+  }
+  const code = String(body.code || "");
+  if (!CORRECTION_CODES.has(code)) {
+    return NextResponse.json({ error: "unknown correction code" }, { status: 400 });
+  }
+  const productId = body.productId == null ? "" : String(body.productId);
+  if (!validProductId(productId)) {
+    return NextResponse.json({ error: "valid productId required" }, { status: 400 });
+  }
+  const scope = body.scope == null ? "ongoing" : String(body.scope);
+  if (!CORRECTION_SCOPES.includes(scope)) {
+    return NextResponse.json({ error: "unknown correction scope" }, { status: 400 });
+  }
+  // IMPRESSION ATTRIBUTION (docs/v2/CONTRACTS.md § Learning events): the
+  // serve the reader was looking at when they corrected, so a replay can tie
+  // the correction to the bridge that served the piece. Optional, a string,
+  // recorded on the event — never trusted for anything but attribution.
+  const serveId = body.serveId == null ? null : String(body.serveId).slice(0, 80);
+  if (serveId !== null && !/^[A-Za-z0-9_-]{4,80}$/.test(serveId)) {
+    return NextResponse.json({ error: "serveId must be 4–80 url-safe characters" }, { status: 400 });
+  }
+  const r = await recordCorrection(user, { productId, code, note: body.note, scope, serveId });
+  if (!r.ok) {
+    return NextResponse.json({ error: r.error }, { status: r.status || 400 });
+  }
+  return NextResponse.json({
+    correction: { id: r.correction.id, code: r.correction.code, lane: r.lane, scope: r.correction.scope || scope },
+    moderationQueued: !!r.moderationTask,
+    duplicate: !!r.duplicate,
+    revived: !!r.revived,
+    profileUpdated: r.profileUpdated,
+  });
+}
+
+// Personal data: never shared-cacheable (see withPrivateCache).
+export const GET = withPrivateCache(handleGET);
+export const POST = withPrivateCache(handlePOST);

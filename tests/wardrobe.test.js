@@ -1,0 +1,143 @@
+// tests/wardrobe.test.js — ownership model (Feature C, Phase 3a), mem mode.
+// The invariant under test everywhere: wardrobe rows exist only from explicit
+// user action; validation is atomic; promotion is idempotent; purge and
+// adoption cover the domain.
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+
+import {
+  normalizeWardrobeAdd, addWardrobeItem, tagsFromDescription,
+  wardrobeAnchor, WARDROBE_CATEGORIES, wardrobeEnabled,
+} from "../lib/wardrobe/index.js";
+import { buildEvent, EVENTS } from "../lib/events/index.js";
+import {
+  listWardrobeItems, getWardrobeItem, setWardrobeItemStatus, deleteWardrobeItem,
+  createTicket, updateTicket, reportTicketOutcome,
+  purgePersonalizationData, adoptAccountData,
+} from "../lib/db/production.js";
+import { upsertItems } from "../lib/db/index.js";
+
+const U = "u-wardrobe-test";
+
+test("wardrobe defaults to enabled; flag turns it off", () => {
+  assert.equal(wardrobeEnabled(), true);
+  process.env.WARDROBE_ENABLED = "0";
+  assert.equal(wardrobeEnabled(), false);
+  delete process.env.WARDROBE_ENABLED;
+});
+
+test("manual add validates atomically and derives lexicon tags", async () => {
+  for (const bad of [
+    {},
+    { title: "" },
+    { title: "x".repeat(201) },
+    { title: "ok", category: "hats" },
+    { title: "ok", brand: "bad\u0000brand" },
+    { source: "upload", title: "photo piece" },
+    { source: "nonsense" },
+  ]) {
+    const r = await normalizeWardrobeAdd(U, bad);
+    assert.equal(r.ok, false, JSON.stringify(bad));
+  }
+  const r = await addWardrobeItem(U, {
+    source: "manual", title: "black leather biker jacket", category: "outerwear", sizeLabel: "M",
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.item.status, "active");
+  assert.equal(r.item.category, "outerwear");
+  assert.ok(Object.keys(r.item.tags).length > 0, "lexicon walk must yield tags for garment words");
+  await purgePersonalizationData(U);
+});
+
+test("tagsFromDescription is deterministic and bounded", () => {
+  const a = tagsFromDescription("grey wool tailored trousers");
+  const b = tagsFromDescription("grey wool tailored trousers");
+  assert.deepEqual(a, b);
+  assert.ok(Object.keys(a).length <= 24);
+  assert.deepEqual(tagsFromDescription("zzzz qqqq"), {});
+});
+
+test("catalog source resolves the real item; unknown item refused", async () => {
+  await upsertItems([{
+    id: "wd-cat-1", title: "Raw denim jacket", brand: "TestBrand",
+    category: "outerwear", tags: { STREETWEAR: 0.6 }, price: 200,
+  }]);
+  const bad = await normalizeWardrobeAdd(U, { source: "catalog", itemId: "no-such-item" });
+  assert.equal(bad.ok, false);
+  const r = await addWardrobeItem(U, { source: "catalog", itemId: "wd-cat-1" });
+  assert.equal(r.ok, true);
+  assert.equal(r.item.catalogItemId, "wd-cat-1");
+  assert.equal(r.item.tags.STREETWEAR, 0.6);
+  const dup = await addWardrobeItem(U, { source: "catalog", itemId: "wd-cat-1" });
+  assert.equal(dup.duplicate, true, "same catalog piece must not create a second row");
+  assert.equal((await listWardrobeItems(U)).length, 1);
+  await purgePersonalizationData(U);
+});
+
+test("ticket promotion requires a bought outcome and is idempotent", async () => {
+  await upsertItems([{
+    id: "wd-item-t", title: "Pleated trouser", brand: "TB", category: "bottoms",
+    tags: { TAILORED: 0.8 }, price: 150,
+  }]);
+  const ticket = await createTicket({ userId: U, productId: "wd-item-t", sourceName: "eBay" });
+  const early = await normalizeWardrobeAdd(U, { source: "ticket", ticketId: String(ticket.id) });
+  assert.equal(early.ok, false, "no outcome yet — refuse");
+  await updateTicket(ticket.id, { status: "checkout_started" });
+  await reportTicketOutcome(ticket.id, U, "bought",
+    buildEvent(U, EVENTS.USER_REPORTED_PURCHASE, { ticketId: Number(ticket.id), itemId: "wd-item-t" }));
+  const r = await addWardrobeItem(U, { source: "ticket", ticketId: String(ticket.id) });
+  assert.equal(r.ok, true);
+  assert.equal(r.item.source, "ticket");
+  assert.equal(r.item.tags.TAILORED, 0.8, "catalog tags ride along");
+  const dup = await addWardrobeItem(U, { source: "ticket", ticketId: String(ticket.id) });
+  assert.equal(dup.duplicate, true, "one wardrobe row per ticket");
+  const foreign = await normalizeWardrobeAdd("u-someone-else", { source: "ticket", ticketId: String(ticket.id) });
+  assert.equal(foreign.ok, false, "another identity cannot promote your ticket");
+  await purgePersonalizationData(U);
+});
+
+test("anchor synthesis: active pieces only, item-shaped, owned", async () => {
+  const r = await addWardrobeItem(U, { source: "manual", title: "chunky loafers", category: "footwear" });
+  const row = await getWardrobeItem(U, r.item.id);
+  const anchor = wardrobeAnchor(row);
+  assert.equal(anchor.id, `wardrobe:${row.id}`);
+  assert.equal(anchor.category, "footwear");
+  assert.equal(anchor.owned, true);
+  assert.equal(anchor.price, 0);
+  await setWardrobeItemStatus(U, r.item.id, "retired");
+  assert.equal(wardrobeAnchor(await getWardrobeItem(U, r.item.id)), null, "retired pieces never anchor");
+  assert.equal(await getWardrobeItem("u-other", r.item.id), null, "wardrobe reads are owner-scoped");
+  await purgePersonalizationData(U);
+});
+
+test("retire, restore, delete, and purge cover the domain", async () => {
+  const a = await addWardrobeItem(U, { source: "manual", title: "wool overcoat", category: "outerwear" });
+  const b = await addWardrobeItem(U, { source: "manual", title: "silk scarf", category: "accessories" });
+  await setWardrobeItemStatus(U, a.item.id, "retired");
+  assert.equal((await listWardrobeItems(U, { status: "active" })).length, 1);
+  assert.equal((await listWardrobeItems(U, { status: "all" })).length, 2);
+  await setWardrobeItemStatus(U, a.item.id, "active");
+  assert.equal((await listWardrobeItems(U)).length, 2);
+  assert.equal(await deleteWardrobeItem(U, b.item.id), true);
+  assert.equal(await deleteWardrobeItem(U, b.item.id), false);
+  await purgePersonalizationData(U);
+  assert.equal((await listWardrobeItems(U, { status: "all" })).length, 0);
+});
+
+test("adoption moves the wardrobe; source_ref collisions dedupe", async () => {
+  const from = "u-wardrobe-adopt-from";
+  const to = "sb-wardrobe-adopt-to";
+  await upsertItems([{
+    id: "wd-cat-2", title: "Cashmere crewneck", brand: "TB",
+    category: "knitwear", tags: { MINIMAL: 0.7 }, price: 300,
+  }]);
+  await addWardrobeItem(from, { source: "catalog", itemId: "wd-cat-2" });
+  await addWardrobeItem(to, { source: "catalog", itemId: "wd-cat-2" }); // collision
+  await addWardrobeItem(from, { source: "manual", title: "vintage band tee", category: "tops" });
+  await adoptAccountData(from, to);
+  const moved = await listWardrobeItems(to, { status: "all" });
+  assert.equal(moved.length, 2, "collision deduped, manual piece moved");
+  assert.equal((await listWardrobeItems(from, { status: "all" })).length, 0);
+  await purgePersonalizationData(to);
+});

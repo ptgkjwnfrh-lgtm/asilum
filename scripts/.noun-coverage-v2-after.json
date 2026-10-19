@@ -1,0 +1,11533 @@
+{
+  "cozy knit for cold evenings at home": {
+    "triples": [
+      [
+        "syn-0770",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0732",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0763",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0753",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0788",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0766",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0758",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0780",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0725",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0800",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0781",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0728",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0727",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0736",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0741",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0724",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0783",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0702",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0730",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0778",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0761",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0796",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0764",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0798",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0779",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0723",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0790",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0704",
+        0.27,
+        "garment match"
+      ],
+      [
+        "syn-0755",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0782",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0786",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0771",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0775",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0711",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0716",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0792",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0793",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0710",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0717",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0794",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0032",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0136",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0135",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0154",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0014",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0065",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0122",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0082",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0019",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0830",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0808",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0125",
+        0.5,
+        "semantic match"
+      ]
+    ],
+    "n": 52,
+    "verdict": {
+      "covered": true,
+      "allKnit": true,
+      "firstTarget": 1
+    }
+  },
+  "warm knit for a freezing mountain hut": {
+    "triples": [
+      [
+        "syn-0759",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0729",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0750",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0747",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0762",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0769",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0768",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0789",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0743",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0756",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0714",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0712",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0772",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0757",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0767",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0751",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0726",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0795",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0738",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0742",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0715",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0721",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0718",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0740",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0731",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0719",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0752",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0773",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0705",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0785",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0701",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0744",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0791",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0708",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0737",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0748",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0720",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0722",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0709",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0777",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0746",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0739",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0703",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0733",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0760",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0797",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0713",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0735",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0734",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0745",
+        0.24,
+        "garment match"
+      ],
+      [
+        "syn-0873",
+        0.49,
+        "semantic match"
+      ],
+      [
+        "syn-0517",
+        0.49,
+        "semantic match"
+      ],
+      [
+        "syn-0162",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0130",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0088",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0156",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0292",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0146",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0057",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0229",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0027",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0093",
+        0.45,
+        "semantic match"
+      ]
+    ],
+    "n": 62,
+    "verdict": {
+      "covered": true,
+      "allKnit": true,
+      "firstTarget": 1
+    }
+  },
+  "hoodie": {
+    "triples": [
+      [
+        "syn-0240",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0260",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0219",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0203",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0282",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0279",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0186",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0247",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0281",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0230",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0255",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0172",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0306",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0273",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0175",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0256",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0314",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0301",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0268",
+        1,
+        "product name match"
+      ]
+    ],
+    "n": 19,
+    "verdict": {
+      "ok": true,
+      "firstWant": 1
+    }
+  },
+  "fleece": {
+    "triples": [
+      [
+        "syn-0156",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0135",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0032",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0102",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0097",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0090",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0146",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0144",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0108",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0165",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0099",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0136",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0054",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0134",
+        1,
+        "product name match"
+      ]
+    ],
+    "n": 14,
+    "verdict": {
+      "ok": true,
+      "firstWant": 1
+    }
+  },
+  "warm hoodie for cold mornings": {
+    "triples": [
+      [
+        "syn-0306",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0230",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0301",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0186",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0273",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0175",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0243",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0283",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0181",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0176",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0214",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0221",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0263",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0201",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0233",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0278",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0225",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0259",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0253",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0234",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0228",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0246",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0288",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0319",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0174",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0261",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0254",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0323",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0330",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0224",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0217",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0290",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0208",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0207",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0227",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0320",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0204",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0296",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0249",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0192",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0324",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0315",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0326",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0258",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0304",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0262",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0184",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0179",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0295",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0202",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0293",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0308",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0270",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0185",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0269",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0173",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0305",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0188",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0302",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0297",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0218",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0238",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0232",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0329",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0310",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0197",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0195",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0199",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0274",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0307",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0248",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0294",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0252",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0285",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0136",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0032",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0135",
+        0.46,
+        "semantic match"
+      ]
+    ],
+    "n": 77,
+    "verdict": {
+      "ok": true,
+      "firstWant": 1
+    }
+  },
+  "fleece for chilly campsite mornings": {
+    "triples": [
+      [
+        "syn-0032",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0136",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0156",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0135",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0102",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0146",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0054",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0165",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0090",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0134",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0144",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0108",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0097",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0099",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0037",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0074",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0007",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0088",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0162",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0040",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0101",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0130",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0022",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0093",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0013",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0164",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0147",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0018",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0017",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0059",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0075",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0031",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0041",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0170",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0063",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0069",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0055",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0021",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0112",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0056",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0079",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0020",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0143",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0125",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0024",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0126",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0154",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0019",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0122",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0132",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0043",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0065",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0115",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0077",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0109",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0100",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0082",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0008",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0025",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0114",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0139",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0092",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0010",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0127",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0071",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0057",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0023",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0149",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0104",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0087",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0157",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0120",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0035",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0014",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0028",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0150",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0083",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0062",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0012",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0142",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0086",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0072",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0001",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0034",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0095",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0121",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0111",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0064",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0155",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0118",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0070",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0027",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0167",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0006",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0052",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0094",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0113",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0085",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0110",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0124",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0067",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0009",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0160",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0002",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0030",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0151",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0169",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0045",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0073",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0048",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0129",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0038",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0145",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0141",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0117",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0137",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0003",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0119",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0140",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0163",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0138",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0066",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0033",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0039",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0080",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0159",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0042",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0081",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0061",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0051",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0005",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0049",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0036",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0096",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0106",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0089",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0026",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0046",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0015",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0105",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0168",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0053",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0128",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0047",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0011",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0091",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0148",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0153",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0068",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0050",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0029",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0161",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0131",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0058",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0044",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0152",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0016",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0133",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0078",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0076",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0107",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0116",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0123",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0060",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0004",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0158",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0103",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0166",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0084",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0098",
+        0.21,
+        "garment match"
+      ]
+    ],
+    "n": 170,
+    "verdict": {
+      "ok": true,
+      "firstWant": 1
+    }
+  },
+  "warm sweater for brutal winter cold": {
+    "triples": [
+      [
+        "syn-0770",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0732",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0763",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0753",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0788",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0758",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0766",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0725",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0800",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0702",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0723",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0781",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0728",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0798",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0761",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0780",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0704",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0717",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0764",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0775",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0779",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0796",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0786",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0736",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0783",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0711",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0727",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0724",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0792",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0778",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0730",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0793",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0790",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0741",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0755",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0710",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0716",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0782",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0794",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0771",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0032",
+        0.45,
+        "semantic match"
+      ],
+      [
+        "syn-0135",
+        0.45,
+        "semantic match"
+      ]
+    ],
+    "n": 42
+  },
+  "sweater for a freezing mountain hut": {
+    "triples": [
+      [
+        "syn-0750",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0712",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0743",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0738",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0756",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0751",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0757",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0770",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0708",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0722",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0732",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0731",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0763",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0746",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0753",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0788",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0759",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0767",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0702",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0772",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0790",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0793",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0729",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0768",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0736",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0775",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0723",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0789",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0762",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0747",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0766",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0725",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0792",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0728",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0781",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0744",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0773",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0714",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0764",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0724",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0730",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0726",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0769",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0705",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0721",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0742",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0715",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0755",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0783",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0779",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0717",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0758",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0780",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0719",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0786",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0701",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0785",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0752",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0748",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0798",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0720",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0795",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0711",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0791",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0718",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0739",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0796",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0709",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0782",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0800",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0737",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0741",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0740",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0761",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0778",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0727",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0710",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0704",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0703",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0777",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0794",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0760",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0733",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0716",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0713",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0797",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0771",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0735",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0734",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0745",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0037",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0101",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0517",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0639",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0873",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0032",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0054",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0074",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0608",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0020",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0059",
+        0.5,
+        "semantic match"
+      ],
+      [
+        "syn-0292",
+        0.5,
+        "semantic match"
+      ]
+    ],
+    "n": 102
+  },
+  "distressed mohair sweater": {
+    "triples": [
+      [
+        "syn-0751",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0763",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0756",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0708",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0743",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0770",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0757",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0750",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0732",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0712",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0788",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0746",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0753",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0722",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0738",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0731",
+        1,
+        "product name match"
+      ]
+    ],
+    "n": 16
+  },
+  "jacket that survives a storm": {
+    "triples": [
+      [
+        "syn-0150",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0119",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0170",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0040",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0063",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0130",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0055",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0095",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0101",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0007",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0053",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0139",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0059",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0104",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0009",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0088",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0074",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0037",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0126",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0125",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0062",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0071",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0061",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0136",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0148",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0022",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0112",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0056",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0012",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0106",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0128",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0114",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0147",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0093",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0041",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0122",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0115",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0155",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0131",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0003",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0142",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0138",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0087",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0058",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0160",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0019",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0030",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0075",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0081",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0005",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0036",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0008",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0072",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0077",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0023",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0143",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0021",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0129",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0024",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0057",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0046",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0124",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0033",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0017",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0066",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0028",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0097",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0069",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0091",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0117",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0015",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0082",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0146",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0076",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0162",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0110",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0132",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0020",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0083",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0100",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0159",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0070",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0116",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0047",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0109",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0164",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0133",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0152",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0067",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0137",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0120",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0045",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0153",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0121",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0002",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0026",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0052",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0031",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0102",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0044",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0089",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0144",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0086",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0051",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0167",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0151",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0149",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0079",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0065",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0039",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0029",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0018",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0092",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0073",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0042",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0001",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0049",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0145",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0141",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0154",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0064",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0027",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0068",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0156",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0135",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0157",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0158",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0096",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0032",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0013",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0161",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0134",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0043",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0163",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0113",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0034",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0099",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0025",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0080",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0016",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0010",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0168",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0165",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0103",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0105",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0111",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0118",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0085",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0078",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0060",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0140",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0011",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0014",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0166",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0107",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0035",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0098",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0004",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0090",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0169",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0094",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0054",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0123",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0048",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0127",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0038",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0050",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0108",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0006",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0084",
+        0.26,
+        "garment match"
+      ]
+    ],
+    "n": 170
+  },
+  "trashed jeans": {
+    "triples": [
+      [
+        "syn-0393",
+        0.8,
+        "tag match"
+      ],
+      [
+        "syn-0423",
+        0.8,
+        "tag match"
+      ],
+      [
+        "syn-0337",
+        0.75,
+        "tag match"
+      ],
+      [
+        "syn-0466",
+        0.75,
+        "tag match"
+      ],
+      [
+        "syn-0422",
+        0.68,
+        "tag match"
+      ],
+      [
+        "syn-0382",
+        0.67,
+        "garment match"
+      ],
+      [
+        "syn-0434",
+        0.67,
+        "garment match"
+      ],
+      [
+        "syn-0474",
+        0.67,
+        "garment match"
+      ],
+      [
+        "syn-0413",
+        0.67,
+        "garment match"
+      ],
+      [
+        "syn-0456",
+        0.66,
+        "tag match"
+      ],
+      [
+        "syn-0358",
+        0.62,
+        "tag match"
+      ],
+      [
+        "syn-0412",
+        0.62,
+        "tag match"
+      ],
+      [
+        "syn-0365",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0352",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0453",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0418",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0349",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0479",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0364",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0428",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0476",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0407",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0435",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0373",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0380",
+        0.61,
+        "garment match"
+      ],
+      [
+        "syn-0367",
+        0.53,
+        "garment match"
+      ],
+      [
+        "syn-0346",
+        0.53,
+        "garment match"
+      ],
+      [
+        "syn-0340",
+        0.53,
+        "garment match"
+      ],
+      [
+        "syn-0461",
+        0.53,
+        "garment match"
+      ],
+      [
+        "syn-0465",
+        0.53,
+        "garment match"
+      ],
+      [
+        "syn-0372",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0392",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0385",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0389",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0359",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0353",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0454",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0439",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0391",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0419",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0343",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0394",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0400",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0421",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0438",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0384",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0387",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0477",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0448",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0408",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0403",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0424",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0405",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0375",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0457",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0404",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0336",
+        0.49,
+        "garment match"
+      ],
+      [
+        "syn-0455",
+        0.46,
+        "garment match"
+      ],
+      [
+        "syn-0401",
+        0.44,
+        "garment match"
+      ],
+      [
+        "syn-0333",
+        0.44,
+        "garment match"
+      ],
+      [
+        "syn-0463",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0437",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0429",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0334",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0440",
+        0.41,
+        "garment match"
+      ],
+      [
+        "syn-0361",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0426",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0381",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0344",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0416",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0388",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0374",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0331",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0472",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0357",
+        0.4,
+        "garment match"
+      ],
+      [
+        "syn-0390",
+        0.39,
+        "garment match"
+      ],
+      [
+        "syn-0399",
+        0.39,
+        "garment match"
+      ],
+      [
+        "syn-0345",
+        0.36,
+        "garment match"
+      ],
+      [
+        "syn-0397",
+        0.36,
+        "garment match"
+      ],
+      [
+        "syn-0379",
+        0.35,
+        "garment match"
+      ],
+      [
+        "syn-0369",
+        0.35,
+        "garment match"
+      ],
+      [
+        "syn-0417",
+        0.35,
+        "garment match"
+      ],
+      [
+        "syn-0425",
+        0.35,
+        "garment match"
+      ],
+      [
+        "syn-0338",
+        0.35,
+        "garment match"
+      ],
+      [
+        "syn-0446",
+        0.33,
+        "garment match"
+      ],
+      [
+        "syn-0468",
+        0.33,
+        "garment match"
+      ],
+      [
+        "syn-0449",
+        0.33,
+        "garment match"
+      ],
+      [
+        "syn-0460",
+        0.33,
+        "garment match"
+      ],
+      [
+        "syn-0442",
+        0.33,
+        "garment match"
+      ],
+      [
+        "syn-0445",
+        0.3,
+        "garment match"
+      ],
+      [
+        "syn-0470",
+        0.3,
+        "garment match"
+      ],
+      [
+        "syn-0451",
+        0.3,
+        "garment match"
+      ],
+      [
+        "syn-0444",
+        0.3,
+        "garment match"
+      ],
+      [
+        "syn-0296",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0877",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0863",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0150",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0798",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0244",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0205",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0882",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0222",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0602",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0138",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0853",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0318",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0096",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0213",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0865",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0672",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0156",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0135",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0665",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0518",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0023",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0219",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0250",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0248",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0641",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0046",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0053",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0699",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0783",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0496",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0163",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0703",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0501",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0279",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0519",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0849",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0026",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0826",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0856",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0671",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0551",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0145",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0141",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0843",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0003",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0874",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0594",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0816",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0688",
+        0.29,
+        "aesthetic match"
+      ],
+      [
+        "syn-0447",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0471",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0450",
+        0.26,
+        "garment match"
+      ],
+      [
+        "syn-0179",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0722",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0732",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0316",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0262",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0307",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0597",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0656",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0576",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0668",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0190",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0778",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0604",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0586",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0701",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0186",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0247",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0591",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0785",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0907",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0204",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0650",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0185",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0524",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0592",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0271",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0749",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0745",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0800",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0754",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0611",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0735",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0892",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0889",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0550",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0231",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0622",
+        0.24,
+        "aesthetic match"
+      ],
+      [
+        "syn-0368",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0415",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0467",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0411",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0378",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0362",
+        0.21,
+        "garment match"
+      ],
+      [
+        "syn-0708",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0287",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0654",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0281",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0663",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0584",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0704",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0872",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0739",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0777",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0765",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0510",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0268",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0575",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0593",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0578",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0612",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0541",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0648",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0598",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0717",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0533",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0698",
+        0.16,
+        "aesthetic match"
+      ],
+      [
+        "syn-0197",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0321",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0245",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0005",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0617",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0052",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0153",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0486",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0638",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0645",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0133",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0559",
+        0.15,
+        "tag match"
+      ],
+      [
+        "syn-0818",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0746",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0065",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0118",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0809",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0077",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0725",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0500",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0187",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0652",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0779",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0095",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0726",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0747",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0148",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0086",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0207",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0763",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0034",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0817",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0265",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0284",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0757",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0825",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0067",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0195",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0010",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0174",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0194",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0093",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0043",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0137",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0487",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0198",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0786",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0547",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0643",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0322",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0047",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0909",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0097",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0297",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0102",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0267",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0042",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0210",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0225",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0076",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0146",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0232",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0530",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0009",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0036",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0134",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0313",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0662",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0571",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0734",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0002",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0565",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0820",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0001",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0542",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0878",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0716",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0724",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0064",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0651",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0771",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0595",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0508",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0304",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0301",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0259",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0294",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0894",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0110",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0567",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0758",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0554",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0302",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0116",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0142",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0492",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0511",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0532",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0642",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0236",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0661",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0309",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0742",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0715",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0805",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0491",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0100",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0626",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0557",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0055",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0155",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0119",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0814",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0223",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0152",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0868",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0693",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0081",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0596",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0669",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0831",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0103",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0634",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0615",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0165",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0914",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0104",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0099",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0070",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0869",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0084",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0275",
+        0.11,
+        "tag match"
+      ],
+      [
+        "syn-0188",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0030",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0621",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0891",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0128",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0614",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0131",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0091",
+        0.08,
+        "tag match"
+      ],
+      [
+        "syn-0013",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0172",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0618",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0690",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0903",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0498",
+        0.07,
+        "tag match"
+      ],
+      [
+        "syn-0730",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0051",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0058",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0144",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0842",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0160",
+        0.04,
+        "tag match"
+      ],
+      [
+        "syn-0124",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0178",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0021",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0295",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0192",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0548",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0200",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0088",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0202",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0870",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0159",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0255",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0824",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0066",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0885",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0289",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0653",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0011",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0911",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0505",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0803",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0902",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0801",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0684",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0686",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0855",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0020",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0149",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0311",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0330",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0631",
+        0.04,
+        "aesthetic match"
+      ],
+      [
+        "syn-0246",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0196",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0227",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0263",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0238",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0291",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0288",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0193",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0041",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0143",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0303",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0189",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0069",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0191",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0014",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0140",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0256",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0319",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0300",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0085",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0274",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0285",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0114",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0228",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0098",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0040",
+        0.02,
+        "aesthetic match"
+      ],
+      [
+        "syn-0563",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0692",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0797",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0240",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0625",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0760",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0587",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0640",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0512",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0317",
+        0.49,
+        "semantic match"
+      ],
+      [
+        "syn-0731",
+        0.49,
+        "semantic match"
+      ],
+      [
+        "syn-0753",
+        0.48,
+        "semantic match"
+      ],
+      [
+        "syn-0839",
+        0.48,
+        "semantic match"
+      ],
+      [
+        "syn-0886",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0327",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0751",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0199",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0712",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0827",
+        0.47,
+        "semantic match"
+      ],
+      [
+        "syn-0252",
+        0.46,
+        "semantic match"
+      ],
+      [
+        "syn-0844",
+        0.46,
+        "semantic match"
+      ]
+    ],
+    "n": 442
+  },
+  "good blanks": {
+    "triples": [
+      [
+        "syn-0556",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0859",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0412",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0420",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0680",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0172",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0015",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0908",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0793",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0647",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0829",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0787",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0035",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0260",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0269",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0203",
+        0.27,
+        "aesthetic match"
+      ],
+      [
+        "syn-0852",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0588",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0468",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0536",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0456",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0830",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0585",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0193",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0432",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0291",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0578",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0575",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0700",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0459",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0577",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0085",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0370",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0896",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0572",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0663",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0464",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0189",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0475",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0139",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0274",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0226",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0261",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0499",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0220",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0682",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0804",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0176",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0299",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0401",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0423",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0012",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0233",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0013",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0333",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0822",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0208",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0115",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0071",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0040",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0355",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0510",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0125",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0872",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0019",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0427",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0538",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0191",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0912",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0114",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0490",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0513",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0082",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0482",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0834",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0181",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0534",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0367",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0590",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0253",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0351",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0561",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0441",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0761",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0221",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0331",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0765",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0283",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0481",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0346",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0414",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0417",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0698",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0898",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0416",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0768",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0729",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0766",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0648",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0493",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0498",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0708",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0738",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0007",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0535",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0129",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0473",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0402",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0752",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0649",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0593",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0618",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0744",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0319",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0884",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0303",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0836",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0612",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0777",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0743",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0143",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0756",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0340",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0903",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0748",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0120",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0147",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0300",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0045",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0541",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0531",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0690",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0018",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0354",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0606",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0323",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0494",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0558",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0847",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0620",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0727",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0875",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0616",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0599",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0890",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0230",
+        0.22,
+        "aesthetic match"
+      ],
+      [
+        "syn-0314",
+        0.22,
+        "aesthetic match"
+      ],
+      [
+        "syn-0462",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0485",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0857",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0341",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0363",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0315",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0828",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0516",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0183",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0037",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0685",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0212",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0807",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0547",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0201",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0284",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0265",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0438",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0545",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0028",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0851",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0487",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0773",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0718",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0148",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0242",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0833",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0032",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0711",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0544",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0880",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0678",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0527",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0290",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0377",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0705",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0566",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0879",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0079",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0746",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0525",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0838",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0781",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0867",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0624",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0443",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0526",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0632",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0820",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0628",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0092",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0025",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0097",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0111",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0674",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0677",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0109",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0697",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0635",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0502",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0047",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0503",
+        0.19,
+        "aesthetic match"
+      ],
+      [
+        "syn-0837",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0517",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0101",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0844",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0863",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0839",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0848",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0809",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0853",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0821",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0827",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0347",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0808",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0801",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0798",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0811",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0812",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0846",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0335",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0726",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0871",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0813",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0714",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0298",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0842",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0736",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0861",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0856",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0728",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0818",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0832",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0458",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0779",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0755",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0795",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0758",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0780",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0789",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0769",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0730",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0740",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0823",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0733",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0757",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0652",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0767",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0702",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0764",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0784",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0164",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0725",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0720",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0747",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0017",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0731",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0560",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0703",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0712",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0850",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0721",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0799",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0031",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0815",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0706",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0022",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0874",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0723",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0059",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0865",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0803",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0751",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0716",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0786",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0845",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0771",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0024",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0770",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0734",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0268",
+        0.1,
+        "related term"
+      ],
+      [
+        "syn-0282",
+        0.1,
+        "related term"
+      ],
+      [
+        "syn-0240",
+        0.09,
+        "related term"
+      ],
+      [
+        "syn-0358",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0339",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0280",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0050",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0636",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0074",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0397",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0272",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0613",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0054",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0173",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0049",
+        0.06,
+        "tag match"
+      ],
+      [
+        "syn-0489",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0553",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0442",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0521",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0835",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0130",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0098",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0285",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0583",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0810",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0326",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0776",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0772",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0410",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0598",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0533",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0167",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0841",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0395",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0689",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0719",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0619",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0171",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0860",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0241",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0866",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0506",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0027",
+        0.02,
+        "tag match"
+      ],
+      [
+        "syn-0796",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0206",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0488",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0083",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0234",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0802",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0383",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0466",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0277",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0621",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0806",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0915",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0455",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0532",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0400",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0325",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0433",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0409",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0131",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0735",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0667",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0116",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0188",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0357",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0128",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0030",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0669",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0687",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0737",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0625",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0707",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0673",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0457",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0404",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0134",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0614",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0642",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0609",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0596",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0309",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0223",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0039",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0091",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0891",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0320",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0332",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0539",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0246",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0072",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0569",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0257",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0381",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0361",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0426",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0217",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0790",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0327",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0328",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0568",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0528",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0348",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0073",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0258",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0659",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0480",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0546",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0854",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0895",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0310",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0041",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0654",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0263",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0218",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0893",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0154",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0369",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0710",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0449",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0886",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0629",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0470",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0627",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0162",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0127",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0227",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0589",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0607",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0249",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0344",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0901",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0713",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0266",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0523",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0170",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0058",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0360",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0087",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0063",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0160",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0038",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0601",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0425",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0444",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0060",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0117",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0014",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0144",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0126",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0094",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0151",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0507",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0509",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0113",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0794",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0051",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0089",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0078",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0389",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0415",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0179",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0368",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0174",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0062",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0077",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0225",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0418",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0362",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0450",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0349",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0379",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0211",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0683",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0576",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0055",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0447",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0453",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0365",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0359",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0597",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0563",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0002",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0390",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0093",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0476",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0146",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0452",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0061",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0398",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0586",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0658",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0338",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0591",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0237",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0472",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0184",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0305",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0399",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0118",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0676",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0603",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0666",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0655",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0065",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0681",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0034",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0006",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0121",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0216",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0168",
+        0.01,
+        "tag match"
+      ],
+      [
+        "syn-0587",
+        0.01,
+        "tag match"
+      ]
+    ],
+    "n": 500
+  },
+  "like rick owens": {
+    "triples": [
+      [
+        "syn-0621",
+        0.65,
+        "tag match"
+      ],
+      [
+        "syn-0237",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0683",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0338",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0692",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0472",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0563",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0587",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0240",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0251",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0178",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0308",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0505",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0317",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0463",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0192",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0334",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0684",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0686",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0653",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0911",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0357",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0625",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0451",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0445",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0645",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0195",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0343",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0174",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0662",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0188",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0614",
+        0.61,
+        "aesthetic match"
+      ],
+      [
+        "syn-0199",
+        0.6,
+        "aesthetic match"
+      ],
+      [
+        "syn-0286",
+        0.6,
+        "aesthetic match"
+      ],
+      [
+        "syn-0617",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0197",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0321",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0245",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0486",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0638",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0216",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0184",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0194",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0681",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0232",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0305",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0676",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0603",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0655",
+        0.59,
+        "aesthetic match"
+      ],
+      [
+        "syn-0574",
+        0.58,
+        "tag match"
+      ],
+      [
+        "syn-0694",
+        0.58,
+        "tag match"
+      ],
+      [
+        "syn-0175",
+        0.58,
+        "tag match"
+      ],
+      [
+        "syn-0664",
+        0.58,
+        "tag match"
+      ],
+      [
+        "syn-0252",
+        0.53,
+        "aesthetic match"
+      ],
+      [
+        "syn-0455",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0030",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0128",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0131",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0091",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0891",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0086",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0565",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0042",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0384",
+        0.53,
+        "tag match"
+      ],
+      [
+        "syn-0666",
+        0.52,
+        "aesthetic match"
+      ],
+      [
+        "syn-0888",
+        0.52,
+        "aesthetic match"
+      ],
+      [
+        "syn-0778",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0732",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0052",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0559",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0465",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0825",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0749",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0102",
+        0.52,
+        "tag match"
+      ],
+      [
+        "syn-0824",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0870",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0704",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0124",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0011",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0803",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0437",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0548",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0159",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0855",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0902",
+        0.5,
+        "tag match"
+      ],
+      [
+        "syn-0062",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0368",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0362",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0061",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0900",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0897",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0906",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0495",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0140",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0537",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0731",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0753",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0411",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0105",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0467",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0132",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0029",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0720",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0570",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0529",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0158",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0573",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0691",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0779",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0153",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0169",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0905",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0461",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0005",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0706",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0123",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0359",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0065",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0365",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0118",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0453",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0133",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0077",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0034",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0349",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0576",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0514",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0044",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0093",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0591",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0264",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0597",
+        0.49,
+        "tag match"
+      ],
+      [
+        "syn-0358",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0397",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0280",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0525",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0398",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0788",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0452",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0006",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0121",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0861",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0751",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0709",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0447",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0721",
+        0.48,
+        "tag match"
+      ],
+      [
+        "syn-0488",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0701",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0785",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0313",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0707",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0408",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0500",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0190",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0403",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0301",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0304",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0043",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0010",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0385",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0726",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0262",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0428",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0542",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0364",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0067",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0236",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0387",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0419",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0001",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0064",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0198",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0439",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0634",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0615",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0656",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0259",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0081",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0479",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0626",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0210",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0668",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0142",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0392",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0407",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0394",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0353",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0137",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0337",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0491",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0352",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0878",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0909",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0186",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0247",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0567",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0036",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0307",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0297",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0271",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0267",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0391",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0817",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0187",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0076",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0492",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0650",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0554",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0745",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0372",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0786",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0373",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0448",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0119",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0754",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0302",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0868",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0571",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0322",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0421",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0592",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0914",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0524",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0375",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0152",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0009",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0294",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0550",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0530",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0869",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0652",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0084",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0454",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0508",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0155",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0651",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0511",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0100",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0185",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0805",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0800",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0405",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0693",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0889",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0758",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0611",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0661",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0622",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0231",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0907",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0165",
+        0.47,
+        "tag match"
+      ],
+      [
+        "syn-0678",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0272",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0613",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0203",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0674",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0166",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0378",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0090",
+        0.46,
+        "tag match"
+      ],
+      [
+        "syn-0276",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0345",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0484",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0016",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0579",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0543",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0108",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0329",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0673",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0670",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0646",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0802",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0206",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0806",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0234",
+        0.44,
+        "tag match"
+      ],
+      [
+        "syn-0287",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0281",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0584",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0545",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0581",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0675",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0215",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0182",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0910",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0657",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0293",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0254",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0224",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0600",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0679",
+        0.43,
+        "tag match"
+      ],
+      [
+        "syn-0295",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0202",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0289",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0200",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0711",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0885",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0867",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0623",
+        0.43,
+        "aesthetic match"
+      ],
+      [
+        "syn-0244",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0213",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0250",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0248",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0672",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0219",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0296",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0641",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0205",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0222",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0665",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0279",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0783",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0699",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0602",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0882",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0318",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0594",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0688",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0838",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0807",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0324",
+        0.42,
+        "aesthetic match"
+      ],
+      [
+        "syn-0746",
+        0.41,
+        "aesthetic match"
+      ],
+      [
+        "syn-0487",
+        0.41,
+        "aesthetic match"
+      ],
+      [
+        "syn-0438",
+        0.41,
+        "aesthetic match"
+      ],
+      [
+        "syn-0265",
+        0.41,
+        "aesthetic match"
+      ],
+      [
+        "syn-0284",
+        0.41,
+        "aesthetic match"
+      ],
+      [
+        "syn-0390",
+        0.4,
+        "tag match"
+      ],
+      [
+        "syn-0399",
+        0.4,
+        "tag match"
+      ],
+      [
+        "syn-0671",
+        0.4,
+        "tag match"
+      ],
+      [
+        "syn-0892",
+        0.4,
+        "tag match"
+      ],
+      [
+        "syn-0618",
+        0.38,
+        "tag match"
+      ],
+      [
+        "syn-0690",
+        0.38,
+        "tag match"
+      ],
+      [
+        "syn-0903",
+        0.38,
+        "tag match"
+      ],
+      [
+        "syn-0083",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0811",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0796",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0555",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0471",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0797",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0733",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0008",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0552",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0107",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0080",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0915",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0122",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0760",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0218",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0257",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0607",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0748",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0380",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0208",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0473",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0204",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0435",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0354",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0355",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0414",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0599",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0616",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0266",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0327",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0470",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0523",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0369",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0425",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0444",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0249",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0763",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0171",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0275",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0225",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0506",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0619",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0724",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0633",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0875",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0890",
+        0.35,
+        "aesthetic match"
+      ],
+      [
+        "syn-0789",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0050",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0049",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0784",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0054",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0728",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0092",
+        0.35,
+        "tag match"
+      ],
+      [
+        "syn-0145",
+        0.34,
+        "tag match"
+      ],
+      [
+        "syn-0141",
+        0.34,
+        "tag match"
+      ],
+      [
+        "syn-0856",
+        0.34,
+        "tag match"
+      ],
+      [
+        "syn-0874",
+        0.34,
+        "tag match"
+      ],
+      [
+        "syn-0003",
+        0.34,
+        "tag match"
+      ],
+      [
+        "syn-0179",
+        0.34,
+        "aesthetic match"
+      ],
+      [
+        "syn-0191",
+        0.34,
+        "aesthetic match"
+      ],
+      [
+        "syn-0172",
+        0.34,
+        "aesthetic match"
+      ],
+      [
+        "syn-0154",
+        0.34,
+        "aesthetic match"
+      ],
+      [
+        "syn-0774",
+        0.32,
+        "tag match"
+      ],
+      [
+        "syn-0580",
+        0.32,
+        "tag match"
+      ],
+      [
+        "syn-0057",
+        0.32,
+        "tag match"
+      ],
+      [
+        "syn-0812",
+        0.32,
+        "tag match"
+      ],
+      [
+        "syn-0881",
+        0.32,
+        "tag match"
+      ],
+      [
+        "syn-0422",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0773",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0021",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0066",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0088",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0801",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0792",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0504",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0775",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0864",
+        0.31,
+        "tag match"
+      ],
+      [
+        "syn-0562",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0433",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0845",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0068",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0823",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0849",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0501",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0163",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0853",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0026",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0496",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0798",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0519",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0551",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0413",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0138",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0046",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0518",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0096",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0703",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0023",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0434",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0382",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0150",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0826",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0865",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0877",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0863",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0156",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0135",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0474",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0053",
+        0.3,
+        "tag match"
+      ],
+      [
+        "syn-0103",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0336",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0099",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0843",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0816",
+        0.27,
+        "tag match"
+      ],
+      [
+        "syn-0669",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0309",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0223",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0207",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0457",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0642",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0477",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0404",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0595",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0596",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0643",
+        0.26,
+        "aesthetic match"
+      ],
+      [
+        "syn-0450",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0168",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0575",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0498",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0401",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0333",
+        0.26,
+        "tag match"
+      ],
+      [
+        "syn-0847",
+        0.25,
+        "tag match"
+      ],
+      [
+        "syn-0710",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0094",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0713",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0844",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0113",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0589",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0509",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0151",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0060",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0117",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0089",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0794",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0893",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0078",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0126",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0901",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0507",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0424",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0070",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0757",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0110",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0814",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0104",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0742",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0715",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0220",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0045",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0738",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0299",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0012",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0441",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0898",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0120",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0432",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0370",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0464",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0129",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0147",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0912",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0752",
+        0.23,
+        "tag match"
+      ],
+      [
+        "syn-0303",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0482",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0300",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0744",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0513",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0512",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0312",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0235",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0561",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0406",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0176",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0640",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0418",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0682",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0695",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0412",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0211",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0620",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0319",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0269",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0586",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0564",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0417",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0376",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0606",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0582",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0476",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0478",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0379",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0647",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0348",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0658",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0480",
+        0.21,
+        "aesthetic match"
+      ],
+      [
+        "syn-0516",
+        0.2,
+        "tag match"
+      ],
+      [
+        "syn-0908",
+        0.2,
+        "tag match"
+      ],
+      [
+        "syn-0423",
+        0.2,
+        "tag match"
+      ],
+      [
+        "syn-0274",
+        0.2,
+        "tag match"
+      ],
+      [
+        "syn-0777",
+        0.2,
+        "tag match"
+      ],
+      [
+        "syn-0383",
+        0.19,
+        "tag match"
+      ],
+      [
+        "syn-0217",
+        0.19,
+        "tag match"
+      ],
+      [
+        "syn-0409",
+        0.19,
+        "tag match"
+      ],
+      [
+        "syn-0532",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0722",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0716",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0466",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0316",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0547",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0148",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0400",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0771",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0734",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0604",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0095",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0809",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0735",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0557",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0116",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0047",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0820",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0134",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0725",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0097",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0747",
+        0.17,
+        "aesthetic match"
+      ],
+      [
+        "syn-0772",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0872",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0790",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0810",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0002",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0130",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0389",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0835",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0167",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0241",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0831",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0583",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0072",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0521",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0415",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0055",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0539",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0846",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0569",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0854",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0127",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0146",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0860",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0073",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0841",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0689",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0894",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0866",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0895",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0899",
+        0.13,
+        "aesthetic match"
+      ],
+      [
+        "syn-0887",
+        0.09,
+        "aesthetic match"
+      ],
+      [
+        "syn-0649",
+        0.09,
+        "aesthetic match"
+      ],
+      [
+        "syn-0680",
+        0.09,
+        "aesthetic match"
+      ]
+    ],
+    "n": 599
+  },
+  "slip dress": {
+    "triples": [
+      [
+        "syn-0887",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0878",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0884",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0882",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0892",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0896",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0889",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0911",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0903",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0902",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0885",
+        1,
+        "product name match"
+      ]
+    ],
+    "n": 11
+  },
+  "boots": {
+    "triples": [
+      [
+        "syn-0621",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0659",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0683",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0623",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0648",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0617",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0631",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0641",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0663",
+        1,
+        "product name match"
+      ],
+      [
+        "syn-0654",
+        1,
+        "product name match"
+      ]
+    ],
+    "n": 10
+  }
+}

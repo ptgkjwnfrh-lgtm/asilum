@@ -1,0 +1,17 @@
+# Third-party data attribution
+
+## Fashionpedia ontology extract
+`lib/search/fashionpedia-ontology.json` is an extract (category and
+attribute names + supercategories only — no images, no annotations) of the
+Fashionpedia dataset ontology:
+
+  Menglin Jia, Mengyun Shi, Mikhail Sirotenko, Yin Cui, Claire Cardie,
+  Bharath Hariharan, Hartwig Adam, Serge Belongie.
+  "Fashionpedia: Ontology, Segmentation, and an Attribute Localization
+  Dataset", ECCV 2020.
+  https://github.com/cvdfoundation/fashionpedia
+
+The Fashionpedia annotations and ontology are licensed CC BY 4.0
+(https://fashionpedia.github.io/home/data_license.html). The extract was
+produced by scripts/extract-fashionpedia.mjs; the curated crosswalk into
+ASILUM's category space lives in lib/search/ontology.js.
