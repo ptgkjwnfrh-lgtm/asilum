@@ -483,6 +483,7 @@ test("mem and Postgres agree on the identity scenario", { skip: !databaseUrl }, 
   }
   assert.deepEqual(Object.keys(pg).sort(), Object.keys(mem).sort());
   assert.equal(mem.noConsent, "CONSENT_REQUIRED"); assert.equal(mem.scoreAfter, "0.0 ★ · No reviews"); assert.equal(mem.erased, true);
+  assert.equal(mem.orphanReview, "ORDER_NOT_FOUND", "a review without an order is refused, not stored");
 });
 
 // Money in motion (slice 11) has a mem branch and a Postgres branch for every

@@ -22,6 +22,7 @@ import assert from "node:assert/strict";
 import * as L from "../lib/identity/commerce.js";
 import * as I from "../lib/db/production/identity.js";
 import * as S from "../lib/db/production/score.js";
+import { createOrderWithEvent } from "../lib/db/orders.js";
 import { gate } from "../lib/identity/gate.js";
 import { bearerAssuranceLevel } from "../lib/identity.js";
 import { purgePersonalizationData } from "../lib/db/production/privacy.js";
@@ -147,8 +148,12 @@ test("appeals and the downgrade notice: only the seller appeals, once per item, 
 test("deletion resets the Passenger Score: reviews about the person are excluded, reviews by them stay anonymized, penalties stay", async () => {
   const gone = "sb-" + uuid(), other = "sb-" + uuid();
   const T0 = NOW - 10 * 86_400_000;
-  await S.submitReview({ orderId: "ord_a", reviewerId: other, subjectId: gone, role: "buyer", stars: 5, text: "great", order: { deliveredAt: T0, verified: true }, now: T0 + 86_400_000 });
-  await S.submitReview({ orderId: "ord_a", reviewerId: gone, subjectId: other, role: "seller", stars: 4, text: "fine", order: { deliveredAt: T0, verified: true }, now: T0 + 2 * 86_400_000 });
+  // a review needs a real order, on both backends
+  await assert.rejects(() => S.submitReview({ orderId: "ord_missing", reviewerId: other, subjectId: gone, role: "buyer", stars: 5, order: { deliveredAt: T0, verified: true }, now: T0 + 86_400_000 }), (e) => e.code === "ORDER_NOT_FOUND");
+  const ordA = (await createOrderWithEvent({ user: other, itemId: "syn-0003", amountCents: 18000, currency: "usd" })).id;
+  const ordB = (await createOrderWithEvent({ user: other, itemId: "syn-0003", amountCents: 18000, currency: "usd" })).id;
+  await S.submitReview({ orderId: ordA, reviewerId: other, subjectId: gone, role: "buyer", stars: 5, text: "great", order: { deliveredAt: T0, verified: true }, now: T0 + 86_400_000 });
+  await S.submitReview({ orderId: ordA, reviewerId: gone, subjectId: other, role: "seller", stars: 4, text: "fine", order: { deliveredAt: T0, verified: true }, now: T0 + 2 * 86_400_000 });
   const pen = await S.proposePenalty({ userId: gone, reason: "label refused", now: T0 });
   await S.movePenalty({ penaltyId: pen.id, action: "confirm", now: T0 });
   assert.ok((await S.passengerScore(gone, { now: NOW })).public.score > 0, "scored before deletion");
@@ -160,7 +165,7 @@ test("deletion resets the Passenger Score: reviews about the person are excluded
   assert.equal((await S.penaltiesFor(gone)).length, 1, "6.32: enforcement records remain");
   // the purge path calls the same reset
   const gone2 = "sb-" + uuid();
-  await S.submitReview({ orderId: "ord_b", reviewerId: other, subjectId: gone2, role: "buyer", stars: 5, text: "ok", order: { deliveredAt: T0, verified: true }, now: T0 + 86_400_000 });
+  await S.submitReview({ orderId: ordB, reviewerId: other, subjectId: gone2, role: "buyer", stars: 5, text: "ok", order: { deliveredAt: T0, verified: true }, now: T0 + 86_400_000 });
   await I.setIdentity(gone2.slice(3), { hometown: { name: "Seoul" } });
   await purgePersonalizationData(gone2);
   assert.equal((await S.passengerScore(gone2, { now: NOW })).public.score, 0);

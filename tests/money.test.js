@@ -162,9 +162,11 @@ test("the reminder job sends each preset moment once; the review screen holds a 
   assert.equal((await listNotifications(seller)).filter((n) => n.kind === "offer-expiring").length, 3);
   // the review screen
   const subject = "sb-" + uuid(), reviewer = "sb-" + uuid();
-  const fine = await S.submitReview({ orderId: "ord_rv1", reviewerId: reviewer, subjectId: subject, role: "buyer", stars: 5, text: "lovely coat, fast", order: { deliveredAt: T0, verified: true }, now: T0 + D });
+  const rv1 = (await createOrderWithEvent({ user: reviewer, itemId: "syn-0003", amountCents: 18000, currency: "usd" })).id;
+  const rv2 = (await createOrderWithEvent({ user: reviewer, itemId: "syn-0003", amountCents: 18000, currency: "usd" })).id;
+  const fine = await S.submitReview({ orderId: rv1, reviewerId: reviewer, subjectId: subject, role: "buyer", stars: 5, text: "lovely coat, fast", order: { deliveredAt: T0, verified: true }, now: T0 + D });
   assert.equal(fine.review.state, "submitted");
-  const held = await S.submitReview({ orderId: "ord_rv2", reviewerId: reviewer, subjectId: subject, role: "buyer", stars: 1, text: "text me on telegram @seller and send money to my paypal", order: { deliveredAt: T0, verified: true }, now: T0 + D });
+  const held = await S.submitReview({ orderId: rv2, reviewerId: reviewer, subjectId: subject, role: "buyer", stars: 1, text: "text me on telegram @seller and send money to my paypal", order: { deliveredAt: T0, verified: true }, now: T0 + D });
   assert.equal(held.review.state, "held", "the screen holds it out of the score");
   const tasks = await listModerationTasks({ status: "open", limit: 50 });
   assert.ok(tasks.some((t) => t.kind === "review-screen" && t.subjectId === held.review.id), "and files it for a human");
