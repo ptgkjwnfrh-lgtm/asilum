@@ -19,7 +19,11 @@ try {
   out.defaultState = { paused: before.paused, grade: before.grade, handed: before.handed };
   const d = decide({ fn, initial: { answer: "range", confidence: 0.5, evidence: ["comparable:" + run], reasoning: "scenario" }, subject, kind: "scenario", startedAt: 0, now: 10 });
   const a = await rows.recordAsteriskAction(d);
-  out.recorded = { actor: a.actor, outcome: a.outcome, confidence: a.confidence, subject: a.subjectId, evidence: a.decision.evidence, groundTruth: a.groundTruth };
+  // The subject and the evidence carry this run's id, which differs between
+  // the two runs by design; print them with the id written as <run> so the
+  // comparison still pins exactly what each backend stored and nothing else.
+  const unrun = (s) => String(s).split(run).join("<run>");
+  out.recorded = { actor: a.actor, outcome: a.outcome, confidence: a.confidence, subject: unrun(a.subjectId), evidence: a.decision.evidence.map(unrun), groundTruth: a.groundTruth };
   const o = await rows.overrideAsteriskAction(a.id, { outcome: { answer: "fixed" }, note: "scenario", actor: "scenario" });
   out.override = { ok: o.ok, actor: o.action.actor, groundTruth: o.action.groundTruth, confidence: o.action.confidence, supersedesMatches: o.supersedes === a.id, outcome: o.action.outcome };
   out.overrideTwice = (await rows.overrideAsteriskAction(a.id, { outcome: { answer: "x" } })).ok;

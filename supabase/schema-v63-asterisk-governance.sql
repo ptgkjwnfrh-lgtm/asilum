@@ -101,9 +101,19 @@ CREATE TABLE IF NOT EXISTS replica_patterns (
   house            TEXT NOT NULL,
   pattern          TEXT NOT NULL CHECK (length(pattern) BETWEEN 3 AND 200),
   confirmed_by     TEXT NOT NULL,
-  note             TEXT,
-  UNIQUE (house, pattern)
+  note             TEXT
 );
+-- A house is one house however it is capitalised: the library is read with
+-- lower(house) and memory mode matches it case-insensitively, so uniqueness
+-- is on (lower(house), pattern). The first version keyed (house, pattern),
+-- which let "Scenario House" and "scenario house" hold the same pattern twice
+-- in Postgres alone; a database that applied that version drops it here.
+-- (A scratch database that already holds such a pair refuses the index with
+-- 23505 naming it: merge the pair by hand, keeping the earlier confirmation.
+-- Production never applied v63, and CI starts from an empty database.)
+ALTER TABLE replica_patterns DROP CONSTRAINT IF EXISTS replica_patterns_house_pattern_key;
+CREATE UNIQUE INDEX IF NOT EXISTS replica_patterns_house_pattern_lower_key
+  ON replica_patterns (lower(house), pattern);
 
 DO $$ DECLARE t TEXT; role_name TEXT;
 BEGIN
