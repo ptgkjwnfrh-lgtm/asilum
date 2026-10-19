@@ -4431,7 +4431,20 @@ test("native storefront v62 serializes fee and inventory reservations in Postgre
       await pool.query("DELETE FROM storefronts WHERE id=$1", [storefrontId]);
     }
     await pool.query("DELETE FROM profile_rooms WHERE account_id=$1", [accountId]);
+    if (authUserSeeded) await pool.query("DELETE FROM auth.users WHERE id=$1", [accountId]);
   });
+
+  // profile_rooms carries an FK to auth.users wherever the auth schema exists
+  // (Supabase, and CI's shim), so the seller handle below needs a parent row,
+  // as the v17 profile-rooms block gives its accounts. Absent auth schema
+  // (42P01 / 3F000) means no FK to satisfy; any other refusal is a real error.
+  let authUserSeeded = false;
+  try {
+    await pool.query("INSERT INTO auth.users (id) VALUES ($1::uuid) ON CONFLICT DO NOTHING", [accountId]);
+    authUserSeeded = true;
+  } catch (err) {
+    if (err.code !== "42P01" && err.code !== "3F000") throw err;
+  }
 
   let owner = await storefronts.createStorefront({
     accountId, name: `PG Store ${suffix.slice(0, 6)}`, accepted: true,
