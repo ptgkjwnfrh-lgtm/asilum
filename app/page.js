@@ -29,6 +29,8 @@ import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
 import Wordmark from "./components/Wordmark.jsx";
 import WireCard from "./components/WireCard.jsx";
+import PieceFloat from "./components/PieceFloat.jsx";
+import { createPortal } from "react-dom";
 import TagRow from "./components/TagChip.jsx";
 import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
 import { tagsFor, visibleTags } from "../lib/tagging/grammar.js";
@@ -789,6 +791,9 @@ export default function Home() {
     park();
     openSheet("listing", { item, title: "LISTING" });
   }
+  // A DOUBLE TAP lifts a piece out to float over the fogged Feed (owner, 18
+  // Oct 2026; PieceFloat.jsx). One tap still opens the LISTING popup.
+  const [floatItem, setFloatItem] = useState(null);
   // what the popup did to a piece (lib/feed/actions.js): a pass leaves the
   // stream, a favourite pulls its neighbours in
   useEffect(() => {
@@ -821,6 +826,7 @@ export default function Home() {
         it={it}
         fitLine={fitPhrase(it.size, fitBrain)}
         onOpen={() => openModal(it)}
+        onFloat={() => setFloatItem(it)}
         onPass={() => react(it, "skip")}
       />
     );
@@ -877,6 +883,7 @@ export default function Home() {
       </p>
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
+      {floatItem && typeof document !== "undefined" ? createPortal(<PieceFloat item={floatItem} onClose={() => setFloatItem(null)} />, document.body) : null}
 
       <>
           {items.length > 0 && (
@@ -1124,7 +1131,26 @@ function Columns({ items, count, render, children, memo, weight }) {
   );
 }
 
-function FragmentCard({ it, fitLine, onOpen, onPass }) {
+// the window inside which a second tap makes a double tap — a mouse's
+// dblclick and a finger's double tap alike (iOS does not fire dblclick)
+const DOUBLE_TAP_MS = 280;
+function FragmentCard({ it, fitLine, onOpen, onPass, onFloat }) {
+  const tap = useRef({ at: 0, timer: 0 });
+  useEffect(() => () => clearTimeout(tap.current.timer), []);
+  // one tap opens the listing a beat later; a second tap inside the window
+  // cancels that and floats the piece instead
+  function onPhoto() {
+    const now = Date.now();
+    if (onFloat && now - tap.current.at < DOUBLE_TAP_MS) {
+      clearTimeout(tap.current.timer);
+      tap.current.at = 0;
+      onFloat();
+      return;
+    }
+    tap.current.at = now;
+    clearTimeout(tap.current.timer);
+    tap.current.timer = setTimeout(() => { tap.current.at = 0; onOpen(); }, onFloat ? DOUBLE_TAP_MS : 0);
+  }
   // THE PIECE CARD (owner's reference of 18 Oct 2026, 2.jpg): the photograph
   // fills a rounded card; one quiet line beneath carries the name and the
   // price; the small × at the corner is PASS. Favourite and bag live in the
@@ -1133,7 +1159,7 @@ function FragmentCard({ it, fitLine, onOpen, onPass }) {
   // presentational and keeps its pointer affordance.
   return (
     <div className={"card piece" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-      <div className="imgwrap" onClick={onOpen} aria-hidden="true" style={{ aspectRatio: aspectFor(it.id) }}>
+      <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it" style={{ aspectRatio: aspectFor(it.id) }}>
         <OriginSticker item={it} />
         <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>

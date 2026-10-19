@@ -45,9 +45,14 @@
   --sig: #6e9cff;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
-  --glow: none;
-  --glow-r: none;
-  --glow-p: none;
+  /* THE PHOSPHOR GLOW, BACK IN DARK (owner, 18 Oct 2026: "I miss the dark
+     mode phosphorus glow … add it back"; CONSTITUTION A6, third addendum).
+     A word glows in its OWN colour (currentColor), so the green accent
+     glows phosphor green and a link glows its blue; body text never glows
+     (--glow-ink stays none). The light palette keeps no glow at all. */
+  --glow: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 55%, transparent), 0 0 22px color-mix(in srgb, currentColor 18%, transparent);
+  --glow-r: 0 0 1px currentColor, 0 0 10px color-mix(in srgb, currentColor 60%, transparent), 0 0 26px color-mix(in srgb, currentColor 22%, transparent);
+  --glow-p: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 50%, transparent);
   --glow-ink: none;
   /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
      line ONLY — ASILUM above it is left exactly as it shipped. Purely
@@ -135,7 +140,9 @@
   --bg-grad:
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 16%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 10%, transparent), transparent 64%),
-    linear-gradient(180deg, #070b0c 0%, #0b1417 52%, #070b0c 100%);
+    /* the OG ground (owner, 18 Oct: "I miss the soft gradient … green to
+       black"): a phosphor green that settles into black as the page falls */
+    linear-gradient(180deg, #0d2219 0%, #08150f 34%, #040907 68%, #000000 100%);
   /* SHADE AND SCRIM (owner, 18 Oct 2026: "on dark mode if there is a popup
      the background should be darker, not a cloudy white"). The popup's scrim
      and every shadow were mixed from --ink, which is near-white in the dark
@@ -256,7 +263,9 @@
   --bg-grad:
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 12%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 7%, transparent), transparent 64%),
-    linear-gradient(180deg, #f4f8fb 0%, #e8f0f6 52%, #f1f6fa 100%);
+    /* the OG ground (owner, 18 Oct: "I miss the soft gradient of blue to
+       white"): a soft sky blue at the top washing out to white */
+    linear-gradient(180deg, #d6e8f6 0%, #e7f1f9 30%, #f6fafd 64%, #ffffff 100%);
   /* light keeps the reference's slate wash under a popup (6.jpg) */
   --shade: #253749;
   --scrim: color-mix(in srgb, #253749 42%, transparent);
@@ -733,7 +742,8 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
    with the phone or the cursor, a shadow that slides the other way, a glare
    across its face, a halo of its own colour behind. */
 .float {
-  position: fixed; inset: 0; z-index: 90; background: #000; cursor: zoom-out;
+  position: fixed; inset: 0; z-index: 90; background: var(--fog); cursor: zoom-out;
+  -webkit-backdrop-filter: blur(18px) saturate(115%); backdrop-filter: blur(18px) saturate(115%);
   display: flex; align-items: center; justify-content: center;
   perspective: 1100px; animation: floatfade 0.3s ease;
 }
@@ -4498,4 +4508,166 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .sheethead .sheettitle { padding: 0 6px; }
 .sheethead .sheetacts { gap: 4px; }
 /* a phone: the grip and the title's tracking give the title and its session count the room the keys took */
-@media (max-width: 480px) { .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } .sheethead .sheetcount { margin-left: 6px; } }
+@media (max-width: 480px) { .sheethead { gap: 4px; padding: 10px 6px; } .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } .sheethead .sheetcount { margin-left: 6px; } }
+
+/* =====================================================================
+   THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
+   refractive reactive liquid glass, cmon claude i want it to look cool").
+   Three things on top of the restored glass:
+   1. the lens itself splits colour (LiquidGlass.jsx prism: what passes
+      under a bezel comes apart into red, green and blue);
+   2. an oil-slick film on every face: a faint conic rainbow, blended so it
+      tints rather than covers, turning with the hand (--iris-a, --iris-x/y)
+      and, on the small fixtures and the deck, drifting on its own;
+   3. a thicker, brighter rim with a soft rainbow bloom just outside it.
+   Reduced motion: no drift. Reduced transparency: none of it.
+   ===================================================================== */
+@property --iris-drift { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
+@keyframes irisdrift { to { --iris-drift: 360deg; } }
+:root { --iris-w: 2px; --iris-film: 0.16; }
+[data-theme="light"] { --iris-film: 0.22; }
+.fixture, .ccenter { animation: irisdrift 18s linear infinite; }
+.fixture::after, .ccenter::after, .sheet::after {
+  background: conic-gradient(from calc(var(--iris-a, 200deg) + var(--iris-drift, 0deg)) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
+  filter: saturate(1.35) brightness(1.08);
+}
+.fixture::before, .ccenter::before, .sheet::before {
+  background:
+    radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
+      color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
+    linear-gradient(calc(104deg + var(--tilt-x, 0) * 26deg), transparent 34%, color-mix(in srgb, var(--paper) 9%, transparent) 48%, color-mix(in srgb, var(--paper) 14%, transparent) 52%, transparent 66%),
+    conic-gradient(from calc(var(--iris-a, 200deg) * -1 + var(--iris-drift, 0deg)) at var(--iris-x, 50%) var(--iris-y, 50%),
+      color-mix(in srgb, var(--iris-1) calc(var(--iris-film) * 100%), transparent),
+      color-mix(in srgb, var(--iris-2) calc(var(--iris-film) * 100%), transparent),
+      color-mix(in srgb, var(--iris-3) calc(var(--iris-film) * 100%), transparent),
+      color-mix(in srgb, var(--iris-4) calc(var(--iris-film) * 100%), transparent),
+      color-mix(in srgb, var(--iris-5) calc(var(--iris-film) * 100%), transparent),
+      color-mix(in srgb, var(--iris-1) calc(var(--iris-film) * 100%), transparent)),
+    var(--glass-sheen);
+  mix-blend-mode: screen;
+}
+[data-theme="light"] .fixture::before, [data-theme="light"] .ccenter::before, [data-theme="light"] .sheet::before { mix-blend-mode: soft-light; }
+/* the bloom: a soft rainbow just outside the rim, in the rim's own colours */
+.fixture, .ccenter { box-shadow: 0 10px 30px color-mix(in srgb, var(--shade) 14%, transparent), 0 0 18px -6px var(--iris-2), 0 0 22px -10px var(--iris-1), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
+.sheet { box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 26%, transparent), 0 0 34px -12px var(--iris-2), 0 0 44px -18px var(--iris-1), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
+@media (prefers-reduced-motion: reduce) { .fixture, .ccenter { animation: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  .fixture::before, .ccenter::before, .sheet::before { background: none; mix-blend-mode: normal; }
+  .fixture, .ccenter, .sheet { animation: none; }
+}
+
+/* ---- the dark headline wears the OG title card: chrome letters washing to
+   mint with the phosphor halo (the owner's title-card reference) ---- */
+:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #f4fbf7 0%, #d4f3e1 45%, #8ee8b3 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(110, 240, 160, 0.32)) drop-shadow(0 0 2px rgba(180, 255, 210, 0.5)); }
+:root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
+:root:not([data-theme="light"]) .wordmark { filter: drop-shadow(0 0 8px rgba(110, 240, 160, 0.4)); }
+/* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
+:root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .adslot, .idkey.cur) { text-shadow: var(--glow-r); }
+
+/* =====================================================================
+   THE DEVICE'S OWN LANGUAGE, A LITTLE OF IT (owner, 18 Oct 2026; the 404
+   and title-card films): text that loads in behind a run of >>>>>>, square
+   warning lights that blink and go dark like a CD tray's eject light, and
+   MRZ lines run out in chevrons with a blinking block cursor. --warn is the
+   lights' and the chevrons' red in BOTH palettes (in dark the accent token
+   is phosphor green; a warning light is red on any device).
+   ===================================================================== */
+:root { --warn: #ff4136; --cursor: #6dffa8; }
+[data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
+.chevtext .chevrun { color: var(--warn); letter-spacing: 0.02em; }
+.chevtext .chevrest { color: transparent; }
+:root:not([data-theme="light"]) .chevtext .chevrun { text-shadow: 0 0 6px color-mix(in srgb, var(--warn) 60%, transparent); }
+/* the lamp: a small square, dark at rest; lit, it blinks like an eject light and settles dark */
+.lamp { display: inline-block; flex: none; width: 7px; height: 7px; margin: 0 7px 0 0; border-radius: 1.5px; vertical-align: 0.05em;
+  background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
+.lstact .lamp { position: absolute; top: 7px; right: 7px; margin: 0; width: 6px; height: 6px; }
+.lstacts .lstact { position: relative; }
+.lamp[data-blink="eject"] { animation: ejectlight 1.8s steps(1, end) forwards; }
+.lamp[data-blink="once"] { animation: ejectonce 1.2s ease forwards; }
+@keyframes ejectlight {
+  0%, 20%, 40%, 60% { background: var(--warn); box-shadow: 0 0 8px var(--warn), inset 0 0 0 1px var(--warn); }
+  10%, 30%, 50%, 70%, 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
+}
+@keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
+/* the deck's two status lights, at the end of the ad strip */
+.devlights { display: inline-flex; gap: 4px; margin-left: auto; flex: none; }
+.devlights .lamp { width: 8px; height: 8px; margin: 0; }
+.devlights .lamp + .lamp[data-blink="eject"] { animation-delay: 0.1s; }
+/* an MRZ line: words in the ink, chevrons in red, a block cursor blinking at the end */
+.mrzline { font: 13px/1.5 var(--mono); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; display: block; text-overflow: clip; }
+.mrzline b { font-weight: 400; color: var(--ink); }
+.mrzline i { font-style: normal; color: var(--warn); }
+.mrzcursor { display: inline-block; width: 0.6em; height: 1em; margin-left: 2px; vertical-align: -0.12em; background: var(--cursor); animation: mrzblink 1.06s steps(1, end) infinite; }
+@keyframes mrzblink { 50% { opacity: 0; } }
+:root:not([data-theme="light"]) .mrzline b { color: var(--cursor); text-shadow: var(--glow); }
+@media (prefers-reduced-motion: reduce) { .mrzcursor { animation: none; } .lamp[data-blink] { animation: ejectonce 1.2s ease forwards; } }
+/* the post card's caption is a button now: a tap expands it */
+.wpccapbtn { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: inherit; }
+.wpcover .wpccap.full { display: block; -webkit-line-clamp: unset; max-height: 46vh; overflow-y: auto; font: 13px/1.45 var(--mono); }
+
+/* =====================================================================
+   FLOATING OVER THE FOG (owner, 18 Oct 2026: "floating in space that is
+   reactive to movement but the background should be a fogged version of
+   the feed"). The page stays behind, blurred and hazed — the fog — and the
+   piece hangs over it as a card of the rainbow glass that turns with the
+   phone or the cursor (useTilt). The photograph float wears the same fog.
+   ===================================================================== */
+:root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(12, 30, 22, 0.22), rgba(2, 6, 4, 0.55)); }
+[data-theme="light"] { --fog: radial-gradient(80% 60% at 50% 46%, rgba(255, 255, 255, 0.22), rgba(214, 232, 246, 0.5)); }
+.pfloat { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; perspective: 1200px; animation: floatfade 0.3s ease; }
+.pfloatfog { position: absolute; inset: 0; border: 0; padding: 0; cursor: zoom-out; background: var(--fog); -webkit-backdrop-filter: blur(9px) saturate(120%); backdrop-filter: blur(9px) saturate(120%); }
+.pfloatclose { color: var(--ink); }
+.pfloatcard {
+  position: relative; width: min(84vw, 380px); max-height: 86vh; overflow: hidden auto; padding: 14px 14px 16px;
+  border-radius: var(--radius-card); isolation: isolate; will-change: transform;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  box-shadow: var(--sx, 0px) var(--sy, 40px) 90px color-mix(in srgb, var(--shade) 45%, transparent), 0 0 40px -10px var(--iris-2), 0 0 50px -16px var(--iris-1);
+  animation: floatin 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pfloatcard[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); }
+.pfloatcard::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 2px); pointer-events: none; z-index: 5; opacity: var(--iris, 0.62);
+  background: conic-gradient(from var(--iris-a, 200deg) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+.pfloatcard::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(130% 90% at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--paper) 16%, transparent), transparent 55%); }
+.pfloatimg { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: calc(var(--radius-card) - 6px); overflow: hidden; background: var(--paper); cursor: pointer; }
+.pfloatimg img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pfloatdemo { position: absolute; top: 8px; left: 10px; font: 400 11px/1.2 var(--mich); color: var(--ink); text-shadow: 0 0 6px var(--paper); }
+.pfloatacts { display: flex; align-items: center; gap: 18px; margin: 10px 0 8px; }
+.pfloatacts .lstact { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+[data-theme] .pfloatcard .pfloatacts .lstact.lstact { color: var(--ink); background: none; border: 0; box-shadow: none; text-shadow: none; }
+[data-theme] .pfloatcard .pfloatacts .lstact.lstact.on { color: var(--red); }
+.pfloatopen { display: inline-block; margin-top: 10px; }
+@media (prefers-reduced-motion: reduce) { .pfloat, .pfloatcard { animation: none; } }
+@media (prefers-reduced-transparency: reduce) { .pfloatfog, .pfloatcard, .float { -webkit-backdrop-filter: none; backdrop-filter: none; } .pfloatcard { background: var(--bg3); } }
+
+/* =====================================================================
+   THE OG PASSPORT (owner, 18 Oct 2026: "the og passport design should
+   transfer over 90% accurately"; iteration 5 of 25 Jul, 7db2b89 — the
+   screenshot the owner sent). Restored: the registration pluses in their
+   three tones across the top band, the "01" page numeral, the photo slot's
+   fine print lines with the target, the document's own teal (light) and
+   phosphor green (dark) for its roads and type, the mono face of the
+   numbers, the microprint, and the machine zone at the foot under a dashed
+   rule. Kept from since: your own streets as the map, the glass, BASED IN
+   and SAVED (real data where the original printed SEX X and BOARDS), the
+   name without "magazine".
+   ===================================================================== */
+[data-theme="light"] .ppdoc { --sig: #0b7584; }
+:root:not([data-theme="light"]) .ppdoc { --sig: #46ff96; }
+.pv-s { stroke: var(--sig); opacity: 0.55; }
+.pv-p { stroke: var(--p2); opacity: 0.5; }
+.pv-r { stroke: var(--red); opacity: 0.75; }
+.ppvpage { position: absolute; top: 38px; right: 16px; font-family: var(--mono); font-size: 26px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
+.ppnum, .ppsummit, .pvstars text { font-family: var(--mono); }
+.ppphoto::after { background:
+    linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
+    repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--ink) 14%, transparent) 2px 3px); }
+.ppdoc .ppmrz { order: 99; border-top: 1px dashed var(--line); border-bottom: 0; padding: 8px 16px 10px; font-family: var(--mono); font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; }
+.ppdoc .ppdocacts { margin-top: 0; }

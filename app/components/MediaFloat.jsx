@@ -25,6 +25,7 @@ import MotionHousing from "./MotionHousing.jsx";
 import { postType } from "../../lib/feed/types.js";
 import SaveButton from "./SaveButton.jsx";
 import TransmissionText from "./TransmissionText.jsx";
+import { ChevronText } from "./Chevrons.jsx";
 import Icon from "./Icons.jsx";
 import { haptic } from "../../lib/haptics.js";
 
@@ -125,7 +126,7 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
         <button type="button" className={"mfcaption" + (up ? " up" : "")} aria-expanded={up} onClick={() => setUp((u) => !u)}>
           <b className="mfwho">{name}</b>
           {post.title ? <span className="mfttl">{post.title}</span> : null}
-          <TransmissionText text={post.text} className="mftext" />
+          {up ? <ChevronText as="p" className="mftext" text={post.text} /> : <TransmissionText text={post.text} className="mftext" />}
           {cur && cur.credit ? <small className="mfcredit">{cur.credit}</small> : null}
           {video && video.generated ? <small className="mfcredit">SAMPLE MOTION · GENERATED TEST PATTERN · {video.width}×{video.height} · {video.codec} · a generated test tone</small> : null}
         </button>

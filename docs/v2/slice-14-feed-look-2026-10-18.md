@@ -67,3 +67,34 @@ rounded out too." Branch `v2/build`, six commits, one per instruction.
 - Safari's page-side bend under the popup was not seen (no WebKit here).
 - The cover and hotlist pages still use some older square chrome off the
   shell; the floor rounds their buttons and fields, not every panel.
+
+## Slice 14b — the device (18 October 2026, evening)
+
+The owner, after the first pass: "rainbow refractive reactive liquid glass,
+cmon claude i want it to look cool"; "pull from the og design language but
+only some of it" (the 404 and title-card films); ">>>>>>" for expanding
+descriptions; "blinking squares that turn off … like how you eject a disc";
+"the og passport design should transfer over 90% accurately"; a double-click
+float "reactive to movement" over "a fogged version of the feed"; "the soft
+gradient of blue to white and green to black" and "the dark mode phosphorus
+glow"; then "drop the magazine from everything, it's just ASILUM". Recorded as
+CONSTITUTION A6 third addendum.
+
+| What | Where |
+| --- | --- |
+| The lens splits colour (`prism`), an iridescent film turns with the hand, the fixtures and the deck drift, a rainbow bloom outside every rim | `LiquidGlass.jsx`, `globals.css` |
+| The original ground (blue→white, green→black) and the dark phosphor glow in each word's own colour; the dark headline in the title card's chrome-to-mint | `globals.css` tokens; `tests/v2-shell.test.js` updated |
+| `>>>>>>` load-in on expanding text: a tapped post caption, an opened BRDCST event, the map popup's description, the overview behind Read more, BEHIND THE PRODUCT and the valuation, the raised media caption | `Chevrons.jsx` (`ChevronText`), `lib/feed/chevrons.js` |
+| Warning lights: a square lamp that blinks like an eject light and goes dark on bag, offer, buy and request purchase; the deck's pair of red status squares answers | `Chevrons.jsx` (`Lamp`, `blinkLamp`), `ListingSheet.jsx`, `ControlCenter.jsx` |
+| A double tap on a Feed piece floats it as a glass card turning with the phone or cursor over the fogged Feed; the photograph float wears the same fog | `PieceFloat.jsx`, `FloatView.jsx` (`useTilt`), `app/page.js` |
+| The passport document to its iteration-5 design (7db2b89): plus registration band, the 01, the photo slot's print lines and target, its own teal and phosphor, mono numbers, the microprint, the MRZ at the foot | `board/page.js`, `PassportSecurity.jsx`, `globals.css` |
+| No "magazine": ASILUM never calls itself one in any visible string; the domain keeps its address until it moves | 12 files; `tests/brand-name.test.js` |
+
+Deliberate departures from the 25 July passport: BASED IN and SAVED (real
+data) where it printed SEX X and BOARDS; "PERSONALIZED FASHION TERMINAL" where
+it printed the retired "fashion intelligence" name (copy law); ASILUM without
+"MAG"; the glass and the OPEN MAP / STAMP PASSPORT buttons kept.
+
+Not seen: the tilt on a real phone; Safari; the fog and the popup glass take
+a moment to paint in the preview pane (a background tab), worth a look on a
+phone.

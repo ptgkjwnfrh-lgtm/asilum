@@ -340,7 +340,7 @@ export default function BoardPage() {
         <div className="ppdoc lg" ref={ppRef} aria-label="passport document">
           {ppGlass}
           <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
-          <div className="ppnation">ASILUM MAGAZINE <b>*</b> FASHION PASSPORT</div>
+          <div className="ppnation">ASILUM <b>*</b> FASHION PASSPORT</div>
           <div className="ppbody">
             <div className="ppphotocol">
               <span className="ppquad"><b>PASSPORT</b><span>パスポート</span><span>REISEPASS</span><span>PASSEPORT</span></span>
@@ -359,13 +359,17 @@ export default function BoardPage() {
               <div><dt>BASED IN<em>/ Basé à</em></dt><dd>{loc && loc.baseCity ? loc.baseCity.name : "—"}{loc && loc.baseCity && !basedIn ? <span className="ppmono"> PRIVATE</span> : null}</dd></div>
               <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
               <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
-              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>THE ASTERISK SYSTEM</dd></div>
+              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — PERSONALIZED FASHION TERMINAL</dd></div>
               <div><dt>SAVED</dt><dd>{pinCount + (counts.total - counts.piece)}</dd></div>
               <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
-          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
+          {/* THE OG DOCUMENT (owner, 18 Oct 2026: "the og passport design should
+              transfer over 90% accurately" — iteration 5, 25 Jul, 7db2b89): the
+              data page, then the hologram window, the microprint, and the
+              machine zone at the FOOT of the document */}
           <PassportSecurity topTag={convictions()[0]?.[0]} topWeight={convictions()[0]?.[1] || 0} map={docMap} />
+          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
           <div className="ppdocacts">
             <button className="ppbtn" onClick={() => switchTab("places")}>OPEN MAP</button>
             <button className="ppbtn primary" onClick={warpToUpload}>STAMP PASSPORT</button>

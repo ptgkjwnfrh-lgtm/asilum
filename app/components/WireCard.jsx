@@ -35,6 +35,7 @@ import { postType, brdcstWhen } from "../../lib/feed/types.js";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import TagRow from "./TagChip.jsx";
+import { ChevronText } from "./Chevrons.jsx";
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 const STATE_WORD = { draft: "DRAFT · UNPAID", scheduled: "SCHEDULED", active: "LIVE", ended: "ENDED", cancelled: "CANCELLED", under_review: "UNDER REVIEW" };
@@ -49,7 +50,7 @@ function BrdcstEvent({ event, open, onToggle }) {
       </button>
       {open ? (
         <div className="brdcstbody">
-          <span className="fine">{String(event.kind || "").toUpperCase()}{event.city ? " · " + event.city : ""}{event.status ? " · " + String(event.status).toUpperCase() : ""}{event.admission ? " · " + event.admission : ""}</span>
+          <ChevronText className="fine" text={[String(event.kind || "").toUpperCase(), event.city, event.status ? String(event.status).toUpperCase() : null, event.admission].filter(Boolean).join(" · ")} />
           <div className="brdcstacts">
             {/* 5.5 (slice 12): the map opens above the post as a popup */}
             <button type="button" className="txtbtn" onClick={() => { haptic("press"); openSheet("map", { pin: event.id, title: "MAP" }); }}>PASSPORT MAP →</button>
@@ -228,6 +229,7 @@ function Actions({ p, eng, onEngage, sample, href, name, image }) {
 }
 
 export default function WireCard({ post: p, engagement, onEngage }) {
+  const [more, setMore] = useState(0);
   const sample = !!p.sample;
   const type = postType(p);
   const refs = sample ? { category: p.category, intent: p.intent } : readWireRefs(p.tags || []);
@@ -244,7 +246,12 @@ export default function WireCard({ post: p, engagement, onEngage }) {
     <div className="wpcover">
       <span className="wpchandle">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}{sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}</span>
       {p.title ? <a className="wpcttl" href={href}>{p.title}</a> : null}
-      <TransmissionText text={p.text} className="wpccap" />
+      {/* a compacted caption expands on a tap and the rest loads in from >>>>>> (owner, 18 Oct) */}
+      {more ? (
+        <button type="button" className="wpccapbtn open" aria-expanded="true" onClick={() => setMore(0)}><ChevronText as="span" className="wpccap full" text={p.text} play={more} /></button>
+      ) : (
+        <button type="button" className="wpccapbtn" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}><TransmissionText text={p.text} className="wpccap" /></button>
+      )}
       <Actions p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
     </div>
   );

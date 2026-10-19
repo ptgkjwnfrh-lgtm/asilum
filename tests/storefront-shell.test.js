@@ -54,5 +54,6 @@ test("the listing popup: a native listing buys here and never shows the referral
   const listing = strip(read("app/components/ListingSheet.jsx"));
   assert.match(listing, /isNativeItem\(item\) \? \(/);
   assert.match(listing, /item\.native_checkout_ready === true \? \(buying \? "opening checkout…" : "buy ↗"\) : "checkout not enabled"/);
-  assert.match(listing, /\) : \(\s*<>\s*<button type="button" className="buy" onClick=\{\(\) => setTicket\(true\)\}>request purchase<\/button>/, "external records keep the ticket flow");
+  // (18 Oct) the button carries its warning light and opens the ticket a beat after the light blinks
+  assert.match(listing, /\) : \(\s*<>\s*<button type="button" className="buy" onClick=\{\(e\) => \{ blinkLamp\(e\); setTimeout\(\(\) => setTicket\(true\), 420\); \}\}><Lamp \/>request purchase<\/button>/, "external records keep the ticket flow");
 });

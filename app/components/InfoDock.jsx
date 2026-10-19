@@ -28,7 +28,7 @@ export default function InfoDock() {
   const dock = useDock();
   // the OG liquid glass (slice 14): the bezel bends what passes beneath, the rim's rainbow answers the hand
   const glassRef = useRef(null);
-  const glass = useLiquidGlass(glassRef, { id: "lg-infodock", strength: 0.8 });
+  const glass = useLiquidGlass(glassRef, { id: "lg-infodock", strength: 1.1, prism: 1 });
   const [bagCount, setBagCount] = useState(0);
   const [exploration, setExploration] = useState(null); // { active, auto, off, step, ratio }
   useEffect(() => {

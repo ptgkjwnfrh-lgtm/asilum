@@ -114,8 +114,13 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
 // The pull at the edge, R/G/B (glass disperses: red bends least, blue most).
 // The header runs at 1; the popups at 0.5 (0.15 read as nothing at all).
 export const PULL = [80, 86, 92];
-export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1 }) {
-  const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
+// `prism` widens the gap between the three colours' pulls (owner, 18 Oct
+// 2026: "rainbow refractive reactive liquid glass, cmon … I want it to look
+// cool"): 0 is the 8 Sep fringe; 1 roughly triples it, so what passes under
+// the bezel splits into red, green and blue — the rainbow is IN the
+// refraction, not only painted on the rim.
+export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1, prism = 0 }) {
+  const [sr, sg, sb] = PULL.map((v, i) => (v * strength * (1 + prism * (i - 1) * 0.28)).toFixed(1));
   return (
     <svg className="glass-defs" aria-hidden="true" focusable="false">
     {/* THE OPTICS: the centre of the pane is CRYSTAL CLEAR (the backdrop
@@ -337,7 +342,7 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
 // coordinates over a flat 128 grey — so what is under the edge bends the
 // way a backdrop would. Bounded: only the elements under the pane, each
 // filtered within its own box; nothing on the rest of the page pays.
-export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null } = {}) {
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, prism = 0 } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
   useEffect(() => {
@@ -390,7 +395,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (pageBend) pageBend.dispose();
     };
   }, [elRef, id, active, open, strength, bend]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} />;
+  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} prism={prism} />;
 }
 
 // ---- THE REACTIVE RAINBOW (owner, 18 Oct 2026: "the liquid glass isn't

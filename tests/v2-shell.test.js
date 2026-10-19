@@ -36,7 +36,9 @@ test("no CRT: scanlines, the grid, the glow and the wash are gone from the token
     const body = css.slice(i, css.indexOf("\n}", i));
     assert.match(body, /--scan:\s*transparent;/, block + " --scan");
     assert.match(body, /--grid-ln:\s*transparent;/, block + " --grid-ln");
-    assert.match(body, /--glow:\s*none;/, block + " --glow");
+    // (18 Oct, A6 third addendum) the phosphor glow is back in DARK only, in each word's own colour
+    if (block === ":root {") assert.match(body, /--glow:\s*0 0 1px currentColor,/, block + " --glow glows in the word's own colour");
+    else assert.match(body, /--glow:\s*none;/, block + " --glow");
     assert.match(body, /--glow-ink:\s*none;/, block + " --glow-ink");
     assert.match(body, /--backlight:\s*none;/, block + " --backlight");
     assert.match(body, /--wash:\s*none;/, block + " --wash");

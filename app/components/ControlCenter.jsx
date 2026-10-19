@@ -46,6 +46,7 @@ import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
 import { usePlacements } from "./Placements.jsx";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
+import { Lamp, blinkLamp } from "./Chevrons.jsx";
 
 const ROTATE_MS = 7000;
 
@@ -58,6 +59,17 @@ const ROTATE_MS = 7000;
  *  types; it is not announced. */
 function AdStrip({ typing }) {
   const items = usePlacements();
+  // THE STATUS LIGHTS (owner, 18 Oct 2026: blinking squares that turn off,
+  // the CD tray's eject light): two red squares at the strip's end, dark at
+  // rest; anything put in the bag or any purchase control's lamp makes them
+  // blink and settle dark again
+  const lightsRef = useRef(null);
+  useEffect(() => {
+    const on = () => blinkLamp(lightsRef.current, { quiet: true });
+    window.addEventListener("asilum:lamp", on);
+    window.addEventListener("asilum:bag", on);
+    return () => { window.removeEventListener("asilum:lamp", on); window.removeEventListener("asilum:bag", on); };
+  }, []);
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const reduced = useRef(false);
@@ -91,11 +103,12 @@ function AdStrip({ typing }) {
           )}
         </>
       ) : (
-        <span className="adline notice">
+        <span className="adline notice" data-house="1">
           <span className="adtag asilum">ASILUM</span>
           <span className="adtext">{items === null ? "…" : HOUSE_LINES[i % HOUSE_LINES.length]}</span>
         </span>
       )}
+      <span className="devlights" ref={lightsRef} aria-hidden="true"><Lamp /><Lamp /></span>
     </div>
   );
 }
@@ -113,7 +126,7 @@ export default function ControlCenter({ kind, pathname }) {
   const fieldRef = useRef(null);
   // the OG liquid glass (slice 14): the deck's bezel bends the Feed scrolling beneath it
   const glassRef = useRef(null);
-  const glass = useLiquidGlass(glassRef, { id: "lg-deck", strength: 0.8 });
+  const glass = useLiquidGlass(glassRef, { id: "lg-deck", strength: 1.1, prism: 1 });
 
   // entering Map puts the dock in search mode — no keyboard
   useEffect(() => {

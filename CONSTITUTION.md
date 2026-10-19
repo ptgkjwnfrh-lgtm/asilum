@@ -344,6 +344,27 @@ hairline fields, no grid. Where the 17 October blueprint's "Inter secondary"
 differs, this addendum wins (the latest explicit correction beats the
 earlier text).
 
+**A6 third addendum — THE DEVICE (Oct 18, 2026, evening).** The owner,
+after the slice-14 look: "rainbow refractive reactive liquid glass, cmon …
+I want it to look cool"; "pull from the og design language but only some of
+it"; "I want the app to feel like a physical device"; "the og passport design
+should transfer over 90% accurately"; "I miss the soft gradient of blue to
+white and green to black and I miss the dark mode phosphorus glow … add it
+back"; "drop the magazine from everything, it's just ASILUM". Rulings:
+(1) THE PHOSPHOR GLOW returns in the DARK palette only — a word glows in its
+own colour; body text never glows; light keeps none. This narrows the
+addendum above ("no glow" in its "no lines of any kind" sense): scanlines,
+hairline fields and grids stay retired. (2) THE GROUND is the original
+gradient — blue to white in light, green to black in dark. (3) THE DEVICE
+LANGUAGE, sparingly: text that loads in from ">>>>>>" when a compacted
+description expands; square warning lights that blink and go dark on a
+purchase, a bag or an offer; MRZ lines run out in chevrons with a block
+cursor. Their red (--warn) is red in both palettes. (4) THE PASSPORT
+document follows its 25 July iteration-5 design (7db2b89) at roughly 90%:
+the photo slot's fine print lines and the plus registration band are part of
+the document, not a CRT. (5) The name is ASILUM — "magazine" is dropped from
+every visible string; the domain keeps its current address until it moves.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

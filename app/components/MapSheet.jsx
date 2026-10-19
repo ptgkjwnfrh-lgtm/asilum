@@ -19,6 +19,7 @@
 import { useEffect, useState } from "react";
 import FashionMap from "./FashionMap.jsx";
 import Icon from "./Icons.jsx";
+import { ChevronText } from "./Chevrons.jsx";
 import { listPlaces, mapsUrl, placeRating, milesLabel } from "../../lib/places/registry.js";
 import { getCurrentArea, discoveryCenter } from "../../lib/location.js";
 import { distanceMi } from "../../lib/brdcst/index.js";
@@ -77,8 +78,8 @@ export default function MapSheet({ pin = null }) {
       </header>
       <div className="placedesc">
         <span className="placedesclbl">Description</span>
-        {place.organizer ? <p>{place.organizer}</p> : null}
-        {place.note ? <p className="fine">{place.note}</p> : null}
+        {place.organizer ? <ChevronText as="p" text={place.organizer} /> : null}
+        {place.note ? <ChevronText as="p" className="fine" text={place.note} /> : null}
         <span className="fine">{[place.city, place.startsAt ? place.startsAt + (place.endsAt && place.endsAt !== place.startsAt ? " → " + place.endsAt : "") : null, place.admission ? "admission · " + place.admission : null].filter(Boolean).join(" · ")}</span>
         {place.address ? <span className="fine">{place.address}</span> : null}
       </div>

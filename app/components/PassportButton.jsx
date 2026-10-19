@@ -19,7 +19,7 @@ export default function PassportButton({ kind, pathname }) {
   const p = fixtureFor(kind, "passport");
   // the OG liquid glass (slice 14); the hook runs before the business's early return
   const glassRef = useRef(null);
-  const glass = useLiquidGlass(glassRef, { id: "lg-passportbtn", strength: 0.8, active: !!p });
+  const glass = useLiquidGlass(glassRef, { id: "lg-passportbtn", strength: 1.1, prism: 1, active: !!p });
   if (!p) return null;
   const cur = p.match(pathname || "/");
   return (

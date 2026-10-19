@@ -47,6 +47,7 @@ import { getUid } from "../../lib/client.js";
 import { isNativeItem, startNativeCheckout } from "../../lib/storefront/client.js";
 import { postJSON } from "../../lib/client.js";
 import TagRow from "./TagChip.jsx";
+import { Lamp, blinkLamp, ChevronText } from "./Chevrons.jsx";
 
 /** Chapter 11 (slice 12): the valuation read — comparables ASILUM recorded, else rank × era in words, else the stake. Says which rung answered. */
 function ValuationLine({ item }) {
@@ -59,7 +60,7 @@ function ValuationLine({ item }) {
   }, [item && item.id]);
   if (!v) return null;
   const rung = v.basis === "comparables" ? "COMPARABLES" : v.basis === "rank-era" ? "RANK × ERA" : "THE STAKE";
-  return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b>{v.line}</p>;
+  return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b><ChevronText text={v.line} /></p>;
 }
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 import { priceLine, offerMode, pieceName } from "../../lib/feed/types.js";
@@ -187,7 +188,7 @@ export default function ListingSheet({ item: given, id }) {
             : offerable.mode === "wardrobe"
               ? <button type="button" className="lstofferword" title={offerable.reason} onClick={() => { haptic("press"); setNotice("an offer starts with a message to the owner — the desk opens"); openSheet("messages", { title: "MESSAGES" }); }}>OFFER</button>
               : <span className="lstofferword quiet" title={offerable.reason} aria-label={"OFFER — " + offerable.reason}>OFFER</span>}
-          <button type="button" className={"lstact" + (bagged ? " on" : "")} onClick={toBag} aria-pressed={bagged} aria-label={bagged ? "in the bag" : "add to the bag"} title={bagged ? "IN BAG ✓" : "BAG"}><Icon name="bag" size={24} /></button>
+          <button type="button" className={"lstact" + (bagged ? " on" : "")} onClick={(e) => { blinkLamp(e); toBag(); }} aria-pressed={bagged} aria-label={bagged ? "in the bag" : "add to the bag"} title={bagged ? "IN BAG ✓" : "BAG"}><Icon name="bag" size={24} /><Lamp /></button>
           <SaveButton className="lstact lststamp" icon="hourglass" kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />
         </div>
         <h3 className="lstttl">{item.brand ? <a className="lstbrand" href={"/discover?q=" + encodeURIComponent(item.brand)} title={"see " + item.brand + " on DISCOVER"}>{pieceName(item)}</a> : pieceName(item)}</h3>
@@ -204,7 +205,7 @@ export default function ListingSheet({ item: given, id }) {
             <label className="fine" htmlFor="lstoffer-amount">your offer, {item.currency || "USD"} — 24 hours for the seller to accept, decline or counter; it cannot be withdrawn</label>
             <div className="lstofferrow">
               <input id="lstoffer-amount" className="wcap" inputMode="decimal" value={offer.amount} onChange={(e) => setOffer((o) => ({ ...o, amount: e.target.value }))} aria-label="offer amount" />
-              <button type="submit" className="buy">send ✓</button>
+              <button type="submit" className="buy" onClick={blinkLamp}><Lamp />send ✓</button>
             </div>
             {offer.state ? <span className="fine" role="status">{offer.state}</span> : null}
           </form>
@@ -223,14 +224,14 @@ export default function ListingSheet({ item: given, id }) {
             <>
               <button type="button" className={"buy" + (item.native_checkout_ready === true ? "" : " soon")} disabled={item.native_checkout_ready !== true || buying}
                 title={item.native_checkout_ready === true ? "opens Stripe's secure checkout; the passenger fee is shown before payment" : "this seller's payment path is not enabled yet"}
-                onClick={async () => { haptic("press"); setBuying(true); const r = await startNativeCheckout(item, { user: getUid() }); if (!r.ok) { setBuying(false); setNotice(r.error); if (r.status === 401) openSheet("account", { title: "ACCOUNT" }); } }}>
-                {item.native_checkout_ready === true ? (buying ? "opening checkout…" : "buy ↗") : "checkout not enabled"}
+                onClick={async (e) => { blinkLamp(e); setBuying(true); const r = await startNativeCheckout(item, { user: getUid() }); if (!r.ok) { setBuying(false); setNotice(r.error); if (r.status === 401) openSheet("account", { title: "ACCOUNT" }); } }}>
+                <Lamp />{item.native_checkout_ready === true ? (buying ? "opening checkout…" : "buy ↗") : "checkout not enabled"}
               </button>
               <span className="fine">native storefront{item.storefront_name ? " · " + item.storefront_name : ""}{Number.isSafeInteger(item.inventory_available) ? ` · ${item.inventory_available} available` : ""}</span>
             </>
           ) : (
             <>
-              <button type="button" className="buy" onClick={() => setTicket(true)}>request purchase</button>
+              <button type="button" className="buy" onClick={(e) => { blinkLamp(e); setTimeout(() => setTicket(true), 420); }}><Lamp />request purchase</button>
               {safeExternalUrl(item.url) ? <a className="buy" href={safeExternalUrl(item.url)} target="_blank" rel="noopener noreferrer">view source ↗</a> : null}
             </>
           )}
@@ -240,7 +241,7 @@ export default function ListingSheet({ item: given, id }) {
 
         {behind ? (
           <div className="lstdepth" aria-label="behind the product">
-            <div className="cclbl">BEHIND THE PRODUCT{rest.length ? ` · ${rest.length} more ${rest.length === 1 ? "tag" : "tags"}` : ""}</div>
+            <ChevronText className="cclbl" text={"BEHIND THE PRODUCT" + (rest.length ? ` · ${rest.length} more ${rest.length === 1 ? "tag" : "tags"}` : "")} />
             {rest.length ? <TagRow tags={rest} size="popup" label="every other tag" /> : null}
             <ColorEvidenceLine item={item} detailed />
             {sameShot ? (
