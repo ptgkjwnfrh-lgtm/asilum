@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/sweeps",
-      "schedule": "7 * * * *"
+      "schedule": "7 6 * * *"
     }
   ]
 }

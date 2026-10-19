@@ -49,7 +49,12 @@ test("the outbox: order, dedupe, replay, drop what the server refuses, keep what
   // a window for the client module
   const store = new Map();
   globalThis.window = { localStorage: { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, v), removeItem: (k) => store.delete(k) }, dispatchEvent() {}, addEventListener() {} };
-  globalThis.navigator = { onLine: false };
+  // Node 21+ defines globalThis.navigator as a getter, so a plain assignment
+  // throws (CI runs Node 22; it failed there and passed on 20). Define it, and
+  // put the runtime's own back at the end.
+  const ownNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const setNavigator = (v) => Object.defineProperty(globalThis, "navigator", { value: v, configurable: true, writable: true, enumerable: true });
+  setNavigator({ onLine: false });
   const ob = await import("../lib/outbox.js");
   assert.equal(ob.isOffline(), true);
   const e1 = ob.enqueue({ url: "/api/interaction", payload: { operationId: "op-1", action: "favorite" } });
@@ -60,7 +65,7 @@ test("the outbox: order, dedupe, replay, drop what the server refuses, keep what
   assert.equal(q.status, 202); assert.equal(q.headers.get("x-asilum-queued"), "1");
   assert.equal((await q.json()).queued, true, "honest: queued, not landed");
   assert.deepEqual(await ob.flushOutbox(async () => ({ ok: true, status: 200 })), { sent: 0, dropped: 0, kept: 2 }, "offline: nothing is sent");
-  globalThis.navigator = { onLine: true };
+  setNavigator({ onLine: true });
   const seen = [];
   const r1 = await ob.flushOutbox(async (entry) => { seen.push(entry.id); if (entry.id === "op-2") return { ok: false, status: 400 }; return { ok: true, status: 200 }; });
   assert.deepEqual(seen, ["op-1", "op-2"], "in order"); assert.deepEqual(r1, { sent: 1, dropped: 1, kept: 0 });
@@ -71,5 +76,6 @@ test("the outbox: order, dedupe, replay, drop what the server refuses, keep what
   assert.deepEqual(r3, { sent: 0, dropped: 0, kept: 1 }, "429 is not a refusal");
   const r4 = await ob.flushOutbox(async () => ({ ok: true, status: 200 }));
   assert.deepEqual(r4, { sent: 1, dropped: 0, kept: 0 });
-  delete globalThis.window; delete globalThis.navigator;
+  delete globalThis.window;
+  if (ownNavigator) Object.defineProperty(globalThis, "navigator", ownNavigator); else delete globalThis.navigator;
 });

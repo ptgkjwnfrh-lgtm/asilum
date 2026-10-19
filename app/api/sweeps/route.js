@@ -1,7 +1,13 @@
 // app/api/sweeps/route.js — THE CLOCKS, RUN BY THE CRON (V.2 slice 11: the
 // laws that were "scheduled by the law, not sent by a job"). One guarded
 // endpoint (lib/steward/cronGate.js, the same gate the steward's run uses)
-// that vercel.json fires hourly:
+// that vercel.json fires ONCE A DAY (06:07 UTC). It was hourly; the Vercel
+// Hobby plan refuses any cron finer than daily and rejected every deployment
+// that declared one (18 Oct 2026). Until the plan allows hourly, each clock
+// below advances at most daily — states read at request time (an expired
+// offer reads expired, a lapsed checkout reads lapsed) are unaffected; the
+// sends and releases (reminders, discount restores, payout releases) wait
+// for the day's run:
 //   BRDCST     failed-payment reminders every three hours until resolved (5.23)
 //   offers     the seller's reminder preset before an offer expires (7.20);
 //              expired offers read expired (7.17)
