@@ -22,7 +22,7 @@ export default function TermsPage() {
 
       <h2 className="statshead">THE SERVICE</h2>
       <p className="legal">
-        ASILUM is a fashion discovery service: an editorial magazine,
+        ASILUM is a fashion discovery service: an editorial feed,
         a product catalog, a personal taste engine named Asterisk, a stylist,
         and private tools like moodboards and a wardrobe. by using
         asilummagazine.com you agree to these terms and to the{" "}

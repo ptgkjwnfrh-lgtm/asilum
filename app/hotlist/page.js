@@ -453,8 +453,8 @@ export default function TheWirePage() {
           </GlassPane>
 
           {/* ---- ASILUM MAGAZINE — the house's own dispatches ---- */}
-          <GlassPane glass="lg-w-house" className="elhouse" aria-label="asilum magazine">
-            <div className="elh elh2">ASILUM MAGAZINE</div>
+          <GlassPane glass="lg-w-house" className="elhouse" aria-label="asilum">
+            <div className="elh elh2">ASILUM</div>
             {house === null && <div className="empty">opening the house pages…</div>}
             {house && !houseLive && (
               <p className="elhousenote">the house pages could not be reached — try again in a moment.</p>

@@ -74,3 +74,22 @@ test("the social card and the order mail say the name", () => {
   assert.match(card, /alt =\s*\n?\s*"\*ASILUM —/);
   assert.match(read("lib/notify.js"), /\*ASILUM — order paid/);
 });
+
+// THE NAME IS JUST ASILUM (owner, 18 Oct 2026: "drop the magazine from
+// everything its just ASILUM"). Not only after the asterisk: no visible
+// "magazine" anywhere in app/ or lib/ — a title, a label, a placeholder, a
+// metadata line, an MRZ run. The one survivor is the domain the site still
+// lives at (asilummagazine.com, in addresses and the legal mail), which is
+// an address, not the name, until lib/site.js flips to www.asilum.com.
+test("ASILUM never calls itself a magazine in any visible string; only the domain remains until it moves", () => {
+  const offenders = [];
+  const strip = (s) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1");
+  for (const file of [...walk("app"), ...walk("lib")]) {
+    strip(read(file.replace(/^\//, ""))).split("\n").forEach((line, i) => {
+      const rest = line.replace(/asilummagazine\.com/gi, "");
+      // ASILUM calling itself a magazine — not another publication's name (W Magazine, a photo credit), which stays as attribution
+      if (/asilum[\s_<*-]*magazine|\bthe magazine\b|\bour magazine\b/i.test(rest)) offenders.push(`${file}:${i + 1}: ${line.trim().slice(0, 90)}`);
+    });
+  }
+  assert.deepEqual(offenders, [], "the name is ASILUM, nothing after it");
+});

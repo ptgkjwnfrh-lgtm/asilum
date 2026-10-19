@@ -55,7 +55,7 @@ export default function TitleCardPage() {
 
         <div className="e4-mrz" aria-hidden="true">
           <div>
-            <b>TITLE</b><i>&lt;</i><b>CARD</b><i>&lt;&lt;</i><b>ASILUMMAGAZINE</b>
+            <b>TITLE</b><i>&lt;</i><b>CARD</b><i>&lt;&lt;</i><b>ASILUM</b>
             <i>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</i>
             <b className="e4-caret">▮</b>
           </div>

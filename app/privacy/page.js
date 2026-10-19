@@ -23,7 +23,7 @@ export default function PrivacyPage() {
       <h2 className="statshead">WHO WE ARE</h2>
       <p className="legal">
         ASILUM (&quot;ASILUM&quot;, &quot;we&quot;) operates
-        asilummagazine.com — a fashion discovery magazine with a personal
+        asilummagazine.com — a fashion discovery service with a personal
         taste engine. Privacy questions and requests:{" "}
         <a href="mailto:legal@asilummagazine.com">legal@asilummagazine.com</a>.
       </p>

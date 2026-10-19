@@ -439,7 +439,7 @@ export default function AccountSignup() {
                 <input
                   type="text"
                   value={name}
-                  placeholder="what should the magazine call you?"
+                  placeholder="what should ASILUM call you?"
                   maxLength={80}
                   onChange={(event) => setName(event.target.value)}
                 />
