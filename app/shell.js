@@ -2,10 +2,11 @@
 
 // app/shell.js
 // The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Three
-// fixtures and nothing else: the INFO DOCK at the top left (likes, bag,
-// notices), the PASSPORT BUTTON at the top right (the globe), and the
-// CENTRAL CONTROL DECK at the bottom (FEED · SEARCH · POST · MESSAGES ·
-// ACCOUNT, with the ad ticker beneath). Secondary surfaces rise over the
+// fixtures and nothing else, as the owner drew them on 19 Oct 2026: the
+// INFO DOCK (likes, bag, notices) and the PASSPORT BUTTON (the globe) side
+// by side at the top right, and the CENTRAL CONTROL DECK at the bottom
+// (FEED · SEARCH · POST · MESSAGES · ACCOUNT, its cuts, the tab indicator
+// and the foot grill; the ad ticker moved to the Feed's head). Secondary surfaces rise over the
 // root from SheetHost. The magazine header — wordmark, marquee, big
 // search/bag/sign-in, the destination row and the liquid-glass refraction
 // drawn for it — left with the blueprint; the wordmark lives on as
@@ -280,8 +281,9 @@ export default function Shell({ children }) {
           Visually hidden until focused — no visual-identity change. */}
       <a className="skiplink" href="#main">skip to content</a>
 
-      {/* THE FIXTURES (blueprint): the Info Dock top left, the Passport
-          Button top right, the Central Control Deck at the thumb. The one
+      {/* THE FIXTURES (the owner's sketch, 19 Oct 2026): the Info Dock
+          and the Passport Button at the top right, the Central Control
+          Deck at the thumb. The one
           sheet (Likes, Bag, Notices, Search, Messages, Post, an overview)
           rises over the root from SheetHost. */}
       <InfoDock />

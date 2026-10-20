@@ -25,8 +25,11 @@
   --faint: #2a3a41;
   --line: rgba(140, 170, 185, 0.22);
   --red: #8cf0a6;
-  --helv: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --serif: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* ALL THE FONTS ARE MICHROMA (owner, 19 Oct 2026): the reading face, the
+     serif slot and the description face all resolve to it; Inter stays only
+     as the fallback for a glyph Michroma does not carry */
+  --helv: "Michroma", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: "Michroma", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
   /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
@@ -41,7 +44,7 @@
   --bg2: rgba(14, 21, 24, 0.85);
   --bg3: rgba(13, 20, 23, 0.92);
   --mich: "Michroma", var(--helv);
-  --mono: "Share Tech Mono", ui-monospace, Menlo, Consolas, monospace;
+  --mono: "Michroma", "Inter", ui-monospace, Menlo, Consolas, monospace;
   --sig: #6e9cff;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
@@ -83,6 +86,8 @@
      lamp in .glass-light behind the pane that the pane blurs and bends. */
   --glass: rgba(255, 255, 255, 0.03);
   --glass-deep: rgba(255, 255, 255, 0.05);
+  --fx-glass: rgba(255, 255, 255, 0.03); /* the fixtures' pane: September's near-clear fill */
+  --fx-tint: rgba(0, 0, 0, 0.275);       /* the owner's touch of black: 15%, then 25%, then 27.5% (19 Oct) */
   /* the edge is UNSEEN (owner, 8 Sep: "I shouldn't be able to see the bezel,
      it should still cause the distortion"): no lip, no band — only a whisper
      of light on the bottom edge where the glass ends (Fresnel) */
@@ -97,6 +102,11 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0px, rgba(255, 255, 255, 0.02) 3px, rgba(255, 255, 255, 0) 16px),
     linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.025) 45%, rgba(255, 255, 255, 0.045) 50%, rgba(255, 255, 255, 0.02) 56%, rgba(255, 255, 255, 0) 65%),
     linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0) 8px);
+  /* the deck's gloss at the top fixtures' half height */
+  --fx-sheen-half:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0px, rgba(255, 255, 255, 0.02) 1.5px, rgba(255, 255, 255, 0) 8px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.0125) 45%, rgba(255, 255, 255, 0.0225) 50%, rgba(255, 255, 255, 0.01) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, rgba(255, 255, 255, 0) 4px);
   /* the pointer's shine: a tight specular core and a faint wide sheen —
      diluted (owner, 8 Sep: "all active glows caused by cursors should be
      greatly diluted, there's simply too much") */
@@ -242,6 +252,8 @@
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 60%);
   --glass: rgba(255, 255, 255, 0.72);
   --glass-deep: rgba(255, 255, 255, 0.82);
+  --fx-glass: rgba(205, 240, 252, 0.22); /* September's light pane, icy and clear */
+  --fx-tint: rgba(255, 255, 255, 0.275); /* the owner's touch of white: 15%, then 25%, then 27.5% (19 Oct) */
   --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
   --glass-rim: none;
   --glass-rim-catch: rgba(255, 255, 255, 0.35);
@@ -249,6 +261,10 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0px, rgba(255, 255, 255, 0.08) 3px, rgba(255, 255, 255, 0) 16px),
     linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.10) 45%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0.08) 56%, rgba(255, 255, 255, 0) 65%),
     linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 8px);
+  --fx-sheen-half:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0px, rgba(255, 255, 255, 0.08) 1.5px, rgba(255, 255, 255, 0) 8px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.09) 50%, rgba(255, 255, 255, 0.04) 56%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0px, rgba(255, 255, 255, 0) 4px);
   --glass-spot: rgba(255, 255, 255, 0.22);
   --glass-spot-wide: rgba(255, 255, 255, 0.03);
   --glass-shadow: 0 12px 36px rgba(11, 20, 22, 0.08), 0 1px 2px rgba(11, 20, 22, 0.05);
@@ -3288,39 +3304,86 @@ body { font-size: 14px; }
 :root {
   --nav-h: 0px;                 /* the destination row is gone */
   --cc-w: min(760px, calc(100vw - 20px));
-  --cc-row-h: 64px;
-  --ad-h: 32px;
+  /* THE SKETCH'S UNIT (owner's fixture sketch, 19 Oct 2026): every fixture
+     size is a multiple of --u, the drawing's own pixel on its 1000-wide
+     page — the deck is 745 × 175 of them — so the proportions are the
+     drawing's at every width; a phone reads it at 0.4px, a desktop at 0.5px */
+  --u: clamp(0.4px, 0.1vw, 0.5px);
+  --dk-w: calc(var(--u) * 745);
+  --dk-h: calc(var(--u) * 175);
+  --dk-r: calc(var(--u) * 34);
+  --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
+  --dk-edge: calc(50% - var(--dk-w) / 2); /* the deck's inset; the top fixtures line up with its right edge */
+  --cc-row-h: var(--dk-h);
+  --ad-h: 0px;                  /* the ad strip left the deck for the Feed */
   --cc-gap: 10px;
-  --cc-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  --cc-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: calc(var(--radius-card) + 4px);
 }
+:root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
-/* ---- the dock ------------------------------------------------------- */
+/* ---- the dock: THE CENTRAL CONTROL DECK, as drawn ---------------------
+   The owner's fixture sketch of 19 Oct 2026 (Figures 1, 1.2, 3, 5), in the
+   sketch's own units (--u): one 745 × 175 pane of glass, cut at 40, 163,
+   290, 452, 578 and 705 — two end caps and five keys (FEED 123 · SEARCH 127
+   · POST 162 · MESSAGES 126 · ACCOUNT 127) — the tab indicator at the top
+   right above the last cut, the foot grill under the post disc. No words on
+   the keys (the readable label rides on each for assistive technology). */
 .ccenter {
-  position: fixed; z-index: 66; left: max(10px, calc(50% - var(--cc-w) / 2)); width: var(--cc-w);
+  position: fixed; z-index: 66; left: var(--dk-edge); width: var(--dk-w); height: var(--dk-h);
   bottom: var(--cc-bottom);
-  display: flex; flex-direction: column;
-  border-radius: var(--sheet-radius); border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg3) 88%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  border-radius: var(--dk-r);
+  transition: height 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.ccenter .tabbar { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px 6px; position: static; height: auto; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
-.ccrow { display: flex; align-items: stretch; gap: var(--cc-gap); }
-.cctabs { display: flex; flex: 1; gap: 2px; min-width: 0; }
+/* SEARCH: the deck extends upward to make room for the bar (Figure 1) */
+.ccenter.ccsearching { height: calc(var(--dk-h) + var(--dk-rise)); }
+.ccenter .tabbar { display: flex; flex-direction: column; justify-content: flex-end; flex: 1; min-height: 0; padding: 0; position: static; height: auto; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.ccrow { position: relative; flex: none; height: var(--dk-h); display: grid; grid-template-columns: 40fr 665fr 40fr; }
+.cctabs { display: grid; grid-template-columns: 123fr 127fr 162fr 126fr 127fr; min-width: 0; }
+.cccap { position: relative; }
+.ccenter .tabl, .ccenter .cckey-mail, .ccenter .ccpostwrap { min-width: 0; }
 .ccenter .tabl {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  min-height: 52px; min-width: 44px; padding: 4px 2px; border-radius: 18px; text-decoration: none;
-  font-family: var(--mich); font-size: 9px; letter-spacing: 0.1em; color: var(--grey); text-shadow: none;
-  transition: background 0.18s, color 0.18s;
+  position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+  padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 18); text-decoration: none;
+  color: var(--ink); text-shadow: none; transition: background 0.18s, color 0.18s, transform 0.12s;
 }
-.ccenter .tabl:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.ccenter .tabl.cur { color: var(--red); text-shadow: none; }
-.ccenter .tabl.cur .ic { color: var(--red); }
-.ccenter .tabl .tbl { white-space: nowrap; }
+.ccenter .tabl .ic { width: calc(var(--u) * 56); height: calc(var(--u) * 56); min-width: 20px; min-height: 20px; }
+.ccenter .tabl.cur { color: var(--red); }
+.ccenter .tabl .tbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* the cuts: extremely subtle (owner, 19 Oct 2026: "the same type of
+   outline you used for the search bar") — one hairline in the search
+   field's own outline colour; the backdrop bends into it only faintly
+   (data-lens-shape="cut", data-lens-gain) */
+.cccut {
+  position: absolute; z-index: 2; left: calc(var(--u) * var(--cut-x)); top: calc(var(--u) * 58); bottom: calc(var(--u) * 52); /* shortened (owner, 19 Oct): 65 of the 175 */
+  width: 1px; transform: translateX(-50%); border-radius: 1px; pointer-events: none;
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+}
+/* the foot grill: a vent cut through the glass under the post disc, like a
+   phone's ventilation port (Figure 1.2); the glass warps around it */
+.ccgrill {
+  position: absolute; z-index: 2; left: calc(var(--u) * 318.5); width: calc(var(--u) * 105); bottom: calc(var(--u) * 11); height: max(4px, calc(var(--u) * 11));
+  border-radius: 999px; pointer-events: none;
+  /* no outline and no shadow (owner, 19 Oct): only the opening, darker at its top lip */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 50%, transparent), color-mix(in srgb, var(--shade) 20%, transparent));
+}
+/* the tab indicator: a small ring in the right cap, above the last cut */
+.tabind {
+  position: absolute; z-index: 3; left: calc(var(--u) * 3); top: calc(var(--u) * 17); transform: translateX(-50%);
+  width: max(11px, calc(var(--u) * 26)); height: max(11px, calc(var(--u) * 26)); border-radius: 50%;
+  border: 0.525px solid color-mix(in srgb, var(--ink) 82%, transparent); display: block; /* 65% of the old 1.5px ring gone (owner, 19 Oct) */
+}
+/* the light: SOLID red (owner, 19 Oct), with a dense halo — brighter, not
+   wider; the glass does not refract round it */
+.tabindlamp { position: absolute; inset: 0.5px; border-radius: 50%; opacity: 0;
+  background: var(--warn);
+  box-shadow: 0 0 2px var(--warn), 0 0 4.5px var(--warn), 0 0 7.7px color-mix(in srgb, var(--warn) 75%, transparent); }
+.tabind.held .tabindlamp { opacity: 1; }
+.tabind.held { border-color: var(--warn); }
 .cckey {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0; background: none; cursor: pointer;
@@ -3330,45 +3393,46 @@ body { font-size: 14px; }
 .cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .cckey.cur .ic { color: var(--red); }
-.ccenter .maildesk { position: static; }
-.ccenter .mailbtn { flex-direction: column; gap: 4px; min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0;
-  font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); justify-content: center; }
-.ccenter .mailbtn:hover, .ccenter .mailbtn.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); border: 0; }
-.ccenter .mailword { font-weight: 400; }
+.ccenter .cckey-mail { position: relative; display: flex; }
+.ccenter .maildesk { position: static; display: flex; width: 100%; }
+.ccenter .mailbtn { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 18); border: 0; background: none; color: var(--ink); }
+.ccenter .mailbtn .ic { width: calc(var(--u) * 56); height: calc(var(--u) * 56); min-width: 20px; min-height: 20px; }
+.ccenter .mailbtn.cur { border: 0; }
+.ccenter .mailbtn.cur { color: var(--red); }
+.ccenter .mailword { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .ccenter .mailpanel { position: absolute; top: auto; bottom: calc(100% + 10px); left: 0; right: 0; width: auto; max-height: 60vh; overflow-y: auto;
   border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent); }
-/* search mode: the field takes the row; the keys keep their targets, lose their words */
-.ccsearch { display: flex; align-items: center; gap: 8px; }
-.ccfield {
-  flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 46px;
-  padding: 4px 8px 4px 14px; border-radius: 20px; border: 1px solid var(--line); background: var(--paper); color: var(--grey);
+.ccenter .cckey-mail .mailpanel { left: auto; right: calc(var(--u) * -250); width: min(360px, calc(100vw - 24px)); }
+/* the search bar the deck rises to hold: a groove of its own in the glass */
+.ccsearch {
+  flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
+  height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40) 0;
+  animation: ccrise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.ccfield:focus-within { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--shade) 12%, transparent); }
-.ccfield input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); }
+@keyframes ccrise { from { opacity: 0; transform: translateY(10px); } }
+.ccfield {
+  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; height: 100%; max-height: 44px;
+  padding: 0 6px 0 12px; border-radius: 999px; color: var(--grey);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  background: color-mix(in srgb, var(--shade) 10%, transparent);
+  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--shade) 24%, transparent), 0 1px 0 color-mix(in srgb, var(--paper) 30%, transparent);
+}
+.ccfield:focus-within { border-color: color-mix(in srgb, var(--ink) 40%, transparent); }
+.ccfield input { flex: 1; min-width: 0; border: 0; background: none; font: 15px var(--mono); letter-spacing: 0.04em; color: var(--ink); }
 /* the field's ring is drawn on the pill (.ccfield:focus-within above), so the
    input's own outline would double it */
 .ccfield input:focus-visible { outline: 2px solid transparent; outline-offset: 0; }
 .ccfield input::placeholder { color: var(--grey); }
 .ccfield input::-webkit-search-cancel-button { -webkit-appearance: none; }
-.ccscope { font-family: var(--mich); font-size: 8px; letter-spacing: 0.18em; color: var(--grey); white-space: nowrap; padding: 4px 8px; border: 1px solid var(--line); border-radius: 10px; }
-.ccclose { min-height: 46px; }
-.ccenter.ccsearching .tabl { min-height: 44px; }
-.ccenter.ccsearching .tabl .tbl, .ccenter.ccsearching .cckey span, .ccenter.ccsearching .mailword { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { min-height: 44px; }
-.cctoggles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 2px 2px; }
-.cctog {
-  display: inline-flex; align-items: center; gap: 4px; min-height: 34px; padding: 6px 14px; border-radius: 14px;
-  border: 1px solid var(--line); background: var(--paper); color: var(--grey); cursor: pointer; text-decoration: none;
-  font-family: var(--mich); font-size: 10px; letter-spacing: 0.14em; transition: background 0.18s, color 0.18s, border-color 0.18s;
-}
-.cctog.on { color: var(--ink); border-color: var(--ink); background: color-mix(in srgb, var(--ink) 8%, var(--paper)); }
-.cctog.link { margin-left: auto; color: var(--sig); }
-.cctog .red { font-style: normal; }
-.ccscopenote { font-size: 11px; letter-spacing: 0.08em; color: var(--grey); padding: 0 6px; }
-/* the ad strip: its own stable height; never resized by a mode change */
+.ccamark { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 32px; padding: 0 6px; border: 0; border-radius: 999px; background: none; color: var(--grey); cursor: pointer; }
+.ccwide { flex: none; font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); text-decoration: none; padding: 6px 8px; white-space: nowrap; }
+.ccclose { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
+/* the ad strip: at the head of the Feed now (off the deck, 19 Oct 2026), a
+   rounded strip in the page's flow with its own stable height */
 .adstrip {
-  height: var(--ad-h); flex: none; display: flex; align-items: center; gap: 10px; padding: 0 14px;
-  border-top: 1px solid var(--line); border-radius: 0 0 var(--sheet-radius) var(--sheet-radius);
+  height: 34px; flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 6px 0 10px;
+  border: 1px solid var(--line); border-radius: var(--radius-key);
   font-size: 11px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
 }
 .adline { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
@@ -3473,33 +3537,13 @@ body { font-size: 14px; }
   .maplayout { grid-template-columns: 1fr; }
   .maptools { position: static; flex-direction: row; order: -1; }
   .maptool { flex: 1; min-height: 64px; }
-  .ccenter .tabl { font-size: 8px; }
-  .cckey, .ccenter .mailbtn { min-width: 46px; font-size: 8px; }
-  .ccscope { display: none; }
-  .ccrow { gap: 6px; }
   .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - 12px); }
   .sheetscrim { align-items: flex-end; }
   .sheetbody { padding-bottom: calc(var(--cc-space) + 12px); }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 360px) {
-  .ccenter .tabl .tbl { font-size: 7px; }
   .cckey span { font-size: 7px; }
-}
-/* phones: the four tabs and the three utilities cannot share one 375px row
-   (the brief, decision 3) — the dock grows DOWNWARD: tabs on one row, the
-   utilities on their own row beneath, every target still 44px */
-@media (max-width: 760px) {
-  .ccrow { flex-wrap: wrap; gap: 2px; }
-  .cctabs { flex: 1 1 100%; }
-  .ccenter .tabl { min-height: 50px; }
-  .cckey, .ccenter .mailbtn { min-height: 44px; flex-direction: row; gap: 6px; }
-  /* in search mode the seven keys shrink to their glyphs on ONE row — the
-     targets stay 44px (7 × 44 = 308px inside a 355px dock) */
-  .ccenter.ccsearching .ccrow { flex-wrap: nowrap; gap: 0; }
-  .ccenter.ccsearching .cctabs { flex: 4 1 auto; }
-  .ccenter.ccsearching .cckey, .ccenter.ccsearching .mailbtn { flex: 1; min-width: 44px; padding: 4px 2px; }
-  :root { --cc-row-h: 100px; }
 }
 
 /* the feed's "new above" pill (V.2 brief §2): what a return found above the
@@ -3601,25 +3645,34 @@ body { font-size: 14px; }
    the same glass. The rainbow is a MATERIAL effect on the fixtures' edges
    only: a faint conic sheen masked to a one-pixel rim, never a wash.
    ===================================================================== */
+/* THE TOP FIXTURES, as drawn (owner's fixture sketch, 19 Oct 2026, Figure
+   5), in the sketch's units: the Info Dock (292 × 88, three keys parted by
+   cuts) and the Passport Button (82 × 88) side by side at the top RIGHT,
+   18 apart, the Passport's right edge in line with the deck's. Not pills:
+   the Info Dock's outer end is round and the end that meets the Passport is
+   straight, and the Passport's the reverse. */
 .fixture {
-  position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); z-index: 66;
-  display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg3) 86%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--shade) 10%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 60%, transparent);
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + max(10px, var(--u) * 17)); z-index: 66;
+  display: flex; align-items: stretch; height: calc(var(--u) * 88); padding: 0; gap: 0;
+  border-radius: calc(var(--u) * 26) calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 26);
 }
-.infodock { left: max(12px, env(safe-area-inset-left, 0px)); }
-.passportbtn { right: max(12px, env(safe-area-inset-right, 0px)); width: 46px; height: 46px; justify-content: center; color: var(--grey); text-decoration: none; transition: color 0.18s, transform 0.12s; }
-.passportbtn.cur, .passportbtn:hover { color: var(--red); }
+.infodock { right: calc(var(--dk-edge) + var(--u) * 100); }
+.passportbtn {
+  right: var(--dk-edge); width: calc(var(--u) * 82); align-items: center; justify-content: center;
+  border-radius: calc(var(--u) * 3) calc(var(--u) * 26) calc(var(--u) * 26) calc(var(--u) * 3);
+  color: var(--ink); text-decoration: none; transition: color 0.18s, transform 0.12s;
+}
+.passportbtn .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.passportbtn.cur { color: var(--red); }
 .idkey {
-  position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 38px; border: 0; border-radius: 999px; background: none; color: var(--grey); cursor: pointer;
+  position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: calc(var(--u) * 97); height: 100%; border: 0; border-radius: calc(var(--u) * 14); background: none; color: var(--ink); cursor: pointer;
   transition: background 0.18s, color 0.18s, transform 0.12s;
 }
-.idkey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.idkey.cur { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
-.idkey:active, .passportbtn:active { transform: scale(0.94); }
+.idkey .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.idkey.cur { color: var(--red); }
+/* the Info Dock's cuts: the same groove as the deck's, shorter */
+.infodock .cccut.idcut { position: relative; left: auto; top: auto; bottom: auto; transform: none; flex: none; align-self: center; height: calc(100% - var(--u) * 46); margin: 0 -0.5px; }
 .idcount {
   position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
   background: var(--red); color: var(--paper); font: 9px/16px var(--mich); letter-spacing: 0; text-align: center;
@@ -3633,7 +3686,7 @@ body { font-size: 14px; }
    angle and centre follow the hand: the pointer, the phone's tilt, the
    scroll (LiquidGlass.jsx useGlassReactive writes --iris-a/--iris-x/--iris-y
    on the `.lgrx` elements). Reduced motion: the rim stays where it rests. */
-.fixture::after, .ccenter::after, .sheet::after {
+.sheet::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 1.5px); pointer-events: none; z-index: 5;
   opacity: var(--iris, 0.62);
   background: conic-gradient(from var(--iris-a, 200deg) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
@@ -3645,15 +3698,17 @@ body { font-size: 14px; }
   .fixture, .ccenter { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
 }
 
-/* the POST disc at the center of the deck */
-.ccenter .tabl.ccpost { flex: 0 0 auto; min-width: 66px; }
+/* the POST disc at the center of the deck: the sketch's ring with its plus,
+   a raised lens of its own in the glass (the backdrop bends round it) */
 .ccdisc {
-  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
-  border: 1px solid var(--line); color: var(--ink);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 85%, transparent), color-mix(in srgb, var(--bg2) 85%, transparent));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent), 0 6px 18px color-mix(in srgb, var(--shade) 12%, transparent);
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: max(34px, calc(var(--u) * 88)); height: max(34px, calc(var(--u) * 88)); border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 88%, transparent); color: var(--ink);
+  background: radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--paper) 22%, transparent), transparent 70%);
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--paper) 45%, transparent), inset 0 -2px 4px color-mix(in srgb, var(--shade) 16%, transparent), 0 2px 8px color-mix(in srgb, var(--shade) 14%, transparent);
   transition: transform 0.12s, color 0.18s, border-color 0.18s;
 }
+.ccenter .tabl.ccpost .ccdisc .ic { width: 62%; height: 62%; min-width: 0; min-height: 0; }
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
 .ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
@@ -3663,7 +3718,7 @@ body { font-size: 14px; }
 
 /* the deck's keys and the sheet buttons press like compact buttons (blueprint
    "compact buttons feel tactile"): a tiny depression, a spring back */
-.ccenter .tabl:active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
+.ccenter .tabl:not(.hkey):active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
 .ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
 
 /* the feed's masthead wears the wordmark */
@@ -3694,7 +3749,7 @@ body { font-size: 14px; }
 .sheet.hubsheet .sheetbody { display: flex; flex-direction: column; padding: 10px 14px 18px; }
 
 /* the Post disc's second life: the session indicator (1.25) */
-.ccpostwrap { position: relative; display: inline-flex; flex: 0 0 auto; }
+.ccpostwrap { position: relative; display: flex; }
 .cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
 .ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }
 .ccmenu, .hubmenu {
@@ -4440,7 +4495,7 @@ body { font-size: 14px; }
    ===================================================================== */
 .fixture, .ccenter, .sheet { isolation: isolate; }
 .sheet { position: relative; overflow: hidden; }
-.fixture::before, .ccenter::before, .sheet::before {
+.sheet::before {
   content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
   background:
     radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
@@ -4450,11 +4505,6 @@ body { font-size: 14px; }
     var(--glass-sheen);
 }
 /* the panes: translucent, the backdrop softened after it is bent */
-.fixture { background: color-mix(in srgb, var(--bg3) 58%, transparent); }
-.ccenter { background: color-mix(in srgb, var(--bg3) 66%, transparent); }
-.fixture[data-refract="1"], .ccenter[data-refract="1"] {
-  -webkit-backdrop-filter: var(--lg-filter) blur(10px) saturate(160%); backdrop-filter: var(--lg-filter) blur(10px) saturate(160%);
-}
 .sheet { background: color-mix(in srgb, var(--bg) 80%, transparent); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); }
 .sheet[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); }
 [data-theme="light"] .sheet { background: linear-gradient(180deg, color-mix(in srgb, #eef6fb 84%, transparent), color-mix(in srgb, #e5eef5 84%, transparent)); }
@@ -4508,12 +4558,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 @keyframes irisdrift { to { --iris-drift: 360deg; } }
 :root { --iris-w: 2px; --iris-film: 0.16; }
 [data-theme="light"] { --iris-film: 0.22; }
-.fixture, .ccenter { animation: irisdrift 18s linear infinite; }
-.fixture::after, .ccenter::after, .sheet::after {
+.sheet::after {
   background: conic-gradient(from calc(var(--iris-a, 200deg) + var(--iris-drift, 0deg)) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
   filter: saturate(1.35) brightness(1.08);
 }
-.fixture::before, .ccenter::before, .sheet::before {
+.sheet::before {
   background:
     radial-gradient(96px 36px at calc(var(--gx, 50%) - 6px) calc(var(--gy, 40%) - 6px),
       color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
@@ -4529,14 +4578,12 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
     var(--glass-sheen);
   mix-blend-mode: screen;
 }
-[data-theme="light"] .fixture::before, [data-theme="light"] .ccenter::before, [data-theme="light"] .sheet::before { mix-blend-mode: soft-light; }
+[data-theme="light"] .sheet::before { mix-blend-mode: soft-light; }
 /* the bloom: a soft rainbow just outside the rim, in the rim's own colours */
-.fixture, .ccenter { box-shadow: 0 10px 30px color-mix(in srgb, var(--shade) 14%, transparent), 0 0 18px -6px var(--iris-2), 0 0 22px -10px var(--iris-1), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
 .sheet { box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 26%, transparent), 0 0 34px -12px var(--iris-2), 0 0 44px -18px var(--iris-1), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
-@media (prefers-reduced-motion: reduce) { .fixture, .ccenter { animation: none; } }
 @media (prefers-reduced-transparency: reduce) {
-  .fixture::before, .ccenter::before, .sheet::before { background: none; mix-blend-mode: normal; }
-  .fixture, .ccenter, .sheet { animation: none; }
+  .sheet::before { background: none; mix-blend-mode: normal; }
+  .sheet { animation: none; }
 }
 
 /* ---- the dark headline wears the OG title card: chrome letters washing to
@@ -4653,3 +4700,140 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
     repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--ink) 14%, transparent) 2px 3px); }
 .ppdoc .ppmrz { order: 99; border-top: 1px dashed var(--line); border-bottom: 0; padding: 8px 16px 10px; font-family: var(--mono); font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; }
 .ppdoc .ppdocacts { margin-top: 0; }
+
+/* =====================================================================
+   THE SEPTEMBER GLASS ON THE FIXTURES (owner, 19 Oct 2026: "do this" —
+   the header's recipe of 8 Sep, LiquidGlass.jsx). The Info Dock, the
+   Passport Button and the deck are each one pane of it:
+   1. the pane: near-clear (--fx-glass, 3% white in dark), a saturation
+      lift, NO blur (the frosted middle read as cloudy); a soft shadow and a
+      faint light line on the bottom edge mark where the glass ends — no
+      outline, no ring;
+   2. the bend: Chromium runs the displacement map as the backdrop filter
+      (--lg-filter: the 56px squircle bezel, Snell's law at n = 1.5,
+      pulling inward), split three ways at 80 / 86 / 92 — the rainbow on
+      the letters is the bend's own; WebKit bends the page under the edges
+      instead (FIXTURE_BEND);
+   3. the gloss: a thin specular along the top, one soft diagonal band, a
+      faint bottom-edge light (--glass-sheen); the pointer's shine set a
+      little up and left of the cursor, towards the light;
+   4. the lamps under the water (.glass-light, useGlassLamps): the current
+      key's glow and the hovered key's, gliding, which the pane bends; the
+      edge zone reflects them; on Chromium the hovered key sits under a
+      shallow dome (the meniscus).
+   ===================================================================== */
+.fixture, .ccenter {
+  /* September's near-clear pane with a slight opaque touch on top (owner,
+     19 Oct 2026: "a black one for dark mode and a white one for light mode
+     but only like 15%") */
+  background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  transition: transform 0.22s, opacity 0.22s, height 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.fixture[data-refract="1"], .ccenter[data-refract="1"] {
+  -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%);
+}
+.fixture::before, .ccenter::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: -1; border-radius: inherit;
+}
+/* the gloss: a thin specular along the top, one soft diagonal band, a faint
+   bottom-edge light. The surface does not answer the pointer (owner, 19 Oct
+   2026: "there doesn't have to be surface hover reactions"). */
+.ccenter::before { background: var(--glass-sheen); }
+/* the top fixtures are half the deck's height, so September's gloss — drawn
+   in px for a tall strip — covered twice as much of their face and read as
+   shinier (owner, 19 Oct 2026: "they look too shiny compared to central").
+   Their gloss is the deck's scaled to their size: the top specular and the
+   bottom light at half their depth, the diagonal band at half its strength;
+   the shine rim at the deck's apparent brightness. */
+.fixture::before { background: var(--fx-sheen-half); }
+.fixture .fxrim { opacity: 0.6; }
+
+/* THE LAMP under the glass: the current key's glow, kept to the pane's rect
+   one layer below it, so the pane bends this light — a glow stick in water.
+   Its spread is 55% of September's (owner, 19 Oct 2026: "reduce the glow
+   spread by 45%"). */
+.glass-light {
+  position: fixed; z-index: 65; pointer-events: none; overflow: hidden;
+  filter: blur(7.7px);
+  background:
+    radial-gradient(24px 9px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp-core) calc(var(--cs) * 50%), transparent), transparent 70%),
+    radial-gradient(77px 29px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 100%), transparent), transparent 70%),
+    radial-gradient(165px 66px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 12%), transparent), transparent 70%);
+  transition: --cx 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cy 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cs 0.6s ease, opacity 0.22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixture, .ccenter { transition: none; }
+  .glass-light { transition: --cs 0.3s ease; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .fixture, .ccenter, .fixture[data-refract="1"], .ccenter[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
+  .glass-light { display: none; }
+}
+
+/* THE KEYS GLOW IN DARK (owner, 19 Oct 2026: "give the buttons on dark mode
+   a slight glow"): each glyph in its own colour, the disc's ring with it;
+   light never glows (A6 third addendum) */
+:root:not([data-theme="light"]) :is(.ccenter .tabl, .ccenter .mailbtn, .idkey, .passportbtn) .ic {
+  filter: drop-shadow(0 0 0.55px currentColor) drop-shadow(0 0 2.75px color-mix(in srgb, currentColor 33.75%, transparent)); /* spread cut 45%, then the strength cut 25% (owner, 19 Oct) */
+}
+:root:not([data-theme="light"]) .ccdisc {
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--paper) 45%, transparent), inset 0 -2px 4px color-mix(in srgb, var(--shade) 16%, transparent), 0 0 3.85px color-mix(in srgb, currentColor 35%, transparent);
+}
+
+/* =====================================================================
+   THE HINGED KEYS (owner, 19 Oct 2026: "physical music player buttons …
+   a hinge at the top of each button besides the upload button, not visible
+   at all … when it's clicked it should look like it's actually been
+   clicked"). app/components/hinge.js holds the pressed state. Each key is a
+   flap hinged on its top edge: pressed, its lower edge tips into the glass
+   (rotateX about the top, in perspective), the face shades where it sinks
+   and a hairline seam opens under its lower edge; released, it springs back
+   a touch past rest and settles. The hinge is never drawn. The POST disc
+   is not hinged — it presses straight in.
+   ===================================================================== */
+.hkey {
+  transform-origin: 50% 0;
+  transform: perspective(220px) rotateX(0deg);
+  transition: transform 0.42s cubic-bezier(0.34, 1.7, 0.5, 1), background 0.18s, color 0.18s;
+  -webkit-tap-highlight-color: transparent; will-change: transform;
+}
+.hkey::after {
+  content: ""; position: absolute; inset: 10% 7% 6%; border-radius: calc(var(--u) * 16); pointer-events: none; z-index: -1;
+  /* a whisper of shade where the flap sinks (owner, 19 Oct: "reduce the shadows on clicks a lot") */
+  background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--shade) 4%, transparent) 80%, color-mix(in srgb, var(--shade) 7%, transparent));
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--shade) 10%, transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.hkey[data-pressed] {
+  transform: perspective(220px) rotateX(-17deg) translateY(0.5px);
+  transition: transform 0.06s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.18s, color 0.18s;
+}
+.hkey[data-pressed]::after { opacity: 1; transition: opacity 0.05s; }
+/* the glyph sinks with the flap and loses a little light */
+.hkey .ic { transition: transform 0.42s cubic-bezier(0.34, 1.7, 0.5, 1), opacity 0.3s; }
+.hkey[data-pressed] .ic { transform: translateY(0.6px) scale(0.97); opacity: 0.94; transition: transform 0.06s, opacity 0.06s; }
+/* the globe is a key inside its own pane */
+.pbkey { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: inherit; }
+@media (prefers-reduced-motion: reduce) {
+  .hkey, .hkey[data-pressed], .hkey .ic, .hkey[data-pressed] .ic { transform: none; transition: none; }
+}
+
+/* ONE STROKE for every glyph on the fixtures (owner, 19 Oct: "all the
+   symbols kinda look like they were all designed differently"): the same
+   1.5px line whatever size a glyph is drawn at, the disc's ring at it too */
+.fixture .ic *, .ccenter .ic * { vector-effect: non-scaling-stroke; stroke-width: 1.5px; }
+
+/* THE SHINE RIM (owner, 19 Oct: "a very thin shine outline on the fixtures
+   like how Apple has"): a hairline round each pane, bright where light
+   catches the top-left and the bottom-right, fading to almost nothing
+   along the sides */
+.fxrim {
+  position: absolute; inset: 0; z-index: 4; border-radius: inherit; padding: 0.75px; pointer-events: none;
+  background: linear-gradient(135deg, var(--fx-rim-hi) 0%, var(--fx-rim-lo) 28%, transparent 50%, var(--fx-rim-lo) 72%, var(--fx-rim-hi) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+:root { --fx-rim-hi: rgba(255, 255, 255, 0.5); --fx-rim-lo: rgba(255, 255, 255, 0.12); }
+[data-theme="light"] { --fx-rim-hi: rgba(255, 255, 255, 0.95); --fx-rim-lo: rgba(255, 255, 255, 0.4); }

@@ -27,6 +27,7 @@ import { PIECE_EVENT } from "../lib/feed/actions.js";
 import { EchoRail } from "./components/EchoRail.jsx";
 import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
+import AdStrip from "./components/AdStrip.jsx";
 import Wordmark from "./components/Wordmark.jsx";
 import PostCard from "./components/PostCard.jsx";
 import PieceFloat from "./components/PieceFloat.jsx";
@@ -862,6 +863,8 @@ export default function Home() {
     <div className="wrap ctr">
       <header className="cthead">
         <div className="feedmark"><Wordmark /></div>
+        {/* the ad strip runs at the head of the Feed, off the deck (the owner's fixture sketch, 19 Oct 2026) */}
+        <AdStrip />
         <PageMast word="THE FEED" sub="DISCOVERY · PUBLISHING · COMMERCE" />
         {stamp && (
           <div className="ctmeta">

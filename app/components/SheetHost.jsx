@@ -90,7 +90,7 @@ export default function SheetHost() {
 
   const dismiss = () => (hubOpen ? closeHub() : closeSheet());
   useEscape(() => (hasBack ? backSheet() : dismiss()), open);
-  useFocusTrap(ref, open);
+  useFocusTrap(ref, open, { companion: ".ccsearch" }); // the deck's search bar keeps its caret
   // THE OG LIQUID GLASS (8 Sep: the item detail in the same glass, the page
   // bending under it — 8073a74, 7a6abe5, 19a7bd6; slice 14 restores it on
   // every popup): all four edges lens what lies beneath at half the deck's

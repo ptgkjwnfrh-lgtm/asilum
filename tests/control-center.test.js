@@ -145,8 +145,8 @@ test("the feed parks and restores through the registry; wire cards carry their i
   assert.ok(/data-id=\{"post:" \+ \(p\.serverId \?\? p\.id\)\}/.test(wire), "a wire card's data-id is the id the feed lists it under");
   const cover = read("app/cover/page.js");
   assert.ok(/<PlacementsBlock \/>/.test(cover), "the cover carries the placements block");
-  const dock = read("app/components/ControlCenter.jsx");
-  assert.ok(/usePlacements\(\)/.test(dock) && !/tickerItems\(/.test(dock), "the dock reads placements through the shared hook, not its own copy");
+  const dock = read("app/components/AdStrip.jsx");
+  assert.ok(/usePlacements\(\)/.test(dock) && !/tickerItems\(/.test(dock), "the ad strip reads placements through the shared hook, not its own copy");
   const street = read("app/components/StreetMap.jsx");
   assert.ok(/map\.names/.test(street) && /strokeText\(label, x, y\)/.test(street), "the neighbourhood names are drawn from the document");
 });

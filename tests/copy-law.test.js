@@ -91,10 +91,12 @@ test("the engine is called The Asterisk system in prose", () => {
 });
 
 test("the ticker carries the house lines when nothing eligible runs", () => {
-  // (V.2, 17 Oct) the marquee left with the header; the deck's ad ticker
-  // carries the house lines as its fallback (lib/dock.js HOUSE_LINES).
+  // (V.2, 17 Oct) the marquee left with the header; the ad ticker carries
+  // the house lines as its fallback (lib/dock.js HOUSE_LINES). (19 Oct) The
+  // ticker runs at the head of the Feed now, off the deck (AdStrip.jsx).
   const dock = read("lib/dock.js");
-  const cc = read("app/components/ControlCenter.jsx");
+  const cc = read("app/components/AdStrip.jsx");
+  assert.match(read("app/page.js"), /<AdStrip \/>/, "the Feed carries the strip");
   // Verbatim, including the owner's spacing in "A S I L U M".
   for (const line of [
     "ARE YOU SEEKING A S I L U M",

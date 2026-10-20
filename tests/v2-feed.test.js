@@ -124,8 +124,9 @@ test("the piece card and the listing popup to the references: rounded photograph
   assert.match(listing, /priceLine\(item\)/);
   assert.match(listing, /"SIZE: " \+ item\.size\.label/);
   assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
-  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the *ADs slot is red under the deck");
-  assert.match(strip(read("app/components/ControlCenter.jsx")), /<span className="adslot" aria-hidden="true">\*ADs<\/span>/);
+  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the *ADs slot is red");
+  // (19 Oct) the strip left the deck for the head of the Feed (the owner's fixture sketch)
+  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">\*ADs<\/span>/);
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {

@@ -48,9 +48,10 @@ test("the warning lights: square, dark at rest, blinking like an eject light on 
   for (const where of [/onClick=\{\(e\) => \{ blinkLamp\(e\); toBag\(\); \}\}[^\n]*<Lamp \/>/, /<button type="submit" className="buy" onClick=\{blinkLamp\}><Lamp \/>send ✓/, /onClick=\{async \(e\) => \{ blinkLamp\(e\); setBuying\(true\);/, /blinkLamp\(e\); setTimeout\(\(\) => setTicket\(true\), 420\);[^\n]*<Lamp \/>request purchase/]) {
     assert.match(listing, where);
   }
-  const deck = strip(read("app/components/ControlCenter.jsx"));
+  // (19 Oct) the pair rides with the ad strip at the head of the Feed (AdStrip.jsx)
+  const deck = strip(read("app/components/AdStrip.jsx"));
   assert.match(deck, /<span className="devlights" ref=\{lightsRef\} aria-hidden="true"><Lamp \/><Lamp \/><\/span>/);
-  assert.match(deck, /window\.addEventListener\("asilum:bag", on\)/, "a piece in the bag blinks the deck's lights");
+  assert.match(deck, /window\.addEventListener\("asilum:bag", on\)/, "a piece in the bag blinks the strip's lights");
   assert.match(rules, /\.lamp \{[^}]*width: 7px; height: 7px;[^}]*background: color-mix\(in srgb, var\(--warn\) 22%, transparent\)/s, "square, dark at rest");
   assert.match(rules, /\.lamp\[data-blink="eject"\] \{ animation: ejectlight 1\.8s steps\(1, end\) forwards; \}/, "it blinks and stays dark at the end");
   assert.match(rules, /@keyframes ejectlight \{[^}]*0%, 20%, 40%, 60% \{[^}]*\}\s*10%, 30%, 50%, 70%, 100% \{/s);
@@ -75,16 +76,18 @@ test("a double tap floats the piece over the fogged Feed, reactive to movement; 
   assert.match(strip(read("app/components/FloatView.jsx")), /export function useTilt\(cardRef, haloRef = null, tilt = true\)/);
 });
 
-test("the louder rainbow: the lens splits colour, a film turns with the hand, the fixtures drift, reduced motion and transparency honoured", () => {
+test("the louder rainbow on the popup; the fixtures are the September glass (19 Oct): the bend's own split, no drifting film", () => {
   const lg = strip(read("app/components/LiquidGlass.jsx"));
   assert.match(lg, /PULL\.map\(\(v, i\) => \(v \* strength \* \(1 \+ prism \* \(i - 1\) \* 0\.28\)\)/, "red, green and blue pulled apart by the prism");
-  for (const f of ["app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx", "app/components/SheetHost.jsx"]) {
-    assert.match(read(f), /prism: 1/, f + " splits colour");
+  assert.match(read("app/components/SheetHost.jsx"), /prism: 1/, "the popup splits colour");
+  // (19 Oct, the owner: "do this" — the September recipe) the fixtures run the header's 80 / 86 / 92 with no extra prism
+  for (const f of ["app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx"]) {
+    assert.ok(!/prism: 1/.test(read(f)), f + " splits colour by the bend alone");
   }
   assert.match(rules, /@keyframes irisdrift \{ to \{ --iris-drift: 360deg; \} \}/);
-  assert.match(rules, /\.fixture, \.ccenter \{ animation: irisdrift 18s linear infinite; \}/);
-  assert.match(rules, /conic-gradient\(from calc\(var\(--iris-a, 200deg\) \* -1 \+ var\(--iris-drift, 0deg\)\)/, "the film turns against the rim");
-  assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.fixture, \.ccenter \{ animation: none; \} \}/);
+  assert.ok(!/\.fixture, \.ccenter \{ animation: irisdrift/.test(rules), "the fixtures carry no drifting film");
+  assert.match(rules, /conic-gradient\(from calc\(var\(--iris-a, 200deg\) \* -1 \+ var\(--iris-drift, 0deg\)\)/, "the popup's film turns against the rim");
+  assert.match(rules, /prefers-reduced-motion: reduce\) \{\n  \.fixture, \.ccenter \{ transition: none; \}/, "reduced motion: the fixtures' lamps stop gliding");
 });
 
 test("the original ground and the dark phosphor glow: blue to white, green to black; dark words glow in their own colour; light never", () => {

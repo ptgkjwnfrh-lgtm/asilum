@@ -360,6 +360,37 @@ the photo slot's fine print lines and the plus registration band are part of
 the document, not a CRT. (5) The name is ASILUM — "magazine" is dropped from
 every visible string; the domain keeps its current address until it moves.
 
+**A6 fourth addendum — THE FIXTURES AS DRAWN (Oct 19, 2026).** The owner
+supplied a dimensioned sketch of the three fixtures ("how EXACTLY THE APP
+UI FIXTURES SHOULD LOOK") and a film of the September header glass. The
+sketch is the law for the fixtures: the Info Dock and the Passport Button
+sit side by side at the top RIGHT (superseding "Info Dock top left"), the
+ends where they meet straight; the deck is one pane cut into two end caps
+and five keys, with the tab indicator at its top right and the foot grill
+under the post disc; all of it clear, rainbow-refracting liquid glass whose
+cuts and curves bend what passes beneath. The glass is the September
+header's recipe, unchanged ("do this"): a near-clear pane with a saturation
+lift and no blur, the 56px Snell's-law bezel split 80 / 86 / 92, the grey
+weight mask, the gloss, the current key's lamp under the water, and the
+page-side bend on Safari — and, by the owner's later word that day, no
+surface hover reactions at all (no pointer shine, hovered lamp or dome),
+glows at 55% of their spread, a far lighter shade on a press, and a 25%
+touch of black or white on the pane. The tab indicator blinks red
+twice for any fixture key, and once then holds for POST and the globe; the
+sketch's 17.5 / 1 / 17.5 ms was lengthened at the owner's word the same day
+to a DVD player's pace (140 ms lit, a 90 ms break with a 40 ms afterglow).
+The same day: the cuts are a hairline in the search field's outline colour;
+the fixtures carry a 15% touch of black (dark) or white (light) over the
+September pane; the keys glow in dark; and every font in the app is Michroma
+(the description and reading faces resolve to it; Inter is the fallback). Then: every fixture key
+but POST is a flap hinged invisibly on its top edge that tips into the glass
+when pressed and springs back (app/components/hinge.js); the cuts are
+shorter; the vent has no outline; the bezel is a thin fading band; the
+glyphs share one geometry and one 1.5px stroke; a hairline shine rim runs
+round each fixture. Search extends the deck upward for its bar; the search
+popup appears only once something is typed. The ad strip left the deck for
+the head of the Feed.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

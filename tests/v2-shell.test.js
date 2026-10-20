@@ -70,10 +70,18 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
   assert.match(dark, /--sig:\s*#6e9cff;/);
 });
 
-test("the fixtures are glass pills with the restrained rainbow rim, and the post disc is round", () => {
-  assert.match(rules, /\.fixture \{[^}]*position: fixed;[^}]*border-radius: 999px;/s);
-  // (18 Oct) the rim is drawn once for the fixtures, the deck AND every popup, and it follows the hand
-  assert.match(rules, /\.fixture::after, \.ccenter::after, \.sheet::after \{[^}]*conic-gradient\(from var\(--iris-a, 200deg\) at var\(--iris-x, 30%\) var\(--iris-y, 0%\)/s, "the rainbow is a rim that follows the hand, drawn once for the fixtures, the deck and the popup");
+test("the fixtures are glass with the rainbow rim, shaped as the owner drew them (19 Oct 2026), and the post disc is round", () => {
+  assert.match(rules, /\.fixture \{[^}]*position: fixed;/s);
+  // not pills: the Info Dock's outer end is round, the end meeting the Passport straight — and the Passport the reverse
+  assert.match(rules, /\.fixture \{[^}]*border-radius: calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 26\);/s);
+  assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 3\);/s);
+  // (18 Oct) the popup's rainbow rim follows the hand
+  assert.match(rules, /\.sheet::after \{[^}]*conic-gradient\(from var\(--iris-a, 200deg\) at var\(--iris-x, 30%\) var\(--iris-y, 0%\)/s, "the popup's rim follows the hand");
+  // (19 Oct, "do this") the fixtures are the September glass: near-clear, a saturation lift, no blur, the shadow and the lip, no painted rim
+  assert.match(rules, /\.fixture, \.ccenter \{\n[^}]*background: linear-gradient\(var\(--fx-tint\), var\(--fx-tint\)\), var\(--fx-glass\);\n  -webkit-backdrop-filter: saturate\(160%\); backdrop-filter: saturate\(160%\);\n  box-shadow: var\(--glass-shadow\), var\(--glass-lip\);/);
+  assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{\n  -webkit-backdrop-filter: var\(--lg-filter\) saturate\(160%\); backdrop-filter: var\(--lg-filter\) saturate\(160%\);\n\}/, "the bend, and no blur");
+  assert.match(rules, /--fx-glass: rgba\(255, 255, 255, 0\.03\);/, "3% white in dark");
+  assert.ok(!/\.(fixture|ccenter)[^{}]*\{[^}]*irisdrift/.test(rules), "no drifting film on the fixtures");
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s);
   assert.match(rules, /prefers-reduced-transparency: reduce/, "reduced transparency drops the blur");
 });
@@ -162,7 +170,9 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   for (const [f, id] of [["app/components/InfoDock.jsx", "lg-infodock"], ["app/components/PassportButton.jsx", "lg-passportbtn"], ["app/components/ControlCenter.jsx", "lg-deck"], ["app/components/SheetHost.jsx", "lg-popup"]]) {
     const src = read(f);
     assert.match(src, new RegExp('useLiquidGlass\\(\\w+, \\{ id: "' + id + '"'), f + " is a pane of the OG glass");
-    assert.match(src, /lgrx/, f + " answers the reactive rim");
+    // (19 Oct) the popup's rim answers the hand; the fixtures' glass does not answer the pointer at all
+    if (id === "lg-popup") assert.match(src, /lgrx/, f + " answers the reactive rim");
+    else assert.match(src, /shine: false/, f + " carries no surface reaction");
   }
   assert.match(read("app/components/SheetHost.jsx"), /bend: "\.card"/, "where WebKit cannot bend a backdrop, the cards under the popup's edges bend");
   assert.match(rules, /\.sheetscrim \{ -webkit-backdrop-filter: none; backdrop-filter: none; \}/, "the scrim is no backdrop root, so the popup has a page to bend");

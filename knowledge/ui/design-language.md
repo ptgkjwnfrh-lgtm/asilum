@@ -5,11 +5,16 @@
 > behind rules that survived; the V.2 slices (`docs/v2/slice-*.md`) and
 > `docs/engineering/ui.md` are the current law.
 
-- **No header.** Three fixtures: the Info Dock (top left: LIKES · BAG ·
-  NOTICES), the Passport Button (top right: the globe) and the Central
-  Control Deck (bottom: FEED · SEARCH · POST disc · MESSAGES · ACCOUNT).
-  The wordmark lives on the Feed's masthead; the house lines run in the
-  deck's ad strip.
+- **No header.** Three fixtures, drawn by the owner on 19 Oct 2026 (the
+  fixture sketch; the geometry is `app/globals.css` in the sketch's unit
+  `--u`, pinned by `tests/v2-fixtures-sketch.test.js`): the Info Dock
+  (LIKES · BAG · NOTICES) and the Passport Button (the globe) side by side
+  at the top RIGHT, the Passport's right edge in line with the deck's, the
+  ends where they meet straight; and the Central Control Deck (bottom:
+  FEED · SEARCH · POST disc · MESSAGES · ACCOUNT) parted by cuts in the
+  glass, with the tab indicator at its top right and the foot grill under
+  the disc. All three are clear rainbow-refracting liquid glass. The
+  wordmark and the ad strip (the house lines) live on the Feed's masthead.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
   links, a green-teal `--red` accent. Dark: `#070b0c` paper, `#6e9cff`
   links, `#8cf0a6` accent. Token NAMES are unchanged so the rules keep
