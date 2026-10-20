@@ -12,6 +12,11 @@
    Inter. The names stay so four thousand lines of rules keep working; the
    values are the blueprint's. */
 
+/* NOTHING IS ITALIC (owner, 19 Oct 2026): no rule sets it, the elements a
+   browser slants by default stand upright, and no face is slanted by the
+   browser where it has no italic of its own */
+:where(em, i, cite, var, dfn, address, q) { font-style: normal; }
+html { font-synthesis-style: none; }
 @font-face { font-family: "Michroma"; src: url("/fonts/michroma.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Inter"; src: url("/fonts/inter.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 /* the description face (owner reference, 18 Oct 2026: the search popup's deck, tabs and meta): Share Tech Mono, OFL, restored from the 1 Oct build */
@@ -24,7 +29,12 @@
   --grey: #8a9ba3;
   --faint: #2a3a41;
   --line: rgba(140, 170, 185, 0.22);
-  --red: #8cf0a6;
+  /* THE ORIGINAL PHOSPHOR GREEN (owner, 19 Oct 2026: "the greens on the
+     site besides on the fixtures look too white washed out — I want the
+     original phosphorus green"): the September build's signal green. The
+     fixtures keep the paler V.2 accent (:is(.fixture, .ccenter, .brandfix)
+     below). */
+  --red: #46ff96;
   /* ALL THE FONTS ARE MICHROMA (owner, 19 Oct 2026): the reading face, the
      serif slot and the description face all resolve to it; Inter stays only
      as the fallback for a glyph Michroma does not carry */
@@ -40,7 +50,7 @@
      Dock and the Passport Button — plus the phone's top inset. */
   --head-h: calc(66px + env(safe-area-inset-top, 0px));
   /* OS tokens */
-  --bg: #070b0c;
+  --bg: #030505;
   --bg2: rgba(14, 21, 24, 0.85);
   --bg3: rgba(13, 20, 23, 0.92);
   --mich: "Michroma", var(--helv);
@@ -148,11 +158,12 @@
      over a gentle vertical fall of the ground. Cards sit on it. */
   --page-tint: var(--sig);
   --bg-grad:
-    radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 16%, transparent), transparent 62%),
-    radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 10%, transparent), transparent 64%),
+    radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 8%, transparent), transparent 62%),
+    radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 5%, transparent), transparent 64%),
     /* the OG ground (owner, 18 Oct: "I miss the soft gradient … green to
-       black"): a phosphor green that settles into black as the page falls */
-    linear-gradient(180deg, #0d2219 0%, #08150f 34%, #040907 68%, #000000 100%);
+       black"), blacker (19 Oct: "make the background more black"): a breath
+       of phosphor green at the top, black almost at once */
+    linear-gradient(180deg, #06120c 0%, #030907 30%, #010302 62%, #000000 100%);
   /* SHADE AND SCRIM (owner, 18 Oct 2026: "on dark mode if there is a popup
      the background should be darker, not a cloudy white"). The popup's scrim
      and every shadow were mixed from --ink, which is near-white in the dark
@@ -337,11 +348,45 @@ button { font-family: var(--helv); }
 
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-.wordmark { flex: none; font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); font-weight: 400; letter-spacing: 0.04em; line-height: 1;
-  background: linear-gradient(180deg, var(--ink) 20%, var(--sig) 70%, var(--grey));
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 6px rgba(70, 255, 150, 0.25)); }
-.wordmark i { font-style: normal; -webkit-text-fill-color: var(--red); text-shadow: var(--glow-r); }
+/* THE WORDMARK, AS THE TITLE CARD (owner, 19 Oct 2026, the launch card's
+   picture: "the logo should look like that"): the capitals in metal — in
+   dark the card's chrome washing to mint under the phosphor halo, in light
+   brushed steel (light never glows) — a touch bolder (Michroma has one
+   weight; a fine stroke in the metal's own edge carries it); the asterisk
+   the card's chunky red one, about seven-tenths of the capitals' height and
+   hung from their top line (Michroma's asterisk is 0.56em tall from the cap
+   line at 0.75em, so 0.93em of it, lifted 0.054em, puts its top on the
+   capitals'); under the word a thick translucent bar and one lit square,
+   within the word's width. */
+.wordmark { flex: none; display: inline-flex; flex-direction: column; align-items: stretch; gap: 0.22em;
+  font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); font-weight: 400; letter-spacing: 0.04em; line-height: 1; text-decoration: none; }
+.wmword { display: inline-block; white-space: nowrap; }
+.wmcaps { background: var(--metal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.5px var(--metal-edge); }
+/* the asterisk: small, up in the top-left corner of the word's box — its top
+   above the capitals' line, inside the line box (owner, 19 Oct 2026: "smaller
+   and move it up in the corner more"); plain red, no stroke, no glow */
+.wmword i { font-style: normal; font-size: 0.6em; line-height: 1; position: relative; top: -0.68em; margin-right: 0.1em;
+  color: var(--warn); -webkit-text-fill-color: var(--warn); text-shadow: none; }
+.wmbar { display: flex; align-items: stretch; gap: 0.22em; height: 0.26em; }
+.wmbar::before { content: ""; flex: 1; border-radius: 1px; background: var(--wm-bar); }
+.wmsq { flex: none; aspect-ratio: 1; height: 100%; border-radius: 1px; background: var(--warn); }
+/* one load in ten the line is the chevron run (Wordmark.jsx CHEVRON_CHANCE) */
+.wmbar.chev::before { content: none; }
+.wmchev { flex: 1; display: flex; justify-content: space-between; align-items: center; min-width: 0; overflow: hidden;
+  font-size: 0.62em; line-height: 0; letter-spacing: -0.02em; color: color-mix(in srgb, var(--warn) 85%, transparent); }
+.wmchev b { font-weight: 400; }
+:root {
+  /* the title card's letters: chrome at the top washing to mint */
+  --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
+  --metal-edge: rgba(214, 255, 232, 0.35);
+  --wm-bar: rgba(232, 239, 241, 0.2);
+}
+[data-theme="light"] {
+  --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
+  --metal-edge: rgba(37, 55, 73, 0.45);
+  --wm-bar: rgba(37, 55, 73, 0.18);
+}
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -354,7 +399,7 @@ button { font-family: var(--helv); }
   position: fixed; z-index: 60; width: 330px; max-height: 70vh; overflow-y: auto;
   background: var(--paper); border: 1px solid var(--line); padding: 16px;
 }
-.pempty { font-family: var(--serif); font-style: italic; color: var(--grey); font-size: 13px; padding: 8px 0; }
+.pempty { font-family: var(--serif); font-style: normal; color: var(--grey); font-size: 13px; padding: 8px 0; }
 .acctline { font-size: 12px; font-weight: 700; }
 .platform {
   border: 1px solid var(--line); background: var(--paper); cursor: pointer;
@@ -382,7 +427,7 @@ button { font-family: var(--helv); }
   line-height: 0.92; text-transform: uppercase; margin: 0 0 6px;
 }
 .headline .red { color: var(--red); }
-.deck { font-family: var(--serif); font-style: italic; font-size: 16px; font-weight: 500; color: var(--grey); margin: 0 0 16px; }
+.deck { font-family: var(--serif); font-style: normal; font-size: 16px; font-weight: 500; color: var(--grey); margin: 0 0 16px; }
 
 /* DEMO MODE (owner ruling, Aug 16). The catalog is synthetic sample data and
    must never read as real inventory. Built from tokens only, so it inverts
@@ -622,9 +667,9 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .autonote {
   margin: 8px 0 14px; padding: 10px 14px;
   border: 1px solid var(--line); border-left: 4px solid var(--red);
-  font-family: var(--serif); font-style: italic; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  font-family: var(--serif); font-style: normal; font-size: 14.5px; font-weight: 600; cursor: pointer;
 }
-.empty { font-family: var(--serif); font-style: italic; color: var(--grey); padding: 50px 0; text-align: center; }
+.empty { font-family: var(--serif); font-style: normal; color: var(--grey); padding: 50px 0; text-align: center; }
 .sentinel { height: 1px; }
 .controls + .grid { margin-top: 16px; }
 
@@ -815,7 +860,7 @@ a.dz { color: inherit; text-decoration: none; cursor: pointer; }
 a.brand2 { text-decoration: none; cursor: pointer; display: block; }
 a.brand2:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 a.dz:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
-.why { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--red); }
+.why { font-family: var(--serif); font-style: normal; font-size: 13px; color: var(--red); }
 .tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .t { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; border: 1px solid var(--line); padding: 2px 6px; }
 .mute { border: none; background: none; cursor: pointer; font-size: 12px; line-height: 1; padding: 0 1px; color: var(--grey); }
@@ -863,7 +908,7 @@ div.hlrow.static { cursor: default; }
 .hlrow img { width: 64px; height: 84px; object-fit: cover; border: 1px solid var(--line); flex: none; }
 .hlinfo { flex: 1; min-width: 0; }
 .hlttl { font-size: clamp(16px, 2.2vw, 26px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.05; }
-.hlbrand { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--grey); margin-top: 3px; }
+.hlbrand { font-family: var(--serif); font-style: normal; font-size: 13px; color: var(--grey); margin-top: 3px; }
 .hlstat { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--red); text-align: right; flex: none; }
 .pulse { display: inline-block; width: 9px; height: 9px; background: var(--red); border-radius: 50%; margin-right: 8px; animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 0%, 100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 1; } }
@@ -911,7 +956,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 .otfprice { display: block; font-size: 10px; color: var(--grey); font-weight: 700; }
 .otffit { font-size: 11px; color: var(--grey); margin: 8px 0 0; }
 .otfacts { display: flex; align-items: center; gap: 14px; margin-top: 12px; }
-.otfwhy { font-family: var(--serif); font-style: italic; font-size: 12px; color: var(--grey); }
+.otfwhy { font-family: var(--serif); font-style: normal; font-size: 12px; color: var(--grey); }
 
 /* ---- Tabs (the feed CATALOG/POST switch, profile record) ---- */
 .tabs { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 4px 0 14px; }
@@ -1013,7 +1058,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .eladrow { display: flex; gap: 40px; flex-wrap: wrap; margin-top: 8px; }
 .elad { flex: 1; min-width: 220px; min-height: 110px; border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent); display: grid; place-content: center; justify-items: center; gap: 4px; padding: 18px; text-align: center; }
 .elad b { font-size: 9px; letter-spacing: 0.22em; font-weight: 400; color: var(--grey); }
-.elad em { font-style: italic; font-size: 11px; color: var(--faint); }
+.elad em { font-style: normal; font-size: 11px; color: var(--faint); }
 .elad .adstar { font-size: 26px; }
 /* the graded ladder (owner order, Aug 13): descending visibility is
    carried by TYPE SCALE, not just content — the masthead is rung 1,
@@ -1064,7 +1109,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .pavatar .uavatar { width: 78px; height: 78px; font-size: 25px; background: var(--paper); border-width: 2px; }
 .pident { flex: 1; min-width: 220px; padding-top: 44px; }
 .pname { font-size: 27px; font-weight: 900; letter-spacing: -0.03em; }
-.pbio { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--grey); margin: 6px 0 8px; }
+.pbio { font-family: var(--serif); font-style: normal; font-size: 14px; color: var(--grey); margin: 6px 0 8px; }
 .pcounts { display: flex; gap: 20px; font-size: 10px; letter-spacing: 0.1em; color: var(--grey); }
 .pcounts b { color: var(--ink); font-size: 14px; margin-right: 4px; }
 .phead2 > .btn, .phead2 > .followbtn { margin-top: 44px; }
@@ -1090,7 +1135,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .measuregrid label { font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 .measuregrid input, .measuregrid select { width: 100%; box-sizing: border-box; margin-top: 4px; border: 1px solid var(--line); padding: 10px; background: var(--paper); font: 700 13px var(--helv); }
 .measureactions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-.measurestatus { color: var(--grey); font: italic 13px var(--serif); }
+.measurestatus { color: var(--grey); font: 13px var(--serif); }
 @media (max-width: 900px) { .measuregrid { grid-template-columns: repeat(2, minmax(120px, 1fr)); } .accountgrid { grid-template-columns: 1fr; } }
 .ccount { margin-left: auto; font-size: 10px; color: var(--faint); letter-spacing: 0.08em; }
 
@@ -1115,7 +1160,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .awhy { border-top: 1px solid var(--ink); margin-top: 10px; padding-top: 8px; }
 .awhyhead { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; }
 .awhysum { font-size: 12px; margin-top: 4px; line-height: 1.45; }
-.awhywarn { font-family: var(--serif); font-style: italic; font-size: 11px; color: var(--red); margin-top: 3px; }
+.awhywarn { font-family: var(--serif); font-style: normal; font-size: 11px; color: var(--red); margin-top: 3px; }
 .awhychips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .achip { font-size: 11px; border: 1px solid var(--line); background: var(--paper); padding: 2px 8px; cursor: pointer; font-family: inherit; }
 .achip:hover { background: var(--ink); color: var(--bg); }
@@ -1127,14 +1172,14 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
    de-bubbled Aug 12) */
 .aread { border: none; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); padding: 10px 0 2px; margin: 12px 0 2px; }
 .areadhead { font-family: var(--mich); font-size: 10px; font-weight: 400; letter-spacing: 0.18em; }
-.areadhead em { font-family: var(--serif); font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--grey); }
+.areadhead em { font-family: var(--serif); font-style: normal; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--grey); }
 .areadpills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .apill { font-size: 11px; border: 1px solid var(--line); background: var(--paper); padding: 3px 10px; cursor: pointer; font-family: inherit; font-weight: 700; }
 .apill:hover { background: var(--ink); color: var(--bg); }
 .apill.cur { background: var(--red); color: #fff; border-color: var(--red); }
 .apill.clearpill { border-color: var(--red); color: var(--red); font-weight: 400; }
 .apill.clearpill:hover { background: var(--red); color: #fff; }
-.areadsum { font-family: var(--serif); font-style: italic; font-size: 12px; margin-top: 7px; }
+.areadsum { font-family: var(--serif); font-style: normal; font-size: 12px; margin-top: 7px; }
 .areadnote { font-size: 10px; color: var(--grey); margin-top: 5px; }
 
 /* ── Asterisk memory (/asterisk page, Phase 2) ──────────────────────────── */
@@ -1198,7 +1243,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .railrow { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0 4px; }
 .railcard { flex: 0 0 240px; border: 1px solid var(--line); padding: 8px 10px; }
 .railname { font-size: 12px; font-weight: 900; letter-spacing: 0.06em; }
-.railphase { font-style: italic; font-weight: 400; color: var(--red); font-size: 10px; }
+.railphase { font-style: normal; font-weight: 400; color: var(--red); font-size: 10px; }
 .railnote { font-size: 10px; color: var(--grey); line-height: 1.45; margin: 4px 0 6px; }
 .railpills { display: flex; flex-wrap: wrap; gap: 4px; }
 .railitem { flex: 0 0 120px; text-decoration: none; color: inherit; display: grid; gap: 3px; }
@@ -2368,12 +2413,12 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailwith b { color: var(--sig); font-weight: 700; }
 /* V.2 13.4: the offer panel under the thread header */
 .mailoffer { padding: 8px 12px; border-bottom: 1px solid var(--line); font-family: var(--helv); font-size: 12px; }
-.mailoffer em { color: var(--grey); font-style: italic; }
+.mailoffer em { color: var(--grey); font-style: normal; }
 .mailofferrow { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
 .mailofferrow span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mailofferamt { width: 72px; background: none; border: 1px solid var(--line); color: var(--ink); font-family: var(--mono); font-size: 12px; padding: 3px 6px; }
-.mailnohandle { color: var(--grey); font-style: italic; font-size: 10px; }
-.mailwith em { color: var(--grey); font-style: italic; font-size: 10px; }
+.mailnohandle { color: var(--grey); font-style: normal; font-size: 10px; }
+.mailwith em { color: var(--grey); font-style: normal; font-size: 10px; }
 .mailtabs { display: flex; gap: 6px; margin-top: 6px; }
 .mailtabs button {
   display: inline-flex; align-items: center; gap: 5px;
@@ -2809,7 +2854,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pfmain { min-width: 0; }
 .pfk { font-family: var(--mich); font-size: 10px; letter-spacing: 0.22em; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
 .pfk i { font-family: var(--helv); font-style: normal; font-size: 22px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; }
-.pfabout p { font-family: var(--serif); font-style: italic; font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
+.pfabout p { font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
 .pfline { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 8.5px; letter-spacing: 0.18em; color: var(--grey); padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
 .pfline b { font-family: var(--helv); font-weight: 400; font-size: 12px; color: var(--ink); letter-spacing: 0.06em; text-align: right; }
 /* THE PASSPORT IN PREVIEW (PassportPreview.jsx): the document's own classes
@@ -3381,7 +3426,7 @@ body { font-size: 14px; }
    wider; the glass does not refract round it */
 .tabindlamp { position: absolute; inset: 0.5px; border-radius: 50%; opacity: 0;
   background: var(--warn);
-  box-shadow: 0 0 2px var(--warn), 0 0 4.5px var(--warn), 0 0 7.7px color-mix(in srgb, var(--warn) 75%, transparent); }
+  box-shadow: none; /* bright and solid, never glowing: no red glows (owner, 19 Oct 2026) */ }
 .tabind.held .tabindlamp { opacity: 1; }
 .tabind.held { border-color: var(--warn); }
 .cckey {
@@ -3656,7 +3701,7 @@ body { font-size: 14px; }
   display: flex; align-items: stretch; height: calc(var(--u) * 88); padding: 0; gap: 0;
   border-radius: calc(var(--u) * 26) calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 26);
 }
-.infodock { right: calc(var(--dk-edge) + var(--u) * 100); }
+.infodock { right: calc(var(--dk-edge) + var(--u) * 90); } /* the Passport's 82 + a gap of 8 (owner, 19 Oct: shrunk from the drawn 18) */
 .passportbtn {
   right: var(--dk-edge); width: calc(var(--u) * 82); align-items: center; justify-content: center;
   border-radius: calc(var(--u) * 3) calc(var(--u) * 26) calc(var(--u) * 26) calc(var(--u) * 3);
@@ -3721,9 +3766,18 @@ body { font-size: 14px; }
 .ccenter .tabl:not(.hkey):active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
 .ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
 
-/* the feed's masthead wears the wordmark */
-.feedmark { display: block; width: 100%; clear: both; margin: 0 0 6px; }
-.feedmark .wordmark { display: inline-flex; }
+/* THE WORDMARK IS A FIXTURE (owner, 19 Oct 2026: "the *ASILUM logo becomes
+   a fixture that permanently sits in the left hand corner"): on every page,
+   top left, its left edge in line with the deck's and its middle on the
+   top fixtures' middle; it dims with them under a popup */
+.brandfix {
+  position: fixed; z-index: 66; left: var(--dk-edge);
+  top: calc(env(safe-area-inset-top, 0px) + max(10px, var(--u) * 17));
+  height: calc(var(--u) * 88); display: inline-flex; flex-direction: column; justify-content: center; align-items: stretch;
+  text-decoration: none; transition: transform 0.22s, opacity 0.22s; transform-origin: 0 50%;
+}
+[data-popup] .brandfix { transform: scale(0.92); opacity: 0.55; }
+[data-media] .brandfix { opacity: 0.22; }
 
 /* notices (the bell's sheet) */
 .notices { display: grid; gap: 8px; }
@@ -4588,9 +4642,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 
 /* ---- the dark headline wears the OG title card: chrome letters washing to
    mint with the phosphor halo (the owner's title-card reference) ---- */
-:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #f4fbf7 0%, #d4f3e1 45%, #8ee8b3 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(110, 240, 160, 0.32)) drop-shadow(0 0 2px rgba(180, 255, 210, 0.5)); }
+:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(70, 255, 150, 0.34)) drop-shadow(0 0 2px rgba(120, 255, 180, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
-:root:not([data-theme="light"]) .wordmark { filter: drop-shadow(0 0 8px rgba(110, 240, 160, 0.4)); }
+:root:not([data-theme="light"]) .wordmark .wmcaps { filter: drop-shadow(0 0 10px rgba(110, 240, 160, 0.32)) drop-shadow(0 0 2px rgba(180, 255, 210, 0.5)); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
 :root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .adslot, .idkey.cur) { text-shadow: var(--glow-r); }
 
@@ -4606,7 +4660,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 [data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
 .chevtext .chevrun { color: var(--warn); letter-spacing: 0.02em; }
 .chevtext .chevrest { color: transparent; }
-:root:not([data-theme="light"]) .chevtext .chevrun { text-shadow: 0 0 6px color-mix(in srgb, var(--warn) 60%, transparent); }
 /* the lamp: a small square, dark at rest; lit, it blinks like an eject light and settles dark */
 .lamp { display: inline-block; flex: none; width: 7px; height: 7px; margin: 0 7px 0 0; border-radius: 1.5px; vertical-align: 0.05em;
   background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
@@ -4615,7 +4668,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .lamp[data-blink="eject"] { animation: ejectlight 1.8s steps(1, end) forwards; }
 .lamp[data-blink="once"] { animation: ejectonce 1.2s ease forwards; }
 @keyframes ejectlight {
-  0%, 20%, 40%, 60% { background: var(--warn); box-shadow: 0 0 8px var(--warn), inset 0 0 0 1px var(--warn); }
+  0%, 20%, 40%, 60% { background: var(--warn); box-shadow: inset 0 0 0 1px var(--warn); }
   10%, 30%, 50%, 70%, 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
 }
 @keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
@@ -4837,3 +4890,35 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 :root { --fx-rim-hi: rgba(255, 255, 255, 0.5); --fx-rim-lo: rgba(255, 255, 255, 0.12); }
 [data-theme="light"] { --fx-rim-hi: rgba(255, 255, 255, 0.95); --fx-rim-lo: rgba(255, 255, 255, 0.4); }
+
+/* the fixtures keep the V.2 accent (owner, 19 Oct 2026: the original phosphor
+   green is for the site "besides on the fixtures") */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; } }
+:root[data-theme="dark"] :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; }
+
+/* =====================================================================
+   THE POST LAYOUT, AS DRAWN (owner's sketch, 19 Oct 2026): a media post
+   full width with its BRDCST hung beneath; then a large piece on the left
+   with a narrow column of place cards stacked on its right (packFeed's
+   duo, the two-column phone Feed). The place card is the mark, the
+   distance, the name and the globe.
+   ===================================================================== */
+.feedduo { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); gap: 12px; align-items: start; margin: 0 0 var(--ed-card-gap, 26px); }
+.feedduo .card { margin-bottom: 0; }
+.duohero { min-width: 0; }
+.duoside { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+/* a place beside a piece is a near-square card: the mark at the top left,
+   the distance at the top right, the name, the globe in the corner */
+.duoside .placeopen { grid-template-columns: auto minmax(0, 1fr); min-height: 0; aspect-ratio: 1 / 1.08; padding: 12px 12px 34px; align-content: start; }
+.duoside .placeicon { width: 52px; height: 46px; }
+.duoside .placedist { font-size: clamp(18px, 5.6vw, 26px); }
+.duoside .placename { font-size: clamp(11px, 3.1vw, 13px); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.placemeta { padding-right: 28px; }
+/* the post's action row, as the sketch draws it: four large outline glyphs
+   spread across the media's foot, the author's circle at the far right */
+.wpcacts { gap: clamp(14px, 6.5vw, 40px); }
+.wpcact { width: 48px; height: 48px; }
+.wpcact .ic { width: 30px; height: 30px; }
+.wpcorb .uavatar { width: 38px; height: 38px; }
+/* the rule under BRDCST is a hollow bar (the sketch's outlined band) */
+.brdcstrule { height: 7px; border: 1.5px solid var(--ink); background: transparent; opacity: 0.85; border-radius: 3px; }

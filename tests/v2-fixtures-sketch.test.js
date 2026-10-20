@@ -6,7 +6,8 @@
 // where the markup is the law (a .jsx cannot be imported here).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+const require_fs = () => ({ readdirSync, statSync });
 import { doubleBlinkFrames, holdBlinkFrames, indicatorHeld, BLINK_ON_MS, BLINK_GAP_MS, FADE_MS } from "../lib/indicator.js";
 import { PATTERNS } from "../lib/haptics.js";
 
@@ -51,10 +52,10 @@ test("the carvings are carved into the glass: cuts, the disc's ring, the grill a
   assert.ok(!/<AdStrip/.test(deck), "nothing but the drawing on the deck: the ad strip left it");
 });
 
-test("the top fixtures sit at the top right, the Passport's right edge in line with the deck's, 18 apart", () => {
+test("the top fixtures sit at the top right, the Passport's right edge in line with the deck's, 8 apart (shrunk from the drawn 18)", () => {
   assert.match(rules, /\.passportbtn \{[^}]*right: var\(--dk-edge\); width: calc\(var\(--u\) \* 82\);/s);
   const off = Number(rules.match(/\.infodock \{ right: calc\(var\(--dk-edge\) \+ var\(--u\) \* (\d+)\); \}/)[1]);
-  assert.equal(off, 82 + 18, "the Info Dock ends 18 short of the Passport");
+  assert.equal(off, 82 + 8, "the Info Dock ends 8 short of the Passport (owner, 19 Oct: the gap shrunk)");
   assert.match(rules, /\.idkey \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "three keys of the drawn 292");
   assert.ok(!/\.infodock \{[^}]*left:/s.test(rules.split(".infodock {")[1].split("}")[0]), "not the top left any more");
 });
@@ -228,3 +229,46 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
   assert.match(read("app/components/InfoDock.jsx"), /if \(dock\.mode === "search"\) \{ leaveSearch\(\); openSheet\(id\); return; \}/);
   assert.match(read("app/components/PassportButton.jsx"), /onClick=\{leaveSearch/);
 });
+
+test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
+  assert.match(rules, /\.brandfix \{\n  position: fixed; z-index: 66; left: var\(--dk-edge\);/, "fixed, its left edge on the deck's");
+  assert.match(rules, /\.brandfix \{[^}]*height: calc\(var\(--u\) \* 88\);[^}]*flex-direction: column; justify-content: center;/s, "its middle on the top fixtures' middle");
+  // (19 Oct) the name in metal, a touch bolder; the asterisk smaller, at the top of the capitals; a
+  // thick translucent bar and one square under the word, within its width
+  // the metal and its halo on the capitals only, so the red asterisk takes none of the green glow
+  assert.match(rules, /\.wmcaps \{[^}]*background: var\(--metal\);[^}]*-webkit-text-stroke: 0\.5px var\(--metal-edge\);/s);
+  assert.match(rules, /\.wordmark \.wmcaps \{ filter: drop-shadow/);
+  assert.ok(!/\.wmword \{[^}]*(filter|background):/s.test(rules));
+  // the asterisk small and up in the corner, plain red: no stroke, no glow
+  assert.match(rules, /\.wmword i \{[^}]*font-size: 0\.6em;[^}]*top: -0\.68em;[^}]*color: var\(--warn\);[^}]*text-shadow: none; \}/s);
+  assert.ok(!/\.wmword i \{[^}]*-webkit-text-stroke/s.test(rules), "not bolded");
+  assert.match(rules, /\.wmbar::before \{ content: ""; flex: 1;[^}]*background: var\(--wm-bar\); \}/, "the bar fills the word's width");
+  assert.match(rules, /\.wmsq \{ flex: none; aspect-ratio: 1; height: 100%;/, "one square, as thick as the bar");
+  assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
+  assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
+  const wm = read("app/components/Wordmark.jsx");
+  assert.match(wm, /<span className="wmword"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/);
+  // one load in ten the line is a chevron run that fills it, measured
+  assert.match(wm, /export const CHEVRON_CHANCE = 0\.1;/);
+  assert.match(wm, /useEffect\(\(\) => \{ if \(Math\.random\(\) < CHEVRON_CHANCE\) setChev\(true\); \}, \[\]\);/, "after hydration, never during the server render");
+  assert.match(wm, /setCount\(Math\.max\(MIN_CHEVRONS, Math\.floor\(run\.clientWidth \/ one\)\)\)/, "as many as fill the line");
+  // no red glows anywhere (owner, 19 Oct 2026)
+  for (const sel of ["\\.wmsq", "\\.tabindlamp"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
+  assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
+  assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
+  assert.match(wm, /<span className=\{"wmbar" \+ \(chev \? " chev" : ""\)\} aria-hidden="true">/, "the bar, decorative");
+  assert.match(wm, /<b className="wmsq" \/>/, "and its one square");
+  assert.match(rules, /\[data-popup\] \.brandfix \{ transform: scale\(0\.92\); opacity: 0\.55; \}/, "it dims with the fixtures under a popup");
+  assert.ok(!/\.feedmark/.test(rules), "the Feed's masthead mark is gone");
+  // nothing italic: no rule, no default slant, no synthesized oblique
+  const css = read("app/globals.css");
+  assert.ok(!/italic|oblique/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "no rule slants anything");
+  assert.match(rules, /:where\(em, i, cite, var, dfn, address, q\) \{ font-style: normal; \}/);
+  assert.match(rules, /html \{ font-synthesis-style: none; \}/);
+  const { readdirSync, statSync } = require_fs();
+  const offenders = [];
+  const walk = (d) => { for (const f of readdirSync(new URL("../" + d, import.meta.url))) { const q = d + "/" + f; if (statSync(new URL("../" + q, import.meta.url)).isDirectory()) walk(q); else if (/\.(jsx?|mjs|css)$/.test(f) && /fontStyle:\s*["']italic|font-style:\s*italic/.test(read(q))) offenders.push(q); } };
+  walk("app");
+  assert.deepEqual(offenders, [], "no component slants a word inline either");
+});
+

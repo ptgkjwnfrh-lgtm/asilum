@@ -65,8 +65,10 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
   assert.match(light, /--sig:\s*#1d5fd6;/, "links and chosen things are blue");
   assert.match(light, /--red:\s*#c9372a;/, "the accent is the reference's red (the asterisk, the active tab)");
   assert.match(light, /--ink:\s*#253749;/, "slate ink, as the reference reads");
-  assert.match(dark, /--bg:\s*#070b0c;/);
-  assert.match(dark, /--red:\s*#8cf0a6;/, "the dark accent is a subtle phosphorus green");
+  // (19 Oct 2026) a blacker ground, and the original phosphor green back (the fixtures keep #8cf0a6)
+  assert.match(dark, /--bg:\s*#030505;/);
+  assert.match(dark, /--red:\s*#46ff96;/, "the dark accent is the original phosphor green");
+  assert.match(css, /:root\[data-theme="dark"\] :is\(\.fixture, \.ccenter, \.brandfix\) \{ --red: #8cf0a6; \}/, "the fixtures keep the paler accent");
   assert.match(dark, /--sig:\s*#6e9cff;/);
 });
 

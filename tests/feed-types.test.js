@@ -95,3 +95,36 @@ test("slice 14: the footer's date line, the price line and what OFFER does (owne
   assert.equal(pieceName({ brand: "Visvim", title: "Visvim – chore coat" }), "Visvim: chore coat", "a title that repeats the brand is not doubled");
   assert.equal(pieceName({ brand: "", title: "a coat" }), "a coat");
 });
+
+test("the duo (owner's post-layout sketch, 19 Oct 2026): on the phone Feed a piece stands large with the places stacked beside it", () => {
+  const pc = (id) => ({ id });
+  const pl = (id) => ({ id, __place: { id } });
+  const media = { id: "m", __post: { id: "m", image: { src: "/x.jpg" } } };
+  const list = [pc("a"), pc("b"), pl("p1"), pl("p2"), pc("hero"), pc("c"), pc("d"), pc("e"), pc("f"), media, pc("g")];
+  // off (the wide Feed): exactly what it was — the places pack into the columns
+  const wide = packFeed(list);
+  assert.ok(!wide.some((s) => s.kind === "duo"), "no duo on the wide Feed");
+  assert.equal(wide.filter((s) => s.kind === "grid").flatMap((s) => s.items).filter((x) => x.__place).length, 2);
+  // on: the places wait for the next piece, which stands beside them
+  const segs = packFeed(list, { duo: true });
+  const duo = segs.find((s) => s.kind === "duo");
+  assert.ok(duo, "a duo segment");
+  assert.equal(duo.item.id, "hero", "the next piece is the large card");
+  assert.deepEqual(duo.side.map((x) => x.id), ["p1", "p2"], "the places stack beside it, in order");
+  assert.ok(!segs.filter((s) => s.kind === "grid").some((s) => s.items.some((x) => x.__place || x.id === "hero")), "neither is also in the columns");
+  // a duo is full width, so it waits for a run behind it, like any full card
+  const before = segs.slice(0, segs.indexOf(duo)).filter((s) => s.kind === "grid").flatMap((s) => s.items).length;
+  assert.ok(before >= MIN_RUN, "it follows a balanced run (" + before + ")");
+  // never more than DUO_SIDE beside one piece; places with no piece after them go back into the columns
+  const three = packFeed([pc("a"), pl("x"), pl("y"), pl("z"), pc("h")], { duo: true });
+  assert.deepEqual(three.find((s) => s.kind === "duo").side.map((x) => x.id), ["y", "z"]);
+  const tail = packFeed([pc("a"), pc("b"), pl("q")], { duo: true });
+  assert.ok(!tail.some((s) => s.kind === "duo") && tail[0].items.some((x) => x.id === "q"), "a lone tail place is not lost");
+  // every card comes out exactly once
+  const ids = (ss) => ss.flatMap((s) => s.kind === "grid" ? s.items : s.kind === "duo" ? [s.item, ...s.side] : [s.item]).map((x) => x.id).sort();
+  assert.deepEqual(ids(segs), list.map((x) => x.id).sort());
+  // the braid brings places in pairs after every ninth piece
+  const pieces = Array.from({ length: 9 }, (_, i) => ({ id: "i" + i }));
+  const out = braid(pieces, [], [{ id: "A" }, { id: "B" }, { id: "C" }]);
+  assert.deepEqual(out.filter((x) => x.__place).map((x) => x.__place.id), ["A", "B"], "two places after the ninth piece");
+});

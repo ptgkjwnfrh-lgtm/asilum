@@ -59,9 +59,12 @@ test("the metadata a browser tab and a search result actually show", () => {
   assert.match(read("app/piece/[id]/page.js"), /siteName: "\*ASILUM"/);
 });
 
-test("the wordmark is the asterisk and the six capitals, nothing under them", () => {
+// (19 Oct 2026) the owner added a bar and one square under the name — a
+// decorative mark, aria-hidden, not a lockup line of words
+test("the wordmark is the asterisk and the six capitals, no words under them", () => {
   const src = codeOnly(read("app/components/Wordmark.jsx"));
-  assert.match(src, /<i>\*<\/i>ASILUM/);
+  // (19 Oct) the capitals carry the metal in their own span, so the red asterisk takes none of its glow
+  assert.match(src, /<i>\*<\/i>(<span className="wmcaps">)?ASILUM/);
   assert.ok(!/<em|<small|MAGAZINE|FASHION TERMINAL/.test(src), "no lockup lines");
   const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
   assert.ok(!/\.wordmark (em|small)/.test(css), "their rules are gone too");

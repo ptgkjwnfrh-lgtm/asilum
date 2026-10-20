@@ -387,7 +387,24 @@ but POST is a flap hinged invisibly on its top edge that tips into the glass
 when pressed and springs back (app/components/hinge.js); the cuts are
 shorter; the vent has no outline; the bezel is a thin fading band; the
 glyphs share one geometry and one 1.5px stroke; a hairline shine rim runs
-round each fixture. Search extends the deck upward for its bar; the search
+round each fixture. Later the same day: the gap between the Info Dock and
+the Passport Button shrank from the drawn 18 units to 8; the *ASILUM
+wordmark became a fixture of its own, permanently in the top-left corner
+(in line with the deck's left edge); and nothing on the site is italic.
+The wordmark is brushed metal and a touch bolder, its asterisk smaller and
+raised to the top of the capitals, with a thick translucent bar and one
+square beneath the word, all within the word's own box. Then, to the
+launch title card: the capitals in chrome washing to mint (dark) or steel
+(light), the asterisk small, plain red and up in the word's top-left corner,
+the square lit red, and one load in ten the bar is a run of chevrons that
+fills it. No red glows anywhere (the tab indicator included). The site's
+greens return to the original phosphor green (#46ff96) while the fixtures
+keep the V.2 accent (#8cf0a6), and the dark ground is blacker. THE POST
+LAYOUT (the owner's sketch, same day): a media post stands full width with
+its BRDCST hung beneath; on the two-column phone Feed a large piece stands on
+the left with the place cards stacked in a narrow column on its right
+(lib/feed/types.js packFeed's duo), places braided in pairs; a place card is
+the mark, the distance, the name and the globe. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 

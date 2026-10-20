@@ -92,11 +92,13 @@ test("the louder rainbow on the popup; the fixtures are the September glass (19 
 
 test("the original ground and the dark phosphor glow: blue to white, green to black; dark words glow in their own colour; light never", () => {
   assert.match(block('[data-theme="light"] {'), /linear-gradient\(180deg, #d6e8f6 0%, #e7f1f9 30%, #f6fafd 64%, #ffffff 100%\)/, "blue to white");
-  assert.match(block(":root {"), /linear-gradient\(180deg, #0d2219 0%, #08150f 34%, #040907 68%, #000000 100%\)/, "green to black");
+  // (19 Oct 2026, "make the background more black") a breath of green at the top, black almost at once
+  assert.match(block(":root {"), /linear-gradient\(180deg, #06120c 0%, #030907 30%, #010302 62%, #000000 100%\)/, "green to black, blacker");
   assert.match(block(":root {"), /--glow: 0 0 1px currentColor, 0 0 9px color-mix\(in srgb, currentColor 55%, transparent\)/);
   assert.match(block(":root {"), /--glow-ink: none;/, "body text never glows");
   assert.match(block('[data-theme="light"] {'), /--glow: none;/, "light never glows");
-  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #f4fbf7 0%, #d4f3e1 45%, #8ee8b3 100%\);/, "the title card's chrome-to-mint letters");
+  // (19 Oct 2026) the dark headline is the original phosphor, no longer chrome washed to mint
+  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%\);/, "the original phosphor green");
 });
 
 test("the original passport (iteration 5, 7db2b89): plus registration band, the 01, the print lines, its own teal and phosphor, the machine zone at the foot", () => {

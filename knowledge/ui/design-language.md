@@ -14,7 +14,10 @@
   FEED · SEARCH · POST disc · MESSAGES · ACCOUNT) parted by cuts in the
   glass, with the tab indicator at its top right and the foot grill under
   the disc. All three are clear rainbow-refracting liquid glass. The
-  wordmark and the ad strip (the house lines) live on the Feed's masthead.
+  *ASILUM wordmark is a fixture too, top left, in line with the deck's left
+  edge (19 Oct); the ad strip (the house lines) lives on the Feed's head.
+- **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
+  upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
   links, a green-teal `--red` accent. Dark: `#070b0c` paper, `#6e9cff`
   links, `#8cf0a6` accent. Token NAMES are unchanged so the rules keep

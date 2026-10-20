@@ -28,7 +28,10 @@ test("there is no Wire: the selector, the lanes, the in-page composer and the ho
 });
 
 test("the stream is Tetris-packed and wheels: packFeed drives the segments, a full card breaks the columns", () => {
-  assert.match(page, /const segs = packFeed\(feedList\(list\)\);/);
+  // (19 Oct) the duo — a piece with the places stacked beside it — on the two-column phone Feed only
+  assert.match(page, /const segs = packFeed\(feedList\(list\), \{ duo: gridCols <= 2 \}\);/);
+  assert.match(page, /className="feedduo"><div className="duohero">\{renderCard\(seg\.item\)\}<\/div><div className="duoside">\{seg\.side\.map\(renderCard\)\}<\/div><\/div>/);
+  assert.match(css, /\.feedduo \{ display: grid; grid-template-columns: minmax\(0, 1\.8fr\) minmax\(0, 1fr\);/, "the sketch's wide piece and narrow column");
   assert.match(page, /seg\.kind === "grid"\s*\?\s*<Columns/);
   assert.match(page, /className=\{seg\.kind === "full" \? "feedfull" : "feedstrip"\}/);
   assert.match(css, /\.feedwheel > \* \+ \* \{ margin-top: -6px; \}/, "slight overlap");

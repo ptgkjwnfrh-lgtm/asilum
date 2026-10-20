@@ -31,15 +31,19 @@ export default function PlaceCard({ place: p }) {
     window.addEventListener("asilum:location", read);
     return () => window.removeEventListener("asilum:location", read);
   }, [p]);
-  const when = p.dated && p.startsAt ? p.startsAt + (p.endsAt && p.endsAt !== p.startsAt ? " → " + p.endsAt : "") : null;
   const label = milesLabel(miles);
   return (
     <article className="card placecard" data-id={"place:" + p.id} data-type="PLACE" aria-label={"place: " + p.name}>
       <button type="button" className="placeopen" onClick={() => { haptic("press"); openSheet("map", { pin: p.id, title: "MAP" }); }} aria-label={"open the map for " + p.name}>
         <span className="placeicon" aria-hidden="true"><Icon name="venue" size={34} /></span>
+        {/* the name for assistive technology carries what the card no longer prints */}
+        <span className="idlabel">{[String(p.kind || "").toLowerCase(), p.city, p.dated && p.startsAt ? p.startsAt : null].filter(Boolean).join(", ")}</span>
         {label ? <span className="placedist">{label}</span> : <span className="placedist quiet" title="the distance appears once a base city or your current area is shared on the map">—</span>}
         <b className="placename">{p.name}</b>
-        <span className="placemeta">{String(p.kind || "").toUpperCase()}{p.city ? " · " + p.city : ""}{when ? " · " + when : ""}{p.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        {/* as the owner's post-layout sketch draws it (19 Oct 2026): the mark,
+            the distance, the name, the globe — the kind, the city and the
+            dates live in the map popup; a sample still says so here */}
+        {p.sample ? <span className="placemeta">SAMPLE FIXTURE</span> : null}
         <span className="placeglobe" aria-hidden="true"><Icon name="globe" size={18} /></span>
       </button>
     </article>

@@ -28,7 +28,6 @@ import { EchoRail } from "./components/EchoRail.jsx";
 import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
 import AdStrip from "./components/AdStrip.jsx";
-import Wordmark from "./components/Wordmark.jsx";
 import PostCard from "./components/PostCard.jsx";
 import PieceFloat from "./components/PieceFloat.jsx";
 import { createPortal } from "react-dom";
@@ -833,12 +832,15 @@ export default function Home() {
     );
   }
   function Stream({ list, memo }) {
-    const segs = packFeed(feedList(list));
+    // the duo (owner's sketch, 19 Oct 2026) on the two-column phone Feed only
+    const segs = packFeed(feedList(list), { duo: gridCols <= 2 });
     return (
       <div className="feedwheel">
         {segs.map((seg, i) => seg.kind === "grid"
           ? <Columns key={"g" + i} count={gridCols} items={seg.items} memo={memo} weight={weightOf} render={renderCard} />
-          : <div key={seg.item.id} className={seg.kind === "full" ? "feedfull" : "feedstrip"}>{renderCard(seg.item)}</div>)}
+          : seg.kind === "duo"
+            ? <div key={"duo:" + seg.item.id} className="feedduo"><div className="duohero">{renderCard(seg.item)}</div><div className="duoside">{seg.side.map(renderCard)}</div></div>
+            : <div key={seg.item.id} className={seg.kind === "full" ? "feedfull" : "feedstrip"}>{renderCard(seg.item)}</div>)}
       </div>
     );
   }
@@ -862,7 +864,6 @@ export default function Home() {
   return (
     <div className="wrap ctr">
       <header className="cthead">
-        <div className="feedmark"><Wordmark /></div>
         {/* the ad strip runs at the head of the Feed, off the deck (the owner's fixture sketch, 19 Oct 2026) */}
         <AdStrip />
         <PageMast word="THE FEED" sub="DISCOVERY · PUBLISHING · COMMERCE" />
