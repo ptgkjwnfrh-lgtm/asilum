@@ -12,18 +12,24 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
-import { fitPhrase } from "../lib/brain/sizing.js";
-import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
   getUid, postJSON, authorizedFetch, thumbFor,
-  fitProfileForBrain, brainEnabled, claimRequest, watchRequest, aspectFor, beaconJSON } from "../lib/client.js";
+  brainEnabled, claimRequest, watchRequest, beaconJSON } from "../lib/client.js";
 import {
   observationOn, followedBrands, isDemoItem, DEMO_LABEL,
 } from "../lib/social.js";
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
-import { braid, packFeed, echoRail, pieceName } from "../lib/feed/types.js";
-import { PIECE_EVENT } from "../lib/feed/actions.js";
+import { braid, echoRail, pieceName } from "../lib/feed/types.js";
+import { tetrisPack, feedColsFor, motionRail } from "../lib/feed/tetris.js";
+import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
+import Fig20Rail from "./components/MotionRail.jsx";
+import SongCard from "./components/SongCard.jsx";
+import { PIECE_EVENT, favorite } from "../lib/feed/actions.js";
+import Icon from "./components/Icons.jsx";
+import SaveButton from "./components/SaveButton.jsx";
+import { haptic } from "../lib/haptics.js";
 import { EchoRail } from "./components/EchoRail.jsx";
 import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
@@ -31,9 +37,7 @@ import AdStrip from "./components/AdStrip.jsx";
 import PostCard from "./components/PostCard.jsx";
 import PieceFloat from "./components/PieceFloat.jsx";
 import { createPortal } from "react-dom";
-import TagRow from "./components/TagChip.jsx";
 import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
-import { tagsFor, visibleTags } from "../lib/tagging/grammar.js";
 import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
@@ -94,7 +98,6 @@ export default function Home() {
   const feedGenRef = useRef(0);
   const sentinelRef = useRef(null);
 
-  const fitBrain = fitProfileForBrain(fit);
 
   // The folio's edition date — set on mount like the cover's masthead.
   useEffect(() => {
@@ -161,15 +164,14 @@ export default function Home() {
   const itemsRef = useRef([]);
   useEffect(() => { itemsRef.current = items; }, [items]);
 
-  const gridCols = useColumnCount();
-  // Column memories per list, kept across tab round-trips.
-  const curatedColsRef = useRef({ count: 0, map: new Map() });
-  const followingColsRef = useRef({ count: 0, map: new Map() });
-  const newColsRef = useRef({ count: 0, map: new Map() });
-  // A card's height in column widths: the tile aspect plus the caption.
-  const cardWeight = useCallback((it) => {
-    const [w, h] = String(aspectFor(it.id)).split("/").map((x) => Number(x));
-    return (Number.isFinite(w) && Number.isFinite(h) && w > 0 ? h / w : 1.2) + 0.45;
+  const feedCols = useFeedCols();
+  // cards set aside on this device (lib/feed/hidden.js), read after mount
+  const [hidden, setHidden] = useState(() => new Set());
+  useEffect(() => {
+    const sync = () => setHidden(readHidden());
+    sync();
+    window.addEventListener(HIDDEN_EVENT, sync);
+    return () => window.removeEventListener(HIDDEN_EVENT, sync);
   }, []);
   // ---- THE POSTS of the one Feed (V.2 Blueprint, 17 Oct 2026), read from
   // the editorial route and braided into the pieces below.
@@ -251,11 +253,13 @@ export default function Home() {
     if (!list) return list;
     const hit = braidCache.current.get(list);
     if (hit && hit.posts === posts && hit.places === places) return hit.out;
-    const out = braid(list, streamPosts, places);
+    // the motion row: up to twenty of the stream's motions in Figure 20, after the sixth card
+    const { rail, rest } = motionRail(streamPosts);
+    const out = braid(list, rest, places);
+    if (rail) out.splice(Math.min(6, out.length), 0, rail);
     braidCache.current.set(list, { posts, places, out });
     return out;
   }
-  const weightOf = useCallback((it) => (it.__post ? ((it.__post.image || it.__post.imageUrl) ? 1.95 : 0.85) : it.__place ? 0.5 : cardWeight(it)), [cardWeight]);
   // Which tab is on screen, for handlers that resolve after a switch.
   const tabRef = useRef("curated");
   useEffect(() => { tabRef.current = tab; }, [tab]);
@@ -629,7 +633,7 @@ export default function Home() {
     const boot = async () => {
       if (q) {
         promptRef.current = q;
-        setNotice(`The Asterisk system is routing this edit toward “${q}” without rewriting your Passport`);
+        setNotice(`The Asterisk system is routing this feed toward “${q}” without rewriting your Passport`);
       }
       await loadFeed(user);
       if (sharedItem) {
@@ -814,33 +818,39 @@ export default function Home() {
     return () => window.removeEventListener("asilum:feed-refresh", on);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // THE STREAM: Tetris-packed (lib/feed/types.js packFeed). A run of column
-  // cards is one masonry segment; a STILL or MOTION stands full width; a
-  // standalone BRDCST is a thin strip. The wheel overlaps slightly (CSS).
-  function renderCard(it) {
+  // THE STREAM: one Tetris grid (lib/feed/tetris.js tetrisPack) — every
+  // card in one of its kind's sizes at its grid place, the gaps even; a
+  // carousel and the motion row are Figure 20 (Fig20.jsx).
+  function renderCard(it, variant) {
+    if (it.__rail) return <Fig20Rail key={it.id} posts={it.__rail} />;
+    if (it.__song) return <SongCard key={it.id} id={it.id} song={it.__song} />;
     if (it.__post) return <PostCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} />;
     if (it.__place) return <PlaceCard key={it.id} place={it.__place} />;
     return (
       <FragmentCard
         key={it.id}
         it={it}
-        fitLine={fitPhrase(it.size, fitBrain)}
+        variant={variant}
         onOpen={() => openModal(it)}
         onFloat={() => setFloatItem(it)}
         onPass={() => react(it, "skip")}
       />
     );
   }
-  function Stream({ list, memo }) {
+  function Stream({ list }) {
     // the duo (owner's sketch, 19 Oct 2026) on the two-column phone Feed only
-    const segs = packFeed(feedList(list), { duo: gridCols <= 2 });
+    // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
+    // every card at its grid place, in one size its kind allows, the gaps even
+    const { cells, rows } = tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols });
     return (
-      <div className="feedwheel">
-        {segs.map((seg, i) => seg.kind === "grid"
-          ? <Columns key={"g" + i} count={gridCols} items={seg.items} memo={memo} weight={weightOf} render={renderCard} />
-          : seg.kind === "duo"
-            ? <div key={"duo:" + seg.item.id} className="feedduo"><div className="duohero">{renderCard(seg.item)}</div><div className="duoside">{seg.side.map(renderCard)}</div></div>
-            : <div key={seg.item.id} className={seg.kind === "full" ? "feedfull" : "feedstrip"}>{renderCard(seg.item)}</div>)}
+      <div className="fgridwrap">
+        <div className="fgrid" style={{ "--fcols": feedCols, "--frows": rows }}>
+          {cells.map((c) => (
+            <div key={c.card.id} className={"fcell k-" + c.kind.toLowerCase().replace("+", "-") + " v-" + c.v} style={{ gridColumn: `${c.x + 1} / span ${c.w}`, gridRow: `${c.y + 1} / span ${c.h}` }}>
+              {renderCard(c.card, c.v)}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -869,7 +879,7 @@ export default function Home() {
         <PageMast word="THE FEED" sub="DISCOVERY · PUBLISHING · COMMERCE" />
         {stamp && (
           <div className="ctmeta">
-            LIVE EDIT · {stamp}
+            LIVE FEED · {stamp}
             {items.length > 0 && (
               <span>{items.length} PIECES THIS PASS</span>
             )}
@@ -883,7 +893,7 @@ export default function Home() {
           page-level statement tells you the whole shelf is sample data. */}
       <p className="demoline" role="note">
         <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
-        {" "}{guideOn ? "The Asterisk system routed this edit through your Passport." : "The Asterisk system is paused — a general edit."}
+        {" "}{guideOn ? "The Asterisk system routed this feed through your Passport." : "The Asterisk system is paused — a general feed."}
       </p>
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
@@ -1002,7 +1012,7 @@ export default function Home() {
                   {newAboveCount} new {newAboveCount === 1 ? "piece" : "pieces"} above ↑
                 </button>
               )}
-              <Stream list={items} memo={curatedColsRef} />
+              <Stream list={items} />
               <div ref={sentinelRef} className="sentinel" />
             </>
           )}
@@ -1018,7 +1028,7 @@ export default function Home() {
                 </div>
               )}
               {tabItems && tabItems.length > 0 && (
-                <Stream list={tabItems} memo={followingColsRef} />
+                <Stream list={tabItems} />
               )}
             </>
           )}
@@ -1031,7 +1041,7 @@ export default function Home() {
               <p className="deck">newest sample records first.</p>
               {!tabItems && <div className="empty">pulling the fresh racks…</div>}
               {tabItems && (
-                <Stream list={tabItems} memo={newColsRef} />
+                <Stream list={tabItems} />
               )}
             </>
           )}
@@ -1081,65 +1091,30 @@ export default function Home() {
 // least --ed-grid-colw wide — so a narrow desktop window dropped to fewer
 // columns. The same contract, computed: the UI lab's variables (it announces
 // a change as `asilum:edition`), the grid's own width, two on a phone.
-function useColumnCount() {
-  const [count, setCount] = useState(4);
+// THE FEED'S COLUMNS (lib/feed/tetris.js feedColsFor): 5 on a phone, 10 on a
+// tablet or small laptop, 15 wider — read from the Feed's own width.
+function useFeedCols() {
+  const [cols, setCols] = useState(5);
   useEffect(() => {
-    // The same breakpoint as the stylesheet's mobile rules (globals.css).
-    const mq = window.matchMedia("(max-width: 760px)");
     const sync = () => {
-      if (mq.matches) { setCount(2); return; }
-      const css = getComputedStyle(document.documentElement);
-      const cols = parseInt(css.getPropertyValue("--ed-grid-cols"), 10);
-      const colw = parseInt(css.getPropertyValue("--ed-grid-colw"), 10);
-      const gap = parseInt(css.getPropertyValue("--ed-grid-gap"), 10);
-      const want = Number.isFinite(cols) && cols > 0 ? cols : 4;
-      const minW = Number.isFinite(colw) && colw > 0 ? colw : 240;
-      const g = Number.isFinite(gap) && gap >= 0 ? gap : 20;
-      const grid = document.querySelector(".grid.gcols");
-      const width = grid ? grid.clientWidth : window.innerWidth;
-      const fit = Math.max(1, Math.floor((width + g) / (minW + g)));
-      setCount(Math.max(1, Math.min(want, fit)));
+      const wrap = document.querySelector(".fgridwrap");
+      setCols(feedColsFor(wrap ? wrap.clientWidth : window.innerWidth));
     };
     sync();
-    mq.addEventListener("change", sync);
     window.addEventListener("resize", sync);
-    window.addEventListener("asilum:edition", sync);
-    return () => {
-      mq.removeEventListener("change", sync);
-      window.removeEventListener("resize", sync);
-      window.removeEventListener("asilum:edition", sync);
-    };
+    return () => window.removeEventListener("resize", sync);
   }, []);
-  return count;
+  return cols;
 }
 
-// Explicit columns with a memory: a card keeps the column it was first
-// placed in, a newcomer takes the shortest, and cards keep list order within
-// a column — so a replacement lands where the replaced card stood and a
-// removal (PASS) shortens only its own column (lib/feed/rechunk.js
-// placeInColumns; see .grid.gcols in globals.css).
-// `memo` is the page's map for this list (it must outlive a tab round-trip,
-// or every card re-buckets when the reader comes back); `weight` says how tall
-// a card is so columns balance by height.
-function Columns({ items, count, render, children, memo, weight }) {
-  const n = Math.max(1, count);
-  const fallbackRef = useRef({ count: n, map: new Map() });
-  const store = memo || fallbackRef;
-  if (store.current.count !== n) store.current = { count: n, map: new Map() };
-  const cols = placeInColumns(items, n, store.current.map, weight);
-  return (
-    <div className="grid gcols">
-      {cols.map((col, c) => <div className="gcol" key={c}>{col.map(render)}</div>)}
-      {children}
-    </div>
-  );
-}
 
 // the window inside which a second tap makes a double tap — a mouse's
 // dblclick and a finger's double tap alike (iOS does not fire dblclick)
 const DOUBLE_TAP_MS = 280;
-function FragmentCard({ it, fitLine, onOpen, onPass, onFloat }) {
+function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const tap = useRef({ at: 0, timer: 0 });
+  const [liked, setLiked] = useState(false);
+  const [shared, setShared] = useState("");
   useEffect(() => () => clearTimeout(tap.current.timer), []);
   // one tap opens the listing a beat later; a second tap inside the window
   // cancels that and floats the piece instead
@@ -1155,33 +1130,69 @@ function FragmentCard({ it, fitLine, onOpen, onPass, onFloat }) {
     clearTimeout(tap.current.timer);
     tap.current.timer = setTimeout(() => { tap.current.at = 0; onOpen(); }, onFloat ? DOUBLE_TAP_MS : 0);
   }
-  // THE PIECE CARD (owner's reference of 18 Oct 2026, 2.jpg): the photograph
-  // fills a rounded card; one quiet line beneath carries the name and the
-  // price; the small × at the corner is PASS. Favourite and bag live in the
-  // LISTING popup the card opens. ONE ACCESSIBLE NAME PER CARD (launch
-  // audit, Aug 16): the title is the real control; the image is
-  // presentational and keeps its pointer affordance.
+  async function share() {
+    haptic("press");
+    const url = window.location.origin + "/piece/" + encodeURIComponent(it.id);
+    try {
+      if (navigator.share) await navigator.share({ url, title: pieceName(it) });
+      else await navigator.clipboard.writeText(url);
+      setShared("link copied ✓");
+    } catch { setShared(""); }
+    setTimeout(() => setShared(""), 1800);
+  }
+  // THE PIECE CARD (owner's feed sketch, 25 Oct 2026; the post sketch, IMG_1143
+  // Figs. 12–13). HERO: "SELL:handle" — the mode word and the seller's handle
+  // as one line — with PASS, the photograph, the name, the size and the price
+  // on one line, and ♡ · the stamp (STAMP) · share.
+  // SMALL: the photograph and one quiet line, PASS at the corner. The mode
+  // word is what the record is, never a claim: SELL only for a native
+  // Storefront listing, LISTED for one bought at its source, DEMO for a
+  // synthetic record (which is also "sample data, not for sale"). ONE
+  // ACCESSIBLE NAME PER CARD (launch audit, Aug 16): the title is the real
+  // control; the image is presentational and keeps its pointer affordance.
+  const demo = isDemoItem(it);
+  const mode = demo ? DEMO_LABEL : it.commerce_rail === "native" ? "SELL" : "LISTED";
+  const who = it.sellerHandle || it.ownerHandle || (demo ? it.brand : it.src || it.brand) || "";
+  const size = it.size && (it.size.label || it.size.fitsLikeUS) ? it.size.label || it.size.fitsLikeUS : (typeof it.size === "string" ? it.size : "");
+  const price = it.price != null && it.price !== "" ? `${it.price}${it.currency || "USD"}` : "";
+  const pass = onPass ? <button type="button" className="cardpass" onClick={onPass} aria-label={"pass on " + (it.title || "this piece")} title="PASS"><Icon name="pass" size={20} /></button> : null;
+  if (variant === "small") {
+    return (
+      <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
+        <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
+          <OriginSticker item={it} />
+          <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+        </div>
+        {pass}
+        <div className="pieceline">
+          <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
+          {price ? <span className="price">{price}</span> : null}
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className={"card piece" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-      <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it" style={{ aspectRatio: aspectFor(it.id) }}>
+    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
+      <div className="pchead">
+        <b className="pcmode">{mode}{who ? <span className="pchandle">:{who}</span> : null}</b>
+        {pass}
+      </div>
+      <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
         <OriginSticker item={it} />
         <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
       </div>
-      {/* (7 Sep) the brief's third verb — a reader can pass on a piece
-          without opening it. Same signal the modal's Skip sends. */}
-      {onPass && <button type="button" className="piecepass" onClick={onPass} aria-label={"pass on " + (it.title || "this piece")} title="PASS">×</button>}
-      <div className="pieceline">
-        <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
-        {it.price ? <span className="price">{it.currency || "USD"} {it.price}</span> : null}
+      <button type="button" className="ttl pctitle" onClick={onOpen}>{pieceName(it)}</button>
+      <div className="pcrow">
+        <span className="pcsize">{size}</span>
+        {price ? <span className="price">{price}</span> : null}
       </div>
-      {/* A demo record says so, and says nothing else about provenance: no
-          source, no "just in". Both would be claims it cannot support. */}
-      {isDemoItem(it)
-        ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div>
-        : it.src ? <div className="fitline"><b className="red">{it.src}</b> · just in</div> : null}
-      {fitLine ? <div className="fitline">{fitLine}</div> : null}
-      {/* the Feed card shows the same first three as the listing (slice 4) */}
-      <TagRow tags={visibleTags(tagsFor(it)).shown} size="card" />
+      {demo ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div> : null}
+      <div className="pcacts" role="group" aria-label="piece actions">
+        <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
+        <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />
+        <button type="button" className="pcact" onClick={share} aria-label="share the piece" title={shared || "SHARE"}><Icon name="share" size={22} /></button>
+        {shared ? <span className="wpcshared" role="status">{shared}</span> : null}
+      </div>
     </div>
   );
 }

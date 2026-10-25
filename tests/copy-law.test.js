@@ -89,7 +89,7 @@ test("the engine is called The Asterisk system in prose", () => {
   // Positive, so the rule cannot be satisfied by deleting the sentences.
   assert.match(read("app/stylist/page.js"), /The Asterisk system is styling/);
   assert.match(read("app/discover/page.js"), /The Asterisk system is using your Passport/);
-  assert.match(read("app/page.js"), /The Asterisk system routed this edit/);
+  assert.match(read("app/page.js"), /The Asterisk system routed this feed/); // (25 Oct) "it's the feed", not an edit
 });
 
 test("the ticker carries the house lines when nothing eligible runs", () => {

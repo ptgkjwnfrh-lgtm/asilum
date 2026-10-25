@@ -28,12 +28,18 @@ const GLYPHS = {
   close: <g {...P}><path d="M6 6l12 12M18 6L6 18" /></g>,
   back: <g {...P}><path d="M14.5 5.5L8 12l6.5 6.5" /></g>,
   chevron: <g {...P}><path d="M6 9.5l6 6 6-6" /></g>,
+  // the fold (owner's post sketch, 25 Oct 2026, Fig. 7): a triangle under its bar
+  fold: <g {...P}><path d="M5.5 5.8h13" /><path d="M7.2 9.2h9.6L12 17.4z" /></g>,
   asterisk: <g {...P}><path d="M12 4v16M5.1 8l13.8 8M18.9 8L5.1 16" /></g>,
   stamp: <g {...P}><rect x="5" y="5" width="5.5" height="5.5" rx="1" /><rect x="13.5" y="5" width="5.5" height="5.5" rx="1" /><rect x="5" y="13.5" width="5.5" height="5.5" rx="1" /><rect x="13.5" y="13.5" width="5.5" height="5.5" rx="1" /></g>,
   link: <g {...P}><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2" /></g>,
   glasses: <g {...P}><circle cx="7.5" cy="13" r="3.5" /><circle cx="16.5" cy="13" r="3.5" /><path d="M11 13h2M4 12l2-5h2M20 12l-2-5h-2" /></g>,
   list: <g {...P}><path d="M5 7h14M5 12h14M5 17h10" /></g>,
   plus: <g {...P}><path d="M12 6v12M6 12h12" /></g>,
+  // PASS (owner's feed sketch, 25 Oct 2026): an × standing on a bar — set aside, not deleted
+  // STAMP (owner's post sketch, 25 Oct 2026, Fig. 3): a rubber stamp — the handle tapering to its neck, the plate
+  stamp: <g {...P}><path d="M7.6 3.4h8.8l-2.6 9.4h-3.6z" /><rect x="4.4" y="12.8" width="15.2" height="4.4" rx="1.1" /><path d="M6 20.6h12" /></g>,
+  pass: <g {...P}><path d="M6.5 3.5l11 11M17.5 3.5l-11 11" /><rect x="5" y="18.5" width="14" height="2.4" rx="1.2" /></g>,
   minus: <g {...P}><path d="M5 12h14" /></g>,
   locate: <g {...P}><circle cx="12" cy="12" r="4" /><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /></g>,
   bag: <g {...P}><rect x="4.4" y="8.4" width="15.2" height="12.4" rx="1.4" /><path d="M8.8 8.4V6.6a3.2 3.2 0 0 1 6.4 0v1.8" /></g>,

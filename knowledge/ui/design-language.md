@@ -16,6 +16,9 @@
   the disc. All three are clear rainbow-refracting liquid glass. The
   *ASILUM wordmark is a fixture too, top left, in line with the deck's left
   edge (19 Oct); the ad strip (the house lines) lives on the Feed's head.
+- **The Feed is one Tetris grid** (25 Oct, lib/feed/tetris.js): mixed card
+  sizes, even gaps, no holes; carousels and the motion row are Figure 20
+  (Fig20.jsx), the ends turned and stacked.
 - **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
   upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for

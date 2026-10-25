@@ -22,7 +22,7 @@ import { buildFeed, learn, markSeen, tasteVector, SERVE_ZONES } from "../lib/bra
 import { CATALOG } from "../lib/ingest/catalog.js";
 import { publicProduct, PUBLIC_BRIDGES } from "../lib/products.js";
 import { eventFromInteraction } from "../lib/events/index.js";
-import { planRechunk, idsBelowFold, applyRechunk, placeInColumns, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
+import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, RECHUNK_MIN_REPLACE } from "../lib/feed/rechunk.js";
 
 const PROFILE = () => ({
   long: { MINIMAL: 0.9, TAILORED: 0.6, UTILITARIAN: 0.3 },
@@ -541,33 +541,6 @@ test("C25 applyRechunk replaces planned cards in place and touches nothing else"
   assert.deepEqual(applyRechunk(prev.slice(0, 3), [], fresh.slice(0, 2), { max: 4 }).map((x) => x.id), ["p0", "p1", "p2", "f0"]);
 });
 
-test("C27 a column is a card's state: a removal shortens only its own column, a replacement lands where the old card stood", () => {
-  const items = Array.from({ length: 12 }, (_, i) => ({ id: `c${i}` }));
-  const memo = new Map();
-  const first = placeInColumns(items, 4, memo);
-  assert.deepEqual(first.map((col) => col.map((x) => x.id)), [
-    ["c0", "c4", "c8"], ["c1", "c5", "c9"], ["c2", "c6", "c10"], ["c3", "c7", "c11"],
-  ], "a fresh page is round-robin");
-  // PASS on c1 (column 1): the other three columns are byte-identical.
-  const afterPass = placeInColumns(items.filter((x) => x.id !== "c1"), 4, memo);
-  assert.deepEqual(afterPass[0].map((x) => x.id), ["c0", "c4", "c8"]);
-  assert.deepEqual(afterPass[1].map((x) => x.id), ["c5", "c9"]);
-  assert.deepEqual(afterPass[2].map((x) => x.id), ["c2", "c6", "c10"]);
-  assert.deepEqual(afterPass[3].map((x) => x.id), ["c3", "c7", "c11"]);
-  // A newcomer takes the shortest column, in list order within it.
-  const withNew = placeInColumns([...items.filter((x) => x.id !== "c1"), { id: "n1" }], 4, memo);
-  assert.deepEqual(withNew[1].map((x) => x.id), ["c5", "c9", "n1"]);
-  // An in-place replacement (applyRechunk) lands where the replaced card stood.
-  const replaced = applyRechunk(items, ["c6"], [{ id: "f1" }], { max: 300 });
-  const memo2 = new Map();
-  placeInColumns(items, 4, memo2);
-  const cols = placeInColumns(replaced, 4, memo2);
-  assert.deepEqual(cols[2].map((x) => x.id), ["c2", "f1", "c10"], "f1 sits exactly where c6 was");
-  assert.deepEqual(cols[0].map((x) => x.id), ["c0", "c4", "c8"]);
-  // A column-count change forgets the memory (the caller discards the map).
-  assert.equal(placeInColumns(items, 3, new Map()).length, 3);
-  assert.equal(placeInColumns([], 4, new Map()).every((c) => c.length === 0), true);
-});
 
 test("C28 the dry-pool fill rotates and reaches an item the filter wrongly calls served", () => {
   const pool = CATALOG.slice(0, 40);
@@ -624,17 +597,6 @@ test("C30 the dry-pool fill resumes after its last take — a brand wall cycles 
   assert.ok(new Set(dry).size >= dry.length - 1, "dry pages differ from one another");
 });
 
-test("C31 placeInColumns: a duplicated id is one card, and a height weight balances by height", () => {
-  const items = [{ id: "a" }, { id: "b" }, { id: "a" }, { id: "c" }];
-  const cols = placeInColumns(items, 2, new Map());
-  assert.equal(cols.flat().length, 3, "the second a is not a second card");
-  assert.equal(cols.flat().filter((x) => x.id === "a").length, 1);
-  const tall = (it) => (it.id.startsWith("t") ? 3 : 1);
-  const mix = [{ id: "t1" }, { id: "t2" }, { id: "s1" }, { id: "s2" }, { id: "s3" }, { id: "s4" }];
-  const byHeight = placeInColumns(mix, 3, new Map(), tall);
-  const heights = byHeight.map((col) => col.reduce((h, it) => h + tall(it), 0));
-  assert.ok(Math.max(...heights) - Math.min(...heights) <= 1, `balanced by height: ${heights}`);
-});
 
 test("C32 a cursorless reader with rotation memory cycles the pool — the seen penalty is graded by recency, never flat", () => {
   const pool = Array.from({ length: 100 }, (_, i) => ({ id: `w${String(i).padStart(3, "0")}`, brand: `B${i % 10}`, tags: { MINIMAL: 0.5 + (i % 7) / 20 } }));

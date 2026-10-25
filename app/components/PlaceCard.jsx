@@ -23,6 +23,12 @@ import { distanceMi } from "../../lib/brdcst/index.js";
 import { milesLabel } from "../../lib/places/registry.js";
 import Icon from "./Icons.jsx";
 
+/** "gallery" / "GALLERY" / "pop_up" → "Gallery", "Pop up". */
+export function kindWord(kind) {
+  const s = String(kind || "").replace(/[_-]+/g, " ").trim().toLowerCase();
+  return s ? s[0].toUpperCase() + s.slice(1) : "";
+}
+
 export default function PlaceCard({ place: p }) {
   const [miles, setMiles] = useState(null);
   useEffect(() => {
@@ -40,10 +46,11 @@ export default function PlaceCard({ place: p }) {
         <span className="idlabel">{[String(p.kind || "").toLowerCase(), p.city, p.dated && p.startsAt ? p.startsAt : null].filter(Boolean).join(", ")}</span>
         {label ? <span className="placedist">{label}</span> : <span className="placedist quiet" title="the distance appears once a base city or your current area is shared on the map">—</span>}
         <b className="placename">{p.name}</b>
-        {/* as the owner's post-layout sketch draws it (19 Oct 2026): the mark,
-            the distance, the name, the globe — the kind, the city and the
-            dates live in the map popup; a sample still says so here */}
-        {p.sample ? <span className="placemeta">SAMPLE FIXTURE</span> : null}
+        {/* as the owner's sketches draw it (25 Oct 2026, IMG_1143 Figs.
+            14–16): "Location name", "Location type" beneath it, as written —
+            not shouted; the city and dates live in the map popup; a sample
+            still says so here */}
+        <span className="placemeta">{kindWord(p.kind)}{p.sample ? " · SAMPLE FIXTURE" : ""}</span>
         <span className="placeglobe" aria-hidden="true"><Icon name="globe" size={18} /></span>
       </button>
     </article>

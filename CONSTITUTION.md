@@ -399,12 +399,30 @@ launch title card: the capitals in chrome washing to mint (dark) or steel
 the square lit red, and one load in ten the bar is a run of chevrons that
 fills it. No red glows anywhere (the tab indicator included). The site's
 greens return to the original phosphor green (#46ff96) while the fixtures
-keep the V.2 accent (#8cf0a6), and the dark ground is blacker. THE POST
-LAYOUT (the owner's sketch, same day): a media post stands full width with
-its BRDCST hung beneath; on the two-column phone Feed a large piece stands on
-the left with the place cards stacked in a narrow column on its right
-(lib/feed/types.js packFeed's duo), places braided in pairs; a place card is
-the mark, the distance, the name and the globe. Search extends the deck upward for its bar; the search
+keep the V.2 accent (#8cf0a6), and the dark ground is blacker. THE FEED
+LAYOUT (the owner's feed sketch, 25 Oct 2026, superseding the 19 Oct duo):
+one Tetris grid (lib/feed/tetris.js) — 5, 10 or 15 columns by width, half-
+column rows, one gap everywhere; every card in one of its kind's sizes
+(a piece three columns tall or a small square, a place or a song a square,
+stills and motions tall or wide, a standalone BRDCST a full-width strip),
+placed where it traps no cells, full-width cards waiting for a level row. A
+post of several stills, and up to twenty recommended motions, are Figure 20:
+three cards flat in the middle and every other card visible in the two end
+stacks (twenty shows three and seventeen split), each stacked card standing
+on its outer edge with its inner edge turned away, flattening as it arrives;
+it opens in the middle. The Feed says "feed", never "edit". A piece card is the mode word (SELL for a native listing,
+LISTED otherwise, DEMO for a synthetic record), the handle, PASS, the
+photograph, the name, the size and price, and like · stamp · share. A song
+card appears only for a real record; there is no music catalog yet. THE POST
+CARD (the owner's post sketch, IMG_1143, 25 Oct 2026): every post is a five-
+column card — the author's circle and username with PASS over a red rule,
+the media (Figure 20 for a carousel), the counter "01/26", the caption folded
+into two lines of chevrons with the fold mark (a sound ring at the right on a
+motion), then ♡ · the bubble · the stamp · share in the signal blue, each
+with its count beneath, over a red rule. A count is the real one in three
+digits or "---" where none is kept (comments, shares, any sample); never an
+invented "000". The piece card's head is one line, "SELL:handle"; a place
+card prints its name and type as written, not in capitals. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 

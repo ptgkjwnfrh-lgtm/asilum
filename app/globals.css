@@ -704,8 +704,6 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
    below the fold re-flowed every column break and ~30% of the cards on
    screen hopped a column (a verifier's measurement). Row order is now visual
    order too: the reader reads left to right, top to bottom. */
-.grid.gcols { columns: auto; column-gap: 0; display: flex; align-items: flex-start; gap: var(--ed-grid-gap, 20px); }
-.grid.gcols .gcol { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
 .card {
   break-inside: avoid; margin: 0 0 var(--ed-card-gap, 26px); background: none;
   display: block;
@@ -931,7 +929,6 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 @media (max-width: 760px) {
   .main { padding: calc(var(--head-h) + 14px) 14px 90px; }
   .grid { columns: 2 150px; column-gap: 12px; }
-  .grid.gcols { gap: 12px; }
 }
 
 /* ---- The Stylist: outfit slates (de-bubbled Aug 12: rack-rule tops,
@@ -3894,13 +3891,6 @@ body { font-size: 14px; }
 /* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
 /* the vertical wheel with slight overlap (blueprint "Two scrolling systems"):
    each packed segment rides a few pixels over the one before it */
-.feedwheel { display: flex; flex-direction: column; }
-.feedwheel > * + * { margin-top: -6px; }
-.feedfull { position: relative; z-index: 1; margin: 0 0 var(--ed-card-gap, 26px); }
-.feedfull .card { margin: 0; }
-.feedstrip { margin: 0 0 14px; }
-.feedstrip .card { margin: 0; }
-.feedstrip .card .body { padding-top: 4px; }
 .typechip { display: inline-block; padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; font: 8px/1.5 var(--mich); letter-spacing: 0.14em; color: var(--grey); vertical-align: middle; }
 
 /* media in a card is a button: tap enlarges (MediaFloat) */
@@ -4408,7 +4398,6 @@ body { font-size: 14px; }
 .wpcstage { position: relative; background: color-mix(in srgb, var(--ink) 8%, var(--paper)); }
 .wpcstage .wpcfig { margin: 0; }
 .wpcstage .wpcfig img, .wpcstage video { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-.feedfull .wpcstage .wpcfig img, .feedfull .wpcstage video { max-height: min(80vh, 760px); }
 .wpcstage .wpccarousel { display: flex; gap: 0; overflow-x: auto; scroll-snap-type: x mandatory; }
 .wpcstage .wpccarousel .wpcmedia { flex: 0 0 100%; }
 .wpcstage .wpccarousel .wpcmedia img { aspect-ratio: 4 / 5; border-radius: 0; }
@@ -4489,9 +4478,6 @@ body { font-size: 14px; }
 /* the piece card: the photograph, rounded, one quiet line beneath, × to pass */
 .card.piece { position: relative; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
 .card.piece .imgwrap { border-radius: 0; }
-.piecepass { position: absolute; top: 8px; right: 8px; z-index: 3; width: 28px; height: 28px; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--paper) 72%, transparent); color: var(--ink); font: 15px/1 var(--helv); cursor: pointer; opacity: 0.7; transition: opacity 0.18s, transform 0.12s; }
-.piecepass:hover { opacity: 1; }
-.piecepass:active { transform: scale(0.94); }
 .pieceline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 9px 12px 2px; font: 400 10.5px/1.4 var(--mich); letter-spacing: 0.01em; }
 .pieceline .ttl { min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-transform: none; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pieceline .price { margin: 0; flex: none; font: inherit; }
@@ -4896,24 +4882,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; } }
 :root[data-theme="dark"] :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; }
 
-/* =====================================================================
-   THE POST LAYOUT, AS DRAWN (owner's sketch, 19 Oct 2026): a media post
-   full width with its BRDCST hung beneath; then a large piece on the left
-   with a narrow column of place cards stacked on its right (packFeed's
-   duo, the two-column phone Feed). The place card is the mark, the
-   distance, the name and the globe.
-   ===================================================================== */
-.feedduo { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); gap: 12px; align-items: start; margin: 0 0 var(--ed-card-gap, 26px); }
-.feedduo .card { margin-bottom: 0; }
-.duohero { min-width: 0; }
-.duoside { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-/* a place beside a piece is a near-square card: the mark at the top left,
-   the distance at the top right, the name, the globe in the corner */
-.duoside .placeopen { grid-template-columns: auto minmax(0, 1fr); min-height: 0; aspect-ratio: 1 / 1.08; padding: 12px 12px 34px; align-content: start; }
-.duoside .placeicon { width: 52px; height: 46px; }
-.duoside .placedist { font-size: clamp(18px, 5.6vw, 26px); }
-.duoside .placename { font-size: clamp(11px, 3.1vw, 13px); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.placemeta { padding-right: 28px; }
 /* the post's action row, as the sketch draws it: four large outline glyphs
    spread across the media's foot, the author's circle at the far right */
 .wpcacts { gap: clamp(14px, 6.5vw, 40px); }
@@ -4922,3 +4890,194 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .wpcorb .uavatar { width: 38px; height: 38px; }
 /* the rule under BRDCST is a hollow bar (the sketch's outlined band) */
 .brdcstrule { height: 7px; border: 1.5px solid var(--ink); background: transparent; opacity: 0.85; border-radius: 3px; }
+
+/* =====================================================================
+   THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js
+   packs, this draws). One grid: --fcols columns, half-column rows — two
+   rows and a gap are one column width — and the same gap everywhere. Each
+   card fills its grid cell exactly; what is inside a card adapts to the
+   size the packer gave it.
+   ===================================================================== */
+.fgridwrap { container-type: inline-size; width: 100%; }
+.fgrid {
+  --fgap: 10px;
+  display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
+  grid-auto-rows: calc(((100cqw - (var(--fcols, 5) - 1) * var(--fgap)) / var(--fcols, 5) - var(--fgap)) / 2);
+  gap: var(--fgap); margin: 0 0 var(--ed-card-gap, 26px);
+}
+@media (min-width: 760px) { .fgrid { --fgap: 14px; } }
+.fcell { position: relative; display: flex; min-width: 0; min-height: 0; container-type: inline-size; } /* a card's type scales with the card (cqw = its own width) */
+.fcell > .card { flex: 1; min-width: 0; min-height: 0; height: 100%; margin: 0; overflow: hidden; }
+
+/* PASS: an × on its bar at a card's corner */
+.cardpass { position: absolute; top: 8px; right: 8px; z-index: 4; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 60%, transparent); color: var(--ink); cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: transform 0.12s; }
+.cardpass:active { transform: scale(0.94); }
+.cardpass .ic { width: 20px; height: 20px; }
+
+/* THE PIECE — hero: head (mode word, handle, PASS), photograph, name, size · price, actions */
+.fcell .card.piece { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
+.fcell .card.piece .imgwrap { position: relative; flex: 1; min-height: 0; aspect-ratio: auto; overflow: hidden; cursor: pointer; }
+.fcell .card.piece .imgwrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card.piece.v-hero { padding: 10px 12px 6px; }
+.card.piece.v-hero .imgwrap { border-radius: 14px; margin: 6px 0 0; }
+.pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
+/* "SELL:handle" — one line, the sketch's Fig. 12 */
+.pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
+.pchandle { font: inherit; color: inherit; }
+.pchead .cardpass { position: static; flex: none; margin-left: auto; width: 30px; height: 30px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.pctitle { display: block; width: 100%; margin: 8px 0 0; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer;
+  font: 400 clamp(10px, 6.4cqw, 18px)/1.25 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pcrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 0 0; font: 400 clamp(11px, 7.6cqw, 22px)/1.1 var(--mich); color: var(--ink); }
+.pcrow .price { font: inherit; color: inherit; }
+.card.piece.v-hero .demoflag { margin: 4px 0 0; font-size: 9px; }
+.pcacts { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 0; }
+.pcact { display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform 0.12s; }
+.pcact .ic { width: 24px; height: 24px; }
+.pcact:active { transform: scale(0.94); }
+.pcact.on { color: var(--red); }
+/* small: the photograph and one quiet line */
+.card.piece.v-small .pieceline { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 8px 6px; min-width: 0; }
+.card.piece.v-small .pieceline .ttl { min-width: 0; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card.piece.v-small .pieceline .price { flex: none; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); }
+.card.piece.v-small .cardpass { width: 26px; height: 26px; top: 6px; right: 6px; }
+.card.piece.v-small .cardpass .ic { width: 16px; height: 16px; }
+
+/* THE PLACE: the mark, the distance, LOCATION NAME, LOCATION TYPE, the globe */
+.fcell .card.placecard { display: flex; }
+.fcell .placeopen { flex: 1; min-height: 0; height: 100%; align-content: start; padding: 8cqw; gap: 3cqw 6cqw; }
+.fcell .placeicon { width: 34cqw; height: 30cqw; border-radius: 7cqw; }
+.fcell .placeicon .ic { width: 60%; height: 60%; }
+.fcell .placedist { font-size: 14cqw; }
+.fcell .placename { text-transform: none; font-size: 8.4cqw; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fcell .placemeta { font: 400 5.6cqw/1.3 var(--mich); letter-spacing: 0.04em; padding-right: 0; }
+.fcell .placeglobe { right: 7cqw; bottom: 7cqw; }
+.fcell .placeglobe .ic { width: 14cqw; height: 14cqw; }
+
+/* THE SONG: the record's art, the title over it, PASS */
+.card.songcard { position: relative; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg3); }
+.songart { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.songtitle { position: absolute; left: 6cqw; right: 6cqw; bottom: 6cqw; padding: 3cqw 5cqw; border-radius: 7cqw; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.4cqw/1.2 var(--mich); }
+.songtitle small { display: block; font-size: 0.75em; color: var(--grey); }
+
+/* POSTS fill their cell: the media takes what the words and the footer leave */
+.fcell .card.wpostcard { display: flex; flex-direction: column; }
+.fcell .wpcstage { position: relative; flex: 1; min-height: 0; }
+.fcell .wpcstage .wpcfig, .fcell .wpcstage .wpcmedia { height: 100%; margin: 0; }
+.fcell .wpcstage img, .fcell .wpcstage video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; max-height: none; }
+.fcell .wpcbody { flex: 1; min-height: 0; overflow: hidden; }
+
+/* THE BRDCST STRIP: the badge in its ring, the name large, where and when */
+.card.bstrip { position: relative; display: flex; border: 1px solid var(--line); border-radius: var(--radius-card);
+  background: linear-gradient(90deg, var(--paper) 0%, color-mix(in srgb, var(--ink) 9%, var(--paper)) 100%); }
+.bsopen { display: flex; align-items: center; gap: 3.5cqw; width: 100%; height: 100%; padding: 6px 48px 6px 3cqw; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; min-width: 0; }
+.bsbadge { flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 82%; aspect-ratio: 1; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); }
+.bsbadge b { font: 400 clamp(8px, 3.2cqw, 16px)/1 var(--mich); letter-spacing: 0; }
+.bsbadge i { display: block; width: 55%; height: 2px; border-radius: 1px; background: var(--red); }
+.bsbody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bsname { font: 400 clamp(18px, 9cqw, 56px)/1 var(--mich); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bswhen { font: 400 clamp(8px, 3.4cqw, 15px)/1.25 var(--mich); letter-spacing: 0.04em; color: var(--ink); }
+
+/* FIGURE 20 (Fig20.jsx): tall cards in a strip, the ends turned and stacked */
+.fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
+.f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+.f20stage:active { cursor: grabbing; }
+.f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
+.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(8px, 9%, 22px); overflow: hidden; background: var(--bg3); will-change: transform; }
+.f20card img { -webkit-user-drag: none; pointer-events: none; }
+.f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.card.wpostcard.type-carousel { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
+.f20line { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 0 0 6px; font: 400 10px/1.3 var(--mich); color: var(--ink); overflow: hidden; }
+.f20line .wpchandle { flex: 0 1 auto; min-width: 0; display: inline-flex; align-items: center; gap: 6px; font-size: clamp(10px, 3.6cqw, 16px); white-space: nowrap; overflow: hidden; }
+.f20line .wpcttl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--grey); text-decoration: none; }
+.f20count { margin-left: auto; color: var(--grey); }
+.f20line .cardpass { position: static; flex: none; width: 28px; height: 28px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.f20line .f20count { flex: none; }
+.f20line > .modeltag { flex: none; }
+.f20line .wpchandle { text-overflow: ellipsis; display: block; }
+/* the motion row: 9:16 tiles, the one in the middle plays */
+.card.motionrail { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
+.mrhead { margin: 0; padding: 0 6px; font: 400 10px/1.3 var(--mich); letter-spacing: 0.16em; color: var(--ink); }
+.mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
+.mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
+@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
+
+/* the BRDCST footer and the post overlay inside a grid cell size to the card,
+   not the screen (a half-width post on a laptop overflowed with vw sizes) */
+.fcell .brdcstword { font-size: clamp(20px, 12cqw, 48px); }
+.fcell .brdcst .brdcstwhen { font-size: clamp(8px, 3.4cqw, 13px); }
+.fcell .brdcstname { font-size: clamp(14px, 6.8cqw, 28px); }
+.fcell .brdcst { padding: 2.6cqw 4.5cqw; }
+/* the post overlay sizes to its card: a three-column still on a laptop is
+   narrower than a phone's full-width one */
+.fcell .wpcover { padding: 18cqw 5cqw 3.5cqw; gap: 1cqw; }
+.fcell .wpchandle { font-size: clamp(10px, 6.4cqw, 20px); gap: 2.6cqw; }
+.fcell .wpcover .wpcttl { font-size: clamp(8.5px, 3.8cqw, 13px); }
+.fcell .wpcover .wpccap { font-size: clamp(9px, 4cqw, 14px); }
+.fcell .wpcacts { gap: clamp(4px, 6cqw, 40px); margin-top: 1.5cqw; }
+.fcell .wpcact { width: clamp(30px, 13cqw, 48px); height: clamp(30px, 13cqw, 48px); }
+.fcell .wpcact .ic { width: clamp(18px, 8.6cqw, 30px); height: clamp(18px, 8.6cqw, 30px); }
+.fcell .wpcorb .uavatar { width: clamp(26px, 10.5cqw, 38px); height: clamp(26px, 10.5cqw, 38px); }
+.fcell .wpccredit { padding: 1.6cqw 5cqw 0; font-size: clamp(7px, 2.6cqw, 9px); }
+
+/* =====================================================================
+   THE POST CARD (owner's post sketch, 25 Oct 2026, IMG_1143; PostCard.jsx).
+   Figs. 8–10: the author's circle, the username large, PASS at the corner;
+   11: a red rule from the name to the edge; the media fills the body;
+   6: the counter; 7: the caption folded into two lines of chevrons with the
+   fold mark, the sound ring at the right; 2–5: the four actions in the
+   signal blue, each with its count beneath; 1: a red rule under them.
+   Everything sizes to the card (cqw), so a phone's card and a laptop's read
+   alike.
+   ===================================================================== */
+.card.wpostcard.p2, .card.wpostcard.p2.type-carousel {
+  display: flex; flex-direction: column; gap: 0; padding: 4cqw 5cqw 3.2cqw;
+  border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); overflow: hidden;
+}
+.p2head { position: relative; display: flex; align-items: center; gap: 2.2cqw; min-width: 0; }
+.p2orb { flex: none; display: inline-grid; place-items: center; width: 10cqw; height: 10cqw; min-width: 28px; min-height: 28px; border: 1.5px solid var(--ink); border-radius: 50%; overflow: hidden; }
+.p2orb a { display: contents; }
+.p2orb .uavatar { width: 100%; height: 100%; border: 0; }
+.p2user { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(14px, 7.2cqw, 40px)/1.1 var(--mich); letter-spacing: 0; color: var(--ink); }
+.p2user a { color: inherit; text-decoration: none; }
+.p2head > .modeltag { flex: none; }
+.p2head .cardpass { position: static; flex: none; width: clamp(28px, 8cqw, 44px); height: clamp(28px, 8cqw, 44px); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.p2head .cardpass .ic { width: 80%; height: 80%; }
+/* the rule under the head starts under the name, past the circle */
+.p2rule { display: block; flex: none; height: 2px; margin: 0.6cqw 0 0 calc(max(10cqw, 28px) + 2.2cqw); border-radius: 1px; background: var(--red); }
+.p2rule.p2rule2 { margin: 1.2cqw 12cqw 0 11cqw; }
+.p2media { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; margin: 3cqw 0 2cqw; }
+.p2media .wpcstage { flex: 1; min-height: 0; border-radius: clamp(10px, 4cqw, 22px); overflow: hidden; }
+.p2media .wpccredit { padding: 1.2cqw 0 0; font-size: clamp(7px, 2.2cqw, 9px); }
+.p2media .fig20 { flex: 1; }
+.p2words { flex: 1; min-height: 0; display: flex; align-items: center; overflow: hidden; padding: 0 1cqw; font: 400 clamp(12px, 5.4cqw, 26px)/1.35 var(--mich); color: var(--ink); }
+.p2cap { flex: none; display: flex; flex-direction: column; gap: 0.8cqw; min-width: 0; padding: 0 0 0 1cqw; }
+.p2count { font: 400 clamp(8px, 2.4cqw, 12px)/1 var(--mich); letter-spacing: 0.06em; color: var(--ink); padding-left: 1cqw; }
+.p2line { display: flex; align-items: flex-end; gap: 1.6cqw; min-width: 0; }
+.p2fold { flex: 1; min-width: 0; display: block; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+/* two lines of chevrons, cut where the line ends — the caption waits inside */
+.p2chev { display: block; max-height: 2.9em; overflow: hidden; word-break: break-all; font: 400 clamp(10px, 3.6cqw, 20px)/1.45 var(--mich); letter-spacing: 0.04em; }
+.p2text { flex: 1; min-width: 0; max-height: 9.5em; margin: 0; overflow-y: auto; font: 400 clamp(10px, 3.4cqw, 17px)/1.45 var(--mich); color: var(--ink); }
+.p2more { flex: none; display: inline-grid; place-items: center; width: clamp(22px, 6cqw, 34px); height: clamp(22px, 6cqw, 34px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; transition: transform 0.18s; }
+.p2more .ic { width: 82%; height: 82%; }
+.p2more.up { transform: rotate(180deg); }
+.p2ring { flex: none; width: clamp(18px, 4.4cqw, 28px); height: clamp(18px, 4.4cqw, 28px); margin: 0 1cqw 0.8cqw auto; padding: 0; border: 1.5px solid var(--ink); border-radius: 50%; background: none; cursor: pointer; }
+.p2ring.on { background: var(--ink); }
+/* the four actions, blue, counted */
+.p2acts { position: relative; flex: none; display: flex; justify-content: space-between; align-items: flex-start; padding: 1.6cqw 12cqw 0 11cqw; color: var(--sig); }
+.p2act { display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; min-width: 0; }
+.fcell .p2acts .wpcact, .p2acts .wpcact { width: clamp(30px, 11cqw, 56px); height: clamp(30px, 11cqw, 56px); color: var(--sig); }
+.fcell .p2acts .wpcact .ic, .p2acts .wpcact .ic { width: 88%; height: 88%; }
+.p2acts .wpcact.on { color: var(--red); }
+/* the shared .soon rule paints a word red; the bubble here is a quiet blue glyph that says it is not built */
+[data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.45; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
+.p2n { font: 400 clamp(9px, 3.6cqw, 18px)/1 var(--mich); letter-spacing: 0.08em; color: var(--sig); }
+.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.55; }
+.p2acts .wpcshared { left: 11cqw; bottom: 100%; color: var(--ink); }
+/* what hangs beneath: the tagged pieces, the link, the BRDCST */
+.card.wpostcard.p2 .wpcpieces, .card.wpostcard.p2 .wpclink { margin: 2cqw 0 0; }
+.card.wpostcard.p2 .brdcst { margin: 2.4cqw -5cqw -3.2cqw; }
+.card.wpostcard.p2 .brdcstword { font-size: clamp(20px, 9cqw, 44px); }
+.card.wpostcard.p2 .brdcst .brdcstwhen { overflow-wrap: anywhere; }
