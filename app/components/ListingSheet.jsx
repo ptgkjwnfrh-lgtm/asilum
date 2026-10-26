@@ -40,6 +40,7 @@ import FloatView, { askTilt } from "./FloatView.jsx";
 import SaveButton from "./SaveButton.jsx";
 import TicketFlow from "./TicketFlow.jsx";
 import AsteriskWhy from "./AsteriskWhy.jsx";
+import { demoImageFor } from "../../lib/model/pieces.js";
 import Icon from "./Icons.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
@@ -47,7 +48,7 @@ import { getUid } from "../../lib/client.js";
 import { isNativeItem, startNativeCheckout } from "../../lib/storefront/client.js";
 import { postJSON } from "../../lib/client.js";
 import TagRow from "./TagChip.jsx";
-import { Lamp, blinkLamp, ChevronText } from "./Chevrons.jsx";
+import { Lamp, blinkLamp, BlockText } from "./Blocks.jsx";
 
 /** Chapter 11 (slice 12): the valuation read — comparables ASILUM recorded, else rank × era in words, else the stake. Says which rung answered. */
 function ValuationLine({ item }) {
@@ -60,7 +61,7 @@ function ValuationLine({ item }) {
   }, [item && item.id]);
   if (!v) return null;
   const rung = v.basis === "comparables" ? "COMPARABLES" : v.basis === "rank-era" ? "RANK × ERA" : "THE STAKE";
-  return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b><ChevronText text={v.line} /></p>;
+  return <p className="vline"><b>VALUATION · {rung} · {String(v.confidence).toUpperCase()}</b><BlockText text={v.line} /></p>;
 }
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 import { priceLine, offerMode, pieceName } from "../../lib/feed/types.js";
@@ -121,7 +122,7 @@ export default function ListingSheet({ item: given, id }) {
 
   if (!item) return <p className="deck">reading the listing…</p>;
 
-  const images = Array.isArray(item.images) && item.images.length > 1 ? item.images : [item.img || thumbFor(item)];
+  const images = Array.isArray(item.images) && item.images.length > 1 ? item.images : [item.img || demoImageFor(item) || thumbFor(item)];
   // the taste keys the STAMP inherits as evidence (identity, never state)
   const tags = Object.keys(item.tags || {});
   const { shown, behind: rest } = visibleTags(tagsFor(item, { typed, state: { verification: badge && badge.state !== "none" ? badge.state : null } }));
@@ -241,7 +242,7 @@ export default function ListingSheet({ item: given, id }) {
 
         {behind ? (
           <div className="lstdepth" aria-label="behind the product">
-            <ChevronText className="cclbl" text={"BEHIND THE PRODUCT" + (rest.length ? ` · ${rest.length} more ${rest.length === 1 ? "tag" : "tags"}` : "")} />
+            <BlockText className="cclbl" text={"BEHIND THE PRODUCT" + (rest.length ? ` · ${rest.length} more ${rest.length === 1 ? "tag" : "tags"}` : "")} />
             {rest.length ? <TagRow tags={rest} size="popup" label="every other tag" /> : null}
             <ColorEvidenceLine item={item} detailed />
             {sameShot ? (
@@ -283,7 +284,7 @@ export default function ListingSheet({ item: given, id }) {
                 <div className="mrel">
                   {rel.map((r) => (
                     <button key={r.id} type="button" className="mrelitem" onClick={() => openSheet("listing", { item: r })}>
-                      <img src={r.img || thumbFor(r)} alt={r.title} />
+                      <img src={r.img || demoImageFor(r) || thumbFor(r)} alt={r.title} />
                       <span>{r.brand}</span>
                     </button>
                   ))}

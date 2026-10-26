@@ -11,7 +11,8 @@
 // constraint kept, the Passport's order when ASTERISK is on), posts (the
 // editorial endpoint), places (the map's register). "Search all ASILUM"
 // leads to the full /discover page with the same query. The deck's field
-// and this one are the same query (lib/dockstate.js setQuery).
+// and this one are the same query (lib/dockstate.js setQuery); while the
+// deck is searching its bar is the only field on screen.
 
 import { useEffect, useRef, useState } from "react";
 import { useDock, pushSheet, unpinTag, setQuery, flipToggle } from "../../lib/dockstate.js";
@@ -112,6 +113,11 @@ export default function SearchSheet() {
     <div className="srch srchref">
       <h2 className="srchhead">Find your next connection.</h2>
       <p className="srchdeck">People, pieces, places and ideas — one search.</p>
+      {/* the deck's bar is the field while the deck is searching (the owner's
+          fixture sketch, 19 Oct 2026: the deck rises to hold it, and this
+          popup appears only once something is typed there) — one query, one
+          field on screen; opened any other way, the popup keeps its own */}
+      {dock.mode !== "search" ? (
       <label className="srchfield">
         <Icon name="search" size={22} />
         <input ref={fieldRef} type="search" value={dock.q} placeholder="Search ASILUM" aria-label="Search ASILUM" onChange={(e) => setQuery(e.target.value)} enterKeyHint="search" />
@@ -119,6 +125,7 @@ export default function SearchSheet() {
           <AMark className={asterisk ? "on" : ""} label={asterisk ? "ASTERISK on" : "ASTERISK off"} />
         </button>
       </label>
+      ) : null}
       <div className="srchtabs" role="tablist" aria-label="what to search">
         {SEARCH_TABS.map(([id, label]) => (
           <button key={id} type="button" role="tab" className={"srchtab" + (tab === id ? " cur" : "")} aria-selected={tab === id} onClick={() => { haptic("tick"); setTab(id); }}>{label}</button>

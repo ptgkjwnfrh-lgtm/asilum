@@ -42,6 +42,7 @@ import EchoViewer from "./EchoRail.jsx";
 import ScoreSheet from "./ScoreSheet.jsx";
 import Onboarding from "./Onboarding.jsx";
 import MapSheet from "./MapSheet.jsx";
+import BrdcstSheet from "./BrdcstSheet.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -67,6 +68,8 @@ const VIEWS = {
   onboarding: { title: "PASSPORT", render: (p) => <Onboarding {...p} />, heavy: true },
   // the map above a post (5.5, slice 12): a BRDCST's event pinned, the ring around it
   map: { title: "MAP", render: (p) => <MapSheet {...p} />, roomy: true },
+  // the BRDCST popup (owner's drawing, 25 Oct 2026): the strip's photograph clear, the event's record
+  brdcst: { title: "BRDCST", render: (p) => <BrdcstSheet {...p} />, roomy: true },
 };
 
 const SWIPE_DOWN = 70;
@@ -90,7 +93,7 @@ export default function SheetHost() {
 
   const dismiss = () => (hubOpen ? closeHub() : closeSheet());
   useEscape(() => (hasBack ? backSheet() : dismiss()), open);
-  useFocusTrap(ref, open);
+  useFocusTrap(ref, open, { companion: ".ccsearch" }); // the deck's search bar keeps its caret
   // THE OG LIQUID GLASS (8 Sep: the item detail in the same glass, the page
   // bending under it — 8073a74, 7a6abe5, 19a7bd6; slice 14 restores it on
   // every popup): all four edges lens what lies beneath at half the deck's
@@ -143,7 +146,7 @@ export default function SheetHost() {
 
   return (
     <div className="sheetscrim" onMouseDown={(e) => { if (e.target === e.currentTarget && lightweight) dismiss(); }}>
-      <section ref={ref} className={"sheet lgrx" + (tall ? " tall" : "") + (view.roomy ? " roomy" : "") + (hubOpen ? " hubsheet" : "")} role="dialog" aria-modal="true" aria-label={title}>
+      <section ref={ref} className={"sheet lgrx" + (tall ? " tall" : "") + (view.roomy ? " roomy" : "") + (hubOpen ? " hubsheet" : "") + (top && top.view === "search" ? " deckrise" : "")} role="dialog" aria-modal="true" aria-label={title}>
         {glass}
         <header className={"sheethead" + (hasBack ? " hasback" : "")} onPointerDown={headDown} onPointerUp={headUp}>
           {hasBack ? (

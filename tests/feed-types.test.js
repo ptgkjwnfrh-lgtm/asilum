@@ -1,9 +1,9 @@
 // tests/feed-types.test.js — THE ONE FEED's card law (V.2 Blueprint, 17 Oct
-// 2026): the eight types, the Tetris weights and spans, the ECHO clock and
-// the braid. Pure.
+// 2026): the eight types, the blueprint weights, the ECHO clock and the
+// braid. Pure. The packing's own tests are tests/feed-tetris.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pieceName, brdcstMoment, brdcstWhen, priceLine, offerMode, postType, weightOf, spanOf, packFeed, MIN_RUN, echoLive, echoRail, braid, WEIGHT, FULL_AT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
+import { pieceName, brdcstMoment, brdcstWhen, priceLine, offerMode, postType, weightOf, echoLive, echoRail, braid, WEIGHT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
 
 const post = (extra = {}) => ({ id: "p1", serverId: 1, handle: "a", at: 1000, text: "x", attachments: {}, ...extra });
 
@@ -19,37 +19,10 @@ test("the eight types and how a post earns one", () => {
   assert.equal(postType(null), "TRANSM");
 });
 
-test("Tetris weights follow the blueprint and decide the span", () => {
+test("the blueprint's weights stand (the packing is lib/feed/tetris.js since 25 Oct 2026)", () => {
   assert.equal(WEIGHT.STILL, 0.7); assert.equal(WEIGHT.MOTION, 0.7); assert.equal(WEIGHT["MEDIA+BRDCST"], 0.75);
   assert.equal(WEIGHT.LISTING, 0.45); assert.equal(WEIGHT.PLACE, 0.2); assert.equal(WEIGHT.SONG, 0.2); assert.equal(WEIGHT.BRDCST, 0.1);
-  assert.equal(FULL_AT, 0.7);
   assert.equal(weightOf({ __post: post({ imageUrl: "/x.jpg", attachments: { event: { id: "e" } } }) }), 0.75, "media plus BRDCST is the heaviest");
-  assert.equal(spanOf({ __post: post({ imageUrl: "/x.jpg" }) }), "full");
-  assert.equal(spanOf({ id: "piece" }), "column", "a LISTING takes one column");
-  assert.equal(spanOf({ __place: { id: "pl" } }), "compact");
-  assert.equal(spanOf({ __post: post() }), "column", "a TRANSM takes one column");
-});
-
-test("packFeed: a full card or a strip waits until the columns hold a balanced run (MIN_RUN), then follows it in order; no card-sized hole", () => {
-  const list = [
-    { id: "a" }, { id: "b" },
-    { id: "s", __post: post({ imageUrl: "/x.jpg" }) },
-    { id: "c" }, { id: "pl", __place: { id: "pl" } },
-    { id: "e", __post: post({ attachments: { event: { id: "e" } } }) },
-    { id: "d" },
-  ];
-  const segs = packFeed(list);
-  // four column cards is short of MIN_RUN, so the run flushes at the end and the full and the strip follow it, in order
-  assert.deepEqual(segs.map((s) => s.kind), ["grid", "full", "strip"]);
-  assert.deepEqual(segs[0].items.map((x) => x.id), ["a", "b", "c", "pl", "d"]);
-  assert.equal(segs[1].item.id, "s"); assert.equal(segs[2].item.id, "e");
-  const long = [];
-  for (let i = 0; i < 14; i++) { long.push({ id: "k" + i }); if (i === 2 || i === 8) long.push({ id: "f" + i, __post: post({ imageUrl: "/x.jpg" }) }); }
-  const packed = packFeed(long);
-  assert.deepEqual(packed.map((s) => s.kind), ["grid", "full", "grid", "full", "grid"]);
-  assert.equal(packed[0].items.length, MIN_RUN, "the first full card waits for six column cards"); assert.equal(packed[1].item.id, "f2");
-  assert.equal(packed[2].items.length, MIN_RUN); assert.equal(packed[3].item.id, "f8"); assert.equal(packed[4].items.length, 2);
-  assert.deepEqual(packFeed([]), []);
 });
 
 test("ECHO: 24 hours by default, never live after expiry, never an echo without the mark", () => {

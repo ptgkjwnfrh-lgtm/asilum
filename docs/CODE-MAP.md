@@ -391,7 +391,7 @@ Nothing here may import from `app/`.
 | `rechunk.js` | 146 | which cards a re-chunk may replace. Pure; client-safe. |
 | `actions.js` | 53 | what a card can do to a piece, from anywhere (V.2 slice 3: the LISTING popup lives in the session hub, outside the feed |
 | `caption.js` | 20 | the on-media caption's ink (V.2 Blueprint, owner, 17 Oct 2026: "caption text flips between black, gray and white to stay |
-| `chevrons.js` | 16 | the frame of text loading in from ">>>>>>" (owner, 18 Oct 2026; app/components/Chevrons.jsx draws it). Pure and isomorphic. |
+| `blocks.js` | 34 | the blocks that stand in for text (owner, 25 Oct 2026; app/components/Blocks.jsx draws them) — the frame of text loading in behind even blocks, and a folded line's words as blocks (was chevrons.js, the ">>>>>>" of 18 Octs it). Pure and isomorphic. |
 
 ### `lib/identity/`
 *2 files, 141 lines*
@@ -1379,7 +1379,7 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `BagSheet.jsx` | 119 | THE BAG, as a sheet (V.2 Blueprint, owner, 17 Oct 2026: the bag opens from the Info Dock, not from a header panel). |
 | `FloatView.jsx` | 119 | THE FLOAT (owner order, 8 Sep, with a Spotify recording): tap the photograph in the item detail and it floats alone over the fogged page (owner, 18 Oct 2026: "t |
 | `EchoRail.jsx` | 116 | THE ECHO RAIL and THE ECHO VIEWER (V.2 Blueprint, owner, 17 Oct 2026: "ECHO is a story-style temporary viewer |
-| `Chevrons.jsx` | 110 | THE DEVICE'S OWN LANGUAGE, a little of it (owner, 18 Oct 2026: "pull from the og design language but only some of it |
+| `Blocks.jsx` | 124 | THE DEVICE'S OWN LANGUAGE, a little of it (owner, 18 Oct 2026: "pull from the og design language but only some of it |
 | `ConnectionsWheel.jsx` | 110 | CONNECTIONS (V.2 brief §11): the people and houses this passenger follows, as a CD-inspired wheel beside a |
 | `PurchaseGlobe.jsx` | 101 | THE PURCHASE GLOBE (owner order, 9 Sep: "replace the asterisk figure with a globe that shows all the places users |
 | `WardrobeFlow.jsx` | 97 | THE CLOSET (V.2 brief §8): isolated item cards in a closet-like Cover Flow stack — one selected card centred and |

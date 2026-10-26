@@ -3,21 +3,29 @@
 // app/components/ControlCenter.jsx — THE CENTRAL CONTROL DECK (V.2
 // Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief
 // §1 where the blueprint is silent). Centred at the bottom above the safe
-// area, on every size. BASE mode: the five keys of lib/dock.js DECK —
-// FEED · SEARCH · POST · MESSAGES · ACCOUNT — with POST as the round disc
-// in the center. SEARCH mode: the scoped field takes the row with its scope
-// printed as the placeholder (lib/dock.js SEARCH_SCOPES); the keys shrink
-// to their glyphs but keep their 44px targets; the three search controls —
-// PIECES · WIRE · ASTERISK — sit under the field; CLOSE returns to Base.
-// On a phone the deck grows DOWNWARD into rows for search instead of
-// squeezing one row. The ad ticker is a separate, stable-height part of the
-// same dock (AdStrip below): a mode change never resizes it or resets it.
+// area, on every size, drawn to the owner's fixture sketch of 19 Oct 2026
+// (Figures 1–3, 5): ONE pane of translucent rainbow liquid glass, its five
+// keys — FEED · SEARCH · POST · MESSAGES · ACCOUNT — parted by CUTS in the
+// glass, two narrow end caps, the TAB INDICATOR carved into the top right
+// above the last cut (TabIndicator.jsx), and the FOOT GRILL under the post
+// disc like a phone's ventilation port. The cuts, the disc's ring, the grill
+// and the indicator are carved shapes (data-lens-shape): the backdrop bends
+// around each of them (LiquidGlass.jsx lensFeatures). Every size is a
+// multiple of --u, the sketch's own unit, so the proportions are the
+// drawing's at every width.
+//
+// SEARCH (Figure 1): the key morphs the deck — it extends UPWARD to make
+// room for the search bar; the search popup (the sub tab) does not appear
+// until something is typed, and the deck's bar stays the one field while it
+// is up. CLOSE (or Escape) returns to Base. The scope is the placeholder
+// (lib/dock.js SEARCH_SCOPES); a scoped search offers "Search all ASILUM"
+// as its explicit way out and never widens on its own.
 //
 // Search mode opens on the Search key, and on entering Map, Likes or
 // Messages — and never opens the keyboard by itself (no autoFocus on
-// entry; focus only when the reader taps the field). Submitting a global
-// search opens the results sheet over the root; a scoped search filters
-// the surface it belongs to live and never widens on its own.
+// entry; focus only when the reader taps the field). The first character of
+// a global search opens the results popup over the root; a scoped search
+// filters the surface it belongs to live.
 //
 // The MESSAGES key IS the mail desk's own button when the desk is
 // available (MailDesk.jsx renders it, with its counts and its panel); when
@@ -36,82 +44,24 @@
 // which starts at the top (1.14).
 
 import { useEffect, useRef, useState } from "react";
-import { deckFor } from "../../lib/nav.js";
-import { DECK, HOUSE_LINES, SEARCH_TOGGLES, scopeFor } from "../../lib/dock.js";
-import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
+import { deckFor, fixtureFor } from "../../lib/nav.js";
+import { DECK, scopeFor } from "../../lib/dock.js";
+import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
 import { counter, activeSession } from "../../lib/sessions.js";
 import { LONG_PRESS_MS } from "../../lib/disc.js";
 import { haptic } from "../../lib/haptics.js";
+import { blinkIndicator, indicatorHeld } from "../../lib/indicator.js";
+import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
-import { usePlacements } from "./Placements.jsx";
-import { useLiquidGlass } from "./LiquidGlass.jsx";
-import { Lamp, blinkLamp } from "./Chevrons.jsx";
+import AMark from "./AMark.jsx";
+import TabIndicator from "./TabIndicator.jsx";
+import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
+import { useHingedKeys } from "./hinge.js";
 
-const ROTATE_MS = 7000;
-
-/** The ad strip: Sponsored placements first, then this device's own
- *  promotion drafts (to their author, labelled DRAFT), then LISTED dated
- *  events from the places record — lib/placements.js is the law. With
- *  nothing eligible it carries the house lines (lib/dock.js HOUSE_LINES)
- *  under the ASILUM tag, never a blank and never an invented offer.
- *  Rotation pauses on hover, focus, reduced motion, and while the reader
- *  types; it is not announced. */
-function AdStrip({ typing }) {
-  const items = usePlacements();
-  // THE STATUS LIGHTS (owner, 18 Oct 2026: blinking squares that turn off,
-  // the CD tray's eject light): two red squares at the strip's end, dark at
-  // rest; anything put in the bag or any purchase control's lamp makes them
-  // blink and settle dark again
-  const lightsRef = useRef(null);
-  useEffect(() => {
-    const on = () => blinkLamp(lightsRef.current, { quiet: true });
-    window.addEventListener("asilum:lamp", on);
-    window.addEventListener("asilum:bag", on);
-    return () => { window.removeEventListener("asilum:lamp", on); window.removeEventListener("asilum:bag", on); };
-  }, []);
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const reduced = useRef(false);
-  useEffect(() => {
-    try { reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch {}
-  }, []);
-  const count = items && items.length ? items.length : HOUSE_LINES.length;
-  useEffect(() => {
-    if (count < 2 || paused || typing || reduced.current) return undefined;
-    const t = setInterval(() => setI((n) => (n + 1) % count), ROTATE_MS);
-    return () => clearInterval(t);
-  }, [count, paused, typing]);
-  const cur = items && items.length ? items[i % items.length] : null;
-  const step = (d) => { if (items && items.length) setI((n) => (n + d + items.length) % items.length); };
-  return (
-    <div className="adstrip" aria-label="ads and placements" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
-      {/* the slot's name, in red, as the owner drew it (18 Oct 2026: "*ADs") */}
-      <span className="adslot" aria-hidden="true">*ADs</span>
-      {cur ? (
-        <>
-          <a className="adline" href={cur.href} aria-label={cur.label.toLowerCase() + " placement: " + cur.line}>
-            <span className={"adtag " + cur.kind}>{cur.label}</span>
-            <span className="adtext">{cur.line}</span>
-          </a>
-          {items.length > 1 && (
-            <span className="adnav">
-              <button className="adbtn" onClick={() => step(-1)} aria-label="previous placement"><Icon name="back" size={14} /></button>
-              <span className="adcount" aria-hidden="true">{i % items.length + 1}/{items.length}</span>
-              <button className="adbtn" onClick={() => step(1)} aria-label="next placement"><Icon name="back" size={14} className="flip" /></button>
-            </span>
-          )}
-        </>
-      ) : (
-        <span className="adline notice" data-house="1">
-          <span className="adtag asilum">ASILUM</span>
-          <span className="adtext">{items === null ? "…" : HOUSE_LINES[i % HOUSE_LINES.length]}</span>
-        </span>
-      )}
-      <span className="devlights" ref={lightsRef} aria-hidden="true"><Lamp /><Lamp /></span>
-    </div>
-  );
-}
+/** Where the glass is cut, in the sketch's units from the deck's left edge
+ *  (the deck is 745 wide): the two end caps and the four seams between keys. */
+const CUTS = [40, 163, 290, 452, 578, 705];
 
 export default function ControlCenter({ kind, pathname }) {
   const dock = useDock();
@@ -119,14 +69,17 @@ export default function ControlCenter({ kind, pathname }) {
   const feed = routes[0];
   const account = routes[routes.length - 1];
   const inSearch = dock.mode === "search";
-  // the search popup (owner reference, 18 Oct 2026) holds its own field and the |A|; while it is up the deck keeps only its keys
+  // the deck's bar is the one search field: the popup that the first
+  // character opens reads the same query and shows no field of its own
   const searchPopupUp = !!(dock.sheet && dock.sheet.id === "search");
-  const deckField = inSearch && !searchPopupUp;
   const scope = scopeFor({ pathname, sheet: dock.sheet && dock.sheet.id, likesTab: dock.likesTab });
   const fieldRef = useRef(null);
-  // the OG liquid glass (slice 14): the deck's bezel bends the Feed scrolling beneath it
+  // the OG liquid glass: the bezel, the cuts, the disc, the grill and the indicator bend what passes beneath
   const glassRef = useRef(null);
-  const glass = useLiquidGlass(glassRef, { id: "lg-deck", strength: 1.1, prism: 1 });
+  const glass = useLiquidGlass(glassRef, { id: "lg-deck", strength: 1, bend: FIXTURE_BEND, bezel: "fixture", shine: false });
+  // every key but POST is hinged along its top (the upload disc presses straight in)
+  useHingedKeys(glassRef);
+  useGlassLamps(glassRef);
 
   // entering Map puts the dock in search mode — no keyboard
   useEffect(() => {
@@ -137,7 +90,7 @@ export default function ControlCenter({ kind, pathname }) {
   function submit(e) {
     e.preventDefault();
     const q = String(dock.q || "").trim();
-    if (scope.id === "global") { if (q) openSheet("search"); return; }
+    if (scope.id === "global") { if (q && !searchPopupUp) openSheet("search"); return; }
     if (scope.id === "messages") {
       // the mail desk's own find, never the whole app
       window.dispatchEvent(new CustomEvent("asilum:dm-find", { detail: { q } }));
@@ -145,11 +98,17 @@ export default function ControlCenter({ kind, pathname }) {
     // map and likes scopes filter live through the dock state
   }
 
+  function type(v) {
+    setQuery(v);
+    setTyping(true);
+    // the sub tab appears only once something is typed (Figure 1)
+    if (scope.id === "global" && v.trim() && !searchPopupUp) openSheet("search");
+  }
+
   function press(id) {
     if (id === "search") {
+      if (inSearch) { closeSearch(); return; }
       setMode("search");
-      // the search popup holds its own field (owner reference, 18 Oct 2026): the key opens it at once
-      if (!dock.sheet || dock.sheet.id !== "search") openSheet("search");
       return;
     }
     if (id === "post") {
@@ -164,6 +123,8 @@ export default function ControlCenter({ kind, pathname }) {
   const popupUp = !!dock.sheet || !!dock.hub.hubOpen;
   const active = activeSession(dock.hub);
   const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
+  const passport = fixtureFor(kind, "passport");
+  const held = indicatorHeld({ sheetId: dock.sheet && dock.sheet.id, hubOpen: dock.hub.hubOpen, onPassport: !!(passport && passport.match(pathname || "/")) });
   const [menu, setMenu] = useState(false);
   const hold = useRef(null);
   function holdStart(e) {
@@ -179,12 +140,34 @@ export default function ControlCenter({ kind, pathname }) {
   function holdCancel() { const h = hold.current; hold.current = null; if (h) clearTimeout(h.t); }
 
   function feedTap(e, dest) {
+    // the press that left search does only that: no refresh on the way out
+    if (leftSearch.current) { leftSearch.current = false; if ((pathname || "/") === dest.href) e.preventDefault(); return; }
     if (dock.sheet || dock.hub.hubOpen) { e.preventDefault(); closeSheet(); return; }
     if ((pathname || "/") === dest.href && dest.href === "/") {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("asilum:feed-refresh"));
       try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch { window.scrollTo(0, 0); }
     }
+  }
+
+  // ANOTHER KEY LEAVES SEARCH (owner, 19 Oct 2026): on the press itself, before
+  // the key acts, so POST opens Post Selection rather than toggling the hub of
+  // the search popup, and MESSAGES opens over a closed search
+  const leftSearch = useRef(false);
+  function keyDown(e) {
+    if (!inSearch) return;
+    const t = e.target && e.target.closest ? e.target.closest("a, button") : null;
+    if (!t || t.closest(".ccsearch") || t.closest(".mailpanel") || t.getAttribute("aria-label") === "search") return;
+    leftSearch.current = !!t.closest('a[href="/"]');
+    leaveSearch();
+  }
+
+  // every key but POST blinks the tab indicator twice (POST holds it instead)
+  function keyBlink(e) {
+    if (e.detail === 0) keyDown(e); // a key pressed from the keyboard has no pointer down
+    const t = e.target && e.target.closest ? e.target.closest("a, button") : null;
+    if (!t || t.closest(".ccpostwrap") || t.closest(".ccsearch") || t.closest(".mailpanel")) return;
+    blinkIndicator();
   }
 
   const sheetIs = (id) => !!(dock.sheet && dock.sheet.id === id);
@@ -194,7 +177,7 @@ export default function ControlCenter({ kind, pathname }) {
       const dest = k.id === "feed" ? feed : account;
       const cur = dest.match(pathname || "/") && !dock.sheet;
       return (
-        <a key={k.id} className={"tabl" + (cur ? " cur" : "")} href={dest.href} aria-current={cur ? "page" : undefined} onClick={k.id === "feed" ? (e) => feedTap(e, dest) : undefined}>
+        <a key={k.id} className={"tabl hkey" + (cur ? " cur" : "")} href={dest.href} aria-label={dest.label.toLowerCase()} aria-current={cur ? "page" : undefined} onClick={k.id === "feed" ? (e) => feedTap(e, dest) : undefined}>
           <Icon name={dest.icon} size={22} />
           <span className="tbl">{dest.label}</span>
         </a>
@@ -216,8 +199,8 @@ export default function ControlCenter({ kind, pathname }) {
             onPointerCancel={holdCancel}
             onContextMenu={(e) => e.preventDefault()}
           >
-            <span className="ccdisc">
-              <Icon name={indicator ? "disc" : "post"} size={24} />
+            <span className="ccdisc" data-lens-shape="ring" data-lens-band="11">
+              <Icon name={indicator ? "disc" : "plus"} size={24} />
               {indicator && sessionCount ? <b className="cccount" aria-hidden="true">{sessionCount}</b> : null}
             </span>
             <span className="tbl">{indicator ? "SESSIONS" : k.label}</span>
@@ -235,27 +218,27 @@ export default function ControlCenter({ kind, pathname }) {
     if (k.id === "messages") {
       return (
         <span key={k.id} className="cckey-mail">
-          <MailDesk />
-          <button type="button" className={"tabl ccfallback" + (sheetIs("messages") ? " cur" : "")} onClick={() => press("messages")} aria-label="messages">
+          <MailDesk glyph="messages" keyClass="hkey" />
+          <button type="button" className={"tabl hkey ccfallback" + (sheetIs("messages") ? " cur" : "")} onClick={() => press("messages")} aria-label="messages">
             <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
           </button>
         </span>
       );
     }
     // search: a mode
-    const cur = inSearch && !dock.sheet;
+    const cur = inSearch;
     return (
-      <button key={k.id} type="button" className={"tabl" + (cur ? " cur" : "")} onClick={() => press("search")} aria-label="search" aria-pressed={cur}>
+      <button key={k.id} type="button" className={"tabl hkey" + (cur ? " cur" : "")} onClick={() => press("search")} aria-label="search" aria-pressed={cur}>
         <Icon name="search" size={22} /><span className="tbl">{k.label}</span>
       </button>
     );
   }
 
   return (
-    <div ref={glassRef} className={"ccenter lgrx" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
       {glass}
-      <nav className="tabbar" aria-label="control deck">
-        {deckField && (
+      <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyBlink}>
+        {inSearch && (
           <form className="ccsearch" role="search" onSubmit={submit}>
             <label className="ccfield">
               <Icon name="search" size={18} />
@@ -265,38 +248,41 @@ export default function ControlCenter({ kind, pathname }) {
                 aria-label={scope.placeholder}
                 placeholder={scope.placeholder}
                 value={dock.q}
-                onChange={(e) => { setQuery(e.target.value); setTyping(true); }}
+                onChange={(e) => type(e.target.value)}
                 onBlur={() => setTyping(false)}
-                onKeyDown={(e) => { if (e.key === "Enter") submit(e); }}
+                onKeyDown={(e) => { if (e.key === "Enter") submit(e); if (e.key === "Escape") closeSearch(); }}
                 enterKeyHint="search"
               />
-              <span className="ccscope" aria-hidden="true">{scope.placeholder.replace(/^Search /, "").toUpperCase()}</span>
+              {scope.id === "global" ? (
+                <button type="button" className={"ccamark" + (dock.toggles.asterisk ? " on" : "")} aria-pressed={!!dock.toggles.asterisk} onClick={() => { haptic("toggle"); flipToggle("asterisk"); }} title={dock.toggles.asterisk ? "ASTERISK reads your Passport — tap to search without it" : "tap to let ASTERISK read your Passport"}>
+                  <AMark className={dock.toggles.asterisk ? "on" : ""} label={dock.toggles.asterisk ? "ASTERISK on" : "ASTERISK off"} />
+                </button>
+              ) : scope.wide ? (
+                <a className="ccwide" href={"/discover?q=" + encodeURIComponent(dock.q || "")} title={"searching " + scope.placeholder.replace(/^Search /, "")}>ALL →</a>
+              ) : null}
             </label>
-            <button type="button" className="cckey ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={20} /><span>CLOSE</span></button>
+            <button type="button" className="ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={18} /></button>
           </form>
         )}
         <div className="ccrow">
+          {CUTS.map((x) => <i key={x} className="cccut" style={{ "--cut-x": x }} data-lens-shape="cut" data-lens-band="6" data-lens-gain="0.08" aria-hidden="true" />)}
+          <span className="cccap" aria-hidden="true" />
           <div className="cctabs">
             {DECK.map((k) => key(k))}
           </div>
+          <span className="cccap">
+            <TabIndicator held={held} />
+          </span>
         </div>
-        {deckField && scope.id === "global" && (
-          <div className="cctoggles" role="group" aria-label="search controls">
-            {SEARCH_TOGGLES.map((t) => (
-              <button key={t.id} className={"cctog" + (dock.toggles[t.id] ? " on" : "")} aria-pressed={!!dock.toggles[t.id]} onClick={() => flipToggle(t.id)}>
-                {t.id === "asterisk" ? <i className="red">*</i> : null}{t.label}
-              </button>
-            ))}
-          </div>
-        )}
-        {inSearch && scope.wide && (
-          <div className="cctoggles" role="group" aria-label="search scope">
-            <span className="ccscopenote">searching {scope.placeholder.replace(/^Search /, "")}</span>
-            <a className="cctog link" href={"/discover?q=" + encodeURIComponent(dock.q || "")}>SEARCH ALL ASILUM →</a>
-          </div>
-        )}
+        {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
+            central control fixture as a bubble … inside the bubble will be the ad
+            scroll wheel"; moved the same night: "beneath the buttons and above the
+            vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
+            foot grill; the deck is taller by --ad-h to hold it */}
+        <div className="ccad"><AdStrip typing={inSearch} /></div>
       </nav>
-      <AdStrip typing={dock.typing} />
+      <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />
+      <i className="fxrim" aria-hidden="true" />
     </div>
   );
 }

@@ -136,7 +136,10 @@ test("the card's type hierarchy is the site's, read off globals.css", () => {
   // The stylesheet's own mapping. If a token is ever repointed, these fail and
   // the card gets looked at rather than quietly diverging from the page.
   assert.match(css, /--mich:\s*"Michroma"/, "--mich is the wordmark/headline face");
-  assert.match(css, /--helv:\s*"Inter"/, "--helv is the body face (V.2)");
+  // (19 Oct 2026) every font in the app is Michroma (owner); the share card is an image, not the app, and keeps Inter for its domain line
+  // (25 Oct 2026, late: the owner's mockup) Inter carries the body beside Michroma; Share Tech Mono the small print
+  assert.match(css, /--helv:\s*"Inter"/, "--helv is Inter, the body face beside Michroma");
+  assert.match(css, /--mono:\s*"Share Tech Mono"/, "--mono is Share Tech Mono, the small print");
   assert.match(css, /@font-face \{ font-family: "Michroma"/);
   assert.match(css, /@font-face \{ font-family: "Inter"/);
 

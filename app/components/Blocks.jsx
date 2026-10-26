@@ -1,38 +1,38 @@
 "use client";
 
-// app/components/Chevrons.jsx — THE DEVICE'S OWN LANGUAGE, a little of it
-// (owner, 18 Oct 2026: "pull from the og design language but only some of it
-// — I just want a couple of '>>>>>>' used like when people expand a
-// compacted description some of the text should load in from '>>>>>>' …
-// some blinking squares that turn off … like when you buy something there
-// should be a blinking square like how you eject a disc from a cd player and
-// there's a warning light … I want the app to feel like a physical device").
-// The references are the owner's 404 and title-card films: MRZ lines run out
-// in red chevrons, a green block cursor blinks, two red squares blink and
-// settle.
+// app/components/Blocks.jsx — THE DEVICE'S OWN LANGUAGE, a little of it
+// (owner, 18 Oct 2026: "I want the app to feel like a physical device";
+// 25 Oct 2026: "fuck the chevrons — use this image to replace the chevrons,
+// I want them used as text place holders"). The chevron runs of 18 Oct are
+// gone; BLOCKS stand in for text now (lib/feed/blocks.js, the owner's
+// reference: Ref 1 a row of even blocks, Ref 2 blocks the length of words).
 //
-//   <ChevronText text="…" />   the text loads in behind a run of ">>>>>>"
-//                              sweeping left to right; the not-yet text keeps
-//                              its place (transparent), so nothing reflows
-//                              as it arrives. Plays once on mount, again when
-//                              `play` changes. The full text is the
-//                              accessible name from the first frame.
-//   <Lamp />                   one square warning light, off at rest.
-//   blinkLamp(eventOrEl)       blinks the lamp inside the pressed control
-//                              like a CD tray's eject light — on, off, on,
-//                              off — then it goes dark.
-//   <MrzLine text="…" />       an MRZ-style line: words joined by "<", run
-//                              out with "<<<<" to the width, a block cursor
-//                              blinking at the end.
+//   <BlockText text="…" />    the text loads in behind a run of even blocks
+//                             sweeping left to right; the not-yet text keeps
+//                             its place (transparent), so nothing reflows as
+//                             it arrives. Plays once on mount, again when
+//                             `play` changes. The full text is the accessible
+//                             name from the first frame.
+//   <BlockLine text="…" />    a folded line: every word a block of its own
+//                             width, the text waiting inside (aria-hidden —
+//                             the control that unfolds it names the text).
+//   <Lamp />                  one square warning light, off at rest.
+//   blinkLamp(eventOrEl)      blinks the lamp inside the pressed control
+//                             like a CD tray's eject light — on, off, on,
+//                             off — then it goes dark.
+//   <MrzLine text="…" />      an MRZ-style line: words joined by "<", run
+//                             out with "<<<<" to the width, a block cursor
+//                             blinking at the end (the passport device,
+//                             not a placeholder).
 //
 // prefers-reduced-motion: the text is simply there, the lamp lights once and
 // goes dark without blinking, the cursor holds still.
 
 import { useEffect, useRef } from "react";
 import { haptic } from "../../lib/haptics.js";
-import { chevronFrame, CHEVRON_RUN as RUN } from "../../lib/feed/chevrons.js";
+import { blockFrame, blockWords, BLOCK_RUN as RUN } from "../../lib/feed/blocks.js";
 
-export { chevronFrame };
+export { blockFrame };
 
 const STEP_MS = 14;       // per character
 const MAX_MS = 900;       // a long description never takes longer than this
@@ -40,15 +40,15 @@ const MAX_MS = 900;       // a long description never takes longer than this
 const still = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 
-export function ChevronText({ text, as: Tag = "span", className = "", play = 0 }) {
+export function BlockText({ text, as: Tag = "span", className = "", play = 0 }) {
   const shownRef = useRef(null);
-  const chevRef = useRef(null);
+  const runRef = useRef(null);
   const restRef = useRef(null);
   const t = String(text || "");
   useEffect(() => {
-    const s = shownRef.current, c = chevRef.current, r = restRef.current;
+    const s = shownRef.current, c = runRef.current, r = restRef.current;
     if (!s || !c || !r) return undefined;
-    const paint = (n) => { const f = chevronFrame(t, n); s.textContent = f.shown; c.textContent = f.chevrons; r.textContent = f.rest; };
+    const paint = (n) => { const f = blockFrame(t, n); s.textContent = f.shown; c.textContent = f.run; r.textContent = f.rest; };
     if (still() || !t) { paint(t.length); return undefined; }
     const per = Math.min(STEP_MS, MAX_MS / Math.max(1, t.length + RUN));
     let raf = 0;
@@ -63,10 +63,20 @@ export function ChevronText({ text, as: Tag = "span", className = "", play = 0 }
     return () => cancelAnimationFrame(raf);
   }, [t, play]);
   return (
-    <Tag className={"chevtext " + className} aria-label={t}>
+    <Tag className={"blktext " + className} aria-label={t}>
       <span ref={shownRef} aria-hidden="true" />
-      <span ref={chevRef} className="chevrun" aria-hidden="true" />
-      <span ref={restRef} className="chevrest" aria-hidden="true">{t}</span>
+      <span ref={runRef} className="blkrun" aria-hidden="true" />
+      <span ref={restRef} className="blkrest" aria-hidden="true">{t}</span>
+    </Tag>
+  );
+}
+
+/** A folded line: the words as blocks of their own width (Ref 2). Hidden
+ *  from assistive technology — the control around it carries the words. */
+export function BlockLine({ text, as: Tag = "span", className = "" }) {
+  return (
+    <Tag className={"blkline " + className} aria-hidden="true">
+      {blockWords(text).map((w, i) => <i key={i} className="blkw">{w}</i>)}
     </Tag>
   );
 }
