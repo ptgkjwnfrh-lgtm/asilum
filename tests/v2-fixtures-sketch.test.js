@@ -108,9 +108,9 @@ test("search morphs the deck upward; the popup waits for the first character; on
   assert.match(read("app/components/SheetHost.jsx"), /useFocusTrap\(ref, open, \{ companion: "\.ccsearch" \}\)/, "the popup does not steal the caret");
 });
 
-test("the September recipe on the fixtures: one pull of 86 for every colour, the Safari page bend, the lamps and the meniscus", () => {
+test("the September recipe on the fixtures: a slight 84 / 86 / 88 split, the Safari page bend, the lamps and the meniscus", () => {
   const glass = read("app/components/LiquidGlass.jsx");
-  assert.match(glass, /export const PULL = 86;/, "one pull, no colour split (26 Oct 2026: the red bezel line)");
+  assert.match(glass, /export const PULL = \[84, 86, 88\];/, "a slight split (26 Oct 2026: the owner's faint rainbow, not the old 80 / 86 / 92 red line)");
   assert.match(glass, /export const BEZEL = 56;/);
   assert.match(glass, /const GLASS_N = 1\.5;/);
   assert.match(glass, /const bez = Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
@@ -187,7 +187,7 @@ test("the bend is centred: no coloured map ever reaches a displacement, and the 
   const glass = read("app/components/LiquidGlass.jsx");
   const defs = glass.slice(glass.indexOf("export function LiquidGlassDefs"), glass.indexOf("export function restrictLens"));
   const passes = [...defs.matchAll(/<feDisplacementMap [^>]*\/>/g)].map((m) => m[0]);
-  assert.equal(passes.length, 2, "two passes, sideways then up and down, every colour alike");
+  assert.equal(passes.length, 6, "two passes, sideways then up and down, for each of red, green and blue");
   for (const p of passes) {
     assert.match(p, /in2="lg[xy]a"/, "a grey map: " + p);
     assert.match(p, /(xChannelSelector="R" yChannelSelector="A")|(xChannelSelector="A" yChannelSelector="R")/, "one direction a pass: " + p);
@@ -285,22 +285,47 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
 
 // THE RED BEZEL LINE (owner, 26 Oct 2026: "the odd red bezel line" on a
 // Feed piece card and along the top fixtures, reddish on top and yellow-green
-// below). Two causes, both gone: the far-reach card's 2px red frame round its
-// photograph, and the glass's dispersion — red, green and blue pulled 80 / 86
-// / 92 (wider still under `prism`), so wherever the bend met an edge the
-// colours parted. Declared: no rule frames a card's photograph in the accent,
-// no displacement anywhere runs at a second scale, no channel is split out of
-// a bent picture, and nothing passes a prism.
-test("no red bezel: the reach frame is gone and the glass bends every colour alike", () => {
+// below). Two causes: the far-reach card's 2px red frame round its
+// photograph (gone), and the glass's dispersion — red, green and blue pulled
+// 80 / 86 / 92 (wider still under `prism`), so wherever the bend met an edge
+// the colours parted into hard lines. Then the owner's correction the same
+// day: "I still want slight rainbow on all the liquid glass" — so the split
+// comes back slight, the same small spread on every pane, never the old one.
+test("no red bezel, a faint rainbow: the reach frame is gone, and every glass splits colour by a little", () => {
+  // (26 Oct 2026, the owner's correction: "I still want slight rainbow on all the liquid glass".) Declared
+  // before measuring: PULL is three pulls rising red -> green -> blue; the spread (blue - red) is above 0
+  // and at most 4 — a third of the old 80 / 86 / 92, whose 12 drew the hard red line; both chains (the
+  // backdrop lens every pane renders through LiquidGlassDefs, and Safari's page bend) run all three; no
+  // prism widens it for one pane; and the far-reach card's red frame, a separate artifact, stays gone.
   assert.ok(!/\.card\.reach[^{]*\{[^}]*(border|outline|box-shadow)[^}]*var\(--red\)/.test(rules), "no accent frame on a far-reach card");
   const glass = read("app/components/LiquidGlass.jsx");
   const code = glass.replace(/\/\/[^\n]*/g, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
-  assert.match(code, /export const PULL = 86;/);
-  assert.ok(!/PULL\.map|PULL\[/.test(code), "no per-colour pull");
-  const scales = [...code.matchAll(/feDisplacementMap[^>]*scale=(\{\w+\}|"\$\{\w+\}")/g)].map((m) => m[1].replace(/[{}"$]/g, ""));
-  assert.ok(scales.length >= 3, "the lens and the page bend both found");
-  assert.deepEqual([...new Set(scales)], ["pull"], "every displacement at the one pull");
-  assert.ok(!/values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/.test(code), "no red channel lifted out of a bent picture");
+  const m = code.match(/export const PULL = \[(\d+(?:\.\d+)?), (\d+(?:\.\d+)?), (\d+(?:\.\d+)?)\];/);
+  assert.ok(m, "three pulls, red / green / blue");
+  const [r, g, b] = m.slice(1).map(Number);
+  assert.ok(r < g && g < b, "red bends least, blue most");
+  assert.ok(b - r > 0, "a split is present");
+  assert.ok(b - r <= 4, `the spread stays slight: ${b - r} of at most 4 (the old 80 / 86 / 92 was 12)`);
+  // both chains use all three pulls
+  const defs = code.slice(code.indexOf("export function LiquidGlassDefs"), code.indexOf("export function restrictLens"));
+  const lensScales = new Set([...defs.matchAll(/feDisplacementMap[^>]*scale=\{(\w+)\}/g)].map((x) => x[1]));
+  assert.deepEqual([...lensScales].sort(), ["sb", "sg", "sr"], "the panes' lens runs red, green and blue apart");
+  assert.match(defs, /const \[sr, sg, sb\] = pulls\(strength\);/);
+  const bend = code.slice(code.indexOf("export function createPageBend"), code.indexOf("let serial = 0;"));
+  const bendScales = new Set([...bend.matchAll(/feDisplacementMap[^>]*scale="\$\{(\w+)\}"/g)].map((x) => x[1]));
+  assert.deepEqual([...bendScales].sort(), ["sb", "sg", "sr"], "Safari's page bend runs them apart too");
+  assert.match(bend, /const \[sr, sg, sb\] = pulls\(strength\);/);
+  // and only under the pane: outside it the map is a flat 128 (not quite neutral), and a split there drew a
+  // faint coloured line down every bent card's whole border — the bend's primitives take the pane's rectangle
+  // as their subregion and the element passes through untouched elsewhere
+  assert.ok([...bend.matchAll(/<feDisplacementMap data-pb="1"/g)].length === 3, "the three pulls carry the pane's subregion");
+  assert.match(bend, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the pane the element is untouched");
+  assert.match(code, /for \(const n of f\.querySelectorAll\("\[data-pb\]"\)\) \{ n\.setAttribute\("x", px\); n\.setAttribute\("y", py\); n\.setAttribute\("width", pw\); n\.setAttribute\("height", ph\); \}/, "place() sets the subregion to the pane");
+  // every pane of liquid glass goes through the one hook, so through the one spread; no pane widens it
+  for (const f of ["app/components/Masthead.jsx", "app/components/ControlCenter.jsx", "app/components/SheetHost.jsx", "app/components/PieceFloat.jsx", "app/components/GlassPane.jsx"]) {
+    const src = read(f);
+    assert.match(src, /useLiquidGlass\(/, f + " is a pane of the one glass");
+    assert.ok(!/prism/.test(src), f + " passes no prism");
+  }
   assert.ok(!/prism/.test(code), "no prism option");
-  for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx"]) assert.ok(!/prism/.test(read(f)), f);
 });

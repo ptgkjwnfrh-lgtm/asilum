@@ -4620,7 +4620,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
    refractive reactive liquid glass … I want it to look cool").
    Three things on top of the restored glass:
-   1. (retired 26 Oct 2026: one pull for every colour, no fringe) the lens itself splits colour (LiquidGlass.jsx prism: what passes
+   1. (26 Oct 2026: a slight 84 / 86 / 88 on every pane; `prism` is gone) the lens itself splits colour (LiquidGlass.jsx prism: what passes
       under a bezel comes apart into red, green and blue);
    2. an oil-slick film on every face: a faint conic rainbow, blended so it
       tints rather than covers, turning with the hand (--iris-a, --iris-x/y)
@@ -4795,8 +4795,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
       outline, no ring;
    2. the bend: Chromium runs the displacement map as the backdrop filter
       (--lg-filter: the 56px squircle bezel, Snell's law at n = 1.5,
-      pulling inward), every colour at one pull (86; the 80 / 86 / 92 split
-      drew a red line along the edges and is gone, 26 Oct 2026); WebKit bends the page under the edges
+      pulling inward), split three ways at 84 / 86 / 88 — a faint rainbow
+      (26 Oct 2026; the old 80 / 86 / 92 drew a hard red line along the
+      edges); WebKit bends the page under the edges
       instead (FIXTURE_BEND);
    3. the gloss: a thin specular along the top, one soft diagonal band, a
       faint bottom-edge light (--glass-sheen); the pointer's shine set a
