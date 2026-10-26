@@ -533,8 +533,12 @@ floating neatly tucked with the other media cards"). A post of several
 stills is Figure 20 alone in its cell — three cards flat, every other card
 stacked at the two ends on its outer edge, opening in the middle — with no
 post-card housing around it: no head, caption, counter or actions; a hold
-opens its menu, the centre card its media. It is a band a large card wide
-and its flat cards tall. The motion row stays the strip.
+opens its menu, the centre card its media. Later that night: the stacks
+are TUCKED OUTWARD (each end card's inner edge swings toward the viewer),
+and a carousel is almost the size of a still or motion post, its flat card
+filling the height, a small line above for the author's name. The
+recommended motions are Figure 20 the same way, RECOMMENDED VIDEOS in that
+line; the strip is deleted.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is

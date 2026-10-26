@@ -6,12 +6,18 @@
 // two ends as thin slivers — a carousel of twenty shows three flat and the
 // other seventeen split between the stacks (owner: "if 3 are laid flat I
 // want 17 divided by 2 visibly stacked side by side on the right and left").
-// Each stacked card stands on its OUTER edge with its inner edge turned
-// away, the way the drawing's ends lean in like the pages of an open book
-// (the first cut turned them the other way — the owner: "the animation is
-// inverted"); the animation sheet's turn ( | / — \ | ) is a card coming off
-// a stack and flattening as it reaches the middle three, and leaving the
-// other way.
+// Each stacked card stands on its OUTER edge and is TUCKED OUTWARD: its
+// inner edge swings toward the viewer, so the stacks open away from the
+// middle (owner, 25 Oct 2026, late: "invert the animations, it's being
+// tucked in inward, I want it tucked outward" — the reverse of the turn
+// the earlier cut settled on); a card coming off a stack flattens as it
+// reaches the middle, and leaves the other way.
+//
+// THE FLAT CARDS FILL THE HEIGHT (same night: the carousel is "almost the
+// same height and width of a regular motion or still post"): as many lie
+// flat — three at most — as fit across FLAT_SHARE of the width at the
+// stage's full height; in a post-sized cell that is one, centred, the iPod's
+// way; in a short band, three.
 //
 // The component lays its cards out itself — a scroller cannot show every
 // card at once — from one number, `pos`, the card at the centre. A drag, a
@@ -44,9 +50,10 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       const W = stage.clientWidth, H = stage.clientHeight;
       const cards = stage.children;
       if (!W || !H || !cards.length) return;
-      const flatN = Math.min(FLAT, n);
       const gap = Math.max(6, W * 0.012);
-      let cw = (W * FLAT_SHARE - (flatN - 1) * gap) / flatN;
+      const tall = H * aspect;                      // a card's width at the full height
+      const flatN = Math.max(1, Math.min(FLAT, n, Math.floor((W * FLAT_SHARE + gap) / (tall + gap))));
+      let cw = Math.min(tall, (W * FLAT_SHARE - (flatN - 1) * gap) / flatN);
       let ch = cw / aspect;
       if (ch > H) { ch = H; cw = ch * aspect; }
       const flatW = flatN * cw + (flatN - 1) * gap;
@@ -77,11 +84,11 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
           let edge = e < 1 ? flatEdge + (firstEdge - flatEdge) * ease : firstEdge + sgn * (e - 1) * sl;
           edge = sgn > 0 ? Math.min(W - 1, edge) : Math.max(1, edge);
           const left = sgn > 0 ? edge - cw : edge;
-          // stands on its outer edge, the inner edge turned away (measured: with
-          // the origin on the outer edge, +deg on the right and -deg on the
-          // left take the inner edge back — the inner edge draws shorter)
+          // stands on its outer edge, tucked outward: with the origin on the
+          // outer edge, -deg on the right and +deg on the left bring the inner
+          // edge toward the viewer (it draws taller than the outer one)
           c.style.transformOrigin = sgn > 0 ? "right center" : "left center";
-          c.style.transform = `translateX(${left.toFixed(1)}px) rotateY(${(sgn * EDGE_DEG * ease).toFixed(1)}deg)`;
+          c.style.transform = `translateX(${left.toFixed(1)}px) rotateY(${(-sgn * EDGE_DEG * ease).toFixed(1)}deg)`;
         }
         c.style.zIndex = String(1000 - Math.round(a * 10));
       }

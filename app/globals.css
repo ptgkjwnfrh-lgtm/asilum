@@ -5088,19 +5088,16 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .bsheetwhen { margin: 4px 0 0; font: 400 11px/1.3 var(--mich); letter-spacing: 0.06em; color: var(--ink); }
 .bsheetnote { margin: 0; font: 400 12px/1.5 var(--mich); color: var(--ink); }
 
-/* THE STRIP (Strip.jsx; the owner's reference, 25 Oct 2026, evening: X's
-   "Videos for you"): tall cards side by side, the next one peeking, a plain
-   sideways scroll with snap points; a card is as tall as the strip */
-.strip { position: relative; display: flex; gap: 2cqw; height: 100%; min-height: 0; padding: 0 var(--cardpadx, 3.6cqw); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.strip::-webkit-scrollbar { display: none; }
-.stripcard { flex: none; height: 100%; aspect-ratio: var(--asp, 9 / 16); scroll-snap-align: start; border-radius: clamp(8px, 3.2cqw, 18px); overflow: hidden; background: var(--bg3); }
-.stripcard .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
-.stripcard img, .stripcard video { display: block; width: 100%; height: 100%; object-fit: cover; }
 /* FIGURE 20 (Fig20.jsx; owner, 25 Oct 2026, late: "simply input figure 20
    how it is … the ipod style collapsed cards floating neatly tucked with the
    other media cards"): a carousel is the coverflow alone in its cell — no
-   housing — three cards flat, every other card stacked at the two ends */
-.fcell .card.f20post { display: flex; height: 100%; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+   housing — a post's size, the flat card(s) filling the height, the rest
+   stacked at the two ends and tucked outward. The recommended motions are
+   the same (MotionRail.jsx). Above each, a small line: the author's name on
+   a carousel, RECOMMENDED VIDEOS on the motions. */
+.fcell .card.f20post, .fcell .card.motionrail { display: flex; flex-direction: column; gap: 1.5cqw; height: 100%; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.f20head { flex: none; margin: 0; padding: 0 var(--cardpadx, 5.5cqw); font: 400 clamp(9px, 3.6cqw, 13px)/1.4 var(--mich); letter-spacing: 0.08em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f20head a { color: inherit; text-decoration: none; }
 .fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
 .f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
 .f20stage:active { cursor: grabbing; }
@@ -5110,9 +5107,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
 .f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
 @media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
-/* the motion row: 9:16 tiles, the one in the middle plays */
-.card.motionrail { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
-.mrhead { margin: 0; padding: 0 6px; font: 400 10px/1.3 var(--mich); letter-spacing: 0.16em; color: var(--ink); }
+/* the motion row's 9:16 cards; the one in the middle plays */
 .mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
 .mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
 

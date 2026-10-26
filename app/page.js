@@ -825,7 +825,7 @@ export default function Home() {
 
   // THE STREAM: one Tetris grid (lib/feed/tetris.js tetrisPack) — every
   // card in one of its kind's sizes at its grid place, the gaps even; a
-  // carousel and the motion row are the STRIP (Strip.jsx: X's "Videos for you").
+  // carousel and the motion row are Figure 20 (Fig20.jsx), a post's size.
   function renderCard(it, variant) {
     if (it.__rail) return <MotionRail key={it.id} posts={it.__rail} />;
     if (it.__ad) return <AdSpace key={it.id} wide={variant === "adwide"} />;

@@ -1,16 +1,18 @@
 "use client";
 
 // app/components/MotionRail.jsx — THE MOTION ROW (owner's feed sketch, 25
-// Oct 2026: "motions that will be recommended — 20 videos … that mimic the
-// video recommendations on X and on Instagram"; that evening, X's "Videos
-// for you" as the reference). The stream's MOTION posts, up to 20
-// (lib/feed/tetris.js motionRail), as tall 9:16 tiles in the STRIP
-// (Strip.jsx): side by side, the next one peeking. Only the tile at the
-// left edge plays, muted and looping; the rest hold their first frame. A
-// tap opens the motion in its popup. Reduced motion: nothing autoplays.
+// Oct 2026: "motions that will be recommended — 20 videos in the same
+// formation as figure 20, the way X and Instagram recommend video"; late
+// that night: the recommended motions are Figure 20 again, the size of a
+// motion post, with "RECOMMENDED VIDEOS" where a carousel's author's name
+// sits). The stream's MOTION posts, up to 20 (lib/feed/tetris.js
+// motionRail), as 9:16 cards in Figure 20 (Fig20.jsx). Only the centre card
+// plays, muted and looping; the rest hold their first frame. A tap on the
+// centre card opens the motion in its popup. Reduced motion: nothing
+// autoplays.
 
 import { useCallback, useEffect, useRef } from "react";
-import Strip from "./Strip.jsx";
+import Fig20 from "./Fig20.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 
@@ -26,13 +28,13 @@ export default function MotionRail({ posts }) {
     const root = ref.current;
     if (!root) return undefined;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const stage = root.querySelector(".strip");
+    const stage = root.querySelector(".f20stage");
     if (!stage) return undefined;
-    let centre = 0; // the strip opens at its left edge
+    let centre = Math.floor((posts.length - 1) / 2); // Figure 20 opens in the middle
     const play = () => {
       const r = stage.getBoundingClientRect();
       const inView = r.bottom > 0 && r.top < window.innerHeight;
-      stage.querySelectorAll(".stripcard").forEach((card, i) => {
+      stage.querySelectorAll(".f20card").forEach((card, i) => {
         const v = card.querySelector("video");
         if (!v) return;
         if (i === centre && inView) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
@@ -46,12 +48,12 @@ export default function MotionRail({ posts }) {
   }, [posts]);
   const onSettle = useCallback((i) => { if (settleRef.current) settleRef.current(i); }, []);
   return (
-    <section className="card motionrail" ref={ref} data-id="rail:motion" data-type="MOTION" aria-label={`${posts.length} motions for you`}>
-      <h3 className="mrhead">MOTIONS FOR YOU</h3>
-      <Strip
+    <section className="card motionrail" ref={ref} data-id="rail:motion" data-type="MOTION" aria-label={`${posts.length} recommended videos`}>
+      <h3 className="f20head">RECOMMENDED VIDEOS</h3>
+      <Fig20
         aspect={9 / 16}
         items={posts.map((p) => ({ key: String(p.serverId ?? p.id), p }))}
-        label="motions"
+        label="recommended videos"
         onSettle={onSettle}
         render={({ p }) => {
           const v = videoOf(p);

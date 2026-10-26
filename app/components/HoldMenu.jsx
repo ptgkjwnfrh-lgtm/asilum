@@ -22,7 +22,7 @@ export function useHold(onHold) {
   const st = useRef({ t: 0, x: 0, y: 0, fired: false, upAt: 0 });
   const clear = () => { const s = st.current; if (s.t) { clearTimeout(s.t); s.t = 0; } };
   const down = (e) => {
-    if (e.button || e.target.closest(".holdmenu, .strip")) return; // the strip keeps its scroll
+    if (e.button || e.target.closest(".holdmenu")) return; // a drag (Figure 20's) moves past 8px and cancels the hold below
     const s = st.current;
     s.x = e.clientX; s.y = e.clientY; s.fired = false;
     clear();

@@ -65,8 +65,8 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.deepEqual(SPANS.STILL, [[5, 14, "post"]]);
   assert.deepEqual(SPANS.MOTION, [[5, 14, "post"]]);
   assert.deepEqual(SPANS["STILL+BRDCST"], [[5, 17, "post"]]);
-  assert.deepEqual(SPANS.CAROUSEL, [[5, 4, "fig20"]], "a carousel is Figure 20 alone: a large card's width, its flat cards' height");
-  assert.equal(SPANS.RAIL[0][0], "F");
+  assert.deepEqual(SPANS.CAROUSEL, [[5, 14, "fig20"]], "a carousel is Figure 20 alone, a still post's size");
+  assert.deepEqual(SPANS.RAIL, [[5, 14, "fig20"]], "the recommended motions too, a motion post's size");
   assert.deepEqual(SPANS.ECHO, [], "an echo lives on the rail above the stream");
   assert.equal(kindOf({ id: "x" }), "LISTING");
   assert.equal(kindOf({ id: "p", __post: still("p", { images: [{ src: "a" }, { src: "b" }] }) }), "CAROUSEL");
@@ -75,7 +75,6 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.equal(kindOf({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }), "BRDCST");
   assert.equal(kindOf({ id: "pl", __place: { id: "pl" } }), "PLACE");
   assert.equal(kindOf({ id: "r", __rail: [] }), "RAIL");
-  assert.deepEqual(spansFor({ id: "r", __rail: [] }, 10).map((o) => o.w), [10], "full resolves to the grid's width");
   assert.deepEqual(spansFor({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, 10).map((o) => o.w), [5, 4], "a BRDCST: five wide, or four on a wide grid");
   assert.equal(kindOf({ id: "ad:0:0", __ad: { size: "ad" } }), "AD");
   assert.equal(galleryOf({ attachments: { media: [{ url: "a" }, { url: "b" }] } }).length, 2);
@@ -162,20 +161,9 @@ test("the page draws what the packer decides, and the cards are the sketch's", (
   assert.match(read("app/components/SongCard.jsx"), /if \(!s \|\| !s\.title\) return null;/, "a song card only for a real record");
 });
 
-test("the strip (the owner's reference, 25 Oct 2026, evening: X's \"Videos for you\"): tall cards side by side, the next one peeking, a plain sideways scroll", async () => {
-  const strip = read("app/components/Strip.jsx");
-  assert.match(strip, /scroll-snap|scrollLeft/, "native scrolling, snapped");
-  assert.match(strip, /onSettle\(Math\.max\(0, Math\.min\(items\.length - 1, Math\.round\(el\.scrollLeft \/ Math\.max\(1, step\)\)\)\)\);/, "the card at the left edge is reported");
-  assert.ok(!/rotateY|perspective/.test(strip), "the strip is flat");
-  const css = read("app/globals.css");
-  assert.match(css, /\.strip \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/, "the page still scrolls through it");
-  assert.match(css, /\.stripcard \{ flex: none; height: 100%; aspect-ratio: var\(--asp, 9 \/ 16\); scroll-snap-align: start;/);
-  assert.match(read("app/components/MotionRail.jsx"), /<Strip\n\s*aspect=\{9 \/ 16\}/, "the motion row's tiles are 9:16");
-  const { stripRows } = await import("../lib/feed/tetris.js");
-  assert.deepEqual([5, 10, 15].map((c) => stripRows("RAIL", c)), [8, 12, 12], "the row grows with the columns, capped at a phone's tile");
-  assert.equal(stripRows("CAROUSEL", 10), null, "a carousel's height is its own span, not the strip's");
-  assert.equal(spansFor({ id: "r", __rail: [] }, 10)[0].h, 12);
-});
+// (retired 25 Oct 2026, late) the strip (Strip.jsx, X's "Videos for you") is
+// deleted: the carousels and then the recommended motions went back to
+// Figure 20 at the owner's word — the FIGURE 20 test below holds them.
 
 test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rules, folded caption, four counted blue actions — and no invented count", async () => {
   const post = read("app/components/PostCard.jsx");
@@ -244,8 +232,8 @@ test("stills and motions are always the biggest: every other kind's every size i
   // declared before measuring: the area of the smallest post-card size is larger
   // than the area of the largest size of a piece, a song, a place, a BRDCST or an ad
   const area = (k) => SPANS[k].map(([w, h]) => w * h);
-  // (a carousel is Figure 20, a band of small cards, not a post card — see its own test)
-  const posts = ["STILL", "MOTION", "STILL+BRDCST", "MOTION+BRDCST"].flatMap(area);
+  // (a carousel and the recommended motions are Figure 20 at a post's size)
+  const posts = ["STILL", "MOTION", "STILL+BRDCST", "MOTION+BRDCST", "CAROUSEL", "RAIL"].flatMap(area);
   const rest = ["LISTING", "SONG", "PLACE", "BRDCST", "AD"].flatMap(area);
   assert.ok(Math.min(...posts) > Math.max(...rest), `posts ${Math.min(...posts)} > others ${Math.max(...rest)}`);
 });
@@ -339,15 +327,25 @@ test("FIGURE 20 for the carousels (owner, 25 Oct 2026, late: \"simply input figu
   // caption, counter or actions — and its cell draws no box around it
   const fig = read("app/components/Fig20.jsx");
   assert.match(fig, /export const FLAT = 3;/, "three flat");
-  assert.match(fig, /rotateY\(/, "the ends turned");
+  // (same night: "invert the animations … I want it tucked outward") the right
+  // stack turns by -deg and the left by +deg about their outer edges
+  assert.match(fig, /rotateY\(\$\{\(-sgn \* EDGE_DEG \* ease\)\.toFixed\(1\)\}deg\)/, "the ends tucked outward");
+  assert.match(fig, /c\.style\.transformOrigin = sgn > 0 \? "right center" : "left center";/, "each stands on its outer edge");
+  // "almost the same height and width of a regular motion or still post": the flat
+  // cards fill the stage's height, as many as fit (one in a post-sized cell)
+  assert.match(fig, /const flatN = Math\.max\(1, Math\.min\(FLAT, n, Math\.floor\(\(W \* FLAT_SHARE \+ gap\) \/ \(tall \+ gap\)\)\)\);/);
   assert.match(fig, /s\.pos = s\.target = Math\.floor\(\(n - 1\) \/ 2\);/, "it opens in the middle");
   const post = read("app/components/PostCard.jsx");
   const at = post.indexOf("if (gallery.length > 1) {");
   const bare = post.slice(at, post.indexOf("  return (\n    <article", at));
   assert.match(bare, /<Fig20\n/, "the carousel is Figure 20");
+  assert.match(bare, /<p className="f20head">/, "a small space for the author's name");
+  const rail = read("app/components/MotionRail.jsx");
+  assert.match(rail, /<h3 className="f20head">RECOMMENDED VIDEOS<\/h3>\s*<Fig20\n\s*aspect=\{9 \/ 16\}/, "the recommended motions: Figure 20 under RECOMMENDED VIDEOS");
+  assert.ok(!existsSync("app/components/Strip.jsx"), "the strip is deleted");
   assert.ok(!/p2head|p2foot|p2cap|p2count|p2acts|Avatar|<Cut/.test(bare), "and nothing around it");
-  assert.ok(!/<Strip/.test(post), "the post card no longer uses the strip");
+  assert.ok(!/<Strip/.test(post + rail), "nothing uses the strip");
   const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(css, /\.fcell \.card\.f20post \{[^}]*border: 0;[^}]*background: none;/, "no housing in the cell");
-  assert.ok(!/type-carousel|\.p2count|\.p2media \.strip/.test(css), "the housed carousel's rules are gone");
+  assert.match(css, /\.fcell \.card\.f20post, \.fcell \.card\.motionrail \{[^}]*border: 0;[^}]*background: none;/, "no housing in the cell");
+  assert.ok(!/type-carousel|\.p2count|\.p2media \.strip|\.stripcard|\.mrhead|(^|[^-])\.strip \{/.test(css), "the housed carousel's and the strip's rules are gone");
 });

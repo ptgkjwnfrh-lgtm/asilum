@@ -323,14 +323,20 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // figure 20 how it is. it should be the ipod style collapsed cards
   // floating neatly tucked with the other media cards"): a post of two or
   // more stills is the coverflow alone in its cell — no housing, no head,
-  // caption or actions around it. The centre card opens the post's media;
+  // caption or actions around it, only the author's name above. It is the
+  // size of a still or motion post (SPANS.CAROUSEL). The centre card opens
+  // the post's media;
   // a hold (or the hidden key) opens its menu, PASS among it.
   if (gallery.length > 1) {
     return (
       <div className="card f20post" data-id={cardId} data-type={type} aria-label={"carousel: " + (p.title || name) + ", " + gallery.length + " photographs"} {...hold}>
         <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
         <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
+        {/* a small space above it for the author (same night: "allowing small
+            space for the user name if it's a still carousel") */}
+        <p className="f20head">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</p>
         <Fig20
+          aspect={3 / 5}
           items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
           label={`${gallery.length} photographs by ${name}`}
           render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}

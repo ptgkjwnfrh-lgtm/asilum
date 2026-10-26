@@ -796,9 +796,13 @@ checked what a reader is actually served, which is the claim that matters.
 - Strip.jsx: `.strip` scroll-snaps sideways, `.stripcard` is `height:
   100%` with `aspect-ratio: var(--asp)`; the motion row 9:16 (`stripRows`:
   ceil(cols × 1.5), capped at 12). (Late that night a post carousel went
-  back to Fig20.jsx, bare: `.card.f20post` in a 5x4 cell, no housing; the
-  housed carousel's `.type-carousel`, `.p2count` and `.p2media .strip` are
-  gone.)
+  back to Fig20.jsx, bare: `.card.f20post`, no housing; the housed
+  carousel's `.type-carousel`, `.p2count` and `.p2media .strip` are gone.
+  Then: CAROUSEL and RAIL are 5x14 Figure 20 cells with a `.f20head` line —
+  the author's name, or RECOMMENDED VIDEOS; Fig20 turns the stacks
+  `rotateY(-sgn·72°)` about the outer edge (tucked outward) and lays flat as
+  many cards as fit at the stage's full height (one in a post-sized cell);
+  Strip.jsx and its rules are deleted.)
 - Wordmark.jsx is `.wmimg` (`/model/logo.jpg`, the owner's artwork cropped
   to the mark) with the name visually hidden; `.wordmark.brandfix` blends
   multiply (screen, inverted, in dark).
