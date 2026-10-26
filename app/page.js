@@ -1168,7 +1168,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
       <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
         {menuEl}
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
+          <img src={it.img || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" />
         </div>
         <div className="pieceline">
           <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
@@ -1182,7 +1182,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
       {menuEl}
       <div className="pcphoto">
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
+          <img src={it.img || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" />
         </div>
         <div className="pchead">
           <b className="pcmode">{mode}{who ? <span className="pchandle">{mode ? ":" : ""}{who}</span> : null}</b>
@@ -1193,13 +1193,15 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
             <span className="pcsize">{size}</span>
             {price ? <span className="price">{price}</span> : null}
           </div>
-        </div>
-      </div>
-      <div className="pcacts" role="group" aria-label="piece actions">
+          {/* the actions close the same column as the name and the price, so
+              the three rows stack and never sit on each other */}
+          <div className="pcacts" role="group" aria-label="piece actions">
         <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
         <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />
         <button type="button" className="pcact" onClick={share} aria-label="share the piece" title={shared || "SHARE"}><Icon name="share" size={22} /></button>
         {shared ? <span className="wpcshared" role="status">{shared}</span> : null}
+          </div>
+        </div>
       </div>
     </div>
   );

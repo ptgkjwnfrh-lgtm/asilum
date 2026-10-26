@@ -4966,17 +4966,21 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); color: var(--on-media); }
 .card.piece.v-hero .pcmode { color: var(--on-media); }
 .card.piece.v-hero .imgwrap .ostick { top: 10cqw; left: var(--cardpadx); } /* under the head, not through it */
-.card.piece.v-hero .pcfoot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 8cqw var(--cardpadx) 4cqw;
-  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 72%, transparent) 100%); color: var(--on-media); }
-.card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); }
-.card.piece.v-hero .pcfoot .pctitle { margin: 0; }
+/* THE FOOT, ONE COLUMN (owner, 25 Oct 2026: "uniformly orient everything on
+   the media card so that everything is spaced correctly"): the name, the
+   size and price, then the actions, stacked in flow on one scrim — nothing
+   is pinned over anything else. The foot's insets match the head's
+   (--cardpadx at the sides, 4.5cqw from the edge); the action row's icons
+   sit on that same inset, their buttons' slack pulled out past it on every
+   side, so the three rows sit one even step (2.5cqw) apart. */
+.card.piece.v-hero .pcfoot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; flex-direction: column; gap: 2.5cqw;
+  padding: 10cqw var(--cardpadx) 4.5cqw;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 42%, transparent) 100%); color: var(--on-media); }
+.card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); margin: 0; }
 .card.piece.v-hero .pcfoot .demoflag { color: var(--on-media); opacity: 0.85; }
 /* the actions float on the photograph too (owner, evening: "every media card should just be comprised of the images with everything floating on it") */
-.card.piece.v-hero .pcacts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 0 var(--cardpadx) 3cqw; color: var(--on-media); }
+.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.78; background: none; }
 .card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
-.card.piece.v-hero .pcfoot { bottom: 0; padding-bottom: 12cqw; }
-.card.piece.v-hero .pcfoot { background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 42%, transparent) 100%); }
-.card.piece.v-hero .pcacts { opacity: 0.78; background: none; }
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */

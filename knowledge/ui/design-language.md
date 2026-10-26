@@ -840,6 +840,12 @@ checked what a reader is actually served, which is the claim that matters.
   bordered, `.brdcst` a separate paper block 4px below, bottom-rounded; no
   `.brdcstrule`, no `.brdcstast`.
 - `--cardpadx: 5.5cqw`; head and foot insets 4.5cqw / 4cqw.
+- The piece card's foot is one column (same night: "uniformly orient
+  everything on the media card"): `.pcfoot` holds the name, `.pcrow` and
+  `.pcacts` in flow, `gap: 2.5cqw`, insets 4.5cqw like the head; the action
+  icons sit on the text's edge (each button's slack pulled out by a negative
+  margin). Nothing is pinned over the foot. The Feed's piece cards draw
+  `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
   `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`
   maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.
