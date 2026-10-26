@@ -17,6 +17,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { buildFeed, promptVector, overlayVector, markSeen, markBridgeImpressions, markBridgeServed, recordServe, itemsVector } from "../../../lib/brain/index.js";
+import { MODEL_PERSONA } from "../../../lib/model/pieces.js";
 import { examinedImpressionsEnabled } from "../../../lib/brain/attribution.js";
 import { popularityDedupEnabled } from "../../../lib/brain/popularity.js";
 import { consentState, observationAllowed } from "../../../lib/consent.js";
@@ -105,14 +106,18 @@ export async function GET(req) {
   // one serve, exactly like a craving, read by the ranker and stored by
   // nothing. /api/train remains the only path that persists a prompt, and it
   // does so on the user's explicit action.
+  // THE MODEL'S READER (owner, 25 Oct 2026; lib/model/pieces.js): on a
+  // keyless run — the pool is the seed catalog — a cold reader with no
+  // prompt is served as the persona the model was built for. An overlay on
+  // this serve, like a prompt; stored by nothing.
   const promptVec = q ? promptVector(q) : null;
   const contextVec = overlayVector(
     cravingActive ? cravingVector(craving) : null,
     promptVec
   );
 
-  // Item pool: DB items if available, else the seed catalog.
-  let pool = await getDiscoverablePool();
+  // Item pool: DB items if available, else the model's pieces ahead of the seed catalog (lib/products.js).
+  let pool = await getDiscoverablePool({ model: true });
   // The rotation ring is sized to the WHOLE discoverable pool, not to this
   // request's filtered slice — one serve under a 40-item category must not
   // truncate a 915-item memory to 40.
@@ -241,12 +246,18 @@ export async function GET(req) {
 
   // V.2 14.9 (slice 10c): the passenger's |A| in the Info Dock turns exploration off; off beats reactivation
   const explorationOff = userId ? (await getMemoryPreferences(userId).catch(() => ({ explorationOff: false }))).explorationOff === true : false;
+  // the model's reader: a keyless run (the pool is the seed catalog) serving
+  // a cold reader with no prompt and no board reads as the persona —
+  // lib/model/pieces.js MODEL_PERSONA, an overlay on this serve only
+  const seedPool = pool.length > 0 && pool.every((it) => String(it.source || it.source_name || "") === "Asilum synthetic seed");
+  const modelReader = seedPool && !hasProfile && !promptVec && !boardVec && !cravingActive;
+  const servedContext = modelReader ? overlayVector(contextVec, MODEL_PERSONA.tags) : contextVec;
   const { split, items, epsilonActive, epsilonAuto, safeMode, zones, quotas, catalog, exploration } = buildFeed(
     {
       profile,
       explorationOff,
       epsilonActive: epsilonParam || craving.novelty === "wildcard",
-      edges, popularity, boardVec, contextVec, crossUser, novelty: craving.novelty,
+      edges, popularity, boardVec, contextVec: servedContext, crossUser, novelty: craving.novelty,
       tunedSplit: tuned,
       limit,
       // The lane walks the FILTERED pool in listing order, so a category or

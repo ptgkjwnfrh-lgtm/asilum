@@ -69,8 +69,13 @@ const FOCUSABLE = [
  * reader user is dropped at the top of the document every time they dismiss
  * something, losing their place entirely. Focus is only restored if the origin
  * element is still connected.
+ *
+ * `companion` is a selector for a surface OUTSIDE this one that may keep the
+ * focus while it is open: the deck's search bar types into the search popup
+ * it opened (the owner's fixture sketch, 19 Oct 2026), so a popup opened
+ * from it must not pull the caret away mid-word.
  */
-export function useFocusTrap(surfaceRef, active = true) {
+export function useFocusTrap(surfaceRef, active = true, { companion = null } = {}) {
   useEffect(() => {
     if (!active) return undefined;
     const surface = surfaceRef.current;
@@ -83,7 +88,8 @@ export function useFocusTrap(surfaceRef, active = true) {
     const inside = () =>
       [...surface.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
 
-    (inside()[0] || surface).focus();
+    const withCompanion = () => !!(companion && document.activeElement && document.activeElement.closest && document.activeElement.closest(companion));
+    if (!withCompanion()) (inside()[0] || surface).focus();
 
     const onKey = (event) => {
       if (event.key !== "Tab") return;
@@ -92,6 +98,7 @@ export function useFocusTrap(surfaceRef, active = true) {
       const first = items[0];
       const last = items[items.length - 1];
       if (!surface.contains(document.activeElement)) {
+        if (withCompanion()) return;
         // another modal dialog stacked above this one (the photograph that
         // floats, the ticket flow — rendered on <body>, outside this surface)
         // keeps focus: its own trap owns Tab while it is up
@@ -111,9 +118,10 @@ export function useFocusTrap(surfaceRef, active = true) {
     document.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("keydown", onKey, true);
+      if (withCompanion()) return;
       if (origin && origin.isConnected && typeof origin.focus === "function") origin.focus();
     };
-  }, [active, surfaceRef]);
+  }, [active, surfaceRef, companion]);
 }
 
 /**

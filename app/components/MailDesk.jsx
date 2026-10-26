@@ -39,6 +39,7 @@
 // when the desk is unreachable is a false statement to the reader's face, and
 // it is the same rule the account-kind read follows.
 
+import Icon from "./Icons.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEscape, useClickAway, useFocusTrap } from "./dismiss.js";
 import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
@@ -76,7 +77,9 @@ function Envelope({ waiting, fault }) {
   );
 }
 
-export default function MailDesk() {
+// `glyph`: the deck draws its own messages glyph (the owner's fixture sketch,
+// 19 Oct 2026: a square speech bubble); the envelope stays the default.
+export default function MailDesk({ glyph = null, keyClass = "" }) {
   const [available, setAvailable] = useState(null); // null = unknown, false = feature absent
   const [counts, setCounts] = useState({ inbox: 0, requests: 0 });
   const [fault, setFault] = useState(false);
@@ -635,12 +638,12 @@ export default function MailDesk() {
     <div className="maildesk">
       <button
         ref={buttonRef}
-        className={"mailbtn" + (open ? " cur" : "")}
+        className={"mailbtn" + (keyClass ? " " + keyClass : "") + (open ? " cur" : "")}
         aria-label={label}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <Envelope waiting={waiting && !fault} fault={fault} />
+        {glyph ? <Icon name={glyph} size={22} /> : <Envelope waiting={waiting && !fault} fault={fault} />}
         <span className="mailword">MAIL</span>
         {fault ? <span className="mailfault" title="unavailable">!</span>
           : waiting ? <span className="mailcount">{counts.inbox + counts.requests}</span> : null}

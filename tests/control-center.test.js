@@ -129,7 +129,7 @@ test("the theme follows the device unless a pick is pinned (blueprint 2.24)", ()
 test("there is no Wire: one Feed, the posts braided in, the listing a popup (blueprint, 17 Oct)", () => {
   const feed = read("app/page.js");
   assert.ok(!/view=wire|view === "wire"|streamlanes|HotlistStrip/.test(feed), "the selector, the lanes and the rail are gone");
-  assert.ok(/function feedList\(/.test(feed) && /braid\(list, streamPosts, places\)/.test(feed), "the posts are braided into the pieces");
+  assert.ok(/function feedList\(/.test(feed) && /braid\(list, rest, places, SAMPLE_SONGS\)/.test(feed) && /motionRail\(streamPosts\)/.test(feed), "the posts are braided into the pieces");
   assert.ok(/openSheet\("listing", \{ item, title: "LISTING" \}\)/.test(feed), "a piece opens the LISTING popup");
   assert.ok(/<EchoRail groups=\{rail\} \/>/.test(feed), "the echo rail rides above the stream");
 });
@@ -142,11 +142,11 @@ test("the feed parks and restores through the registry; wire cards carry their i
   assert.ok(/restoreFromPark\(data\.items \|\| \[\]\)/.test(feed), "the fresh feed re-finds the anchor");
   assert.ok(/className="newabove"/.test(feed), "new items above are offered, never scrolled into");
   const wire = read("app/components/PostCard.jsx");
-  assert.ok(/data-id=\{"post:" \+ \(p\.serverId \?\? p\.id\)\}/.test(wire), "a wire card's data-id is the id the feed lists it under");
+  assert.ok(/const cardId = "post:" \+ \(p\.serverId \?\? p\.id\);/.test(wire) && /data-id=\{cardId\}/.test(wire), "a wire card's data-id is the id the feed lists it under");
   const cover = read("app/cover/page.js");
   assert.ok(/<PlacementsBlock \/>/.test(cover), "the cover carries the placements block");
-  const dock = read("app/components/ControlCenter.jsx");
-  assert.ok(/usePlacements\(\)/.test(dock) && !/tickerItems\(/.test(dock), "the dock reads placements through the shared hook, not its own copy");
+  const dock = read("app/components/AdStrip.jsx");
+  assert.ok(/usePlacements\(\)/.test(dock) && !/tickerItems\(/.test(dock), "the ad strip reads placements through the shared hook, not its own copy");
   const street = read("app/components/StreetMap.jsx");
   assert.ok(/map\.names/.test(street) && /strokeText\(label, x, y\)/.test(street), "the neighbourhood names are drawn from the document");
 });

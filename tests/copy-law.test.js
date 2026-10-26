@@ -53,7 +53,9 @@ test("the app is a personalized fashion terminal, and nothing calls it the old n
   // Positive: the descriptor a reader meets in prose and metadata.
   assert.match(read("app/layout.js"), /personalized fashion terminal/);
   // (17 Oct) the wordmark is "*ASILUM" alone — tests/brand-name.test.js owns the lockup.
-  assert.match(read("app/page.js"), /<Wordmark \/>/, "the feed prints the wordmark");
+  // (19 Oct) the wordmark is a fixture of its own, top left, mounted once by the shell
+  assert.match(read("app/shell.js"), /<Wordmark className="brandfix" \/>/, "the shell mounts the wordmark fixture");
+  assert.ok(!/<Wordmark/.test(read("app/page.js")), "the Feed no longer prints a second one");
 });
 
 test("no public mention of the learning bridges", () => {
@@ -87,14 +89,16 @@ test("the engine is called The Asterisk system in prose", () => {
   // Positive, so the rule cannot be satisfied by deleting the sentences.
   assert.match(read("app/stylist/page.js"), /The Asterisk system is styling/);
   assert.match(read("app/discover/page.js"), /The Asterisk system is using your Passport/);
-  assert.match(read("app/page.js"), /The Asterisk system routed this edit/);
+  assert.match(read("app/page.js"), /The Asterisk system routed this feed/); // (25 Oct) "it's the feed", not an edit
 });
 
 test("the ticker carries the house lines when nothing eligible runs", () => {
-  // (V.2, 17 Oct) the marquee left with the header; the deck's ad ticker
-  // carries the house lines as its fallback (lib/dock.js HOUSE_LINES).
+  // (V.2, 17 Oct) the marquee left with the header; the ad ticker carries
+  // the house lines as its fallback (lib/dock.js HOUSE_LINES). (19 Oct) The
+  // ticker runs at the head of the Feed now, off the deck (AdStrip.jsx).
   const dock = read("lib/dock.js");
-  const cc = read("app/components/ControlCenter.jsx");
+  const cc = read("app/components/AdStrip.jsx");
+  assert.match(read("app/components/ControlCenter.jsx"), /<AdStrip typing=\{inSearch\} \/>/, "the deck carries the strip, in its bubble (owner, 25 Oct 2026, last)");
   // Verbatim, including the owner's spacing in "A S I L U M".
   for (const line of [
     "ARE YOU SEEKING A S I L U M",

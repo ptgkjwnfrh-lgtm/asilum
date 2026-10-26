@@ -11,6 +11,8 @@ import { useEffect, useRef } from "react";
 // backdrop-filter (WebKit parses it and paints nothing; Gecko drops it), so
 // the refraction is gated on the engine, not on CSS.supports — which is true
 // everywhere and proves nothing.
+const SVG = "http://www.w3.org/2000/svg";
+
 export function canRefract() {
   if (typeof window === "undefined") return false;
   // the lab switch: <html data-lg-page="1"> or ?lgpage=1 takes the
@@ -53,7 +55,25 @@ function bendProfile(t) {
 // `open` says which edges are real edges of the glass: an edge flush with
 // the viewport (the strip's top, left and right) has nothing beyond it and
 // does not lens; only the edges the page passes under do.
-export function drawRefractionMap(node, weightNode, w, h, radius, open) {
+// `radius` is one number or the four corners [tl, tr, br, bl] (the owner's
+// fixture sketch of 19 Oct 2026: the info deck's right end and the passport
+// button's left end are straight, the outer ends round).
+// `features` are the shapes carved INTO the pane — the cuts between keys,
+// the post disc's ring, the foot grill, the tab indicator (lensFeatures
+// below): the backdrop bends around each of them too, so the glass warps
+// where it is cut, the way the sketch's Figure 3 draws it.
+// THE PULL, AS TWO GREYS (19 Oct 2026: the owner saw the warp "curve to the
+// left a lot"; a grid laid under the deck showed every vertical line along
+// its bottom lip hooking left). The pull used to travel as ONE colour
+// picture — red for x, green for y — and Chromium colour-manages an
+// feImage, which on a wide-gamut screen MIXES the channels: where the y pull
+// was strong (the top and bottom lips) some of it leaked into red and became
+// a sideways pull. The same lesson as the weight picture below: only greys
+// survive the conversion. So the x pull and the y pull are each drawn as a
+// grey (xNode, yNode) and recombined inside the filter, where nothing is
+// colour-managed. The colour picture (node) is still drawn for the
+// page-side bend.
+export function drawRefractionMap(node, weightNode, w, h, radius, open, features = null, bezel = null, xNode = null, yNode = null) {
   const c = document.createElement("canvas");
   c.width = w; c.height = h;
   const ctx = c.getContext("2d");
@@ -65,8 +85,23 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
   const d = img.data;
   const imgw = ctxw.createImageData(w, h);
   const dw = imgw.data;
-  const r = Math.max(0, Math.min(radius, w / 2, h / 2));
+  const cx = document.createElement("canvas"); cx.width = w; cx.height = h;
+  const cy = document.createElement("canvas"); cy.width = w; cy.height = h;
+  const ctxx = cx.getContext("2d"), ctxy = cy.getContext("2d");
+  const imgx = ctxx ? ctxx.createImageData(w, h) : null, imgy = ctxy ? ctxy.createImageData(w, h) : null;
+  const rad = Array.isArray(radius) ? radius : [radius, radius, radius, radius];
+  const [rtl, rtr, rbr, rbl] = rad.map((v) => Math.max(0, Math.min(v || 0, w / 2, h / 2)));
   const o = open || { top: true, right: true, bottom: true, left: true };
+  const feats = Array.isArray(features) ? features : [];
+  // the bezel is the full BEZEL (56px) deep wherever the pane has room; a
+  // pane shorter than two bezels (the fixtures: 35–90px) keeps the same
+  // profile over half its short side, so the bend still fades to nothing
+  // at the middle instead of two lenses overlapping across it
+  // `bezel` (a fraction of the short side) narrows it further — the
+  // fixtures' bezel is a thin band that fades out, never a thick visible
+  // ring (owner, 19 Oct 2026: "it should be a gradient")
+  // a number under 1 is a fraction of the short side, 1 or more is px
+  const bez = Math.max(6, Math.min(BEZEL, Math.min(w, h) / 2, bezel ? (bezel < 1 ? Math.min(w, h) * bezel : bezel) : Infinity));
   // normalise the profile so the strongest bend uses the full channel
   let peak = 0;
   for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
@@ -78,6 +113,7 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
       const dx = Math.min(dl, dr), dy = Math.min(dt, db);
       const sx = dl <= dr ? -1 : 1, sy = dt <= db ? -1 : 1; // outward signs
       let nx = 0, ny = 0, inside; // outward normal, distance to the edge
+      const r = sy < 0 ? (sx < 0 ? rtl : rtr) : (sx < 0 ? rbl : rbr); // this quadrant's corner
       if (r > 0 && dx < r && dy < r) {
         // a rounded corner between two open edges: radial distance
         const cx = r - dx, cy = r - dy;
@@ -90,14 +126,38 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
         ny = sy; inside = dy;
       }
       let m = 0;
-      if (inside >= 0 && inside < BEZEL) m = bendProfile(inside / BEZEL) / (peak || 1);
+      if (inside >= 0 && inside < bez) m = bendProfile(inside / bez) / (peak || 1);
       // the bezel's weight: 1 at the lip, easing to 0 a little past the bend
-      const bw = Math.max(0, Math.min(1, 1 - inside / (BEZEL * 1.35)));
+      let bw = Math.max(0, Math.min(1, 1 - inside / (bez * 1.35)));
+      let vx = -nx * m, vy = -ny * m; // pull inward along -normal
+      // the carved shapes: each pulls what lies near its outline TOWARDS the
+      // outline, from both sides, so the backdrop stretches into the cut
+      for (const f of feats) {
+        const px = f.kind === "cut" ? f.x : f.kind === "slot" ? Math.max(f.x0, Math.min(f.x1, x + 0.5)) : f.cx;
+        const py = f.kind === "cut" ? Math.max(f.y0, Math.min(f.y1, y + 0.5)) : f.cy;
+        const ex = x + 0.5 - px, ey = y + 0.5 - py;
+        const len = Math.hypot(ex, ey) || 1;
+        const sd = f.kind === "cut" ? len : len - f.r; // signed distance to the outline
+        const t = Math.abs(sd) / f.band;
+        if (t >= 1) continue;
+        // a carving's pull is a fraction of the bezel's: at the September pull
+        // (80–92px at full strength) anything stronger tears the letters apart
+        const g = (1 - t) * (1 - t) * Math.min(1, t / 0.12) * (f.gain || 0.22);
+        const sgn = sd >= 0 ? 1 : -1;
+        vx -= (ex / len) * sgn * g; vy -= (ey / len) * sgn * g;
+        bw = Math.max(bw, 1 - t * 0.8);
+      }
+      vx = Math.max(-1, Math.min(1, vx)); vy = Math.max(-1, Math.min(1, vy));
       const i = (y * w + x) * 4;
-      d[i] = Math.round(128 - nx * m * 127);      // pull inward along -normal
-      d[i + 1] = Math.round(128 - ny * m * 127);
+      d[i] = Math.round(128 + vx * 127);
+      d[i + 1] = Math.round(128 + vy * 127);
       d[i + 2] = 128;
       d[i + 3] = 255;
+      if (imgx && imgy) {
+        const gx = d[i], gy = d[i + 1];
+        imgx.data[i] = gx; imgx.data[i + 1] = gx; imgx.data[i + 2] = gx; imgx.data[i + 3] = 255;
+        imgy.data[i] = gy; imgy.data[i + 1] = gy; imgy.data[i + 2] = gy; imgy.data[i + 3] = 255;
+      }
       const wt = Math.round(255 * bw * bw * (3 - 2 * bw)); // smoothstep, as a grey
       dw[i] = wt; dw[i + 1] = wt; dw[i + 2] = wt; dw[i + 3] = 255;
     }
@@ -106,6 +166,11 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open) {
   ctxw.putImageData(imgw, 0, 0);
   node.setAttribute("href", c.toDataURL("image/png"));
   weightNode.setAttribute("href", cw.toDataURL("image/png"));
+  if (xNode && yNode && imgx && imgy) {
+    ctxx.putImageData(imgx, 0, 0); ctxy.putImageData(imgy, 0, 0);
+    xNode.setAttribute("href", cx.toDataURL("image/png"));
+    yNode.setAttribute("href", cy.toDataURL("image/png"));
+  }
 }
 
 
@@ -119,7 +184,7 @@ export const PULL = [80, 86, 92];
 // cool"): 0 is the 8 Sep fringe; 1 roughly triples it, so what passes under
 // the bezel splits into red, green and blue — the rainbow is IN the
 // refraction, not only painted on the rim.
-export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1, prism = 0 }) {
+export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1, prism = 0 }) {
   const [sr, sg, sb] = PULL.map((v, i) => (v * strength * (1 + prism * (i - 1) * 0.28)).toFixed(1));
   return (
     <svg className="glass-defs" aria-hidden="true" focusable="false">
@@ -132,15 +197,28 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1, prism = 0
         picture, a grey that says how much of each pixel is bezel. That is
         Apple's clear glass: a refracting rim around an untouched middle. */}
     <filter id={id} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
-      <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
+      {/* THE PULL, NEVER A COLOUR (see drawRefractionMap). Each direction is
+          its own grey, and the bend runs as two passes — sideways, then up and
+          down — so no coloured picture ever reaches a displacement: a colour
+          pixel is colour-managed even inside the filter, and on a wide-gamut
+          screen that leaked the up-and-down pull of the top and bottom lips
+          into a sideways one (the owner's "it curves to the left", 19 Oct;
+          measured with a grid under the deck). The direction a pass leaves
+          alone reads the alpha channel, held at exactly one half. */}
+      <feImage ref={xRef} preserveAspectRatio="none" result="lgx" />
+      <feImage ref={yRef} preserveAspectRatio="none" result="lgy" />
+      <feColorMatrix in="lgx" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" result="lgxa" />
+      <feColorMatrix in="lgy" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" result="lgya" />
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
       {/* the lens chain, data-lens: restrictLens() confines these to the
           edge band when only one edge is open (the strip), so the clear
-          middle costs nothing — the blur that used to follow them is gone
-          for the same reason; the lens is crisp, as Apple's is. */}
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
+          middle costs nothing; red bends least, blue most */}
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sr} xChannelSelector="R" yChannelSelector="A" result="sxR" />
+      <feDisplacementMap data-lens="1" in="sxR" in2="lgya" scale={sr} xChannelSelector="A" yChannelSelector="R" result="bentR" />
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sg} xChannelSelector="R" yChannelSelector="A" result="sxG" />
+      <feDisplacementMap data-lens="1" in="sxG" in2="lgya" scale={sg} xChannelSelector="A" yChannelSelector="R" result="bentG" />
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sb} xChannelSelector="R" yChannelSelector="A" result="sxB" />
+      <feDisplacementMap data-lens="1" in="sxB" in2="lgya" scale={sb} xChannelSelector="A" yChannelSelector="R" result="bentB" />
       <feColorMatrix data-lens="1" in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
       <feColorMatrix data-lens="1" in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
       <feColorMatrix data-lens="1" in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
@@ -156,6 +234,8 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, strength = 1, prism = 0
       <feComposite in="SourceGraphic" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
       <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
     </filter>
+    {/* the colour picture of the pull: off the filter's chain, kept for the page-side bend */}
+    <image ref={mapRef} width="0" height="0" />
     </svg>
   );
 }
@@ -189,7 +269,6 @@ export function bottomBand(w, h) {
 // its own box; nothing on the rest of the page pays. place(rect) on every
 // change of the pane or the scroll; dispose() takes it all back.
 export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null }) {
-  const SVG = "http://www.w3.org/2000/svg";
   let svg = null;
   const bent = new Map(); // element -> filter node
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -342,9 +421,33 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
 // coordinates over a flat 128 grey — so what is under the edge bends the
 // way a backdrop would. Bounded: only the elements under the pane, each
 // filtered within its own box; nothing on the rest of the page pays.
-export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, prism = 0 } = {}) {
+// The shapes carved into a pane, read from the DOM: every descendant marked
+// data-lens-shape — "cut" (a vertical groove: its centre line), "ring" (a
+// circle: the element's box), "slot" (a stadium: the element's box) — in the
+// pane's own pixels. data-lens-band widens or narrows the bend around it.
+export function lensFeatures(el) {
+  const box = el.getBoundingClientRect();
+  const out = [];
+  for (const n of el.querySelectorAll("[data-lens-shape]")) {
+    const b = n.getBoundingClientRect();
+    if (!b.width && !b.height) continue;
+    const kind = n.getAttribute("data-lens-shape");
+    const band = parseFloat(n.getAttribute("data-lens-band")) || 10;
+    const gain = parseFloat(n.getAttribute("data-lens-gain")) || undefined; // how hard it pulls (a cut barely does)
+    const l = b.left - box.left, t = b.top - box.top;
+    if (kind === "cut") out.push({ kind, x: l + b.width / 2, y0: t, y1: t + b.height, band, gain });
+    else if (kind === "ring") out.push({ kind, cx: l + b.width / 2, cy: t + b.height / 2, r: b.width / 2, band, gain });
+    else if (kind === "slot") { const r = b.height / 2; out.push({ kind, x0: l + r, x1: l + b.width - r, cy: t + r, r, band, gain }); }
+  }
+  return out;
+}
+
+// `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, prism = 0, bezel = null, shine = true } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
+  const xRef = useRef(null);
+  const yRef = useRef(null);
   useEffect(() => {
     const el = elRef.current;
     if (!active || !el) return undefined;
@@ -356,8 +459,9 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       raf = 0;
       const r = el.getBoundingClientRect();
       if (mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
-        const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open);
+        const cs = getComputedStyle(el);
+        const radius = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius].map((v) => parseFloat(v) || 0);
+        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open, lensFeatures(el), bezel === "fixture" ? fixtureBezel() : bezel, xRef.current, yRef.current);
         if (refract) {
           el.style.setProperty("--lg-filter", `url(#${id})`);
           el.dataset.refract = "1";
@@ -382,7 +486,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       el.style.setProperty("--gs", "1");
     };
     const onLeave = () => el.style.setProperty("--gs", "0");
-    if (!still) {
+    if (!still && shine) {
       el.addEventListener("pointermove", onMove);
       el.addEventListener("pointerleave", onLeave);
     }
@@ -394,8 +498,8 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       el.removeEventListener("pointerleave", onLeave);
       if (pageBend) pageBend.dispose();
     };
-  }, [elRef, id, active, open, strength, bend]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} prism={prism} />;
+  }, [elRef, id, active, open, strength, bend, bezel, shine]);
+  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} prism={prism} />;
 }
 
 // ---- THE REACTIVE RAINBOW (owner, 18 Oct 2026: "the liquid glass isn't
@@ -423,6 +527,21 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
 // the photograph that floats) — until then the pointer and the scroll drive
 // it alone. prefers-reduced-motion: nothing listens, the rim stays still.
 export const GLASS_REACTIVE = ".lgrx";
+// THE FIXTURES' BEZEL, ONE WIDTH (owner, 19 Oct 2026: "the refraction bezel
+// on the info dock and the passport button should match the central
+// control"): 26% of the deck's 175-unit height, in px at this width — the
+// same --u as globals.css (clamp(0.4px, 0.1vw, 0.5px)), so the Info Dock
+// and the globe bend over the same band the deck does (each still capped
+// at half its own height, which the 88-unit top fixtures barely reach).
+export const FIXTURE_BEZEL_UNITS = 175 * 0.26;
+export function fixtureBezel() {
+  const u = Math.min(0.5, Math.max(0.4, (typeof window === "undefined" ? 1000 : window.innerWidth) * 0.001));
+  return u * FIXTURE_BEZEL_UNITS;
+}
+// What bends under a fixture's edges where the engine cannot bend a backdrop
+// (WebKit: Safari, every iPhone browser) — the September header's list, cut
+// to what scrolls under the V.2 fixtures: the cards, the masthead's lines.
+export const FIXTURE_BEND = ".card, .headline, .headsub, .deck, .demobanner, .adstrip, .ctmeta";
 export function useGlassReactive() {
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -471,4 +590,69 @@ export function useGlassReactive() {
       if (s.raf) cancelAnimationFrame(s.raf);
     };
   }, []);
+}
+
+// ---- THE LAMP UNDER THE WATER (the September header, owner, 8 Sep 2026;
+// carried onto the V.2 fixtures 19 Oct 2026). A .glass-light layer kept to
+// the pane's rect, one level BELOW it (a sibling on <body>, so the pane's
+// backdrop sees it), carrying the current key's coloured glow
+// (--cx/--cy/--cs). The pane bends that light: a glow stick in water.
+// THE GLASS DOES NOT ANSWER THE POINTER (owner, 19 Oct 2026: "there doesn't
+// have to be surface hover reactions on the liquid glass — take that out"):
+// no hovered-key lamp, no pointer trace, no meniscus dome. Nothing
+// re-renders: CSS variables only.
+export function useGlassLamps(elRef, { active = true, current = ".cur" } = {}) {
+  useEffect(() => {
+    const el = elRef.current;
+    if (!active || !el || typeof document === "undefined") return undefined;
+    const light = document.createElement("div");
+    light.className = "glass-light";
+    light.setAttribute("aria-hidden", "true");
+    document.body.appendChild(light);
+    const centreOf = (node) => {
+      const r = el.getBoundingClientRect();
+      const b = node.getBoundingClientRect();
+      return {
+        x: `${((b.left + b.width / 2 - r.left) / Math.max(1, r.width)) * 100}%`,
+        y: `${((b.top + b.height / 2 - r.top) / Math.max(1, r.height)) * 100}%`,
+      };
+    };
+    // the lamp layer follows the pane; the current key's lamp follows the current key
+    const placeCurrent = () => {
+      const cur = el.matches(current) ? el : el.querySelector(current); // the globe is its own key
+      if (!cur) { light.style.setProperty("--cs", "0"); return; }
+      const c = centreOf(cur);
+      light.style.setProperty("--cx", c.x);
+      light.style.setProperty("--cy", c.y);
+      light.style.setProperty("--cs", "1");
+    };
+    let raf = 0;
+    const fit = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      light.style.top = `${r.top}px`;
+      light.style.left = `${r.left}px`;
+      light.style.width = `${r.width}px`;
+      light.style.height = `${r.height}px`;
+      light.style.borderRadius = getComputedStyle(el).borderRadius;
+      light.style.opacity = getComputedStyle(el).opacity;
+      placeCurrent();
+    };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(fit); };
+    const ro = new ResizeObserver(wake);
+    ro.observe(el);
+    const mo = new MutationObserver(wake); // a key turning current, a popup shrinking the fixture
+    mo.observe(el, { subtree: true, attributes: true, attributeFilter: ["class", "aria-current", "aria-pressed"] });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-popup", "data-media", "data-dm"] });
+    window.addEventListener("resize", wake);
+    el.addEventListener("transitionend", wake);
+    fit();
+    return () => {
+      ro.disconnect(); mo.disconnect();
+      window.removeEventListener("resize", wake);
+      el.removeEventListener("transitionend", wake);
+      if (raf) cancelAnimationFrame(raf);
+      light.remove();
+    };
+  }, [elRef, active, current]);
 }

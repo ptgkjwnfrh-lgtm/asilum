@@ -45,7 +45,7 @@ export default function OverviewPreview({ person, onOpen }) {
         </div>
       ) : null}
       <div className="ovpbody">
-        {!image ? <span className="ovpkick" aria-hidden="true"><i>*</i>ASILUM OVERVIEW</span> : null}
+        {!image ? <span className="ovpkick" aria-hidden="true">ASILUM OVERVIEW</span> : null}
         <h3 className="ovpname">{person.name}</h3>
         <p className="ovpsrc">
           SUMMARY FROM {src ? <a href={src.url} target="_blank" rel="noreferrer">{src.publisher.toUpperCase()} ↗</a> : <span>ASILUM</span>}

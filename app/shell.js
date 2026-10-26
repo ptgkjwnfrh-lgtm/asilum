@@ -2,14 +2,15 @@
 
 // app/shell.js
 // The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Three
-// fixtures and nothing else: the INFO DOCK at the top left (likes, bag,
-// notices), the PASSPORT BUTTON at the top right (the globe), and the
-// CENTRAL CONTROL DECK at the bottom (FEED · SEARCH · POST · MESSAGES ·
-// ACCOUNT, with the ad ticker beneath). Secondary surfaces rise over the
+// fixtures and nothing else, as the owner drew them on 19 Oct 2026: the
+// WORDMARK (*ASILUM) in the top-left corner, the INFO DOCK (likes, bag,
+// notices) and the PASSPORT BUTTON (the globe) side by side at the top right, and the CENTRAL CONTROL DECK at the bottom
+// (FEED · SEARCH · POST · MESSAGES · ACCOUNT, its cuts, the tab indicator
+// and the foot grill; the ad ticker moved to the Feed's head). Secondary surfaces rise over the
 // root from SheetHost. The magazine header — wordmark, marquee, big
 // search/bag/sign-in, the destination row and the liquid-glass refraction
-// drawn for it — left with the blueprint; the wordmark lives on as
-// app/components/Wordmark.jsx on the Feed's masthead, and the house lines
+// drawn for it — left with the blueprint; the wordmark is a fixture of its
+// own (app/components/Wordmark.jsx, top left), and the house lines
 // of the marquee run in the deck's ticker (lib/dock.js HOUSE_LINES).
 //
 // What stays here is identity: the server-issued device cookie, the
@@ -34,6 +35,7 @@ import InfoDock from "./components/InfoDock.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import PassportButton from "./components/PassportButton.jsx";
+import Wordmark from "./components/Wordmark.jsx";
 import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
 export default function Shell({ children }) {
@@ -280,10 +282,12 @@ export default function Shell({ children }) {
           Visually hidden until focused — no visual-identity change. */}
       <a className="skiplink" href="#main">skip to content</a>
 
-      {/* THE FIXTURES (blueprint): the Info Dock top left, the Passport
-          Button top right, the Central Control Deck at the thumb. The one
+      {/* THE FIXTURES (the owner's sketch, 19 Oct 2026): the Info Dock
+          and the Passport Button at the top right, the Central Control
+          Deck at the thumb. The one
           sheet (Likes, Bag, Notices, Search, Messages, Post, an overview)
           rises over the root from SheetHost. */}
+      <Wordmark className="brandfix" />
       <InfoDock />
       <MusicHost />
       <PassportButton kind={accountKind} pathname={pathname} />

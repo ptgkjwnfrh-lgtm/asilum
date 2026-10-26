@@ -48,8 +48,9 @@ test("the listing: three from the grammar over the record and the typed rows, th
   assert.ok(!/VISIBLE_TAGS|className="t"|lstbehind|lsttags/.test(listing), "the plain chips and the old expander are gone");
 });
 
-test("the Feed card and a post's tagged piece show the same first three the listing shows", () => {
-  assert.match(page, /<TagRow tags=\{visibleTags\(tagsFor\(it\)\)\.shown\} size="card" \/>/);
+test("a post's tagged piece shows the same first three the listing shows; the Feed's piece card carries none (owner's feed sketch, 25 Oct 2026)", () => {
+  // the sketch's piece card is the mode, the photograph, the name, the size and the price — the tags live in the LISTING popup
+  assert.ok(!/<TagRow/.test(page), "no tag row on the Feed's piece card");
   assert.match(card, /<TagRow tags=\{visibleTags\(tagsFor\(pc\)\)\.shown\} size="card" \/>/);
 });
 

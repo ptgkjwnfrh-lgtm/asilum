@@ -1,13 +1,14 @@
 # Typography
 
-TWO voices, self-hosted in public/fonts (no CDN). Both ship WOFF2 for the
-browser and TTF for the build-time social card (Satori cannot read WOFF2):
-- Michroma (--mich) — titles, nav, designer names, wordmark. Microgramma's
-  spirit. Wide face: keep sizes modest (headline clamp 26–46px),
-  letter-spacing 0.10–0.18em, weight 400 always.
-- Share Tech Mono (--helv/--serif alias "STM") — everything else. Body,
-  interface text, and now every machine readout too. The whole app reads as
-  instrument output. Advance is exactly 0.540em per character.
+ONE voice since 19 Oct 2026 (owner: "I want all the fonts to be Michroma").
+Self-hosted in public/fonts (no CDN):
+- Michroma — every token resolves to it: --mich (titles, wordmark), --helv
+  and --serif (reading text), --mono (decks, tabs, meta, the search field).
+  Wide face: keep sizes modest, letter-spacing 0.10–0.18em, weight 400 always.
+- Inter stays in each stack only as the fallback for a glyph Michroma does
+  not carry, and in the build-time social card (app/opengraph-image.js),
+  which is an image, not the app. Share Tech Mono still ships, unused, so one
+  token can bring it back.
 
 **RETIRED 17 August: VT323 (--osd), the "digi-cam" LCD face.** Owner directive —
 "get rid of the digi cam font, only the main font from now on". It had reached

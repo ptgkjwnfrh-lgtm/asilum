@@ -188,7 +188,8 @@ test("the sticker sits on every true listing surface", () => {
   // "top left of the listing" — the four surfaces that render a listing card
   // over an image. The other product surfaces are compact rows and carry the
   // sentence instead.
-  for (const file of ["app/page.js", "app/discover/page.js", "app/board/page.js",
+  // (25 Oct 2026, last) the Feed's cards carry no sticker at the owner's word ("get rid of all the demo and sample tags"); the sentence still speaks in the LISTING popup
+  for (const file of ["app/discover/page.js", "app/board/page.js",
                       "app/u/[handle]/page.js"]) {
     const src = readFileSync(file, "utf8");
     const wraps = (src.match(/className="imgwrap"/g) || []).length;

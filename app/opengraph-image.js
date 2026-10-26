@@ -72,9 +72,9 @@ export const contentType = "image/png";
 // closest a build-time image can get, so THESE ARE ASSERTED AGAINST
 // app/globals.css BY TEST. Do not edit one without the other, and do not "tidy"
 // them into a shared object the test cannot read.
-const BG = "#070b0c";    // --bg
+const BG = "#030505";    // --bg (blacker, 19 Oct 2026)
 const INK = "#e8eff1";   // --ink
-const RED = "#8cf0a6";   // --red (the accent: phosphorus green in the dark theme)
+const RED = "#46ff96";   // --red (the accent: the original phosphor green in the dark theme, 19 Oct 2026)
 const SIG = "#6e9cff";   // --sig
 const GREY = "#8a9ba3";  // --grey
 const FAINT = "#2a3a41"; // --faint

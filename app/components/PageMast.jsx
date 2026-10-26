@@ -9,10 +9,11 @@
 // nothing invented here. Pages with no cover line pass none and get the
 // masthead alone.
 
-export default function PageMast({ word, sub = "", children }) {
+export default function PageMast({ word, sub = "", plain = false, children }) {
+  // `plain`: no asterisk (owner, 25 Oct 2026, last: "drop the asterisk on a lot of things — it's getting overused")
   return (
     <>
-      <h1 className="headline"><span className="red">*</span>{word}{children}</h1>
+      <h1 className="headline">{plain ? null : <span className="red">*</span>}{word}{children}</h1>
       {sub ? <span className="headsub" aria-hidden="true">{sub}</span> : null}
     </>
   );

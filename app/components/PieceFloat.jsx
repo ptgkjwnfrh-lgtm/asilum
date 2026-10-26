@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { useEscape, useFocusTrap } from "./dismiss.js";
 import { useTilt } from "./FloatView.jsx";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
-import { Lamp, blinkLamp } from "./Chevrons.jsx";
+import { Lamp, blinkLamp } from "./Blocks.jsx";
 import Icon from "./Icons.jsx";
 import { thumbFor, aspectFor } from "../../lib/client.js";
 import { pieceName, priceLine, offerMode } from "../../lib/feed/types.js";

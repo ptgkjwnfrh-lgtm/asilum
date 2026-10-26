@@ -27,11 +27,10 @@ test("there is no Wire: the selector, the lanes, the in-page composer and the ho
   }
 });
 
-test("the stream is Tetris-packed and wheels: packFeed drives the segments, a full card breaks the columns", () => {
-  assert.match(page, /const segs = packFeed\(feedList\(list\)\);/);
-  assert.match(page, /seg\.kind === "grid"\s*\?\s*<Columns/);
-  assert.match(page, /className=\{seg\.kind === "full" \? "feedfull" : "feedstrip"\}/);
-  assert.match(css, /\.feedwheel > \* \+ \* \{ margin-top: -6px; \}/, "slight overlap");
+test("the stream is one Tetris grid (owner's feed sketch, 25 Oct 2026): the packer places, the page draws", () => {
+  assert.match(page, /tetrisPack\(feedList\(list\)/);
+  assert.match(page, /className="fgrid" style=\{\{ "--fcols": feedCols, "--frows": rows \}\}/);
+  assert.ok(!/feedwheel|feedfull|feedstrip|feedduo/.test(page + css), "the segments, the strip wrapper and the duo are gone");
 });
 
 test("every card wears its type; media enlarges over the Feed; a piece opens the LISTING popup", () => {
@@ -102,30 +101,32 @@ test("PLACE: the reference's card (venue mark, distance, name, globe) opens the 
   assert.match(page, /fetch\("\/api\/places"\)/);
 });
 
-test("the post card to the reference: media fills the card, handle and caption over it, four outline actions, the BRDCST footer as drawn", () => {
-  assert.match(card, /className="wpcover"/, "handle and caption sit over the media");
+test("the post card: four outline actions, the BRDCST footer as drawn", () => {
+  // (25 Oct) the post card is the owner's post sketch, IMG_1143 — tests/feed-tetris.test.js holds its shape
   for (const g of ["heart", "comment", "share"]) assert.match(card, new RegExp('<Icon name="' + g + '"'), g);
-  assert.match(card, /icon="hourglass"/, "the hourglass is STAMP, the one save");
+  assert.match(card, /icon="stamp"/, "the stamp is STAMP, the one save");
   assert.match(card, /className="wpcact soon" title="comments are not built yet"/, "the bubble says soon");
   assert.match(card, /<b className="brdcstword">BRDCST/);
-  assert.match(card, /<span className="brdcstrule" aria-hidden="true" \/>/);
-  assert.match(card, /<i className="brdcstast" aria-hidden="true">\*<\/i>\{first\.name\}/, "*event under the rule");
+  // (25 Oct 2026, last) no hollow bar, no asterisk before the event's name
+  assert.ok(!/brdcstrule|brdcstast/.test(card), "the bar and the asterisk are gone");
+  assert.match(card, /<span>\{first\.name\}<\/span>/, "the event's name, plain");
   assert.match(card, /<Icon name="chevron"/);
   assert.match(card, /brdcstWhen\(first\)/, "the date and time from the one law");
-  assert.match(css, /\.wpcover \{[^}]*position: absolute;/);
   assert.match(css, /\.card\.wpostcard \{[^}]*border-radius: var\(--radius-card\)/);
 });
 
 test("the piece card and the listing popup to the references: rounded photograph, quiet line, × to pass; unverified only from the ledger; ♡ OFFER bag; the lines in Michroma", () => {
-  assert.match(page, /className=\{"card piece"/);
-  assert.match(page, /className="piecepass" onClick=\{onPass\}/);
+  // (25 Oct) the piece card is the owner's feed sketch — tests/feed-tetris.test.js holds its shape; PASS is the × on its bar
+  assert.match(page, /className=\{"card piece v-hero"/);
+  assert.match(page, /onPass=\{onPass \|\| null\}/, "PASS rides the hold menu (25 Oct, later)");
   assert.match(listing, /className=\{"lstbadge " \+ badge\.state\}/, "the word on the photograph comes from the ledger's badge");
   assert.match(listing, /\{badge && badge\.state !== "none" \?/, "nothing without a badge");
   assert.match(listing, /priceLine\(item\)/);
   assert.match(listing, /"SIZE: " \+ item\.size\.label/);
   assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
-  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the *ADs slot is red under the deck");
-  assert.match(strip(read("app/components/ControlCenter.jsx")), /<span className="adslot" aria-hidden="true">\*ADs<\/span>/);
+  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the ADs slot is red");
+  // (19 Oct) the strip left the deck for the head of the Feed (the owner's fixture sketch)
+  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">ADs<\/span>/, "no asterisk (owner, 25 Oct, last: overused)");
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {
