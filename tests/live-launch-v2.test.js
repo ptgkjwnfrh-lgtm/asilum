@@ -151,10 +151,10 @@ test("the sample media: every picture is a coloured tile (owner, 25 Oct 2026, la
   const { SAMPLE_MOTION } = await import("../lib/model/media.js");
   assert.ok(SAMPLE_POSTS.filter((sp) => sp.video).every((sp) => sp.video === SAMPLE_MOTION), "no film is invented: each is the generated test pattern");
   // the model folder holds no photographs but the people overview's one portrait and the owner's logo
-  // (with, since 26 Oct 2026, the masks cut from it to colour it, logo-ink.png and logo-star.png, and
-  // logo-light.png, its own colours darkened for light mode)
+  // (with, since 26 Oct 2026, the masks cut from it to colour it, logo-word-ink.png and logo-star.png, and
+  // logo-word-light.png, its own colours darkened for light mode; "word" since the bar of blocks was cut)
   const files = require_fs().readdirSync("public/model").filter((f) => /\.(jpg|png|webp)$/.test(f)).sort();
-  assert.deepEqual(files, ["logo-ink.png", "logo-light.png", "logo-star.png", "logo.jpg", "olivier-rousteing-2016.jpg"]);
+  assert.deepEqual(files, ["logo-star.png", "logo-word-ink.png", "logo-word-light.png", "logo.jpg", "olivier-rousteing-2016.jpg"]);
   assert.ok(credits.assets.every((a) => files.includes(a.filename) || /\.(mp4|vtt)$/.test(a.filename)), "the register names only what is there");
   const { PLACES } = await import("../lib/places/registry.js");
   for (const p of PLACES) if (p.image) assert.ok(isStill(p.image), p.id + " wears a still");

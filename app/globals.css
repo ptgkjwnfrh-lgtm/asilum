@@ -385,7 +385,7 @@ button { font-family: var(--helv); }
    artwork, the word in --wm-ink, the asterisk in --warn (the bar of blocks
    left the masks the same day: it is the Masthead's stamped line, .mhstamp) */
 .wmink, .wmstar { position: absolute; inset: 0; -webkit-mask: var(--wm-mask) center / 100% 100% no-repeat; mask: var(--wm-mask) center / 100% 100% no-repeat; }
-.wmink { --wm-mask: url(/model/logo-ink.png); background: var(--wm-ink); }
+.wmink { --wm-mask: url(/model/logo-word-ink.png); background: var(--wm-ink); }
 .wmstar { --wm-mask: url(/model/logo-star.png); background: var(--wm-star, var(--warn)); }
 /* dark: the title card's glow round the green (a mask clips its own
    element's filter, so the glow sits on the wrapper) */
@@ -395,30 +395,28 @@ button { font-family: var(--helv); }
   /* the title card's letters: chrome at the top washing to mint */
   --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
   --metal-edge: rgba(214, 255, 232, 0.35);
-  /* the stamped line (.mhstamp): the groove's fill, the lit last block, the
-     shade pressed along its upper edge and the light caught on its lower one */
-  --wm-bar: rgba(142, 232, 179, 0.4);
-  --wm-lit: #7fb0c0;
-  --stamp-sink: rgba(0, 0, 0, 0.62);
-  --stamp-catch: rgba(255, 255, 255, 0.14);
+  /* the stamped line (.mhstamp): imprints with no colour of their own — the
+     shade pressed along each one's upper edge and the light caught on its
+     lower — and one blue block, under the globe (the links' blue, both themes) */
+  --stamp-sink: rgba(0, 0, 0, 0.8);
+  --stamp-catch: rgba(255, 255, 255, 0.34);
+  --stamp-blue: var(--sig);
   /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
   --wm-ink: var(--metal);
 }
 [data-theme="light"] {
   --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
   --metal-edge: rgba(37, 55, 73, 0.45);
-  --wm-bar: #3d4c5b; /* the reference's slate (owner, 26 Oct 2026, Ref 2) */
-  --wm-lit: #5c8a9a;
   --stamp-sink: rgba(13, 24, 33, 0.55);
   --stamp-catch: rgba(255, 255, 255, 0.72);
   /* the logo in light: the owner's artwork in its own colours (owner, 26 Oct
      2026: "let's go back to the original color for light mode"), then
-     "darker and bolder": logo-light.png is the artwork's slate, blue-grey
+     "darker and bolder": logo-word-light.png is the artwork's slate, blue-grey
      and red, each darkened, painted through the same (bolder) masks */
-  --wm-ink: url(/model/logo-light.png) center / 100% 100% no-repeat;
-  --wm-star: url(/model/logo-light.png) center / 100% 100% no-repeat;
+  --wm-ink: url(/model/logo-word-light.png) center / 100% 100% no-repeat;
+  --wm-star: url(/model/logo-word-light.png) center / 100% 100% no-repeat;
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: url(/model/logo-light.png) center / 100% 100% no-repeat; --wm-star: url(/model/logo-light.png) center / 100% 100% no-repeat; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: url(/model/logo-word-light.png) center / 100% 100% no-repeat; --wm-star: url(/model/logo-word-light.png) center / 100% 100% no-repeat; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -3819,19 +3817,20 @@ body { font-size: 14px; }
   display: inline-flex; flex-direction: column; justify-content: flex-start; align-items: stretch;
   text-decoration: none;
 }
-/* THE STAMPED LINE (owner, 26 Oct 2026, Ref 2): the bar of blocks pressed
-   into the Masthead's glass from the left edge of the A (column 19 of the
-   artwork's 900) to the Passport's globe, its last long block — lighter —
-   centred under the globe (Masthead.jsx STAMP; the columns are fractions,
-   so it fills the span exactly at every width). Just below the keys'
-   glyphs; the wordmark sits the stamp gap above it, three times the
-   artwork's own. Pressed in, not painted on: a groove of the glass's own
-   tone, the shade along its upper edge, the light caught on its lower lip. */
+/* THE STAMPED LINE (owner, 26 Oct 2026, Ref 2, then "thinner to larger"):
+   imprints pressed into the Masthead's glass from the left edge of the A
+   (column 19 of the artwork's 900) to the Passport's globe, graduated —
+   three small and a large, each group a size up (Masthead.jsx STAMP; the
+   columns are fractions, so it fills the span exactly at every width) —
+   the last large block centred under the globe. Just below the keys'
+   glyphs, the word the stamp gap above it. No colour of their own: only
+   the glass's shading, the shade along an imprint's upper edge and the
+   light caught on its lower; the block under the globe alone is blue. */
 .masthead {
   --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* .wmimg's width */
   --mh-line-top: calc(33px + max(var(--u) * 25, 9.5px) + 2.5px); /* the row's middle, half a glyph, a breath */
-  --mh-line-h: calc(var(--wm-w) * 45 / 900); /* the artwork's bar: 45 of its 900 */
-  --mh-gap: calc(var(--wm-w) * 12 / 900);    /* the artwork's gap was 4 */
+  --mh-line-h: calc(var(--wm-w) * 24 / 900); /* thinner than the artwork's bar (45 of its 900): ~4px on a desktop, ~3 on a phone */
+  --mh-gap: calc(var(--wm-w) * 18 / 900);    /* the artwork's gap was 4 */
 }
 .mhstamp {
   position: absolute; z-index: 1; pointer-events: none; display: grid; align-items: stretch;
@@ -3840,10 +3839,10 @@ body { font-size: 14px; }
   top: calc(env(safe-area-inset-top, 0px) + var(--mh-line-top)); height: var(--mh-line-h);
 }
 .mhstamp i {
-  display: block; grid-row: 1; border-radius: 0.5px; background: var(--wm-bar);
-  box-shadow: inset 0 1px 1px var(--stamp-sink), inset 0 -0.5px 0 var(--stamp-catch), 0 0.5px 0 var(--stamp-catch);
+  display: block; grid-row: 1; border-radius: 0.5px; background: none;
+  box-shadow: inset 0 1px 1px var(--stamp-sink), inset 0 -1px 0 var(--stamp-catch);
 }
-.mhstamp i.lit { width: 200%; background: var(--wm-lit); }
+.mhstamp i.lit { width: 200%; background: var(--stamp-blue); }
 
 /* notices (the bell's sheet) */
 .notices { display: grid; gap: 8px; }
