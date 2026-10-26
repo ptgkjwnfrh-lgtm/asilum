@@ -264,11 +264,6 @@ export default function ControlCenter({ kind, pathname }) {
             <button type="button" className="ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={18} /></button>
           </form>
         )}
-        {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
-            central control fixture as a bubble … inside the bubble will be the ad
-            scroll wheel"): the ticker (AdStrip.jsx) in a long pill above the row;
-            the deck is taller by --ad-h to hold it */}
-        <div className="ccad"><AdStrip typing={inSearch} /></div>
         <div className="ccrow">
           {CUTS.map((x) => <i key={x} className="cccut" style={{ "--cut-x": x }} data-lens-shape="cut" data-lens-band="6" data-lens-gain="0.08" aria-hidden="true" />)}
           <span className="cccap" aria-hidden="true" />
@@ -279,6 +274,12 @@ export default function ControlCenter({ kind, pathname }) {
             <TabIndicator held={held} />
           </span>
         </div>
+        {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
+            central control fixture as a bubble … inside the bubble will be the ad
+            scroll wheel"; moved the same night: "beneath the buttons and above the
+            vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
+            foot grill; the deck is taller by --ad-h to hold it */}
+        <div className="ccad"><AdStrip typing={inSearch} /></div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />
       <i className="fxrim" aria-hidden="true" />

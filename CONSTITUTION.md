@@ -506,7 +506,8 @@ alone. The asterisk is dropped where it was overused — THE FEED, ADs, the
 event's name, the overview's kicker — and kept on the logo. The head is
 THE FEED, FOR YOU · FOLLOWING and the sort bubble, nothing else (no
 sub-line, no stamp, no WHAT'S NEW). The ad ticker is a BUBBLE on the
-centre control deck above the row, the deck taller by it. The logo sits
+centre control deck beneath the row of keys and above the vent (moved
+from above the row the same night), the deck taller by it. The logo sits
 top left at about half the Info Dock. A BRDCST attached to a post is
 detached from it by a thin gap — the post's bottom flat, its top rounded;
 the broadcast's top flat, its bottom rounded — the way the Info Dock and

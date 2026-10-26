@@ -50,8 +50,13 @@ test("the carvings are carved into the glass: cuts, the disc's ring, the grill a
   const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* ([\d.]+)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
   assert.ok(g, "the grill is placed in sketch units");
   assert.equal(Number(g[1]) + Number(g[2]) / 2, 371, "the grill is centred on the disc");
-  // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble above the row
+  // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble, beneath the keys and above the vent
   assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} \/><\/div>/, "the ad bubble on the deck");
+  assert.ok(deck.indexOf('className="ccad"') > deck.indexOf('className="ccrow"'), "the bubble comes after the row of keys");
+  const ad = rules.match(/\.ccad \{[^}]*padding: 0 calc\(var\(--u\) \* 40\) calc\(var\(--u\) \* (\d+)\)/);
+  const gr = rules.match(/\.ccgrill \{[^}]*bottom: calc\(var\(--u\) \* (\d+)\); height: max\(4px, calc\(var\(--u\) \* (\d+)\)\)/s);
+  assert.ok(ad && gr, "the bubble and the grill are placed in sketch units");
+  assert.ok(Number(ad[1]) > Number(gr[1]) + Number(gr[2]), "the bubble ends above the grill's top lip");
   assert.ok(!/<AdStrip/.test(read("app/page.js")), "and off the Feed's head");
 });
 

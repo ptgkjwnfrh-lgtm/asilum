@@ -3365,7 +3365,7 @@ body { font-size: 14px; }
   --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
   --dk-edge: calc(50% - var(--dk-w) / 2); /* the deck's inset; the top fixtures line up with its right edge */
   --cc-row-h: calc(var(--dk-h) + var(--ad-h));
-  --ad-h: calc(var(--u) * 64);  /* the ad bubble above the row (owner, 25 Oct 2026, last: the ticker is on the deck again) */
+  --ad-h: calc(var(--u) * 64);  /* the ad bubble under the row, above the grill (owner, 25 Oct 2026, last: the ticker is on the deck again) */
   --cc-gap: 10px;
   --cc-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
@@ -3480,11 +3480,14 @@ body { font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
 /* the ad strip: at the head of the Feed now (off the deck, 19 Oct 2026), a
    rounded strip in the page's flow with its own stable height */
-/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): a long pill above
-   the row, the ticker's scroll wheel inside it */
-.ccad { position: relative; z-index: 2; flex: none; height: var(--ad-h); padding: calc(var(--u) * 12) calc(var(--u) * 40) 0; }
+/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): a long pill
+   beneath the keys and above the vent, the ticker's scroll wheel inside it.
+   The pill is 52 tall and ends 8 above the grill's top lip (11 + 11); it
+   reaches 18 up into the row's empty foot, under the cuts' lower ends (52),
+   so the deck grows by --ad-h alone */
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40) calc(var(--u) * 30); box-sizing: border-box; }
 .adstrip {
-  height: calc(var(--ad-h) - var(--u) * 12); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
+  height: calc(var(--u) * 52); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
   font-size: 10px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
 }

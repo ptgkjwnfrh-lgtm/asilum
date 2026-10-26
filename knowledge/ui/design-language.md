@@ -827,7 +827,9 @@ checked what a reader is actually served, which is the claim that matters.
 
 ## 25 Oct 2026, the next round — the deck's ad bubble, the plain head, no tags, the tiles
 
-- `.ccad` holds AdStrip on the deck above `.ccrow`; `--ad-h: calc(var(--u)
+- `.ccad` holds AdStrip on the deck under `.ccrow`, above `.ccgrill` (moved
+  from above the row the same night: "beneath the buttons and above the
+  vent"); the pill is 52u, 8u clear of the grill, 18u into the row's foot; `--ad-h: calc(var(--u)
   * 64)`; `.ccenter` and its searching height and `--cc-row-h` include it.
 - `PageMast plain`: THE FEED without the asterisk; no `sub`, no `.ctmeta`,
   the `.demoline` visually hidden; tabs FOR YOU · FOLLOWING (+ the craving
