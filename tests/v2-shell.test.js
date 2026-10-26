@@ -75,8 +75,8 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
 test("the fixtures are glass with the rainbow rim, shaped as the owner drew them (19 Oct 2026), and the post disc is round", () => {
   assert.match(rules, /\.fixture \{[^}]*position: fixed;/s);
   // not pills: the Info Dock's outer end is round, the end meeting the Passport straight — and the Passport the reverse
-  assert.match(rules, /\.fixture \{[^}]*border-radius: calc\(var\(--u\) \* 19\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 19\);/s);
-  assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 19\) calc\(var\(--u\) \* 19\) calc\(var\(--u\) \* 3\);/s);
+  assert.match(rules, /\.fixture \{[^}]*border-radius: calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 14\);/s);
+  assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 3\);/s);
   // (18 Oct) the popup's rainbow rim follows the hand
   // (25 Oct 2026, late) the popup wears no rim: `content: none` — the rainbow is the fixtures' alone
   assert.match(rules, /\.sheet::after \{\n  content: none;/, "the popup wears no rim");
@@ -182,7 +182,7 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   assert.match(rules, /\[data-popup\] \.main \{ filter: blur\(14px\) saturate\(0\.8\);/, "the page is clouded under a popup (25 Oct, evening)");
   // the popup floats in the middle of the screen, a large rounded square
   assert.match(rules, /\.sheetscrim \{\n  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;/);
-  assert.match(rules, /\.sheet \{\n  width: min\(var\(--cc-w\), calc\(100vw - 20px\)\);[^}]*border-radius: max\(var\(--sheet-radius\), 26px\);/s);
+  assert.match(rules, /\.sheet \{\n  width: min\(var\(--cc-w\), calc\(100vw - 20px\)\);[^}]*border-radius: max\(var\(--sheet-radius\), 19px\);/s);
   assert.match(rules, /\.sheetscrim:has\(> \.sheet\.deckrise\) \{ align-items: flex-end; padding-bottom: calc\(var\(--cc-row-h\) \+ var\(--cc-bottom\)\); \}/, "the search rises out of the deck (the owner's image 2)");
   assert.match(read("app/components/SheetHost.jsx"), /\(top && top\.view === "search" \? " deckrise" : ""\)/);
   assert.match(rules, /\.sheet\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
@@ -206,7 +206,7 @@ test("rounded everywhere: three radius tokens, a floor for every key and field, 
   assert.match(rules, /\nbutton, \.btn, a\.btn \{ border-radius: var\(--radius-key\); \}/, "every button is rounded unless rounded otherwise");
   assert.match(rules, /\ninput:not\(\[type="checkbox"\]\):not\(\[type="radio"\]\):not\(\[type="range"\]\), select, textarea \{ border-radius: var\(--radius-field\); \}/, "every field");
   assert.match(rules, /\.card, [^{]*\{ border-radius: var\(--radius-card\); \}/, "every card");
-  assert.match(rules, /--sheet-radius: calc\(var\(--radius-card\) \+ 3px\);/, "the popup and the deck in the same family");
+  assert.match(rules, /--sheet-radius: calc\(var\(--radius-card\) \+ 2px\);/, "the popup and the deck in the same family");
   assert.match(rules, /\.imgwrap \{ position: relative; border-radius: var\(--ed-img-rad, var\(--radius-card\)\);/, "a card's photograph is rounded by default");
   // no field is a hairline with square corners any more
   const squareFields = (rules.match(/\{[^}]*border-bottom:\s*\d+px solid var\(--line\);[^}]*border-radius:\s*0[;\s]/g) || []);
@@ -214,25 +214,26 @@ test("rounded everywhere: three radius tokens, a floor for every key and field, 
   assert.ok(!/border: none; border-bottom: [12]px solid var\(--line\); border-radius: 0;/.test(rules));
 });
 
-// SOFTENED (owner, 26 Oct 2026: everything "too rounded" — sharpen the
-// corners slightly, keep them rounded). Every rounded-rectangle radius of
-// 12px and up scaled by 0.73: the tokens 22/18/14 are 16/13/10, the popup's
-// 36 is 26, the fixtures' drawn corners 34/26/18 are 25/19/13 of --u. Pills
-// (999px) and circles (50%) keep their shape.
-test("softened corners: the radius scale is 16/13/10, nothing rounder than 18px but the popup's 26 and a pill, the fixtures and the popup on the same scale", () => {
+// SOFTENED TWICE (owner, 26 Oct 2026: everything "too rounded", then "a
+// little less round again" — sharpen the corners, keep them rounded). Every
+// rounded-rectangle radius that was 12px and up scaled by 0.73 twice: the
+// tokens 22/18/14 are 12/9/7, the popup's 36 is 19, the fixtures' drawn
+// corners 34/26/18 are 18/14/9 of --u. Pills (999px) and circles (50%) keep
+// their shape.
+test("softened corners: the radius scale is 12/9/7, nothing rounder than 13px but the popup's 19 and a pill, the fixtures and the popup on the same scale", () => {
   const root = css.slice(css.indexOf(":root {"), css.indexOf("\n}", css.indexOf(":root {")));
-  assert.match(root, /--radius-card: 16px;/);
-  assert.match(root, /--radius-field: 13px;/);
-  assert.match(root, /--radius-key: 10px;/);
-  assert.match(rules, /--dk-r: calc\(var\(--u\) \* 25\);/, "the deck");
-  assert.match(rules, /\.ccenter \.tabl \{[^}]*border-radius: calc\(var\(--u\) \* 13\);/s, "the deck's keys");
-  // a rounded rectangle is at most 18px: every px radius between 19 and 99 is gone (999px pills and 50% circles stay)
+  assert.match(root, /--radius-card: 12px;/);
+  assert.match(root, /--radius-field: 9px;/);
+  assert.match(root, /--radius-key: 7px;/);
+  assert.match(rules, /--dk-r: calc\(var\(--u\) \* 18\);/, "the deck");
+  assert.match(rules, /\.ccenter \.tabl \{[^}]*border-radius: calc\(var\(--u\) \* 9\);/s, "the deck's keys");
+  // a rounded rectangle is at most 13px: every px radius between 14 and 99 is gone (999px pills and 50% circles stay)
   const radii = [...rules.matchAll(/border-radius:([^;}]*)/g)].map((m) => m[1]);
-  const tooRound = radii.filter((v) => !v.includes("--sheet-radius") && [...v.matchAll(/(?<![\w.])(\d+(?:\.\d+)?)px/g)].some((n) => +n[1] > 18 && +n[1] < 100));
-  assert.deepEqual(tooRound, [], "no rounded rectangle above 18px");
-  assert.equal(radii.filter((v) => v.includes("max(var(--sheet-radius), 26px)")).length, 2, "the popup at 26 (was 36), floating and risen from the deck");
-  const tooRoundU = radii.filter((v) => [...v.matchAll(/var\(--u\) \* (\d+)/g)].some((n) => +n[1] > 25));
-  assert.deepEqual(tooRoundU, [], "no fixture corner above 25 of --u");
+  const tooRound = radii.filter((v) => !v.includes("--sheet-radius") && [...v.matchAll(/(?<![\w.])(\d+(?:\.\d+)?)px/g)].some((n) => +n[1] > 13 && +n[1] < 100));
+  assert.deepEqual(tooRound, [], "no rounded rectangle above 13px");
+  assert.equal(radii.filter((v) => v.includes("max(var(--sheet-radius), 19px)")).length, 2, "the popup at 19 (was 36, then 26), floating and risen from the deck");
+  const tooRoundU = radii.filter((v) => [...v.matchAll(/var\(--u\) \* (\d+)/g)].some((n) => +n[1] > 18));
+  assert.deepEqual(tooRoundU, [], "no fixture corner above 18 of --u");
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s, "the post disc is still a circle");
   assert.match(rules, /\.btn, \.fitbtn, \.platform, \.chip \{ border-radius: var\(--ed-rad-btn, 999px\); \}/, "the pills are still pills");
 });
