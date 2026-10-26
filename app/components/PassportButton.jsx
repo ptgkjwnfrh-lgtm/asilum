@@ -4,9 +4,7 @@
 // owner, 17 Oct 2026, Foundations "Screen map"; the owner's fixture sketch
 // of 19 Oct 2026, Figure 5: the meridian globe at the far top right, its
 // right edge in line with the deck's, its left end straight where it meets
-// the Info Dock). It opens the Passport: STAMPS, the map, the taste record;
-// like the post key it blinks the tab indicator once and holds it lit while
-// the Passport is open (lib/indicator.js indicatorHeld).
+// the Info Dock). It opens the Passport: STAMPS, the map, the taste record.
 // In this slice it is a link to the Passport's route; slice 2 makes the
 // Passport a popup in the session hub and this button its opener.
 //

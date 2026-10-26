@@ -6,10 +6,11 @@
 // area, on every size, drawn to the owner's fixture sketch of 19 Oct 2026
 // (Figures 1–3, 5): ONE pane of translucent rainbow liquid glass, its five
 // keys — FEED · SEARCH · POST · MESSAGES · ACCOUNT — parted by CUTS in the
-// glass, two narrow end caps, the TAB INDICATOR carved into the top right
-// above the last cut (TabIndicator.jsx), and the FOOT GRILL under the post
-// disc like a phone's ventilation port. The cuts, the disc's ring, the grill
-// and the indicator are carved shapes (data-lens-shape): the backdrop bends
+// glass, two narrow end caps, and the FOOT GRILL under the post disc like a
+// phone's ventilation port. (The tab indicator light is gone: owner, 26 Oct
+// 2026, "for the central control let's take away the indicator light".) The
+// cuts, the disc's ring and the grill are carved shapes (data-lens-shape):
+// the backdrop bends
 // around each of them (LiquidGlass.jsx lensFeatures). Every size is a
 // multiple of --u, the sketch's own unit, so the proportions are the
 // drawing's at every width.
@@ -44,18 +45,16 @@
 // which starts at the top (1.14).
 
 import { useEffect, useRef, useState } from "react";
-import { deckFor, fixtureFor } from "../../lib/nav.js";
+import { deckFor } from "../../lib/nav.js";
 import { DECK, scopeFor } from "../../lib/dock.js";
 import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
 import { counter, activeSession } from "../../lib/sessions.js";
 import { LONG_PRESS_MS } from "../../lib/disc.js";
 import { haptic } from "../../lib/haptics.js";
-import { blinkIndicator, indicatorHeld } from "../../lib/indicator.js";
 import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
 import AMark from "./AMark.jsx";
-import TabIndicator from "./TabIndicator.jsx";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
 import { useHingedKeys } from "./hinge.js";
 
@@ -123,8 +122,6 @@ export default function ControlCenter({ kind, pathname }) {
   const popupUp = !!dock.sheet || !!dock.hub.hubOpen;
   const active = activeSession(dock.hub);
   const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
-  const passport = fixtureFor(kind, "passport");
-  const held = indicatorHeld({ sheetId: dock.sheet && dock.sheet.id, hubOpen: dock.hub.hubOpen, onPassport: !!(passport && passport.match(pathname || "/")) });
   const [menu, setMenu] = useState(false);
   const hold = useRef(null);
   function holdStart(e) {
@@ -162,12 +159,13 @@ export default function ControlCenter({ kind, pathname }) {
     leaveSearch();
   }
 
-  // every key but POST blinks the tab indicator twice (POST holds it instead)
-  function keyBlink(e) {
+  // every key but POST answers with one subtle tick (the tab indicator's blink
+  // carried this vibration until the light was taken away, 26 Oct 2026)
+  function keyTap(e) {
     if (e.detail === 0) keyDown(e); // a key pressed from the keyboard has no pointer down
     const t = e.target && e.target.closest ? e.target.closest("a, button") : null;
     if (!t || t.closest(".ccpostwrap") || t.closest(".ccsearch") || t.closest(".mailpanel")) return;
-    blinkIndicator();
+    haptic("tick");
   }
 
   const sheetIs = (id) => !!(dock.sheet && dock.sheet.id === id);
@@ -237,7 +235,7 @@ export default function ControlCenter({ kind, pathname }) {
   return (
     <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
       {glass}
-      <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyBlink}>
+      <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (
           <form className="ccsearch" role="search" onSubmit={submit}>
             <label className="ccfield">
@@ -270,9 +268,7 @@ export default function ControlCenter({ kind, pathname }) {
           <div className="cctabs">
             {DECK.map((k) => key(k))}
           </div>
-          <span className="cccap">
-            <TabIndicator held={held} />
-          </span>
+          <span className="cccap" aria-hidden="true" />
         </div>
         {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
             central control fixture as a bubble … inside the bubble will be the ad

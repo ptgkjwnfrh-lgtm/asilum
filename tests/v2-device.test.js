@@ -33,7 +33,7 @@ test("expanding a compacted description loads it in behind blocks: the caption, 
   const ch = strip(read("app/components/Blocks.jsx"));
   assert.match(ch, /prefers-reduced-motion: reduce/, "reduced motion: the text is simply there");
   assert.match(ch, /aria-label=\{t\}/, "the full text is the accessible name from the first frame");
-  assert.match(strip(read("app/components/PostCard.jsx")), /<BlockText as="p" className="p2text" text=\{caption\} play=\{more\} \/>/, "a tapped caption (IMG_1143 Fig. 7: unfolded from its chevrons)");
+  assert.match(strip(read("app/components/PostCard.jsx")), /<BlockText as="p" className="p2text" text=\{text\} play=\{more\} \/>/, "a tapped caption (IMG_1143 Fig. 7: unfolded from its chevrons)");
   assert.match(strip(read("app/components/PostCard.jsx")), /<BlockText className="fine" text=\{\[String\(event\.kind/, "an opened BRDCST event");
   assert.match(strip(read("app/components/MapSheet.jsx")), /<BlockText as="p" text=\{place\.organizer\} \/>/, "the place's description");
   assert.match(strip(read("app/components/PersonOverview.jsx")), /<BlockText as="p" className="povsum" text=\{person\.summary\} \/>/, "Read more → the overview");
@@ -42,7 +42,7 @@ test("expanding a compacted description loads it in behind blocks: the caption, 
   assert.match(rules, /\.blktext \.blkrun \{ color: transparent;[^}]*repeating-linear-gradient\(90deg, var\(--blk\)/, "the run is drawn as even blocks (Ref 1), in the ink");
   assert.match(rules, /\.blktext \.blkrest \{ color: transparent; \}/, "the not-yet text keeps its place");
   // the folded caption: a block the length of each word (Ref 2)
-  assert.match(strip(read("app/components/PostCard.jsx")), /<BlockLine className="p2fold-line" text=\{caption\} \/>/);
+  assert.match(strip(read("app/components/PostCard.jsx")), /<BlockLine className="p2fold-line" text=\{text\} \/>/);
   assert.match(rules, /\.blkline \.blkw \{[^}]*color: transparent; background: var\(--blk\);/);
   assert.ok(!/>>>>/.test(read("app/components/Blocks.jsx")) && !/>>>>/.test(read("app/components/PostCard.jsx")), "no chevrons stand in for text any more");
 });

@@ -33,7 +33,7 @@ import { footerPages } from "../../lib/brdcst/index.js";
 import { postType, brdcstWhen, brdcstMoment } from "../../lib/feed/types.js";
 import { galleryOf } from "../../lib/feed/tetris.js";
 import { hideCard } from "../../lib/feed/hidden.js";
-import Strip from "./Strip.jsx";
+import Fig20 from "./Fig20.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import TagRow from "./TagChip.jsx";
@@ -295,9 +295,34 @@ function SoundRing({ video }) {
   );
 }
 
-export default function PostCard({ post: p, engagement, onEngage }) {
+/** THE CAPTION (the post sketch's Fig. 7): folded into a line of blocks, one
+ *  per word, with the fold mark to unfold it (the words load in behind the
+ *  blocks), the sound ring at the right on a motion. The post card and the
+ *  recommended motions (MotionRail.jsx, a caption per video) both wear it;
+ *  `key` it by the text to fold it again when the text changes. */
+export function Caption({ text, motion = false, videoRef = null }) {
   const [more, setMore] = useState(0);
-  const [idx, setIdx] = useState(0);
+  return (
+    <div className="p2cap">
+      <div className="p2line">
+        {more ? (
+          <BlockText as="p" className="p2text" text={text} play={more} />
+        ) : (
+          <button type="button" className="p2fold" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}>
+            <BlockLine className="p2fold-line" text={text} />
+            <span className="idlabel">read the caption: {text}</span>
+          </button>
+        )}
+        <button type="button" className={"p2more" + (more ? " up" : "")} aria-expanded={!!more} aria-label={more ? "fold the caption" : "unfold the caption"} onClick={() => { haptic("press"); setMore((m) => (m ? 0 : 1)); }}>
+          <Icon name="fold" size={18} />
+        </button>
+        {motion && videoRef ? <SoundRing video={() => videoRef.current} /> : null}
+      </div>
+    </div>
+  );
+}
+
+export default function PostCard({ post: p, engagement, onEngage }) {
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
   const hold = useHold(() => setMenu(true));
@@ -319,8 +344,20 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   const gallery = hasMedia ? galleryOf(p) : [];
   const motion = type === "MOTION";
   const caption = [p.title, p.text].filter(Boolean).join(" — ");
-  const pad = (n) => String(n).padStart(2, "0");
   const what = "the post " + (p.title || name);
+  // FIGURE 20 (owner, 25 Oct 2026, late: "for the carousels … simply input
+  // figure 20 how it is … the ipod style collapsed cards floating"; then: "I
+  // want the caption and the like, comment, stamp and share buttons to be
+  // floating over top of the feed, and make the profile pic and user name
+  // float as well, so the carousel can have the exact same dimensions as
+  // just a regular post"): a post of two or more stills is the post card's
+  // own head, caption and actions with Figure 20 for its media and no
+  // housing — no box, no ground. Then: "allow the header and captions to
+  // float over top of the actual card, so the carousel cards still have the
+  // same height as the regular motion and still cards": the coverflow fills
+  // the whole cell as a photograph fills a post (withmedia), its centre card
+  // the full height, the head and the foot floating over it.
+  const carousel = gallery.length > 1;
   // THE POST CARD (owner's post sketch, 25 Oct 2026, IMG_1143): the author's
   // circle and name (Figs. 8–10) over a red rule (11); the media; the
   // counter "01/26" (6); the caption folded into two lines of BLOCKS, one
@@ -328,7 +365,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + (gallery.length > 1 ? "carousel" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(gallery.length > 1 ? "carousel" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
+    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
       <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
       {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be
           comprised of the entire image — text and icons overlap it"): the
@@ -343,12 +380,11 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </header>
       <Cut className="p2rule" />
       <div className="p2media">
-        {gallery.length > 1 ? (
-          <Strip
-            aspect={3 / 4}
+        {carousel ? (
+          <Fig20
+            aspect={1 / 2}
             items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
-            label={`${gallery.length} photographs`}
-            onSettle={setIdx}
+            label={`${gallery.length} photographs by ${name}`}
             render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}
           />
         ) : hasMedia ? (
@@ -367,23 +403,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </div>
       <div className="p2foot">
       {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
-      <div className="p2cap">
-        {gallery.length > 1 ? <span className="p2count" aria-label={`photograph ${idx + 1} of ${gallery.length}`}>{pad(idx + 1)}/{pad(gallery.length)}</span> : null}
-        <div className="p2line">
-          {more ? (
-            <BlockText as="p" className="p2text" text={caption} play={more} />
-          ) : (
-            <button type="button" className="p2fold" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}>
-              <BlockLine className="p2fold-line" text={caption} />
-              <span className="idlabel">read the caption: {caption}</span>
-            </button>
-          )}
-          <button type="button" className={"p2more" + (more ? " up" : "")} aria-expanded={!!more} aria-label={more ? "fold the caption" : "unfold the caption"} onClick={() => { haptic("press"); setMore((m) => (m ? 0 : 1)); }}>
-            <Icon name="fold" size={18} />
-          </button>
-          {motion ? <SoundRing video={() => videoRef.current} /> : null}
-        </div>
-      </div>
+      <Caption text={caption} motion={motion} videoRef={videoRef} />
       <Acts p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
       </div>
       </div>

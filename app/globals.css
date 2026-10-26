@@ -375,26 +375,38 @@ button { font-family: var(--helv); }
    the lighter blue; the bar is as wide as the word */
 /* the logo as the owner drew it (public/model/logo.jpg): its white ground
    multiplies away on the light page; dark inverts and screens it */
-.wmimg { display: block; height: auto; width: clamp(78px, 21vw, 110px); max-width: none; } /* about half the Info Dock (owner, last) */
-.wordmark.brandfix { height: auto; }
-/* the fixture itself blends (a fixed element is its own stacking context, so the picture inside it could not) */
-.wordmark.brandfix { mix-blend-mode: multiply; }
-:root:not([data-theme="light"]) .wordmark.brandfix { mix-blend-mode: screen; }
-:root:not([data-theme="light"]) .wmimg { filter: invert(1) hue-rotate(180deg); }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wordmark.brandfix { mix-blend-mode: multiply; } :root:not([data-theme="dark"]) .wmimg { filter: none; } }
+.wmimg { position: relative; display: block; width: clamp(107.25px, 28.875vw, 151.25px); aspect-ratio: 900 / 200; } /* about half the Info Dock (owner, 25 Oct), then 25% bigger and 10% more (owner, 26 Oct 2026) */
+/* the logo recoloured (owner, 26 Oct 2026): two masks cut from the owner's
+   artwork, the word and bar in --wm-ink, the asterisk in --warn */
+.wmink, .wmstar { position: absolute; inset: 0; -webkit-mask: var(--wm-mask) center / 100% 100% no-repeat; mask: var(--wm-mask) center / 100% 100% no-repeat; }
+.wmink { --wm-mask: url(/model/logo-ink.png); background: var(--wm-ink); }
+.wmstar { --wm-mask: url(/model/logo-star.png); background: var(--wm-star, var(--warn)); }
+/* dark: the title card's glow round the green (a mask clips its own
+   element's filter, so the glow sits on the wrapper) */
+:root:not([data-theme="light"]) .wmimg { filter: drop-shadow(0 0 0.6px rgba(180, 255, 210, 0.55)) drop-shadow(0 0 7px rgba(110, 240, 160, 0.3)); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wmimg { filter: none; } }
 :root {
   /* the title card's letters: chrome at the top washing to mint */
   --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
   --metal-edge: rgba(214, 255, 232, 0.35);
   --wm-bar: rgba(232, 239, 241, 0.2);
   --wm-lit: #7fb0c0;
+  /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
+  --wm-ink: var(--metal);
 }
 [data-theme="light"] {
   --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
   --metal-edge: rgba(37, 55, 73, 0.45);
   --wm-bar: rgba(37, 55, 73, 0.18);
   --wm-lit: #5c8a9a;
+  /* the logo in light: the owner's artwork in its own colours (owner, 26 Oct
+     2026: "let's go back to the original color for light mode"), then
+     "darker and bolder": logo-light.png is the artwork's slate, blue-grey
+     and red, each darkened, painted through the same (bolder) masks */
+  --wm-ink: url(/model/logo-light.png) center / 100% 100% no-repeat;
+  --wm-star: url(/model/logo-light.png) center / 100% 100% no-repeat;
 }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: url(/model/logo-light.png) center / 100% 100% no-repeat; --wm-star: url(/model/logo-light.png) center / 100% 100% no-repeat; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -3359,7 +3371,11 @@ body { font-size: 14px; }
      page — the deck is 745 × 175 of them — so the proportions are the
      drawing's at every width; a phone reads it at 0.4px, a desktop at 0.5px */
   --u: clamp(0.4px, 0.1vw, 0.5px);
-  --dk-w: calc(var(--u) * 745);
+  /* WIDER (owner, 26 Oct 2026: "let's also widen the central control
+     fixture"): the drawn 745 stretched sideways by --dk-sx; the cuts, the
+     grill and the insets that sit in it stretch with it, the heights do not */
+  --dk-sx: 1.1;
+  --dk-w: calc(var(--u) * 745 * var(--dk-sx));
   --dk-h: calc(var(--u) * 175);
   --dk-r: calc(var(--u) * 34);
   --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
@@ -3409,31 +3425,18 @@ body { font-size: 14px; }
    field's own outline colour; the backdrop bends into it only faintly
    (data-lens-shape="cut", data-lens-gain) */
 .cccut {
-  position: absolute; z-index: 2; left: calc(var(--u) * var(--cut-x)); top: calc(var(--u) * 58); bottom: calc(var(--u) * 52); /* shortened (owner, 19 Oct): 65 of the 175 */
+  position: absolute; z-index: 2; left: calc(var(--u) * var(--cut-x) * var(--dk-sx)); top: calc(var(--u) * 58); bottom: calc(var(--u) * 52); /* shortened (owner, 19 Oct): 65 of the 175 */
   width: 1px; transform: translateX(-50%); border-radius: 1px; pointer-events: none;
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 /* the foot grill: a vent cut through the glass under the post disc, like a
    phone's ventilation port (Figure 1.2); the glass warps around it */
 .ccgrill {
-  position: absolute; z-index: 2; left: calc(var(--u) * 318.5); width: calc(var(--u) * 105); bottom: calc(var(--u) * 11); height: max(4px, calc(var(--u) * 11));
+  position: absolute; z-index: 2; left: calc(var(--u) * (371 * var(--dk-sx) - 52.5)); width: calc(var(--u) * 105); bottom: calc(var(--u) * 11); height: max(4px, calc(var(--u) * 11));
   border-radius: 999px; pointer-events: none;
   /* no outline and no shadow (owner, 19 Oct): only the opening, darker at its top lip */
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 50%, transparent), color-mix(in srgb, var(--shade) 20%, transparent));
 }
-/* the tab indicator: a small ring in the right cap, above the last cut */
-.tabind {
-  position: absolute; z-index: 3; left: calc(var(--u) * 3); top: calc(var(--u) * 17); transform: translateX(-50%);
-  width: max(11px, calc(var(--u) * 26)); height: max(11px, calc(var(--u) * 26)); border-radius: 50%;
-  border: 0.525px solid color-mix(in srgb, var(--ink) 82%, transparent); display: block; /* 65% of the old 1.5px ring gone (owner, 19 Oct) */
-}
-/* the light: SOLID red (owner, 19 Oct), with a dense halo — brighter, not
-   wider; the glass does not refract round it */
-.tabindlamp { position: absolute; inset: 0.5px; border-radius: 50%; opacity: 0;
-  background: var(--warn);
-  box-shadow: none; /* bright and solid, never glowing: no red glows (owner, 19 Oct 2026) */ }
-.tabind.held .tabindlamp { opacity: 1; }
-.tabind.held { border-color: var(--warn); }
 .cckey {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0; background: none; cursor: pointer;
@@ -3456,7 +3459,7 @@ body { font-size: 14px; }
 /* the search bar the deck rises to hold: a groove of its own in the glass */
 .ccsearch {
   flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
-  height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40) 0;
+  height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40 * var(--dk-sx)) 0;
   animation: ccrise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 @keyframes ccrise { from { opacity: 0; transform: translateY(10px); } }
@@ -3485,7 +3488,7 @@ body { font-size: 14px; }
    The pill is 52 tall and ends 8 above the grill's top lip (11 + 11); it
    reaches 18 up into the row's empty foot, under the cuts' lower ends (52),
    so the deck grows by --ad-h alone */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40) calc(var(--u) * 30); box-sizing: border-box; }
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
 .adstrip {
   height: calc(var(--u) * 52); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
@@ -3775,7 +3778,7 @@ body { font-size: 14px; }
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--paper) 45%, transparent), inset 0 -2px 4px color-mix(in srgb, var(--shade) 16%, transparent), 0 2px 8px color-mix(in srgb, var(--shade) 14%, transparent);
   transition: transform 0.12s, color 0.18s, border-color 0.18s;
 }
-.ccenter .tabl.ccpost .ccdisc .ic { width: 62%; height: 62%; min-width: 0; min-height: 0; }
+.ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
 .ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
@@ -4503,9 +4506,6 @@ body { font-size: 14px; }
 /* the piece card: the photograph, rounded, one quiet line beneath, × to pass */
 .card.piece { position: relative; border-radius: var(--radius-card); overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
 .card.piece .imgwrap { border-radius: 0; }
-.pieceline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 9px 12px 2px; font: 400 10.5px/1.4 var(--mich); letter-spacing: 0.01em; }
-.pieceline .ttl { min-width: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-transform: none; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pieceline .price { margin: 0; flex: none; font: inherit; }
 .card.piece .fitline { padding: 0 12px; }
 .card.piece .fitline.demoflag { padding: 2px 12px 0; }
 .card.piece .tagrow { margin: 4px 0 0; padding: 0 12px 10px; }
@@ -4847,6 +4847,17 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   .glass-light { display: none; }
 }
 
+/* THE FIXTURES' BUTTONS, SOFTER (owner, 26 Oct 2026: "all the buttons on the
+   fixtures — thin them ever so slightly and dim the white brightness and
+   lower the buttons' opacity slightly"): every key's glyph on the deck, the
+   Info Dock and the Passport Button draws a 1-unit stroke (the shared 1.15),
+   its ink pulled 14% toward the ground, at 88% opacity; the POST disc's
+   ring follows. A current key keeps its red. */
+:is(.ccenter .tabl, .ccenter .mailbtn, .idkey, .passportbtn) .ic g { stroke-width: 1; }
+:is(.ccenter .tabl, .ccenter .mailbtn, .idkey, .passportbtn) .ic { opacity: 0.88; }
+:is(.ccenter .tabl:not(.cur), .ccenter .mailbtn:not(.cur), .idkey:not(.cur), .passportbtn:not(.cur)) .ic { color: color-mix(in srgb, var(--ink) 86%, var(--bg)); }
+.ccenter .tabl.ccpost:not(.cur) .ccdisc { color: color-mix(in srgb, var(--ink) 86%, var(--bg)); border-color: color-mix(in srgb, var(--ink) 76%, transparent); border-width: 1.25px; }
+
 /* THE KEYS GLOW IN DARK (owner, 19 Oct 2026: "give the buttons on dark mode
    a slight glow"): each glyph in its own colour, the disc's ring with it;
    light never glows (A6 third addendum) */
@@ -4932,7 +4943,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    card fills its grid cell exactly; what is inside a card adapts to the
    size the packer gave it.
    ===================================================================== */
-.fgridwrap { container-type: inline-size; width: 100%; }
+.fgridwrap { container-type: inline-size; width: calc(100% + 2 * var(--feed-bleed)); margin-inline: calc(-1 * var(--feed-bleed)); --feed-bleed: 6px; } /* closer to the screen's edges (owner, 26 Oct 2026: "tighten the space between the cards and the bezels a little more"): 8px on a phone, was 14 */
 .fgrid {
   --fgap: 6px; /* tightened (owner, 25 Oct 2026: "tighten the spaces in between media to make them all a little bigger") */
   display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
@@ -4966,18 +4977,26 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); color: var(--on-media); }
 .card.piece.v-hero .pcmode { color: var(--on-media); }
 .card.piece.v-hero .imgwrap .ostick { top: 10cqw; left: var(--cardpadx); } /* under the head, not through it */
-.card.piece.v-hero .pcfoot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 8cqw var(--cardpadx) 4cqw;
-  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 72%, transparent) 100%); color: var(--on-media); }
-.card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); }
-.card.piece.v-hero .pcfoot .pctitle { margin: 0; }
+/* THE FOOT, ONE COLUMN (owner, 25 Oct 2026: "uniformly orient everything on
+   the media card so that everything is spaced correctly"): the name, the
+   size and price, then the actions, stacked in flow on one scrim — nothing
+   is pinned over anything else. The foot's insets match the head's
+   (--cardpadx at the sides, 4.5cqw from the edge); the action row's icons
+   sit on that same inset, their buttons' slack pulled out past it on every
+   side, so the three rows sit one even step (2.5cqw) apart. */
+.card.piece.v-hero .pcfoot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; flex-direction: column; gap: 2.5cqw;
+  padding: 10cqw var(--cardpadx) 4.5cqw;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 42%, transparent) 100%); color: var(--on-media); }
+.card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); margin: 0; }
 .card.piece.v-hero .pcfoot .demoflag { color: var(--on-media); opacity: 0.85; }
 /* the actions float on the photograph too (owner, evening: "every media card should just be comprised of the images with everything floating on it") */
-.card.piece.v-hero .pcacts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 0 var(--cardpadx) 3cqw; color: var(--on-media); }
+.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.78; background: none; }
 .card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
-.card.piece.v-hero .pcfoot { bottom: 0; padding-bottom: 12cqw; }
-.card.piece.v-hero .pcfoot { background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 42%, transparent) 100%); }
-.card.piece.v-hero .pcacts { opacity: 0.78; background: none; }
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
+/* the hairline between the size and price and the actions (owner, 25 Oct
+   2026): the deck's cut, in the card's own ink so it reads on any tile */
+.card.piece.v-hero .pcrule { display: block; flex: none; height: 1px; border-radius: 1px; }
+.card.piece.v-hero .pcrule::after { background: color-mix(in srgb, var(--on-media) 45%, transparent); }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
@@ -4993,12 +5012,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .pcact .ic { width: 24px; height: 24px; }
 .pcact:active { transform: scale(0.94); }
 .pcact.on { color: var(--red); }
-/* small: the photograph and one quiet line */
-.card.piece.v-small { position: relative; }
-.card.piece.v-small .pieceline { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 9cqw var(--cardpadx) 6cqw; min-width: 0;
-  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 34%, transparent) 100%); color: var(--on-media); }
-.card.piece.v-small .pieceline .ttl { min-width: 0; color: inherit; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card.piece.v-small .pieceline .price { flex: none; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); }
 
 /* THE PLACE: the mark, the distance, LOCATION NAME, LOCATION TYPE, the globe */
 .fcell .card.placecard { display: flex; }
@@ -5013,7 +5026,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.placecard.withphoto .placeopen { position: relative; isolation: isolate; align-content: end; color: var(--on-media); }
 .card.placecard.withphoto .placeopen::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 34%, color-mix(in srgb, var(--shade) 82%, transparent) 100%); }
 .card.placecard.withphoto .placeopen > :not(.placephoto) { position: relative; z-index: 2; }
-.card.placecard.withphoto .placeglobe { position: absolute; right: 7cqw; bottom: 7cqw; left: auto; top: auto; }
+/* the globe stays pinned at the bottom right: the rule above lifts every
+   child but the photograph to position: relative, and it outranks a plain
+   .placeglobe — so the globe fell into the grid's flow and sat on the
+   place's type (owner, 25 Oct 2026: "more overlapping with the passport
+   button"). The words keep clear of it on the right. */
+.card.placecard.withphoto .placeopen > .placeglobe { position: absolute; right: 7cqw; bottom: 7cqw; left: auto; top: auto; }
+.fcell .card.placecard .placename, .fcell .card.placecard .placemeta { padding-right: calc(14cqw + 7cqw); }
 .card.placecard.withphoto .placename, .card.placecard.withphoto .placemeta, .card.placecard.withphoto .placedist, .card.placecard.withphoto .placeglobe { color: var(--on-media); }
 .fcell .placeicon .ic { width: 60%; height: 60%; }
 .fcell .placedist { font-size: 14cqw; }
@@ -5023,6 +5042,14 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .placeglobe .ic { width: 14cqw; height: 14cqw; }
 
 /* THE SONG: the record's art, the title over it, PASS */
+/* THE AD SPACE (owner, 25 Oct 2026): the gaps at the feed's end, medium or
+   BRDCST-size; an open placement drawn as the Hotlist draws one — a dashed
+   outline, the words centred, nothing that pretends to be an advertiser */
+.fcell .card.adspace { display: grid; place-content: center; justify-items: center; gap: 1.5cqw; height: 100%; box-sizing: border-box; padding: var(--cardpadx);
+  border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent); border-radius: var(--radius-card); background: none; text-align: center; }
+.adspacetag { font: 400 clamp(8px, 3.4cqw, 11px)/1 var(--mich); letter-spacing: 0.22em; color: var(--red); }
+.adspaceline { font: 400 clamp(8px, 3cqw, 10px)/1.3 var(--mich); letter-spacing: 0.18em; color: var(--grey); }
+.adspacenote { font: 400 clamp(9px, 3.4cqw, 11px)/1.3 var(--mich); font-style: normal; color: var(--faint); }
 .card.songcard { position: relative; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg3); }
 .songart { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
@@ -5066,18 +5093,35 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .bsheetwhen { margin: 4px 0 0; font: 400 11px/1.3 var(--mich); letter-spacing: 0.06em; color: var(--ink); }
 .bsheetnote { margin: 0; font: 400 12px/1.5 var(--mich); color: var(--ink); }
 
-/* THE STRIP (Strip.jsx; the owner's reference, 25 Oct 2026, evening: X's
-   "Videos for you"): tall cards side by side, the next one peeking, a plain
-   sideways scroll with snap points; a card is as tall as the strip */
-.strip { position: relative; display: flex; gap: 2cqw; height: 100%; min-height: 0; padding: 0 var(--cardpadx, 3.6cqw); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.strip::-webkit-scrollbar { display: none; }
-.stripcard { flex: none; height: 100%; aspect-ratio: var(--asp, 9 / 16); scroll-snap-align: start; border-radius: clamp(8px, 3.2cqw, 18px); overflow: hidden; background: var(--bg3); }
-.stripcard .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
-.stripcard img, .stripcard video { display: block; width: 100%; height: 100%; object-fit: cover; }
-.card.wpostcard.type-carousel { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
-/* the motion row: 9:16 tiles, the one in the middle plays */
-.card.motionrail { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
-.mrhead { margin: 0; padding: 0 6px; font: 400 10px/1.3 var(--mich); letter-spacing: 0.16em; color: var(--ink); }
+/* FIGURE 20 (Fig20.jsx; owner, 25 Oct 2026, late: "simply input figure 20
+   how it is … the ipod style collapsed cards floating neatly tucked with the
+   other media cards"): a carousel is the coverflow alone in its cell — no
+   housing — a post's size, the flat card(s) filling the height, the rest
+   stacked at the two ends and tucked outward. The recommended motions are
+   the same (MotionRail.jsx), VIDEOS YOU MAY LIKE where the author sits and
+   the centre video's caption below. */
+/* (then: the head, the caption and the four actions float, and — "allow the
+   header and captions to float over top of the actual card, so the carousel
+   cards still have the same height as the regular motion and still cards" —
+   they float over the coverflow itself: the post's own photo-filled layout
+   (.withmedia), the coverflow in the media's place filling the cell, the
+   centre card the full height (1:2 cards), on no box and no ground — the
+   scrims go too, since around the cards there is only the feed) */
+.fcell .card.wpostcard.p2.f20post { height: 100%; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.card.wpostcard.p2.withmedia.f20post .p2media { display: flex; }
+.card.wpostcard.p2.withmedia.f20post .p2head, .card.wpostcard.p2.withmedia.f20post .p2foot { background: none; pointer-events: none; }
+.card.wpostcard.p2.withmedia.f20post .p2head > *, .card.wpostcard.p2.withmedia.f20post .p2foot > * { pointer-events: auto; }
+.card.wpostcard.p2.f20post h3.p2user { margin: 0; font: inherit; letter-spacing: 0.04em; }
+.fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
+.f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+.f20stage:active { cursor: grabbing; }
+.f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
+.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(8px, 9%, 22px); overflow: hidden; background: var(--bg3); will-change: transform; }
+.f20card img { -webkit-user-drag: none; pointer-events: none; }
+.f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
+/* the motion row's 9:16 cards; the one in the middle plays */
 .mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
 .mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
 
@@ -5109,7 +5153,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    Everything sizes to the card (cqw), so a phone's card and a laptop's read
    alike.
    ===================================================================== */
-.card.wpostcard.p2, .card.wpostcard.p2.type-carousel {
+.card.wpostcard.p2 {
   display: flex; flex-direction: column; gap: 0; padding: var(--cardpad, 4cqw) var(--cardpadx, 5cqw) calc(var(--cardpad, 4cqw) * 0.8);
   border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); overflow: hidden;
 }
@@ -5142,7 +5186,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .p2media .wpccredit { padding: 1.2cqw 0 0; font-size: clamp(7px, 2.2cqw, 9px); }
 .p2words { flex: 1; min-height: 0; display: flex; align-items: center; overflow: hidden; padding: 0 1cqw; font: 400 clamp(12px, 5.4cqw, 26px)/1.35 var(--mich); color: var(--ink); }
 .p2cap { flex: none; display: flex; flex-direction: column; gap: 0.8cqw; min-width: 0; padding: 0 0 0 1cqw; }
-.p2count { font: 400 clamp(8px, 2.4cqw, 12px)/1 var(--mich); letter-spacing: 0.06em; color: var(--ink); padding-left: 1cqw; }
 .p2line { display: flex; align-items: flex-end; gap: 1.6cqw; min-width: 0; }
 .p2fold { flex: 1; min-width: 0; display: block; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
 /* two lines of blocks, one per word, cut where the line ends — the caption waits inside */
@@ -5177,7 +5220,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2.withmedia .p2stage { display: block; }
 .card.wpostcard.p2.withmedia .p2media { position: absolute; inset: 0; margin: 0; display: block; }
 .card.wpostcard.p2.withmedia .p2media .wpcstage { height: 100%; border-radius: 0; }
-.card.wpostcard.p2.withmedia .p2media .strip { position: absolute; left: 0; right: 0; top: 16cqw; bottom: 26cqw; height: auto; }
 .card.wpostcard.p2.withmedia .p2head { position: absolute; left: 0; right: 0; top: 0; z-index: 3; padding: 4.5cqw var(--cardpadx, 5.5cqw) 7cqw; color: var(--on-media);
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); }
 .card.wpostcard.p2.withmedia .p2user, .card.wpostcard.p2.withmedia .p2user a { color: var(--on-media); }
@@ -5187,7 +5229,7 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2.withmedia .p2foot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 9cqw var(--cardpadx, 5.5cqw) 4cqw; color: var(--on-media);
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 34%, transparent) 100%); }
 .card.wpostcard.p2.withmedia .wpccredit { padding: 0 0 1cqw; color: var(--on-media); opacity: 0.8; }
-.card.wpostcard.p2.withmedia .p2count, .card.wpostcard.p2.withmedia .p2fold, .card.wpostcard.p2.withmedia .p2text, .card.wpostcard.p2.withmedia .p2more { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2fold, .card.wpostcard.p2.withmedia .p2text, .card.wpostcard.p2.withmedia .p2more { color: var(--on-media); }
 .card.wpostcard.p2.withmedia .blkline .blkw { background: color-mix(in srgb, var(--on-media) 82%, transparent); }
 .card.wpostcard.p2.withmedia .p2ring { border-color: var(--on-media); }
 .card.wpostcard.p2.withmedia .p2ring.on { background: var(--on-media); }
