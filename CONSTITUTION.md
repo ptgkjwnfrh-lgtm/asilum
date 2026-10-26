@@ -538,7 +538,12 @@ are TUCKED OUTWARD (each end card's inner edge swings toward the viewer),
 and a carousel is almost the size of a still or motion post, its flat card
 filling the height, a small line above for the author's name. The
 recommended motions are Figure 20 the same way, RECOMMENDED VIDEOS in that
-line; the strip is deleted.
+line; the strip is deleted. LAST: a carousel is laid out exactly as a photo
+post is — the coverflow fills the cell, the centre card the post's full
+height, and the post's own head (picture and name) and foot (caption, like,
+comment, stamp, share) float over it with no box, ground or scrim. The
+recommended motions likewise, VIDEOS YOU MAY LIKE in the head and the
+caption of whichever video sits in the centre, changing as it moves.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is

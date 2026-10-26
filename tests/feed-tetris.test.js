@@ -152,7 +152,7 @@ test("the page draws what the packer decides, and the cards are the sketch's", (
   assert.ok(!/SAMPLE FIXTURE|ModelTag/.test(read("app/components/PostCard.jsx")), "no SAMPLE on a post");
   const post = read("app/components/PostCard.jsx");
   assert.match(post, /if \(type === "BRDCST"\) return <BrdcstStrip p=\{p\} id=\{cardId\} \/>;/);
-  assert.match(post, /if \(gallery\.length > 1\) \{\n\s*return \(\n\s*<div className="card f20post"/, "a post of two or more stills is Figure 20 alone");
+  assert.match(post, /\{carousel \? \(\n\s*<Fig20\n/, "a post of two or more stills has Figure 20 for its media");
   // no × on any card's face: a piece and a song hold the menu too
   assert.ok(!/className="cardpass"/.test(page) && !/className="cardpass"/.test(read("app/components/SongCard.jsx")), "the × lives in the hold menu everywhere");
   assert.match(page, /<HoldMenu id=\{"piece:" \+ it\.id\} what=\{what\} open=\{menu\} onClose=\{closeMenu\} onPass=\{onPass \|\| null\} \/>/, "a piece's PASS is still the brain's signal");
@@ -189,8 +189,8 @@ test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rule
   // Figs. 6–7: the counter and the folded caption
   // (25 Oct 2026, late) the "01/26" counter rode only the housed carousel; Figure 20 carries none
   assert.ok(!/pad\(idx \+ 1\)|p2count/.test(post), "no counter: a carousel is Figure 20 alone");
-  assert.match(post, /<BlockLine className="p2fold-line" text=\{caption\} \/>/, "the caption folds into blocks, one per word (owner, 25 Oct: the blocks replace the chevrons)");
-  assert.match(post, /<span className="idlabel">read the caption: \{caption\}<\/span>/, "the folded caption is still read aloud");
+  assert.match(post, /<BlockLine className="p2fold-line" text=\{text\} \/>/, "the caption folds into blocks, one per word (owner, 25 Oct: the blocks replace the chevrons)");
+  assert.match(post, /<span className="idlabel">read the caption: \{text\}<\/span>/, "the folded caption is still read aloud");
   assert.match(post, /<Icon name="fold"/);
   // Figs. 2–5: the four actions, the stamp is STAMP, the bubble is not built and says so; no counts beneath (owner, late: "get rid of the three dots")
   assert.match(post, /icon="stamp"/);
@@ -199,7 +199,7 @@ test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rule
   assert.match(read("app/components/Icons.jsx"), /strokeWidth: 1\.15,/, "one thin stroke");
   assert.match(read("app/globals.css"), /\.p2acts \{[^}]*opacity: 0\.78; \}/, "a little transparent");
   // the ring: a real sound control, on a motion only
-  assert.match(post, /\{motion \? <SoundRing video=\{\(\) => videoRef\.current\} \/> : null\}/);
+  assert.match(post, /\{motion && videoRef \? <SoundRing video=\{\(\) => videoRef\.current\} \/> : null\}/, "the sound ring on a motion's caption");
   const css = read("app/globals.css");
   // (evening) the rule is the fixtures' hairline cut, .cccut's colour, not a red line
   assert.match(css, /\.p2rule \{[^}]*background: color-mix\(in srgb, var\(--ink\) 14%, transparent\);/);
@@ -336,16 +336,30 @@ test("FIGURE 20 for the carousels (owner, 25 Oct 2026, late: \"simply input figu
   assert.match(fig, /const flatN = Math\.max\(1, Math\.min\(FLAT, n, Math\.floor\(\(W \* FLAT_SHARE \+ gap\) \/ \(tall \+ gap\)\)\)\);/);
   assert.match(fig, /s\.pos = s\.target = Math\.floor\(\(n - 1\) \/ 2\);/, "it opens in the middle");
   const post = read("app/components/PostCard.jsx");
-  const at = post.indexOf("if (gallery.length > 1) {");
-  const bare = post.slice(at, post.indexOf("  return (\n    <article", at));
-  assert.match(bare, /<Fig20\n/, "the carousel is Figure 20");
-  assert.match(bare, /<p className="f20head">/, "a small space for the author's name");
+  // (then: "the caption and the like, comment, stamp and share buttons … floating
+  // over top of the feed … the profile pic and user name float as well, so the
+  // carousel can have the exact same dimensions as just a regular post") — the
+  // post card's own head, caption and actions around Figure 20, on no ground
+  assert.match(post, /const carousel = gallery\.length > 1;/);
+  assert.match(post, /type-" \+ \(carousel \? "carousel f20post" : type\.toLowerCase\(\)\)/, "the carousel wears f20post");
+  // (then: "allow the header and captions to float over top of the actual card, so
+  // the carousel cards still have the same height as the regular motion and still
+  // cards") the photo-filled stage: the coverflow fills the cell, the head and foot over it
+  assert.match(post, /\(hasMedia \? " withmedia" : ""\)/, "the carousel takes the post's photo-filled stage");
+  assert.match(post, /\{carousel \? \(\n\s*<Fig20\n\s*aspect=\{1 \/ 2\}/, "1:2 cards, so the centre card is the post's full height");
+  assert.match(post, /<Caption text=\{caption\} motion=\{motion\} videoRef=\{videoRef\} \/>\s*<Acts /, "the caption and the four actions");
   const rail = read("app/components/MotionRail.jsx");
-  assert.match(rail, /<h3 className="f20head">RECOMMENDED VIDEOS<\/h3>\s*<Fig20\n\s*aspect=\{9 \/ 16\}/, "the recommended motions: Figure 20 under RECOMMENDED VIDEOS");
+  // (same: "VIDEOS YOU MAY LIKE floating where it says the profile pic and user
+  // names … for each video it lands on allow its caption to appear")
+  assert.match(rail, /<h3 className="p2user">VIDEOS YOU MAY LIKE<\/h3>/, "the head reads VIDEOS YOU MAY LIKE");
+  assert.match(rail, /className="card wpostcard p2 withmedia f20post motionrail"/, "laid out as a carousel post");
+  assert.match(rail, /<Fig20\n\s*aspect=\{1 \/ 2\}/, "the recommended motions in Figure 20, the centre card full height");
+  assert.match(rail, /const onSettle = useCallback\(\(i\) => \{ setAt\(i\);/, "the card it lands on is remembered");
+  assert.match(rail, /<Caption key=\{String\(cur\.serverId \?\? cur\.id \?\? at\)\} text=\{caption\} \/>/, "and its caption shows, folding again for each video");
   assert.ok(!existsSync("app/components/Strip.jsx"), "the strip is deleted");
-  assert.ok(!/p2head|p2foot|p2cap|p2count|p2acts|Avatar|<Cut/.test(bare), "and nothing around it");
   assert.ok(!/<Strip/.test(post + rail), "nothing uses the strip");
   const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
-  assert.match(css, /\.fcell \.card\.f20post, \.fcell \.card\.motionrail \{[^}]*border: 0;[^}]*background: none;/, "no housing in the cell");
+  assert.match(css, /\.fcell \.card\.wpostcard\.p2\.f20post \{[^}]*border: 0;[^}]*background: none;/, "no housing: they float on the feed");
+  assert.match(css, /\.card\.wpostcard\.p2\.withmedia\.f20post \.p2head, \.card\.wpostcard\.p2\.withmedia\.f20post \.p2foot \{ background: none;/, "no scrims: around the cards there is only the feed");
   assert.ok(!/type-carousel|\.p2count|\.p2media \.strip|\.stripcard|\.mrhead|(^|[^-])\.strip \{/.test(css), "the housed carousel's and the strip's rules are gone");
 });

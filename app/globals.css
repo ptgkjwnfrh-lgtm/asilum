@@ -5093,11 +5093,20 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    other media cards"): a carousel is the coverflow alone in its cell — no
    housing — a post's size, the flat card(s) filling the height, the rest
    stacked at the two ends and tucked outward. The recommended motions are
-   the same (MotionRail.jsx). Above each, a small line: the author's name on
-   a carousel, RECOMMENDED VIDEOS on the motions. */
-.fcell .card.f20post, .fcell .card.motionrail { display: flex; flex-direction: column; gap: 1.5cqw; height: 100%; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
-.f20head { flex: none; margin: 0; padding: 0 var(--cardpadx, 5.5cqw); font: 400 clamp(9px, 3.6cqw, 13px)/1.4 var(--mich); letter-spacing: 0.08em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.f20head a { color: inherit; text-decoration: none; }
+   the same (MotionRail.jsx), VIDEOS YOU MAY LIKE where the author sits and
+   the centre video's caption below. */
+/* (then: the head, the caption and the four actions float, and — "allow the
+   header and captions to float over top of the actual card, so the carousel
+   cards still have the same height as the regular motion and still cards" —
+   they float over the coverflow itself: the post's own photo-filled layout
+   (.withmedia), the coverflow in the media's place filling the cell, the
+   centre card the full height (1:2 cards), on no box and no ground — the
+   scrims go too, since around the cards there is only the feed) */
+.fcell .card.wpostcard.p2.f20post { height: 100%; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.card.wpostcard.p2.withmedia.f20post .p2media { display: flex; }
+.card.wpostcard.p2.withmedia.f20post .p2head, .card.wpostcard.p2.withmedia.f20post .p2foot { background: none; pointer-events: none; }
+.card.wpostcard.p2.withmedia.f20post .p2head > *, .card.wpostcard.p2.withmedia.f20post .p2foot > * { pointer-events: auto; }
+.card.wpostcard.p2.f20post h3.p2user { margin: 0; font: inherit; letter-spacing: 0.04em; }
 .fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
 .f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
 .f20stage:active { cursor: grabbing; }

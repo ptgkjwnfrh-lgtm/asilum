@@ -802,7 +802,12 @@ checked what a reader is actually served, which is the claim that matters.
   the author's name, or RECOMMENDED VIDEOS; Fig20 turns the stacks
   `rotateY(-sgn·72°)` about the outer edge (tucked outward) and lays flat as
   many cards as fit at the stage's full height (one in a post-sized cell);
-  Strip.jsx and its rules are deleted.)
+  Strip.jsx and its rules are deleted.) Last: the carousel is the post
+  card itself — `type-carousel f20post withmedia`, Fig20 (1:2 cards) in
+  `.p2media` filling the cell, `.p2head` and `.p2foot` floating over it,
+  `background: none` on the card, head and foot. MotionRail wears the same
+  classes, VIDEOS YOU MAY LIKE as its `.p2user`, and `<Caption key=…>`
+  (exported from PostCard.jsx) for the centre video.
 - Wordmark.jsx is `.wmimg` (`/model/logo.jpg`, the owner's artwork cropped
   to the mark) with the name visually hidden; `.wordmark.brandfix` blends
   multiply (screen, inverted, in dark).

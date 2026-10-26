@@ -4,15 +4,20 @@
 // Oct 2026: "motions that will be recommended — 20 videos in the same
 // formation as figure 20, the way X and Instagram recommend video"; late
 // that night: the recommended motions are Figure 20 again, the size of a
-// motion post, with "RECOMMENDED VIDEOS" where a carousel's author's name
-// sits). The stream's MOTION posts, up to 20 (lib/feed/tetris.js
-// motionRail), as 9:16 cards in Figure 20 (Fig20.jsx). Only the centre card
-// plays, muted and looping; the rest hold their first frame. A tap on the
-// centre card opens the motion in its popup. Reduced motion: nothing
-// autoplays.
+// motion post; then: "make it so it has VIDEOS YOU MAY LIKE floating where
+// it says the profile pic and user names, and for each video it lands on
+// allow its caption to appear as well, so the caption fixture changes for
+// each video"). The stream's MOTION posts, up to 20 (lib/feed/tetris.js
+// motionRail), as 9:16 cards in Figure 20 (Fig20.jsx), laid out as a
+// carousel post is — the head and the caption float on the feed, no housing.
+// Only the centre card plays, muted and looping; the rest hold their first
+// frame; the caption is the centre card's. A tap on the centre card opens
+// the motion in its popup. Reduced motion: nothing autoplays.
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Fig20 from "./Fig20.jsx";
+import { Cut } from "./Cut.jsx";
+import { Caption } from "./PostCard.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 
@@ -24,6 +29,7 @@ function videoOf(p) {
 export default function MotionRail({ posts }) {
   const ref = useRef(null);
   const settleRef = useRef(null);
+  const [at, setAt] = useState(Math.floor((posts.length - 1) / 2)); // the centre card, whose caption shows
   useEffect(() => {
     const root = ref.current;
     if (!root) return undefined;
@@ -46,12 +52,19 @@ export default function MotionRail({ posts }) {
     play();
     return () => { settleRef.current = null; window.removeEventListener("scroll", play); };
   }, [posts]);
-  const onSettle = useCallback((i) => { if (settleRef.current) settleRef.current(i); }, []);
+  const onSettle = useCallback((i) => { setAt(i); if (settleRef.current) settleRef.current(i); }, []);
+  const cur = posts[Math.max(0, Math.min(posts.length - 1, at))] || {};
+  const caption = [cur.title, cur.text].filter(Boolean).join(" — ") || cur.name || cur.handle || "";
   return (
-    <section className="card motionrail" ref={ref} data-id="rail:motion" data-type="MOTION" aria-label={`${posts.length} recommended videos`}>
-      <h3 className="f20head">RECOMMENDED VIDEOS</h3>
+    <section className="card wpostcard p2 withmedia f20post motionrail" ref={ref} data-id="rail:motion" data-type="MOTION" aria-label={`${posts.length} videos you may like`}>
+      <div className="p2stage">
+      <header className="p2head">
+        <h3 className="p2user">VIDEOS YOU MAY LIKE</h3>
+      </header>
+      <Cut className="p2rule" />
+      <div className="p2media">
       <Fig20
-        aspect={9 / 16}
+        aspect={1 / 2}
         items={posts.map((p) => ({ key: String(p.serverId ?? p.id), p }))}
         label="recommended videos"
         onSettle={onSettle}
@@ -66,6 +79,12 @@ export default function MotionRail({ posts }) {
           );
         }}
       />
+      </div>
+      <div className="p2foot">
+        {/* the centre video's own caption; keyed so it folds again for each one */}
+        <Caption key={String(cur.serverId ?? cur.id ?? at)} text={caption} />
+      </div>
+      </div>
     </section>
   );
 }

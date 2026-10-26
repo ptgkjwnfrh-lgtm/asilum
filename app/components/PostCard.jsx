@@ -295,8 +295,34 @@ function SoundRing({ video }) {
   );
 }
 
-export default function PostCard({ post: p, engagement, onEngage }) {
+/** THE CAPTION (the post sketch's Fig. 7): folded into a line of blocks, one
+ *  per word, with the fold mark to unfold it (the words load in behind the
+ *  blocks), the sound ring at the right on a motion. The post card and the
+ *  recommended motions (MotionRail.jsx, a caption per video) both wear it;
+ *  `key` it by the text to fold it again when the text changes. */
+export function Caption({ text, motion = false, videoRef = null }) {
   const [more, setMore] = useState(0);
+  return (
+    <div className="p2cap">
+      <div className="p2line">
+        {more ? (
+          <BlockText as="p" className="p2text" text={text} play={more} />
+        ) : (
+          <button type="button" className="p2fold" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}>
+            <BlockLine className="p2fold-line" text={text} />
+            <span className="idlabel">read the caption: {text}</span>
+          </button>
+        )}
+        <button type="button" className={"p2more" + (more ? " up" : "")} aria-expanded={!!more} aria-label={more ? "fold the caption" : "unfold the caption"} onClick={() => { haptic("press"); setMore((m) => (m ? 0 : 1)); }}>
+          <Icon name="fold" size={18} />
+        </button>
+        {motion && videoRef ? <SoundRing video={() => videoRef.current} /> : null}
+      </div>
+    </div>
+  );
+}
+
+export default function PostCard({ post: p, engagement, onEngage }) {
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
   const hold = useHold(() => setMenu(true));
@@ -320,30 +346,18 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   const caption = [p.title, p.text].filter(Boolean).join(" — ");
   const what = "the post " + (p.title || name);
   // FIGURE 20 (owner, 25 Oct 2026, late: "for the carousels … simply input
-  // figure 20 how it is. it should be the ipod style collapsed cards
-  // floating neatly tucked with the other media cards"): a post of two or
-  // more stills is the coverflow alone in its cell — no housing, no head,
-  // caption or actions around it, only the author's name above. It is the
-  // size of a still or motion post (SPANS.CAROUSEL). The centre card opens
-  // the post's media;
-  // a hold (or the hidden key) opens its menu, PASS among it.
-  if (gallery.length > 1) {
-    return (
-      <div className="card f20post" data-id={cardId} data-type={type} aria-label={"carousel: " + (p.title || name) + ", " + gallery.length + " photographs"} {...hold}>
-        <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
-        <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
-        {/* a small space above it for the author (same night: "allowing small
-            space for the user name if it's a still carousel") */}
-        <p className="f20head">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</p>
-        <Fig20
-          aspect={3 / 5}
-          items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
-          label={`${gallery.length} photographs by ${name}`}
-          render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}
-        />
-      </div>
-    );
-  }
+  // figure 20 how it is … the ipod style collapsed cards floating"; then: "I
+  // want the caption and the like, comment, stamp and share buttons to be
+  // floating over top of the feed, and make the profile pic and user name
+  // float as well, so the carousel can have the exact same dimensions as
+  // just a regular post"): a post of two or more stills is the post card's
+  // own head, caption and actions with Figure 20 for its media and no
+  // housing — no box, no ground. Then: "allow the header and captions to
+  // float over top of the actual card, so the carousel cards still have the
+  // same height as the regular motion and still cards": the coverflow fills
+  // the whole cell as a photograph fills a post (withmedia), its centre card
+  // the full height, the head and the foot floating over it.
+  const carousel = gallery.length > 1;
   // THE POST CARD (owner's post sketch, 25 Oct 2026, IMG_1143): the author's
   // circle and name (Figs. 8–10) over a red rule (11); the media; the
   // counter "01/26" (6); the caption folded into two lines of BLOCKS, one
@@ -351,7 +365,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + type.toLowerCase() + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={type.toLowerCase() + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
+    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
       <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
       {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be
           comprised of the entire image — text and icons overlap it"): the
@@ -366,7 +380,14 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </header>
       <Cut className="p2rule" />
       <div className="p2media">
-        {hasMedia ? (
+        {carousel ? (
+          <Fig20
+            aspect={1 / 2}
+            items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
+            label={`${gallery.length} photographs by ${name}`}
+            render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}
+          />
+        ) : hasMedia ? (
           <div className="wpcstage">
             {composed && <Media p={p} onMedia={onMedia} videoRef={videoRef} />}
             {sample && p.video && <MotionMedia video={p.video} id={p.id} onMedia={onMedia} label={"open the sample motion: " + (p.title || "")} videoRef={videoRef} />}
@@ -382,22 +403,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </div>
       <div className="p2foot">
       {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
-      <div className="p2cap">
-        <div className="p2line">
-          {more ? (
-            <BlockText as="p" className="p2text" text={caption} play={more} />
-          ) : (
-            <button type="button" className="p2fold" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}>
-              <BlockLine className="p2fold-line" text={caption} />
-              <span className="idlabel">read the caption: {caption}</span>
-            </button>
-          )}
-          <button type="button" className={"p2more" + (more ? " up" : "")} aria-expanded={!!more} aria-label={more ? "fold the caption" : "unfold the caption"} onClick={() => { haptic("press"); setMore((m) => (m ? 0 : 1)); }}>
-            <Icon name="fold" size={18} />
-          </button>
-          {motion ? <SoundRing video={() => videoRef.current} /> : null}
-        </div>
-      </div>
+      <Caption text={caption} motion={motion} videoRef={videoRef} />
       <Acts p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
       </div>
       </div>
