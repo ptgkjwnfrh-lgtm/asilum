@@ -552,7 +552,9 @@ green in dark mode", with the title card for reference). The wordmark's
 middle is the top fixtures' middle. The owner's artwork is coloured through
 two masks cut from it: the word and its bar of blocks in a clear blue in
 light, and in the title card's chrome washing to phosphor green, glowing, in
-dark; the asterisk red in both.
+dark; the asterisk red in both. The same day: the logo 25% bigger, and light
+mode back to the artwork's own colours (painted through the same masks); the
+blue is gone.
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several

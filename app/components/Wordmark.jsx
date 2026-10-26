@@ -24,9 +24,11 @@
 // 1080p.mp4, for the dark): the artwork is two masks cut from logo.jpg —
 // logo-ink.png, the word and its bar of blocks (each pixel's darkness its
 // opacity, so the lighter last block stays lighter), and logo-star.png, the
-// asterisk — painted in --wm-ink (a blue in light; the title card's chrome
-// washing to mint in dark, glowing) and --warn (red in both, as the card has
-// it).
+// asterisk — painted in --wm-ink and --wm-star: in light the artwork's own
+// colours (the owner, the same day: "let's go back to the original color for
+// light mode"); in dark the title card's chrome washing to mint, glowing, and
+// the asterisk red (--warn), as the card has it. 25% bigger than the 25 Oct
+// size (owner, 26 Oct 2026).
 
 export default function Wordmark({ href = "/", className = "" }) {
   return (
