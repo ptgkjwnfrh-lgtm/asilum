@@ -182,12 +182,17 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
 // 84 / 86 / 88, a third of the old 80 / 86 / 92 spread, which (widened
 // further by the popup's `prism`) parted the colours into a hard red line on
 // one edge and a yellow-green one on the other ("the odd red bezel line",
-// the same day). One spread for every pane, no prism. The header runs at 1;
+// the same day). One spread for every pane but the fixtures (FIXTURE_PULL,
+// below), no prism. The header runs at 1;
 // the popups at 0.8.
 export const PULL = [84, 86, 88];
-const pulls = (strength) => PULL.map((v) => (v * strength).toFixed(1));
-export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1 }) {
-  const [sr, sg, sb] = pulls(strength);
+// THE FIXTURES' RAINBOW (owner, 26 Oct 2026: "a little more rainbow on the
+// fixtures"): the Masthead and the deck — the panes on the fixture bezel —
+// split a little wider, 83 / 86 / 89: half the old 12, never the hard line.
+export const FIXTURE_PULL = [83, 86, 89];
+const pulls = (strength, spread = PULL) => spread.map((v) => (v * strength).toFixed(1));
+export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1, spread = PULL }) {
+  const [sr, sg, sb] = pulls(strength, spread);
   return (
     <svg className="glass-defs" aria-hidden="true" focusable="false">
     {/* THE OPTICS: the centre of the pane is CRYSTAL CLEAR (the backdrop
@@ -269,7 +274,7 @@ export function bottomBand(w, h) {
 // would. Bounded: only the elements the edge crosses, each filtered within
 // its own box; nothing on the rest of the page pays. place(rect) on every
 // change of the pane or the scroll; dispose() takes it all back.
-export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null }) {
+export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null, spread = PULL }) {
   let svg = null;
   const bent = new Map(); // element -> filter node
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -289,7 +294,7 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     // not quite neutral (127.5 is): it shifts every pixel by ~0.17px, by a
     // different hair per colour once the pulls differ, and that drew a faint
     // red-and-cyan line down the whole border of every bent card (26 Oct 2026)
-    const [sr, sg, sb] = pulls(strength);
+    const [sr, sg, sb] = pulls(strength, spread);
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
       (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
@@ -465,7 +470,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
-    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open }) : null;
+    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open, spread: bezel === "fixture" ? FIXTURE_PULL : PULL }) : null;
     let raf = 0;
     const fit = () => {
       raf = 0;
@@ -511,7 +516,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (pageBend) pageBend.dispose();
     };
   }, [elRef, id, active, open, strength, bend, bezel, shine]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} />;
+  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} spread={bezel === "fixture" ? FIXTURE_PULL : PULL} />;
 }
 
 // ---- THE REACTIVE RAINBOW (owner, 18 Oct 2026: "the liquid glass isn't

@@ -232,8 +232,9 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
 
 test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
   // (26 Oct 2026) on the Masthead: in its flow, the strip's padding puts its left edge on the deck's
-  assert.match(rules, /\.brandfix \{\n  position: relative; flex: none;/, "in the Masthead's row");
-  assert.match(rules, /\.brandfix \{[^}]*height: calc\(var\(--u\) \* 88\);[^}]*flex-direction: column; justify-content: center;/s, "its middle on the keys' middle");
+  assert.match(rules, /\.brandfix \{\n  position: relative; flex: none; align-self: flex-start;/, "in the Masthead's row");
+  // (26 Oct 2026) the word's foot (row 140 of the artwork's 200) sits the stamp gap above the stamped line
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-w\) \* 140 \/ 900\);/s, "its foot over the stamped line");
   // (19 Oct) the name in metal, a touch bolder; the asterisk smaller, at the top of the capitals; a
   // thick translucent bar and one square under the word, within its width
   // the metal and its halo on the capitals only, so the red asterisk takes none of the green glow
@@ -310,11 +311,11 @@ test("no red bezel, a faint rainbow: the reach frame is gone, and every glass sp
   const defs = code.slice(code.indexOf("export function LiquidGlassDefs"), code.indexOf("export function restrictLens"));
   const lensScales = new Set([...defs.matchAll(/feDisplacementMap[^>]*scale=\{(\w+)\}/g)].map((x) => x[1]));
   assert.deepEqual([...lensScales].sort(), ["sb", "sg", "sr"], "the panes' lens runs red, green and blue apart");
-  assert.match(defs, /const \[sr, sg, sb\] = pulls\(strength\);/);
+  assert.match(defs, /const \[sr, sg, sb\] = pulls\(strength, spread\);/);
   const bend = code.slice(code.indexOf("export function createPageBend"), code.indexOf("let serial = 0;"));
   const bendScales = new Set([...bend.matchAll(/feDisplacementMap[^>]*scale="\$\{(\w+)\}"/g)].map((x) => x[1]));
   assert.deepEqual([...bendScales].sort(), ["sb", "sg", "sr"], "Safari's page bend runs them apart too");
-  assert.match(bend, /const \[sr, sg, sb\] = pulls\(strength\);/);
+  assert.match(bend, /const \[sr, sg, sb\] = pulls\(strength, spread\);/);
   // and only under the pane: outside it the map is a flat 128 (not quite neutral), and a split there drew a
   // faint coloured line down every bent card's whole border — the bend's primitives take the pane's rectangle
   // as their subregion and the element passes through untouched elsewhere
@@ -328,4 +329,58 @@ test("no red bezel, a faint rainbow: the reach frame is gone, and every glass sp
     assert.ok(!/prism/.test(src), f + " passes no prism");
   }
   assert.ok(!/prism/.test(code), "no prism option");
+  // THE FIXTURES' RAINBOW (owner, the same day: "a little more rainbow on the fixtures", still no hard
+  // line). Declared: FIXTURE_PULL rises red -> blue, its spread is wider than PULL's and at most 6 (half
+  // the 12 that drew the line); the panes on the fixture bezel (the Masthead, the deck) get it in both
+  // chains; every other pane keeps PULL.
+  const fm = code.match(/export const FIXTURE_PULL = \[(\d+(?:\.\d+)?), (\d+(?:\.\d+)?), (\d+(?:\.\d+)?)\];/);
+  assert.ok(fm, "the fixtures' three pulls");
+  const [fr, fg, fb] = fm.slice(1).map(Number);
+  assert.ok(fr < fg && fg < fb, "red least, blue most");
+  assert.ok(fb - fr > b - r, `the fixtures split wider than the other glass (${fb - fr} > ${b - r})`);
+  assert.ok(fb - fr <= 6, `and stay slight: ${fb - fr} of at most 6`);
+  assert.match(code, /<LiquidGlassDefs [^>]*spread=\{bezel === "fixture" \? FIXTURE_PULL : PULL\} \/>/, "the panes' lens");
+  assert.match(code, /createPageBend\(\{ [^}]*spread: bezel === "fixture" \? FIXTURE_PULL : PULL \}\)/, "Safari's page bend");
+  for (const f of ["app/components/Masthead.jsx", "app/components/ControlCenter.jsx"]) assert.match(read(f), /bezel: "fixture"/, f + " is a fixture");
+  for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx", "app/components/GlassPane.jsx"]) assert.ok(!/bezel: "fixture"/.test(read(f)), f + " keeps the faint split");
+});
+
+// THE STAMPED LINE (owner, 26 Oct 2026, the reference 4.jpg, "Ref 2"). Declared before measuring: the
+// pattern read left to right is three thin (1/2), then four times [short, short, short, long] (1, 1, 1, 2),
+// every gap 0.45; it runs from the left edge of the A (column 19 of the artwork's 900, the first column the
+// word's ink reaches) to the Passport's globe, ending on the globe's centre with the last long block lit and
+// centred there; the columns are fractions so it fills the span at any width; it is pressed into the glass
+// (an inset shade on the upper edge, a caught light on the lower), the reference's slate in light; the gap
+// to the word is larger than the artwork's 4/900; and the word masks no longer carry the old bar.
+test("the stamped line: Ref 2 pressed into the Masthead from the A to the globe, the lit block under the globe", async () => {
+  const mast = read("app/components/Masthead.jsx");
+  const stamp = JSON.parse(mast.match(/export const STAMP = Object\.freeze\((\[[^\]]*\])\);/)[1]);
+  assert.deepEqual(stamp, [0.5, 0.5, 0.5, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2], "three thin, then four [short, short, short, long]");
+  assert.match(mast, /export const STAMP_GAP = 0\.45;/);
+  // the grid: a bar and a gap per block, the last block's column half its length; its fractions sum to 28.6
+  const cols = stamp.map((w, i) => (i === stamp.length - 1 ? [w / 2] : [w, 0.45])).flat();
+  assert.equal(Math.round(cols.reduce((a, c) => a + c, 0) * 100) / 100, 28.6);
+  assert.match(mast, /STAMP\.map\(\(w, i\) => \(i === STAMP\.length - 1 \? `\$\{w \/ 2\}fr` : `\$\{w\}fr \$\{STAMP_GAP\}fr`\)\)\.join\(" "\)/, "fractions: it fills its span at every width");
+  assert.match(mast, /className=\{i === STAMP\.length - 1 \? "lit" : undefined\} style=\{\{ gridColumn: 2 \* i \+ 1 \}\}/, "each block in its own column, the last one lit");
+  assert.ok(mast.indexOf("<Wordmark") < mast.indexOf('className="mhstamp"'), "under the word");
+  assert.match(rules, /\.mhstamp \{[^}]*left: calc\(var\(--dk-edge\) \+ var\(--wm-w\) \* 19 \/ 900\);/s, "from the A's left edge");
+  assert.match(rules, /\.mhstamp \{[^}]*right: calc\(var\(--dk-edge\) \+ var\(--u\) \* 97 \/ 2\);/s, "to the globe's centre (the last key, 97 units)");
+  assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--wm-lit\); \}/, "the lit block, twice its column, centred on the globe");
+  assert.match(rules, /\.mhstamp i \{[^}]*box-shadow: inset 0 1px 1px var\(--stamp-sink\), inset 0 -0\.5px 0 var\(--stamp-catch\), 0 0\.5px 0 var\(--stamp-catch\);/s, "pressed in, not painted on");
+  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-bar: #3d4c5b;/s, "the reference's slate in light");
+  assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 12 \/ 900\);/, "a larger gap than the artwork's 4");
+  const wmw = rules.match(/\.masthead \{[^}]*--wm-w: (clamp\([^)]*\));/s)[1];
+  assert.match(rules, new RegExp("\\.wmimg \\{ position: relative; display: block; width: " + wmw.replace(/[()*.+]/g, "\\$&") + ";"), "the line's measure is the wordmark's");
+  // the masks: no bar left under the word; the word's ink starts at column 19
+  const sharp = (await import("sharp")).default;
+  for (const f of ["logo-ink.png", "logo-light.png"]) {
+    const { data, info } = await sharp(new URL("../public/model/" + f, import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    let inked = 0;
+    for (let y = 141; y < info.height; y++) for (let x = 0; x < info.width; x++) if (data[(y * info.width + x) * 4 + 3] > 0) inked++;
+    assert.equal(inked, 0, f + " carries no bar");
+  }
+  const ink = await sharp(new URL("../public/model/logo-ink.png", import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let first = -1;
+  for (let x = 0; x < 900 && first < 0; x++) for (let y = 0; y < 141; y++) if (ink.data[(y * 900 + x) * 4 + 3] > 40) { first = x; break; }
+  assert.equal(first, 19, "the A's left edge is column 19");
 });

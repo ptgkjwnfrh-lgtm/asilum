@@ -83,7 +83,8 @@ test("a double tap floats the piece over the fogged Feed, reactive to movement; 
 test("the popup's film; the fixtures are the September glass (19 Oct): a slight split on every pane (26 Oct), no drifting film", () => {
   const lg = strip(read("app/components/LiquidGlass.jsx"));
   // (26 Oct 2026, "the odd red bezel line") the 80 / 86 / 92 split and the popup's prism are gone: every colour bends alike
-  assert.match(lg, /export const PULL = \[84, 86, 88\];\nconst pulls = \(strength\) => PULL\.map\(\(v\) => \(v \* strength\)\.toFixed\(1\)\);/, "one slight spread, scaled by the pane's strength");
+  assert.match(lg, /export const PULL = \[84, 86, 88\];/, "one slight spread on the glass");
+  assert.match(lg, /const pulls = \(strength, spread = PULL\) => spread\.map\(\(v\) => \(v \* strength\)\.toFixed\(1\)\);/, "scaled by the pane's strength");
   for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx", "app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx"]) {
     assert.ok(!/prism/.test(read(f)), f + " passes no prism");
   }
