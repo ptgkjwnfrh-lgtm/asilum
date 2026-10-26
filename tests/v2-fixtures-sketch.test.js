@@ -329,6 +329,23 @@ test("no red bezel, a faint rainbow: the reach frame is gone, and every glass sp
     assert.ok(!/prism/.test(src), f + " passes no prism");
   }
   assert.ok(!/prism/.test(code), "no prism option");
+  // THE RAINBOW FILM (owner, the same day: "where's the rainbow"): the splits above stay slight (the red
+  // bezel), so the rainbow that reads is a film inside every pane. Declared: the hook renders it with every
+  // pane's filter; it sits under the pane's content (z-index -1); it is the iris colours; it fades to
+  // transparent at all four edges (a mask from transparent on both axes), never a rim (no padding,
+  // content-box or exclude mask); it reads (opacity at least 0.25 in both themes); reduced transparency
+  // drops it.
+  assert.match(code, /<LiquidGlassDefs [^>]*\/>\s*<i className="lgfilm" aria-hidden="true" \/>/, "every pane of the glass carries the film");
+  const film = rules.match(/\.lgfilm \{([^}]*)\}/)[1];
+  assert.match(film, /z-index: -1;/, "under the pane's words and keys");
+  for (const i of [1, 2, 3, 4, 5]) assert.match(film, new RegExp("var\\(--iris-" + i + "\\)"), "the iris colour " + i);
+  assert.match(film, /\n  mask: linear-gradient\(90deg, transparent, #000 .+?, transparent\),\s*linear-gradient\(180deg, transparent, #000 .+?, transparent\);/s, "faded out at every edge");
+  assert.match(film, /mask-composite: intersect;/);
+  assert.ok(!/padding|content-box|exclude|xor/.test(film), "not a rim");
+  const filmDark = Number(film.match(/opacity: var\(--film, ([\d.]+)\)/)[1]);
+  const filmLight = Number(rules.match(/\[data-theme="light"\] \.lgfilm \{ --film: ([\d.]+);/)[1]);
+  assert.ok(filmDark >= 0.25 && filmLight >= 0.25, `it reads: ${filmDark} dark, ${filmLight} light`);
+  assert.match(rules, /prefers-reduced-transparency: reduce\) \{ \.lgfilm \{ display: none; \} \}/);
   // THE FIXTURES' RAINBOW (owner, the same day: "a little more rainbow on the fixtures", still no hard
   // line). Declared: FIXTURE_PULL rises red -> blue, its spread is wider than PULL's and at most 6 (half
   // the 12 that drew the line); the panes on the fixture bezel (the Masthead, the deck) get it in both
@@ -358,8 +375,10 @@ test("no red bezel, a faint rainbow: the reach frame is gone, and every glass sp
 //     the last large block centred there;
 //   - a stamp, flat ("it should feel like a stamp", then "no shadow at all"): square edges and a tone in
 //     the glass (alpha at most 0.25), nothing else (the next test forbids every shadow); no colour of its
-//     own but the last block, blue in both themes (--stamp-blue is --sig), flat the same way;
-//   - thinner: 24/900 of the wordmark's width, against the artwork's 45.
+//     own but the last block, blue in both themes — the V.1 light theme's ink, #08788a (the owner's
+//     picture 5.png, the FRONT COVER headline; 1d0caa6) — flat the same way;
+//   - thin: 12/900 of the wordmark's width with a floor of 1.5px (2px on a desktop, 1.5 on a phone),
+//     against the artwork's 45.
 test("the stamped line: nothing else under the word; graduated, flat stamped marks from the A to the globe, colourless but the one blue block, thin", async () => {
   const css = read("app/globals.css");
   // nothing else under the word
@@ -407,14 +426,13 @@ test("the stamped line: nothing else under the word; graduated, flat stamped mar
   for (const a of alphas("--stamp-recess")) assert.ok(a > 0 && a <= 0.25, "a shade, no more: " + a);
   assert.deepEqual([...rules.matchAll(/\.mhstamp i[^{]*\{[^}]*background: (?!var\(--stamp-recess\))[^;]+;/g)].map((m) => m[0].split("{")[0].trim()), [".mhstamp i.lit"], "the one coloured block");
   assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "blue, twice its column, centred on the globe");
-  assert.match(rules, /--stamp-blue: var\(--sig\);/);
-  for (const hex of [css.match(/:root \{[^}]*--sig: (#[0-9a-f]{6});/s)[1], css.match(/\[data-theme="light"\] \{[^}]*--sig: (#[0-9a-f]{6});/s)[1]]) {
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-    assert.ok(b > r && b > g, hex + " is a blue");
-  }
+  const blues = [...css.matchAll(/--stamp-blue: ([^;]+);/g)].map((m) => m[1]);
+  assert.deepEqual(blues, ["#08788a"], "one blue for both themes: the V.1 light ink of the FRONT COVER picture");
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(blues[0].slice(i, i + 2), 16));
+  assert.ok(b > r && b > g, "a blue");
   assert.ok(!/--wm-bar|--wm-lit/.test(css), "the old fills are gone");
   // thinner, and the measure is the wordmark's
-  assert.match(rules, /--mh-line-h: calc\(var\(--wm-w\) \* 24 \/ 900\);/, "24 of 900, against the artwork's 45");
+  assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "12 of 900, at least 1.5px: 2px on a desktop");
   assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 18 \/ 900\);/, "the word clear of the line");
   const wmw = rules.match(/\.masthead \{[^}]*--wm-w: (clamp\([^)]*\));/s)[1];
   assert.match(rules, new RegExp("\\.wmimg \\{ position: relative; display: block; width: " + wmw.replace(/[()*.+]/g, "\\$&") + ";"), "the line's measure is the wordmark's");

@@ -460,6 +460,14 @@ export function lensFeatures(el) {
 }
 
 // `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
+//
+// THE RAINBOW FILM (owner, 26 Oct 2026: "where's the rainbow"). The colour
+// split of the bend is kept slight — wide enough to show, it parts into the
+// red line on one edge and the yellow-green on the other the owner called a
+// red bezel — so the rainbow that reads is a film INSIDE the pane: light
+// through glass, a soft iridescent sweep (globals.css .lgfilm), faded to
+// nothing well before the rim. Every pane of the glass gets it with its
+// filter: the hook renders the film beside the defs.
 export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
@@ -516,7 +524,12 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (pageBend) pageBend.dispose();
     };
   }, [elRef, id, active, open, strength, bend, bezel, shine]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} spread={bezel === "fixture" ? FIXTURE_PULL : PULL} />;
+  return (
+    <>
+      <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} spread={bezel === "fixture" ? FIXTURE_PULL : PULL} />
+      <i className="lgfilm" aria-hidden="true" />
+    </>
+  );
 }
 
 // ---- THE REACTIVE RAINBOW (owner, 18 Oct 2026: "the liquid glass isn't

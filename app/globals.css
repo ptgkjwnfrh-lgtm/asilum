@@ -398,10 +398,11 @@ button { font-family: var(--helv); }
   /* the stamped line (.mhstamp): a stamp, flat (owner, 26 Oct 2026: "still
      too much, no shadow at all") — only a tone in the glass, a shade darker
      on the light glass and a shade clearer on the dark, with crisp edges and
-     no shadow of any kind; one blue block, under the globe (the links'
-     blue, both themes) */
+     no shadow of any kind; one blue block, under the globe: the V.1 light
+     theme's ink, the teal-blue of its FRONT COVER headline (owner, 26 Oct
+     2026, the picture 5.png; --ink #08788a from 1d0caa6), in both themes */
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
-  --stamp-blue: var(--sig);
+  --stamp-blue: #08788a;
   /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
   --wm-ink: var(--metal);
 }
@@ -3831,7 +3832,7 @@ body { font-size: 14px; }
 .masthead {
   --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* .wmimg's width */
   --mh-line-top: calc(33px + max(var(--u) * 25, 9.5px) + 2.5px); /* the row's middle, half a glyph, a breath */
-  --mh-line-h: calc(var(--wm-w) * 24 / 900); /* thinner than the artwork's bar (45 of its 900): ~4px on a desktop, ~3 on a phone */
+  --mh-line-h: max(1.5px, calc(var(--wm-w) * 12 / 900)); /* thin (owner, 26 Oct 2026, twice): 2px on a desktop, 1.5 on a phone; the artwork's bar was 45 of its 900 */
   --mh-gap: calc(var(--wm-w) * 18 / 900);    /* the artwork's gap was 4 */
 }
 .mhstamp {
@@ -4620,6 +4621,26 @@ body { font-size: 14px; }
 .sheetscrim { -webkit-backdrop-filter: none; backdrop-filter: none; }
 [data-popup] .main { filter: blur(14px) saturate(0.8); transition: filter 0.22s; }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+/* THE RAINBOW FILM (owner, 26 Oct 2026: "where's the rainbow"): light
+   through glass — a soft iridescent sweep inside every pane of the glass
+   (LiquidGlass.jsx renders it with the pane's filter), under the pane's
+   words and keys, faded to nothing well before the rim so no colour ever
+   lines an edge (the bend's colour split stays slight: the "red bezel" of a
+   wide split is not coming back). On the reactive panes (.lgrx: the popup,
+   the floating piece) it turns with the hand; on the fixtures it rests. */
+.lgfilm {
+  position: absolute; inset: 0; z-index: -1; display: block; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(calc(var(--iris-a, 200deg) - 110deg), var(--iris-1), var(--iris-2) 26%, var(--iris-3) 50%, var(--iris-4) 74%, var(--iris-5));
+  opacity: var(--film, 0.3); mix-blend-mode: screen;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 var(--film-fade-x, min(64px, 18%)), #000 calc(100% - var(--film-fade-x, min(64px, 18%))), transparent),
+    linear-gradient(180deg, transparent, #000 var(--film-fade-y, 30%), #000 calc(100% - var(--film-fade-y, 30%)), transparent);
+  -webkit-mask-composite: source-in;
+  mask: linear-gradient(90deg, transparent, #000 var(--film-fade-x, min(64px, 18%)), #000 calc(100% - var(--film-fade-x, min(64px, 18%))), transparent),
+    linear-gradient(180deg, transparent, #000 var(--film-fade-y, 30%), #000 calc(100% - var(--film-fade-y, 30%)), transparent);
+  mask-composite: intersect;
+}
+[data-theme="light"] .lgfilm { --film: 0.34; mix-blend-mode: normal; }
+@media (prefers-reduced-transparency: reduce) { .lgfilm { display: none; } }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
   .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
