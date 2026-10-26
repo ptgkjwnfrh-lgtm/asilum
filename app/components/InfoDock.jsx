@@ -7,8 +7,8 @@
 // right edge in line with the deck's: LIKES, BAG and the bell (NOTICES),
 // parted by cuts in the glass, each opening its popup over the root (every
 // popup carries EXPAND to open the full tab). Its outer (left) end is round,
-// the end that meets the Passport Button is straight. A key blinks the
-// deck's tab indicator twice (lib/indicator.js). The music circle
+// the end that meets the Passport Button is straight. A key answers with one
+// subtle tick (the deck's tab indicator is gone, 26 Oct 2026). The music circle
 // joins it while audio plays (slice 9, 3.17: contextual — MusicCircle.jsx);
 // the |A| exploration indicator (14.9, slice 10c) appears while Exploration
 // Active is on; a tap turns exploration off, and off beats reactivation.
@@ -28,7 +28,7 @@ import { useDock, openSheet, closeSheet, leaveSearch } from "../../lib/dockstate
 import Icon from "./Icons.jsx";
 import MusicCircle from "./MusicCircle.jsx";
 import AMark from "./AMark.jsx";
-import { blinkIndicator } from "../../lib/indicator.js";
+import { haptic } from "../../lib/haptics.js";
 import { getUid, postJSON } from "../../lib/client.js";
 
 export default function InfoDock() {
@@ -66,7 +66,7 @@ export default function InfoDock() {
   }
 
   return (
-    <div ref={glassRef} className="infodock fixture" role="group" aria-label="info dock" onClickCapture={blinkIndicator}>
+    <div ref={glassRef} className="infodock fixture" role="group" aria-label="info dock" onClickCapture={() => haptic("tick")}>
       {glass}
       <i className="fxrim" aria-hidden="true" />
       {UTILITIES.map((u, i) => {

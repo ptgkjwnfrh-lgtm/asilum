@@ -1,15 +1,14 @@
 // tests/v2-fixtures-sketch.test.js — THE FIXTURES AS DRAWN (the owner's
 // fixture sketch, 19 Oct 2026, Figures 1, 1.2, 3 and 5). The deck's cuts
 // sit exactly on the seams of its columns, the top fixtures line up with
-// the deck's right edge, the tab indicator keeps the drawn timing, and the
-// search key morphs the deck instead of opening the popup. Source reads
+// the deck's right edge, and the search key morphs the deck instead of
+// opening the popup. (The tab indicator light is gone, 26 Oct 2026.) Source reads
 // where the markup is the law (a .jsx cannot be imported here).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 const require_fs = () => ({ readdirSync, statSync });
-import { doubleBlinkFrames, holdBlinkFrames, indicatorHeld, BLINK_ON_MS, BLINK_GAP_MS, FADE_MS } from "../lib/indicator.js";
 import { PATTERNS } from "../lib/haptics.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
@@ -21,8 +20,10 @@ const fr = (sel) => {
   return m[1].trim().split(/\s+/).map((v) => parseFloat(v));
 };
 
-test("the deck is the sketch's 745 × 175 and every cut sits on a seam between its columns", () => {
-  assert.match(rules, /--dk-w: calc\(var\(--u\) \* 745\);/);
+test("the deck is the sketch's 745 × 175, stretched 1.1 sideways, and every cut sits on a seam between its columns", () => {
+  // (owner, 26 Oct 2026: "let's also widen the central control fixture") the drawn 745, stretched by --dk-sx
+  assert.match(rules, /--dk-sx: 1\.1;\s*--dk-w: calc\(var\(--u\) \* 745 \* var\(--dk-sx\)\);/);
+  assert.match(rules, /\.cccut \{[^}]*left: calc\(var\(--u\) \* var\(--cut-x\) \* var\(--dk-sx\)\);/, "the cuts stretch with it");
   assert.match(rules, /--dk-h: calc\(var\(--u\) \* 175\);/);
   const outer = fr(".ccrow");
   const keys = fr(".cctabs");
@@ -36,24 +37,22 @@ test("the deck is the sketch's 745 × 175 and every cut sits on a seam between i
   assert.ok(keys[2] > Math.max(keys[0], keys[1], keys[3], keys[4]), "the POST cell is the widest (the disc)");
 });
 
-test("the carvings are carved into the glass: cuts, the disc's ring, the grill and the indicator bend the backdrop", () => {
+test("the carvings are carved into the glass: cuts, the disc's ring and the grill bend the backdrop", () => {
   assert.match(deck, /className="cccut"[^>]*data-lens-shape="cut"/);
   assert.match(deck, /className="ccdisc" data-lens-shape="ring"/);
   assert.match(deck, /className="ccgrill" data-lens-shape="slot"/);
-  // (19 Oct) the indicator is a light set in the pane, not a carving: the glass does not refract round it
-  assert.ok(!/data-lens-shape/.test(read("app/components/TabIndicator.jsx")), "no lens round the indicator");
   assert.match(read("app/components/InfoDock.jsx"), /className="cccut idcut" data-lens-shape="cut"/, "the Info Dock is cut between its keys");
   const glass = read("app/components/LiquidGlass.jsx");
   assert.match(glass, /export function lensFeatures\(el\)/);
   assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current\);/, "the map is drawn with the carvings, as two greys");
-  // the grill sits centred under the POST disc: 40 + 123 + 127 + 162 / 2 = 371
-  const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* ([\d.]+)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
+  // the grill sits centred under the POST disc: 40 + 123 + 127 + 162 / 2 = 371, stretched with the deck
+  const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* \(371 \* var\(--dk-sx\) - ([\d.]+)\)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
   assert.ok(g, "the grill is placed in sketch units");
-  assert.equal(Number(g[1]) + Number(g[2]) / 2, 371, "the grill is centred on the disc");
+  assert.equal(Number(g[1]) * 2, Number(g[2]), "the grill is centred on the disc");
   // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble, beneath the keys and above the vent
   assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} \/><\/div>/, "the ad bubble on the deck");
   assert.ok(deck.indexOf('className="ccad"') > deck.indexOf('className="ccrow"'), "the bubble comes after the row of keys");
-  const ad = rules.match(/\.ccad \{[^}]*padding: 0 calc\(var\(--u\) \* 40\) calc\(var\(--u\) \* (\d+)\)/);
+  const ad = rules.match(/\.ccad \{[^}]*padding: 0 calc\(var\(--u\) \* 40 \* var\(--dk-sx\)\) calc\(var\(--u\) \* (\d+)\)/);
   const gr = rules.match(/\.ccgrill \{[^}]*bottom: calc\(var\(--u\) \* (\d+)\); height: max\(4px, calc\(var\(--u\) \* (\d+)\)\)/s);
   assert.ok(ad && gr, "the bubble and the grill are placed in sketch units");
   assert.ok(Number(ad[1]) > Number(gr[1]) + Number(gr[2]), "the bubble ends above the grill's top lip");
@@ -68,45 +67,20 @@ test("the top fixtures sit at the top right, the Passport's right edge in line w
   assert.ok(!/\.infodock \{[^}]*left:/s.test(rules.split(".infodock {")[1].split("}")[0]), "not the top left any more");
 });
 
-test("the tab indicator, paced like a DVD player's light: two blinks a visible beat apart; POST and the globe blink once and hold", () => {
-  // declared before measuring (owner, 19 Oct 2026: "longer … like a DVD player indicator"): each blink lit
-  // for at least 100ms, a dark beat between them that lasts two 60Hz frames or more (33ms), the whole
-  // double blink under 600ms, the light's own afterglow rather than a hard cut
-  const d = doubleBlinkFrames();
-  // the opacity at t, linear between keyframes; at a shared offset the later keyframe wins (a step)
-  const at = (anim, t) => {
-    const f = anim.frames.map((k) => ({ t: k.offset * anim.duration, o: k.opacity }));
-    let o = f[0].o;
-    for (let i = 0; i < f.length - 1; i++) {
-      if (t >= f[i].t && t < f[i + 1].t) return f[i].o + (f[i + 1].o - f[i].o) * ((t - f[i].t) / (f[i + 1].t - f[i].t));
-      if (t >= f[i + 1].t) o = f[i + 1].o;
-    }
-    return o;
-  };
-  const runs = (anim, lit) => { const out = []; let start = null; for (let t = 0; t <= anim.duration; t += 1) { const on = lit(at(anim, t)); if (on && start === null) start = t; if (!on && start !== null) { out.push([start, t]); start = null; } } if (start !== null) out.push([start, anim.duration]); return out; };
-  const litRuns = runs(d, (o) => o > 0.5);
-  assert.equal(litRuns.length, 2, "two blinks");
-  for (const [a, b] of litRuns) assert.ok(b - a >= 100, "each blink is lit 100ms or more (" + (b - a) + ")");
-  const dark = runs(d, (o) => o < 0.05).filter(([a, b]) => a > litRuns[0][0] && b < litRuns[1][1]);
-  assert.ok(dark.length === 1 && dark[0][1] - dark[0][0] >= 33, "a dark beat of two frames or more between them");
-  assert.ok(d.duration < 600, "an indicator, not a show");
-  assert.ok(at(d, BLINK_ON_MS + FADE_MS / 2) > 0.05 && at(d, BLINK_ON_MS + FADE_MS / 2) < 0.95, "it fades out like an LED, not a hard cut");
-  assert.equal(BLINK_ON_MS + BLINK_GAP_MS, PATTERNS.blink2[0] + PATTERNS.blink2[1], "the second vibration lands with the second blink");
-  const h = holdBlinkFrames();
-  assert.equal(h.duration, BLINK_ON_MS + BLINK_GAP_MS);
-  assert.ok(at(h, 50) === 1 && at(h, h.duration - 1) === 0, "one blink, the break, then the hold's own light takes over");
-  assert.equal(indicatorHeld({ sheetId: "postselect" }), true);
-  assert.equal(indicatorHeld({ sheetId: "post" }), true);
-  assert.equal(indicatorHeld({ hubOpen: true }), true);
-  assert.equal(indicatorHeld({ onPassport: true }), true);
-  assert.equal(indicatorHeld({ sheetId: "likes" }), false, "a utility's popup does not hold the light");
-  assert.equal(indicatorHeld({}), false);
-  assert.equal(PATTERNS.blink.length, 1, "one subtle vibration on the hold's blink");
-  assert.equal(PATTERNS.blink2.filter((_, i) => i % 2 === 0).length, 2, "one per blink of the double");
-  const ind = read("app/components/TabIndicator.jsx");
-  assert.match(ind, /prefers-reduced-motion: reduce/, "reduced motion: no blinking");
-  assert.match(rules, /--warn: #ff4136;[^\n]*\n\[data-theme="light"\] \{ --warn: #d22f22;/, "red in both palettes (--warn)");
-  assert.match(rules, /\.tabind \{[^}]*width: max\(11px, calc\(var\(--u\) \* 26\)\);/s, "a little bigger than drawn (owner, 19 Oct)");
+test("the indicator light is gone, the plus is smaller, the fixtures' buttons are softer (owner, 26 Oct 2026)", () => {
+  // declared before checking: "for the central control let's take away the indicator light … the plus in
+  // the upload button, let's shrink it slightly … all the buttons on the fixtures, thin them ever so
+  // slightly and dim the white brightness and lower the buttons' opacity slightly"
+  assert.ok(!existsSync(new URL("../app/components/TabIndicator.jsx", import.meta.url)), "the light's component is deleted");
+  assert.ok(!existsSync(new URL("../lib/indicator.js", import.meta.url)), "and its timing");
+  assert.ok(!/TabIndicator|indicatorHeld|blinkIndicator|tabind/.test(deck + read("app/components/InfoDock.jsx")), "nothing draws or blinks it");
+  assert.ok(!/\.tabind/.test(rules), "no rules left for it");
+  assert.ok(!("blink" in PATTERNS) && !("blink2" in PATTERNS), "its vibrations are gone");
+  assert.match(deck, /function keyTap\(e\) \{[\s\S]*?haptic\("tick"\);/, "a fixture key still answers with one subtle tick");
+  assert.match(rules, /\.ccenter \.tabl\.ccpost \.ccdisc \.ic \{ width: 54%; height: 54%;/, "the plus at 54% of the disc (was 62%)");
+  assert.match(rules, /:is\(\.ccenter \.tabl, \.ccenter \.mailbtn, \.idkey, \.passportbtn\) \.ic g \{ stroke-width: 1; \}/, "a thinner stroke (the shared 1.15)");
+  assert.match(rules, /:is\(\.ccenter \.tabl, \.ccenter \.mailbtn, \.idkey, \.passportbtn\) \.ic \{ opacity: 0\.88; \}/, "a little lower opacity");
+  assert.match(rules, /\.passportbtn:not\(\.cur\)\) \.ic \{ color: color-mix\(in srgb, var\(--ink\) 86%, var\(--bg\)\); \}/, "the white dimmed toward the ground, a current key keeps its red");
 });
 
 test("search morphs the deck upward; the popup waits for the first character; one field on screen", () => {
@@ -149,9 +123,6 @@ test("the September recipe on the fixtures: full pull split 80/86/92, the Safari
   // one glow for every key (the dock's, the globe's, the deck's), its strength cut 25%: 45% -> 33.75%
   assert.match(rules, /drop-shadow\(0 0 2\.75px color-mix\(in srgb, currentColor 33\.75%, transparent\)\)/);
   assert.ok(!/\.ccgrill \{[^}]*box-shadow/s.test(rules), "the vent casts no shadow");
-  // the indicator: its ring 65% thinner (1.5px -> 0.525px), its light brighter, not wider
-  assert.match(rules, /\.tabind \{[^}]*border: 0\.525px solid/s);
-  assert.match(rules, /\.tabindlamp \{[^}]*background: var\(--warn\);/s, "solid red (owner, 19 Oct)");
 });
 
 test("the owner's second pass (19 Oct): hairline cuts, the 15% touch, the dark glow, Michroma everywhere", () => {

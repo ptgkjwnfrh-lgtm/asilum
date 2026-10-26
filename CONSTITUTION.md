@@ -535,6 +535,17 @@ they fill the gaps the packing leaves (lib/feed/tetris.js fillAds) and,
 with nothing sold, say THIS PLACEMENT IS OPEN — never a pretend advertiser.
 A piece card's foot is one column — name, size and price, a hairline, then
 like, stamp and share — so nothing on it overlaps.
+THE DECK, 26 OCT 2026 (owner: "for the central control let's take away the
+indicator light, let's also widen the central control fixture, … the plus in
+the upload button, let's shrink it slightly, … all the buttons on the
+fixtures — thin them ever so slightly and dim the white brightness and lower
+the buttons' opacity slightly"). The tab indicator light is gone, and with it
+its blinks and their vibrations; a fixture key answers with one subtle tick.
+The deck is the drawn 745 stretched 1.1 sideways (--dk-sx), its cuts, grill
+and insets with it; the top fixtures still end on its right edge. The plus
+is 54% of the disc. Every fixture key's glyph draws a 1-unit stroke, its ink
+pulled 14% toward the ground, at 88% opacity. This supersedes the tab
+indicator wherever the 19 Oct entries above describe it.
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several

@@ -3359,7 +3359,11 @@ body { font-size: 14px; }
      page — the deck is 745 × 175 of them — so the proportions are the
      drawing's at every width; a phone reads it at 0.4px, a desktop at 0.5px */
   --u: clamp(0.4px, 0.1vw, 0.5px);
-  --dk-w: calc(var(--u) * 745);
+  /* WIDER (owner, 26 Oct 2026: "let's also widen the central control
+     fixture"): the drawn 745 stretched sideways by --dk-sx; the cuts, the
+     grill and the insets that sit in it stretch with it, the heights do not */
+  --dk-sx: 1.1;
+  --dk-w: calc(var(--u) * 745 * var(--dk-sx));
   --dk-h: calc(var(--u) * 175);
   --dk-r: calc(var(--u) * 34);
   --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
@@ -3409,31 +3413,18 @@ body { font-size: 14px; }
    field's own outline colour; the backdrop bends into it only faintly
    (data-lens-shape="cut", data-lens-gain) */
 .cccut {
-  position: absolute; z-index: 2; left: calc(var(--u) * var(--cut-x)); top: calc(var(--u) * 58); bottom: calc(var(--u) * 52); /* shortened (owner, 19 Oct): 65 of the 175 */
+  position: absolute; z-index: 2; left: calc(var(--u) * var(--cut-x) * var(--dk-sx)); top: calc(var(--u) * 58); bottom: calc(var(--u) * 52); /* shortened (owner, 19 Oct): 65 of the 175 */
   width: 1px; transform: translateX(-50%); border-radius: 1px; pointer-events: none;
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 /* the foot grill: a vent cut through the glass under the post disc, like a
    phone's ventilation port (Figure 1.2); the glass warps around it */
 .ccgrill {
-  position: absolute; z-index: 2; left: calc(var(--u) * 318.5); width: calc(var(--u) * 105); bottom: calc(var(--u) * 11); height: max(4px, calc(var(--u) * 11));
+  position: absolute; z-index: 2; left: calc(var(--u) * (371 * var(--dk-sx) - 52.5)); width: calc(var(--u) * 105); bottom: calc(var(--u) * 11); height: max(4px, calc(var(--u) * 11));
   border-radius: 999px; pointer-events: none;
   /* no outline and no shadow (owner, 19 Oct): only the opening, darker at its top lip */
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 50%, transparent), color-mix(in srgb, var(--shade) 20%, transparent));
 }
-/* the tab indicator: a small ring in the right cap, above the last cut */
-.tabind {
-  position: absolute; z-index: 3; left: calc(var(--u) * 3); top: calc(var(--u) * 17); transform: translateX(-50%);
-  width: max(11px, calc(var(--u) * 26)); height: max(11px, calc(var(--u) * 26)); border-radius: 50%;
-  border: 0.525px solid color-mix(in srgb, var(--ink) 82%, transparent); display: block; /* 65% of the old 1.5px ring gone (owner, 19 Oct) */
-}
-/* the light: SOLID red (owner, 19 Oct), with a dense halo — brighter, not
-   wider; the glass does not refract round it */
-.tabindlamp { position: absolute; inset: 0.5px; border-radius: 50%; opacity: 0;
-  background: var(--warn);
-  box-shadow: none; /* bright and solid, never glowing: no red glows (owner, 19 Oct 2026) */ }
-.tabind.held .tabindlamp { opacity: 1; }
-.tabind.held { border-color: var(--warn); }
 .cckey {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 18px; border: 0; background: none; cursor: pointer;
@@ -3456,7 +3447,7 @@ body { font-size: 14px; }
 /* the search bar the deck rises to hold: a groove of its own in the glass */
 .ccsearch {
   flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
-  height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40) 0;
+  height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40 * var(--dk-sx)) 0;
   animation: ccrise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 @keyframes ccrise { from { opacity: 0; transform: translateY(10px); } }
@@ -3485,7 +3476,7 @@ body { font-size: 14px; }
    The pill is 52 tall and ends 8 above the grill's top lip (11 + 11); it
    reaches 18 up into the row's empty foot, under the cuts' lower ends (52),
    so the deck grows by --ad-h alone */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40) calc(var(--u) * 30); box-sizing: border-box; }
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
 .adstrip {
   height: calc(var(--u) * 52); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
@@ -3775,7 +3766,7 @@ body { font-size: 14px; }
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--paper) 45%, transparent), inset 0 -2px 4px color-mix(in srgb, var(--shade) 16%, transparent), 0 2px 8px color-mix(in srgb, var(--shade) 14%, transparent);
   transition: transform 0.12s, color 0.18s, border-color 0.18s;
 }
-.ccenter .tabl.ccpost .ccdisc .ic { width: 62%; height: 62%; min-width: 0; min-height: 0; }
+.ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
 .ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
@@ -4843,6 +4834,17 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   .fixture, .ccenter, .fixture[data-refract="1"], .ccenter[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
   .glass-light { display: none; }
 }
+
+/* THE FIXTURES' BUTTONS, SOFTER (owner, 26 Oct 2026: "all the buttons on the
+   fixtures — thin them ever so slightly and dim the white brightness and
+   lower the buttons' opacity slightly"): every key's glyph on the deck, the
+   Info Dock and the Passport Button draws a 1-unit stroke (the shared 1.15),
+   its ink pulled 14% toward the ground, at 88% opacity; the POST disc's
+   ring follows. A current key keeps its red. */
+:is(.ccenter .tabl, .ccenter .mailbtn, .idkey, .passportbtn) .ic g { stroke-width: 1; }
+:is(.ccenter .tabl, .ccenter .mailbtn, .idkey, .passportbtn) .ic { opacity: 0.88; }
+:is(.ccenter .tabl:not(.cur), .ccenter .mailbtn:not(.cur), .idkey:not(.cur), .passportbtn:not(.cur)) .ic { color: color-mix(in srgb, var(--ink) 86%, var(--bg)); }
+.ccenter .tabl.ccpost:not(.cur) .ccdisc { color: color-mix(in srgb, var(--ink) 86%, var(--bg)); border-color: color-mix(in srgb, var(--ink) 76%, transparent); border-width: 1.25px; }
 
 /* THE KEYS GLOW IN DARK (owner, 19 Oct 2026: "give the buttons on dark mode
    a slight glow"): each glyph in its own colour, the disc's ring with it;
