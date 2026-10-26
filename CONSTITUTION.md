@@ -557,6 +557,18 @@ mode back to the artwork's own colours (painted through the same masks); the
 blue is gone.
 Then 10% bigger again, darker and bolder: the letters thickened (the bar
 left as drawn), light painted in the artwork's own hues darkened.
+THE FEED'S MIX, 26 OCT 2026 (owner: "I want there to be a majority of
+stills and motions on the feed"; then, having seen two posts to a piece,
+"now there's too many stills and motions, reduce it"). The posts lead the
+pieces one to one, and the pieces are capped at the number of media posts
+(stills, carousels, motions), so the stills and motions fill most of the
+feed's area while the pieces, songs and places are a little over half its
+cards; with no media post the pieces stand alone. The model carries more of
+its reader's posts — every author a fixture, every picture a still, every
+motion the one generated test pattern. The ad space fills mid-feed gaps no
+card can (at most one ad per eight cards); the two-wide song and place sizes
+are a phone's only, and a listing has one size, three by eight. The cards
+sit 8px from the screen's edges on a phone (was 14).
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several

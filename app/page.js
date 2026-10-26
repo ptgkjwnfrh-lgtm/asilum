@@ -848,7 +848,7 @@ export default function Home() {
     // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
     // every card at its grid place, in one size its kind allows, the gaps even
     // the gaps the packing leaves at the feed's ragged end take ad space (fillAds)
-    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols }), { cols: feedCols });
+    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols, ads: true }), { cols: feedCols });
     return (
       <>
       <CutDefs />

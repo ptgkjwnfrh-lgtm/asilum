@@ -56,10 +56,13 @@ test("the grid: 5 columns on a phone, 10 on a tablet, 15 wide — the column sta
 test("each kind's sizes, as the sketch draws them", () => {
   // (owner, 25 Oct 2026, late: "the sizes … can be randomized to varying sizes") portrait, square and landscape
   // (owner, 25 Oct 2026, late: "a listing should never be in a small card … that is reserved for music and locations only")
-  assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"], [4, 8, "hero", 18]], "the piece: medium only (four wide only on eighteen columns: on twelve, 4 + 4 + 3 leaves a one-column well)");
+  // (26 Oct 2026) one medium size: the four-wide one left wells beside the three-wide cards on every wide grid
+  assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"]], "the piece: medium only");
   // (owner, 25 Oct 2026) a song and a place vary like a piece: small or medium
-  assert.deepEqual(SPANS.PLACE, [[2, 4, "square"], [2, 8, "square"], [3, 4, "square"], [3, 8, "medium"]]);
-  assert.deepEqual(SPANS.SONG, [[2, 4, "square"], [2, 8, "square"], [3, 4, "square"], [3, 8, "medium"]]);
+  // (26 Oct 2026) the two-wide sizes on a phone's six columns only
+  assert.deepEqual(SPANS.PLACE, [[2, 4, "square", 0, 6], [2, 8, "square", 0, 6], [3, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.SONG, [[2, 4, "square", 0, 6], [2, 8, "square", 0, 6], [3, 4, "square"], [3, 8, "medium"]]);
+  assert.ok(spansFor({ id: "s", __song: { id: "s", title: "t" } }, 12).every((o) => o.w !== 2), "no two-wide song beside the three-wide pieces on twelve");
   assert.deepEqual(SPANS.BRDCST, [[6, 4, "strip"]], "a standalone BRDCST: a small card's height, a large card's width");
   assert.ok(spansFor({ id: "x" }, 6).every((o) => o.w !== 4), "no four-wide size on a phone's six columns");
   assert.deepEqual(SPANS.AD, [[6, 4, "adwide"], [3, 8, "ad"]], "two ad spaces: BRDCST-size and medium");
@@ -98,10 +101,11 @@ test("every card is placed exactly once, inside the grid, overlapping nothing, t
 
 test("like Tetris: holes stay rare in the packed area; a full-width card never sits over a hole", () => {
   // (25 Oct 2026, late) the bound is the size battery's (below): listings are medium only now, so a
-  // two-column gap waits for a song or a place, and zero is no longer a claim the packing can make
+  // two-column gap waits for a song or a place, and zero is no longer a claim the packing can make.
+  // (26 Oct) measured as the page packs: with the ad space filling what no card can (ads: true)
   const list = feed();
   for (const [cols, maxShare] of [[6, 0.02], [12, 0.03], [18, 0.04]]) {
-    const { cells } = tetrisPack(list, { cols });
+    const { cells } = tetrisPack(list, { cols, ads: true });
     const m = audit(cells, cols);
     assert.ok(m.holes / m.area <= maxShare, `${cols} columns: ${m.holes} holes of ${m.area} (${(100 * m.holes / m.area).toFixed(1)}%)`);
     assert.equal(m.fullOverHole, 0, cols + ": a full card waits for a level row");
@@ -145,7 +149,7 @@ test("places come in pairs after every ninth piece; a non-piece PASS is remember
 
 test("the page draws what the packer decides, and the cards are the sketch's", () => {
   const page = read("app/page.js");
-  assert.match(page, /const \{ cells, rows \} = fillAds\(tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols \}\), \{ cols: feedCols \}\);/);
+  assert.match(page, /const \{ cells, rows \} = fillAds\(tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols, ads: true \}\), \{ cols: feedCols \}\);/, "the page packs with the ad space as filler");
   assert.match(page, /style=\{\{ gridColumn: `\$\{c\.x \+ 1\} \/ span \$\{c\.w\}`, gridRow: `\$\{c\.y \+ 1\} \/ span \$\{c\.h\}` \}\}/, "every card at its grid place");
   assert.match(page, /const \{ rail, rest \} = motionRail\(streamPosts\);/);
   assert.ok(!/<Columns|placeInColumns|packFeed/.test(page), "the masonry columns are gone");
@@ -295,7 +299,10 @@ test("THE SIZE BATTERY: across 24 feeds the sizes vary, no column is left behind
   //    lowest column (a packer that abandons a column fails this; the
   //    weight-only version scored 288 half-rows);
   //  - holes: at most 2% of the packed area on six columns, 3% on twelve,
-  //    4% on eighteen. RE-DECLARED AFTER MEASURING, and why: with small
+  //    4% on eighteen, packed as the page packs (ads: true). (26 Oct 2026:
+  //    the stills and motions lead one to one with the pieces now; with the
+  //    two-wide smalls kept to the phone and one listing size, measured
+  //    1.5% / 1.4% / 1.0% — the bounds stand.) RE-DECLARED AFTER MEASURING, and why: with small
   //    listings as filler the bounds were 1% / 1% / 2% on 5 / 10 / 15 (met at
   //    0.7 / 0.2 / 1.2); the owner took the small sizes from the listings, so
   //    a two-column gap waits for a song or a place, and the old bounds are
@@ -310,7 +317,7 @@ test("THE SIZE BATTERY: across 24 feeds the sizes vary, no column is left behind
   for (const seed of "abcdefgh") for (const n of [30, 45, 90]) {
     const list = sample(seed, n);
     for (const cols of [6, 12, 18]) {
-      const { cells } = tetrisPack(list, { cols });
+      const { cells } = tetrisPack(list, { cols, ads: true });
       const h = new Array(cols).fill(0);
       for (const c of cells) {
         if (c.w < 6) assert.ok(c.x <= h.indexOf(Math.min(...h)) && h.indexOf(Math.min(...h)) < c.x + c.w, `${seed}${n}@${cols}: ${c.card.id} covers the lowest column`);

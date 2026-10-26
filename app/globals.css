@@ -4943,7 +4943,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    card fills its grid cell exactly; what is inside a card adapts to the
    size the packer gave it.
    ===================================================================== */
-.fgridwrap { container-type: inline-size; width: 100%; }
+.fgridwrap { container-type: inline-size; width: calc(100% + 2 * var(--feed-bleed)); margin-inline: calc(-1 * var(--feed-bleed)); --feed-bleed: 6px; } /* closer to the screen's edges (owner, 26 Oct 2026: "tighten the space between the cards and the bezels a little more"): 8px on a phone, was 14 */
 .fgrid {
   --fgap: 6px; /* tightened (owner, 25 Oct 2026: "tighten the spaces in between media to make them all a little bigger") */
   display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
