@@ -225,19 +225,26 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   // the asterisk small and up in the corner, plain red: no stroke, no glow
   assert.match(rules, /\.wmword i \{[^}]*font-size: 0\.6em;[^}]*top: -0\.68em;[^}]*color: var\(--warn\);[^}]*text-shadow: none; \}/s);
   assert.ok(!/\.wmword i \{[^}]*-webkit-text-stroke/s.test(rules), "not bolded");
-  // (25 Oct, late) THE LOGO IS THE OWNER'S IMAGE (public/model/logo.jpg), blended onto the page; the name stays for assistive technology
-  assert.match(rules, /\.wmimg \{ display: block; height: auto; width: clamp\(78px, 21vw, 110px\); max-width: none; \}/, "top left, about half the Info Dock");
-  assert.match(rules, /\.wordmark\.brandfix \{ mix-blend-mode: multiply; \}/, "the fixture blends its white ground away");
-  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: invert\(1\) hue-rotate\(180deg\); \}/, "dark inverts it");
-  assert.ok(existsSync("public/model/logo.jpg"), "the owner's artwork is in the model folder");
+  // (25 Oct, late) THE LOGO IS THE OWNER'S IMAGE (public/model/logo.jpg); the name stays for assistive technology.
+  // (26 Oct 2026: "make it more blue so it's visible, and phosphorus green in dark mode") two masks cut from
+  // it colour it: the word and bar in --wm-ink (a blue in light, the title card's chrome-to-mint in dark), the
+  // asterisk in --warn (red in both, as the title card has it)
+  assert.match(rules, /\.wmimg \{ position: relative; display: block; width: clamp\(78px, 21vw, 110px\); aspect-ratio: 900 \/ 200; \}/, "top left, about half the Info Dock, the artwork's proportions");
+  assert.match(rules, /\.wmink \{ --wm-mask: url\(\/model\/logo-ink\.png\); background: var\(--wm-ink\); \}/);
+  assert.match(rules, /\.wmstar \{ --wm-mask: url\(\/model\/logo-star\.png\); background: var\(--warn\); \}/);
+  assert.match(rules, /--wm-ink: var\(--metal\);/, "dark: the title card's chrome washing to phosphor green");
+  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: linear-gradient\(180deg, #3f7ef2/s, "light: a clear blue");
+  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: drop-shadow/, "dark glows, as the title card does");
+  assert.ok(!/\.wordmark\.brandfix \{ (height: auto|mix-blend-mode)/.test(rules), "no blending, and no height override: the mark sits on the fixtures' middle");
+  for (const f of ["logo.jpg", "logo-ink.png", "logo-star.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
   assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
   assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
   const wm = read("app/components/Wordmark.jsx");
   assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/);
-  assert.match(wm, /<img className="wmimg" src="\/model\/logo\.jpg" alt="" \/>/, "the image, as given");
+  assert.match(wm, /<span className="wmimg" aria-hidden="true"><i className="wmink" \/><i className="wmstar" \/><\/span>/, "the artwork as two masked layers");
   assert.ok(!/CHEVRON_CHANCE|wmchev|wmsq|wmblk/.test(wm), "the line, its square, the chevron run and the block bar are all retired for the picture");
   // no red glows anywhere (owner, 19 Oct 2026)
-  for (const sel of ["\\.wmimg", "\\.tabindlamp"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
+  for (const sel of ["\\.wmimg", "\\.wmstar"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
   assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
   assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
   assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");

@@ -375,26 +375,34 @@ button { font-family: var(--helv); }
    the lighter blue; the bar is as wide as the word */
 /* the logo as the owner drew it (public/model/logo.jpg): its white ground
    multiplies away on the light page; dark inverts and screens it */
-.wmimg { display: block; height: auto; width: clamp(78px, 21vw, 110px); max-width: none; } /* about half the Info Dock (owner, last) */
-.wordmark.brandfix { height: auto; }
-/* the fixture itself blends (a fixed element is its own stacking context, so the picture inside it could not) */
-.wordmark.brandfix { mix-blend-mode: multiply; }
-:root:not([data-theme="light"]) .wordmark.brandfix { mix-blend-mode: screen; }
-:root:not([data-theme="light"]) .wmimg { filter: invert(1) hue-rotate(180deg); }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wordmark.brandfix { mix-blend-mode: multiply; } :root:not([data-theme="dark"]) .wmimg { filter: none; } }
+.wmimg { position: relative; display: block; width: clamp(78px, 21vw, 110px); aspect-ratio: 900 / 200; } /* about half the Info Dock (owner, last) */
+/* the logo recoloured (owner, 26 Oct 2026): two masks cut from the owner's
+   artwork, the word and bar in --wm-ink, the asterisk in --warn */
+.wmink, .wmstar { position: absolute; inset: 0; -webkit-mask: var(--wm-mask) center / 100% 100% no-repeat; mask: var(--wm-mask) center / 100% 100% no-repeat; }
+.wmink { --wm-mask: url(/model/logo-ink.png); background: var(--wm-ink); }
+.wmstar { --wm-mask: url(/model/logo-star.png); background: var(--warn); }
+/* dark: the title card's glow round the green (a mask clips its own
+   element's filter, so the glow sits on the wrapper) */
+:root:not([data-theme="light"]) .wmimg { filter: drop-shadow(0 0 0.6px rgba(180, 255, 210, 0.55)) drop-shadow(0 0 7px rgba(110, 240, 160, 0.3)); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wmimg { filter: none; } }
 :root {
   /* the title card's letters: chrome at the top washing to mint */
   --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
   --metal-edge: rgba(214, 255, 232, 0.35);
   --wm-bar: rgba(232, 239, 241, 0.2);
   --wm-lit: #7fb0c0;
+  /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
+  --wm-ink: var(--metal);
 }
 [data-theme="light"] {
   --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
   --metal-edge: rgba(37, 55, 73, 0.45);
   --wm-bar: rgba(37, 55, 73, 0.18);
   --wm-lit: #5c8a9a;
+  /* the logo's ink in light: a clear blue, so it reads on the pale ground */
+  --wm-ink: linear-gradient(180deg, #3f7ef2 0%, #2459d0 55%, #1a43a6 100%);
 }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: linear-gradient(180deg, #3f7ef2 0%, #2459d0 55%, #1a43a6 100%); } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);

@@ -546,6 +546,13 @@ and insets with it; the top fixtures still end on its right edge. The plus
 is 54% of the disc. Every fixture key's glyph draws a 1-unit stroke, its ink
 pulled 14% toward the ground, at 88% opacity. This supersedes the tab
 indicator wherever the 19 Oct entries above describe it.
+THE LOGO, 26 OCT 2026 (owner: "it should be placed at the same height as
+the info deck, and let's make it more blue so it's visible, and phosphorus
+green in dark mode", with the title card for reference). The wordmark's
+middle is the top fixtures' middle. The owner's artwork is coloured through
+two masks cut from it: the word and its bar of blocks in a clear blue in
+light, and in the title card's chrome washing to phosphor green, glowing, in
+dark; the asterisk red in both.
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several

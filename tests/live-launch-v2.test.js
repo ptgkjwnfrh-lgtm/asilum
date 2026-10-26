@@ -148,8 +148,9 @@ test("the sample media: every picture is a coloured tile (owner, 25 Oct 2026, la
   }
   assert.equal(SAMPLE_POSTS.filter((sp) => sp.video).length, 1);
   // the model folder holds no photographs but the people overview's one portrait and the owner's logo
+  // (with, since 26 Oct 2026, the two masks cut from it to colour it: logo-ink.png and logo-star.png)
   const files = require_fs().readdirSync("public/model").filter((f) => /\.(jpg|png|webp)$/.test(f)).sort();
-  assert.deepEqual(files, ["logo.jpg", "olivier-rousteing-2016.jpg"]);
+  assert.deepEqual(files, ["logo-ink.png", "logo-star.png", "logo.jpg", "olivier-rousteing-2016.jpg"]);
   assert.ok(credits.assets.every((a) => files.includes(a.filename) || /\.(mp4|vtt)$/.test(a.filename)), "the register names only what is there");
   const { PLACES } = await import("../lib/places/registry.js");
   for (const p of PLACES) if (p.image) assert.ok(isStill(p.image), p.id + " wears a still");
