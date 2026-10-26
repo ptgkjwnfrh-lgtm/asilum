@@ -356,10 +356,12 @@ test("no red bezel, a faint rainbow: the reach frame is gone, and every glass sp
 //     from group to group; every gap 0.45; fraction columns, so it fills its span at any width;
 //   - from the A's left edge (column 19 of 900, the word's first inked column) to the globe's centre,
 //     the last large block centred there;
-//   - colourless imprints: no fill, only the glass's shading (a shade on the upper edge, a light on the
-//     lower); the one coloured block is the last, blue in both themes (--stamp-blue is --sig);
+//   - a stamp, not a carving ("too much shadow, it should feel like a stamp"): square edges, a barely
+//     darker recess in the glass (alpha at most 0.25), one inset hairline on the pressed edge (offset at
+//     most 1px, no blur, alpha at most 0.35), nothing else — no drop, no groove; no colour of its own
+//     but the last block, blue in both themes (--stamp-blue is --sig), stamped the same way;
 //   - thinner: 24/900 of the wordmark's width, against the artwork's 45.
-test("the stamped line: nothing else under the word; graduated imprints from the A to the globe, colourless but the one blue block, thin", async () => {
+test("the stamped line: nothing else under the word; graduated, flat stamped marks from the A to the globe, colourless but the one blue block, thin", async () => {
   const css = read("app/globals.css");
   // nothing else under the word
   const sharp = (await import("sharp")).default;
@@ -397,11 +399,25 @@ test("the stamped line: nothing else under the word; graduated imprints from the
   let first = -1;
   for (let x = 0; x < 900 && first < 0; x++) for (let y = 0; y < 141; y++) if (ink.data[(y * 900 + x) * 4 + 3] > 40) { first = x; break; }
   assert.equal(first, 19, "the A's left edge is column 19");
-  // colourless imprints, one blue block
+  // a stamp: flat, crisp, one hairline; one blue block
   const bar = rules.match(/\.mhstamp i \{([^}]*)\}/)[1];
-  assert.match(bar, /background: none;/, "no fill: an imprint, not paint");
-  assert.match(bar, /box-shadow: inset 0 1px 1px var\(--stamp-sink\), inset 0 -1px 0 var\(--stamp-catch\);/, "only the glass's shading: a shade above, a light below");
-  assert.deepEqual([...rules.matchAll(/\.mhstamp i[^{]*\{[^}]*background: (?!none)[^;]+;/g)].map((m) => m[0].split("{")[0].trim()), [".mhstamp i.lit"], "the one coloured block");
+  assert.match(bar, /border-radius: 0;/, "square, crisp edges");
+  assert.match(bar, /background: var\(--stamp-recess\);/, "a recess in the glass, not paint");
+  const shadow = bar.match(/box-shadow: ([^;]+);/)[1];
+  assert.ok(!shadow.includes(","), "one shadow, no more: " + shadow);
+  const sm = shadow.match(/^inset (-?[\d.]+)(?:px)? (-?[\d.]+)(?:px)? (?:([\d.]+)(?:px)? )?var\(--stamp-edge\)$/);
+  assert.ok(sm, "an inset hairline in the stamp's edge tone: " + shadow);
+  assert.ok(Math.abs(Number(sm[1])) <= 1 && Math.abs(Number(sm[2])) <= 1, "a hairline: at most 1px");
+  assert.equal(Number(sm[3] || 0), 0, "no blur");
+  const alphas = (name) => [...css.matchAll(new RegExp(name + ": rgba\\([^)]*, ([\\d.]+)\\);", "g"))].map((m) => Number(m[1]));
+  assert.equal(alphas("--stamp-recess").length, 2, "a recess in each theme");
+  for (const a of alphas("--stamp-recess")) assert.ok(a <= 0.25, "barely darker: " + a);
+  assert.equal(alphas("--stamp-edge").length, 2, "an edge in each theme");
+  for (const a of alphas("--stamp-edge")) assert.ok(a <= 0.35, "a low hairline: " + a);
+  assert.ok(!/\.mhstamp[^{]*\{[^}]*(filter|drop-shadow|text-shadow)/.test(rules), "no drop, no glow");
+  assert.ok(!/--stamp-sink|--stamp-catch/.test(css), "the groove's shade and light are gone");
+  assert.deepEqual([...rules.matchAll(/\.mhstamp i[^{]*\{[^}]*background: (?!var\(--stamp-recess\))[^;]+;/g)].map((m) => m[0].split("{")[0].trim()), [".mhstamp i.lit"], "the one coloured block");
+  assert.ok(!/\.mhstamp i\.lit \{[^}]*box-shadow/.test(rules), "the blue block is stamped the same way (it keeps the one hairline)");
   assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "blue, twice its column, centred on the globe");
   assert.match(rules, /--stamp-blue: var\(--sig\);/);
   for (const hex of [css.match(/:root \{[^}]*--sig: (#[0-9a-f]{6});/s)[1], css.match(/\[data-theme="light"\] \{[^}]*--sig: (#[0-9a-f]{6});/s)[1]]) {
