@@ -4982,6 +4982,10 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.78; background: none; }
 .card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
+/* the hairline between the size and price and the actions (owner, 25 Oct
+   2026): the deck's cut, in the card's own ink so it reads on any tile */
+.card.piece.v-hero .pcrule { display: block; flex: none; height: 1px; border-radius: 1px; }
+.card.piece.v-hero .pcrule::after { background: color-mix(in srgb, var(--on-media) 45%, transparent); }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
