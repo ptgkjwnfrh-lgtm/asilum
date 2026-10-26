@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { HOUSE_LINES } from "../../lib/dock.js";
 import Icon from "./Icons.jsx";
 import { usePlacements } from "./Placements.jsx";
-import { Lamp, blinkLamp } from "./Chevrons.jsx";
+import { Lamp, blinkLamp } from "./Blocks.jsx";
 
 const ROTATE_MS = 7000;
 
@@ -56,7 +56,7 @@ export default function AdStrip({ typing = false }) {
   return (
     <div className="adstrip" aria-label="ads and placements" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}>
       {/* the slot's name, in red, as the owner drew it (18 Oct 2026: "*ADs") */}
-      <span className="adslot" aria-hidden="true">*ADs</span>
+      <span className="adslot" aria-hidden="true">ADs</span>
       {cur ? (
         <>
           <a className="adline" href={cur.href} aria-label={cur.label.toLowerCase() + " placement: " + cur.line}>

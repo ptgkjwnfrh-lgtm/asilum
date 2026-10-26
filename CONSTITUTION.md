@@ -422,7 +422,96 @@ motion), then ♡ · the bubble · the stamp · share in the signal blue, each
 with its count beneath, over a red rule. A count is the real one in three
 digits or "---" where none is kept (comments, shares, any sample); never an
 invented "000". The piece card's head is one line, "SELL:handle"; a place
-card prints its name and type as written, not in capitals. Search extends the deck upward for its bar; the search
+card prints its name and type as written, not in capitals. LATER THE SAME
+DAY: PASS leaves a post's face for a HOLD MENU — a held press, a
+right-click or the keyboard's OPTIONS key opens PASS and the link over the
+card (a piece and a song keep their ×). THE BLOCKS replace the chevrons
+wherever text stood in for text (the owner's reference: a row of even
+blocks while text loads in, a block the length of each word on a folded
+line); the MRZ line is the passport's, not a placeholder, and stays. The
+comment bubble's tail is at the right; MESSAGES is an envelope; the four
+actions share one glyph span in four equal columns; every card in the grid
+takes one padding and one inner radius. THE MODEL (the owner: "this is just
+a model so pepco can see what the app looks like"): a keyless run is the
+Feed of one reader — an Oasis, Fontaines D.C., Hedi Slimane, indie sleaze,
+Justice fan who likes Eames and industrial furniture (lib/model/pieces.js
+MODEL_PERSONA, overlaid on a cold reader like a prompt, stored by nothing).
+Its pieces are DEMO records that lead the seed catalog, photographed with
+free-use reference photography on white (rawpixel CC0 / public domain,
+Wikimedia Commons; public/model/credits.json), never the listing's own; its
+places are four real public venues with their own source and free-use
+photographs, and fictional DMV rooms and concerts labelled SAMPLE FIXTURE;
+its songs are real titles labelled SAMPLE with no art, no link and no
+playback. Nothing in the model can be bought, booked or played. AND THEN
+(the owner, the same evening): no × on any card's face — a piece and a song
+hold the menu too (a piece's PASS stays the brain's signal); a piece's words
+ride its photograph, the head on its top and the name and price on its foot;
+the grid's gaps are tightened so the media is bigger; the Passport globe
+has its equator; the model's authors are made-up usernames with free-use
+photographs for their pictures; the carousels ride early; and every red
+rule is a CUT — a band either side bends what lies beneath it (Cut.jsx, an
+SVG displacement run as a backdrop-filter where the engine can, a plain
+line elsewhere). AND THEN AGAIN ("still looks like shite"): a media post is
+the whole photograph, the head and the foot over it on scrims; the rule is
+not red but the fixtures' own hairline cut (the deck's groove, laid flat),
+still a cut; every glyph but the feed's and the Passport's is drawn in
+Michroma's hand — wide, squared, every corner rounded the same, one stroke;
+and the BRDCST strip is the owner's drawing: the event's photograph clouded
+across it, the badge in its white ring with the red rule under the word,
+the name large in white, where and when small, the × at the corner, and a
+tap opens the BRDCST popup where the photograph is clear. AND LAST THAT
+NIGHT: the NEW LOGO — under *ASILUM a bar of blocks, narrow at the left and
+widening like a line's words, the last one lit in the lighter blue; the
+thick line, its square and the one-in-ten chevron run retire with it. A
+piece's actions float on its photograph and a post's BRDCST footer floats
+on its; the search lens is a circle, the heart narrower, the account a
+circle; every popup is a large rounded square floating in the middle of
+the screen over a clouded page; every seed piece wears one of the model's
+free-use reference photographs for its category (never the listing's own
+— the card still says DEMO); and the light ground is ice blue the whole
+way down, never white. The owner's "use images from Google" is NOT taken
+up: other people's product photographs are not pulled from retailers or
+search results (the no-scraping law, and their copyright) — free-use
+photography stands in everywhere instead. AND THE LAST WORD OF THE NIGHT:
+no counts under the four actions, which are thin, small and a little
+transparent; the foot's gradient faint, on every post; the carousel and the
+motion row are the STRIP of X's "Videos for you" — tall cards side by side,
+the next one peeking, a plain sideways scroll — and Figure 20 is retired;
+the logo is the owner's own image, imported as given; no rainbow rim on a
+post or a popup (the fixtures keep theirs); one thin stroke on every glyph.
+THEN THE OWNER'S OWN MOCKUP (two references, 25 Oct 2026, late): every
+popup but the search is a large rounded square floating in the middle of
+the screen, its face an ice gradient, the page behind it clouded dark
+blue; the SEARCH rises out of the centre control deck, its foot meeting the
+deck's head; beside Michroma (the words) Inter carries the body and Share
+Tech Mono the small print, so A6's "every font is Michroma" is amended to
+those three; the lines are thin and the colour stays (the red current tab,
+the teal ink). The page ground is a dark blue coming in from the top and
+the bottom with the ice blue between. A card's foot is a gradient only,
+never a solid band, and no line sits under the four actions. The logo sits
+top left at a real size. And EVERY PICTURE IS A DARK BLUE STILL
+(lib/model/stills.js): the free-use photographs are gone at the owner's
+word ("they all look ugly"); a piece, a post, a place, a broadcast and an
+author each wear a still drawn from their id, and nothing is a photograph.
+THEN, THE NEXT ROUND (owner, 25 Oct 2026, last): the stills are the
+ORIGINAL COLOURED CARDS again — a piece its own placeholder card (thumbFor),
+every other picture a tile in that same ten-tag palette (lib/model/
+stills.js) — and the ink on a card is the light blue or the dark blue at
+85% by the card's own ground (inkFor). THE MODEL'S CARDS CARRY NO DEMO OR
+SAMPLE TAGS at the owner's word ("get rid of all the demo and sample
+tags"): the records stay demo in the data (isDemoItem, nothing buyable,
+the fixtures still fictional in the register), only the words on the cards
+are gone; the page's DEMO CATALOG note is read by assistive technology
+alone. The asterisk is dropped where it was overused — THE FEED, ADs, the
+event's name, the overview's kicker — and kept on the logo. The head is
+THE FEED, FOR YOU · FOLLOWING and the sort bubble, nothing else (no
+sub-line, no stamp, no WHAT'S NEW). The ad ticker is a BUBBLE on the
+centre control deck above the row, the deck taller by it. The logo sits
+top left at about half the Info Dock. A BRDCST attached to a post is
+detached from it by a thin gap — the post's bottom flat, its top rounded;
+the broadcast's top flat, its bottom rounded — the way the Info Dock and
+the Passport Button sit; its hollow bar is gone. The words on a card sit
+evenly in from the edges. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 

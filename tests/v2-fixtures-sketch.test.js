@@ -6,6 +6,7 @@
 // where the markup is the law (a .jsx cannot be imported here).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 const require_fs = () => ({ readdirSync, statSync });
 import { doubleBlinkFrames, holdBlinkFrames, indicatorHeld, BLINK_ON_MS, BLINK_GAP_MS, FADE_MS } from "../lib/indicator.js";
@@ -49,7 +50,9 @@ test("the carvings are carved into the glass: cuts, the disc's ring, the grill a
   const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* ([\d.]+)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
   assert.ok(g, "the grill is placed in sketch units");
   assert.equal(Number(g[1]) + Number(g[2]) / 2, 371, "the grill is centred on the disc");
-  assert.ok(!/<AdStrip/.test(deck), "nothing but the drawing on the deck: the ad strip left it");
+  // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble above the row
+  assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} \/><\/div>/, "the ad bubble on the deck");
+  assert.ok(!/<AdStrip/.test(read("app/page.js")), "and off the Feed's head");
 });
 
 test("the top fixtures sit at the top right, the Passport's right edge in line with the deck's, 8 apart (shrunk from the drawn 18)", () => {
@@ -105,7 +108,8 @@ test("search morphs the deck upward; the popup waits for the first character; on
   const press = deck.slice(deck.indexOf("function press(id)"), deck.indexOf('if (id === "post")'));
   assert.ok(!/openSheet\("search"\)/.test(press), "the search key does not open the popup");
   assert.match(deck, /if \(scope\.id === "global" && v\.trim\(\) && !searchPopupUp\) openSheet\("search"\);/, "typing opens it");
-  assert.match(rules, /\.ccenter\.ccsearching \{ height: calc\(var\(--dk-h\) \+ var\(--dk-rise\)\); \}/, "the deck extends upward");
+  assert.match(rules, /\.ccenter\.ccsearching \{ height: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "the deck extends upward");
+  assert.match(rules, /--ad-h: calc\(var\(--u\) \* 64\);/, "the deck is taller by the ad bubble");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.ccenter \{ transition: none; \} \.ccsearch \{ animation: none; \} \}/);
   assert.match(read("app/components/SearchSheet.jsx"), /\{dock\.mode !== "search" \? \(\n\s*<label className="srchfield">/, "the popup hides its own field while the deck's bar is up");
   assert.match(read("app/components/SheetHost.jsx"), /useFocusTrap\(ref, open, \{ companion: "\.ccsearch" \}\)/, "the popup does not steal the caret");
@@ -151,7 +155,10 @@ test("the owner's second pass (19 Oct): hairline cuts, the 15% touch, the dark g
   assert.match(deck, /data-lens-shape="cut" data-lens-band="6" data-lens-gain="0\.08"/, "and barely bends");
   assert.match(rules, /background: linear-gradient\(var\(--fx-tint\), var\(--fx-tint\)\), var\(--fx-glass\);/);
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) :is\(\.ccenter \.tabl, \.ccenter \.mailbtn, \.idkey, \.passportbtn\) \.ic \{\n  filter: drop-shadow/, "the keys glow in dark only");
-  for (const tok of ["--helv", "--serif", "--mono", "--mich"]) {
+  // (25 Oct 2026, late: the owner's mockup) Michroma is the words' face; Inter carries the body and Share Tech Mono the small print beside it
+  assert.match(rules, /--mich: "Michroma"/, "--mich is Michroma");
+  assert.match(rules, /--helv: "Inter"/); assert.match(rules, /--serif: "Inter"/); assert.match(rules, /--mono: "Share Tech Mono"/);
+  for (const tok of []) {
     assert.match(rules, new RegExp(tok + ': "Michroma"'), tok + " is Michroma");
   }
 });
@@ -242,22 +249,22 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   // the asterisk small and up in the corner, plain red: no stroke, no glow
   assert.match(rules, /\.wmword i \{[^}]*font-size: 0\.6em;[^}]*top: -0\.68em;[^}]*color: var\(--warn\);[^}]*text-shadow: none; \}/s);
   assert.ok(!/\.wmword i \{[^}]*-webkit-text-stroke/s.test(rules), "not bolded");
-  assert.match(rules, /\.wmbar::before \{ content: ""; flex: 1;[^}]*background: var\(--wm-bar\); \}/, "the bar fills the word's width");
-  assert.match(rules, /\.wmsq \{ flex: none; aspect-ratio: 1; height: 100%;/, "one square, as thick as the bar");
+  // (25 Oct, late) THE LOGO IS THE OWNER'S IMAGE (public/model/logo.jpg), blended onto the page; the name stays for assistive technology
+  assert.match(rules, /\.wmimg \{ display: block; height: auto; width: clamp\(78px, 21vw, 110px\); max-width: none; \}/, "top left, about half the Info Dock");
+  assert.match(rules, /\.wordmark\.brandfix \{ mix-blend-mode: multiply; \}/, "the fixture blends its white ground away");
+  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: invert\(1\) hue-rotate\(180deg\); \}/, "dark inverts it");
+  assert.ok(existsSync("public/model/logo.jpg"), "the owner's artwork is in the model folder");
   assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
   assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
   const wm = read("app/components/Wordmark.jsx");
-  assert.match(wm, /<span className="wmword"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/);
-  // one load in ten the line is a chevron run that fills it, measured
-  assert.match(wm, /export const CHEVRON_CHANCE = 0\.1;/);
-  assert.match(wm, /useEffect\(\(\) => \{ if \(Math\.random\(\) < CHEVRON_CHANCE\) setChev\(true\); \}, \[\]\);/, "after hydration, never during the server render");
-  assert.match(wm, /setCount\(Math\.max\(MIN_CHEVRONS, Math\.floor\(run\.clientWidth \/ one\)\)\)/, "as many as fill the line");
+  assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/);
+  assert.match(wm, /<img className="wmimg" src="\/model\/logo\.jpg" alt="" \/>/, "the image, as given");
+  assert.ok(!/CHEVRON_CHANCE|wmchev|wmsq|wmblk/.test(wm), "the line, its square, the chevron run and the block bar are all retired for the picture");
   // no red glows anywhere (owner, 19 Oct 2026)
-  for (const sel of ["\\.wmsq", "\\.tabindlamp"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
+  for (const sel of ["\\.wmimg", "\\.tabindlamp"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
   assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
   assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
-  assert.match(wm, /<span className=\{"wmbar" \+ \(chev \? " chev" : ""\)\} aria-hidden="true">/, "the bar, decorative");
-  assert.match(wm, /<b className="wmsq" \/>/, "and its one square");
+  assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");
   assert.match(rules, /\[data-popup\] \.brandfix \{ transform: scale\(0\.92\); opacity: 0\.55; \}/, "it dims with the fixtures under a popup");
   assert.ok(!/\.feedmark/.test(rules), "the Feed's masthead mark is gone");
   // nothing italic: no rule, no default slant, no synthesized oblique

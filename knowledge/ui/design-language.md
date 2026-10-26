@@ -711,3 +711,135 @@ destinations were fetched from a running server and their markup checked: every
 one returns 200, and not one contains the word "bridges", the phrase "fashion
 intelligence", or a bare `Asterisk <verb>`. The unit test reads source files; this
 checked what a reader is actually served, which is the claim that matters.
+
+## 25 Oct 2026, later — the hold menu, the blocks, the envelope, the model
+
+- A post's PASS lives in a HOLD MENU (PostCard.jsx HoldMenu): hold the
+  card LONG_PRESS_MS (lib/disc.js, the one clock), right-click, or press
+  the visually hidden OPTIONS key; PASS and, on a real post, COPY THE LINK;
+  Escape, a tap outside or CLOSE puts it away. A piece and a song keep the
+  × on their face.
+- The chevron runs are gone. BLOCKS (lib/feed/blocks.js, Blocks.jsx) stand
+  in for text: BlockText loads text in behind a run of even blocks (the
+  run is the next characters themselves, transparent over a block
+  gradient, so nothing reflows); BlockLine folds a line into a block per
+  word. The block is `--blk`, the ink a shade back. The MRZ line stays.
+- Glyphs: the comment bubble's tail is at the right; MESSAGES is an
+  envelope; heart, bubble, stamp and share share the 17.6 span; the post's
+  four actions are four equal grid columns.
+- Every card in the grid takes `--cardpad` / `--cardpadx` and `--inner-r`
+  (set on `.fcell`), so the post, the piece and the place sit alike.
+- The model's photographs are free-use reference photography on white
+  (public/model/credits.json); a place that carries one wears it across the
+  card with the words on a scrim at its foot.
+
+## 25 Oct 2026, the same evening — no ×, words over photographs, cuts
+
+- No × on any card's face: a piece (page.js FragmentCard) and a song
+  (SongCard.jsx) hold the menu too, through HoldMenu.jsx's `useHold`,
+  `HoldMenu` and the hidden `HoldKey`; a piece's PASS is still `onPass`,
+  the brain's signal.
+- A piece's photograph fills the card; `.pchead` rides its top and
+  `.pcfoot` (name, size · price, the DEMO line) its foot, on scrims in
+  `--on-media`; a small piece's `.pieceline` does the same.
+- `.fgrid { --fgap: 6px }` (8px from 760px); `.fcell { --cardpad: 3cqw;
+  --cardpadx: 3.6cqw; --inner-r: clamp(8px, 3.2cqw, 18px) }`.
+- The globe glyph carries its equator.
+- A sample author carries `avatar` (a free-use photograph); `Avatar` takes
+  `src` and draws `.uavatar.uphoto`.
+- A red rule is a `<Cut>`: `.cut::after` is the line, `.cutband` the
+  22px band whose `backdrop-filter: url(#cutwarp)` (CutDefs, once on the
+  page; `html[data-cut="1"]` only where `canRefract()`) bends the backdrop
+  toward the line from both sides. Reduced motion drops the band.
+
+## 25 Oct 2026, later still — the stage, the hairline cut, Michroma's glyphs, the strip
+
+- A media post is its photograph: `.p2stage` holds `.p2media` (absolute,
+  the whole card), `.p2head` over the top and `.p2foot` (credit, caption,
+  the four actions, the second rule) over the bottom, on scrims, in
+  `--on-media`. A words-only post keeps its paper.
+- `.p2rule` and the Cut's line are the deck's groove — `color-mix(in srgb,
+  var(--ink) 14%, transparent)` (`.cccut`), 1px — never red; over a
+  photograph `--on-media` at 55%.
+- Icons.jsx: every glyph but `feed` and `globe` is wide, squared and
+  evenly rounded (a squircle for search, post, account, disc; rx 1.6–2.4
+  on rects; the 17.6 span), as if cut by Michroma's hand.
+- The BRDCST strip (`.bstrip.withphoto`): `.bsimg` clouded (blur 3px,
+  saturate .45) under a shade veil, the badge, `.bsname` large and
+  `.bswhen` (where · when) in white, `.bspass` the × as drawn; it spans
+  four half-rows; a tap opens the `brdcst` popup (BrdcstSheet.jsx), the
+  photograph clear.
+
+## 25 Oct 2026, last that night — the logo's bar, everything floating, the floating popup, the ice ground
+
+- Wordmark.jsx: `.wmbar` is a row of `.wmblk` blocks (`--w` bar-heights
+  wide, `BAR` as drawn), the last `.wmblk.lit` in `--wm-lit`; no line, no
+  square, no chevron run.
+- `.card.piece.v-hero .pcacts` floats at the photograph's foot (white, on a
+  shade), `.pcfoot` above it; a post with an event (`.withevent`) floats
+  its `.brdcst` at the foot of the photograph, the caption above it.
+- Icons: `search` is a circle lens; `heart` narrower; `account` a circle.
+- `.sheetscrim` centres; `.sheet` is `min(var(--cc-w), 100vw - 20px)` wide
+  with a 28px+ radius; `[data-popup] .main` is blurred 14px and
+  desaturated — the page clouded.
+- `demoImageFor(item)` (lib/model/pieces.js) lends a seed record a free-use
+  photograph for its category, by id; the Feed and the LISTING popup use
+  `img || demoImageFor || thumbFor`.
+- The light `--bg-grad` ends at `#edf4f9`, never white.
+
+## 25 Oct 2026, the last word — thin, faint, flat
+
+- `.p2acts`: no `.p2n` counts; `opacity: 0.78`; the buttons 8cqw; Icons.jsx
+  `strokeWidth: 1.15` everywhere.
+- Scrims: head 24%, foot 34% of `--shade` (a piece's 30%); a words-only
+  post's `.p2foot` wears a 10% gradient too.
+- Strip.jsx replaces Fig20.jsx: `.strip` scroll-snaps sideways,
+  `.stripcard` is `height: 100%` with `aspect-ratio: var(--asp)`; a post
+  carousel is 3:4, the motion row 9:16 (`stripRows`: ceil(cols × 1.5),
+  capped at 12).
+- Wordmark.jsx is `.wmimg` (`/model/logo.jpg`, the owner's artwork cropped
+  to the mark) with the name visually hidden; `.wordmark.brandfix` blends
+  multiply (screen, inverted, in dark).
+- `.sheet::after` and `::before` are `content: none`; the bloom is gone
+  from the popup's shadow. The fixtures alone keep the rainbow.
+
+## 25 Oct 2026, the owner's mockup — the popup, the search, the faces, the stills
+
+- Popups: `.sheetscrim` centres over `--scrim` (light: `#1d3446` at 74%)
+  with the page blurred; `.sheet` is a 36px-radius square, light face
+  `linear-gradient(#f2f9fc, #e2eff6, #cfe3ee)`, a teal hairline border.
+- The search (`.sheet.deckrise`, set when the top view is "search"): the
+  scrim aligns to the end with `padding-bottom: calc(var(--cc-row-h) +
+  var(--cc-bottom))`, the sheet's bottom corners square — it rises out of
+  the deck.
+- Faces: `--mich` Michroma (words), `--helv`/`--serif` Inter (body),
+  `--mono` Share Tech Mono (small print: the search's subtitle, tabs,
+  fine print).
+- The ground: `--bg-grad` ends dark blue (`#27465e`) at the top and the
+  bottom, ice blue between.
+- Cards: `.pcfoot` is the only scrim on a piece (the actions float on it);
+  no `.p2rule2`.
+- The logo: `.wmimg` is `clamp(150px, 40vw, 230px)` wide, top left.
+- Stills: `stillFor(key)` (lib/model/stills.js) is every picture — posts
+  (`sampleImage`), authors (`avatar`), places (`image`), demo pieces
+  (`demoImageFor`); `public/model` keeps only the logo, the overview's
+  portrait and the motion pattern.
+
+## 25 Oct 2026, the next round — the deck's ad bubble, the plain head, no tags, the tiles
+
+- `.ccad` holds AdStrip on the deck above `.ccrow`; `--ad-h: calc(var(--u)
+  * 64)`; `.ccenter` and its searching height and `--cc-row-h` include it.
+- `PageMast plain`: THE FEED without the asterisk; no `sub`, no `.ctmeta`,
+  the `.demoline` visually hidden; tabs FOR YOU · FOLLOWING (+ the craving
+  key); no WHAT'S NEW.
+- No ModelTag SAMPLE, no "SAMPLE FIXTURE", no DEMO word or flag, no
+  OriginSticker on the Feed's cards.
+- `.withevent`: the card is transparent; `.p2stage` top-rounded and
+  bordered, `.brdcst` a separate paper block 4px below, bottom-rounded; no
+  `.brdcstrule`, no `.brdcstast`.
+- `--cardpadx: 5.5cqw`; head and foot insets 4.5cqw / 4cqw.
+- `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
+  `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`
+  maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.
+- `.wmimg` is `clamp(78px, 21vw, 110px)` wide.
+

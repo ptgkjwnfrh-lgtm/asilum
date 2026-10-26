@@ -12,19 +12,23 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
+import { useHold, HoldMenu, HoldKey } from "./components/HoldMenu.jsx";
+import { CutDefs } from "./components/Cut.jsx";
+import { demoImageFor } from "../lib/model/pieces.js";
+import { inkFor } from "../lib/model/stills.js";
 import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
 import {
-  getUid, postJSON, authorizedFetch, thumbFor,
+  getUid, postJSON, authorizedFetch, thumbFor, thumbBase,
   brainEnabled, claimRequest, watchRequest, beaconJSON } from "../lib/client.js";
 import {
-  observationOn, followedBrands, isDemoItem, DEMO_LABEL,
+  observationOn, followedBrands, isDemoItem,
 } from "../lib/social.js";
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
 import { tetrisPack, feedColsFor, motionRail } from "../lib/feed/tetris.js";
 import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
-import Fig20Rail from "./components/MotionRail.jsx";
+import MotionRail from "./components/MotionRail.jsx";
 import SongCard from "./components/SongCard.jsx";
 import { PIECE_EVENT, favorite } from "../lib/feed/actions.js";
 import Icon from "./components/Icons.jsx";
@@ -33,12 +37,12 @@ import { haptic } from "../lib/haptics.js";
 import { EchoRail } from "./components/EchoRail.jsx";
 import PlaceCard from "./components/PlaceCard.jsx";
 import PageMast from "./components/PageMast.jsx";
-import AdStrip from "./components/AdStrip.jsx";
 import PostCard from "./components/PostCard.jsx";
 import PieceFloat from "./components/PieceFloat.jsx";
 import { createPortal } from "react-dom";
 import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
 import { SAMPLE_POSTS } from "../lib/model/media.js";
+import { SAMPLE_SONGS } from "../lib/model/songs.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 
@@ -185,7 +189,7 @@ export default function Home() {
   const [places, setPlaces] = useState([]);
   useEffect(() => {
     fetch("/api/places").then((r) => (r.ok ? r.json() : null))
-      .then((d) => setPlaces(d && Array.isArray(d.places) ? d.places.slice(0, 6) : [])).catch(() => setPlaces([]));
+      .then((d) => setPlaces(d && Array.isArray(d.places) ? d.places.slice(0, 12) : [])).catch(() => setPlaces([]));
   }, []);
 
   // FEED PARKING (V.2 brief §2, lib/viewstate.js). The surface's key is the
@@ -255,7 +259,7 @@ export default function Home() {
     if (hit && hit.posts === posts && hit.places === places) return hit.out;
     // the motion row: up to twenty of the stream's motions in Figure 20, after the sixth card
     const { rail, rest } = motionRail(streamPosts);
-    const out = braid(list, rest, places);
+    const out = braid(list, rest, places, SAMPLE_SONGS);
     if (rail) out.splice(Math.min(6, out.length), 0, rail);
     braidCache.current.set(list, { posts, places, out });
     return out;
@@ -820,9 +824,9 @@ export default function Home() {
 
   // THE STREAM: one Tetris grid (lib/feed/tetris.js tetrisPack) — every
   // card in one of its kind's sizes at its grid place, the gaps even; a
-  // carousel and the motion row are Figure 20 (Fig20.jsx).
+  // carousel and the motion row are the STRIP (Strip.jsx: X's "Videos for you").
   function renderCard(it, variant) {
-    if (it.__rail) return <Fig20Rail key={it.id} posts={it.__rail} />;
+    if (it.__rail) return <MotionRail key={it.id} posts={it.__rail} />;
     if (it.__song) return <SongCard key={it.id} id={it.id} song={it.__song} />;
     if (it.__post) return <PostCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} />;
     if (it.__place) return <PlaceCard key={it.id} place={it.__place} />;
@@ -843,6 +847,8 @@ export default function Home() {
     // every card at its grid place, in one size its kind allows, the gaps even
     const { cells, rows } = tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols });
     return (
+      <>
+      <CutDefs />
       <div className="fgridwrap">
         <div className="fgrid" style={{ "--fcols": feedCols, "--frows": rows }}>
           {cells.map((c) => (
@@ -852,6 +858,7 @@ export default function Home() {
           ))}
         </div>
       </div>
+      </>
     );
   }
 
@@ -873,25 +880,13 @@ export default function Home() {
 
   return (
     <div className="wrap ctr">
+      {/* THE HEAD (owner, 25 Oct 2026, last): THE FEED, then FOR YOU · FOLLOWING
+          and the sort bubble — no sub-line, no stamp, no catalog note; the ad
+          ticker lives on the deck now (ControlCenter.jsx) */}
       <header className="cthead">
-        {/* the ad strip runs at the head of the Feed, off the deck (the owner's fixture sketch, 19 Oct 2026) */}
-        <AdStrip />
-        <PageMast word="THE FEED" sub="DISCOVERY · PUBLISHING · COMMERCE" />
-        {stamp && (
-          <div className="ctmeta">
-            LIVE FEED · {stamp}
-            {items.length > 0 && (
-              <span>{items.length} PIECES THIS PASS</span>
-            )}
-          </div>
-        )}
+        <PageMast word="THE FEED" plain />
       </header>
-      {/* DEMO MODE banner (owner ruling, Aug 16). Deliberately in normal flow
-          directly under the masthead rather than inside `.cthead`, which is a
-          laid-out row — dropped in there it fought the headline for the same
-          space. A per-card DEMO flag tells you about one record; only a
-          page-level statement tells you the whole shelf is sample data. */}
-      <p className="demoline" role="note">
+      <p className="demoline idlabel" role="note">
         <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
         {" "}{guideOn ? "The Asterisk system routed this feed through your Passport." : "The Asterisk system is paused — a general feed."}
       </p>
@@ -910,7 +905,7 @@ export default function Home() {
           </span>
           <EchoRail groups={rail} />
           <div className="fmodes seg">
-            {[["curated", "FOR YOU"], ["following", "FOLLOWING"], ["new", "WHAT'S NEW"]].map(([k, label]) => (
+            {[["curated", "FOR YOU"], ["following", "FOLLOWING"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
                 {label}
               </button>
@@ -1115,6 +1110,10 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const tap = useRef({ at: 0, timer: 0 });
   const [liked, setLiked] = useState(false);
   const [shared, setShared] = useState("");
+  // PASS lives in the hold menu (HoldMenu.jsx; owner, 25 Oct 2026: no × on a card's face)
+  const [menu, setMenu] = useState(false);
+  const closeMenu = useCallback(() => setMenu(false), []);
+  const hold = useHold(() => setMenu(true));
   useEffect(() => () => clearTimeout(tap.current.timer), []);
   // one tap opens the listing a beat later; a second tap inside the window
   // cancels that and floats the piece instead
@@ -1151,19 +1150,26 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   // ACCESSIBLE NAME PER CARD (launch audit, Aug 16): the title is the real
   // control; the image is presentational and keeps its pointer affordance.
   const demo = isDemoItem(it);
-  const mode = demo ? DEMO_LABEL : it.commerce_rail === "native" ? "SELL" : "LISTED";
+  // (owner, 25 Oct 2026, last: "get rid of all the demo and sample tags") a
+  // demo record wears no word; the record stays demo (isDemoItem), nothing
+  // here can be bought
+  const mode = demo ? "" : it.commerce_rail === "native" ? "SELL" : "LISTED";
   const who = it.sellerHandle || it.ownerHandle || (demo ? it.brand : it.src || it.brand) || "";
   const size = it.size && (it.size.label || it.size.fitsLikeUS) ? it.size.label || it.size.fitsLikeUS : (typeof it.size === "string" ? it.size : "");
   const price = it.price != null && it.price !== "" ? `${it.price}${it.currency || "USD"}` : "";
-  const pass = onPass ? <button type="button" className="cardpass" onClick={onPass} aria-label={"pass on " + (it.title || "this piece")} title="PASS"><Icon name="pass" size={20} /></button> : null;
+  const what = "the piece " + (it.title || "");
+  const menuEl = <><HoldKey what={what} open={menu} onOpen={() => setMenu(true)} /><HoldMenu id={"piece:" + it.id} what={what} open={menu} onClose={closeMenu} onPass={onPass || null} /></>;
+  const ink = { "--on-card": inkFor(thumbBase(it)) }; // the ink that reads on this card's ground
+  // THE WORDS OVER THE PHOTOGRAPH (owner, 25 Oct 2026: "I want text to
+  // overlap images"): the photograph fills the card; the head rides its top,
+  // the name and the price its foot, on scrims; the actions sit beneath.
   if (variant === "small") {
     return (
-      <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
+      <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
+        {menuEl}
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <OriginSticker item={it} />
-          <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
+          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
         </div>
-        {pass}
         <div className="pieceline">
           <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
           {price ? <span className="price">{price}</span> : null}
@@ -1172,21 +1178,23 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
     );
   }
   return (
-    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id}>
-      <div className="pchead">
-        <b className="pcmode">{mode}{who ? <span className="pchandle">:{who}</span> : null}</b>
-        {pass}
+    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
+      {menuEl}
+      <div className="pcphoto">
+        <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
+          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
+        </div>
+        <div className="pchead">
+          <b className="pcmode">{mode}{who ? <span className="pchandle">{mode ? ":" : ""}{who}</span> : null}</b>
+        </div>
+        <div className="pcfoot">
+          <button type="button" className="ttl pctitle" onClick={onOpen}>{pieceName(it)}</button>
+          <div className="pcrow">
+            <span className="pcsize">{size}</span>
+            {price ? <span className="price">{price}</span> : null}
+          </div>
+        </div>
       </div>
-      <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-        <OriginSticker item={it} />
-        <img src={it.img || thumbFor(it)} alt="" loading="lazy" />
-      </div>
-      <button type="button" className="ttl pctitle" onClick={onOpen}>{pieceName(it)}</button>
-      <div className="pcrow">
-        <span className="pcsize">{size}</span>
-        {price ? <span className="price">{price}</span> : null}
-      </div>
-      {demo ? <div className="fitline demoflag"><b>{DEMO_LABEL}</b> · sample data, not for sale</div> : null}
       <div className="pcacts" role="group" aria-label="piece actions">
         <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
         <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />

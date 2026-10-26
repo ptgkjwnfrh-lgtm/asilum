@@ -411,7 +411,9 @@ test("C20 a taste that moves between chunks changes the ranking, never the promi
   let cursor = null;
   const served = new Set();
   let chunks = 0;
-  while (chunks < 40) {
+  // enough chunks to hold the whole catalog with a page of slack (the model's
+  // pieces lead the catalog since 25 Oct; the claim is the same)
+  while (chunks < Math.ceil(CATALOG.length / 24) + 2) {
     const r = buildFeed({ profile, limit: 24, rotation: "cursor", catalog: { cursor } }, CATALOG);
     chunks++;
     const fresh = r.items.filter((it) => !served.has(it.id));

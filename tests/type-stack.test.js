@@ -33,13 +33,13 @@ test("the type stack is three faces: Michroma, Inter, and the description face S
   assert.deepEqual(faces.sort(), ["Inter", "Michroma", "Share Tech Mono"],
     "a third @font-face means a face was added without a decision");
 
-  // (19 Oct 2026, owner: "I want all the fonts to be Michroma") every face
-  // token resolves to Michroma first; Inter is the fallback for a glyph it
-  // does not carry. The faces still ship, so a single token can bring one back.
+  // (25 Oct 2026, late — the owner's mockup, amending 19 Oct's "all the
+  // fonts Michroma") three faces, three tokens: Michroma for the words,
+  // Inter for the body, Share Tech Mono for the small print
   assert.match(css, /--mich:\s*"Michroma", var\(--helv\)/);
-  assert.match(css, /--helv:\s*"Michroma", "Inter"/);
-  assert.match(css, /--serif:\s*"Michroma", "Inter"/);
-  assert.match(css, /--mono:\s*"Michroma", "Inter"/, "the description face's token is Michroma too");
+  assert.match(css, /--helv:\s*"Inter"/);
+  assert.match(css, /--serif:\s*"Inter"/);
+  assert.match(css, /--mono:\s*"Share Tech Mono"/, "the description face's token is the mono");
   assert.ok(!/"STM"/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "the old STM alias stays retired — the face is named in full");
   assert.ok(existsSync(ROOT + "public/fonts/sharetech.ttf") && existsSync(ROOT + "public/fonts/OFL-sharetechmono.txt"), "Share Tech Mono ships with its licence");
   assert.ok(existsSync(ROOT + "public/fonts/inter.woff2") && existsSync(ROOT + "public/fonts/OFL-inter.txt"), "Inter ships with its licence");

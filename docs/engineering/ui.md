@@ -41,7 +41,7 @@ slice-*.md` says what landed. Non-negotiables when touching UI:
    Theme follows the device unless pinned; no CRT, no grid, no scanline.
    The DARK palette glows (A6 third addendum): a word glows in its own
    colour through --glow / --glow-r; body text never; light never. The
-   device language (`app/components/Chevrons.jsx`: ChevronText, Lamp,
+   device language (`app/components/Blocks.jsx`: BlockText, BlockLine, Lamp,
    blinkLamp, MrzLine) is used sparingly, never as decoration everywhere.
 6. Michroma for labels and headings (`--mich`), Share Tech Mono (`--mono`)
    for decks, tabs, meta and the search field — the description face of the

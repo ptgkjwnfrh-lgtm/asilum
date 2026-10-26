@@ -107,8 +107,9 @@ test("the post card: four outline actions, the BRDCST footer as drawn", () => {
   assert.match(card, /icon="stamp"/, "the stamp is STAMP, the one save");
   assert.match(card, /className="wpcact soon" title="comments are not built yet"/, "the bubble says soon");
   assert.match(card, /<b className="brdcstword">BRDCST/);
-  assert.match(card, /<span className="brdcstrule" aria-hidden="true" \/>/);
-  assert.match(card, /<i className="brdcstast" aria-hidden="true">\*<\/i>\{first\.name\}/, "*event under the rule");
+  // (25 Oct 2026, last) no hollow bar, no asterisk before the event's name
+  assert.ok(!/brdcstrule|brdcstast/.test(card), "the bar and the asterisk are gone");
+  assert.match(card, /<span>\{first\.name\}<\/span>/, "the event's name, plain");
   assert.match(card, /<Icon name="chevron"/);
   assert.match(card, /brdcstWhen\(first\)/, "the date and time from the one law");
   assert.match(css, /\.card\.wpostcard \{[^}]*border-radius: var\(--radius-card\)/);
@@ -117,15 +118,15 @@ test("the post card: four outline actions, the BRDCST footer as drawn", () => {
 test("the piece card and the listing popup to the references: rounded photograph, quiet line, × to pass; unverified only from the ledger; ♡ OFFER bag; the lines in Michroma", () => {
   // (25 Oct) the piece card is the owner's feed sketch — tests/feed-tetris.test.js holds its shape; PASS is the × on its bar
   assert.match(page, /className=\{"card piece v-hero"/);
-  assert.match(page, /className="cardpass" onClick=\{onPass\}/);
+  assert.match(page, /onPass=\{onPass \|\| null\}/, "PASS rides the hold menu (25 Oct, later)");
   assert.match(listing, /className=\{"lstbadge " \+ badge\.state\}/, "the word on the photograph comes from the ledger's badge");
   assert.match(listing, /\{badge && badge\.state !== "none" \?/, "nothing without a badge");
   assert.match(listing, /priceLine\(item\)/);
   assert.match(listing, /"SIZE: " \+ item\.size\.label/);
   assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
-  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the *ADs slot is red");
+  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the ADs slot is red");
   // (19 Oct) the strip left the deck for the head of the Feed (the owner's fixture sketch)
-  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">\*ADs<\/span>/);
+  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">ADs<\/span>/, "no asterisk (owner, 25 Oct, last: overused)");
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {

@@ -78,7 +78,8 @@ test("the fixtures are glass with the rainbow rim, shaped as the owner drew them
   assert.match(rules, /\.fixture \{[^}]*border-radius: calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 26\);/s);
   assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 26\) calc\(var\(--u\) \* 3\);/s);
   // (18 Oct) the popup's rainbow rim follows the hand
-  assert.match(rules, /\.sheet::after \{[^}]*conic-gradient\(from var\(--iris-a, 200deg\) at var\(--iris-x, 30%\) var\(--iris-y, 0%\)/s, "the popup's rim follows the hand");
+  // (25 Oct 2026, late) the popup wears no rim: `content: none` — the rainbow is the fixtures' alone
+  assert.match(rules, /\.sheet::after \{\n  content: none;/, "the popup wears no rim");
   // (19 Oct, "do this") the fixtures are the September glass: near-clear, a saturation lift, no blur, the shadow and the lip, no painted rim
   assert.match(rules, /\.fixture, \.ccenter \{\n[^}]*background: linear-gradient\(var\(--fx-tint\), var\(--fx-tint\)\), var\(--fx-glass\);\n  -webkit-backdrop-filter: saturate\(160%\); backdrop-filter: saturate\(160%\);\n  box-shadow: var\(--glass-shadow\), var\(--glass-lip\);/);
   assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{\n  -webkit-backdrop-filter: var\(--lg-filter\) saturate\(160%\); backdrop-filter: var\(--lg-filter\) saturate\(160%\);\n\}/, "the bend, and no blur");
@@ -143,7 +144,7 @@ test("dark popup backdrop: the scrim deepens the page in dark on both dark paths
   assert.ok(m, ":root (dark) defines --scrim as an rgba");
   assert.ok(Math.max(+m[1], +m[2], +m[3]) <= 16, "the dark scrim is near-black, not a wash of the light ink");
   assert.ok(+m[4] >= 0.6, "and deep enough to lower the page");
-  assert.match(block('[data-theme="light"] {'), /--scrim:\s*color-mix\(in srgb, #253749 42%, transparent\);/, "light keeps the 42% slate wash of the reference");
+  assert.match(block('[data-theme="light"] {'), /--scrim:\s*color-mix\(in srgb, #1d3446 74%, transparent\);/, "light: the dark blue cloud under a popup (the owner's mockup, 25 Oct)");
   assert.match(rules, /@media \(prefers-color-scheme: dark\) \{ :root:not\(\[data-theme="light"\]\) \{ --shade: #000000; --scrim: rgba\(1, 3, 4, 0\.74\); \} \}/, "the device's dark");
   assert.match(rules, /\n\[data-theme="dark"\] \{ --shade: #000000; --scrim: rgba\(1, 3, 4, 0\.74\); \}/, "the pinned dark");
   assert.match(rules, /\.sheetscrim \{[^}]*background: var\(--scrim\);/s, "the popup's scrim is the token");
@@ -178,7 +179,12 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   }
   assert.match(read("app/components/SheetHost.jsx"), /bend: "\.card"/, "where WebKit cannot bend a backdrop, the cards under the popup's edges bend");
   assert.match(rules, /\.sheetscrim \{ -webkit-backdrop-filter: none; backdrop-filter: none; \}/, "the scrim is no backdrop root, so the popup has a page to bend");
-  assert.match(rules, /\[data-popup\] \.main \{ filter: blur\(5px\);/, "the page softens under its own filter");
+  assert.match(rules, /\[data-popup\] \.main \{ filter: blur\(14px\) saturate\(0\.8\);/, "the page is clouded under a popup (25 Oct, evening)");
+  // the popup floats in the middle of the screen, a large rounded square
+  assert.match(rules, /\.sheetscrim \{\n  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;/);
+  assert.match(rules, /\.sheet \{\n  width: min\(var\(--cc-w\), calc\(100vw - 20px\)\);[^}]*border-radius: max\(var\(--sheet-radius\), 36px\);/s);
+  assert.match(rules, /\.sheetscrim:has\(> \.sheet\.deckrise\) \{ align-items: flex-end; padding-bottom: calc\(var\(--cc-row-h\) \+ var\(--cc-bottom\)\); \}/, "the search rises out of the deck (the owner's image 2)");
+  assert.match(read("app/components/SheetHost.jsx"), /\(top && top\.view === "search" \? " deckrise" : ""\)/);
   assert.match(rules, /\.sheet\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
   assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
   assert.match(rules, /prefers-reduced-transparency: reduce\) \{[^}]*\.sheet\[data-refract="1"\][^}]*backdrop-filter: none/s, "reduced transparency drops the glass");

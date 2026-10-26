@@ -39,9 +39,13 @@ export default function PlaceCard({ place: p }) {
   }, [p]);
   const label = milesLabel(miles);
   return (
-    <article className="card placecard" data-id={"place:" + p.id} data-type="PLACE" aria-label={"place: " + p.name}>
+    <article className={"card placecard" + (p.image ? " withphoto" : "")} data-id={"place:" + p.id} data-type="PLACE" aria-label={"place: " + p.name}>
       <button type="button" className="placeopen" onClick={() => { haptic("press"); openSheet("map", { pin: p.id, title: "MAP" }); }} aria-label={"open the map for " + p.name}>
-        <span className="placeicon" aria-hidden="true"><Icon name="venue" size={34} /></span>
+        {/* a record that carries a free-use photograph (lib/places/registry.js
+            `image`, credited in public/model/credits.json) wears it; else the mark */}
+        {p.image
+          ? <img className="placeicon placephoto" src={p.image} alt="" loading="lazy" />
+          : <span className="placeicon" aria-hidden="true"><Icon name="venue" size={34} /></span>}
         {/* the name for assistive technology carries what the card no longer prints */}
         <span className="idlabel">{[String(p.kind || "").toLowerCase(), p.city, p.dated && p.startsAt ? p.startsAt : null].filter(Boolean).join(", ")}</span>
         {label ? <span className="placedist">{label}</span> : <span className="placedist quiet" title="the distance appears once a base city or your current area is shared on the map">—</span>}
@@ -50,7 +54,7 @@ export default function PlaceCard({ place: p }) {
             14–16): "Location name", "Location type" beneath it, as written —
             not shouted; the city and dates live in the map popup; a sample
             still says so here */}
-        <span className="placemeta">{kindWord(p.kind)}{p.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        <span className="placemeta">{kindWord(p.kind)}</span>
         <span className="placeglobe" aria-hidden="true"><Icon name="globe" size={18} /></span>
       </button>
     </article>

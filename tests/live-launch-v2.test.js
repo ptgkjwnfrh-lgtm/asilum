@@ -9,6 +9,8 @@ process.env.DATABASE_URL = "";
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import * as nodeFs from "node:fs";
+const require_fs = () => nodeFs;
 import { readFileSync } from "node:fs";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
@@ -128,24 +130,34 @@ test("the one save has one record shape and refuses what it cannot list", async 
   assert.throws(() => saveRecord({ kind: "piece", id: "", title: "x" }), /id and a title/);
 });
 
-test("the sample media is credited, and only the eight licensed files and the one generated clip are referenced", async () => {
-  const { SAMPLE_POSTS, SAMPLE_CREDITS } = await import("../lib/model/media.js");
+test("the sample media: every picture is a coloured tile (owner, 25 Oct 2026, last: the original cards), the one clip is the generated pattern, and nothing is a photograph", async () => {
+  const { SAMPLE_POSTS } = await import("../lib/model/media.js");
+  const { isStill } = await import("../lib/model/stills.js");
   const credits = JSON.parse(read("public/model/credits.json"));
   for (const sp of SAMPLE_POSTS) {
     assert.equal(sp.sample, true);
+    if (!sp.image && !sp.video && sp.attachments && sp.attachments.event) { assert.equal(sp.attachments.event.sample, true, sp.id + " is a fixture"); continue; }
     if (sp.video) {
-      // the sample MOTION (slice 9) is a GENERATED test pattern, not a licensed photograph: it says so, and it is the one clip
       assert.equal(sp.video.generated, true, sp.id + " must declare itself generated");
       assert.match(sp.video.url, /^\/model\/motion-test-pattern\.mp4$/);
       assert.equal(sp.image, undefined, "a MOTION sample carries no photograph");
       continue;
     }
-    assert.match(sp.image.src, /^\/model\/[a-z0-9-]+\.jpg$/);
-    assert.ok(sp.image.credit && sp.image.license, sp.id + " must carry a credit");
+    for (const im of [sp.image, ...(sp.images || [])]) { assert.ok(isStill(im.src), sp.id + ": a still, not a photograph"); assert.equal(im.credit, "", "nothing to credit"); }
+    if (sp.avatar) assert.ok(isStill(sp.avatar), sp.id + ": the author's picture is a still");
   }
   assert.equal(SAMPLE_POSTS.filter((sp) => sp.video).length, 1);
-  for (const key of Object.keys(SAMPLE_CREDITS)) assert.match(SAMPLE_CREDITS[key].license, /Unsplash License|CC BY/);
-  assert.ok(Array.isArray(credits.assets) && credits.assets.length >= 7);
+  // the model folder holds no photographs but the people overview's one portrait and the owner's logo
+  const files = require_fs().readdirSync("public/model").filter((f) => /\.(jpg|png|webp)$/.test(f)).sort();
+  assert.deepEqual(files, ["logo.jpg", "olivier-rousteing-2016.jpg"]);
+  assert.ok(credits.assets.every((a) => files.includes(a.filename) || /\.(mp4|vtt)$/.test(a.filename)), "the register names only what is there");
+  const { PLACES } = await import("../lib/places/registry.js");
+  for (const p of PLACES) if (p.image) assert.ok(isStill(p.image), p.id + " wears a still");
+  const { MODEL_PIECES, demoImageFor } = await import("../lib/model/pieces.js");
+  for (const it of MODEL_PIECES) { assert.equal(it.img, null, it.id + " carries no photograph"); assert.equal(demoImageFor(it), null, "a piece wears its own placeholder card (thumbFor), nothing lent"); }
+  const { tileFor, inkFor, INK_LIGHT, INK_DARK } = await import("../lib/model/stills.js");
+  assert.equal(tileFor("a").src, tileFor("a").src, "the same key, the same tile"); assert.notEqual(tileFor("a").src, tileFor("b").src);
+  assert.equal(inkFor("#1d2430"), INK_LIGHT, "light ink on a dark ground"); assert.equal(inkFor("#e6f1f8"), INK_DARK, "dark ink on a light one");
 });
 
 test("no gate before the first reward: the sign-up sheet never opens itself", () => {

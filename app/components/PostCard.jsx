@@ -4,7 +4,7 @@
 // Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing
 // types), drawn to the owner's post sketch of 25 Oct 2026 (IMG_1143; see
 // PostCard below): the author's circle and name over a red rule, the media,
-// the caption folded into chevrons, and four blue counted actions — the
+// the caption folded into blocks, and four blue counted actions — the
 // heart (LIKE), the comment bubble, the stamp (STAMP, the one save) and the
 // share arrow — over a red rule. A post that
 // carries an event wears the BRDCST FOOTER hanging from the card, exactly as
@@ -21,10 +21,11 @@
 // SAMPLE tag and never a LIKE. The comment bubble is `soon` — comments are
 // not built — and says so; nothing here pretends.
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useHold, HoldMenu, HoldKey } from "./HoldMenu.jsx";
+import { Cut } from "./Cut.jsx";
 import TransmissionText from "./TransmissionText.jsx";
 import SaveButton from "./SaveButton.jsx";
-import ModelTag from "./ModelTag.jsx";
 import Icon from "./Icons.jsx";
 import { Avatar, FriendName } from "./UserBits.jsx";
 import { registerFeedVideo, feedPolicy } from "../../lib/media/feedplay.js";
@@ -32,11 +33,11 @@ import { footerPages } from "../../lib/brdcst/index.js";
 import { postType, brdcstWhen, brdcstMoment } from "../../lib/feed/types.js";
 import { galleryOf } from "../../lib/feed/tetris.js";
 import { hideCard } from "../../lib/feed/hidden.js";
-import Fig20 from "./Fig20.jsx";
+import Strip from "./Strip.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import TagRow from "./TagChip.jsx";
-import { ChevronText } from "./Chevrons.jsx";
+import { BlockText, BlockLine } from "./Blocks.jsx";
 import { tagsFor, visibleTags } from "../../lib/tagging/grammar.js";
 
 const STATE_WORD = { draft: "DRAFT · UNPAID", scheduled: "SCHEDULED", active: "LIVE", ended: "ENDED", cancelled: "CANCELLED", under_review: "UNDER REVIEW" };
@@ -46,12 +47,12 @@ function BrdcstEvent({ event, open, onToggle }) {
   return (
     <li className={"brdcstev" + (open ? " open" : "")}>
       <button type="button" className="brdcstevhead" aria-expanded={open} onClick={() => { haptic("press"); onToggle(); }}>
-        <b><i className="brdcstast" aria-hidden="true">*</i>{event.name}</b>
-        <span className="brdcstwhen">{brdcstWhen(event)}{event.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        <b>{event.name}</b>
+        <span className="brdcstwhen">{brdcstWhen(event)}</span>
       </button>
       {open ? (
         <div className="brdcstbody">
-          <ChevronText className="fine" text={[String(event.kind || "").toUpperCase(), event.city, event.status ? String(event.status).toUpperCase() : null, event.admission].filter(Boolean).join(" · ")} />
+          <BlockText className="fine" text={[String(event.kind || "").toUpperCase(), event.city, event.status ? String(event.status).toUpperCase() : null, event.admission].filter(Boolean).join(" · ")} />
           <div className="brdcstacts">
             {/* 5.5 (slice 12): the map opens above the post as a popup */}
             <button type="button" className="txtbtn" onClick={() => { haptic("press"); openSheet("map", { pin: event.id, title: "MAP" }); }}>PASSPORT MAP →</button>
@@ -85,11 +86,10 @@ export function BrdcstFooter({ event, events = null, brdcst = null }) {
     <div className={"brdcst" + (open ? " open" : "")}>
       <div className="brdcsthead">
         <b className="brdcstword">BRDCST{pages.more > 0 ? <small>+{pages.more}</small> : null}</b>
-        <span className="brdcstwhen">{brdcstWhen(first)}{first.sample ? " · SAMPLE FIXTURE" : ""}</span>
+        <span className="brdcstwhen">{brdcstWhen(first)}</span>
       </div>
-      <span className="brdcstrule" aria-hidden="true" />
       <button type="button" className="brdcstname" aria-expanded={open} onClick={() => { haptic("press"); setOpen((o) => !o); }}>
-        <span><i className="brdcstast" aria-hidden="true">*</i>{first.name}</span>
+        <span>{first.name}</span>
         <Icon name="chevron" size={20} className={open ? "up" : ""} />
       </button>
       {open ? (
@@ -128,7 +128,6 @@ function MotionMedia({ video, id, onMedia, label, videoRef = null }) {
         </video>
         <span className="wpcmotiontag" aria-hidden="true">MOTION · {Math.round((video.durationMs || 0) / 1000)}s{policy && !policy.autoplay ? " · " + policy.reason : ""}</span>
       </button>
-      {video.generated ? <figcaption>SAMPLE MOTION · GENERATED TEST PATTERN AND TEST TONE</figcaption> : null}
     </figure>
   );
 }
@@ -197,53 +196,60 @@ function Extras({ p }) {
 }
 
 
-/** PASS on a post (owner's feed sketch, 25 Oct 2026): set aside on this
- *  device (lib/feed/hidden.js), never a claim that anyone was told. */
-function PassKey({ id, what }) {
-  return (
-    <button type="button" className="cardpass" onClick={(e) => { e.stopPropagation(); haptic("press"); hideCard(id); }} aria-label={"set aside " + what} title="PASS">
-      <Icon name="pass" size={20} />
-    </button>
-  );
+/** A standalone BRDCST (owner's drawing, 25 Oct 2026, evening: "nearly
+ *  identical to the image"): the event's photograph CLOUDED across the whole
+ *  strip, the BRDCST badge in its white ring with the red rule under the
+ *  word, the name large in white, where and when small beneath it, the × at
+ *  the corner. A tap opens the BRDCST popup (BrdcstSheet.jsx), where the
+ *  photograph is clear. The photograph is the record's own free-use picture
+ *  (lib/places/registry.js `image`); a record without one gets the grey. */
+export function brdcstLines(ev) {
+  const name = String(ev.name || "");
+  const dash = name.indexOf(" — ");
+  const big = dash > 0 ? name.slice(0, dash) : name;
+  const sub = dash > 0 ? name.slice(dash + 3) : "";
+  const kind = String(ev.kind || "").toLowerCase();
+  const live = /concert|show|gig|live|music|performance/.test(kind);
+  const city = String(ev.city || "");
+  const parts = city.split(",").map((x) => x.trim()).filter(Boolean);
+  const short = parts.length > 1 && /^[A-Z]{2,3}$/.test(parts[parts.length - 1]) ? parts[parts.length - 1] : parts[0] || "";
+  const where = short.toUpperCase();
+  const lead = live ? "LIVE IN " + where : (kind ? kind.toUpperCase() + (where ? " IN " + where : "") : where);
+  // the small line is where and when, as drawn ("LIVE IN DC NOV 30th"); the name's second half waits for the popup
+  const small = [lead, brdcstMoment(ev.startsAt, { tz: ev.tz })].filter(Boolean).join(" · ");
+  return { big, sub, small };
 }
 
-/** A standalone BRDCST (owner's feed sketch, 25 Oct 2026): a full-width strip
- *  — the BRDCST badge in its ring with the red rule under the word, the
- *  event's name large, where and when beneath, PASS at the corner. A tap
- *  opens the event on the map. */
 function BrdcstStrip({ p, id }) {
+  const [menu, setMenu] = useState(false);
+  const close = useCallback(() => setMenu(false), []);
+  const hold = useHold(() => setMenu(true));
   const a = p.attachments || {};
   const ev = a.event || (a.events && a.events[0]) || null;
   if (!ev) return null;
-  const kind = String(ev.kind || "").toLowerCase();
-  const live = /concert|show|gig|live|music|performance/.test(kind);
-  const where = ev.city ? String(ev.city).split(",")[0].toUpperCase() : "";
-  const lead = live ? "LIVE IN " + where : (kind ? kind.toUpperCase() + (where ? " IN " + where : "") : where);
+  const { big, small } = brdcstLines(ev);
+  const what = "the broadcast " + ev.name;
   return (
-    <article className="card wpostcard type-brdcst bstrip" data-id={id} data-type="BRDCST" aria-label={"broadcast: " + ev.name}>
-      <button type="button" className="bsopen" onClick={() => { haptic("press"); openSheet("map", { pin: ev.id, title: "MAP" }); }} aria-label={"open " + ev.name + " on the map"}>
+    <article className={"card wpostcard type-brdcst bstrip" + (ev.image ? " withphoto" : "")} data-id={id} data-type="BRDCST" aria-label={"broadcast: " + ev.name} {...hold}>
+      <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
+      <HoldMenu id={id} what={what} href={null} open={menu} onClose={close} />
+      <button type="button" className="bsopen" onClick={() => { haptic("press"); openSheet("brdcst", { id: ev.id, title: "BRDCST" }); }} aria-label={"open the broadcast " + ev.name}>
+        {ev.image ? <img className="bsimg" src={ev.image} alt="" loading="lazy" aria-hidden="true" /> : null}
         <span className="bsbadge" aria-hidden="true"><b>BRDCST</b><i /></span>
         <span className="bsbody">
-          <b className="bsname">{ev.name}</b>
-          <span className="bswhen">{[lead, brdcstMoment(ev.startsAt, { tz: ev.tz })].filter(Boolean).join(" · ")}{ev.sample ? " · SAMPLE FIXTURE" : ""}</span>
+          <b className="bsname">{big}</b>
+          <span className="bswhen">{small}</span>
         </span>
       </button>
-      <PassKey id={id} what={"the broadcast " + ev.name} />
+      {/* the × as drawn on the strip: set aside on this device (lib/feed/hidden.js) */}
+      <button type="button" className="bspass" onClick={(e) => { e.stopPropagation(); haptic("press"); hideCard(id); }} aria-label={"set aside " + what} title="PASS"><Icon name="pass" size={22} /></button>
     </article>
   );
 }
 
-/** A count as the post sketch prints it (Fig. 2–5): three digits, "---" where
- *  the app keeps no count (comments are not built, shares are not counted, a
- *  sample carries no record). Never an invented number. */
-export function count3(v) {
-  if (v == null || !Number.isFinite(Number(v))) return "---";
-  const n = Math.max(0, Math.floor(Number(v)));
-  return n > 999 ? "999+" : String(n).padStart(3, "0");
-}
-
-/** The four counted actions (owner's post sketch, 25 Oct 2026, Figs. 2–5):
- *  ♡ LIKE · the bubble · the STAMP · share, each with its count beneath. */
+/** The four actions (owner's post sketch, 25 Oct 2026, Figs. 2–5; late that
+ *  night: "get rid of the three dots below" — no counts): ♡ LIKE · the
+ *  bubble · the STAMP · share, thin and a little transparent. */
 function Acts({ p, eng, onEngage, sample, href, name, image }) {
   const [shared, setShared] = useState("");
   async function share() {
@@ -262,21 +268,17 @@ function Acts({ p, eng, onEngage, sample, href, name, image }) {
         {eng
           ? <button type="button" className={"wpcact" + (eng.youLike ? " on" : "")} aria-pressed={!!eng.youLike} onClick={() => { haptic("press"); onEngage && onEngage(p, "like"); }} aria-label={"like, " + eng.likes} title="LIKE"><Icon name="heart" size={26} /></button>
           : <span className="wpcact quiet" title={sample ? "a sample carries no LIKE" : "LIKE arrives with the post's record"} aria-hidden="true"><Icon name="heart" size={26} /></span>}
-        <b className="p2n">{eng ? count3(eng.likes) : "---"}</b>
       </span>
       <span className="p2act">
         <span className="wpcact soon" title="comments are not built yet" aria-label="comments — not built yet"><Icon name="comment" size={26} /></span>
-        <b className="p2n" title="comments are not built yet">---</b>
       </span>
       <span className="p2act">
         <SaveButton className="wpcact" icon="stamp" kind="post" id={sample ? p.id : String(p.serverId ?? p.id)} title={p.title || (p.text || "").slice(0, 80)} image={image ? image.src : ""} href={href} meta={name} tags={sample ? p.tags : (p.tags || [])} labels={["STAMP", "STAMPED ✓"]} />
-        <b className="p2n">{eng ? count3(eng.saves) : "---"}</b>
       </span>
       <span className="p2act">
         {sample
           ? <span className="wpcact quiet" title="a sample has no link of its own" aria-hidden="true"><Icon name="share" size={26} /></span>
           : <button type="button" className="wpcact" onClick={share} aria-label="share the post" title={shared || "SHARE"}><Icon name="share" size={26} /></button>}
-        <b className="p2n" title="shares are not counted">---</b>
       </span>
       {shared ? <span className="wpcshared" role="status">{shared}</span> : null}
     </div>
@@ -296,6 +298,9 @@ function SoundRing({ video }) {
 export default function PostCard({ post: p, engagement, onEngage }) {
   const [more, setMore] = useState(0);
   const [idx, setIdx] = useState(0);
+  const [menu, setMenu] = useState(false);
+  const closeMenu = useCallback(() => setMenu(false), []);
+  const hold = useHold(() => setMenu(true));
   const videoRef = useRef(null);
   const sample = !!p.sample;
   const type = postType(p);
@@ -315,24 +320,32 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   const motion = type === "MOTION";
   const caption = [p.title, p.text].filter(Boolean).join(" — ");
   const pad = (n) => String(n).padStart(2, "0");
+  const what = "the post " + (p.title || name);
   // THE POST CARD (owner's post sketch, 25 Oct 2026, IMG_1143): the author's
-  // circle and name with PASS (Figs. 8–10) over a red rule (11); the media;
-  // the counter "01/26" (6); the caption folded into two lines of >>>>>>
-  // with ▽ to unfold it, the words loading in from the chevrons (7); the
+  // circle and name (Figs. 8–10) over a red rule (11); the media; the
+  // counter "01/26" (6); the caption folded into two lines of BLOCKS, one
+  // per word, with the fold mark to unfold it, the words loading in behind
+  // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + (gallery.length > 1 ? "carousel" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "")} data-id={cardId} data-type={type} aria-label={(gallery.length > 1 ? "carousel" : type.toLowerCase()) + (sample ? " (sample editorial): " : ": ") + (p.title || name)}>
+    <article className={"card wpostcard p2 type-" + (gallery.length > 1 ? "carousel" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(gallery.length > 1 ? "carousel" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
+      <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
+      {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be
+          comprised of the entire image — text and icons overlap it"): the
+          media fills it; the head rides its top and the foot — the credit,
+          the caption, the four actions — its bottom, each on a scrim */}
+      <div className="p2stage">
       <header className="p2head">
-        <span className="p2orb">{sample ? <Avatar name={name} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)} aria-label={"the author, " + name}><Avatar name={name} /></a>}</span>
+        <span className="p2orb">{sample ? <Avatar name={name} src={p.avatar || null} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)} aria-label={"the author, " + name}><Avatar name={name} /></a>}</span>
         <span className="p2user">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</span>
-        {/* a sample says so whatever the width */}
-        {sample ? <ModelTag kind="sample">SAMPLE</ModelTag> : null}
-        <PassKey id={cardId} what={"the post " + (p.title || name)} />
+        {/* the keyboard's way into the hold menu */}
+        <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
       </header>
-      <i className="p2rule" aria-hidden="true" />
+      <Cut className="p2rule" />
       <div className="p2media">
         {gallery.length > 1 ? (
-          <Fig20
+          <Strip
+            aspect={3 / 4}
             items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
             label={`${gallery.length} photographs`}
             onSettle={setIdx}
@@ -351,16 +364,17 @@ export default function PostCard({ post: p, engagement, onEngage }) {
         ) : (
           <div className="p2words"><TransmissionText text={p.text} className="p2wordstext" /></div>
         )}
-        {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
       </div>
+      <div className="p2foot">
+      {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
       <div className="p2cap">
         {gallery.length > 1 ? <span className="p2count" aria-label={`photograph ${idx + 1} of ${gallery.length}`}>{pad(idx + 1)}/{pad(gallery.length)}</span> : null}
         <div className="p2line">
           {more ? (
-            <ChevronText as="p" className="p2text" text={caption} play={more} />
+            <BlockText as="p" className="p2text" text={caption} play={more} />
           ) : (
             <button type="button" className="p2fold" aria-expanded="false" onClick={() => { haptic("press"); setMore((m) => m + 1); }}>
-              <span className="p2chev" aria-hidden="true">:{">".repeat(160)}</span>
+              <BlockLine className="p2fold-line" text={caption} />
               <span className="idlabel">read the caption: {caption}</span>
             </button>
           )}
@@ -371,7 +385,8 @@ export default function PostCard({ post: p, engagement, onEngage }) {
         </div>
       </div>
       <Acts p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
-      <i className="p2rule p2rule2" aria-hidden="true" />
+      </div>
+      </div>
       {composed ? <Extras p={p} /> : null}
       {events}
     </article>

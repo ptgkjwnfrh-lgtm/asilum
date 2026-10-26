@@ -7,6 +7,7 @@
 // cards beside it (the sketch); the motion row is never padded. Pure.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFileSync } from "node:fs";
 import { tetrisPack, spansFor, kindOf, galleryOf, feedColsFor, motionRail, SPANS, RAIL_MAX, RAIL_MIN, LOOKAHEAD } from "../lib/feed/tetris.js";
 import { braid, PLACE_PAIR } from "../lib/feed/types.js";
@@ -60,7 +61,7 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.deepEqual(SPANS.STILL, [[5, 14, "post"]]);
   assert.deepEqual(SPANS.MOTION, [[5, 14, "post"]]);
   assert.deepEqual(SPANS["STILL+BRDCST"], [[5, 17, "post"]]);
-  assert.deepEqual(SPANS.CAROUSEL, [[5, 9, "post"]], "a carousel is the post card with Figure 20 for its media");
+  assert.deepEqual(SPANS.CAROUSEL, [[5, 12, "post"]], "a carousel is the post card with the strip for its media");
   assert.equal(SPANS.RAIL[0][0], "F");
   assert.deepEqual(SPANS.ECHO, [], "an echo lives on the rail above the stream");
   assert.equal(kindOf({ id: "x" }), "LISTING");
@@ -147,72 +148,87 @@ test("the page draws what the packer decides, and the cards are the sketch's", (
   assert.match(page, /const \{ rail, rest \} = motionRail\(streamPosts\);/);
   assert.ok(!/<Columns|placeInColumns|packFeed/.test(page), "the masonry columns are gone");
   // the piece: SELL only for a native listing, DEMO for a synthetic record
-  assert.match(page, /const mode = demo \? DEMO_LABEL : it\.commerce_rail === "native" \? "SELL" : "LISTED";/);
+  // (25 Oct 2026, last: "get rid of all the demo and sample tags") a demo record wears no word; it stays demo in the data
+  assert.match(page, /const mode = demo \? "" : it\.commerce_rail === "native" \? "SELL" : "LISTED";/);
+  assert.ok(!/DEMO_LABEL|demoflag|<ModelTag kind="sample">/.test(page), "no DEMO or SAMPLE on a card");
+  assert.ok(!/SAMPLE FIXTURE|ModelTag/.test(read("app/components/PostCard.jsx")), "no SAMPLE on a post");
   const post = read("app/components/PostCard.jsx");
   assert.match(post, /if \(type === "BRDCST"\) return <BrdcstStrip p=\{p\} id=\{cardId\} \/>;/);
-  assert.match(post, /\{gallery\.length > 1 \? \(\n\s*<Fig20/, "a post of two or more stills has Figure 20 for its media");
+  assert.match(post, /\{gallery\.length > 1 \? \(\n\s*<Strip\n\s*aspect=\{3 \/ 4\}/, "a post of two or more stills has the strip for its media");
+  // no × on any card's face: a piece and a song hold the menu too
+  assert.ok(!/className="cardpass"/.test(page) && !/className="cardpass"/.test(read("app/components/SongCard.jsx")), "the × lives in the hold menu everywhere");
+  assert.match(page, /<HoldMenu id=\{"piece:" \+ it\.id\} what=\{what\} open=\{menu\} onClose=\{closeMenu\} onPass=\{onPass \|\| null\} \/>/, "a piece's PASS is still the brain's signal");
   // Fig. 12: "SELL:handle", one line
-  assert.match(page, /<b className="pcmode">\{mode\}\{who \? <span className="pchandle">:\{who\}<\/span> : null\}<\/b>/);
+  assert.match(page, /<b className="pcmode">\{mode\}\{who \? <span className="pchandle">\{mode \? ":" : ""\}\{who\}<\/span> : null\}<\/b>/, "SELL:handle — or the handle alone on a demo record");
   assert.match(read("app/components/SongCard.jsx"), /if \(!s \|\| !s\.title\) return null;/, "a song card only for a real record");
 });
 
-test("Figure 20 (owner, 25 Oct 2026): three flat, every other card visible in the two stacks, each standing on its outer edge", () => {
-  const fig = read("app/components/Fig20.jsx");
-  assert.match(fig, /export const FLAT = 3;/, "three lie flat");
-  assert.match(fig, /s\.pos = s\.target = Math\.floor\(\(n - 1\) \/ 2\);/, "it opens in the middle: twenty shows three flat and seventeen split between the stacks");
-  assert.match(fig, /const sl = Math\.min\(14, room \/ Math\.max\(1, Math\.max\(nL, nR\) - 1\)\);/, "the sliver spacing shrinks so a whole stack fits its side");
-  assert.ok(!/opacity/.test(fig), "no card is faded out of sight: every card is visible");
-  // the inversion the owner caught: the inner edge turns away, the outer edge stands nearest
-  assert.match(fig, /c\.style\.transformOrigin = sgn > 0 \? "right center" : "left center";/, "the turn is about the OUTER edge");
-  assert.match(fig, /rotateY\(\$\{\(sgn \* EDGE_DEG \* ease\)\.toFixed\(1\)\}deg\)/, "+deg on the right, -deg on the left: the inner edge recedes");
-  assert.match(fig, /if \(still \|\| Math\.abs\(diff\) < 0\.002\) s\.pos = s\.target;/, "reduced motion: no gliding");
-  assert.match(read("app/globals.css"), /\.f20stage \{[^}]*touch-action: pan-y;/s, "the page still scrolls vertically through it");
-  assert.match(read("app/components/MotionRail.jsx"), /aspect=\{9 \/ 16\}/, "the motion row's tiles are 9:16");
-});
-
-test("Figure 20's height follows the grid's width, so three flat cards always fit", async () => {
-  const { fig20Rows } = await import("../lib/feed/tetris.js");
-  assert.equal(fig20Rows("CAROUSEL", 10), null, "a carousel is a post card now (IMG_1143)");
-  assert.deepEqual([5, 10, 15].map((c) => fig20Rows("RAIL", c)), [5, 9, 13]);
-  assert.equal(fig20Rows("LISTING", 5), null);
-  assert.equal(spansFor({ id: "c", __post: still("c", { images: [{ src: "a" }, { src: "b" }] }) }, 10)[0].h, 9);
-  assert.equal(spansFor({ id: "r", __rail: [] }, 10)[0].h, 9);
+test("the strip (the owner's reference, 25 Oct 2026, evening: X's \"Videos for you\"): tall cards side by side, the next one peeking, a plain sideways scroll", async () => {
+  const strip = read("app/components/Strip.jsx");
+  assert.match(strip, /scroll-snap|scrollLeft/, "native scrolling, snapped");
+  assert.match(strip, /onSettle\(Math\.max\(0, Math\.min\(items\.length - 1, Math\.round\(el\.scrollLeft \/ Math\.max\(1, step\)\)\)\)\);/, "the card at the left edge is reported");
+  assert.ok(!/rotateY|perspective/.test(strip), "no coverflow: the reference is flat");
+  assert.ok(!existsSync("app/components/Fig20.jsx"), "Figure 20 is retired");
+  const css = read("app/globals.css");
+  assert.match(css, /\.strip \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/, "the page still scrolls through it");
+  assert.match(css, /\.stripcard \{ flex: none; height: 100%; aspect-ratio: var\(--asp, 9 \/ 16\); scroll-snap-align: start;/);
+  assert.ok(!/\.f20|\.fig20/.test(css), "no Figure 20 rules remain");
+  assert.match(read("app/components/MotionRail.jsx"), /<Strip\n\s*aspect=\{9 \/ 16\}/, "the motion row's tiles are 9:16");
+  const { stripRows } = await import("../lib/feed/tetris.js");
+  assert.deepEqual([5, 10, 15].map((c) => stripRows("RAIL", c)), [8, 12, 12], "the row grows with the columns, capped at a phone's tile");
+  assert.equal(stripRows("CAROUSEL", 10), null, "a carousel is a post card");
+  assert.equal(spansFor({ id: "r", __rail: [] }, 10)[0].h, 12);
 });
 
 test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rules, folded caption, four counted blue actions — and no invented count", async () => {
-  const { count3 } = await import("../app/components/PostCard.jsx").catch(() => ({}));
   const post = read("app/components/PostCard.jsx");
   // Figs. 8–11: circle, username, PASS, the red rule
   assert.match(post, /<header className="p2head">\n\s*<span className="p2orb">/);
-  assert.match(post, /<PassKey id=\{cardId\}/);
-  assert.match(post, /<i className="p2rule" aria-hidden="true" \/>/);
-  assert.match(post, /<i className="p2rule p2rule2" aria-hidden="true" \/>/, "Fig. 1: the rule under the actions");
+  // (25 Oct, later) PASS left the head for the HOLD MENU: a held press, a right-click or the keyboard's OPTIONS key
+  assert.ok(!/<PassKey/.test(post) && !/className="cardpass"/.test(post), "no × on a post's face");
+  assert.match(post, /<HoldMenu id=\{cardId\} what=\{what\} href=\{sample \? null : href\} open=\{menu\} onClose=\{closeMenu\} \/>/);
+  const holdm = read("app/components/HoldMenu.jsx");
+  assert.match(holdm, /s\.t = setTimeout\(\(\) => \{ s\.t = 0; s\.fired = true; haptic\("confirm"\); onHold\(\); \}, LONG_PRESS_MS\);/, "the one long-press clock");
+  assert.match(holdm, /if \(s\.t && Math\.hypot\(e\.clientX - s\.x, e\.clientY - s\.y\) > 8\) clear\(\);/, "a scroll is not a hold");
+  assert.match(holdm, /className="idlabel holdopt" aria-haspopup="menu"/, "a keyboard reaches the menu");
+  assert.match(holdm, /useEscape\(onClose, open\);/, "Escape puts it away (the one dismissal contract)");
+  assert.match(holdm, /if \(onPass\) onPass\(\); else hideCard\(id\); onClose\(\);/, "PASS: the brain's signal on a piece, set aside on this device otherwise");
+  assert.match(post, /<HoldKey what=\{what\} open=\{menu\} onOpen=\{\(\) => setMenu\(true\)\} \/>/, "a keyboard reaches a post's menu");
+  // (later) the red rules are CUTS (Cut.jsx): a band either side bends what lies beneath
+  assert.match(post, /<Cut className="p2rule" \/>/);
+  assert.ok(!/p2rule2/.test(post), "no line under the actions (owner, late)");
+  const cut = read("app/components/Cut.jsx");
+  assert.match(cut, /feDisplacementMap in="SourceGraphic" in2="map" scale=\{CUT_SCALE\} xChannelSelector="R" yChannelSelector="G"/);
+  assert.match(cut, /if \(ok\) document\.documentElement\.dataset\.cut = "1";/, "gated on the engine, like the glass");
+  assert.match(read("app/globals.css"), /html\[data-cut="1"\] \.cutband \{[^}]*backdrop-filter: url\(#cutwarp\);/);
   // Figs. 6–7: the counter and the folded caption
   assert.match(post, /\{pad\(idx \+ 1\)\}\/\{pad\(gallery\.length\)\}/, "01/26");
-  assert.match(post, /:\{">"\.repeat\(160\)\}/, "the caption folds into chevrons");
+  assert.match(post, /<BlockLine className="p2fold-line" text=\{caption\} \/>/, "the caption folds into blocks, one per word (owner, 25 Oct: the blocks replace the chevrons)");
   assert.match(post, /<span className="idlabel">read the caption: \{caption\}<\/span>/, "the folded caption is still read aloud");
   assert.match(post, /<Icon name="fold"/);
-  // Figs. 2–5: the four actions, the stamp is STAMP, the bubble is not built and says so
+  // Figs. 2–5: the four actions, the stamp is STAMP, the bubble is not built and says so; no counts beneath (owner, late: "get rid of the three dots")
   assert.match(post, /icon="stamp"/);
   assert.match(post, /className="wpcact soon" title="comments are not built yet"/);
-  assert.match(post, /<b className="p2n" title="comments are not built yet">---<\/b>/);
-  assert.match(post, /<b className="p2n" title="shares are not counted">---<\/b>/);
-  assert.match(post, /<b className="p2n">\{eng \? count3\(eng\.likes\) : "---"\}<\/b>/, "a sample or a post without its record shows ---, never 000");
+  assert.ok(!/className="p2n"/.test(post) && !/count3/.test(post), "no counts, invented or otherwise");
+  assert.match(read("app/components/Icons.jsx"), /strokeWidth: 1\.15,/, "one thin stroke");
+  assert.match(read("app/globals.css"), /\.p2acts \{[^}]*opacity: 0\.78; \}/, "a little transparent");
   // the ring: a real sound control, on a motion only
   assert.match(post, /\{motion \? <SoundRing video=\{\(\) => videoRef\.current\} \/> : null\}/);
   const css = read("app/globals.css");
-  assert.match(css, /\.p2rule \{[^}]*background: var\(--red\);/);
+  // (evening) the rule is the fixtures' hairline cut, .cccut's colour, not a red line
+  assert.match(css, /\.p2rule \{[^}]*background: color-mix\(in srgb, var\(--ink\) 14%, transparent\);/);
+  assert.match(css, /\.cccut \{[^}]*background: color-mix\(in srgb, var\(--ink\) 14%, transparent\);/s, "the same groove as the deck's");
+  // the stage: on a media post the photograph is the whole card, the head and the foot over it
+  assert.match(post, /<div className="p2stage">/);
+  assert.match(css, /\.card\.wpostcard\.p2\.withmedia \.p2media \{ position: absolute; inset: 0;/);
+  assert.match(css, /\.card\.wpostcard\.p2\.withmedia \.p2foot \{ position: absolute; left: 0; right: 0; bottom: 0;/);
+  // the BRDCST strip as drawn: the clouded photograph, the badge, the name large, where and when, the ×, a tap opens the popup
+  assert.match(post, /openSheet\("brdcst", \{ id: ev\.id, title: "BRDCST" \}\)/);
+  assert.match(post, /<img className="bsimg" src=\{ev\.image\}/);
+  assert.match(css, /\.bsimg \{[^}]*filter: blur\(3px\) saturate\(0\.45\)/, "clouded on the strip");
+  assert.match(read("app/components/BrdcstSheet.jsx"), /<img className="bsheetimg" src=\{ev\.image\} alt="" \/>/, "clear in the popup");
+  assert.match(read("app/components/SheetHost.jsx"), /brdcst: \{ title: "BRDCST", render: \(p\) => <BrdcstSheet \{\.\.\.p\} \/>, roomy: true \},/);
   assert.match(css, /\.p2acts \{[^}]*color: var\(--sig\);/, "the actions are the signal blue");
-  assert.match(css, /\.p2n \{[^}]*color: var\(--sig\);/);
-  // count3 is pure: read it from source so the test runs without JSX
-  const src = post.match(/export function count3\(v\) \{[\s\S]*?\n\}/)[0];
-  const fn = count3 || new Function(src.replace("export function count3", "return function count3"))();
-  assert.equal(fn(null), "---", "no record, no number");
-  assert.equal(fn(undefined), "---");
-  assert.equal(fn("x"), "---");
-  assert.equal(fn(0), "000");
-  assert.equal(fn(7), "007");
-  assert.equal(fn(1234), "999+");
 });
 
 test("the place card (IMG_1143 Figs. 14–16): Location name and Location type as written, not shouted", () => {
@@ -222,6 +238,6 @@ test("the place card (IMG_1143 Figs. 14–16): Location name and Location type a
   assert.equal(kindWord("GALLERY"), "Gallery");
   assert.equal(kindWord("pop_up"), "Pop up");
   assert.equal(kindWord(null), "");
-  assert.match(place, /<span className="placemeta">\{kindWord\(p\.kind\)\}\{p\.sample \? " · SAMPLE FIXTURE" : ""\}<\/span>/, "a sample still says so");
+  assert.match(place, /<span className="placemeta">\{kindWord\(p\.kind\)\}<\/span>/, "the kind alone (no SAMPLE, owner, 25 Oct, last)");
   assert.match(read("app/globals.css"), /\.fcell \.placename \{ text-transform: none;/);
 });

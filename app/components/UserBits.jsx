@@ -9,9 +9,11 @@ import { DEMO_SOCIAL_ENABLED, MOCK_USERS, searchUsers, followedUsers, setFollowU
 
 /** Monogram avatar — up to two initials. No image, so nothing to fail to
  *  load and no request to a third party for a picture of a person. */
-export function Avatar({ name }) {
+export function Avatar({ name, src = null }) {
   const initials = String(name || "?")
-    .split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+    .split(/[\s_.-]+/).filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  // a photograph when the record carries one (the model's free-use pictures), else the initials
+  if (src) return <span className="uavatar uphoto"><img src={src} alt="" loading="lazy" /></span>;
   return <span className="uavatar">{initials}</span>;
 }
 

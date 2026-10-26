@@ -38,8 +38,9 @@ html { font-synthesis-style: none; }
   /* ALL THE FONTS ARE MICHROMA (owner, 19 Oct 2026): the reading face, the
      serif slot and the description face all resolve to it; Inter stays only
      as the fallback for a glyph Michroma does not carry */
-  --helv: "Michroma", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --serif: "Michroma", "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* (owner's mockup, 25 Oct 2026, late: "the font used alongside Michroma") Inter carries the body, Share Tech Mono the small print; Michroma the words */
+  --helv: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
   /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
@@ -54,7 +55,7 @@ html { font-synthesis-style: none; }
   --bg2: rgba(14, 21, 24, 0.85);
   --bg3: rgba(13, 20, 23, 0.92);
   --mich: "Michroma", var(--helv);
-  --mono: "Michroma", "Inter", ui-monospace, Menlo, Consolas, monospace;
+  --mono: "Share Tech Mono", ui-monospace, Menlo, Consolas, monospace;
   --sig: #6e9cff;
   --p2: #b088ff;
   --status-h: var(--ed-status-h, 26px);
@@ -292,10 +293,11 @@ html { font-synthesis-style: none; }
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 7%, transparent), transparent 64%),
     /* the OG ground (owner, 18 Oct: "I miss the soft gradient of blue to
        white"): a soft sky blue at the top washing out to white */
-    linear-gradient(180deg, #d6e8f6 0%, #e7f1f9 30%, #f6fafd 64%, #ffffff 100%);
+    /* (owner, 25 Oct, late) a dark blue coming in from the top and the bottom, the ice blue between */
+    linear-gradient(180deg, #27465e 0%, #d7e8f4 24%, #e9f2f8 50%, #d7e8f4 76%, #27465e 100%);
   /* light keeps the reference's slate wash under a popup (6.jpg) */
   --shade: #253749;
-  --scrim: color-mix(in srgb, #253749 42%, transparent);
+  --scrim: color-mix(in srgb, #1d3446 74%, transparent); /* the dark blue cloud under a popup (the owner's mockup, 25 Oct) */
   /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
   --holo: linear-gradient(118deg, #0c7a73 0%, #1d5fd6 25%, #4a52b5 50%, #ff8fb1 75%, #0c7a73 100%);
 }
@@ -368,24 +370,30 @@ button { font-family: var(--helv); }
    and move it up in the corner more"); plain red, no stroke, no glow */
 .wmword i { font-style: normal; font-size: 0.6em; line-height: 1; position: relative; top: -0.68em; margin-right: 0.1em;
   color: var(--warn); -webkit-text-fill-color: var(--warn); text-shadow: none; }
-.wmbar { display: flex; align-items: stretch; gap: 0.22em; height: 0.26em; }
-.wmbar::before { content: ""; flex: 1; border-radius: 1px; background: var(--wm-bar); }
-.wmsq { flex: none; aspect-ratio: 1; height: 100%; border-radius: 1px; background: var(--warn); }
-/* one load in ten the line is the chevron run (Wordmark.jsx CHEVRON_CHANCE) */
-.wmbar.chev::before { content: none; }
-.wmchev { flex: 1; display: flex; justify-content: space-between; align-items: center; min-width: 0; overflow: hidden;
-  font-size: 0.62em; line-height: 0; letter-spacing: -0.02em; color: color-mix(in srgb, var(--warn) 85%, transparent); }
-.wmchev b { font-weight: 400; }
+/* the bar of blocks under the word (the new logo, 25 Oct 2026): each block
+   --w bar-heights wide, the gap one fifth of a height, the last one lit in
+   the lighter blue; the bar is as wide as the word */
+/* the logo as the owner drew it (public/model/logo.jpg): its white ground
+   multiplies away on the light page; dark inverts and screens it */
+.wmimg { display: block; height: auto; width: clamp(78px, 21vw, 110px); max-width: none; } /* about half the Info Dock (owner, last) */
+.wordmark.brandfix { height: auto; }
+/* the fixture itself blends (a fixed element is its own stacking context, so the picture inside it could not) */
+.wordmark.brandfix { mix-blend-mode: multiply; }
+:root:not([data-theme="light"]) .wordmark.brandfix { mix-blend-mode: screen; }
+:root:not([data-theme="light"]) .wmimg { filter: invert(1) hue-rotate(180deg); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wordmark.brandfix { mix-blend-mode: multiply; } :root:not([data-theme="dark"]) .wmimg { filter: none; } }
 :root {
   /* the title card's letters: chrome at the top washing to mint */
   --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
   --metal-edge: rgba(214, 255, 232, 0.35);
   --wm-bar: rgba(232, 239, 241, 0.2);
+  --wm-lit: #7fb0c0;
 }
 [data-theme="light"] {
   --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
   --metal-edge: rgba(37, 55, 73, 0.45);
   --wm-bar: rgba(37, 55, 73, 0.18);
+  --wm-lit: #5c8a9a;
 }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
@@ -3356,14 +3364,14 @@ body { font-size: 14px; }
   --dk-r: calc(var(--u) * 34);
   --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
   --dk-edge: calc(50% - var(--dk-w) / 2); /* the deck's inset; the top fixtures line up with its right edge */
-  --cc-row-h: var(--dk-h);
-  --ad-h: 0px;                  /* the ad strip left the deck for the Feed */
+  --cc-row-h: calc(var(--dk-h) + var(--ad-h));
+  --ad-h: calc(var(--u) * 64);  /* the ad bubble above the row (owner, 25 Oct 2026, last: the ticker is on the deck again) */
   --cc-gap: 10px;
   --cc-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: calc(var(--radius-card) + 4px);
 }
-:root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
+:root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
@@ -3375,14 +3383,14 @@ body { font-size: 14px; }
    right above the last cut, the foot grill under the post disc. No words on
    the keys (the readable label rides on each for assistive technology). */
 .ccenter {
-  position: fixed; z-index: 66; left: var(--dk-edge); width: var(--dk-w); height: var(--dk-h);
+  position: fixed; z-index: 66; left: var(--dk-edge); width: var(--dk-w); height: calc(var(--dk-h) + var(--ad-h)); /* taller by the ad bubble (owner, 25 Oct 2026, last) */
   bottom: var(--cc-bottom);
   display: flex; flex-direction: column; justify-content: flex-end;
   border-radius: var(--dk-r);
   transition: height 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* SEARCH: the deck extends upward to make room for the bar (Figure 1) */
-.ccenter.ccsearching { height: calc(var(--dk-h) + var(--dk-rise)); }
+.ccenter.ccsearching { height: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
 .ccenter .tabbar { display: flex; flex-direction: column; justify-content: flex-end; flex: 1; min-height: 0; padding: 0; position: static; height: auto; background: none; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .ccrow { position: relative; flex: none; height: var(--dk-h); display: grid; grid-template-columns: 40fr 665fr 40fr; }
 .cctabs { display: grid; grid-template-columns: 123fr 127fr 162fr 126fr 127fr; min-width: 0; }
@@ -3472,10 +3480,13 @@ body { font-size: 14px; }
 @media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
 /* the ad strip: at the head of the Feed now (off the deck, 19 Oct 2026), a
    rounded strip in the page's flow with its own stable height */
+/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): a long pill above
+   the row, the ticker's scroll wheel inside it */
+.ccad { position: relative; z-index: 2; flex: none; height: var(--ad-h); padding: calc(var(--u) * 12) calc(var(--u) * 40) 0; }
 .adstrip {
-  height: 34px; flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 6px 0 10px;
-  border: 1px solid var(--line); border-radius: var(--radius-key);
-  font-size: 11px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
+  height: calc(var(--ad-h) - var(--u) * 12); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
+  font-size: 10px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
 }
 .adline { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
 .adline:hover .adtext { color: var(--sig); }
@@ -3492,19 +3503,27 @@ body { font-size: 14px; }
 
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
-  position: fixed; inset: 0; z-index: 64; display: flex; align-items: flex-end; justify-content: center;
+  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;
+  padding: 12px 0 var(--cc-space); box-sizing: border-box;
   background: var(--scrim);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
+/* THE SEARCH (the owner's image 2, 25 Oct 2026): the centre control deck
+   morphs — the search popup rises out of it, its foot meeting the deck's
+   head in one housing; every other popup floats in the middle */
+.sheetscrim:has(> .sheet.deckrise) { align-items: flex-end; padding-bottom: calc(var(--cc-row-h) + var(--cc-bottom)); }
+.sheet.deckrise { border-radius: max(var(--sheet-radius), 36px) max(var(--sheet-radius), 36px) 0 0; border-bottom: 0; }
+/* THE POPUP (owner, 25 Oct 2026, evening): a large rounded square floating
+   in the middle of the screen, the page clouded behind it */
 .sheet {
-  width: var(--cc-w); height: 60vh; max-height: calc(100vh - 24px - var(--cc-space));
-  margin-bottom: var(--cc-space); display: flex; flex-direction: column; min-height: 0;
-  background: var(--bg); border: 1px solid var(--line); border-radius: var(--sheet-radius);
+  width: min(var(--cc-w), calc(100vw - 20px)); height: 60vh; max-height: calc(100vh - 24px - var(--cc-space));
+  margin-bottom: 0; display: flex; flex-direction: column; min-height: 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: max(var(--sheet-radius), 36px);
   box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   animation: sheetin 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
-@keyframes sheetin { from { transform: translateY(24px); opacity: 0; } }
+@keyframes sheetin { from { transform: translateY(12px) scale(0.97); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
@@ -3728,8 +3747,11 @@ body { font-size: 14px; }
    angle and centre follow the hand: the pointer, the phone's tilt, the
    scroll (LiquidGlass.jsx useGlassReactive writes --iris-a/--iris-x/--iris-y
    on the `.lgrx` elements). Reduced motion: the rim stays where it rests. */
+/* (25 Oct 2026, late: "what is this rainbow border on every post and
+   popup — take that out") the rim is the fixtures' alone; the popup and
+   the cards wear none */
 .sheet::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 1.5px); pointer-events: none; z-index: 5;
+  content: none; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 1.5px); pointer-events: none; z-index: 5;
   opacity: var(--iris, 0.62);
   background: conic-gradient(from var(--iris-a, 200deg) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
@@ -4322,6 +4344,7 @@ body { font-size: 14px; }
 .srchfield input::placeholder { color: var(--grey); }
 .srchfield input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .srchtabs { display: flex; flex-wrap: wrap; gap: 22px; padding: 2px 0 4px; }
+.srchq, .srchqs > * { border-bottom: 1px solid color-mix(in srgb, var(--sig) 26%, transparent); }
 .srchtab { border: 0; background: none; padding: 4px 0; font: 15px/1.3 var(--mono); color: var(--grey); cursor: pointer; letter-spacing: 0.02em; }
 .srchtab.cur { color: var(--red); }
 .srchtab:hover { color: var(--ink); }
@@ -4438,7 +4461,6 @@ body { font-size: 14px; }
 .brdcstword { flex: none; font: 400 clamp(24px, 6.8vw, 40px)/1 var(--mich); letter-spacing: -0.01em; }
 .brdcstword small { font-size: 11px; margin-left: 8px; color: var(--red); letter-spacing: 0.08em; vertical-align: middle; }
 .brdcst .brdcstwhen { flex: 0 1 auto; min-width: 0; font: 400 clamp(9px, 2.6vw, 12px)/1.3 var(--mich); letter-spacing: 0.02em; color: var(--ink); text-align: right; }
-.brdcstrule { display: block; height: 3px; margin: 2px 0 2px 8px; border-radius: 2px; background: var(--ink); opacity: 0.85; }
 .brdcstname { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 2px 0 0 8px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 clamp(17px, 5vw, 26px)/1.2 var(--mich); letter-spacing: 0; }
 .brdcstname > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .brdcstname .ic { flex: none; transition: transform 0.18s; }
@@ -4547,10 +4569,10 @@ body { font-size: 14px; }
 /* the panes: translucent, the backdrop softened after it is bent */
 .sheet { background: color-mix(in srgb, var(--bg) 80%, transparent); -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%); }
 .sheet[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); backdrop-filter: var(--lg-filter) blur(14px) saturate(150%); }
-[data-theme="light"] .sheet { background: linear-gradient(180deg, color-mix(in srgb, #eef6fb 84%, transparent), color-mix(in srgb, #e5eef5 84%, transparent)); }
+[data-theme="light"] .sheet { background: linear-gradient(180deg, #f2f9fc 0%, #e2eff6 55%, #cfe3ee 100%); border-color: color-mix(in srgb, var(--sig) 32%, transparent); }
 /* the page under a popup: lowered by the scrim's colour, softened by its own filter */
 .sheetscrim { -webkit-backdrop-filter: none; backdrop-filter: none; }
-[data-popup] .main { filter: blur(5px); transition: filter 0.22s; }
+[data-popup] .main { filter: blur(14px) saturate(0.8); transition: filter 0.22s; }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
@@ -4620,7 +4642,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 [data-theme="light"] .sheet::before { mix-blend-mode: soft-light; }
 /* the bloom: a soft rainbow just outside the rim, in the rim's own colours */
-.sheet { box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 26%, transparent), 0 0 34px -12px var(--iris-2), 0 0 44px -18px var(--iris-1), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
+.sheet { box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 26%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 50%, transparent); }
+.sheet::before { content: none; }
 @media (prefers-reduced-transparency: reduce) {
   .sheet::before { background: none; mix-blend-mode: normal; }
   .sheet { animation: none; }
@@ -4644,8 +4667,18 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    ===================================================================== */
 :root { --warn: #ff4136; --cursor: #6dffa8; }
 [data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
-.chevtext .chevrun { color: var(--warn); letter-spacing: 0.02em; }
-.chevtext .chevrest { color: transparent; }
+/* THE BLOCKS (owner's reference, 25 Oct 2026; lib/feed/blocks.js): text
+   stands in as blocks — a run of even blocks while it loads in (Ref 1), and
+   a block the length of each word on a folded line (Ref 2). The block is
+   the ink, a shade back; the characters underneath keep the width. */
+:root { --blk: color-mix(in srgb, var(--ink) 82%, var(--paper)); }
+.blktext .blkrun { color: transparent; border-radius: 1px;
+  background: repeating-linear-gradient(90deg, var(--blk) 0 0.58em, transparent 0.58em 0.76em); background-clip: content-box; }
+.blktext .blkrest { color: transparent; }
+.blkline { display: block; overflow: hidden; line-height: 1.5; }
+.blkline .blkw { display: inline-block; height: 0.78em; margin: 0 0.38em 0 0; padding: 0 0.04em; border-radius: 1px; color: transparent; background: var(--blk); vertical-align: -0.08em; font-style: normal; line-height: 0.78em; overflow: hidden; }
+.blkline .blkw:nth-child(5n + 2) { height: 0.62em; }
+.blkline .blkw:nth-child(7n + 4) { height: 0.9em; vertical-align: -0.14em; }
 /* the lamp: a small square, dark at rest; lit, it blinks like an eject light and settles dark */
 .lamp { display: inline-block; flex: none; width: 7px; height: 7px; margin: 0 7px 0 0; border-radius: 1.5px; vertical-align: 0.05em;
   background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
@@ -4888,8 +4921,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .wpcact { width: 48px; height: 48px; }
 .wpcact .ic { width: 30px; height: 30px; }
 .wpcorb .uavatar { width: 38px; height: 38px; }
-/* the rule under BRDCST is a hollow bar (the sketch's outlined band) */
-.brdcstrule { height: 7px; border: 1.5px solid var(--ink); background: transparent; opacity: 0.85; border-radius: 3px; }
 
 /* =====================================================================
    THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js
@@ -4900,12 +4931,12 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    ===================================================================== */
 .fgridwrap { container-type: inline-size; width: 100%; }
 .fgrid {
-  --fgap: 10px;
+  --fgap: 6px; /* tightened (owner, 25 Oct 2026: "tighten the spaces in between media to make them all a little bigger") */
   display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
   grid-auto-rows: calc(((100cqw - (var(--fcols, 5) - 1) * var(--fgap)) / var(--fcols, 5) - var(--fgap)) / 2);
   gap: var(--fgap); margin: 0 0 var(--ed-card-gap, 26px);
 }
-@media (min-width: 760px) { .fgrid { --fgap: 14px; } }
+@media (min-width: 760px) { .fgrid { --fgap: 8px; } }
 .fcell { position: relative; display: flex; min-width: 0; min-height: 0; container-type: inline-size; } /* a card's type scales with the card (cqw = its own width) */
 .fcell > .card { flex: 1; min-width: 0; min-height: 0; height: 100%; margin: 0; overflow: hidden; }
 
@@ -4919,8 +4950,31 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .card.piece { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
 .fcell .card.piece .imgwrap { position: relative; flex: 1; min-height: 0; aspect-ratio: auto; overflow: hidden; cursor: pointer; }
 .fcell .card.piece .imgwrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card.piece.v-hero { padding: 10px 12px 6px; }
-.card.piece.v-hero .imgwrap { border-radius: 14px; margin: 6px 0 0; }
+/* ONE PADDING AND ONE INNER RADIUS for every card in the grid (owner, 25
+   Oct 2026: "the spacing uniform and the sizing uniform") */
+.fcell { --cardpad: 3cqw; --cardpadx: 5.5cqw; --inner-r: clamp(8px, 3.2cqw, 18px); }
+/* the ink on a card's picture (owner, last): the light blue or the dark blue at 85%, by the card's own ground (--on-card, set per card) */
+.fcell .card { --on-media: var(--on-card, rgba(219, 233, 245, 0.85)); }
+.card.piece.v-hero { padding: 0; }
+.card.piece.v-hero .pcphoto { position: relative; flex: 1; min-height: 0; display: flex; }
+.card.piece.v-hero .imgwrap { flex: 1; border-radius: 0; margin: 0; }
+/* the head rides the photograph's top, the name and the price its foot, each on a scrim */
+.card.piece.v-hero .pchead { position: absolute; left: 0; right: 0; top: 0; z-index: 2; padding: 4.5cqw var(--cardpadx) 6cqw; pointer-events: none;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); color: var(--on-media); }
+.card.piece.v-hero .pcmode { color: var(--on-media); }
+.card.piece.v-hero .imgwrap .ostick { top: 10cqw; left: var(--cardpadx); } /* under the head, not through it */
+.card.piece.v-hero .pcfoot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 8cqw var(--cardpadx) 4cqw;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 72%, transparent) 100%); color: var(--on-media); }
+.card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); }
+.card.piece.v-hero .pcfoot .pctitle { margin: 0; }
+.card.piece.v-hero .pcfoot .demoflag { color: var(--on-media); opacity: 0.85; }
+/* the actions float on the photograph too (owner, evening: "every media card should just be comprised of the images with everything floating on it") */
+.card.piece.v-hero .pcacts { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 0 var(--cardpadx) 3cqw; color: var(--on-media); }
+.card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
+.card.piece.v-hero .pcfoot { bottom: 0; padding-bottom: 12cqw; }
+.card.piece.v-hero .pcfoot { background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 42%, transparent) 100%); }
+.card.piece.v-hero .pcacts { opacity: 0.78; background: none; }
+.card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
@@ -4937,16 +4991,27 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .pcact:active { transform: scale(0.94); }
 .pcact.on { color: var(--red); }
 /* small: the photograph and one quiet line */
-.card.piece.v-small .pieceline { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 8px 6px; min-width: 0; }
-.card.piece.v-small .pieceline .ttl { min-width: 0; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card.piece.v-small { position: relative; }
+.card.piece.v-small .pieceline { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 9cqw var(--cardpadx) 6cqw; min-width: 0;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 34%, transparent) 100%); color: var(--on-media); }
+.card.piece.v-small .pieceline .ttl { min-width: 0; color: inherit; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card.piece.v-small .pieceline .price { flex: none; font: 400 clamp(7.5px, 6.4cqw, 12px)/1.2 var(--mich); }
-.card.piece.v-small .cardpass { width: 26px; height: 26px; top: 6px; right: 6px; }
-.card.piece.v-small .cardpass .ic { width: 16px; height: 16px; }
 
 /* THE PLACE: the mark, the distance, LOCATION NAME, LOCATION TYPE, the globe */
 .fcell .card.placecard { display: flex; }
 .fcell .placeopen { flex: 1; min-height: 0; height: 100%; align-content: start; padding: 8cqw; gap: 3cqw 6cqw; }
 .fcell .placeicon { width: 34cqw; height: 30cqw; border-radius: 7cqw; }
+/* a place that carries a free-use photograph (the model's clubs, bars,
+   restaurants and museums) wears it across the whole card, the words over
+   its foot on a scrim — the reader sees the room, not a mark */
+.placephoto { display: block; object-fit: cover; border: 1px solid var(--line); background: var(--bg3); }
+.card.placecard.withphoto { position: relative; overflow: hidden; }
+.card.placecard.withphoto .placephoto { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0; }
+.card.placecard.withphoto .placeopen { position: relative; isolation: isolate; align-content: end; color: var(--on-media); }
+.card.placecard.withphoto .placeopen::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 34%, color-mix(in srgb, var(--shade) 82%, transparent) 100%); }
+.card.placecard.withphoto .placeopen > :not(.placephoto) { position: relative; z-index: 2; }
+.card.placecard.withphoto .placeglobe { position: absolute; right: 7cqw; bottom: 7cqw; left: auto; top: auto; }
+.card.placecard.withphoto .placename, .card.placecard.withphoto .placemeta, .card.placecard.withphoto .placedist, .card.placecard.withphoto .placeglobe { color: var(--on-media); }
 .fcell .placeicon .ic { width: 60%; height: 60%; }
 .fcell .placedist { font-size: 14cqw; }
 .fcell .placename { text-transform: none; font-size: 8.4cqw; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -4968,41 +5033,50 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .wpcstage img, .fcell .wpcstage video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; max-height: none; }
 .fcell .wpcbody { flex: 1; min-height: 0; overflow: hidden; }
 
-/* THE BRDCST STRIP: the badge in its ring, the name large, where and when */
-.card.bstrip { position: relative; display: flex; border: 1px solid var(--line); border-radius: var(--radius-card);
+/* THE BRDCST STRIP (the owner's drawing, 25 Oct 2026, evening): the event's
+   photograph clouded across the strip, the badge in its white ring with the
+   red rule under the word, the name large in white, where and when small,
+   the × at the corner */
+.card.bstrip { position: relative; display: flex; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card);
   background: linear-gradient(90deg, var(--paper) 0%, color-mix(in srgb, var(--ink) 9%, var(--paper)) 100%); }
-.bsopen { display: flex; align-items: center; gap: 3.5cqw; width: 100%; height: 100%; padding: 6px 48px 6px 3cqw; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; min-width: 0; }
-.bsbadge { flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 82%; aspect-ratio: 1; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); }
+.bsimg { position: absolute; inset: -4%; width: 108%; height: 108%; object-fit: cover; filter: blur(3px) saturate(0.45) brightness(1.08); }
+.card.bstrip.withphoto .bsopen::before { content: ""; position: absolute; inset: 0; background: color-mix(in srgb, var(--shade) 42%, transparent); }
+.bsopen { position: relative; display: flex; align-items: center; gap: 3.5cqw; width: 100%; height: 100%; padding: 6px 48px 6px 3cqw; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; min-width: 0; }
+.card.bstrip.withphoto .bsopen { color: var(--on-media); }
+.bsbadge { position: relative; flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 82%; aspect-ratio: 1; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); color: var(--ink); }
 .bsbadge b { font: 400 clamp(8px, 3.2cqw, 16px)/1 var(--mich); letter-spacing: 0; }
 .bsbadge i { display: block; width: 55%; height: 2px; border-radius: 1px; background: var(--red); }
-.bsbody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bsbody { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .bsname { font: 400 clamp(18px, 9cqw, 56px)/1 var(--mich); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bswhen { font: 400 clamp(8px, 3.4cqw, 15px)/1.25 var(--mich); letter-spacing: 0.04em; color: var(--ink); }
+.bswhen { font: 400 clamp(8px, 3.4cqw, 15px)/1.25 var(--mich); letter-spacing: 0.04em; color: inherit; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.bspass { position: absolute; top: 2cqw; right: 2.4cqw; z-index: 4; display: inline-grid; place-items: center; width: clamp(28px, 7cqw, 44px); height: clamp(28px, 7cqw, 44px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
+.card.bstrip.withphoto .bspass { color: var(--on-media); }
+.bspass .ic { width: 80%; height: 80%; }
+/* THE BRDCST POPUP (BrdcstSheet.jsx): the photograph clear */
+.bsheet { display: grid; gap: 12px; }
+.bsheetimg { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); }
+.bsheethead { display: flex; align-items: center; gap: 14px; }
+.bsheethead .bsbadge { height: 64px; }
+.bsheethead .bsbadge b { font-size: 11px; }
+.bsheetbody { min-width: 0; }
+.bsheetname { margin: 0; font: 400 clamp(22px, 7vw, 36px)/1.05 var(--mich); letter-spacing: 0; }
+.bsheetwhen { margin: 4px 0 0; font: 400 11px/1.3 var(--mich); letter-spacing: 0.06em; color: var(--ink); }
+.bsheetnote { margin: 0; font: 400 12px/1.5 var(--mich); color: var(--ink); }
 
-/* FIGURE 20 (Fig20.jsx): tall cards in a strip, the ends turned and stacked */
-.fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
-.f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
-.f20stage:active { cursor: grabbing; }
-.f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
-.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(8px, 9%, 22px); overflow: hidden; background: var(--bg3); will-change: transform; }
-.f20card img { -webkit-user-drag: none; pointer-events: none; }
-.f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
-.f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* THE STRIP (Strip.jsx; the owner's reference, 25 Oct 2026, evening: X's
+   "Videos for you"): tall cards side by side, the next one peeking, a plain
+   sideways scroll with snap points; a card is as tall as the strip */
+.strip { position: relative; display: flex; gap: 2cqw; height: 100%; min-height: 0; padding: 0 var(--cardpadx, 3.6cqw); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.strip::-webkit-scrollbar { display: none; }
+.stripcard { flex: none; height: 100%; aspect-ratio: var(--asp, 9 / 16); scroll-snap-align: start; border-radius: clamp(8px, 3.2cqw, 18px); overflow: hidden; background: var(--bg3); }
+.stripcard .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.stripcard img, .stripcard video { display: block; width: 100%; height: 100%; object-fit: cover; }
 .card.wpostcard.type-carousel { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
-.f20line { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 0 0 6px; font: 400 10px/1.3 var(--mich); color: var(--ink); overflow: hidden; }
-.f20line .wpchandle { flex: 0 1 auto; min-width: 0; display: inline-flex; align-items: center; gap: 6px; font-size: clamp(10px, 3.6cqw, 16px); white-space: nowrap; overflow: hidden; }
-.f20line .wpcttl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--grey); text-decoration: none; }
-.f20count { margin-left: auto; color: var(--grey); }
-.f20line .cardpass { position: static; flex: none; width: 28px; height: 28px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.f20line .f20count { flex: none; }
-.f20line > .modeltag { flex: none; }
-.f20line .wpchandle { text-overflow: ellipsis; display: block; }
 /* the motion row: 9:16 tiles, the one in the middle plays */
 .card.motionrail { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
 .mrhead { margin: 0; padding: 0 6px; font: 400 10px/1.3 var(--mich); letter-spacing: 0.16em; color: var(--ink); }
 .mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
 .mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
-@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
 
 /* the BRDCST footer and the post overlay inside a grid cell size to the card,
    not the screen (a half-width post on a laptop overflowed with vw sizes) */
@@ -5033,43 +5107,55 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    alike.
    ===================================================================== */
 .card.wpostcard.p2, .card.wpostcard.p2.type-carousel {
-  display: flex; flex-direction: column; gap: 0; padding: 4cqw 5cqw 3.2cqw;
+  display: flex; flex-direction: column; gap: 0; padding: var(--cardpad, 4cqw) var(--cardpadx, 5cqw) calc(var(--cardpad, 4cqw) * 0.8);
   border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); overflow: hidden;
 }
 .p2head { position: relative; display: flex; align-items: center; gap: 2.2cqw; min-width: 0; }
 .p2orb { flex: none; display: inline-grid; place-items: center; width: 10cqw; height: 10cqw; min-width: 28px; min-height: 28px; border: 1.5px solid var(--ink); border-radius: 50%; overflow: hidden; }
 .p2orb a { display: contents; }
 .p2orb .uavatar { width: 100%; height: 100%; border: 0; }
+.uavatar.uphoto { padding: 0; overflow: hidden; background: var(--bg3); }
+.uavatar.uphoto img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .p2user { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(14px, 7.2cqw, 40px)/1.1 var(--mich); letter-spacing: 0; color: var(--ink); }
 .p2user a { color: inherit; text-decoration: none; }
 .p2head > .modeltag { flex: none; }
 .p2head .cardpass { position: static; flex: none; width: clamp(28px, 8cqw, 44px); height: clamp(28px, 8cqw, 44px); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .p2head .cardpass .ic { width: 80%; height: 80%; }
 /* the rule under the head starts under the name, past the circle */
-.p2rule { display: block; flex: none; height: 2px; margin: 0.6cqw 0 0 calc(max(10cqw, 28px) + 2.2cqw); border-radius: 1px; background: var(--red); }
-.p2rule.p2rule2 { margin: 1.2cqw 12cqw 0 11cqw; }
+/* the rule is the fixtures' own cut (owner, 25 Oct 2026, evening: "the red
+   line should be replaced by the same type of lines in between the icons on
+   the fixtures") — the deck's hairline, .cccut's colour, laid flat */
+.p2rule { display: block; flex: none; height: 1px; margin: 0.6cqw 0 0 calc(max(10cqw, 28px) + 2.2cqw); border-radius: 1px; background: color-mix(in srgb, var(--ink) 14%, transparent); }
+/* THE CUT (Cut.jsx): a red rule whose band bends what lies beneath it — the
+   two lips of a cut — where the engine runs an SVG backdrop-filter */
+.cut { position: relative; overflow: visible; }
+.cutband { position: absolute; left: 0; right: 0; top: 50%; height: 22px; transform: translateY(-50%); pointer-events: none; z-index: 1; }
+html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-filter: url(#cutwarp); }
+.cut::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; background: color-mix(in srgb, var(--ink) 14%, transparent); }
+.withmedia .cut::after { background: color-mix(in srgb, var(--on-media) 55%, transparent); }
+@media (prefers-reduced-motion: reduce) { .cutband { display: none; } }
 .p2media { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; margin: 3cqw 0 2cqw; }
-.p2media .wpcstage { flex: 1; min-height: 0; border-radius: clamp(10px, 4cqw, 22px); overflow: hidden; }
+.p2media .wpcstage { flex: 1; min-height: 0; border-radius: var(--inner-r, clamp(10px, 4cqw, 22px)); overflow: hidden; }
 .p2media .wpccredit { padding: 1.2cqw 0 0; font-size: clamp(7px, 2.2cqw, 9px); }
-.p2media .fig20 { flex: 1; }
 .p2words { flex: 1; min-height: 0; display: flex; align-items: center; overflow: hidden; padding: 0 1cqw; font: 400 clamp(12px, 5.4cqw, 26px)/1.35 var(--mich); color: var(--ink); }
 .p2cap { flex: none; display: flex; flex-direction: column; gap: 0.8cqw; min-width: 0; padding: 0 0 0 1cqw; }
 .p2count { font: 400 clamp(8px, 2.4cqw, 12px)/1 var(--mich); letter-spacing: 0.06em; color: var(--ink); padding-left: 1cqw; }
 .p2line { display: flex; align-items: flex-end; gap: 1.6cqw; min-width: 0; }
 .p2fold { flex: 1; min-width: 0; display: block; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
-/* two lines of chevrons, cut where the line ends — the caption waits inside */
-.p2chev { display: block; max-height: 2.9em; overflow: hidden; word-break: break-all; font: 400 clamp(10px, 3.6cqw, 20px)/1.45 var(--mich); letter-spacing: 0.04em; }
+/* two lines of blocks, one per word, cut where the line ends — the caption waits inside */
+.p2fold .blkline { max-height: 3em; font: 400 clamp(10px, 3.6cqw, 20px)/1.5 var(--mich); }
 .p2text { flex: 1; min-width: 0; max-height: 9.5em; margin: 0; overflow-y: auto; font: 400 clamp(10px, 3.4cqw, 17px)/1.45 var(--mich); color: var(--ink); }
 .p2more { flex: none; display: inline-grid; place-items: center; width: clamp(22px, 6cqw, 34px); height: clamp(22px, 6cqw, 34px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; transition: transform 0.18s; }
 .p2more .ic { width: 82%; height: 82%; }
 .p2more.up { transform: rotate(180deg); }
 .p2ring { flex: none; width: clamp(18px, 4.4cqw, 28px); height: clamp(18px, 4.4cqw, 28px); margin: 0 1cqw 0.8cqw auto; padding: 0; border: 1.5px solid var(--ink); border-radius: 50%; background: none; cursor: pointer; }
 .p2ring.on { background: var(--ink); }
-/* the four actions, blue, counted */
-.p2acts { position: relative; flex: none; display: flex; justify-content: space-between; align-items: flex-start; padding: 1.6cqw 12cqw 0 11cqw; color: var(--sig); }
+/* the four actions, blue, counted — four equal columns, one glyph span, so
+   the row reads even (owner, 25 Oct 2026) */
+.p2acts { position: relative; flex: none; display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; align-items: start; padding: 1cqw 10cqw 0; color: var(--sig); opacity: 0.78; }
 .p2act { display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; min-width: 0; }
-.fcell .p2acts .wpcact, .p2acts .wpcact { width: clamp(30px, 11cqw, 56px); height: clamp(30px, 11cqw, 56px); color: var(--sig); }
-.fcell .p2acts .wpcact .ic, .p2acts .wpcact .ic { width: 88%; height: 88%; }
+.fcell .p2acts .wpcact, .p2acts .wpcact { width: clamp(26px, 8cqw, 40px); height: clamp(26px, 8cqw, 40px); color: var(--sig); }
+.fcell .p2acts .wpcact .ic, .p2acts .wpcact .ic { width: 72%; height: 72%; }
 .p2acts .wpcact.on { color: var(--red); }
 /* the shared .soon rule paints a word red; the bubble here is a quiet blue glyph that says it is not built */
 [data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.45; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
@@ -5078,6 +5164,55 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .p2acts .wpcshared { left: 11cqw; bottom: 100%; color: var(--ink); }
 /* what hangs beneath: the tagged pieces, the link, the BRDCST */
 .card.wpostcard.p2 .wpcpieces, .card.wpostcard.p2 .wpclink { margin: 2cqw 0 0; }
-.card.wpostcard.p2 .brdcst { margin: 2.4cqw -5cqw -3.2cqw; }
+.card.wpostcard.p2 .brdcst { margin: 2.4cqw calc(-1 * var(--cardpadx, 5cqw)) calc(-0.8 * var(--cardpad, 4cqw)); }
 .card.wpostcard.p2 .brdcstword { font-size: clamp(20px, 9cqw, 44px); }
+/* THE STAGE (owner, 25 Oct 2026, evening): on a media post the photograph
+   is the whole card; the head rides its top and the foot its bottom, each on
+   a scrim, in the on-media white; a words-only post keeps its paper */
+.p2stage { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.card.wpostcard.p2.withmedia { padding: 0; background: var(--bg3); }
+.card.wpostcard.p2.withmedia .p2stage { display: block; }
+.card.wpostcard.p2.withmedia .p2media { position: absolute; inset: 0; margin: 0; display: block; }
+.card.wpostcard.p2.withmedia .p2media .wpcstage { height: 100%; border-radius: 0; }
+.card.wpostcard.p2.withmedia .p2media .strip { position: absolute; left: 0; right: 0; top: 16cqw; bottom: 26cqw; height: auto; }
+.card.wpostcard.p2.withmedia .p2head { position: absolute; left: 0; right: 0; top: 0; z-index: 3; padding: 4.5cqw var(--cardpadx, 5.5cqw) 7cqw; color: var(--on-media);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); }
+.card.wpostcard.p2.withmedia .p2user, .card.wpostcard.p2.withmedia .p2user a { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2orb { border-color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2head + .p2rule { position: absolute; left: 0; right: 0; top: calc(4.5cqw + max(10cqw, 28px) + 0.6cqw); z-index: 3; margin-left: calc(var(--cardpadx, 5.5cqw) + max(10cqw, 28px) + 2.2cqw); margin-right: var(--cardpadx, 5.5cqw); }
+/* the foot's gradient, faint (owner, late: "reduce the opacity greatly — a gradient on all the posts") */
+.card.wpostcard.p2.withmedia .p2foot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 9cqw var(--cardpadx, 5.5cqw) 4cqw; color: var(--on-media);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 34%, transparent) 100%); }
+.card.wpostcard.p2.withmedia .wpccredit { padding: 0 0 1cqw; color: var(--on-media); opacity: 0.8; }
+.card.wpostcard.p2.withmedia .p2count, .card.wpostcard.p2.withmedia .p2fold, .card.wpostcard.p2.withmedia .p2text, .card.wpostcard.p2.withmedia .p2more { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .blkline .blkw { background: color-mix(in srgb, var(--on-media) 82%, transparent); }
+.card.wpostcard.p2.withmedia .p2ring { border-color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2ring.on { background: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2acts, .card.wpostcard.p2.withmedia .p2n, .card.wpostcard.p2.withmedia .p2acts .wpcact { color: var(--on-media); }
+[data-theme] .card.wpostcard.p2.withmedia .p2acts .wpcact.wpcact.soon, .card.wpostcard.p2.withmedia .p2acts .wpcact.quiet { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2acts .wpcact.on { color: var(--red); }
+/* THE ATTACHED BRDCST (owner, 25 Oct 2026, last): a thin gap between the post
+   and its broadcast; the post's bottom flat and its top rounded, the
+   broadcast's top flat and its bottom rounded — the way the Info Dock and
+   the Passport Button sit side by side */
+.card.wpostcard.p2.withevent { background: none; border: 0; overflow: visible; gap: 4px; }
+.card.wpostcard.p2.withevent .p2stage { border: 1px solid var(--line); border-radius: var(--radius-card) var(--radius-card) 0 0; overflow: hidden; background: var(--bg3); }
+.card.wpostcard.p2.withevent .brdcst { position: relative; flex: none; margin: 0; padding: 3cqw var(--cardpadx, 5.5cqw) 3.4cqw; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 var(--radius-card) var(--radius-card); background: var(--paper); color: var(--ink); }
+/* the words-only post keeps its stage in flow, and wears the same faint gradient at its foot */
+.card.wpostcard.p2:not(.withmedia) .p2foot { margin: 0 calc(-1 * var(--cardpadx, 3.6cqw)) calc(-0.8 * var(--cardpad, 3cqw)); padding: 2cqw var(--cardpadx, 3.6cqw) calc(0.8 * var(--cardpad, 3cqw));
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 10%, transparent) 100%); }
+
+/* THE HOLD MENU (PostCard.jsx HoldMenu): a veil over the card, a small menu in
+   the middle, the compact menu's own face (.ccmenu) */
+.holdveil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border-radius: inherit; background: color-mix(in srgb, var(--paper) 55%, transparent); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: sheetin 0.16s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.holdveilx { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: default; }
+.holdveilx:focus-visible { outline: 2px solid var(--sig); outline-offset: -4px; }
+.holdmenu { position: relative; transform: none; min-width: min(220px, 82%); display: grid; gap: 2px; padding: 6px; border-radius: 16px; border: 1px solid var(--line); background: var(--bg); box-shadow: 0 18px 44px color-mix(in srgb, var(--shade) 22%, transparent); }
+.holdmenu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 10px/1.2 var(--mich); letter-spacing: 0.14em; }
+.holdmenu button:hover, .holdmenu button:focus-visible { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); outline: none; }
+.holdmenu button .ic { flex: none; width: 18px; height: 18px; }
+.holdopt:focus-visible { position: absolute; top: 6px; right: 6px; width: auto; height: auto; margin: 0; padding: 4px 8px; clip: auto; clip-path: none; overflow: visible; border-radius: 8px; background: var(--bg); color: var(--ink); font: 400 9px/1.2 var(--mich); letter-spacing: 0.1em; z-index: 5; outline: 2px solid var(--sig); }
+.card.wpostcard.p2, .card.bstrip { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.p2text, .p2words { user-select: text; -webkit-user-select: text; }
+@media (prefers-reduced-motion: reduce) { .holdveil { animation: none; } }
 .card.wpostcard.p2 .brdcst .brdcstwhen { overflow-wrap: anywhere; }

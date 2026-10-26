@@ -51,6 +51,7 @@ import { counter, activeSession } from "../../lib/sessions.js";
 import { LONG_PRESS_MS } from "../../lib/disc.js";
 import { haptic } from "../../lib/haptics.js";
 import { blinkIndicator, indicatorHeld } from "../../lib/indicator.js";
+import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
 import MailDesk from "./MailDesk.jsx";
 import AMark from "./AMark.jsx";
@@ -263,6 +264,11 @@ export default function ControlCenter({ kind, pathname }) {
             <button type="button" className="ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={18} /></button>
           </form>
         )}
+        {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
+            central control fixture as a bubble … inside the bubble will be the ad
+            scroll wheel"): the ticker (AdStrip.jsx) in a long pill above the row;
+            the deck is taller by --ad-h to hold it */}
+        <div className="ccad"><AdStrip typing={inSearch} /></div>
         <div className="ccrow">
           {CUTS.map((x) => <i key={x} className="cccut" style={{ "--cut-x": x }} data-lens-shape="cut" data-lens-band="6" data-lens-gain="0.08" aria-hidden="true" />)}
           <span className="cccap" aria-hidden="true" />

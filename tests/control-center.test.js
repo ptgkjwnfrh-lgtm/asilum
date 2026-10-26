@@ -129,7 +129,7 @@ test("the theme follows the device unless a pick is pinned (blueprint 2.24)", ()
 test("there is no Wire: one Feed, the posts braided in, the listing a popup (blueprint, 17 Oct)", () => {
   const feed = read("app/page.js");
   assert.ok(!/view=wire|view === "wire"|streamlanes|HotlistStrip/.test(feed), "the selector, the lanes and the rail are gone");
-  assert.ok(/function feedList\(/.test(feed) && /braid\(list, rest, places\)/.test(feed) && /motionRail\(streamPosts\)/.test(feed), "the posts are braided into the pieces");
+  assert.ok(/function feedList\(/.test(feed) && /braid\(list, rest, places, SAMPLE_SONGS\)/.test(feed) && /motionRail\(streamPosts\)/.test(feed), "the posts are braided into the pieces");
   assert.ok(/openSheet\("listing", \{ item, title: "LISTING" \}\)/.test(feed), "a piece opens the LISTING popup");
   assert.ok(/<EchoRail groups=\{rail\} \/>/.test(feed), "the echo rail rides above the stream");
 });
