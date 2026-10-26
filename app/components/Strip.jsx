@@ -2,9 +2,9 @@
 
 // app/components/Strip.jsx — THE STRIP (owner's reference, 25 Oct 2026,
 // evening: X's "Videos for you" — tall cards side by side in one row, the
-// next one peeking at the edge, a plain sideways scroll). A post's carousel
-// of stills and the row of recommended motions are this strip; the earlier
-// Figure 20 coverflow is retired ("look at the reference").
+// next one peeking at the edge, a plain sideways scroll). The row of
+// recommended motions is this strip; a post's carousel of stills went back
+// to Figure 20 (Fig20.jsx) at the owner's word, 25 Oct 2026, late.
 //
 // Native scrolling with snap points, so the page still scrolls through it
 // and a flick behaves the way the phone's own does. `onSettle(index)` says

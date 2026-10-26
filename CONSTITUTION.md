@@ -527,6 +527,14 @@ they fill the gaps the packing leaves (lib/feed/tetris.js fillAds) and,
 with nothing sold, say THIS PLACEMENT IS OPEN — never a pretend advertiser.
 A piece card's foot is one column — name, size and price, a hairline, then
 like, stamp and share — so nothing on it overlaps.
+FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
+input figure 20 how it is. it should be the ipod style collapsed cards
+floating neatly tucked with the other media cards"). A post of several
+stills is Figure 20 alone in its cell — three cards flat, every other card
+stacked at the two ends on its outer edge, opening in the middle — with no
+post-card housing around it: no head, caption, counter or actions; a hold
+opens its menu, the centre card its media. It is a band a large card wide
+and its flat cards tall. The motion row stays the strip.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is

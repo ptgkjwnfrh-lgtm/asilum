@@ -5096,7 +5096,20 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .stripcard { flex: none; height: 100%; aspect-ratio: var(--asp, 9 / 16); scroll-snap-align: start; border-radius: clamp(8px, 3.2cqw, 18px); overflow: hidden; background: var(--bg3); }
 .stripcard .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
 .stripcard img, .stripcard video { display: block; width: 100%; height: 100%; object-fit: cover; }
-.card.wpostcard.type-carousel { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
+/* FIGURE 20 (Fig20.jsx; owner, 25 Oct 2026, late: "simply input figure 20
+   how it is … the ipod style collapsed cards floating neatly tucked with the
+   other media cards"): a carousel is the coverflow alone in its cell — no
+   housing — three cards flat, every other card stacked at the two ends */
+.fcell .card.f20post { display: flex; height: 100%; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.fig20 { position: relative; flex: 1; min-height: 0; display: flex; }
+.f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+.f20stage:active { cursor: grabbing; }
+.f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
+.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(8px, 9%, 22px); overflow: hidden; background: var(--bg3); will-change: transform; }
+.f20card img { -webkit-user-drag: none; pointer-events: none; }
+.f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
+.f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
 /* the motion row: 9:16 tiles, the one in the middle plays */
 .card.motionrail { display: flex; flex-direction: column; gap: 6px; padding: 0; border: 0; background: none; overflow: visible; }
 .mrhead { margin: 0; padding: 0 6px; font: 400 10px/1.3 var(--mich); letter-spacing: 0.16em; color: var(--ink); }
@@ -5131,7 +5144,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    Everything sizes to the card (cqw), so a phone's card and a laptop's read
    alike.
    ===================================================================== */
-.card.wpostcard.p2, .card.wpostcard.p2.type-carousel {
+.card.wpostcard.p2 {
   display: flex; flex-direction: column; gap: 0; padding: var(--cardpad, 4cqw) var(--cardpadx, 5cqw) calc(var(--cardpad, 4cqw) * 0.8);
   border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); overflow: hidden;
 }
@@ -5164,7 +5177,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .p2media .wpccredit { padding: 1.2cqw 0 0; font-size: clamp(7px, 2.2cqw, 9px); }
 .p2words { flex: 1; min-height: 0; display: flex; align-items: center; overflow: hidden; padding: 0 1cqw; font: 400 clamp(12px, 5.4cqw, 26px)/1.35 var(--mich); color: var(--ink); }
 .p2cap { flex: none; display: flex; flex-direction: column; gap: 0.8cqw; min-width: 0; padding: 0 0 0 1cqw; }
-.p2count { font: 400 clamp(8px, 2.4cqw, 12px)/1 var(--mich); letter-spacing: 0.06em; color: var(--ink); padding-left: 1cqw; }
 .p2line { display: flex; align-items: flex-end; gap: 1.6cqw; min-width: 0; }
 .p2fold { flex: 1; min-width: 0; display: block; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
 /* two lines of blocks, one per word, cut where the line ends — the caption waits inside */
@@ -5199,7 +5211,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2.withmedia .p2stage { display: block; }
 .card.wpostcard.p2.withmedia .p2media { position: absolute; inset: 0; margin: 0; display: block; }
 .card.wpostcard.p2.withmedia .p2media .wpcstage { height: 100%; border-radius: 0; }
-.card.wpostcard.p2.withmedia .p2media .strip { position: absolute; left: 0; right: 0; top: 16cqw; bottom: 26cqw; height: auto; }
 .card.wpostcard.p2.withmedia .p2head { position: absolute; left: 0; right: 0; top: 0; z-index: 3; padding: 4.5cqw var(--cardpadx, 5.5cqw) 7cqw; color: var(--on-media);
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 24%, transparent) 0%, transparent 100%); }
 .card.wpostcard.p2.withmedia .p2user, .card.wpostcard.p2.withmedia .p2user a { color: var(--on-media); }
@@ -5209,7 +5220,7 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2.withmedia .p2foot { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 9cqw var(--cardpadx, 5.5cqw) 4cqw; color: var(--on-media);
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 34%, transparent) 100%); }
 .card.wpostcard.p2.withmedia .wpccredit { padding: 0 0 1cqw; color: var(--on-media); opacity: 0.8; }
-.card.wpostcard.p2.withmedia .p2count, .card.wpostcard.p2.withmedia .p2fold, .card.wpostcard.p2.withmedia .p2text, .card.wpostcard.p2.withmedia .p2more { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2fold, .card.wpostcard.p2.withmedia .p2text, .card.wpostcard.p2.withmedia .p2more { color: var(--on-media); }
 .card.wpostcard.p2.withmedia .blkline .blkw { background: color-mix(in srgb, var(--on-media) 82%, transparent); }
 .card.wpostcard.p2.withmedia .p2ring { border-color: var(--on-media); }
 .card.wpostcard.p2.withmedia .p2ring.on { background: var(--on-media); }

@@ -33,7 +33,7 @@ import { footerPages } from "../../lib/brdcst/index.js";
 import { postType, brdcstWhen, brdcstMoment } from "../../lib/feed/types.js";
 import { galleryOf } from "../../lib/feed/tetris.js";
 import { hideCard } from "../../lib/feed/hidden.js";
-import Strip from "./Strip.jsx";
+import Fig20 from "./Fig20.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import TagRow from "./TagChip.jsx";
@@ -297,7 +297,6 @@ function SoundRing({ video }) {
 
 export default function PostCard({ post: p, engagement, onEngage }) {
   const [more, setMore] = useState(0);
-  const [idx, setIdx] = useState(0);
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
   const hold = useHold(() => setMenu(true));
@@ -319,8 +318,26 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   const gallery = hasMedia ? galleryOf(p) : [];
   const motion = type === "MOTION";
   const caption = [p.title, p.text].filter(Boolean).join(" — ");
-  const pad = (n) => String(n).padStart(2, "0");
   const what = "the post " + (p.title || name);
+  // FIGURE 20 (owner, 25 Oct 2026, late: "for the carousels … simply input
+  // figure 20 how it is. it should be the ipod style collapsed cards
+  // floating neatly tucked with the other media cards"): a post of two or
+  // more stills is the coverflow alone in its cell — no housing, no head,
+  // caption or actions around it. The centre card opens the post's media;
+  // a hold (or the hidden key) opens its menu, PASS among it.
+  if (gallery.length > 1) {
+    return (
+      <div className="card f20post" data-id={cardId} data-type={type} aria-label={"carousel: " + (p.title || name) + ", " + gallery.length + " photographs"} {...hold}>
+        <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
+        <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
+        <Fig20
+          items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
+          label={`${gallery.length} photographs by ${name}`}
+          render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}
+        />
+      </div>
+    );
+  }
   // THE POST CARD (owner's post sketch, 25 Oct 2026, IMG_1143): the author's
   // circle and name (Figs. 8–10) over a red rule (11); the media; the
   // counter "01/26" (6); the caption folded into two lines of BLOCKS, one
@@ -328,7 +345,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + (gallery.length > 1 ? "carousel" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(gallery.length > 1 ? "carousel" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
+    <article className={"card wpostcard p2 type-" + type.toLowerCase() + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={type.toLowerCase() + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
       <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
       {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be
           comprised of the entire image — text and icons overlap it"): the
@@ -343,15 +360,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </header>
       <Cut className="p2rule" />
       <div className="p2media">
-        {gallery.length > 1 ? (
-          <Strip
-            aspect={3 / 4}
-            items={gallery.map((g, i) => ({ key: (g.src || g.url) + i, src: g.src || g.url, alt: g.alt || "" }))}
-            label={`${gallery.length} photographs`}
-            onSettle={setIdx}
-            render={(g, i) => <button type="button" className="wpcmedia" onClick={onMedia} aria-label={"enlarge photograph " + (i + 1)}><img src={g.src} alt={g.alt} loading="lazy" /></button>}
-          />
-        ) : hasMedia ? (
+        {hasMedia ? (
           <div className="wpcstage">
             {composed && <Media p={p} onMedia={onMedia} videoRef={videoRef} />}
             {sample && p.video && <MotionMedia video={p.video} id={p.id} onMedia={onMedia} label={"open the sample motion: " + (p.title || "")} videoRef={videoRef} />}
@@ -368,7 +377,6 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       <div className="p2foot">
       {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
       <div className="p2cap">
-        {gallery.length > 1 ? <span className="p2count" aria-label={`photograph ${idx + 1} of ${gallery.length}`}>{pad(idx + 1)}/{pad(gallery.length)}</span> : null}
         <div className="p2line">
           {more ? (
             <BlockText as="p" className="p2text" text={caption} play={more} />

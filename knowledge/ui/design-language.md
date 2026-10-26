@@ -793,10 +793,12 @@ checked what a reader is actually served, which is the claim that matters.
   `strokeWidth: 1.15` everywhere.
 - Scrims: head 24%, foot 34% of `--shade` (a piece's 30%); a words-only
   post's `.p2foot` wears a 10% gradient too.
-- Strip.jsx replaces Fig20.jsx: `.strip` scroll-snaps sideways,
-  `.stripcard` is `height: 100%` with `aspect-ratio: var(--asp)`; a post
-  carousel is 3:4, the motion row 9:16 (`stripRows`: ceil(cols × 1.5),
-  capped at 12).
+- Strip.jsx: `.strip` scroll-snaps sideways, `.stripcard` is `height:
+  100%` with `aspect-ratio: var(--asp)`; the motion row 9:16 (`stripRows`:
+  ceil(cols × 1.5), capped at 12). (Late that night a post carousel went
+  back to Fig20.jsx, bare: `.card.f20post` in a 5x4 cell, no housing; the
+  housed carousel's `.type-carousel`, `.p2count` and `.p2media .strip` are
+  gone.)
 - Wordmark.jsx is `.wmimg` (`/model/logo.jpg`, the owner's artwork cropped
   to the mark) with the name visually hidden; `.wordmark.brandfix` blends
   multiply (screen, inverted, in dark).

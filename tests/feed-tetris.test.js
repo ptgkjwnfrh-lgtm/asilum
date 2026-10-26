@@ -65,7 +65,7 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.deepEqual(SPANS.STILL, [[5, 14, "post"]]);
   assert.deepEqual(SPANS.MOTION, [[5, 14, "post"]]);
   assert.deepEqual(SPANS["STILL+BRDCST"], [[5, 17, "post"]]);
-  assert.deepEqual(SPANS.CAROUSEL, [[5, 12, "post"]], "a carousel is the post card with the strip for its media");
+  assert.deepEqual(SPANS.CAROUSEL, [[5, 4, "fig20"]], "a carousel is Figure 20 alone: a large card's width, its flat cards' height");
   assert.equal(SPANS.RAIL[0][0], "F");
   assert.deepEqual(SPANS.ECHO, [], "an echo lives on the rail above the stream");
   assert.equal(kindOf({ id: "x" }), "LISTING");
@@ -153,7 +153,7 @@ test("the page draws what the packer decides, and the cards are the sketch's", (
   assert.ok(!/SAMPLE FIXTURE|ModelTag/.test(read("app/components/PostCard.jsx")), "no SAMPLE on a post");
   const post = read("app/components/PostCard.jsx");
   assert.match(post, /if \(type === "BRDCST"\) return <BrdcstStrip p=\{p\} id=\{cardId\} \/>;/);
-  assert.match(post, /\{gallery\.length > 1 \? \(\n\s*<Strip\n\s*aspect=\{3 \/ 4\}/, "a post of two or more stills has the strip for its media");
+  assert.match(post, /if \(gallery\.length > 1\) \{\n\s*return \(\n\s*<div className="card f20post"/, "a post of two or more stills is Figure 20 alone");
   // no × on any card's face: a piece and a song hold the menu too
   assert.ok(!/className="cardpass"/.test(page) && !/className="cardpass"/.test(read("app/components/SongCard.jsx")), "the × lives in the hold menu everywhere");
   assert.match(page, /<HoldMenu id=\{"piece:" \+ it\.id\} what=\{what\} open=\{menu\} onClose=\{closeMenu\} onPass=\{onPass \|\| null\} \/>/, "a piece's PASS is still the brain's signal");
@@ -166,16 +166,14 @@ test("the strip (the owner's reference, 25 Oct 2026, evening: X's \"Videos for y
   const strip = read("app/components/Strip.jsx");
   assert.match(strip, /scroll-snap|scrollLeft/, "native scrolling, snapped");
   assert.match(strip, /onSettle\(Math\.max\(0, Math\.min\(items\.length - 1, Math\.round\(el\.scrollLeft \/ Math\.max\(1, step\)\)\)\)\);/, "the card at the left edge is reported");
-  assert.ok(!/rotateY|perspective/.test(strip), "no coverflow: the reference is flat");
-  assert.ok(!existsSync("app/components/Fig20.jsx"), "Figure 20 is retired");
+  assert.ok(!/rotateY|perspective/.test(strip), "the strip is flat");
   const css = read("app/globals.css");
   assert.match(css, /\.strip \{[^}]*overflow-x: auto;[^}]*scroll-snap-type: x mandatory;/, "the page still scrolls through it");
   assert.match(css, /\.stripcard \{ flex: none; height: 100%; aspect-ratio: var\(--asp, 9 \/ 16\); scroll-snap-align: start;/);
-  assert.ok(!/\.f20|\.fig20/.test(css), "no Figure 20 rules remain");
   assert.match(read("app/components/MotionRail.jsx"), /<Strip\n\s*aspect=\{9 \/ 16\}/, "the motion row's tiles are 9:16");
   const { stripRows } = await import("../lib/feed/tetris.js");
   assert.deepEqual([5, 10, 15].map((c) => stripRows("RAIL", c)), [8, 12, 12], "the row grows with the columns, capped at a phone's tile");
-  assert.equal(stripRows("CAROUSEL", 10), null, "a carousel is a post card");
+  assert.equal(stripRows("CAROUSEL", 10), null, "a carousel's height is its own span, not the strip's");
   assert.equal(spansFor({ id: "r", __rail: [] }, 10)[0].h, 12);
 });
 
@@ -201,7 +199,8 @@ test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rule
   assert.match(cut, /if \(ok\) document\.documentElement\.dataset\.cut = "1";/, "gated on the engine, like the glass");
   assert.match(read("app/globals.css"), /html\[data-cut="1"\] \.cutband \{[^}]*backdrop-filter: url\(#cutwarp\);/);
   // Figs. 6–7: the counter and the folded caption
-  assert.match(post, /\{pad\(idx \+ 1\)\}\/\{pad\(gallery\.length\)\}/, "01/26");
+  // (25 Oct 2026, late) the "01/26" counter rode only the housed carousel; Figure 20 carries none
+  assert.ok(!/pad\(idx \+ 1\)|p2count/.test(post), "no counter: a carousel is Figure 20 alone");
   assert.match(post, /<BlockLine className="p2fold-line" text=\{caption\} \/>/, "the caption folds into blocks, one per word (owner, 25 Oct: the blocks replace the chevrons)");
   assert.match(post, /<span className="idlabel">read the caption: \{caption\}<\/span>/, "the folded caption is still read aloud");
   assert.match(post, /<Icon name="fold"/);
@@ -245,7 +244,8 @@ test("stills and motions are always the biggest: every other kind's every size i
   // declared before measuring: the area of the smallest post-card size is larger
   // than the area of the largest size of a piece, a song, a place, a BRDCST or an ad
   const area = (k) => SPANS[k].map(([w, h]) => w * h);
-  const posts = ["STILL", "MOTION", "STILL+BRDCST", "MOTION+BRDCST", "CAROUSEL"].flatMap(area);
+  // (a carousel is Figure 20, a band of small cards, not a post card — see its own test)
+  const posts = ["STILL", "MOTION", "STILL+BRDCST", "MOTION+BRDCST"].flatMap(area);
   const rest = ["LISTING", "SONG", "PLACE", "BRDCST", "AD"].flatMap(area);
   assert.ok(Math.min(...posts) > Math.max(...rest), `posts ${Math.min(...posts)} > others ${Math.max(...rest)}`);
 });
@@ -330,4 +330,24 @@ test("THE SIZE BATTERY: across 24 feeds the sizes vary, no column is left behind
   }
   // a card's draw is its own and stable
   assert.equal(preferredSpan({ id: "syn-1" }, 4), preferredSpan({ id: "syn-1" }, 4));
+});
+
+test("FIGURE 20 for the carousels (owner, 25 Oct 2026, late: \"simply input figure 20 how it is … the ipod style collapsed cards floating neatly tucked with the other media cards\")", () => {
+  // declared before checking: the coverflow is back as it was drawn (three flat,
+  // every other card stacked at the ends on its outer edge, opening in the
+  // middle); a carousel post renders it alone — no post-card housing, head,
+  // caption, counter or actions — and its cell draws no box around it
+  const fig = read("app/components/Fig20.jsx");
+  assert.match(fig, /export const FLAT = 3;/, "three flat");
+  assert.match(fig, /rotateY\(/, "the ends turned");
+  assert.match(fig, /s\.pos = s\.target = Math\.floor\(\(n - 1\) \/ 2\);/, "it opens in the middle");
+  const post = read("app/components/PostCard.jsx");
+  const at = post.indexOf("if (gallery.length > 1) {");
+  const bare = post.slice(at, post.indexOf("  return (\n    <article", at));
+  assert.match(bare, /<Fig20\n/, "the carousel is Figure 20");
+  assert.ok(!/p2head|p2foot|p2cap|p2count|p2acts|Avatar|<Cut/.test(bare), "and nothing around it");
+  assert.ok(!/<Strip/.test(post), "the post card no longer uses the strip");
+  const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.match(css, /\.fcell \.card\.f20post \{[^}]*border: 0;[^}]*background: none;/, "no housing in the cell");
+  assert.ok(!/type-carousel|\.p2count|\.p2media \.strip/.test(css), "the housed carousel's rules are gone");
 });
