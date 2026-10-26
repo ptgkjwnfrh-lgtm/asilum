@@ -516,6 +516,14 @@ evenly in from the edges. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 
+A LISTING IS NEVER A SMALL CARD (owner, 25 Oct 2026, last: "that is
+reserved for music and locations only"). A piece is medium — three columns
+by eight half-rows (four columns on the widest grid); songs and places alone
+take the small sizes. The Feed's grid is six columns on a phone, twelve on a
+tablet, eighteen wide, so two medium listings fill a phone's row (on five,
+this rule left a fifth of a phone's feed as holes). Large cards are six
+wide. The rest of this paragraph's variety stands for songs, places and
+BRDCSTs.
 THE FEED'S SIZES (owner, 25 Oct 2026, late). Stills and motions are always
 the biggest cards. Pieces, songs and places vary like Tetris — each draws
 its own size from its id (portrait, square or landscape, medium or small)

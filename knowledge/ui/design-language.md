@@ -859,9 +859,11 @@ checked what a reader is actually served, which is the claim that matters.
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
   A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
   between `.pcrow` and `.pcacts`.
-- SPANS (lib/feed/tetris.js): LISTING 3x8 | 4x8 (ten columns up) hero,
-  2x4 | 2x8 small; SONG and PLACE 2x4 | 2x8 | 3x4 square, 3x8 medium;
-  BRDCST 5x4 | 4x4 (ten up) strip; posts 5x12–5x17, always the largest.
+- SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid (feedColsFor):
+  LISTING 3x8 | 4x8 (eighteen only) hero — never small, so the small piece
+  card (`.v-small`, `.pieceline`) is deleted; SONG and PLACE 2x4 | 2x8 |
+  3x4 square, 3x8 medium; BRDCST 6x4 strip; posts 6x16, with a BRDCST
+  6x20, words 6x12; CAROUSEL and RAIL 6x16; AD 6x4 | 3x8. LOOKAHEAD 9.
   `preferredSpan` draws a card's size from its id; any other size costs
   PREF (twenty rows); every card covers the lowest column (BOTTOM FIRST).
   The size battery in tests/feed-tetris.test.js holds the variety, the

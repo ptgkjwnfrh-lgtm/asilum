@@ -1166,20 +1166,8 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   // THE WORDS OVER THE PHOTOGRAPH (owner, 25 Oct 2026: "I want text to
   // overlap images"): the photograph fills the card; the head rides its top,
   // the name and the price its foot, on scrims; the actions sit beneath.
-  if (variant === "small") {
-    return (
-      <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
-        {menuEl}
-        <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" />
-        </div>
-        <div className="pieceline">
-          <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
-          {price ? <span className="price">{price}</span> : null}
-        </div>
-      </div>
-    );
-  }
+  // (owner, 25 Oct 2026, late) a listing is never a small card — the small
+  // sizes are the songs' and the places' — so there is one piece card
   return (
     <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
       {menuEl}

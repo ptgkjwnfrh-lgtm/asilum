@@ -39,7 +39,7 @@ test("every route that renders a masthead has exactly one page heading", () => {
 
 test("the catalog card title is a real control, not a clickable div", () => {
   const src = code("app/page.js");
-  assert.match(src, /<button[^>]*className="ttl"/,
+  assert.match(src, /<button[^>]*className="ttl(?: [^"]*)?"/,
     "the catalog card title is a button — it was a div with onClick, reachable by mouse only");
   assert.ok(!/<div className="ttl" onClick/.test(src),
     "no clickable title div may remain");
