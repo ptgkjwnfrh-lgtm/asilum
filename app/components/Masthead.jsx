@@ -12,8 +12,7 @@
 // nav row (the Feed is the root; the deck navigates).
 //
 // The glass is the fixtures' own: the same near-clear fill and tint, no
-// blur, no rainbow rim, and the fixtures' rainbow in the bend — a split a
-// little wider than the other glass (FIXTURE_PULL, 26 Oct 2026). Only the
+// blur, no rainbow: the bend moves every colour alike (26 Oct 2026). Only the
 // bottom edge is an edge of the glass
 // (top, left and right are flush with the screen), so only it lenses, and on
 // Safari the page bends under that edge alone. The lamp under the water

@@ -4621,26 +4621,6 @@ body { font-size: 14px; }
 .sheetscrim { -webkit-backdrop-filter: none; backdrop-filter: none; }
 [data-popup] .main { filter: blur(14px) saturate(0.8); transition: filter 0.22s; }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
-/* THE RAINBOW FILM (owner, 26 Oct 2026: "where's the rainbow"): light
-   through glass — a soft iridescent sweep inside every pane of the glass
-   (LiquidGlass.jsx renders it with the pane's filter), under the pane's
-   words and keys, faded to nothing well before the rim so no colour ever
-   lines an edge (the bend's colour split stays slight: the "red bezel" of a
-   wide split is not coming back). On the reactive panes (.lgrx: the popup,
-   the floating piece) it turns with the hand; on the fixtures it rests. */
-.lgfilm {
-  position: absolute; inset: 0; z-index: -1; display: block; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(calc(var(--iris-a, 200deg) - 110deg), var(--iris-1), var(--iris-2) 26%, var(--iris-3) 50%, var(--iris-4) 74%, var(--iris-5));
-  opacity: var(--film, 0.3); mix-blend-mode: screen;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 var(--film-fade-x, min(64px, 18%)), #000 calc(100% - var(--film-fade-x, min(64px, 18%))), transparent),
-    linear-gradient(180deg, transparent, #000 var(--film-fade-y, 30%), #000 calc(100% - var(--film-fade-y, 30%)), transparent);
-  -webkit-mask-composite: source-in;
-  mask: linear-gradient(90deg, transparent, #000 var(--film-fade-x, min(64px, 18%)), #000 calc(100% - var(--film-fade-x, min(64px, 18%))), transparent),
-    linear-gradient(180deg, transparent, #000 var(--film-fade-y, 30%), #000 calc(100% - var(--film-fade-y, 30%)), transparent);
-  mask-composite: intersect;
-}
-[data-theme="light"] .lgfilm { --film: 0.34; mix-blend-mode: normal; }
-@media (prefers-reduced-transparency: reduce) { .lgfilm { display: none; } }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
   .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
@@ -4675,7 +4655,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
    refractive reactive liquid glass … I want it to look cool").
    Three things on top of the restored glass:
-   1. (26 Oct 2026: a slight 84 / 86 / 88 on every pane; `prism` is gone) the lens itself splits colour (LiquidGlass.jsx prism: what passes
+   1. (26 Oct 2026: retired — "take away the rainbow"; every colour bends alike) the lens itself splits colour (LiquidGlass.jsx prism: what passes
       under a bezel comes apart into red, green and blue);
    2. an oil-slick film on every face: a faint conic rainbow, blended so it
       tints rather than covers, turning with the hand (--iris-a, --iris-x/y)
@@ -4778,7 +4758,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    FLOATING OVER THE FOG (owner, 18 Oct 2026: "floating in space that is
    reactive to movement but the background should be a fogged version of
    the feed"). The page stays behind, blurred and hazed — the fog — and the
-   piece hangs over it as a card of the rainbow glass that turns with the
+   piece hangs over it as a card of the glass that turns with the
    phone or the cursor (useTilt). The photograph float wears the same fog.
    ===================================================================== */
 :root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(12, 30, 22, 0.22), rgba(2, 6, 4, 0.55)); }
@@ -4792,16 +4772,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  box-shadow: var(--sx, 0px) var(--sy, 40px) 90px color-mix(in srgb, var(--shade) 45%, transparent), 0 0 40px -10px var(--iris-2), 0 0 50px -16px var(--iris-1);
+  box-shadow: var(--sx, 0px) var(--sy, 40px) 90px color-mix(in srgb, var(--shade) 45%, transparent); /* no rainbow glow (owner, 26 Oct 2026: "take away the rainbow") */
   animation: floatin 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .pfloatcard[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); }
-.pfloatcard::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: var(--iris-w, 2px); pointer-events: none; z-index: 5; opacity: var(--iris, 0.62);
-  background: conic-gradient(from var(--iris-a, 200deg) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
-}
+/* (26 Oct 2026, "take away the rainbow") the floating piece wears no rainbow rim */
 .pfloatcard::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; mix-blend-mode: screen;
   background: radial-gradient(130% 90% at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--paper) 16%, transparent), transparent 55%); }
 .pfloatimg { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: calc(var(--radius-card) - 3px); overflow: hidden; background: var(--paper); cursor: pointer; }
@@ -4850,9 +4825,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
       outline, no ring;
    2. the bend: Chromium runs the displacement map as the backdrop filter
       (--lg-filter: the 56px squircle bezel, Snell's law at n = 1.5,
-      pulling inward), split three ways at 84 / 86 / 88 — a faint rainbow
-      (26 Oct 2026; the old 80 / 86 / 92 drew a hard red line along the
-      edges); WebKit bends the page under the edges
+      pulling inward), every colour at one pull, 86 (26 Oct 2026: "take
+      away the rainbow"; the old 80 / 86 / 92 drew a hard red line along
+      the edges); WebKit bends the page under the edges
       instead (FIXTURE_BEND);
    3. the gloss: a thin specular along the top, one soft diagonal band, a
       faint bottom-edge light (--glass-sheen); the pointer's shine set a
