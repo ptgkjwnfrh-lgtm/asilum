@@ -41,7 +41,8 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.match(deck, /className="cccut"[^>]*data-lens-shape="cut"/);
   assert.match(deck, /className="ccdisc" data-lens-shape="ring"/);
   assert.match(deck, /className="ccgrill" data-lens-shape="slot"/);
-  assert.match(read("app/components/InfoDock.jsx"), /className="cccut idcut" data-lens-shape="cut"/, "the Info Dock is cut between its keys");
+  // (26 Oct 2026) the Info Dock is buttons on the Masthead now, no pane of its own to cut
+  assert.ok(!/cccut|idcut/.test(read("app/components/InfoDock.jsx")), "the Info Dock's cuts left with its pane");
   const glass = read("app/components/LiquidGlass.jsx");
   assert.match(glass, /export function lensFeatures\(el\)/);
   assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current\);/, "the map is drawn with the carvings, as two greys");
@@ -59,12 +60,25 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(!/<AdStrip/.test(read("app/page.js")), "and off the Feed's head");
 });
 
-test("the top fixtures sit at the top right, the Passport's right edge in line with the deck's, 8 apart (shrunk from the drawn 18)", () => {
-  assert.match(rules, /\.passportbtn \{[^}]*right: var\(--dk-edge\); width: calc\(var\(--u\) \* 82\);/s);
-  const off = Number(rules.match(/\.infodock \{ right: calc\(var\(--dk-edge\) \+ var\(--u\) \* (\d+)\); \}/)[1]);
-  assert.equal(off, 82 + 8, "the Info Dock ends 8 short of the Passport (owner, 19 Oct: the gap shrunk)");
+test("the Masthead: a full-width glass strip, the wordmark at the left and the bare keys at the right, both in line with the deck's edges", () => {
+  // (26 Oct 2026, the owner: "I kind of miss the liquid glass full-length header, let's add it so the logo can
+  // sit on it and the infodeck can be taken away leaving just the buttons"). Declared: one strip of the
+  // fixtures' glass the width of the page and --head-h tall, padded in to the deck's edges so the wordmark
+  // starts where the deck starts and the globe ends where it ends; the Info Dock and the Passport keep no pane.
+  assert.match(rules, /\.fixture \{[^}]*height: var\(--head-h\); padding: env\(safe-area-inset-top, 0px\) var\(--dk-edge\) 0;/s);
+  assert.match(rules, /\.fixture \{[^}]*justify-content: space-between;/s, "the wordmark at one end, the keys at the other");
+  assert.match(rules, /\.mhkeys \{[^}]*height: calc\(var\(--u\) \* 88\);/, "the keys in the sketch's 88-unit row");
   assert.match(rules, /\.idkey \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "three keys of the drawn 292");
-  assert.ok(!/\.infodock \{[^}]*left:/s.test(rules.split(".infodock {")[1].split("}")[0]), "not the top left any more");
+  assert.match(rules, /\.passportbtn \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "the globe a key of the same width");
+  const mast = read("app/components/Masthead.jsx");
+  assert.match(mast, /className="masthead fixture"/);
+  assert.ok(mast.indexOf("<Wordmark") < mast.indexOf("<InfoDock") && mast.indexOf("<InfoDock") < mast.indexOf("<PassportButton"), "wordmark, then the dock's keys, then the globe");
+  for (const f of ["app/components/InfoDock.jsx", "app/components/PassportButton.jsx"]) {
+    const src = read(f);
+    assert.ok(!/useLiquidGlass|fxrim|\bfixture\b"/.test(src), f + " has no pane of its own");
+  }
+  // the popup clears the strip
+  assert.match(rules, /\.sheetscrim \{[^}]*padding: calc\(var\(--head-h\) \+ 8px\) 0 var\(--cc-space\);/s);
 });
 
 test("the indicator light is gone, the plus is smaller, the fixtures' buttons are softer (owner, 26 Oct 2026)", () => {
@@ -100,9 +114,11 @@ test("the September recipe on the fixtures: one pull of 86 for every colour, the
   assert.match(glass, /export const BEZEL = 56;/);
   assert.match(glass, /const GLASS_N = 1\.5;/);
   assert.match(glass, /const bez = Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
-  for (const [f, id] of [["app/components/InfoDock.jsx", "lg-infodock"], ["app/components/PassportButton.jsx", "lg-passportbtn"], ["app/components/ControlCenter.jsx", "lg-deck"]]) {
+  assert.match(read("app/components/Masthead.jsx"), /useLiquidGlass\(glassRef, \{ id: "lg-masthead", strength: 1, open: MASTHEAD_OPEN, bend: FIXTURE_BEND, bezel: "fixture", shine: false \}\)/, "the Masthead: full strength, only its bottom edge lenses, the page bends under it on WebKit");
+  assert.match(read("app/components/Masthead.jsx"), /MASTHEAD_OPEN = Object\.freeze\(\{ top: false, right: false, bottom: true, left: false \}\)/);
+  for (const [f, id] of [["app/components/Masthead.jsx", "lg-masthead"], ["app/components/ControlCenter.jsx", "lg-deck"]]) {
     const src = read(f);
-    assert.match(src, new RegExp(`useLiquidGlass\\(glassRef, \\{ id: "${id}", strength: 1, bend: FIXTURE_BEND`), f + " runs the header's full strength, no extra prism, and bends the page on WebKit");
+    assert.match(src, new RegExp(`useLiquidGlass\\(glassRef, \\{ id: "${id}", strength: 1, (open: MASTHEAD_OPEN, )?bend: FIXTURE_BEND`), f + " runs the header's full strength, no extra prism, and bends the page on WebKit");
     assert.match(src, /useGlassLamps\(glassRef/, f + " carries the lamp under the water");
     assert.match(src, /shine: false/, f + " does not answer the pointer");
   }
@@ -141,13 +157,14 @@ test("the owner's second pass (19 Oct): hairline cuts, the 15% touch, the dark g
 
 test("the third pass (19 Oct): hinged keys, short cuts, a vent with no outline, a thin bezel, one stroke, the shine rim", () => {
   // every key but POST is a flap hinged on its top edge; the hinge is never drawn
-  for (const [f, n] of [["app/components/ControlCenter.jsx", 3], ["app/components/InfoDock.jsx", 1], ["app/components/PassportButton.jsx", 1]]) {
+  for (const [f, n, ref] of [["app/components/ControlCenter.jsx", 3, "glassRef"], ["app/components/InfoDock.jsx", 1, "keysRef"], ["app/components/PassportButton.jsx", 1, "keyRef"]]) {
     const src = read(f);
-    assert.match(src, /useHingedKeys\(glassRef/, f + " holds the pressed state");
+    assert.match(src, new RegExp("useHingedKeys\\(" + ref), f + " holds the pressed state");
     assert.ok((src.match(/\bhkey\b/g) || []).length >= n, f + " hinges its keys");
-    assert.match(src, /bezel: "fixture"/, f + " runs the one fixture bezel");
-    assert.match(src, /<i className="fxrim" aria-hidden="true" \/>/, f + " wears the shine rim");
   }
+  // the panes run the one fixture bezel; the deck wears the shine rim (the Masthead is flush with three screen edges: no rim)
+  for (const f of ["app/components/ControlCenter.jsx", "app/components/Masthead.jsx"]) assert.match(read(f), /bezel: "fixture"/, f + " runs the one fixture bezel");
+  assert.match(deck, /<i className="fxrim" aria-hidden="true" \/>/, "the deck wears the shine rim");
   assert.ok(!/ccpost[^"]*hkey|hkey[^"]*ccpost/.test(deck), "the upload disc is not hinged");
   assert.match(rules, /\.hkey \{\n  transform-origin: 50% 0;/, "hinged on the top edge");
   assert.match(rules, /\.hkey\[data-pressed\] \{\n  transform: perspective\(220px\) rotateX\(-17deg\)/, "the lower edge tips into the glass");
@@ -190,7 +207,7 @@ test("the top fixtures shine like the deck: their gloss is the deck's at their h
   const halves = [...rules.matchAll(/--fx-sheen-half:\s*\n\s*linear-gradient\(180deg,[^)]*\)[^)]*\)[^)]*\) (\d+(?:\.\d+)?)px\)/g)].map((m) => Number(m[1]));
   assert.deepEqual(halves, [8, 8], "half the 16px top specular, both palettes");
   assert.equal((rules.match(/--fx-sheen-half:/g) || []).length, 2);
-  assert.match(rules, /\.fixture \.fxrim \{ opacity: 0\.6; \}/);
+  assert.ok(!/\.fixture \.fxrim/.test(rules), "the Masthead wears no rim: three of its edges are the screen's");
 });
 
 
@@ -214,8 +231,9 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
 });
 
 test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
-  assert.match(rules, /\.brandfix \{\n  position: fixed; z-index: 66; left: var\(--dk-edge\);/, "fixed, its left edge on the deck's");
-  assert.match(rules, /\.brandfix \{[^}]*height: calc\(var\(--u\) \* 88\);[^}]*flex-direction: column; justify-content: center;/s, "its middle on the top fixtures' middle");
+  // (26 Oct 2026) on the Masthead: in its flow, the strip's padding puts its left edge on the deck's
+  assert.match(rules, /\.brandfix \{\n  position: relative; flex: none;/, "in the Masthead's row");
+  assert.match(rules, /\.brandfix \{[^}]*height: calc\(var\(--u\) \* 88\);[^}]*flex-direction: column; justify-content: center;/s, "its middle on the keys' middle");
   // (19 Oct) the name in metal, a touch bolder; the asterisk smaller, at the top of the capitals; a
   // thick translucent bar and one square under the word, within its width
   // the metal and its halo on the capitals only, so the red asterisk takes none of the green glow
@@ -250,7 +268,7 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
   assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
   assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");
-  assert.match(rules, /\[data-popup\] \.brandfix \{ transform: scale\(0\.92\); opacity: 0\.55; \}/, "it dims with the fixtures under a popup");
+  assert.ok(!/\[data-popup\] \.brandfix/.test(rules) && /\[data-popup\] \.fixture \{ opacity: 0\.55;/.test(rules), "it dims with the Masthead it sits on under a popup, once (26 Oct 2026)");
   assert.ok(!/\.feedmark/.test(rules), "the Feed's masthead mark is gone");
   // nothing italic: no rule, no default slant, no synthesized oblique
   const css = read("app/globals.css");

@@ -174,17 +174,21 @@ test("no gate before the first reward: the sign-up sheet never opens itself", ()
   assert.ok(!/if \(!onboarded && [^\n]*setConnectOpen\(true\)/.test(home), "the connect sheet must not open on first visit");
 });
 
-test("the five keys are the deck's, read from the deck table; the shell mounts the three fixtures", () => {
+test("the five keys are the deck's, read from the deck table; the shell mounts the two fixtures", () => {
   // the deck renders DECK (lib/dock.js) and resolves its two routes through
-  // lib/nav.js; the shell mounts the Info Dock, the Passport Button, the deck
-  // and the one sheet; the old header, thumb bar and destination row are gone
+  // lib/nav.js; the shell mounts the Masthead (the wordmark, the Info Dock's
+  // keys and the Passport's globe on one glass strip, 26 Oct 2026), the deck
+  // and the one sheet; the old header's marquee, thumb bar and destination
+  // row stay gone
   const cc = read("app/components/ControlCenter.jsx");
   const shell = read("app/shell.js");
   assert.ok(/className="tabbar"/.test(cc));
   assert.ok(/DECK\.map\(\(k\) => key\(k\)\)/.test(cc), "the deck renders the DECK table");
   assert.ok(/deckFor\(kind\)/.test(cc), "the deck's routes come from lib/nav.js");
-  assert.ok(/<InfoDock \/>/.test(shell), "the shell mounts the Info Dock");
-  assert.ok(/<PassportButton kind=\{accountKind\} pathname=\{pathname\} \/>/.test(shell), "the shell mounts the Passport Button");
+  assert.ok(/<Masthead kind=\{accountKind\} pathname=\{pathname\} \/>/.test(shell), "the shell mounts the Masthead");
+  const mast = read("app/components/Masthead.jsx");
+  assert.ok(/<InfoDock \/>/.test(mast), "the Masthead carries the Info Dock's keys");
+  assert.ok(/<PassportButton kind=\{kind\} pathname=\{pathname\} \/>/.test(mast), "and the Passport's globe");
   assert.ok(/<ControlCenter kind=\{accountKind\} pathname=\{pathname\} \/>/.test(shell), "the shell mounts the deck");
   assert.ok(/<SheetHost \/>/.test(shell), "the shell mounts the one sheet");
   assert.ok(!/className="topnav"/.test(shell), "no destination row");

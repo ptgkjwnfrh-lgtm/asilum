@@ -1,17 +1,17 @@
 "use client";
 
 // app/shell.js
-// The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Three
-// fixtures and nothing else, as the owner drew them on 19 Oct 2026: the
-// WORDMARK (*ASILUM) in the top-left corner, the INFO DOCK (likes, bag,
-// notices) and the PASSPORT BUTTON (the globe) side by side at the top right, and the CENTRAL CONTROL DECK at the bottom
-// (FEED · SEARCH · POST · MESSAGES · ACCOUNT, its cuts, the tab indicator
-// and the foot grill; the ad ticker moved to the Feed's head). Secondary surfaces rise over the
-// root from SheetHost. The magazine header — wordmark, marquee, big
-// search/bag/sign-in, the destination row and the liquid-glass refraction
-// drawn for it — left with the blueprint; the wordmark is a fixture of its
-// own (app/components/Wordmark.jsx, top left), and the house lines
-// of the marquee run in the deck's ticker (lib/dock.js HOUSE_LINES).
+// The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Two
+// fixtures and nothing else: the MASTHEAD, a full-width strip of liquid
+// glass across the top (owner, 26 Oct 2026: "I kind of miss the liquid
+// glass full-length header") carrying the WORDMARK (*ASILUM) at the left and
+// the bare keys of the INFO DOCK (likes, bag, notices) and the PASSPORT (the
+// globe) at the right; and the CENTRAL CONTROL DECK at the bottom (FEED ·
+// SEARCH · POST · MESSAGES · ACCOUNT, its cuts and the foot grill), as the
+// owner drew it on 19 Oct 2026. Secondary surfaces rise over the root from
+// SheetHost. Of the V.1 magazine header only the glass strip came back: no
+// marquee, no big search/bag/sign-in, no destination row; the house lines of
+// the marquee run in the deck's ticker (lib/dock.js HOUSE_LINES).
 //
 // What stays here is identity: the server-issued device cookie, the
 // Supabase session, adoption on sign-in, and what kind of account is
@@ -31,11 +31,9 @@ import { DEFAULT_KIND } from "../lib/accounts.js";
 import SavePrompt from "./components/SavePrompt.jsx";
 import ControlCenter from "./components/ControlCenter.jsx";
 import SheetHost from "./components/SheetHost.jsx";
-import InfoDock from "./components/InfoDock.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
-import PassportButton from "./components/PassportButton.jsx";
-import Wordmark from "./components/Wordmark.jsx";
+import Masthead from "./components/Masthead.jsx";
 import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
 export default function Shell({ children }) {
@@ -282,15 +280,14 @@ export default function Shell({ children }) {
           Visually hidden until focused — no visual-identity change. */}
       <a className="skiplink" href="#main">skip to content</a>
 
-      {/* THE FIXTURES (the owner's sketch, 19 Oct 2026): the Info Dock
-          and the Passport Button at the top right, the Central Control
-          Deck at the thumb. The one
-          sheet (Likes, Bag, Notices, Search, Messages, Post, an overview)
-          rises over the root from SheetHost. */}
-      <Wordmark className="brandfix" />
-      <InfoDock />
+      {/* THE FIXTURES: the Masthead across the top (owner, 26 Oct 2026: the
+          full-length liquid glass header back, the wordmark on it, the Info
+          Dock's and the Passport's keys bare on it at the right) and the
+          Central Control Deck at the thumb (the owner's sketch, 19 Oct
+          2026). The one sheet (Likes, Bag, Notices, Search, Messages, Post,
+          an overview) rises over the root from SheetHost. */}
+      <Masthead kind={accountKind} pathname={pathname} />
       <MusicHost />
-      <PassportButton kind={accountKind} pathname={pathname} />
       <ControlCenter kind={accountKind} pathname={pathname} />
       <SheetHost />
 

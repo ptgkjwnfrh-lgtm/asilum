@@ -5,17 +5,23 @@
 > behind rules that survived; the V.2 slices (`docs/v2/slice-*.md`) and
 > `docs/engineering/ui.md` are the current law.
 
-- **No header.** Three fixtures, drawn by the owner on 19 Oct 2026 (the
-  fixture sketch; the geometry is `app/globals.css` in the sketch's unit
-  `--u`, pinned by `tests/v2-fixtures-sketch.test.js`): the Info Dock
-  (LIKES · BAG · NOTICES) and the Passport Button (the globe) side by side
-  at the top RIGHT, the Passport's right edge in line with the deck's, the
-  ends where they meet straight; and the Central Control Deck (bottom:
-  FEED · SEARCH · POST disc · MESSAGES · ACCOUNT) parted by cuts in the
-  glass, with the tab indicator at its top right and the foot grill under
-  the disc. All three are clear rainbow-refracting liquid glass. The
-  *ASILUM wordmark is a fixture too, top left, in line with the deck's left
-  edge (19 Oct); the ad strip (the house lines) lives on the Feed's head.
+- **The Masthead and the deck** (owner, 26 Oct 2026: "I kind of miss the
+  liquid glass full-length header, let's add it so the logo can sit on it
+  and the infodeck can be taken away leaving just the buttons"; this
+  replaces the 19 Oct "no header, three fixtures" rule). Two fixtures, in
+  the sketch's unit `--u` (`app/globals.css`, pinned by
+  `tests/v2-fixtures-sketch.test.js`): the MASTHEAD, one full-width strip
+  of the fixtures' liquid glass across the top (`app/components/
+  Masthead.jsx`, `--head-h` tall, only its bottom edge lenses), carrying
+  the *ASILUM wordmark at the left, in line with the deck's left edge, and
+  the bare keys at the right — LIKES · BAG · NOTICES (the Info Dock, no
+  pane of its own now) and the Passport's globe, in line with the deck's
+  right edge; and the Central Control Deck (bottom: FEED · SEARCH · POST
+  disc · MESSAGES · ACCOUNT) parted by cuts in the glass, with the foot
+  grill under the disc. Both are clear liquid glass that bends every
+  colour alike (no colour split, no rainbow rim, 26 Oct). Of the V.1
+  masthead only the strip came back: no ticker, no nav row. The ad strip
+  (the house lines) rides on the deck.
 - **The Feed is one Tetris grid** (25 Oct, lib/feed/tetris.js): mixed card
   sizes, even gaps, no holes; carousels and the motion row are Figure 20
   (Fig20.jsx), the ends turned and stacked.

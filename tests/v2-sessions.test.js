@@ -47,7 +47,7 @@ test("the popup's gesture grammar (1.2): swipe down from the header dismisses, s
   assert.match(body, /checkout: \{[^}]*heavy: true/, "a payment page is heavy");
   assert.match(body, /post: \{.*heavy: true/, "an edit in progress is heavy");
   assert.match(body, /document\.documentElement\.dataset\.popup = "1";/, "the root is marked while a popup is up");
-  assert.match(css, /\[data-popup\] \.fixture \{[^}]*transform: scale\(0\.92\)[^}]*opacity: 0\.55/, "the fixtures shrink and go translucent (1.12)");
+  assert.match(css, /\[data-popup\] \.fixture \{ opacity: 0\.55;/, "the fixtures go translucent (1.12); the Masthead spans the page, so it does not shrink (26 Oct 2026)");
 });
 
 test("the deck's Post disc has two lives (1.25, 1.26): Post Selection with no popup, the session indicator with one", () => {

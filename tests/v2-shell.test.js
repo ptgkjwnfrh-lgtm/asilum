@@ -72,11 +72,11 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
   assert.match(dark, /--sig:\s*#6e9cff;/);
 });
 
-test("the fixtures are glass with the rainbow rim, shaped as the owner drew them (19 Oct 2026), and the post disc is round", () => {
+test("the fixtures are glass, the top one a full-width strip (26 Oct 2026), and the post disc is round", () => {
   assert.match(rules, /\.fixture \{[^}]*position: fixed;/s);
-  // not pills: the Info Dock's outer end is round, the end meeting the Passport straight — and the Passport the reverse
-  assert.match(rules, /\.fixture \{[^}]*border-radius: calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 14\);/s);
-  assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 3\) calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 14\) calc\(var\(--u\) \* 3\);/s);
+  // (26 Oct 2026) the top fixture is the Masthead: flush with the top and both sides, so square; the keys on it are bare
+  assert.match(rules, /\.fixture \{[^}]*top: 0; left: 0; right: 0;[^}]*border-radius: 0;/s);
+  assert.match(rules, /\.passportbtn \{[^}]*border-radius: calc\(var\(--u\) \* 7\);/s, "the globe a key like the Info Dock's");
   // (18 Oct) the popup's rainbow rim follows the hand
   // (25 Oct 2026, late) the popup wears no rim: `content: none` — the rainbow is the fixtures' alone
   assert.match(rules, /\.sheet::after \{\n  content: none;/, "the popup wears no rim");
@@ -170,7 +170,7 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   assert.match(tick, /document\.querySelectorAll\(GLASS_REACTIVE\)/, "it writes to the glass elements, not to <html>");
   assert.ok(!/documentElement\.style\.setProperty/.test(hook), "never on the root");
   assert.match(read("app/shell.js"), /useGlassReactive\(\);/, "the shell runs it once");
-  for (const [f, id] of [["app/components/InfoDock.jsx", "lg-infodock"], ["app/components/PassportButton.jsx", "lg-passportbtn"], ["app/components/ControlCenter.jsx", "lg-deck"], ["app/components/SheetHost.jsx", "lg-popup"]]) {
+  for (const [f, id] of [["app/components/Masthead.jsx", "lg-masthead"], ["app/components/ControlCenter.jsx", "lg-deck"], ["app/components/SheetHost.jsx", "lg-popup"]]) {
     const src = read(f);
     assert.match(src, new RegExp('useLiquidGlass\\(\\w+, \\{ id: "' + id + '"'), f + " is a pane of the OG glass");
     // (19 Oct) the popup's rim answers the hand; the fixtures' glass does not answer the pointer at all

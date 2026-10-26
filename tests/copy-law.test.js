@@ -53,8 +53,10 @@ test("the app is a personalized fashion terminal, and nothing calls it the old n
   // Positive: the descriptor a reader meets in prose and metadata.
   assert.match(read("app/layout.js"), /personalized fashion terminal/);
   // (17 Oct) the wordmark is "*ASILUM" alone — tests/brand-name.test.js owns the lockup.
-  // (19 Oct) the wordmark is a fixture of its own, top left, mounted once by the shell
-  assert.match(read("app/shell.js"), /<Wordmark className="brandfix" \/>/, "the shell mounts the wordmark fixture");
+  // (19 Oct) the wordmark is a fixture of its own, top left, mounted once by the shell;
+  // (26 Oct) it sits on the Masthead, which the shell mounts once
+  assert.match(read("app/components/Masthead.jsx"), /<Wordmark className="brandfix" \/>/, "the Masthead carries the wordmark");
+  assert.match(read("app/shell.js"), /<Masthead kind=\{accountKind\} pathname=\{pathname\} \/>/, "the shell mounts the Masthead");
   assert.ok(!/<Wordmark/.test(read("app/page.js")), "the Feed no longer prints a second one");
 });
 

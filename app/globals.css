@@ -3515,7 +3515,7 @@ body { font-size: 14px; }
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
   position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;
-  padding: 12px 0 var(--cc-space); box-sizing: border-box;
+  padding: calc(var(--head-h) + 8px) 0 var(--cc-space); box-sizing: border-box; /* clear of the Masthead (26 Oct 2026) */
   background: var(--scrim);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
@@ -3527,13 +3527,13 @@ body { font-size: 14px; }
 /* THE POPUP (owner, 25 Oct 2026, evening): a large rounded square floating
    in the middle of the screen, the page clouded behind it */
 .sheet {
-  width: min(var(--cc-w), calc(100vw - 20px)); height: 60vh; max-height: calc(100vh - 24px - var(--cc-space));
+  width: min(var(--cc-w), calc(100vw - 20px)); height: 60vh; max-height: calc(100vh - var(--head-h) - 20px - var(--cc-space));
   margin-bottom: 0; display: flex; flex-direction: column; min-height: 0;
   background: var(--bg); border: 1px solid var(--line); border-radius: max(var(--sheet-radius), 19px);
   box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   animation: sheetin 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.sheet.tall { height: calc(100vh - 24px - var(--cc-space)); }
+.sheet.tall { height: calc(100vh - var(--head-h) - 20px - var(--cc-space)); }
 @keyframes sheetin { from { transform: translateY(12px) scale(0.97); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -3609,7 +3609,7 @@ body { font-size: 14px; }
   .maplayout { grid-template-columns: 1fr; }
   .maptools { position: static; flex-direction: row; order: -1; }
   .maptool { flex: 1; min-height: 64px; }
-  .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - 12px); }
+  .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - var(--head-h) - 8px - var(--cc-space)); } /* between the Masthead and the deck */
   .sheetscrim { align-items: flex-end; }
   .sheetbody { padding-bottom: calc(var(--cc-space) + 12px); }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
@@ -3717,21 +3717,28 @@ body { font-size: 14px; }
    the same glass. The rainbow is a MATERIAL effect on the fixtures' edges
    only: a faint conic sheen masked to a one-pixel rim, never a wash.
    ===================================================================== */
-/* THE TOP FIXTURES, as drawn (owner's fixture sketch, 19 Oct 2026, Figure
-   5), in the sketch's units: the Info Dock (292 × 88, three keys parted by
-   cuts) and the Passport Button (82 × 88) side by side at the top RIGHT,
-   18 apart, the Passport's right edge in line with the deck's. Not pills:
-   the Info Dock's outer end is round and the end that meets the Passport is
-   straight, and the Passport's the reverse. */
+/* THE MASTHEAD (owner, 26 Oct 2026: "I kind of miss the liquid glass
+   full-length header, let's add it so the logo can sit on it and the
+   infodeck can be taken away leaving just the buttons"). The top fixture is
+   one strip of the fixtures' glass the whole width of the page, flush with
+   the top and both sides (so square: it has no corner of its own), exactly
+   --head-h tall, the height the page already clears. On it, in one row of
+   the sketch's 88 units: the wordmark at the left, its left edge in line
+   with the deck's, and the bare keys at the right — LIKES · BAG · NOTICES
+   and the Passport's globe — the globe's right edge in line with the deck's.
+   It replaces the Info Dock's and the Passport Button's own panes (the
+   owner's fixture sketch of 19 Oct 2026, Figure 5). */
 .fixture {
-  position: fixed; top: calc(env(safe-area-inset-top, 0px) + max(10px, var(--u) * 17)); z-index: 66;
-  display: flex; align-items: stretch; height: calc(var(--u) * 88); padding: 0; gap: 0;
-  border-radius: calc(var(--u) * 14) calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 14);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 66; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  height: var(--head-h); padding: env(safe-area-inset-top, 0px) var(--dk-edge) 0;
+  border-radius: 0;
 }
-.infodock { right: calc(var(--dk-edge) + var(--u) * 90); } /* the Passport's 82 + a gap of 8 (owner, 19 Oct: shrunk from the drawn 18) */
+.mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88); }
+.infodock { display: flex; align-items: stretch; }
 .passportbtn {
-  right: var(--dk-edge); width: calc(var(--u) * 82); align-items: center; justify-content: center;
-  border-radius: calc(var(--u) * 3) calc(var(--u) * 14) calc(var(--u) * 14) calc(var(--u) * 3);
+  position: relative; display: inline-flex; flex: none; width: calc(var(--u) * 97); align-items: center; justify-content: center;
+  border-radius: calc(var(--u) * 7);
   color: var(--ink); text-decoration: none; transition: color 0.18s, transform 0.12s;
 }
 .passportbtn .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
@@ -3743,8 +3750,6 @@ body { font-size: 14px; }
 }
 .idkey .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
 .idkey.cur { color: var(--red); }
-/* the Info Dock's cuts: the same groove as the deck's, shorter */
-.infodock .cccut.idcut { position: relative; left: auto; top: auto; bottom: auto; transform: none; flex: none; align-self: center; height: calc(100% - var(--u) * 46); margin: 0 -0.5px; }
 .idcount {
   position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
   background: var(--red); color: var(--paper); font: 9px/16px var(--mich); letter-spacing: 0; text-align: center;
@@ -3796,18 +3801,15 @@ body { font-size: 14px; }
 .ccenter .tabl:not(.hkey):active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
 .ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
 
-/* THE WORDMARK IS A FIXTURE (owner, 19 Oct 2026: "the *ASILUM logo becomes
-   a fixture that permanently sits in the left hand corner"): on every page,
-   top left, its left edge in line with the deck's and its middle on the
-   top fixtures' middle; it dims with them under a popup */
+/* THE WORDMARK (owner, 19 Oct 2026: "the *ASILUM logo becomes a fixture
+   that permanently sits in the left hand corner"; 26 Oct 2026: "so the logo
+   can sit on it"): on the Masthead at the left, its left edge in line with
+   the deck's, on the keys' middle; it dims with the bar under a popup */
 .brandfix {
-  position: fixed; z-index: 66; left: var(--dk-edge);
-  top: calc(env(safe-area-inset-top, 0px) + max(10px, var(--u) * 17));
+  position: relative; flex: none;
   height: calc(var(--u) * 88); display: inline-flex; flex-direction: column; justify-content: center; align-items: stretch;
-  text-decoration: none; transition: transform 0.22s, opacity 0.22s; transform-origin: 0 50%;
+  text-decoration: none;
 }
-[data-popup] .brandfix { transform: scale(0.92); opacity: 0.55; }
-[data-media] .brandfix { opacity: 0.22; }
 
 /* notices (the bell's sheet) */
 .notices { display: grid; gap: 8px; }
@@ -3818,10 +3820,11 @@ body { font-size: 14px; }
 .bagsheet { display: grid; gap: 10px; }
 
 /* ---- V.2 slice 2: the popup grammar, the Disc, the session hub ------- */
-/* while a popup is up the fixtures shrink and go translucent (blueprint 1.12) */
-[data-popup] .fixture { transform: scale(0.92); opacity: 0.55; transition: transform 0.22s, opacity 0.22s; }
+/* while a popup is up the fixtures go translucent (blueprint 1.12); the
+   Masthead spans the page, so it fades and does not shrink */
+[data-popup] .fixture { opacity: 0.55; transition: opacity 0.22s; }
 [data-popup] .fixture:hover { opacity: 0.9; }
-.fixture { transition: transform 0.22s, opacity 0.22s; }
+.fixture { transition: opacity 0.22s; }
 /* a phone's header has no room for BACK, the title, the counter and two
    labelled buttons: with BACK up the action buttons keep their glyphs only */
 /* (18 Oct) on a phone the header's keys keep their glyphs only — with the
@@ -4286,8 +4289,10 @@ body { font-size: 14px; }
    (found in the browser, 18 Oct, on MOTION at every width) */
 .sheetacts .sheetbtn[aria-label$="the popup"] span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 /* 3.1: while the player's controls show, the fixtures become extremely compact and translucent */
-[data-media] .fixture, [data-media] .ccenter { transform: scale(0.72); opacity: 0.22; }
-[data-media] .fixture:hover, [data-media] .ccenter:hover, [data-media] .fixture:focus-within, [data-media] .ccenter:focus-within { opacity: 0.9; transform: scale(0.92); }
+[data-media] .ccenter { transform: scale(0.72); opacity: 0.22; }
+[data-media] .ccenter:hover, [data-media] .ccenter:focus-within { opacity: 0.9; transform: scale(0.92); }
+[data-media] .fixture { opacity: 0.22; }
+[data-media] .fixture:hover, [data-media] .fixture:focus-within { opacity: 0.9; }
 @media (prefers-reduced-motion: reduce) { .mocontrols { transition: none; } }
 
 /* the MOTION card in the Feed */
@@ -4323,7 +4328,6 @@ body { font-size: 14px; }
 .mplink { display: inline-flex; align-items: center; gap: 4px; color: var(--grey); text-decoration: none; }
 /* 3.18: on Direct Messages the Info Dock disappears; the circle stays, small, tucked into the right corner */
 [data-dm] .infodock .idkey:not(.musiccircle) { display: none; }
-[data-dm] .infodock { left: auto; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px)); transition: none; }
 [data-dm] .infodock:not(:has(.musiccircle)) { display: none; }
 [data-dm] .musicpanel { left: auto; right: 0; }
 
@@ -4828,7 +4832,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    bottom light at half their depth, the diagonal band at half its strength;
    the shine rim at the deck's apparent brightness. */
 .fixture::before { background: var(--fx-sheen-half); }
-.fixture .fxrim { opacity: 0.6; }
 
 /* THE LAMP under the glass: the current key's glow, kept to the pane's rect
    one layer below it, so the pane bends this light — a glow stick in water.
