@@ -555,6 +555,8 @@ light, and in the title card's chrome washing to phosphor green, glowing, in
 dark; the asterisk red in both. The same day: the logo 25% bigger, and light
 mode back to the artwork's own colours (painted through the same masks); the
 blue is gone.
+Then 10% bigger again, darker and bolder: the letters thickened (the bar
+left as drawn), light painted in the artwork's own hues darkened.
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several

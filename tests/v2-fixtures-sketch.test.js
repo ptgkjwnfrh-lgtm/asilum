@@ -229,16 +229,16 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   // (26 Oct 2026: "make it more blue so it's visible, and phosphorus green in dark mode") two masks cut from
   // it colour it: the word and bar in --wm-ink (a blue in light, the title card's chrome-to-mint in dark), the
   // asterisk in --warn (red in both, as the title card has it)
-  assert.match(rules, /\.wmimg \{ position: relative; display: block; width: clamp\(97\.5px, 26\.25vw, 137\.5px\); aspect-ratio: 900 \/ 200; \}/, "top left, 25% bigger than half the Info Dock (owner, 26 Oct), the artwork's proportions");
+  assert.match(rules, /\.wmimg \{ position: relative; display: block; width: clamp\(107\.25px, 28\.875vw, 151\.25px\); aspect-ratio: 900 \/ 200; \}/, "top left, 25% then 10% bigger than half the Info Dock (owner, 26 Oct), the artwork's proportions");
   assert.match(rules, /\.wmink \{ --wm-mask: url\(\/model\/logo-ink\.png\); background: var\(--wm-ink\); \}/);
   assert.match(rules, /\.wmstar \{ --wm-mask: url\(\/model\/logo-star\.png\); background: var\(--wm-star, var\(--warn\)\); \}/);
   assert.match(rules, /--wm-ink: var\(--metal\);/, "dark: the title card's chrome washing to phosphor green");
   // (same day: "let's go back to the original color for light mode") light paints the artwork's own colours
-  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: url\(\/model\/logo\.jpg\) center \/ 100% 100% no-repeat;\s*--wm-star: url\(\/model\/logo\.jpg\)/s, "light: the original colours");
+  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: url\(\/model\/logo-light\.png\) center \/ 100% 100% no-repeat;\s*--wm-star: url\(\/model\/logo-light\.png\)/s, "light: the artwork's colours, darker (owner, 26 Oct: darker and bolder)");
   assert.ok(!/#3f7ef2/.test(rules), "the blue is gone");
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: drop-shadow/, "dark glows, as the title card does");
   assert.ok(!/\.wordmark\.brandfix \{ (height: auto|mix-blend-mode)/.test(rules), "no blending, and no height override: the mark sits on the fixtures' middle");
-  for (const f of ["logo.jpg", "logo-ink.png", "logo-star.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
+  for (const f of ["logo.jpg", "logo-ink.png", "logo-star.png", "logo-light.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
   assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
   assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
   const wm = read("app/components/Wordmark.jsx");

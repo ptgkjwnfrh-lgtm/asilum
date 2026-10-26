@@ -28,7 +28,10 @@
 // colours (the owner, the same day: "let's go back to the original color for
 // light mode"); in dark the title card's chrome washing to mint, glowing, and
 // the asterisk red (--warn), as the card has it. 25% bigger than the 25 Oct
-// size (owner, 26 Oct 2026).
+// size, then 10% more, darker and bolder (owner, 26 Oct 2026): the masks'
+// letters thickened ~15px -> ~23px of the 900 (the bar untouched, so its
+// blocks keep their gaps), and light paints logo-light.png — the artwork's
+// slate x0.7, its blue-grey x0.75 and a deeper red.
 
 export default function Wordmark({ href = "/", className = "" }) {
   return (
