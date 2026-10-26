@@ -40,6 +40,15 @@
 // session hub. A long hold on it opens the compact menu (New Session).
 // Posting is unavailable inside a popup; the passenger closes it first.
 //
+// THE SCROLL WHEEL (owner, 26 Oct 2026, the sketch 6.jpg): a swipe UP on the
+// disc ejects it like a CD tray — the plus rides up out of the deck on a
+// pill, a dark disc shows in its slot — and the scroll wheel grows out of it
+// round the tray (ScrollWheel.jsx). ArrowUp on the focused disc does the
+// same. A tap on the ejected plus still posts (and the tray goes home);
+// Escape, a tap on the dark disc or anywhere outside, a popup, search or
+// another page close it. The whole move is one CSS transformation keyed on
+// the deck's data-wheel, reversed on close.
+//
 // THE FEED KEY, TWICE (1.13): the first tap on the active tab dismisses the
 // popup and reveals the tab where it was; the second refreshes the tab,
 // which starts at the top (1.14).
@@ -50,6 +59,9 @@ import { DECK, scopeFor } from "../../lib/dock.js";
 import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
 import { counter, activeSession } from "../../lib/sessions.js";
 import { LONG_PRESS_MS } from "../../lib/disc.js";
+import { isEject } from "../../lib/scrollwheel.js";
+import { useEscape, useClickAway } from "./dismiss.js";
+import ScrollWheel from "./ScrollWheel.jsx";
 import { haptic } from "../../lib/haptics.js";
 import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
@@ -123,18 +135,54 @@ export default function ControlCenter({ kind, pathname }) {
   const active = activeSession(dock.hub);
   const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
   const [menu, setMenu] = useState(false);
+  // the scroll wheel: open while the tray is out
+  const [wheel, setWheel] = useState(false);
+  const postRef = useRef(null);
+  const wrapRef = useRef(null);
+  const canWheel = !popupUp && !inSearch;
+  function openWheel(focus) {
+    if (!canWheel) return;
+    haptic("press");
+    setMenu(false);
+    setWheel(true);
+    if (focus) requestAnimationFrame(() => { const w = wrapRef.current && wrapRef.current.querySelector(".ccwheel"); if (w) w.focus(); });
+  }
+  function closeWheel(refocus) {
+    setWheel(false);
+    if (refocus === true && postRef.current) postRef.current.focus();
+  }
+  useEscape(() => closeWheel(true), wheel);
+  useClickAway(wrapRef, closeWheel, { active: wheel });
+  // a popup, search or another page puts the tray away
+  useEffect(() => { if (!canWheel) setWheel(false); }, [canWheel]);
+  useEffect(() => { setWheel(false); }, [pathname]);
   const hold = useRef(null);
   function holdStart(e) {
     if (e.button) return;
-    hold.current = { fired: false, t: setTimeout(() => { hold.current.fired = true; haptic("press"); setMenu(true); }, LONG_PRESS_MS) };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* an old engine */ }
+    hold.current = { fired: false, y: e.clientY, t: setTimeout(() => { hold.current.fired = true; haptic("press"); setMenu(true); }, LONG_PRESS_MS) };
+  }
+  // a swipe up ejects the tray (a tap posts, a long hold opens the menu)
+  function holdMove(e) {
+    const h = hold.current;
+    if (!h || h.fired || wheel || !isEject(e.clientY - h.y)) return;
+    clearTimeout(h.t);
+    h.fired = true;
+    openWheel(false);
   }
   function holdEnd() {
     const h = hold.current; hold.current = null;
     if (!h) return;
     clearTimeout(h.t);
-    if (!h.fired) press("post");
+    if (h.fired) return;
+    // the ejected plus still posts, and the tray goes home
+    if (wheel) setWheel(false);
+    press("post");
   }
   function holdCancel() { const h = hold.current; hold.current = null; if (h) clearTimeout(h.t); }
+  function postKey(e) {
+    if (e.key === "ArrowUp" && !wheel && canWheel) { e.preventDefault(); openWheel(true); }
+  }
 
   function feedTap(e, dest) {
     // the press that left search does only that: no refresh on the way out
@@ -185,16 +233,23 @@ export default function ControlCenter({ kind, pathname }) {
       const cur = sheetIs("post") || sheetIs("postselect") || !!dock.hub.hubOpen;
       const indicator = popupUp;
       return (
-        <span key={k.id} className="ccpostwrap">
+        <span key={k.id} className="ccpostwrap" ref={wrapRef}>
+          <ScrollWheel open={wheel} onClose={closeWheel} />
+          <span className="cctray" aria-hidden="true" />
+          <button type="button" className="ccspindle" aria-label="put the scroll wheel away" tabIndex={wheel ? 0 : -1} aria-hidden={wheel ? undefined : true} onClick={() => closeWheel(true)} />
           <button
+            ref={postRef}
             type="button"
             className={"tabl ccpost" + (cur ? " cur" : "") + (indicator ? " ccsessions" : "")}
-            aria-label={indicator ? "sessions " + sessionCount : "post"}
+            aria-label={indicator ? "sessions " + sessionCount : "post — swipe up for the scroll wheel"}
             aria-pressed={cur}
+            aria-expanded={canWheel ? wheel : undefined}
             onPointerDown={holdStart}
+            onPointerMove={holdMove}
             onPointerUp={holdEnd}
             onPointerLeave={holdCancel}
             onPointerCancel={holdCancel}
+            onKeyDown={postKey}
             onContextMenu={(e) => e.preventDefault()}
           >
             <span className="ccdisc" data-lens-shape="ring" data-lens-band="11">
@@ -233,7 +288,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-wheel={wheel ? "open" : undefined}>
       {glass}
       <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (

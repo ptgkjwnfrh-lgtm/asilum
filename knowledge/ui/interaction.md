@@ -43,6 +43,19 @@ and tactility) are the law; what follows is the shipped reading.
   swaps in a slim slider with arrows and OPEN.
 - Rotating the session dial moves the carousel; swiping the carousel
   turns the dial.
+- THE SCROLL WHEEL (owner, 26 Oct 2026, the sketch 6.jpg;
+  `ScrollWheel.jsx`, `lib/scrollwheel.js`): a swipe UP on the deck's POST
+  disc (24px) ejects it like a CD tray — the plus rides up out of the deck
+  on a pill, a dark disc shows in its slot — and a click wheel grows out of
+  it round the tray, four ticks at 12 / 3 / 6 / 9. Turning it scrolls the
+  page: clockwise down, a whole turn one screen, a tick every 30°, a flick
+  coasts with the Disc's friction (capped under a turn). ArrowUp on the
+  focused disc ejects it; on the wheel the arrows turn a notch, Page keys a
+  turn, Home / End the ends. A tap on the ejected plus still posts; Escape,
+  the dark disc, a click away, a popup, search or another page put it away.
+  One CSS transformation on the deck's `data-wheel`, reversed on close;
+  reduced motion drops the travel and the coast. A tap still opens Post
+  Selection and a long hold the compact menu, as before.
 
 ## Tactility (lib/haptics.js)
 - `tick`, `press`, `confirm`, `error`, `toggle` — short patterns through

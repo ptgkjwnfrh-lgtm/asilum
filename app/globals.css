@@ -3872,6 +3872,75 @@ body { font-size: 14px; }
 
 /* the Post disc's second life: the session indicator (1.25) */
 .ccpostwrap { position: relative; display: flex; }
+
+/* THE SCROLL WHEEL (owner, 26 Oct 2026: "the upload button should extend
+   out like a cd player ejecting a disc and the scroll wheel should morph and
+   appear"; the sketch 6.jpg). A swipe up on the POST disc (ControlCenter.jsx)
+   sets the deck's data-wheel: the plus rides up out of the deck on a pill
+   tray, a dark disc shows in its slot, and the wheel grows out of the plus's
+   ring round the tray, its centre between the two, about 2.25 deck heights
+   across, with four ticks at twelve, three, six and nine. One continuous
+   transformation, reversed on close: opening, the tray first and then the
+   wheel; closing, the wheel first and then the tray. The glass's rules
+   hold: no rainbow, no coloured rim — the ring is a drawn line in ink, the
+   ticks the accent. Reduced motion: no travel, it is simply there. */
+.ccpostwrap {
+  --disc: max(34px, calc(var(--u) * 88));       /* the POST disc's size */
+  --cy: calc(50% + var(--u) * 3);               /* the disc's centre in its key */
+  --eject: calc(var(--dk-h) * 0.62);            /* how far the tray carries the plus: just above the deck */
+  --wheel-d: calc(var(--dk-h) * 2.25);          /* the wheel, across */
+  --tray-ease: cubic-bezier(0.3, 0.75, 0.25, 1);
+}
+.ccenter .ccpostwrap .tabl.ccpost { z-index: 4; transition: transform 0.42s 0.12s var(--tray-ease); }
+.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost { transform: translateY(calc(-1 * var(--eject))); transition: transform 0.42s var(--tray-ease); pointer-events: none; }
+.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost .ccdisc { pointer-events: auto; }
+/* the ejected key's focus ring hugs its disc, not the travelled key box */
+.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible { outline: none; }
+.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible .ccdisc { outline: 2px solid var(--sig); outline-offset: 3px; }
+.cctray {
+  position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--disc) / 2 - 3px);
+  width: calc(var(--disc) + 6px); height: calc(var(--disc) + 6px); transform: translateX(-50%);
+  border-radius: 999px; pointer-events: none; opacity: 0;
+  border: 1.25px solid color-mix(in srgb, var(--ink) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 35%, transparent);
+  transition: top 0.42s 0.12s var(--tray-ease), height 0.42s 0.12s var(--tray-ease), opacity 0.2s 0.3s;
+}
+.ccenter[data-wheel="open"] .cctray {
+  top: calc(var(--cy) - var(--eject) - var(--disc) / 2 - 3px); height: calc(var(--disc) + var(--eject) + 6px); opacity: 1;
+  transition: top 0.42s var(--tray-ease), height 0.42s var(--tray-ease), opacity 0.16s;
+}
+.ccspindle {
+  position: absolute; z-index: 3; left: 50%; top: var(--cy); width: calc(var(--disc) * 0.9); height: calc(var(--disc) * 0.9);
+  padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ink) 58%, var(--bg));
+  transform: translate(-50%, -50%) scale(0.3); opacity: 0; pointer-events: none;
+  transition: transform 0.3s var(--tray-ease), opacity 0.2s;
+}
+.ccenter[data-wheel="open"] .ccspindle {
+  transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: pointer;
+  transition: transform 0.36s 0.12s var(--tray-ease), opacity 0.2s 0.12s;
+}
+.ccwheel {
+  position: absolute; z-index: 1; left: 50%; top: var(--cy); width: var(--wheel-d); height: var(--wheel-d);
+  border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--ink) 78%, transparent);
+  background: linear-gradient(var(--fx-tint), var(--fx-tint));
+  transform: translate(-50%, -50%) scale(0.2); opacity: 0; pointer-events: none; touch-action: none;
+  transition: top 0.32s var(--tray-ease), transform 0.32s var(--tray-ease), opacity 0.22s;
+}
+.ccenter[data-wheel="open"] .ccwheel {
+  top: calc(var(--cy) - var(--eject) / 2); transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
+  transition: top 0.46s 0.1s var(--tray-ease), transform 0.46s 0.1s var(--tray-ease), opacity 0.3s 0.1s;
+}
+.ccwheel:active { cursor: grabbing; }
+.ccwheel:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; }
+.ccwring { position: absolute; inset: 0; border-radius: 50%; }
+.ccwtick {
+  position: absolute; left: 50%; top: 0; width: 2px; height: max(6px, calc(var(--u) * 14)); margin-left: -1px;
+  background: var(--red); transform-origin: 50% calc((var(--wheel-d) - 3px) / 2); transform: rotate(var(--tick));
+}
+@media (prefers-reduced-motion: reduce) {
+  .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel,
+  .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost, .ccenter[data-wheel="open"] .cctray, .ccenter[data-wheel="open"] .ccspindle, .ccenter[data-wheel="open"] .ccwheel { transition: none; }
+}
 .cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
 .ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }
 .ccmenu, .hubmenu {
