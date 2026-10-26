@@ -395,13 +395,12 @@ button { font-family: var(--helv); }
   /* the title card's letters: chrome at the top washing to mint */
   --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
   --metal-edge: rgba(214, 255, 232, 0.35);
-  /* the stamped line (.mhstamp): a stamp, crisp and flat (owner, 26 Oct
-     2026: "too much shadow, it should feel like a stamp") — a barely darker
-     recess in the glass (a shade clearer on the dark) and one low hairline
-     on its pressed edge, no blur;
-     one blue block, under the globe (the links' blue, both themes) */
-  --stamp-recess: rgba(255, 255, 255, 0.09); /* on the dark glass the recess reads a shade clearer */
-  --stamp-edge: rgba(0, 0, 0, 0.35);
+  /* the stamped line (.mhstamp): a stamp, flat (owner, 26 Oct 2026: "still
+     too much, no shadow at all") — only a tone in the glass, a shade darker
+     on the light glass and a shade clearer on the dark, with crisp edges and
+     no shadow of any kind; one blue block, under the globe (the links'
+     blue, both themes) */
+  --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
   --stamp-blue: var(--sig);
   /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
   --wm-ink: var(--metal);
@@ -409,8 +408,7 @@ button { font-family: var(--helv); }
 [data-theme="light"] {
   --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
   --metal-edge: rgba(37, 55, 73, 0.45);
-  --stamp-recess: rgba(13, 24, 33, 0.09);
-  --stamp-edge: rgba(13, 24, 33, 0.3);
+  --stamp-recess: rgba(13, 24, 33, 0.14);
   /* the logo in light: the owner's artwork in its own colours (owner, 26 Oct
      2026: "let's go back to the original color for light mode"), then
      "darker and bolder": logo-word-light.png is the artwork's slate, blue-grey
@@ -3825,12 +3823,11 @@ body { font-size: 14px; }
    three small and a large, each group a size up (Masthead.jsx STAMP; the
    columns are fractions, so it fills the span exactly at every width) —
    the last large block centred under the globe. Just below the keys'
-   glyphs, the word the stamp gap above it. A stamp, not a carving (owner,
-   the same day: "too much shadow, it should feel like a stamp"): square
-   edges, a barely darker recess in the glass (--stamp-recess), one hairline
-   of half a pixel on the pressed upper edge (--stamp-edge), no blur, no
-   drop; no colour of their own but the block under the globe, blue, which
-   is stamped the same way. */
+   glyphs, the word the stamp gap above it. A stamp, flat (owner, the
+   same day: "it should feel like a stamp", then "no shadow at all"): square
+   edges and a tone in the glass (--stamp-recess), nothing else — no
+   shadow, no hairline, no filter; no colour of their own but the block
+   under the globe, blue, flat the same way. */
 .masthead {
   --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* .wmimg's width */
   --mh-line-top: calc(33px + max(var(--u) * 25, 9.5px) + 2.5px); /* the row's middle, half a glyph, a breath */
@@ -3845,7 +3842,6 @@ body { font-size: 14px; }
 }
 .mhstamp i {
   display: block; grid-row: 1; border-radius: 0; background: var(--stamp-recess);
-  box-shadow: inset 0 0.5px 0 var(--stamp-edge);
 }
 .mhstamp i.lit { width: 200%; background: var(--stamp-blue); }
 
