@@ -59,10 +59,14 @@ test("each kind's sizes, as the sketch draws them", () => {
   // (26 Oct 2026) one medium size: the four-wide one left wells beside the three-wide cards on every wide grid
   assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"]], "the piece: medium only");
   // (owner, 25 Oct 2026) a song and a place vary like a piece: small or medium
-  // (26 Oct 2026) the two-wide sizes on a phone's six columns only
-  assert.deepEqual(SPANS.PLACE, [[2, 4, "square", 0, 6], [2, 8, "square", 0, 6], [3, 4, "square"], [3, 8, "medium"]]);
-  assert.deepEqual(SPANS.SONG, [[2, 4, "square", 0, 6], [2, 8, "square", 0, 6], [3, 4, "square"], [3, 8, "medium"]]);
-  assert.ok(spansFor({ id: "s", __song: { id: "s", title: "t" } }, 12).every((o) => o.w !== 2), "no two-wide song beside the three-wide pieces on twelve");
+  // (26 Oct 2026: "I am also seeing gaps in the feed, which is against the rules") no two-wide size: every
+  // card is a multiple of three columns wide, so a row of halves always closes
+  assert.deepEqual(SPANS.PLACE, [[3, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.SONG, [[3, 4, "square"], [3, 8, "medium"]]);
+  for (const k of Object.keys(SPANS)) for (const [w] of SPANS[k]) assert.ok(w === "F" || w % 3 === 0, k + ": " + w + " is a multiple of three");
+  // the braid sizes a small for its row
+  assert.deepEqual(spansFor({ id: "s", __song: { id: "s", title: "t" }, __span: "short" }, 6).map((o) => o.h), [4]);
+  assert.deepEqual(spansFor({ id: "s", __song: { id: "s", title: "t" }, __span: "tall" }, 6).map((o) => o.h), [8]);
   assert.deepEqual(SPANS.BRDCST, [[6, 4, "strip"]], "a standalone BRDCST: a small card's height, a large card's width");
   assert.ok(spansFor({ id: "x" }, 6).every((o) => o.w !== 4), "no four-wide size on a phone's six columns");
   assert.deepEqual(SPANS.AD, [[6, 4, "adwide"], [3, 8, "ad"]], "two ad spaces: BRDCST-size and medium");
@@ -255,7 +259,7 @@ test("songs and places take more than one size across a feed, and holes stay wit
     const m = audit(cells, cols);
     assert.ok(m.holes / m.area <= { 6: 0.02, 12: 0.03, 18: 0.04 }[cols], `${cols}: ${m.holes} holes of ${m.area}`);
   }
-  assert.ok(seen.has("2x4") && seen.has("3x8"), "small and medium both appear (" + [...seen] + ")");
+  assert.ok(seen.has("3x4") && seen.has("3x8"), "small and medium both appear (" + [...seen] + ")");
 });
 
 test("ad space fills the ragged end: only where it fits exactly, never over a card, never lower than the feed", () => {
@@ -377,4 +381,38 @@ test("FIGURE 20 for the carousels (owner, 25 Oct 2026, late: \"simply input figu
   assert.match(css, /\.fcell \.card\.wpostcard\.p2\.f20post \{[^}]*border: 0;[^}]*background: none;/, "no housing: they float on the feed");
   assert.match(css, /\.card\.wpostcard\.p2\.withmedia\.f20post \.p2head, \.card\.wpostcard\.p2\.withmedia\.f20post \.p2foot \{ background: none;/, "no scrims: around the cards there is only the feed");
   assert.ok(!/type-carousel|\.p2count|\.p2media \.strip|\.stripcard|\.mrhead|(^|[^-])\.strip \{/.test(css), "the housed carousel's and the strip's rules are gone");
+});
+
+test("A SMART MIX AND NO GAPS on the model's feed (owner, 26 Oct 2026)", async () => {
+  // declared before measuring: "when I'm swiping I don't want two full scrolls to be comprised of just
+  // listings, locations, BRDCSTs and/or songs, or motions and stills — I want a smart mix; I am also
+  // seeing gaps in the feed, which is against the rules". On the model's own feed, packed as the page
+  // packs it: no hole on 6, 12 or 18 columns, and on a phone every window two screens tall (2 × 812px,
+  // 62 half-rows at 26px) holds at least one still or motion AND at least one other card. With the old
+  // braid and packing this failed: 125 such windows and 4 holes.
+  const { SAMPLE_POSTS } = await import("../lib/model/media.js");
+  const { SAMPLE_SONGS } = await import("../lib/model/songs.js");
+  const { PLACES } = await import("../lib/places/registry.js");
+  const { postType } = await import("../lib/feed/types.js");
+  const pieces = Array.from({ length: 60 }, (_, i) => ({ id: "syn-" + i }));
+  const { rail, rest } = motionRail(SAMPLE_POSTS);
+  const list = braid(pieces, rest, PLACES.slice(0, 12), SAMPLE_SONGS);
+  if (rail) list.splice(Math.min(6, list.length), 0, rail);
+  const media = (c) => !!(c.__rail || (c.__post && ["STILL", "MOTION"].includes(postType(c.__post))));
+  for (const cols of [6, 12, 18]) {
+    const { cells } = fillAds(tetrisPack(list, { cols, ads: true }), { cols });
+    const m = audit(cells, cols);
+    assert.equal(m.overlaps, 0, cols + ": no overlap");
+    const occ = new Set(); const tops = new Array(cols).fill(0);
+    for (const c of cells) for (let i = 0; i < c.w; i++) { tops[c.x + i] = Math.max(tops[c.x + i], c.y + c.h); for (let j = 0; j < c.h; j++) occ.add((c.x + i) + "," + (c.y + j)); }
+    let holes = 0; for (let x = 0; x < cols; x++) for (let y = 0; y < tops[x]; y++) if (!occ.has(x + "," + y)) holes++;
+    assert.equal(holes, 0, cols + " columns: no gap in the feed");
+    if (cols === 6) {
+      const WIN = 62, rows = Math.max(...tops);
+      for (let t = 0; t + WIN <= rows; t++) {
+        const w = cells.filter((c) => c.y + c.h > t && c.y < t + WIN);
+        assert.ok(w.some((c) => media(c.card)) && w.some((c) => !media(c.card)), "two screens from half-row " + t + " hold both kinds");
+      }
+    }
+  }
 });

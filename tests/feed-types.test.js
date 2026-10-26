@@ -45,10 +45,9 @@ test("the ECHO rail groups live echoes by author, latest first; the braid keeps 
   assert.ok(!out.some((x) => x.__post && x.__post.attachments.echo), "no echo in the stream");
   assert.equal(out.filter((x) => x.__post).length, 1);
   assert.equal(out.filter((x) => x.__place).length, 1, "a place after the ninth piece");
-  // (26 Oct 2026) the posts lead the pieces now (braid: POSTS_PER_PIECE); a words-only post is not
-  // media, so it does not cap the pieces
-  assert.equal(out[0].id, "post:7", "the post leads");
-  assert.equal(out.filter((x) => !x.__post && !x.__place).length, 9, "every piece still shows: no media post, no cap");
+  // (26 Oct 2026) with no media post the plain braid stands: a post after every third piece
+  assert.equal(out[3].id, "post:7", "the first post after the third piece");
+  assert.equal(out.filter((x) => !x.__post && !x.__place).length, 9, "every piece shows");
 });
 
 test("slice 14: the footer's date line, the price line and what OFFER does (owner's references, 18 Oct)", () => {

@@ -569,6 +569,15 @@ motion the one generated test pattern. The ad space fills mid-feed gaps no
 card can (at most one ad per eight cards); the two-wide song and place sizes
 are a phone's only, and a listing has one size, three by eight. The cards
 sit 8px from the screen's edges on a phone (was 14).
+A SMART MIX, AND NO GAPS (owner, 26 Oct 2026: "when I'm swiping I don't
+want two full scrolls to be comprised of just listings, locations, BRDCSTs
+and/or songs, or motions and stills — I want a smart mix; I am also seeing
+gaps in the feed, which is against the rules"). Each still, carousel or
+motion brings one row of smaller cards: a piece, and beside it another
+piece, one tall song or place, or two short ones stacked; a BRDCST has a
+row of its own. The packer takes the cards in that order, a post waiting
+only for its row to level. Every card is a multiple of three columns wide
+(no two-wide song or place), so the rows close; the feed has no gap.
 FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
 input figure 20 how it is. it should be the ipod style collapsed cards
 floating neatly tucked with the other media cards"). A post of several
