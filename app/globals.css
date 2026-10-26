@@ -5021,7 +5021,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.placecard.withphoto .placeopen { position: relative; isolation: isolate; align-content: end; color: var(--on-media); }
 .card.placecard.withphoto .placeopen::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 34%, color-mix(in srgb, var(--shade) 82%, transparent) 100%); }
 .card.placecard.withphoto .placeopen > :not(.placephoto) { position: relative; z-index: 2; }
-.card.placecard.withphoto .placeglobe { position: absolute; right: 7cqw; bottom: 7cqw; left: auto; top: auto; }
+/* the globe stays pinned at the bottom right: the rule above lifts every
+   child but the photograph to position: relative, and it outranks a plain
+   .placeglobe — so the globe fell into the grid's flow and sat on the
+   place's type (owner, 25 Oct 2026: "more overlapping with the passport
+   button"). The words keep clear of it on the right. */
+.card.placecard.withphoto .placeopen > .placeglobe { position: absolute; right: 7cqw; bottom: 7cqw; left: auto; top: auto; }
+.fcell .card.placecard .placename, .fcell .card.placecard .placemeta { padding-right: calc(14cqw + 7cqw); }
 .card.placecard.withphoto .placename, .card.placecard.withphoto .placemeta, .card.placecard.withphoto .placedist, .card.placecard.withphoto .placeglobe { color: var(--on-media); }
 .fcell .placeicon .ic { width: 60%; height: 60%; }
 .fcell .placedist { font-size: 14cqw; }

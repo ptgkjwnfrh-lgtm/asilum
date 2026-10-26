@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFileSync } from "node:fs";
-import { tetrisPack, fillAds, spansFor, kindOf, galleryOf, feedColsFor, motionRail, SPANS, RAIL_MAX, RAIL_MIN, LOOKAHEAD } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, preferredSpan, AD_EVERY, spansFor, kindOf, galleryOf, feedColsFor, motionRail, SPANS, RAIL_MAX, RAIL_MIN, LOOKAHEAD } from "../lib/feed/tetris.js";
 import { braid, PLACE_PAIR } from "../lib/feed/types.js";
 import { readHidden, hideCard } from "../lib/feed/hidden.js";
 
@@ -53,11 +53,13 @@ test("the grid: 5 columns on a phone, 10 on a tablet, 15 wide — the column sta
 });
 
 test("each kind's sizes, as the sketch draws them", () => {
-  assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"], [2, 4, "small"]], "the piece: three columns by four, or a small square");
+  // (owner, 25 Oct 2026, late: "the sizes … can be randomized to varying sizes") portrait, square and landscape
+  assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"], [4, 8, "hero", 10], [2, 4, "small"], [2, 8, "small"]], "the piece: medium tall or square, small square or tall");
   // (owner, 25 Oct 2026) a song and a place vary like a piece: small or medium
-  assert.deepEqual(SPANS.PLACE, [[2, 4, "square"], [3, 8, "medium"]]);
-  assert.deepEqual(SPANS.SONG, [[2, 4, "square"], [3, 8, "medium"]]);
-  assert.deepEqual(SPANS.BRDCST, [[5, 4, "strip"]], "a standalone BRDCST: a large card's width, a small card's height");
+  assert.deepEqual(SPANS.PLACE, [[2, 4, "square"], [2, 8, "square"], [3, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.SONG, [[2, 4, "square"], [2, 8, "square"], [3, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.BRDCST, [[5, 4, "strip"], [4, 4, "strip", 10]], "a standalone BRDCST: a small card's height, a large card's width (or four on a wide grid)");
+  assert.ok(spansFor({ id: "x" }, 5).every((o) => o.w !== 4), "no four-wide size on a phone's five columns: it would leave a one-column well");
   assert.deepEqual(SPANS.AD, [[5, 4, "adwide"], [3, 8, "ad"]], "two ad spaces: BRDCST-size and medium");
   // the post sketch (IMG_1143): every post is the five-column post card, 7:10; a BRDCST hangs beneath
   assert.deepEqual(SPANS.STILL, [[5, 14, "post"]]);
@@ -74,7 +76,7 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.equal(kindOf({ id: "pl", __place: { id: "pl" } }), "PLACE");
   assert.equal(kindOf({ id: "r", __rail: [] }), "RAIL");
   assert.deepEqual(spansFor({ id: "r", __rail: [] }, 10).map((o) => o.w), [10], "full resolves to the grid's width");
-  assert.deepEqual(spansFor({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, 10).map((o) => o.w), [5], "a BRDCST is five wide on any grid");
+  assert.deepEqual(spansFor({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, 10).map((o) => o.w), [5, 4], "a BRDCST: five wide, or four on a wide grid");
   assert.equal(kindOf({ id: "ad:0:0", __ad: { size: "ad" } }), "AD");
   assert.equal(galleryOf({ attachments: { media: [{ url: "a" }, { url: "b" }] } }).length, 2);
   assert.equal(galleryOf({}).length, 0);
@@ -112,16 +114,9 @@ test("the case that trapped cells (seen 25 Oct on a 10-column feed): a wide post
   assert.ok(LOOKAHEAD >= 4, "a short lookahead lets a small card fill the gap first");
 });
 
-test("the sketch's pattern: on a phone a tall piece stands with two small cards stacked beside it", () => {
-  const pieces = Array.from({ length: 30 }, (_, i) => ({ id: "syn-" + i }));
-  const { cells } = tetrisPack(pieces, { cols: 5 });
-  const heroes = cells.filter((c) => c.v === "hero");
-  assert.ok(heroes.length >= 3, "the feed has tall pieces (" + heroes.length + ")");
-  for (const h of heroes.slice(0, 3)) {
-    const beside = cells.filter((c) => c.w === 2 && c.h === 4 && c.y >= h.y && c.y + c.h <= h.y + h.h && (c.x === h.x + h.w || c.x + c.w === h.x));
-    assert.equal(beside.length, 2, "two small cards beside the hero at " + h.x + "," + h.y);
-  }
-});
+// (retired 25 Oct 2026, late) "a tall piece with two small cards beside it" was
+// the fit-first packing's habit; the owner ruled sizes vary and "it doesn't
+// matter what's next to each other" — the size battery below replaces it.
 
 test("the motion row: up to twenty motions, never padded; a row of one is not a row", () => {
   const m = (id) => ({ id, serverId: id, postKind: "video", attachments: { video: { url: "/v.mp4" } } });
@@ -281,6 +276,7 @@ test("ad space fills the ragged end: only where it fits exactly, never over a ca
     assert.equal(m.outside, 0, cols + ": inside the grid");
     assert.deepEqual(out.cells.slice(0, packed.cells.length), packed.cells, cols + ": the cards stay where they were");
     const ads = out.cells.slice(packed.cells.length);
+    assert.ok(ads.length <= Math.floor(packed.cells.length / AD_EVERY), cols + ": at most one ad per " + AD_EVERY + " cards");
     for (const a of ads) {
       assert.equal(a.kind, "AD");
       assert.ok((a.w === 5 && a.h === 4) || (a.w === 3 && a.h === 8), "one of the two sizes");
@@ -290,6 +286,48 @@ test("ad space fills the ragged end: only where it fits exactly, never over a ca
     assert.deepEqual(fillAds(packed, { cols }), out, "deterministic");
   }
   assert.ok(filled > 0, "the wider grids' ragged ends take ad space (" + filled + ")");
+  assert.equal(AD_EVERY, 8);
   // a level feed takes none
   assert.equal(fillAds({ cells: [{ card: { id: "a" }, kind: "LISTING", x: 0, y: 0, w: 5, h: 4, v: "hero" }], rows: 4 }, { cols: 5 }).cells.length, 1);
+});
+
+test("THE SIZE BATTERY: across 24 feeds the sizes vary, no column is left behind, and holes stay rare", () => {
+  // declared before the final measurement (25 Oct 2026, late), from the owner's
+  // ruling that sizes vary like Tetris with stills and motions the biggest:
+  //  - variety: no single listing size holds more than 55% of the listings
+  //    (the fit-first packing held 73% — this fails on it), and listings use
+  //    at least three sizes on a ten-column grid;
+  //  - bottom first: no card narrower than a post is ever placed above the
+  //    lowest column (a packer that abandons a column fails this; the
+  //    weight-only version scored 288 half-rows);
+  //  - holes: at most 1% of the packed area on five and ten columns, 2% on
+  //    fifteen (measured 0.7%, 0.2%, 1.2%).
+  const sample = (seed, n) => braid(
+    Array.from({ length: n }, (_, i) => ({ id: seed + "-syn-" + i })),
+    Array.from({ length: Math.round(n / 3) }, (_, i) => i % 5 === 3 ? { id: seed + "b" + i, attachments: { event: { id: "e" + i, name: "E" } } } : still(seed + "p" + i)),
+    Array.from({ length: Math.round(n / 4) }, (_, i) => ({ id: seed + "pl" + i })),
+    Array.from({ length: Math.round(n / 4) }, (_, i) => ({ id: seed + "s" + i, title: "t" })));
+  const limit = { 5: 0.01, 10: 0.01, 15: 0.02 };
+  for (const seed of "abcdefgh") for (const n of [30, 45, 90]) {
+    const list = sample(seed, n);
+    for (const cols of [5, 10, 15]) {
+      const { cells } = tetrisPack(list, { cols });
+      const h = new Array(cols).fill(0);
+      for (const c of cells) {
+        if (c.w < 5) assert.ok(c.x <= h.indexOf(Math.min(...h)) && h.indexOf(Math.min(...h)) < c.x + c.w, `${seed}${n}@${cols}: ${c.card.id} covers the lowest column`);
+        for (let i = 0; i < c.w; i++) h[c.x + i] = c.y + c.h;
+      }
+      const occ = new Set(); const tops = new Array(cols).fill(0);
+      for (const c of cells) for (let i = 0; i < c.w; i++) { tops[c.x + i] = Math.max(tops[c.x + i], c.y + c.h); for (let j = 0; j < c.h; j++) occ.add((c.x + i) + "," + (c.y + j)); }
+      let holes = 0; for (let x = 0; x < cols; x++) for (let y = 0; y < tops[x]; y++) if (!occ.has(x + "," + y)) holes++;
+      const area = cols * Math.max(...tops);
+      assert.ok(holes / area <= limit[cols], `${seed}${n}@${cols}: ${holes} holes of ${area}`);
+      const sizes = {}; for (const c of cells) if (c.kind === "LISTING") sizes[c.w + "x" + c.h] = (sizes[c.w + "x" + c.h] || 0) + 1;
+      const total = Object.values(sizes).reduce((a, b) => a + b, 0);
+      assert.ok(Math.max(...Object.values(sizes)) / total <= 0.55, `${seed}${n}@${cols}: one listing size holds ${JSON.stringify(sizes)}`);
+      if (cols === 10 && n >= 45) assert.ok(Object.keys(sizes).length >= 3, `${seed}${n}@10: listings in ${Object.keys(sizes)}`);
+    }
+  }
+  // a card's draw is its own and stable
+  assert.equal(preferredSpan({ id: "syn-1" }, 4), preferredSpan({ id: "syn-1" }, 4));
 });

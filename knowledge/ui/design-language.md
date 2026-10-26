@@ -848,9 +848,16 @@ checked what a reader is actually served, which is the claim that matters.
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
   A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
   between `.pcrow` and `.pcacts`.
-- SPANS (lib/feed/tetris.js): LISTING 3x8 hero | 2x4 small; SONG and PLACE
-  2x4 square | 3x8 medium; BRDCST 5x4 strip (no longer full width); posts
-  5x12–5x17, always the largest. AD 5x4 adwide | 3x8 ad, laid only by
+- SPANS (lib/feed/tetris.js): LISTING 3x8 | 4x8 (ten columns up) hero,
+  2x4 | 2x8 small; SONG and PLACE 2x4 | 2x8 | 3x4 square, 3x8 medium;
+  BRDCST 5x4 | 4x4 (ten up) strip; posts 5x12–5x17, always the largest.
+  `preferredSpan` draws a card's size from its id; any other size costs
+  PREF (twenty rows); every card covers the lowest column (BOTTOM FIRST).
+  The size battery in tests/feed-tetris.test.js holds the variety, the
+  bottom-first rule and the hole bounds.
+- `.card.placecard.withphoto .placeopen > .placeglobe` keeps the globe
+  absolute at the bottom right (a plain `.placeglobe` lost to the rule that
+  lifts the photo card's children); the name and type pad right to clear it. AD 5x4 adwide | 3x8 ad, laid only by
   `fillAds` into level gaps at the feed's end, never lower than the feed;
   `AdSpace.jsx` draws `.card.adspace`, a dashed open placement.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks

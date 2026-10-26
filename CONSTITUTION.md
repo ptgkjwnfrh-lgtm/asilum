@@ -517,10 +517,12 @@ popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 
 THE FEED'S SIZES (owner, 25 Oct 2026, late). Stills and motions are always
-the biggest cards. Pieces, songs and places vary like Tetris — medium or
-small, whatever fits, the card's id breaking ties — and it does not matter
-what sits next to what. A standalone BRDCST is a large card's width and a
-small card's height. The Feed has two ad spaces, medium and BRDCST-size;
+the biggest cards. Pieces, songs and places vary like Tetris — each draws
+its own size from its id (portrait, square or landscape, medium or small)
+and keeps it unless keeping it would trap a hole — and it does not matter
+what sits next to what. Every card covers the lowest open column, so none
+is left behind. A standalone BRDCST is a small card's height and a large
+card's width (four columns on a wide grid). The Feed has two ad spaces, medium and BRDCST-size;
 they fill the gaps the packing leaves (lib/feed/tetris.js fillAds) and,
 with nothing sold, say THIS PLACEMENT IS OPEN — never a pretend advertiser.
 A piece card's foot is one column — name, size and price, a hairline, then
