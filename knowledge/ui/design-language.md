@@ -846,6 +846,13 @@ checked what a reader is actually served, which is the claim that matters.
   icons sit on the text's edge (each button's slack pulled out by a negative
   margin). Nothing is pinned over the foot. The Feed's piece cards draw
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
+  A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
+  between `.pcrow` and `.pcacts`.
+- SPANS (lib/feed/tetris.js): LISTING 3x8 hero | 2x4 small; SONG and PLACE
+  2x4 square | 3x8 medium; BRDCST 5x4 strip (no longer full width); posts
+  5x12–5x17, always the largest. AD 5x4 adwide | 3x8 ad, laid only by
+  `fillAds` into level gaps at the feed's end, never lower than the feed;
+  `AdSpace.jsx` draws `.card.adspace`, a dashed open placement.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
   `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`
   maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.

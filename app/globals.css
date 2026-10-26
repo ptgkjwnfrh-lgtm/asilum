@@ -5031,6 +5031,14 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .placeglobe .ic { width: 14cqw; height: 14cqw; }
 
 /* THE SONG: the record's art, the title over it, PASS */
+/* THE AD SPACE (owner, 25 Oct 2026): the gaps at the feed's end, medium or
+   BRDCST-size; an open placement drawn as the Hotlist draws one — a dashed
+   outline, the words centred, nothing that pretends to be an advertiser */
+.fcell .card.adspace { display: grid; place-content: center; justify-items: center; gap: 1.5cqw; height: 100%; box-sizing: border-box; padding: var(--cardpadx);
+  border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent); border-radius: var(--radius-card); background: none; text-align: center; }
+.adspacetag { font: 400 clamp(8px, 3.4cqw, 11px)/1 var(--mich); letter-spacing: 0.22em; color: var(--red); }
+.adspaceline { font: 400 clamp(8px, 3cqw, 10px)/1.3 var(--mich); letter-spacing: 0.18em; color: var(--grey); }
+.adspacenote { font: 400 clamp(9px, 3.4cqw, 11px)/1.3 var(--mich); font-style: normal; color: var(--faint); }
 .card.songcard { position: relative; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--bg3); }
 .songart { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }

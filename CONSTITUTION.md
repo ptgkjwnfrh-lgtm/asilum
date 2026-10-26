@@ -516,6 +516,16 @@ evenly in from the edges. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 
+THE FEED'S SIZES (owner, 25 Oct 2026, late). Stills and motions are always
+the biggest cards. Pieces, songs and places vary like Tetris — medium or
+small, whatever fits, the card's id breaking ties — and it does not matter
+what sits next to what. A standalone BRDCST is a large card's width and a
+small card's height. The Feed has two ad spaces, medium and BRDCST-size;
+they fill the gaps the packing leaves (lib/feed/tetris.js fillAds) and,
+with nothing sold, say THIS PLACEMENT IS OPEN — never a pretend advertiser.
+A piece card's foot is one column — name, size and price, a hairline, then
+like, stamp and share — so nothing on it overlaps.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

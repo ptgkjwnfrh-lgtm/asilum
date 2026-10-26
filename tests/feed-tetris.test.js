@@ -9,7 +9,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFileSync } from "node:fs";
-import { tetrisPack, spansFor, kindOf, galleryOf, feedColsFor, motionRail, SPANS, RAIL_MAX, RAIL_MIN, LOOKAHEAD } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, spansFor, kindOf, galleryOf, feedColsFor, motionRail, SPANS, RAIL_MAX, RAIL_MIN, LOOKAHEAD } from "../lib/feed/tetris.js";
 import { braid, PLACE_PAIR } from "../lib/feed/types.js";
 import { readHidden, hideCard } from "../lib/feed/hidden.js";
 
@@ -54,9 +54,11 @@ test("the grid: 5 columns on a phone, 10 on a tablet, 15 wide — the column sta
 
 test("each kind's sizes, as the sketch draws them", () => {
   assert.deepEqual(SPANS.LISTING, [[3, 8, "hero"], [2, 4, "small"]], "the piece: three columns by four, or a small square");
-  assert.deepEqual(SPANS.PLACE, [[2, 4, "square"]]);
-  assert.deepEqual(SPANS.SONG, [[2, 4, "square"]]);
-  assert.equal(SPANS.BRDCST[0][0], "F", "a standalone BRDCST is a full-width strip");
+  // (owner, 25 Oct 2026) a song and a place vary like a piece: small or medium
+  assert.deepEqual(SPANS.PLACE, [[2, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.SONG, [[2, 4, "square"], [3, 8, "medium"]]);
+  assert.deepEqual(SPANS.BRDCST, [[5, 4, "strip"]], "a standalone BRDCST: a large card's width, a small card's height");
+  assert.deepEqual(SPANS.AD, [[5, 4, "adwide"], [3, 8, "ad"]], "two ad spaces: BRDCST-size and medium");
   // the post sketch (IMG_1143): every post is the five-column post card, 7:10; a BRDCST hangs beneath
   assert.deepEqual(SPANS.STILL, [[5, 14, "post"]]);
   assert.deepEqual(SPANS.MOTION, [[5, 14, "post"]]);
@@ -71,7 +73,9 @@ test("each kind's sizes, as the sketch draws them", () => {
   assert.equal(kindOf({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }), "BRDCST");
   assert.equal(kindOf({ id: "pl", __place: { id: "pl" } }), "PLACE");
   assert.equal(kindOf({ id: "r", __rail: [] }), "RAIL");
-  assert.deepEqual(spansFor({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, 10).map((o) => o.w), [10], "full resolves to the grid's width");
+  assert.deepEqual(spansFor({ id: "r", __rail: [] }, 10).map((o) => o.w), [10], "full resolves to the grid's width");
+  assert.deepEqual(spansFor({ id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, 10).map((o) => o.w), [5], "a BRDCST is five wide on any grid");
+  assert.equal(kindOf({ id: "ad:0:0", __ad: { size: "ad" } }), "AD");
   assert.equal(galleryOf({ attachments: { media: [{ url: "a" }, { url: "b" }] } }).length, 2);
   assert.equal(galleryOf({}).length, 0);
 });
@@ -143,7 +147,7 @@ test("places come in pairs after every ninth piece; a non-piece PASS is remember
 
 test("the page draws what the packer decides, and the cards are the sketch's", () => {
   const page = read("app/page.js");
-  assert.match(page, /const \{ cells, rows \} = tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols \}\);/);
+  assert.match(page, /const \{ cells, rows \} = fillAds\(tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols \}\), \{ cols: feedCols \}\);/);
   assert.match(page, /style=\{\{ gridColumn: `\$\{c\.x \+ 1\} \/ span \$\{c\.w\}`, gridRow: `\$\{c\.y \+ 1\} \/ span \$\{c\.h\}` \}\}/, "every card at its grid place");
   assert.match(page, /const \{ rail, rest \} = motionRail\(streamPosts\);/);
   assert.ok(!/<Columns|placeInColumns|packFeed/.test(page), "the masonry columns are gone");
@@ -240,4 +244,52 @@ test("the place card (IMG_1143 Figs. 14–16): Location name and Location type a
   assert.equal(kindWord(null), "");
   assert.match(place, /<span className="placemeta">\{kindWord\(p\.kind\)\}<\/span>/, "the kind alone (no SAMPLE, owner, 25 Oct, last)");
   assert.match(read("app/globals.css"), /\.fcell \.placename \{ text-transform: none;/);
+});
+
+test("stills and motions are always the biggest: every other kind's every size is smaller (owner, 25 Oct 2026)", () => {
+  // declared before measuring: the area of the smallest post-card size is larger
+  // than the area of the largest size of a piece, a song, a place, a BRDCST or an ad
+  const area = (k) => SPANS[k].map(([w, h]) => w * h);
+  const posts = ["STILL", "MOTION", "STILL+BRDCST", "MOTION+BRDCST", "CAROUSEL"].flatMap(area);
+  const rest = ["LISTING", "SONG", "PLACE", "BRDCST", "AD"].flatMap(area);
+  assert.ok(Math.min(...posts) > Math.max(...rest), `posts ${Math.min(...posts)} > others ${Math.max(...rest)}`);
+});
+
+test("songs and places take more than one size across a feed, and the packing still holds no hole", () => {
+  const list = braid(Array.from({ length: 45 }, (_, i) => ({ id: "syn-" + i })), [], Array.from({ length: 10 }, (_, i) => ({ id: "pl" + i })), Array.from({ length: 10 }, (_, i) => ({ id: "s" + i, title: "t" })));
+  const seen = new Set();
+  for (const cols of [5, 10, 15]) {
+    const { cells } = tetrisPack(list, { cols });
+    for (const c of cells) if (c.kind === "SONG" || c.kind === "PLACE") seen.add(c.w + "x" + c.h);
+    assert.equal(audit(cells, cols).holes, 0, cols + ": no hole");
+  }
+  assert.ok(seen.has("2x4") && seen.has("3x8"), "small and medium both appear (" + [...seen] + ")");
+});
+
+test("ad space fills the ragged end: only where it fits exactly, never over a card, never lower than the feed", () => {
+  // declared before measuring: after fillAds there is no overlap, every ad is one of
+  // the two sizes, none reaches below the feed's lowest card, and the ragged end
+  // shrinks on a grid that has one; the cards' own cells are untouched
+  const posts = Array.from({ length: 15 }, (_, i) => i % 5 === 3 ? { id: "b" + i, attachments: { event: { id: "e" + i, name: "E" } } } : still("p" + i));
+  const list = braid(Array.from({ length: 45 }, (_, i) => ({ id: "syn-" + i })), posts, Array.from({ length: 10 }, (_, i) => ({ id: "pl" + i })), Array.from({ length: 10 }, (_, i) => ({ id: "s" + i, title: "t" })));
+  let filled = 0;
+  for (const cols of [5, 10, 15]) {
+    const packed = tetrisPack(list, { cols });
+    const out = fillAds(packed, { cols });
+    const m = audit(out.cells, cols);
+    assert.equal(m.overlaps, 0, cols + ": no overlap");
+    assert.equal(m.outside, 0, cols + ": inside the grid");
+    assert.deepEqual(out.cells.slice(0, packed.cells.length), packed.cells, cols + ": the cards stay where they were");
+    const ads = out.cells.slice(packed.cells.length);
+    for (const a of ads) {
+      assert.equal(a.kind, "AD");
+      assert.ok((a.w === 5 && a.h === 4) || (a.w === 3 && a.h === 8), "one of the two sizes");
+      assert.ok(a.y + a.h <= packed.rows, cols + ": no lower than the feed");
+    }
+    filled += ads.length;
+    assert.deepEqual(fillAds(packed, { cols }), out, "deterministic");
+  }
+  assert.ok(filled > 0, "the wider grids' ragged ends take ad space (" + filled + ")");
+  // a level feed takes none
+  assert.equal(fillAds({ cells: [{ card: { id: "a" }, kind: "LISTING", x: 0, y: 0, w: 5, h: 4, v: "hero" }], rows: 4 }, { cols: 5 }).cells.length, 1);
 });

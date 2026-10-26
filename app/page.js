@@ -14,6 +14,7 @@ import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
 import { useHold, HoldMenu, HoldKey } from "./components/HoldMenu.jsx";
 import { Cut, CutDefs } from "./components/Cut.jsx";
+import AdSpace from "./components/AdSpace.jsx";
 import { demoImageFor } from "../lib/model/pieces.js";
 import { inkFor } from "../lib/model/stills.js";
 import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
@@ -26,7 +27,7 @@ import {
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
-import { tetrisPack, feedColsFor, motionRail } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, feedColsFor, motionRail } from "../lib/feed/tetris.js";
 import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
 import MotionRail from "./components/MotionRail.jsx";
 import SongCard from "./components/SongCard.jsx";
@@ -827,6 +828,7 @@ export default function Home() {
   // carousel and the motion row are the STRIP (Strip.jsx: X's "Videos for you").
   function renderCard(it, variant) {
     if (it.__rail) return <MotionRail key={it.id} posts={it.__rail} />;
+    if (it.__ad) return <AdSpace key={it.id} wide={variant === "adwide"} />;
     if (it.__song) return <SongCard key={it.id} id={it.id} song={it.__song} />;
     if (it.__post) return <PostCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} />;
     if (it.__place) return <PlaceCard key={it.id} place={it.__place} />;
@@ -845,7 +847,8 @@ export default function Home() {
     // the duo (owner's sketch, 19 Oct 2026) on the two-column phone Feed only
     // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
     // every card at its grid place, in one size its kind allows, the gaps even
-    const { cells, rows } = tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols });
+    // the gaps the packing leaves at the feed's ragged end take ad space (fillAds)
+    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols }), { cols: feedCols });
     return (
       <>
       <CutDefs />
