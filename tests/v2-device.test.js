@@ -80,13 +80,12 @@ test("a double tap floats the piece over the fogged Feed, reactive to movement; 
   assert.match(strip(read("app/components/FloatView.jsx")), /export function useTilt\(cardRef, haloRef = null, tilt = true\)/);
 });
 
-test("the louder rainbow on the popup; the fixtures are the September glass (19 Oct): the bend's own split, no drifting film", () => {
+test("the popup's film; the fixtures are the September glass (19 Oct): one pull for every colour (26 Oct), no drifting film", () => {
   const lg = strip(read("app/components/LiquidGlass.jsx"));
-  assert.match(lg, /PULL\.map\(\(v, i\) => \(v \* strength \* \(1 \+ prism \* \(i - 1\) \* 0\.28\)\)/, "red, green and blue pulled apart by the prism");
-  assert.match(read("app/components/SheetHost.jsx"), /prism: 1/, "the popup splits colour");
-  // (19 Oct, the owner: "do this" — the September recipe) the fixtures run the header's 80 / 86 / 92 with no extra prism
-  for (const f of ["app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx"]) {
-    assert.ok(!/prism: 1/.test(read(f)), f + " splits colour by the bend alone");
+  // (26 Oct 2026, "the odd red bezel line") the 80 / 86 / 92 split and the popup's prism are gone: every colour bends alike
+  assert.match(lg, /export const PULL = 86;\n[^]*const pull = \(PULL \* strength\)\.toFixed\(1\);/, "one pull, scaled by the pane's strength");
+  for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx", "app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx"]) {
+    assert.ok(!/prism/.test(read(f)), f + " passes no prism");
   }
   assert.match(rules, /@keyframes irisdrift \{ to \{ --iris-drift: 360deg; \} \}/);
   assert.ok(!/\.fixture, \.ccenter \{ animation: irisdrift/.test(rules), "the fixtures carry no drifting film");

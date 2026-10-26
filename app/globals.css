@@ -736,7 +736,6 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .card .imgwrap { overflow: hidden; cursor: pointer; }
 .card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
 .card .imgwrap:hover img { transform: scale(var(--ed-zoom, 1.045)); }
-.card.reach .imgwrap { border: 2px solid var(--red); }
 .card .body { padding: 8px 0 0; }
 .card .ttl { font-weight: 900; font-size: var(--ed-fs-cardttl, 14.5px); line-height: 1.25; text-transform: uppercase; letter-spacing: 0.01em; cursor: pointer; }
 .card .ttl:hover { color: var(--red); }
@@ -1701,7 +1700,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 
 /* ---- Catalog cards: mock chrome (scanline + lens + inspect), de-bubbled
    Aug 12 (owner order: more Grailed — square-cut floating images, no card
-   border, no hover box; the red reach frame and INSPECT badge stay) ---- */
+   border, no hover box; the INSPECT badge stays. The red reach frame is
+   gone: owner, 26 Oct 2026, "the odd red bezel line") ---- */
 .imgwrap { position: relative; border-radius: var(--ed-img-rad, var(--radius-card)); overflow: hidden; }
 .imgwrap::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 70% 45% at 30% 16%, rgba(255, 255, 255, 0.10), transparent 60%); }
@@ -4616,7 +4616,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
    refractive reactive liquid glass … I want it to look cool").
    Three things on top of the restored glass:
-   1. the lens itself splits colour (LiquidGlass.jsx prism: what passes
+   1. (retired 26 Oct 2026: one pull for every colour, no fringe) the lens itself splits colour (LiquidGlass.jsx prism: what passes
       under a bezel comes apart into red, green and blue);
    2. an oil-slick film on every face: a faint conic rainbow, blended so it
       tints rather than covers, turning with the hand (--iris-a, --iris-x/y)
@@ -4791,8 +4791,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
       outline, no ring;
    2. the bend: Chromium runs the displacement map as the backdrop filter
       (--lg-filter: the 56px squircle bezel, Snell's law at n = 1.5,
-      pulling inward), split three ways at 80 / 86 / 92 — the rainbow on
-      the letters is the bend's own; WebKit bends the page under the edges
+      pulling inward), every colour at one pull (86; the 80 / 86 / 92 split
+      drew a red line along the edges and is gone, 26 Oct 2026); WebKit bends the page under the edges
       instead (FIXTURE_BEND);
    3. the gloss: a thin specular along the top, one soft diagonal band, a
       faint bottom-edge light (--glass-sheen); the pointer's shine set a

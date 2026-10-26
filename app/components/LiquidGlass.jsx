@@ -176,23 +176,21 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
 
 // The filter, once per pane (each pane needs its own id: its map is its own
 // size). Render it near the pane; it is 0×0 and paints nothing itself.
-// The pull at the edge, R/G/B (glass disperses: red bends least, blue most).
-// The header runs at 1; the popups at 0.5 (0.15 read as nothing at all).
-export const PULL = [80, 86, 92];
-// `prism` widens the gap between the three colours' pulls (owner, 18 Oct
-// 2026: "rainbow refractive reactive liquid glass, cmon … I want it to look
-// cool"): 0 is the 8 Sep fringe; 1 roughly triples it, so what passes under
-// the bezel splits into red, green and blue — the rainbow is IN the
-// refraction, not only painted on the rim.
-export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1, prism = 0 }) {
-  const [sr, sg, sb] = PULL.map((v, i) => (v * strength * (1 + prism * (i - 1) * 0.28)).toFixed(1));
+// The pull at the edge: ONE pull for every colour (owner, 26 Oct 2026: "the
+// odd red bezel line" on the cards and the fixtures). The glass used to
+// disperse — red pulled 80, green 86, blue 92, and `prism` widened the gap —
+// so wherever the bend met an edge the three colours parted into a red line
+// on one side and a yellow-green one on the other. The bend stays; the
+// colours travel together. The header runs at 1; the popups at 0.8.
+export const PULL = 86;
+export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1 }) {
+  const pull = (PULL * strength).toFixed(1);
   return (
     <svg className="glass-defs" aria-hidden="true" focusable="false">
     {/* THE OPTICS: the centre of the pane is CRYSTAL CLEAR (the backdrop
         untouched — the owner found any frost "oddly cloudy"); the
-        bezel is a lens — the backdrop bent through the map, each
-        colour a little differently (glass disperses: red bends least,
-        blue most — the faint colour fringe on Apple's edges), only
+        bezel is a lens — the backdrop bent through the map, every
+        colour alike (no fringe: 26 Oct 2026), only
         lightly softened — blended with the clear backdrop by the weight
         picture, a grey that says how much of each pixel is bezel. That is
         Apple's clear glass: a refracting rim around an untouched middle. */}
@@ -212,18 +210,9 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
       {/* the lens chain, data-lens: restrictLens() confines these to the
           edge band when only one edge is open (the strip), so the clear
-          middle costs nothing; red bends least, blue most */}
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sr} xChannelSelector="R" yChannelSelector="A" result="sxR" />
-      <feDisplacementMap data-lens="1" in="sxR" in2="lgya" scale={sr} xChannelSelector="A" yChannelSelector="R" result="bentR" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sg} xChannelSelector="R" yChannelSelector="A" result="sxG" />
-      <feDisplacementMap data-lens="1" in="sxG" in2="lgya" scale={sg} xChannelSelector="A" yChannelSelector="R" result="bentG" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={sb} xChannelSelector="R" yChannelSelector="A" result="sxB" />
-      <feDisplacementMap data-lens="1" in="sxB" in2="lgya" scale={sb} xChannelSelector="A" yChannelSelector="R" result="bentB" />
-      <feColorMatrix data-lens="1" in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
-      <feColorMatrix data-lens="1" in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
-      <feColorMatrix data-lens="1" in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
-      <feComposite data-lens="1" in="chR" in2="chG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="chRG" />
-      <feComposite data-lens="1" in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens" />
+          middle costs nothing; every colour bends alike */}
+      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
+      <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="lens" />
       {/* lens × weight + clear × (1 − weight): the weight picture read
           into COLOUR at full alpha, and its complement, so the blend is
           plain arithmetic — no alpha mask, nothing premultiplied to
@@ -281,18 +270,13 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
   // reverse: the element reference places nothing, the data href bends.
   const webkit = typeof navigator !== "undefined" && /Apple Computer/.test(navigator.vendor || "");
   const chain = (imgId) => {
-    const [sr, sg, sb] = PULL.map((v) => (v * strength).toFixed(1));
+    // one pull for every colour: a card bent under a pane's edge no longer
+    // parts into a red line and a cyan one along its own border (26 Oct 2026)
+    const pull = (PULL * strength).toFixed(1);
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
       (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
-      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
-      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
-      `<feColorMatrix in="bR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR"/>` +
-      `<feColorMatrix in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
-      `<feColorMatrix in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
-      `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
-      `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>`;
+      `<feDisplacementMap in="SourceGraphic" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G"/>`;
   };
   let serial = 0;
   const crosses = (b, r) => {
@@ -443,7 +427,7 @@ export function lensFeatures(el) {
 }
 
 // `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
-export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, prism = 0, bezel = null, shine = true } = {}) {
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
   const xRef = useRef(null);
@@ -499,7 +483,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (pageBend) pageBend.dispose();
     };
   }, [elRef, id, active, open, strength, bend, bezel, shine]);
-  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} prism={prism} />;
+  return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} />;
 }
 
 // ---- THE REACTIVE RAINBOW (owner, 18 Oct 2026: "the liquid glass isn't

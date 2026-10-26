@@ -94,9 +94,9 @@ test("search morphs the deck upward; the popup waits for the first character; on
   assert.match(read("app/components/SheetHost.jsx"), /useFocusTrap\(ref, open, \{ companion: "\.ccsearch" \}\)/, "the popup does not steal the caret");
 });
 
-test("the September recipe on the fixtures: full pull split 80/86/92, the Safari page bend, the lamps and the meniscus", () => {
+test("the September recipe on the fixtures: one pull of 86 for every colour, the Safari page bend, the lamps and the meniscus", () => {
   const glass = read("app/components/LiquidGlass.jsx");
-  assert.match(glass, /export const PULL = \[80, 86, 92\];/);
+  assert.match(glass, /export const PULL = 86;/, "one pull, no colour split (26 Oct 2026: the red bezel line)");
   assert.match(glass, /export const BEZEL = 56;/);
   assert.match(glass, /const GLASS_N = 1\.5;/);
   assert.match(glass, /const bez = Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
@@ -170,7 +170,7 @@ test("the bend is centred: no coloured map ever reaches a displacement, and the 
   const glass = read("app/components/LiquidGlass.jsx");
   const defs = glass.slice(glass.indexOf("export function LiquidGlassDefs"), glass.indexOf("export function restrictLens"));
   const passes = [...defs.matchAll(/<feDisplacementMap [^>]*\/>/g)].map((m) => m[0]);
-  assert.equal(passes.length, 6, "two passes for each of red, green and blue");
+  assert.equal(passes.length, 2, "two passes, sideways then up and down, every colour alike");
   for (const p of passes) {
     assert.match(p, /in2="lg[xy]a"/, "a grey map: " + p);
     assert.match(p, /(xChannelSelector="R" yChannelSelector="A")|(xChannelSelector="A" yChannelSelector="R")/, "one direction a pass: " + p);
@@ -264,3 +264,25 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   assert.deepEqual(offenders, [], "no component slants a word inline either");
 });
 
+
+// THE RED BEZEL LINE (owner, 26 Oct 2026: "the odd red bezel line" on a
+// Feed piece card and along the top fixtures, reddish on top and yellow-green
+// below). Two causes, both gone: the far-reach card's 2px red frame round its
+// photograph, and the glass's dispersion — red, green and blue pulled 80 / 86
+// / 92 (wider still under `prism`), so wherever the bend met an edge the
+// colours parted. Declared: no rule frames a card's photograph in the accent,
+// no displacement anywhere runs at a second scale, no channel is split out of
+// a bent picture, and nothing passes a prism.
+test("no red bezel: the reach frame is gone and the glass bends every colour alike", () => {
+  assert.ok(!/\.card\.reach[^{]*\{[^}]*(border|outline|box-shadow)[^}]*var\(--red\)/.test(rules), "no accent frame on a far-reach card");
+  const glass = read("app/components/LiquidGlass.jsx");
+  const code = glass.replace(/\/\/[^\n]*/g, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+  assert.match(code, /export const PULL = 86;/);
+  assert.ok(!/PULL\.map|PULL\[/.test(code), "no per-colour pull");
+  const scales = [...code.matchAll(/feDisplacementMap[^>]*scale=(\{\w+\}|"\$\{\w+\}")/g)].map((m) => m[1].replace(/[{}"$]/g, ""));
+  assert.ok(scales.length >= 3, "the lens and the page bend both found");
+  assert.deepEqual([...new Set(scales)], ["pull"], "every displacement at the one pull");
+  assert.ok(!/values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/.test(code), "no red channel lifted out of a bent picture");
+  assert.ok(!/prism/.test(code), "no prism option");
+  for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx"]) assert.ok(!/prism/.test(read(f)), f);
+});

@@ -102,7 +102,7 @@ export default function SheetHost() {
   // filter while a popup is up ([data-popup] .main), never by a backdrop
   // blur on the scrim — that would make the scrim a backdrop root and leave
   // the popup only a flat colour to bend.
-  const glass = useLiquidGlass(ref, { id: "lg-popup", strength: 0.8, prism: 1, active: open, bend: ".card" });
+  const glass = useLiquidGlass(ref, { id: "lg-popup", strength: 0.8, active: open, bend: ".card" });
 
   // a new popup opens at its initial height; a field taking focus inside it
   // lifts it to the full height so the keyboard never covers the input
