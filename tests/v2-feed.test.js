@@ -141,3 +141,20 @@ test("the BRDCST footer: collapsed to title and date, inline expansion, the map 
 test("the FEED key's second tap reloads the feed", () => {
   assert.match(page, /window\.addEventListener\("asilum:feed-refresh", on\)/);
 });
+
+test("the piece card's words never sit on each other: one foot column, a bare tile under it (owner, 25 Oct 2026)", async () => {
+  // declared before the fix: the name, the size and price and the actions are
+  // one stacked column (the actions inside .pcfoot, not pinned over it), no
+  // rule positions .pcacts absolutely, and the Feed's piece cards draw the
+  // tile without its initials and tag word, which printed under the name
+  assert.match(page, /className="pcrow">[\s\S]*?<\/div>\s*(\{\}\s*)?<Cut className="pcrule" \/>\s*<div className="pcacts"/, "the actions open inside the foot, a hairline between them and the size and price");
+  assert.ok(!/\.pcacts \{[^}]*position: absolute/.test(css), "nothing pins the actions over the foot");
+  assert.match(css, /\.card\.piece\.v-hero \.pcfoot \{[^}]*flex-direction: column; gap: 2\.5cqw;/, "one even step between the rows");
+  assert.equal((page.match(/thumbFor\(it, \{ bare: true \}\)/g) || []).length, 1, "the Feed's piece card draws a bare tile");
+  // (owner, 25 Oct 2026, late: "a listing should never be in a small card") one piece card, no small variant
+  assert.ok(!/v-small|variant === "small"|pieceline/.test(page + css), "the small piece card is gone");
+  const { thumbFor } = await import("../lib/client.js");
+  const it = { brand: "Patagonia", tags: { gorp: 1 } };
+  assert.ok(/%3Ctext/.test(thumbFor(it)), "the tile elsewhere keeps its letters");
+  assert.ok(!/%3Ctext/.test(thumbFor(it, { bare: true })), "the bare tile has none");
+});

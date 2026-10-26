@@ -793,10 +793,21 @@ checked what a reader is actually served, which is the claim that matters.
   `strokeWidth: 1.15` everywhere.
 - Scrims: head 24%, foot 34% of `--shade` (a piece's 30%); a words-only
   post's `.p2foot` wears a 10% gradient too.
-- Strip.jsx replaces Fig20.jsx: `.strip` scroll-snaps sideways,
-  `.stripcard` is `height: 100%` with `aspect-ratio: var(--asp)`; a post
-  carousel is 3:4, the motion row 9:16 (`stripRows`: ceil(cols × 1.5),
-  capped at 12).
+- Strip.jsx: `.strip` scroll-snaps sideways, `.stripcard` is `height:
+  100%` with `aspect-ratio: var(--asp)`; the motion row 9:16 (`stripRows`:
+  ceil(cols × 1.5), capped at 12). (Late that night a post carousel went
+  back to Fig20.jsx, bare: `.card.f20post`, no housing; the housed
+  carousel's `.type-carousel`, `.p2count` and `.p2media .strip` are gone.
+  Then: CAROUSEL and RAIL are 5x14 Figure 20 cells with a `.f20head` line —
+  the author's name, or RECOMMENDED VIDEOS; Fig20 turns the stacks
+  `rotateY(-sgn·72°)` about the outer edge (tucked outward) and lays flat as
+  many cards as fit at the stage's full height (one in a post-sized cell);
+  Strip.jsx and its rules are deleted.) Last: the carousel is the post
+  card itself — `type-carousel f20post withmedia`, Fig20 (1:2 cards) in
+  `.p2media` filling the cell, `.p2head` and `.p2foot` floating over it,
+  `background: none` on the card, head and foot. MotionRail wears the same
+  classes, VIDEOS YOU MAY LIKE as its `.p2user`, and `<Caption key=…>`
+  (exported from PostCard.jsx) for the centre video.
 - Wordmark.jsx is `.wmimg` (`/model/logo.jpg`, the owner's artwork cropped
   to the mark) with the name visually hidden; `.wordmark.brandfix` blends
   multiply (screen, inverted, in dark).
@@ -840,6 +851,28 @@ checked what a reader is actually served, which is the claim that matters.
   bordered, `.brdcst` a separate paper block 4px below, bottom-rounded; no
   `.brdcstrule`, no `.brdcstast`.
 - `--cardpadx: 5.5cqw`; head and foot insets 4.5cqw / 4cqw.
+- The piece card's foot is one column (same night: "uniformly orient
+  everything on the media card"): `.pcfoot` holds the name, `.pcrow` and
+  `.pcacts` in flow, `gap: 2.5cqw`, insets 4.5cqw like the head; the action
+  icons sit on the text's edge (each button's slack pulled out by a negative
+  margin). Nothing is pinned over the foot. The Feed's piece cards draw
+  `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
+  A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
+  between `.pcrow` and `.pcacts`.
+- SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid (feedColsFor):
+  LISTING 3x8 | 4x8 (eighteen only) hero — never small, so the small piece
+  card (`.v-small`, `.pieceline`) is deleted; SONG and PLACE 2x4 | 2x8 |
+  3x4 square, 3x8 medium; BRDCST 6x4 strip; posts 6x16, with a BRDCST
+  6x20, words 6x12; CAROUSEL and RAIL 6x16; AD 6x4 | 3x8. LOOKAHEAD 9.
+  `preferredSpan` draws a card's size from its id; any other size costs
+  PREF (twenty rows); every card covers the lowest column (BOTTOM FIRST).
+  The size battery in tests/feed-tetris.test.js holds the variety, the
+  bottom-first rule and the hole bounds.
+- `.card.placecard.withphoto .placeopen > .placeglobe` keeps the globe
+  absolute at the bottom right (a plain `.placeglobe` lost to the rule that
+  lifts the photo card's children); the name and type pad right to clear it. AD 5x4 adwide | 3x8 ad, laid only by
+  `fillAds` into level gaps at the feed's end, never lower than the feed;
+  `AdSpace.jsx` draws `.card.adspace`, a dashed open placement.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
   `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`
   maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.

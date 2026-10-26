@@ -516,6 +516,86 @@ evenly in from the edges. Search extends the deck upward for its bar; the search
 popup appears only once something is typed. The ad strip left the deck for
 the head of the Feed.
 
+A LISTING IS NEVER A SMALL CARD (owner, 25 Oct 2026, last: "that is
+reserved for music and locations only"). A piece is medium — three columns
+by eight half-rows (four columns on the widest grid); songs and places alone
+take the small sizes. The Feed's grid is six columns on a phone, twelve on a
+tablet, eighteen wide, so two medium listings fill a phone's row (on five,
+this rule left a fifth of a phone's feed as holes). Large cards are six
+wide. The rest of this paragraph's variety stands for songs, places and
+BRDCSTs.
+THE FEED'S SIZES (owner, 25 Oct 2026, late). Stills and motions are always
+the biggest cards. Pieces, songs and places vary like Tetris — each draws
+its own size from its id (portrait, square or landscape, medium or small)
+and keeps it unless keeping it would trap a hole — and it does not matter
+what sits next to what. Every card covers the lowest open column, so none
+is left behind. A standalone BRDCST is a small card's height and a large
+card's width (four columns on a wide grid). The Feed has two ad spaces, medium and BRDCST-size;
+they fill the gaps the packing leaves (lib/feed/tetris.js fillAds) and,
+with nothing sold, say THIS PLACEMENT IS OPEN — never a pretend advertiser.
+A piece card's foot is one column — name, size and price, a hairline, then
+like, stamp and share — so nothing on it overlaps.
+THE DECK, 26 OCT 2026 (owner: "for the central control let's take away the
+indicator light, let's also widen the central control fixture, … the plus in
+the upload button, let's shrink it slightly, … all the buttons on the
+fixtures — thin them ever so slightly and dim the white brightness and lower
+the buttons' opacity slightly"). The tab indicator light is gone, and with it
+its blinks and their vibrations; a fixture key answers with one subtle tick.
+The deck is the drawn 745 stretched 1.1 sideways (--dk-sx), its cuts, grill
+and insets with it; the top fixtures still end on its right edge. The plus
+is 54% of the disc. Every fixture key's glyph draws a 1-unit stroke, its ink
+pulled 14% toward the ground, at 88% opacity. This supersedes the tab
+indicator wherever the 19 Oct entries above describe it.
+THE LOGO, 26 OCT 2026 (owner: "it should be placed at the same height as
+the info deck, and let's make it more blue so it's visible, and phosphorus
+green in dark mode", with the title card for reference). The wordmark's
+middle is the top fixtures' middle. The owner's artwork is coloured through
+two masks cut from it: the word and its bar of blocks in a clear blue in
+light, and in the title card's chrome washing to phosphor green, glowing, in
+dark; the asterisk red in both. The same day: the logo 25% bigger, and light
+mode back to the artwork's own colours (painted through the same masks); the
+blue is gone.
+Then 10% bigger again, darker and bolder: the letters thickened (the bar
+left as drawn), light painted in the artwork's own hues darkened.
+THE FEED'S MIX, 26 OCT 2026 (owner: "I want there to be a majority of
+stills and motions on the feed"; then, having seen two posts to a piece,
+"now there's too many stills and motions, reduce it"). The posts lead the
+pieces one to one, and the pieces are capped at the number of media posts
+(stills, carousels, motions), so the stills and motions fill most of the
+feed's area while the pieces, songs and places are a little over half its
+cards; with no media post the pieces stand alone. The model carries more of
+its reader's posts — every author a fixture, every picture a still, every
+motion the one generated test pattern. The ad space fills mid-feed gaps no
+card can (at most one ad per eight cards); the two-wide song and place sizes
+are a phone's only, and a listing has one size, three by eight. The cards
+sit 8px from the screen's edges on a phone (was 14).
+A SMART MIX, AND NO GAPS (owner, 26 Oct 2026: "when I'm swiping I don't
+want two full scrolls to be comprised of just listings, locations, BRDCSTs
+and/or songs, or motions and stills — I want a smart mix; I am also seeing
+gaps in the feed, which is against the rules"). Each still, carousel or
+motion brings one row of smaller cards: a piece, and beside it another
+piece, one tall song or place, or two short ones stacked; a BRDCST has a
+row of its own. The packer takes the cards in that order, a post waiting
+only for its row to level. Every card is a multiple of three columns wide
+(no two-wide song or place), so the rows close; the feed has no gap.
+FIGURE 20 RETURNS FOR THE CAROUSELS (owner, 25 Oct 2026, late: "simply
+input figure 20 how it is. it should be the ipod style collapsed cards
+floating neatly tucked with the other media cards"). A post of several
+stills is Figure 20 alone in its cell — three cards flat, every other card
+stacked at the two ends on its outer edge, opening in the middle — with no
+post-card housing around it: no head, caption, counter or actions; a hold
+opens its menu, the centre card its media. Later that night: the stacks
+are TUCKED OUTWARD (each end card's inner edge swings toward the viewer),
+and a carousel is almost the size of a still or motion post, its flat card
+filling the height, a small line above for the author's name. The
+recommended motions are Figure 20 the same way, RECOMMENDED VIDEOS in that
+line; the strip is deleted. LAST: a carousel is laid out exactly as a photo
+post is — the coverflow fills the cell, the centre card the post's full
+height, and the post's own head (picture and name) and foot (caption, like,
+comment, stamp, share) float over it with no box, ground or scrim. The
+recommended motions likewise, VIDEOS YOU MAY LIKE in the head and the
+caption of whichever video sits in the centre, changing as it moves.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

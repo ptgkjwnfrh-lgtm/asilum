@@ -13,7 +13,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
 import { useHold, HoldMenu, HoldKey } from "./components/HoldMenu.jsx";
-import { CutDefs } from "./components/Cut.jsx";
+import { Cut, CutDefs } from "./components/Cut.jsx";
+import AdSpace from "./components/AdSpace.jsx";
 import { demoImageFor } from "../lib/model/pieces.js";
 import { inkFor } from "../lib/model/stills.js";
 import { planRechunk, idsBelowFold, applyRechunk, RECHUNK_AFTER, SERVE_RING_MAX, MAX_RENDERED, CHUNK, CHUNK_MIN } from "../lib/feed/rechunk.js";
@@ -26,7 +27,7 @@ import {
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
-import { tetrisPack, feedColsFor, motionRail } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, feedColsFor, motionRail } from "../lib/feed/tetris.js";
 import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
 import MotionRail from "./components/MotionRail.jsx";
 import SongCard from "./components/SongCard.jsx";
@@ -824,9 +825,10 @@ export default function Home() {
 
   // THE STREAM: one Tetris grid (lib/feed/tetris.js tetrisPack) — every
   // card in one of its kind's sizes at its grid place, the gaps even; a
-  // carousel and the motion row are the STRIP (Strip.jsx: X's "Videos for you").
+  // carousel and the motion row are Figure 20 (Fig20.jsx), a post's size.
   function renderCard(it, variant) {
     if (it.__rail) return <MotionRail key={it.id} posts={it.__rail} />;
+    if (it.__ad) return <AdSpace key={it.id} wide={variant === "adwide"} />;
     if (it.__song) return <SongCard key={it.id} id={it.id} song={it.__song} />;
     if (it.__post) return <PostCard key={it.id} post={it.__post} engagement={engagement} onEngage={engage} />;
     if (it.__place) return <PlaceCard key={it.id} place={it.__place} />;
@@ -845,7 +847,8 @@ export default function Home() {
     // the duo (owner's sketch, 19 Oct 2026) on the two-column phone Feed only
     // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
     // every card at its grid place, in one size its kind allows, the gaps even
-    const { cells, rows } = tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols });
+    // the gaps the packing leaves at the feed's ragged end take ad space (fillAds)
+    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols, ads: true }), { cols: feedCols });
     return (
       <>
       <CutDefs />
@@ -1163,26 +1166,14 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   // THE WORDS OVER THE PHOTOGRAPH (owner, 25 Oct 2026: "I want text to
   // overlap images"): the photograph fills the card; the head rides its top,
   // the name and the price its foot, on scrims; the actions sit beneath.
-  if (variant === "small") {
-    return (
-      <div className={"card piece v-small" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
-        {menuEl}
-        <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
-        </div>
-        <div className="pieceline">
-          <button type="button" className="ttl" onClick={onOpen}>{pieceName(it)}</button>
-          {price ? <span className="price">{price}</span> : null}
-        </div>
-      </div>
-    );
-  }
+  // (owner, 25 Oct 2026, late) a listing is never a small card — the small
+  // sizes are the songs' and the places' — so there is one piece card
   return (
     <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
       {menuEl}
       <div className="pcphoto">
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it)} alt="" loading="lazy" />
+          <img src={it.img || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" />
         </div>
         <div className="pchead">
           <b className="pcmode">{mode}{who ? <span className="pchandle">{mode ? ":" : ""}{who}</span> : null}</b>
@@ -1193,13 +1184,17 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
             <span className="pcsize">{size}</span>
             {price ? <span className="price">{price}</span> : null}
           </div>
-        </div>
-      </div>
-      <div className="pcacts" role="group" aria-label="piece actions">
+          {/* a hairline under the size and the price, over the actions (owner,
+              25 Oct 2026), then the actions close the same column, so the
+              rows stack and never sit on each other */}
+          <Cut className="pcrule" />
+          <div className="pcacts" role="group" aria-label="piece actions">
         <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
         <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />
         <button type="button" className="pcact" onClick={share} aria-label="share the piece" title={shared || "SHARE"}><Icon name="share" size={22} /></button>
         {shared ? <span className="wpcshared" role="status">{shared}</span> : null}
+          </div>
+        </div>
       </div>
     </div>
   );

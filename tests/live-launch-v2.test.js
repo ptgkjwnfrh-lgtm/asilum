@@ -146,10 +146,15 @@ test("the sample media: every picture is a coloured tile (owner, 25 Oct 2026, la
     for (const im of [sp.image, ...(sp.images || [])]) { assert.ok(isStill(im.src), sp.id + ": a still, not a photograph"); assert.equal(im.credit, "", "nothing to credit"); }
     if (sp.avatar) assert.ok(isStill(sp.avatar), sp.id + ": the author's picture is a still");
   }
-  assert.equal(SAMPLE_POSTS.filter((sp) => sp.video).length, 1);
+  // (26 Oct 2026: more stills and motions) several sample motions, every one the one generated test pattern
+  assert.ok(SAMPLE_POSTS.filter((sp) => sp.video).length >= 2, "enough motions for the row of videos you may like");
+  const { SAMPLE_MOTION } = await import("../lib/model/media.js");
+  assert.ok(SAMPLE_POSTS.filter((sp) => sp.video).every((sp) => sp.video === SAMPLE_MOTION), "no film is invented: each is the generated test pattern");
   // the model folder holds no photographs but the people overview's one portrait and the owner's logo
+  // (with, since 26 Oct 2026, the masks cut from it to colour it, logo-ink.png and logo-star.png, and
+  // logo-light.png, its own colours darkened for light mode)
   const files = require_fs().readdirSync("public/model").filter((f) => /\.(jpg|png|webp)$/.test(f)).sort();
-  assert.deepEqual(files, ["logo.jpg", "olivier-rousteing-2016.jpg"]);
+  assert.deepEqual(files, ["logo-ink.png", "logo-light.png", "logo-star.png", "logo.jpg", "olivier-rousteing-2016.jpg"]);
   assert.ok(credits.assets.every((a) => files.includes(a.filename) || /\.(mp4|vtt)$/.test(a.filename)), "the register names only what is there");
   const { PLACES } = await import("../lib/places/registry.js");
   for (const p of PLACES) if (p.image) assert.ok(isStill(p.image), p.id + " wears a still");
