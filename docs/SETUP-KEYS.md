@@ -112,11 +112,24 @@ Launch sequence (owner + agent, in order):
    → Vercel env var (`STRIPE_SECRET_KEY`), never through a transcript. While
    revealed on screen, do not screenshot.
 3. Dashboard → Webhooks → add endpoint
-   `https://www.asilummagazine.com/api/stripe/webhook`, events
+   `https://www.asilummagazine.com/api/stripe/webhook`, listening to events
+   on **Connected accounts** (native sales are direct charges on the
+   seller's account), events
    `checkout.session.completed` + `checkout.session.expired` +
    `payment_intent.succeeded` + `payment_intent.payment_failed` (the last
-   two settle the §6 ticket-fee lane); its signing secret becomes
+   two settle the §6 ticket-fee lane) + `account.updated` (a seller's
+   onboarding finished or a restriction changed — the storefront's payment
+   record reads it); its signing secret becomes
    `STRIPE_WEBHOOK_SECRET` in Vercel the same way.
+3a. Sellers connect themselves: PROFILE → STOREFRONT → CONNECT PAYMENTS WITH
+   STRIPE opens Stripe's hosted onboarding (`lib/storefront/onboarding.js`);
+   the account is created in the proceeds model's shape — the seller pays
+   the processor's fees, Stripe carries the losses, ASILUM takes only the
+   buyer-paid passenger fee as an application fee. In test mode the same
+   flow works against the sandbox (Stripe's test onboarding accepts its own
+   fixture details). Native checkout on that account still needs the
+   deployment's validation artifact (`STOREFRONT_PAYMENT_VALIDATION_VERSION`
+   from `npm run verify:stripe-connect`) and `NATIVE_CHECKOUT_ENABLED=1`.
 3b. The PUBLISHABLE key (safe to be public — it ships in the client
    bundle): `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — pk_test_ into
    `.env.local` for sandbox work, pk_live_ into Vercel at launch. Without
