@@ -133,6 +133,27 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
       // the carved shapes: each pulls what lies near its outline TOWARDS the
       // outline, from both sides, so the backdrop stretches into the cut
       for (const f of feats) {
+        // THE SPOKES (the wheel's alone, owner 27 Oct 2026: "edit the disc
+        // refracting so it kinda of stems out like in the yeezus cover"): in
+        // f.n × 2 wedges round the hub, what lies under the face is drawn in
+        // toward the hub — each point pulls f.reach of the way to the hub's
+        // ring, so the Feed streaks outward along the spokes the way the
+        // cover's light does; the wedges fade in off the hub and out before
+        // the rim, where the bezel takes over
+        if (f.kind === "spokes") {
+          const ex = x + 0.5 - f.cx, ey = y + 0.5 - f.cy;
+          const len = Math.hypot(ex, ey) || 1;
+          const hub = f.r * f.hub;
+          const t = (len - hub) / (f.r - hub);
+          if (t <= 0 || t >= 1) continue;
+          const ease = (u) => { const c = Math.max(0, Math.min(1, u)); return c * c * (3 - 2 * c); };
+          const env = ease(t / 0.22) * ease((1 - t) / 0.2);
+          const wedge = Math.pow(Math.abs(Math.cos(f.n * Math.atan2(ey, ex))), f.sharp);
+          const pull = Math.min(1, (f.reach * (len - hub)) / (PULL / 2)) * env * wedge;
+          vx -= (ex / len) * pull; vy -= (ey / len) * pull;
+          bw = Math.max(bw, env * wedge);
+          continue;
+        }
         const px = f.kind === "cut" ? f.x : f.kind === "slot" ? Math.max(f.x0, Math.min(f.x1, x + 0.5)) : f.cx;
         const py = f.kind === "cut" ? Math.max(f.y0, Math.min(f.y1, y + 0.5)) : f.cy;
         const ex = x + 0.5 - px, ey = y + 0.5 - py;
@@ -430,7 +451,9 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
 // filtered within its own box; nothing on the rest of the page pays.
 // The shapes carved into a pane, read from the DOM: every descendant marked
 // data-lens-shape — "cut" (a vertical groove: its centre line), "ring" (a
-// circle: the element's box), "slot" (a stadium: the element's box) — in the
+// circle: the element's box), "slot" (a stadium: the element's box),
+// "spokes" (the wheel's radiating pull: the element's box, data-lens-hub /
+// -spokes / -reach / -sharp; 27 Oct 2026) — in the
 // pane's own pixels. data-lens-band widens or narrows the bend around it.
 export function lensFeatures(el) {
   const box = el.getBoundingClientRect();
@@ -445,6 +468,7 @@ export function lensFeatures(el) {
     if (kind === "cut") out.push({ kind, x: l + b.width / 2, y0: t, y1: t + b.height, band, gain });
     else if (kind === "ring") out.push({ kind, cx: l + b.width / 2, cy: t + b.height / 2, r: b.width / 2, band, gain });
     else if (kind === "slot") { const r = b.height / 2; out.push({ kind, x0: l + r, x1: l + b.width - r, cy: t + r, r, band, gain }); }
+    else if (kind === "spokes") out.push({ kind, cx: l + b.width / 2, cy: t + b.height / 2, r: b.width / 2, hub: parseFloat(n.getAttribute("data-lens-hub")) || 0.3, n: parseFloat(n.getAttribute("data-lens-spokes")) || 2, reach: parseFloat(n.getAttribute("data-lens-reach")) || 0.5, sharp: parseFloat(n.getAttribute("data-lens-sharp")) || 1.4 });
   }
   return out;
 }

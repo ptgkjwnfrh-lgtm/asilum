@@ -374,7 +374,7 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   }
   assert.deepEqual(painted, [], "the rainbow is refraction, never paint");
   // the pane sees the Feed
-  assert.match(sw, /createPortal\(<span ref=\{glassRef\} className="ccwglass"/, "the wheel's pane on <body>");
+  assert.match(sw, /createPortal\(\s*<span ref=\{glassRef\} className="ccwglass"/, "the wheel's pane on <body>");
   assert.match(rules, /\.ccwglass \{\n  position: fixed; z-index: 65;/, "one level under the deck (66)");
   assert.match(rules, /\.ccwglass\[data-refract="1"\] \{ -webkit-backdrop-filter: var\(--lg-filter\) saturate\(160%\); backdrop-filter: var\(--lg-filter\) saturate\(160%\); \}/);
   assert.ok(!/\.ccwheel\[data-refract/.test(rules) && !/\.ccwheel \{[^}]*backdrop-filter/.test(rules), "the wheel in the deck draws no glass of its own");
@@ -387,6 +387,17 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   assert.match(turn, /if \(ringRef\.current\) ringRef\.current\.style\.transform = `rotate\(\$\{s\.angle\}deg\)`;/, "a turn moves the wheel's marks");
   assert.equal([...turn.matchAll(/\.style\.transform/g)].length, 1, "and nothing else");
   for (const m of rules.matchAll(/([^{}]*\.(ccpost|ccdisc)\b[^{}]*)\{([^}]*)\}/g)) assert.ok(!/rotate/.test(m[3]), "the plus never rotates: " + m[1].trim());
+  // THE SPOKES (27 Oct: "stems out like in the yeezus cover"): the wheel's pane carries a spokes shape that
+  // its map reads — wedges round the hub that pull the Feed back toward the hub, so it streaks outward — and
+  // no other pane has one
+  const lg = read("app/components/LiquidGlass.jsx");
+  assert.match(lg, /if \(f\.kind === "spokes"\) \{/, "the map draws the spokes");
+  assert.match(lg, /const pull = Math\.min\(1, \(f\.reach \* \(len - hub\)\) \/ \(PULL \/ 2\)\) \* env \* wedge;\n\s*vx -= \(ex \/ len\) \* pull; vy -= \(ey \/ len\) \* pull;/, "drawn back toward the hub along each ray");
+  assert.match(lg, /else if \(kind === "spokes"\) out\.push\(\{ kind, cx:/, "read from the DOM like every carved shape");
+  assert.match(sw, /<i className="ccwspokes" data-lens-shape="spokes" data-lens-hub=\{SPOKES\.hub\} data-lens-spokes=\{SPOKES\.n\} data-lens-reach=\{SPOKES\.reach\} data-lens-sharp=\{SPOKES\.sharp\} \/>/, "inside the wheel's pane");
+  assert.match(sw, /export const SPOKES = Object\.freeze\(\{ hub: 0\.38, n: 2, reach: 0\.95, sharp: 0\.5 \}\);/);
+  assert.deepEqual(files.filter((f) => /data-lens-shape="spokes"/.test(read(f))), ["app/components/ScrollWheel.jsx"], "the wheel's alone");
+  assert.match(rules, /\.ccwspokes \{ position: absolute; inset: 0; border-radius: 50%; pointer-events: none; \}/, "a shape that paints nothing");
   // the slot is empty
   assert.ok(!existsSync(new URL("../app/components/ClearDisc.jsx", import.meta.url)), "no Clear Disc");
   assert.ok(!/cdlens|ClearDisc|--cd-turn/.test(rules + read("app/components/ControlCenter.jsx")), "no CD styling");

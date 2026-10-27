@@ -3920,6 +3920,7 @@ body { font-size: 14px; }
   position: fixed; z-index: 65; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
   pointer-events: none; opacity: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
 }
+.ccwspokes { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; } /* a shape the map reads, drawing nothing */
 .ccwglass::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
 .cctray {
   position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--disc) / 2 - 3px);

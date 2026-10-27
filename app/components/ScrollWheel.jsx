@@ -11,13 +11,14 @@
 // splits like the FRONT COVER letters under the old strip. It turns what the deck gives it: a Feed carousel that is centred on
 // the screen, or the POST cards when the plus is pressed (ControlCenter.jsx
 // says which). A step every 45°, clockwise on (lib/scrollwheel.js). It is
-// the Disc's family: drag to turn, flick to coast, a tick each step, keys
-// step it, reduced motion drops the coast. Always mounted, so it grows and
+// the Disc's family: drag to turn, flick to coast, a tick each step, the
+// Disc's magnet onto a detent when let go, keys step it, reduced motion
+// drops the coast. Always mounted, so it grows and
 // folds as one transformation in CSS, never a popup fading in.
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { angleOf, deltaDeg, stepsFor, coast, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
+import { angleOf, deltaDeg, stepsFor, magnetStep, restAngle, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
 import { V1_RAINBOW } from "./RainbowGlass.jsx";
 import { haptic } from "../../lib/haptics.js";
@@ -26,6 +27,12 @@ const MARKS = [0, 90, 180, 270];
 // what the wheel bends where Safari cannot bend a backdrop: the Feed behind
 // it — never the deck's own ad strip, which sits over the wheel's glass
 export const WHEEL_BEND = ".card, .headline, .headsub, .demobanner, .ctmeta";
+// the spokes: from the plus's ring (hub, a share of the radius) out to the
+// rim, n × 2 wedges, each point pulled `reach` of the way back to the hub,
+// the wedges narrowed by `sharp` (owner, 27 Oct: "stems out like in the
+// yeezus cover"; tuned over stripes: a partial pull made blobs, a near-full
+// pull back to the hub with broad wedges makes streaks — the stems)
+export const SPOKES = Object.freeze({ hub: 0.38, n: 2, reach: 0.95, sharp: 0.5 });
 
 export default function ScrollWheel({ open, label, onStep, onEnd }) {
   const ref = useRef(null);
@@ -116,14 +123,26 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     if (!d || d.id !== e.pointerId) return;
     s.drag = null;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (still || Math.abs(d.v) < STOP_DEG_PER_S || performance.now() - d.t > 80) return;
-    // a flick: the wheel coasts, slowing by the Disc's friction
-    s.v = d.v; s.last = performance.now();
+    // a fresh flick coasts first; any release ends on a detent
+    const flick = !still && Math.abs(d.v) >= STOP_DEG_PER_S && performance.now() - d.t <= 80;
+    settle(flick ? d.v : 0, still);
+  }
+
+  // THE MAGNET (owner, 27 Oct 2026: "a subtle magnetic snapping attached to
+  // the cards and the disc"): let go, the wheel coasts and then the Disc's
+  // pull draws it onto the detent of the card in front (lib/scrollwheel.js
+  // magnetStep). Reduced motion: straight onto the detent, no glide.
+  function settle(v, still) {
+    const s = state.current;
+    stopCoast();
+    if (still) { turn(restAngle(s.angle) - s.angle); return; }
+    s.v = v; s.last = performance.now();
     const step = (now) => {
       const dt = now - s.last; s.last = now;
-      s.v = coast(s.v, dt);
-      if (!s.v) { s.raf = 0; return; }
-      turn((s.v * dt) / 1000);
+      const next = magnetStep({ angle: s.angle, velocity: s.v }, dt);
+      s.v = next.velocity;
+      turn(next.angle - s.angle);
+      if (next.settled) { s.raf = 0; return; }
       s.raf = requestAnimationFrame(step);
     };
     s.raf = requestAnimationFrame(step);
@@ -138,8 +157,8 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     e.preventDefault();
     stopCoast();
     if (k === "first" || k === "last") { onEnd(k); return; }
-    // a key turns the ring a step's worth, so the marks move with it
-    turn(k * STEP_DEG);
+    // a key turns the ring a step's worth, from its detent onto the next
+    turn(restAngle(state.current.angle) + k * STEP_DEG - state.current.angle);
   }
 
   // closing stops a coast mid-turn
@@ -167,7 +186,12 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
       <span ref={ringRef} className="ccwring" aria-hidden="true">
         {MARKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
       </span>
-      {host ? createPortal(<span ref={glassRef} className="ccwglass" data-open={open ? "1" : undefined} aria-hidden="true">{glass}</span>, host) : null}
+      {host ? createPortal(
+        <span ref={glassRef} className="ccwglass" data-open={open ? "1" : undefined} aria-hidden="true">
+          {glass}
+          {/* the spokes the face bends the Feed along, from the plus out (the Yeezus cover; LiquidGlass.jsx "spokes") */}
+          <i className="ccwspokes" data-lens-shape="spokes" data-lens-hub={SPOKES.hub} data-lens-spokes={SPOKES.n} data-lens-reach={SPOKES.reach} data-lens-sharp={SPOKES.sharp} />
+        </span>, host) : null}
     </div>
   );
 }

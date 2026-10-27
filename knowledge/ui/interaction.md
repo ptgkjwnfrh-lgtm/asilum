@@ -54,7 +54,13 @@ and tactility) are the law; what follows is the shipped reading.
   glass (`RainbowGlass.jsx`, red / green / blue pulled 80 / 86 / 92), so
   the Feed behind it bends and splits like the FRONT COVER letters under
   the old strip — the one glass that parts the colours. The pane is a
-  layer on <body> under the deck: inside the deck its bend saw nothing. It SPAWNS on
+  layer on <body> under the deck: inside the deck its bend saw nothing.
+  Its face pulls the Feed back toward the hub in four broad wedges, so
+  what is behind it streaks outward like the Yeezus CD's spokes (the
+  "spokes" lens shape, the wheel's alone). Let go, it comes to rest on a
+  detent: a card changes half-way between two detents, and the Disc's
+  magnet (`lib/disc.js` tuning) draws the wheel onto the detent of the
+  card in front — a flick coasts first (27 Oct). It SPAWNS on
   its own while a Feed carousel (Figure 20) is centred on the screen (its
   middle within 22% of the screen's, half of it in view) and turns THAT
   carousel, a card every 45°, clockwise on — it never scrolls the page.
