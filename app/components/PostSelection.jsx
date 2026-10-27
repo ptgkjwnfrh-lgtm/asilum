@@ -28,7 +28,8 @@ export const POST_TYPES = Object.freeze([
   { id: "echo", label: "ECHO", icon: "disc", means: "a temporary story" },
 ]);
 
-const SOON = {
+// what is not here yet says so (the POST cards on the deck read it too)
+export const POST_SOON = {
   listing: "LISTING arrives with the native storefront — SELL and DROP, the payment-page reservation, offers. Not this slice.",
 };
 
@@ -40,7 +41,7 @@ export default function PostSelection() {
   function choose(idx) {
     const t = POST_TYPES[idx];
     if (!t) return;
-    if (SOON[t.id]) { setSoon(t.id); haptic("error"); return; }
+    if (POST_SOON[t.id]) { setSoon(t.id); haptic("error"); return; }
     haptic("confirm");
     pushSheet("post", { kind: t.id, title: t.label });
   }
@@ -49,7 +50,7 @@ export default function PostSelection() {
     <div className="postsel">
       <p className="deck">{cur.label.toLowerCase()} · {cur.means}</p>
       <Disc name="post" items={POST_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon }))} index={i} onChange={(n) => { setI(n); setSoon(null); }} onSelect={choose} size={220} />
-      {soon ? <p className="fine soon postsoon" role="status">{SOON[soon]}</p> : null}
+      {soon ? <p className="fine soon postsoon" role="status">{POST_SOON[soon]}</p> : null}
     </div>
   );
 }

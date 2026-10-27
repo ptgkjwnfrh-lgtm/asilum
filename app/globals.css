@@ -3873,17 +3873,20 @@ body { font-size: 14px; }
 /* the Post disc's second life: the session indicator (1.25) */
 .ccpostwrap { position: relative; display: flex; }
 
-/* THE SCROLL WHEEL (owner, 26 Oct 2026: "the upload button should extend
-   out like a cd player ejecting a disc and the scroll wheel should morph and
-   appear"; the sketch 6.jpg). A swipe up on the POST disc (ControlCenter.jsx)
-   sets the deck's data-wheel: the plus rides up out of the deck on a pill
-   tray, a dark disc shows in its slot, and the wheel grows out of the plus's
-   ring round the tray, its centre between the two, about 2.25 deck heights
-   across, with four ticks at twelve, three, six and nine. One continuous
-   transformation, reversed on close: opening, the tray first and then the
-   wheel; closing, the wheel first and then the tray. The glass's rules
-   hold: no rainbow, no coloured rim — the ring is a drawn line in ink, the
-   ticks the accent. Reduced motion: no travel, it is simply there. */
+/* THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166). While a
+   Feed carousel is centred, or the POST cards are up (ControlCenter.jsx),
+   the deck carries data-wheel: the plus rides up out of the deck on a pill
+   tray, a dark disc shows in its slot, and the wheel grows out of the
+   plus's ring round the tray, its centre between the two, about 2.25 deck
+   heights across. The plus and the dark disc keep the look they have ("don't
+   change the look of the upload or the disc"); the wheel and the tray are
+   the fixtures' own liquid glass ("the disc scroll wheel has to be made of
+   the same liquid glass as the fixtures. no added colors"): the same tint,
+   the same bend, the shadow and the lip, no ink ring, no coloured mark —
+   the four marks at 12 / 3 / 6 / 9 are pressed into the glass in its own
+   tone, like the Masthead's stamped line. One continuous transformation,
+   reversed on close: opening, the tray first and then the wheel; closing,
+   the wheel first and then the tray. Reduced motion: no travel. */
 .ccpostwrap {
   --disc: max(34px, calc(var(--u) * 88));       /* the POST disc's size */
   --cy: calc(50% + var(--u) * 3);               /* the disc's centre in its key */
@@ -3897,12 +3900,17 @@ body { font-size: 14px; }
 /* the ejected key's focus ring hugs its disc, not the travelled key box */
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible { outline: none; }
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible .ccdisc { outline: 2px solid var(--sig); outline-offset: 3px; }
+/* the tray and the wheel: the fixtures' glass */
+.cctray, .ccwheel {
+  background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  isolation: isolate;
+}
+.ccwheel[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
 .cctray {
   position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--disc) / 2 - 3px);
   width: calc(var(--disc) + 6px); height: calc(var(--disc) + 6px); transform: translateX(-50%);
-  border-radius: 999px; pointer-events: none; opacity: 0;
-  border: 1.25px solid color-mix(in srgb, var(--ink) 70%, transparent);
-  background: color-mix(in srgb, var(--bg) 35%, transparent);
+  border-radius: 999px; pointer-events: none; opacity: 0; box-shadow: var(--glass-lip);
   transition: top 0.42s 0.12s var(--tray-ease), height 0.42s 0.12s var(--tray-ease), opacity 0.2s 0.3s;
 }
 .ccenter[data-wheel="open"] .cctray {
@@ -3921,8 +3929,7 @@ body { font-size: 14px; }
 }
 .ccwheel {
   position: absolute; z-index: 1; left: 50%; top: var(--cy); width: var(--wheel-d); height: var(--wheel-d);
-  border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--ink) 78%, transparent);
-  background: linear-gradient(var(--fx-tint), var(--fx-tint));
+  border-radius: calc(var(--wheel-d) / 2); border: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
   transform: translate(-50%, -50%) scale(0.2); opacity: 0; pointer-events: none; touch-action: none;
   transition: top 0.32s var(--tray-ease), transform 0.32s var(--tray-ease), opacity 0.22s;
 }
@@ -3930,16 +3937,63 @@ body { font-size: 14px; }
   top: calc(var(--cy) - var(--eject) / 2); transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
   transition: top 0.46s 0.1s var(--tray-ease), transform 0.46s 0.1s var(--tray-ease), opacity 0.3s 0.1s;
 }
+.ccwheel::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
 .ccwheel:active { cursor: grabbing; }
 .ccwheel:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; }
-.ccwring { position: absolute; inset: 0; border-radius: 50%; }
+.ccwring { position: absolute; inset: 0; border-radius: inherit; }
 .ccwtick {
-  position: absolute; left: 50%; top: 0; width: 2px; height: max(6px, calc(var(--u) * 14)); margin-left: -1px;
-  background: var(--red); transform-origin: 50% calc((var(--wheel-d) - 3px) / 2); transform: rotate(var(--tick));
+  position: absolute; left: 50%; top: max(3px, calc(var(--u) * 8)); width: max(2px, calc(var(--u) * 4)); height: max(6px, calc(var(--u) * 14));
+  margin-left: calc(max(2px, calc(var(--u) * 4)) / -2); background: var(--stamp-recess);
+  transform-origin: 50% calc(var(--wheel-d) / 2 - max(3px, calc(var(--u) * 8))); transform: rotate(var(--tick));
 }
+
+/* THE POST CARDS (owner, 26 Oct 2026, IMG_1166: "if the upload button is
+   pressed then small cards of the upload options should appear"): Post
+   Selection's six types as small portrait cards of the fixtures' glass on
+   a ring above the wheel, seen from the front (PostCards.jsx): the front
+   card tall and forward, its neighbours turned and set back, the rest
+   behind and hidden. The ring turns (--spin) and the cards ride it. The
+   front card, chosen, grows and fades into its popup. Reduced motion: no
+   turning travel, no growth. */
+.pcring {
+  --card-w: clamp(84px, 24vw, 108px); --card-h: calc(var(--card-w) * 1.5); --ring-r: calc(var(--card-w) * 1.15);
+  position: absolute; z-index: 5; left: 50%; width: calc(var(--card-w) * 3.2); height: var(--card-h);
+  bottom: calc(100% - var(--cy) + var(--eject) / 2 + var(--wheel-d) / 2 + 12px);
+  transform: translateX(-50%) translateY(16px) scale(0.6); transform-origin: 50% 100%; opacity: 0; pointer-events: none;
+  perspective: 900px; transition: transform 0.36s var(--tray-ease), opacity 0.22s;
+}
+.ccenter[data-cards="open"] .pcring {
+  transform: translateX(-50%); opacity: 1; pointer-events: auto;
+  transition: transform 0.44s 0.16s var(--tray-ease), opacity 0.3s 0.16s;
+}
+.pcring3d {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: translateZ(calc(-1 * var(--ring-r))) rotateY(var(--spin)); transition: transform 0.42s var(--tray-ease);
+}
+.pccard {
+  position: absolute; left: calc(50% - var(--card-w) / 2); top: 0; width: var(--card-w); height: var(--card-h);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 6px;
+  border: 0; border-radius: var(--radius-card); color: var(--ink); cursor: pointer;
+  background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%) blur(6px); backdrop-filter: saturate(160%) blur(6px);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transform: rotateY(var(--a)) translateZ(var(--ring-r));
+  transition: transform 0.26s var(--tray-ease), opacity 0.26s;
+  font-family: var(--mich);
+}
+.pccard b { font-weight: 400; font-size: 10px; letter-spacing: 0.12em; }
+.pccard small { font-size: 8.5px; line-height: 1.25; text-align: center; color: var(--grey); text-transform: lowercase; }
+.pccard .ic { width: 22px; height: 22px; }
+.pccard:not(.front) { cursor: pointer; }
+.pccard.soon { opacity: 0.6; }
+.pccard:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; }
+/* chosen: the front card grows toward its popup and gives way to it */
+.pccard.grow { transform: rotateY(var(--a)) translateZ(var(--ring-r)) translateY(-40%) scale(2.6); opacity: 0; }
+.pcsoon { position: absolute; left: 50%; top: calc(100% + 6px); width: max-content; max-width: min(82vw, 320px); transform: translateX(-50%); text-align: center; }
 @media (prefers-reduced-motion: reduce) {
-  .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel,
-  .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost, .ccenter[data-wheel="open"] .cctray, .ccenter[data-wheel="open"] .ccspindle, .ccenter[data-wheel="open"] .ccwheel { transition: none; }
+  .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel, .pcring, .pcring3d, .pccard,
+  .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost, .ccenter[data-wheel="open"] .cctray, .ccenter[data-wheel="open"] .ccspindle, .ccenter[data-wheel="open"] .ccwheel, .ccenter[data-cards="open"] .pcring { transition: none; }
 }
 .cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
 .ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }

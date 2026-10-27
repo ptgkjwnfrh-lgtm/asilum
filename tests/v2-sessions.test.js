@@ -53,7 +53,8 @@ test("the popup's gesture grammar (1.2): swipe down from the header dismisses, s
 test("the deck's Post disc has two lives (1.25, 1.26): Post Selection with no popup, the session indicator with one", () => {
   const body = strip(deck);
   assert.match(body, /if \(popupUp\) \{ haptic\("press"\); toggleHub\(\); return; \}/, "with a popup up a tap opens the hub");
-  assert.match(body, /openSheet\("postselect"\);/, "with none it opens Post Selection");
+  // (26 Oct 2026, IMG_1166) with none it brings up Post Selection's types as the POST cards over the deck
+  assert.match(body, /setCards\(\(c\) => !c\);/, "with none it brings up the POST cards");
   assert.match(body, /const popupUp = !!dock\.sheet \|\| !!dock\.hub\.hubOpen;/);
   assert.match(body, /<b className="cccount" aria-hidden="true">\{sessionCount\}<\/b>/, "the 01/10 counter rides on the disc");
   assert.match(body, /\{indicator \? "SESSIONS" : k\.label\}/);

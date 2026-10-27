@@ -23,7 +23,8 @@
 // card at once — from one number, `pos`, the card at the centre. A drag, a
 // swipe, a sideways wheel or the arrow keys move it; letting go settles on
 // the nearest card. A tap on a stacked or side card brings it to the
-// centre; a tap on the centre card is the card's own (it opens). The page
+// centre; a tap on the centre card is the card's own (it opens). The deck's
+// wheel turns it too, by an f20step event, while it is centred. The page
 // still scrolls vertically through it (touch-action: pan-y). Reduced
 // motion: no gliding — the cards jump to their places.
 
@@ -149,6 +150,14 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       if (e.key === "ArrowRight") { e.preventDefault(); go(Math.round(s.target) + 1); }
       if (e.key === "ArrowLeft") { e.preventDefault(); go(Math.round(s.target) - 1); }
     };
+    // THE WHEEL turns a centred carousel (ControlCenter.jsx, 26 Oct 2026):
+    // a step on or back, or to an end
+    const step = (e) => {
+      const d = (e && e.detail) || {};
+      if (d.to === "first") go(0);
+      else if (d.to === "last") go(n - 1);
+      else if (Number.isFinite(d.by)) go(Math.round(s.target) + d.by);
+    };
     stage.addEventListener("pointerdown", down);
     stage.addEventListener("pointermove", move);
     stage.addEventListener("pointerup", up);
@@ -156,6 +165,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
     stage.addEventListener("click", click, true);
     stage.addEventListener("wheel", wheel, { passive: false });
     stage.addEventListener("keydown", key);
+    stage.addEventListener("f20step", step);
     const ro = new ResizeObserver(layout);
     ro.observe(stage);
     layout();
@@ -172,6 +182,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       stage.removeEventListener("click", click, true);
       stage.removeEventListener("wheel", wheel);
       stage.removeEventListener("keydown", key);
+      stage.removeEventListener("f20step", step);
     };
   }, [n, aspect]);
 

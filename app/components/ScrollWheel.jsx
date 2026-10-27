@@ -1,44 +1,39 @@
 "use client";
 
-// app/components/ScrollWheel.jsx — THE SCROLL WHEEL (owner, 26 Oct 2026:
-// "let's make the scroll wheel … the upload button should extend out like a
-// cd player ejecting a disc and the scroll wheel should morph and appear";
-// the sketch 6.jpg). A click wheel round the deck's POST disc: the deck
-// ejects the disc on a tray (ControlCenter.jsx), and this ring grows out of
-// it, centred on the tray, with four ticks at twelve, three, six and nine.
-// Turning it scrolls the page: clockwise down, anticlockwise up, a whole turn
-// one screen (lib/scrollwheel.js). It is the Disc's family: drag to turn,
-// flick to coast, a tick while it turns, keys turn it a notch, reduced
-// motion drops the coast. It is always mounted, so opening and closing are
-// one continuous transformation in CSS, never a popup fading in.
+// app/components/ScrollWheel.jsx — THE WHEEL (owner, 26 Oct 2026; the
+// sketches 6.jpg and IMG_1166). A click wheel round the deck's POST disc,
+// made of the fixtures' own liquid glass — the same pane, the same bend
+// that moves every colour alike, no rainbow, "no added colors" — with four
+// marks at twelve, three, six and nine pressed into it in the glass's own
+// tone. It turns what the deck gives it: a Feed carousel that is centred on
+// the screen, or the POST cards when the plus is pressed (ControlCenter.jsx
+// says which). A step every 45°, clockwise on (lib/scrollwheel.js). It is
+// the Disc's family: drag to turn, flick to coast, a tick each step, keys
+// step it, reduced motion drops the coast. Always mounted, so it grows and
+// folds as one transformation in CSS, never a popup fading in.
 
 import { useEffect, useRef } from "react";
-import { angleOf, deltaDeg, scrollFor, notches, coast, flickSpeed, keyTurn, STOP_DEG_PER_S } from "../../lib/scrollwheel.js";
+import { angleOf, deltaDeg, stepsFor, coast, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
 import { haptic } from "../../lib/haptics.js";
 
-const TICKS = [0, 90, 180, 270];
+const MARKS = [0, 90, 180, 270];
 
-export default function ScrollWheel({ open, onClose }) {
+export default function ScrollWheel({ open, label, onStep, onEnd }) {
   const ref = useRef(null);
   const ringRef = useRef(null);
   const state = useRef({ angle: 0, drag: null, v: 0, raf: 0, last: 0 });
+  // the fixtures' glass: the same component, the one bend, no shine
+  const glass = useLiquidGlass(ref, { id: "lg-wheel", strength: 1, bezel: "fixture", shine: false, active: open });
 
-  // the ring shows the turn; the page scrolls by it
+  // the ring shows the turn; every STEP_DEG crossed moves what it turns
   function turn(deg) {
     const s = state.current;
     const before = s.angle;
     s.angle += deg;
     if (ringRef.current) ringRef.current.style.transform = `rotate(${s.angle}deg)`;
-    const px = scrollFor(deg, window.innerHeight);
-    if (px) window.scrollBy(0, px);
-    if (notches(before, s.angle)) haptic("tick");
-    if (ref.current) ref.current.setAttribute("aria-valuenow", String(scrolled()));
-  }
-
-  function scrolled() {
-    const el = document.scrollingElement || document.documentElement;
-    const max = Math.max(1, el.scrollHeight - window.innerHeight);
-    return Math.round((window.scrollY / max) * 100);
+    const steps = stepsFor(before, s.angle);
+    if (steps) { haptic("tick"); onStep(steps); }
   }
 
   function stopCoast() {
@@ -91,15 +86,17 @@ export default function ScrollWheel({ open, onClose }) {
     s.raf = requestAnimationFrame(step);
   }
 
+  // Escape is the deck's alone (useEscape in ControlCenter.jsx): handled here
+  // as well, React re-renders between the two and the second sees the cards
+  // already gone, so one press both closed the cards and put the wheel away
   function key(e) {
-    const k = keyTurn(e.key);
-    if (e.key === "Escape") { e.preventDefault(); onClose(true); return; }
+    const k = keyStep(e.key);
     if (k === null) return;
     e.preventDefault();
     stopCoast();
-    if (k === "home") { window.scrollTo(0, 0); return; }
-    if (k === "end") { window.scrollTo(0, (document.scrollingElement || document.documentElement).scrollHeight); return; }
-    turn(k);
+    if (k === "first" || k === "last") { onEnd(k); return; }
+    // a key turns the ring a step's worth, so the marks move with it
+    turn(k * STEP_DEG);
   }
 
   // closing stops a coast mid-turn
@@ -111,10 +108,10 @@ export default function ScrollWheel({ open, onClose }) {
       ref={ref}
       className="ccwheel"
       role="slider"
-      aria-label="scroll wheel: turn clockwise to scroll down"
-      aria-orientation="vertical"
+      aria-label={label}
+      aria-orientation="horizontal"
       aria-valuemin={0}
-      aria-valuemax={100}
+      aria-valuemax={360}
       aria-valuenow={0}
       aria-hidden={open ? undefined : true}
       tabIndex={open ? 0 : -1}
@@ -124,8 +121,9 @@ export default function ScrollWheel({ open, onClose }) {
       onPointerCancel={up}
       onKeyDown={key}
     >
+      {glass}
       <span ref={ringRef} className="ccwring" aria-hidden="true">
-        {TICKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
+        {MARKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
       </span>
     </div>
   );

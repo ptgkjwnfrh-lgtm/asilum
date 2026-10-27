@@ -279,7 +279,7 @@ export default function PostComposer({ onPublished, compact = false, kind = null
             ))}
           </div>
           {anon && (
-            <p className="pempty">transmissions ride on a signed-in account — reading is open, posting is named. <a className="bizapply" href="/board">sign in on your account →</a></p>
+            <p className="pempty">transmissions ride on a signed-in account — reading is open, posting is named. {/* signing in opens over this popup: posting never sends anyone to another page (owner, 26 Oct 2026) */}<button type="button" className="bizapply" onClick={() => window.dispatchEvent(new CustomEvent("asilum:signup-open", { detail: { mode: "signin" } }))}>sign in →</button></p>
           )}
           <div className="wcompose">
             <Avatar name={getProfileInfo().name} />
