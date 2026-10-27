@@ -23,6 +23,9 @@
 //   center     { icon, label, badge } drawn in the middle
 //   dwell      whether the one-second dwell confirms (default true)
 //   size       px (default 220)
+//   finish     "cd" draws the face as a bare compact disc: a refractive
+//              rainbow that turns with the hand under a fixed light (the
+//              Post disc; owner, 27 Oct 2026: "like the Yeezus cover")
 
 import { useEffect, useRef, useState } from "react";
 import { angleFor, indexAt, delta, pointerAngle, stepMomentum, dwell as dwellClock, LONG_PRESS_MS, prefKey } from "../../lib/disc.js";
@@ -33,7 +36,7 @@ function readOff(name) {
   try { return typeof window !== "undefined" && window.localStorage.getItem(prefKey(name)) === "off"; } catch { return false; }
 }
 
-export default function Disc({ name = "disc", items = [], index = 0, onChange, onSelect, onLongPress, center = null, dwell = true, size = 220 }) {
+export default function Disc({ name = "disc", items = [], index = 0, onChange, onSelect, onLongPress, center = null, dwell = true, size = 220, finish = null }) {
   const n = items.length;
   const ref = useRef(null);
   const [angle, setAngle] = useState(() => angleFor(index, n));
@@ -204,7 +207,7 @@ export default function Disc({ name = "disc", items = [], index = 0, onChange, o
       ) : (
         <div
           ref={ref}
-          className="disc"
+          className={"disc" + (finish === "cd" ? " disccd" : "")}
           style={{ "--disc": size + "px" }}
           role="group"
           aria-label={name + " disc — turn to choose, tap the centre to open; arrow keys turn it too"}
@@ -220,6 +223,12 @@ export default function Disc({ name = "disc", items = [], index = 0, onChange, o
           onPointerCancel={onPointerUp}
         >
           <div className="discface" aria-hidden="true">
+            {finish === "cd" ? (
+              <>
+                <span className="discsheen" style={{ transform: `rotate(${-angle}deg)` }} />
+                <span className="discglint" />
+              </>
+            ) : null}
             <div className="discring" style={{ transform: `rotate(${-angle}deg)` }}>
               {items.map((it, i) => (
                 <span key={it.id} className={"discslot" + (i === indexRef.current ? " sel" : "")} style={{ transform: `rotate(${angleFor(i, n)}deg) translateY(calc(var(--disc) / -2 + 22px))` }}>

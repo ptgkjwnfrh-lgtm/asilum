@@ -4045,6 +4045,51 @@ body { font-size: 14px; }
 .discarrow .flip { transform: scaleX(-1); }
 .discgo { min-height: 36px; padding: 0 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--ink); color: var(--paper); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
 @media (prefers-reduced-motion: reduce) { .discring, .ccmenu, .hubmenu { animation: none; transition: none; } }
+/* THE CD FINISH (owner, 27 Oct 2026: "add the refractive rainbow to the
+   upload disc so it looks kinda like the Yeezus album cover"). The Post disc
+   is a bare compact disc. Under the labels, a conic rainbow in the rim's own
+   colours (--iris-*) is masked to the data area (the hub stays clear) and
+   blurred into two fans, one strong and one faint; it turns WITH the disc.
+   Over it, a fixed light: a diagonal glint and the fine grooves. Colour
+   sliding beneath a still light is what refraction looks like when a disc
+   is tilted. Dark: the colour screens up out of the face; light: it
+   multiplies into the paper, the way a disc reads on a white desk. */
+.disccd .discface {
+  border-color: color-mix(in srgb, var(--ink) 22%, transparent);
+  background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--paper) 88%, var(--ink)) 0%, color-mix(in srgb, var(--bg2) 94%, var(--ink)) 48%, color-mix(in srgb, var(--bg3) 90%, var(--ink)) 100%);
+}
+.disccd .discface::before { inset: 20%; border-style: solid; border-color: color-mix(in srgb, var(--ink) 14%, transparent); }
+.discsheen, .discglint {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  -webkit-mask: radial-gradient(circle, transparent 0 20%, #000 24%, #000 95%, transparent 98.5%);
+  mask: radial-gradient(circle, transparent 0 20%, #000 24%, #000 95%, transparent 98.5%);
+}
+.discsheen {
+  background: conic-gradient(from 0deg,
+    transparent 0deg, var(--iris-1) 34deg, var(--iris-4) 58deg, var(--iris-3) 78deg, var(--iris-2) 102deg, var(--iris-5) 126deg, transparent 160deg,
+    transparent 198deg, var(--iris-2) 224deg, var(--iris-3) 244deg, var(--iris-4) 262deg, var(--iris-1) 284deg, transparent 322deg, transparent 360deg);
+  filter: blur(7px) saturate(1.45);
+  opacity: var(--cd-iris, 0.62);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.discglint {
+  background:
+    linear-gradient(116deg, transparent 28%, rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.34) 50%, rgba(255, 255, 255, 0.12) 56%, transparent 72%),
+    linear-gradient(296deg, transparent 58%, rgba(255, 255, 255, 0.1) 68%, transparent 78%),
+    repeating-radial-gradient(circle, transparent 0 2px, color-mix(in srgb, var(--ink) 9%, transparent) 2px 3px);
+  mix-blend-mode: screen;
+}
+[data-theme="light"] .discsheen { mix-blend-mode: multiply; opacity: 0.5; filter: blur(7px) saturate(1.2); }
+[data-theme="light"] .discglint { mix-blend-mode: soft-light; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .discsheen { mix-blend-mode: multiply; opacity: 0.5; filter: blur(7px) saturate(1.2); }
+  :root:not([data-theme="dark"]) .discglint { mix-blend-mode: soft-light; }
+}
+/* the labels still read over the colour: a soft plate behind each */
+.disccd .discslotlbl { text-shadow: 0 0 6px var(--bg), 0 0 2px var(--bg); }
+.disccd .discslotlbl svg { filter: drop-shadow(0 0 2px var(--bg)); }
+@media (prefers-reduced-transparency: reduce) { .discsheen, .discglint { display: none; } }
 
 /* POST SELECTION */
 .postsel { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
