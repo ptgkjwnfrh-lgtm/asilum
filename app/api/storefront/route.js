@@ -20,6 +20,8 @@ import {
 } from "../../../lib/db/production.js";
 import { accountIdFromIdentity, resolveRequestUser } from "../../../lib/identity.js";
 import { STOREFRONT_TERMS_VERSION } from "../../../lib/storefront/contracts.js";
+import { beginPaymentOnboarding, refreshPaymentOnboarding, publicPayment, OnboardingRefused } from "../../../lib/storefront/onboarding.js";
+import { getStorefrontPaymentAccount } from "../../../lib/db/production/storefronts.js";
 import { storefrontRuntimeFlags } from "../../../lib/storefront/flags.js";
 import { readJsonRequest, withPrivateCache } from "../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
@@ -39,6 +41,9 @@ function result(body, status = 200) {
 }
 
 function refused(error) {
+  if (error instanceof OnboardingRefused) {
+    return NextResponse.json({ error: error.message, code: error.code, currentTermsVersion: STOREFRONT_TERMS_VERSION }, { status: error.status });
+  }
   if (error instanceof AftersaleRefused) {
     return NextResponse.json({ error: error.message, code: error.code, currentTermsVersion: STOREFRONT_TERMS_VERSION }, { status: error.status });
   }
@@ -82,7 +87,9 @@ async function handleGET(req) {
       discounts: Object.fromEntries(await Promise.all((envelope.storefront.listings || []).map(async (l) => [l.id, await activeDiscount(l.id).catch(() => null)]))),
       queues: Object.fromEntries(await Promise.all((envelope.storefront.listings || []).map(async (l) => [l.id, (await queueMembers(l.id).catch(() => [])).filter((m) => m.state !== "closed").length]))),
     } : null;
-    return result({ ...envelope, commerce });
+    // the seller's view of their private payment record: states, never the account id
+    const payment = storeId ? publicPayment(await getStorefrontPaymentAccount(storeId).catch(() => null)) : null;
+    return result({ ...envelope, commerce, payment });
   } catch (error) {
     return refused(error);
   }
@@ -124,6 +131,14 @@ async function handlePOST(req) {
       }
       case "update_store":
         return result(await updateStorefront(identity.accountId, body));
+      // THE SELLER CONNECTS STRIPE (lib/storefront/onboarding.js): a one-use
+      // hosted onboarding link, and the read-back that syncs the ledger
+      case "payment_onboard": {
+        const g = await gate(req, String(body.user || ""), { needs: ["sell"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status }); // 6.34, Terms 2.2
+        return result(await beginPaymentOnboarding({ accountId: identity.accountId }));
+      }
+      case "payment_refresh":
+        return result(await refreshPaymentOnboarding({ accountId: identity.accountId }));
       case "create_listing": {
         const g = await gate(req, String(body.user || ""), { needs: [body.mode === "drop" ? "drop" : "sell"] }); if (!g.ok) return NextResponse.json(g.body, { status: g.status });
         return result(await createStorefrontListing(identity.accountId, body), 201);

@@ -87,6 +87,8 @@ function normalizeEnvelope(raw = {}) {
     orders: Array.isArray(raw.orders) ? raw.orders : [],
     fee,
     capabilities: raw.capabilities && typeof raw.capabilities === "object" ? raw.capabilities : {},
+    // the seller's private payment record as the server lets them see it (states, never the account id)
+    payment: raw.payment && typeof raw.payment === "object" ? raw.payment : null,
     // slice 6: the seller's offer settings, the offers on their listings, the
     // running discounts and the waiting queues, all server truth
     commerce: raw.commerce && typeof raw.commerce === "object" ? raw.commerce : null,
@@ -305,6 +307,51 @@ function CheckoutStatus({ capabilities, storefront, compact = false }) {
         <ul>{reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul>
       ) : null}
     </div>
+  );
+}
+
+// THE SELLER CONNECTS STRIPE (lib/storefront/onboarding.js; owner, 27 Oct
+// 2026): Stripe's hosted onboarding collects the seller's details on its own
+// pages and returns here; ASILUM keeps only what Stripe reports. The states
+// are the server's (not_started · pending · restricted · ready).
+function PaymentsPanel({ payment, busy, onConnect, onRefresh }) {
+  const p = payment || { onboardingState: "not_started", connected: false };
+  const state = p.onboardingState || "not_started";
+  const atStripe = p.detailsSubmitted && p.chargesEnabled && p.payoutsEnabled;
+  const title = state === "ready" ? "PAYMENTS CONNECTED"
+    : state === "restricted" ? "PAYMENTS RESTRICTED"
+      : state === "pending" ? (atStripe ? "PAYMENTS CONNECTED AT STRIPE" : "PAYMENTS PENDING")
+        : "PAYMENTS NOT CONNECTED";
+  const note = state === "ready"
+    ? "Stripe pays you directly on each sale. ASILUM's only line is the buyer-paid passenger fee; Stripe's processing fees are yours, as the terms say."
+    : state === "restricted"
+      ? `Stripe reports a restriction${p.disabledReason ? `: ${String(p.disabledReason).replaceAll("_", " ")}` : ""}. Finish what Stripe asks for, then refresh.`
+      : state === "pending"
+        ? (atStripe
+          ? "Stripe reports the account ready. Order intake still waits on the deployment's payment validation — an owner step, not yours."
+          : p.currentlyDue > 0
+            ? `Stripe still needs ${p.currentlyDue} item${p.currentlyDue === 1 ? "" : "s"} from you. Continue at Stripe to finish.`
+            : "Stripe is reviewing the account. Refresh to read the latest.")
+        : "Connect a Stripe account so buyers can pay you. Stripe collects your details on its own pages; ASILUM keeps only what Stripe reports back.";
+  return (
+    <section className={`sfpayments ${state}`} aria-label="payments">
+      <div className={`sfreadiness compact ${state === "ready" ? "ready" : state === "not_started" || state === "restricted" ? "off" : "test"}`}>
+        <b>{title}{p.mode === "test" ? " · TEST MODE" : ""}</b>
+        <span>{note}</span>
+      </div>
+      <div className="sfpayactions">
+        {state === "not_started" ? (
+          <button className="btn" type="button" disabled={!!busy} onClick={onConnect}>{busy === "payment_onboard" ? "OPENING STRIPE…" : "CONNECT PAYMENTS WITH STRIPE"}</button>
+        ) : null}
+        {(state === "pending" && !atStripe) || state === "restricted" ? (
+          <button className="btn" type="button" disabled={!!busy} onClick={onConnect}>{busy === "payment_onboard" ? "OPENING STRIPE…" : "CONTINUE AT STRIPE"}</button>
+        ) : null}
+        {p.connected ? (
+          <button className="txtbtn" type="button" disabled={!!busy} onClick={onRefresh}>{busy === "payment_refresh" ? "READING…" : "REFRESH STATUS"}</button>
+        ) : null}
+      </div>
+      {p.connected && p.providerRetrievedAt ? <p className="fine">last read from Stripe {new Date(p.providerRetrievedAt).toLocaleString()}</p> : null}
+    </section>
   );
 }
 
@@ -763,6 +810,7 @@ export default function StorefrontTab() {
   const [busy, setBusy] = useState("");
   const [mode, setMode] = useState("manage");
   const [section, setSection] = useState("products");
+  const [returned, setReturned] = useState(null); // ?payments=return|refresh — back from Stripe's onboarding
 
   const load = useCallback(async () => {
     const user = getUid() || "";
@@ -792,6 +840,43 @@ export default function StorefrontTab() {
     window.addEventListener("asilum:identity", load);
     return () => window.removeEventListener("asilum:identity", load);
   }, [load]);
+
+  // back from Stripe: read the account once the record is loaded, and strip the marker from the address
+  useEffect(() => {
+    let params;
+    try { params = new URLSearchParams(window.location.search); } catch { return; }
+    const back = params.get("payments");
+    if (back !== "return" && back !== "refresh") return;
+    params.delete("payments");
+    const q = params.toString();
+    try { window.history.replaceState(null, "", window.location.pathname + (q ? "?" + q : "") + window.location.hash); } catch {}
+    setReturned(back);
+  }, []);
+  useEffect(() => {
+    if (!returned || !envelope?.storefront) return;
+    setReturned(null);
+    if (returned === "return") mutate({ action: "payment_refresh" }, "payment status read from Stripe");
+    else connect();
+  }, [returned, envelope]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // open Stripe's hosted onboarding: the server mints a one-use link; the page follows it
+  async function connect() {
+    const user = getUid() || "";
+    if (!user.startsWith("sb-")) { setSignedOut(true); return; }
+    setBusy("payment_onboard"); setNotice("");
+    try {
+      const response = await sendJSON("POST", "/api/storefront", { user, action: "payment_onboard" });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || typeof body.url !== "string") {
+        setNotice(body.error || "Stripe onboarding could not be opened");
+        setBusy(""); return;
+      }
+      window.location.assign(body.url);
+    } catch {
+      setNotice("the storefront service could not be reached — nothing was saved");
+      setBusy("");
+    }
+  }
 
   async function mutate(payload, success) {
     const user = getUid() || "";
@@ -860,6 +945,8 @@ export default function StorefrontTab() {
       ) : (
         <>
           <CheckoutStatus capabilities={capabilities} storefront={storefront} />
+          <PaymentsPanel payment={envelope.payment} busy={busy} onConnect={connect}
+            onRefresh={() => mutate({ action: "payment_refresh" }, "payment status read from Stripe")} />
           <nav className="sfmanagenav" aria-label="storefront management views">
             {[["products", "PRODUCTS"], ["commerce", "OFFERS & DISCOUNTS"], ["orders", "ORDERS"], ["earnings", "EARNINGS / FEE"], ["details", "STORE DETAILS"]].map(([id, label]) => (
               <button type="button" key={id} className={section === id ? "cur" : ""}

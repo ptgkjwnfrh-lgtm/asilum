@@ -44,9 +44,11 @@ designer-program/ONBOARDING.md §0, SETUP-KEYS.md §5, risk-campaign §7/§8.
       never through a transcript, no screenshots while revealed).
 - [ ] **Owner** Dashboard → Webhooks → endpoint
       `https://www.asilummagazine.com/api/stripe/webhook`
+      listening on Connected accounts
       (`checkout.session.completed`, `checkout.session.expired`,
       `payment_intent.succeeded`, `payment_intent.payment_failed` — the
-      PI pair settles the ticket-fee lane) →
+      PI pair settles the ticket-fee lane — and `account.updated`, which
+      keeps each seller's payment record current) →
       its `whsec_` → Vercel as `STRIPE_WEBHOOK_SECRET`.
 - [ ] **Owner** `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: pk_test_ →
       `.env.local` now (unlocks card entry in the housing for sandbox

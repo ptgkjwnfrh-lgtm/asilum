@@ -4270,6 +4270,10 @@ body { font-size: 14px; }
 .sfreadiness span, .sfreadiness li { color: var(--grey); font-size: 12px; line-height: 1.4; }
 .sfreadiness ul { grid-column: 1 / -1; margin: 4px 0 0; padding-left: 18px; }
 .sfreadiness.off { border-left-color: var(--red); }
+/* the seller connects Stripe (StorefrontTab PaymentsPanel) */
+.sfpayments { display: grid; gap: 10px; }
+.sfpayactions { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.sfpayments .fine { margin: 0; }
 .sfreadiness.test { border-left-color: var(--p2); }
 .sfreadiness.ready { border-left-color: var(--sig); }
 .sfreadiness.compact { margin-top: -4px; }
