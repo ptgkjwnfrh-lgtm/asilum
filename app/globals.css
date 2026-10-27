@@ -3878,8 +3878,9 @@ body { font-size: 14px; }
    the deck carries data-wheel: the plus rides up out of the deck on a pill
    tray, a dark disc shows in its slot, and the wheel grows out of the
    plus's ring round the tray, its centre between the two, about 2.25 deck
-   heights across. The plus and the dark disc keep the look they have ("don't
-   change the look of the upload or the disc"); the wheel and the tray are
+   heights across. The plus keeps the look it has ("don't change the look of
+   the upload or the disc"; the dark disc became the Clear Disc on 27 Oct,
+   below); the wheel and the tray are
    the fixtures' own liquid glass ("the disc scroll wheel has to be made of
    the same liquid glass as the fixtures. no added colors"): the same tint,
    the same bend, the shadow and the lip, no ink ring, no coloured mark —
@@ -3919,7 +3920,7 @@ body { font-size: 14px; }
 }
 .ccspindle {
   position: absolute; z-index: 3; left: 50%; top: var(--cy); width: calc(var(--disc) * 0.9); height: calc(var(--disc) * 0.9);
-  padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ink) 58%, var(--bg));
+  padding: 0; border: 0; border-radius: 50%; background: transparent; /* the Clear Disc is drawn over it (.cdlens) */
   transform: translate(-50%, -50%) scale(0.3); opacity: 0; pointer-events: none;
   transition: transform 0.3s var(--tray-ease), opacity 0.2s;
 }
@@ -3946,6 +3947,68 @@ body { font-size: 14px; }
   margin-left: calc(max(2px, calc(var(--u) * 4)) / -2); background: var(--stamp-recess);
   transform-origin: 50% calc(var(--wheel-d) / 2 - max(3px, calc(var(--u) * 8))); transform: rotate(var(--tick));
 }
+
+/* THE CLEAR DISC (owner, 27 Oct 2026: "i want this rainbow effect to be
+   added to only the disc so the disc kind of looks like the yeezus album
+   cover … the cards on the feed would refract causing the rainbow warp").
+   The dark disc in the wheel's middle becomes a clear CD (ClearDisc.jsx): a
+   fixed layer over the deck on the disc's circle — the deck's glass is a
+   Backdrop Root, so a lens inside it could never see the Feed. A silver
+   face, the spectrum in spokes off the middle (two bright pairs, dark
+   between, turning with the wheel and the scroll: --cd-turn), a clear hub
+   ringed in black, a thin clear rim. Beneath the face the backdrop is bent
+   with the colours parted (#lg-cd, the PRISM): the ONE glass that splits
+   them; every other pane bends every colour alike. Reduced motion: no
+   growth, no turning (the script holds --cd-turn). */
+.cdlens {
+  --cd-silver: var(--ink); --cd-spokes: 0.42; --cd-face: 8%;
+  position: fixed; z-index: 67; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
+  pointer-events: none; opacity: 0; transform: scale(0.3);
+  background:
+    radial-gradient(circle closest-side, transparent 92%, color-mix(in srgb, var(--cd-silver) 62%, transparent) 96%, color-mix(in srgb, var(--cd-silver) 22%, transparent) 99%, transparent 100%),
+    radial-gradient(circle closest-side, transparent 40%, color-mix(in srgb, var(--cd-silver) var(--cd-face), transparent) 41% 92%, transparent 93%);
+  box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--shade) 30%, transparent);
+  transition: transform 0.3s cubic-bezier(0.3, 0.75, 0.25, 1), opacity 0.2s;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .cdlens { --cd-silver: var(--paper); --cd-spokes: 0.5; --cd-face: 12%; } }
+[data-theme="light"] .cdlens { --cd-silver: var(--paper); --cd-spokes: 0.5; --cd-face: 12%; }
+.cdlens[data-open] {
+  opacity: 1; transform: scale(1);
+  transition: transform 0.36s 0.12s cubic-bezier(0.3, 0.75, 0.25, 1), opacity 0.2s 0.12s;
+}
+/* the disc's circle is cut out of the tray and the wheel above it (the disc
+   covers the hole exactly): three panes of glass whiten the Feed past seeing,
+   so under the disc only the deck's one pane stays — the jewel case */
+.ccenter[data-wheel="open"] .cctray {
+  -webkit-mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(100% - var(--disc) / 2 - 3px), transparent 97%, black 100%);
+  mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(100% - var(--disc) / 2 - 3px), transparent 97%, black 100%);
+}
+.ccenter[data-wheel="open"] .ccwheel {
+  -webkit-mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(50% + var(--eject) / 2), transparent 97%, black 100%);
+  mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(50% + var(--eject) / 2), transparent 97%, black 100%);
+}
+/* the face is kept clear and the bend saturated: what passes under is the rainbow, the spokes only hint it */
+.cdlens[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(180%); backdrop-filter: var(--lg-filter) saturate(180%); }
+.cdlens::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; opacity: var(--cd-spokes);
+  background:
+    conic-gradient(from var(--cd-turn, 0deg),
+      transparent 0deg 38deg, var(--iris-5) 50deg, var(--iris-2) 64deg, var(--cd-silver) 74deg, var(--iris-3) 82deg, var(--iris-4) 94deg, var(--iris-1) 108deg, transparent 124deg 218deg,
+      var(--iris-1) 230deg, var(--iris-4) 244deg, var(--iris-3) 256deg, var(--cd-silver) 264deg, var(--iris-2) 274deg, var(--iris-5) 290deg, transparent 304deg 360deg),
+    conic-gradient(from var(--cd-turn, 0deg),
+      color-mix(in srgb, var(--shade) 34%, transparent) 0deg 26deg, transparent 44deg 136deg,
+      color-mix(in srgb, var(--shade) 34%, transparent) 154deg 206deg, transparent 224deg 316deg,
+      color-mix(in srgb, var(--shade) 34%, transparent) 334deg 360deg);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 40%, #000 43% 90%, transparent 92%);
+  mask: radial-gradient(circle closest-side, transparent 40%, #000 43% 90%, transparent 92%);
+}
+.cdlens::after {
+  content: ""; position: absolute; inset: 30%; border-radius: 50%;
+  background: radial-gradient(circle closest-side,
+    color-mix(in srgb, var(--cd-silver) 14%, transparent) 0 54%, color-mix(in srgb, var(--cd-silver) 48%, transparent) 60%, transparent 64%,
+    color-mix(in srgb, var(--shade) 82%, transparent) 68% 97%, transparent 100%);
+}
+@media (prefers-reduced-motion: reduce) { .cdlens, .cdlens[data-open] { transition: none; } }
 
 /* THE POST CARDS (owner, 26 Oct 2026, IMG_1166: "if the upload button is
    pressed then small cards of the upload options should appear"): Post

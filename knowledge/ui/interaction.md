@@ -48,8 +48,9 @@ and tactility) are the law; what follows is the shipped reading.
   round the deck's POST disc, made of the fixtures' own liquid glass (one
   bend for every colour, no rainbow, no added colour; four marks at
   12 / 3 / 6 / 9 in the stamp tone). The disc ejects like a CD tray — the
-  plus rides up on a pill, a dark disc shows in its slot — and the wheel
-  grows round it; neither the plus nor the disc changed look. It SPAWNS on
+  plus rides up on a pill, the Clear Disc shows in its slot (a clear CD
+  that splits the Feed under it into rainbow, 27 Oct) — and the wheel
+  grows round it; the plus kept its look. It SPAWNS on
   its own while a Feed carousel (Figure 20) is centred on the screen (its
   middle within 22% of the screen's, half of it in view) and turns THAT
   carousel, a card every 45°, clockwise on — it never scrolls the page.

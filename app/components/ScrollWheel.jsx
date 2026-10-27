@@ -32,6 +32,8 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     const before = s.angle;
     s.angle += deg;
     if (ringRef.current) ringRef.current.style.transform = `rotate(${s.angle}deg)`;
+    // the Clear Disc's spokes turn with it (ClearDisc.jsx), like light across a CD
+    window.dispatchEvent(new CustomEvent("asilum:wheel-turn", { detail: { angle: s.angle } }));
     const steps = stepsFor(before, s.angle);
     if (steps) { haptic("tick"); onStep(steps); }
   }

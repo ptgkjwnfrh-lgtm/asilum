@@ -123,7 +123,7 @@ test("the plus brings up the POST cards: Post Selection's own types, the front c
   assert.match(read("app/components/SheetHost.jsx"), /post: \{/, "the composer is a popup view");
 });
 
-test("the material and the look: the fixtures' glass, no added colour, the plus and the dark disc as they were", () => {
+test("the material and the look: the fixtures' glass, no added colour, the plus as it was", () => {
   const sw = read("app/components/ScrollWheel.jsx");
   assert.match(sw, /useLiquidGlass\(ref, \{ id: "lg-wheel", strength: 1, bezel: "fixture", shine: false, active: open \}\)/, "the fixtures' LiquidGlass");
   const glass = rules.match(/\.cctray, \.ccwheel \{([^}]*)\}/)[1];
@@ -144,6 +144,7 @@ test("the material and the look: the fixtures' glass, no added colour, the plus 
     const props = m[2].split(";").map((d) => d.split(":")[0].trim()).filter(Boolean);
     assert.ok(props.every((p) => /^(pointer-events|outline|outline-offset)$/.test(p)), "the plus is not redrawn: " + m[1].trim() + " sets " + props.join(", "));
   }
-  assert.match(rule(".ccspindle"), /border-radius: 50%; background: color-mix\(in srgb, var\(--ink\) 58%, var\(--bg\)\);/, "the dark disc as drawn");
+  // (27 Oct 2026) the dark disc became the Clear Disc, drawn over it on <body> (tests/v2-fixtures-sketch.test.js)
+  assert.match(rule(".ccspindle"), /border-radius: 50%; background: transparent;/, "the disc under the Clear Disc is still the button, undrawn");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{\n\s*\.ccenter \.ccpostwrap \.tabl\.ccpost, \.cctray, \.ccspindle, \.ccwheel, \.pcring, \.pcring3d, \.pccard,/, "reduced motion: no travel");
 });

@@ -19,9 +19,17 @@
   right edge; and the Central Control Deck (bottom: FEED · SEARCH · POST
   disc · MESSAGES · ACCOUNT) parted by cuts in the glass, with the foot
   grill under the disc. Both are clear liquid glass that bends every
-  colour alike (no colour split, no rainbow rim, 26 Oct). Of the V.1
+  colour alike (no colour split, no rainbow rim, 26 Oct) — save the Clear
+  Disc, the one glass that parts the colours (27 Oct, below). Of the V.1
   masthead only the strip came back: no ticker, no nav row. The ad strip
   (the house lines) rides on the deck.
+- **The Clear Disc** (27 Oct, `ClearDisc.jsx`; owner: the rainbow "added
+  to only the disc so the disc kind of looks like the yeezus album cover"):
+  the dark disc in the wheel's middle is a clear CD — spectral spokes off
+  its middle turning with the wheel and the scroll, a clear hub ringed in
+  black, a thin clear rim — and a lens that bends what passes under it with
+  red, green and blue each pulled its own distance (the V.1 strip's split).
+  The only glass with a split or a spectrum; a test fails if either leaks.
 - **The Feed is one Tetris grid** (25 Oct, lib/feed/tetris.js): mixed card
   sizes, even gaps, no holes; carousels and the motion row are Figure 20
   (Fig20.jsx), the ends turned and stacked.

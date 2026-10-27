@@ -259,7 +259,20 @@ export function bottomBand(w, h) {
 // would. Bounded: only the elements the edge crosses, each filtered within
 // its own box; nothing on the rest of the page pays. place(rect) on every
 // change of the pane or the scroll; dispose() takes it all back.
-export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null }) {
+// Two panes can bend one card — the deck's edge and the Clear Disc over it
+// (27 Oct 2026) — so each adds ITS filter to the card's list and takes only
+// its own away; a bend that set and cleared the whole property undid the other.
+const urlOf = (u) => u.replace(/["']/g, "");
+const bendList = (node, url) => (node.style.filter || "").split(/\s+(?=url\()/).filter((u) => u && urlOf(u) !== urlOf(url));
+export function addBend(node, url) { node.style.filter = [...bendList(node, url), url].join(" "); }
+export function dropBend(node, url) {
+  const rest = bendList(node, url);
+  if (rest.length) node.style.filter = rest.join(" "); else node.style.removeProperty("filter");
+}
+
+// `ownChain` is the Clear Disc's prism (ClearDisc.jsx: the one glass that
+// parts the colours); every pane here passes none and bends every colour alike.
+export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null, ownChain = null }) {
   let svg = null;
   const bent = new Map(); // element -> filter node
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -369,13 +382,13 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
         f.setAttribute("color-interpolation-filters", "sRGB");
         f.setAttribute("primitiveUnits", "userSpaceOnUse");
         f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
-        f.innerHTML = chain(img ? img.getAttribute("id") : "");
+        f.innerHTML = (ownChain || chain)(img ? img.getAttribute("id") : "", webkit);
         // the picture that carries the map: the <image> element (WebKit) or
         // the feImage itself (everything else) — both take x/y/width/height
         f.__img = img || f.querySelector("feImage");
         svg.appendChild(f);
         bent.set(node, f);
-        node.style.filter = `url(#${f.getAttribute("id")})`;
+        addBend(node, `url(#${f.getAttribute("id")})`);
       }
       const img = f.__img;
       if (img.getAttribute("href") !== href) img.setAttribute("href", href);
@@ -389,11 +402,11 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     }
     for (const [node, f] of bent) {
       if (under.has(node)) continue;
-      node.style.removeProperty("filter"); if (f.__img !== f.querySelector("feImage")) f.__img.remove(); f.remove(); bent.delete(node);
+      dropBend(node, `url(#${f.getAttribute("id")})`); if (f.__img !== f.querySelector("feImage")) f.__img.remove(); f.remove(); bent.delete(node);
     }
   };
   const dispose = () => {
-    for (const [node] of bent) node.style.removeProperty("filter");
+    for (const [node, f] of bent) dropBend(node, `url(#${f.getAttribute("id")})`);
     bent.clear();
     if (svg) { svg.remove(); svg = null; }
   };
