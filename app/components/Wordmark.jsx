@@ -22,15 +22,15 @@
 // ITS COLOUR (owner, 26 Oct 2026: "make it more blue so it's visible, and
 // phosphorus green in dark mode", with the title card, ASILUM title card 15s
 // 1080p.mp4, for the dark): the artwork is two masks cut from logo.jpg —
-// logo-ink.png, the word and its bar of blocks (each pixel's darkness its
-// opacity, so the lighter last block stays lighter), and logo-star.png, the
+// logo-word-ink.png, the word (each pixel's darkness its opacity; its bar of
+// blocks was cut on 26 Oct 2026 — the Masthead's stamped line), and logo-star.png, the
 // asterisk — painted in --wm-ink and --wm-star: in light the artwork's own
 // colours (the owner, the same day: "let's go back to the original color for
 // light mode"); in dark the title card's chrome washing to mint, glowing, and
 // the asterisk red (--warn), as the card has it. 25% bigger than the 25 Oct
 // size, then 10% more, darker and bolder (owner, 26 Oct 2026): the masks'
 // letters thickened ~15px -> ~23px of the 900 (the bar untouched, so its
-// blocks keep their gaps), and light paints logo-light.png — the artwork's
+// blocks keep their gaps), and light paints logo-word-light.png — the artwork's
 // slate x0.7, its blue-grey x0.75 and a deeper red.
 
 export default function Wordmark({ href = "/", className = "" }) {

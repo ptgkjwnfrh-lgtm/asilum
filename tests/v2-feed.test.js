@@ -85,7 +85,7 @@ test("ECHO: 24 hours, stored on the row, filtered when expired, viewed sequentia
   const composer = strip(read("app/components/PostComposer.jsx"));
   assert.match(composer, /echo: !!c\.echo/, "the composer sends the mark");
   const sel = strip(read("app/components/PostSelection.jsx"));
-  assert.ok(!/echo:/.test(sel.split("const SOON")[1].split("};")[0]), "ECHO is no longer soon");
+  assert.ok(!/echo:/.test(sel.split("const POST_SOON")[1].split("};")[0]), "ECHO is no longer soon");
 });
 
 test("PLACE: the reference's card (venue mark, distance, name, globe) opens the map popup; a rating only from a real source", () => {

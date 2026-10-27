@@ -41,7 +41,8 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.match(deck, /className="cccut"[^>]*data-lens-shape="cut"/);
   assert.match(deck, /className="ccdisc" data-lens-shape="ring"/);
   assert.match(deck, /className="ccgrill" data-lens-shape="slot"/);
-  assert.match(read("app/components/InfoDock.jsx"), /className="cccut idcut" data-lens-shape="cut"/, "the Info Dock is cut between its keys");
+  // (26 Oct 2026) the Info Dock is buttons on the Masthead now, no pane of its own to cut
+  assert.ok(!/cccut|idcut/.test(read("app/components/InfoDock.jsx")), "the Info Dock's cuts left with its pane");
   const glass = read("app/components/LiquidGlass.jsx");
   assert.match(glass, /export function lensFeatures\(el\)/);
   assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current\);/, "the map is drawn with the carvings, as two greys");
@@ -59,12 +60,25 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(!/<AdStrip/.test(read("app/page.js")), "and off the Feed's head");
 });
 
-test("the top fixtures sit at the top right, the Passport's right edge in line with the deck's, 8 apart (shrunk from the drawn 18)", () => {
-  assert.match(rules, /\.passportbtn \{[^}]*right: var\(--dk-edge\); width: calc\(var\(--u\) \* 82\);/s);
-  const off = Number(rules.match(/\.infodock \{ right: calc\(var\(--dk-edge\) \+ var\(--u\) \* (\d+)\); \}/)[1]);
-  assert.equal(off, 82 + 8, "the Info Dock ends 8 short of the Passport (owner, 19 Oct: the gap shrunk)");
+test("the Masthead: a full-width glass strip, the wordmark at the left and the bare keys at the right, both in line with the deck's edges", () => {
+  // (26 Oct 2026, the owner: "I kind of miss the liquid glass full-length header, let's add it so the logo can
+  // sit on it and the infodeck can be taken away leaving just the buttons"). Declared: one strip of the
+  // fixtures' glass the width of the page and --head-h tall, padded in to the deck's edges so the wordmark
+  // starts where the deck starts and the globe ends where it ends; the Info Dock and the Passport keep no pane.
+  assert.match(rules, /\.fixture \{[^}]*height: var\(--head-h\); padding: env\(safe-area-inset-top, 0px\) var\(--dk-edge\) 0;/s);
+  assert.match(rules, /\.fixture \{[^}]*justify-content: space-between;/s, "the wordmark at one end, the keys at the other");
+  assert.match(rules, /\.mhkeys \{[^}]*height: calc\(var\(--u\) \* 88\);/, "the keys in the sketch's 88-unit row");
   assert.match(rules, /\.idkey \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "three keys of the drawn 292");
-  assert.ok(!/\.infodock \{[^}]*left:/s.test(rules.split(".infodock {")[1].split("}")[0]), "not the top left any more");
+  assert.match(rules, /\.passportbtn \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "the globe a key of the same width");
+  const mast = read("app/components/Masthead.jsx");
+  assert.match(mast, /className="masthead fixture"/);
+  assert.ok(mast.indexOf("<Wordmark") < mast.indexOf("<InfoDock") && mast.indexOf("<InfoDock") < mast.indexOf("<PassportButton"), "wordmark, then the dock's keys, then the globe");
+  for (const f of ["app/components/InfoDock.jsx", "app/components/PassportButton.jsx"]) {
+    const src = read(f);
+    assert.ok(!/useLiquidGlass|fxrim|\bfixture\b"/.test(src), f + " has no pane of its own");
+  }
+  // the popup clears the strip
+  assert.match(rules, /\.sheetscrim \{[^}]*padding: calc\(var\(--head-h\) \+ 8px\) 0 var\(--cc-space\);/s);
 });
 
 test("the indicator light is gone, the plus is smaller, the fixtures' buttons are softer (owner, 26 Oct 2026)", () => {
@@ -94,15 +108,17 @@ test("search morphs the deck upward; the popup waits for the first character; on
   assert.match(read("app/components/SheetHost.jsx"), /useFocusTrap\(ref, open, \{ companion: "\.ccsearch" \}\)/, "the popup does not steal the caret");
 });
 
-test("the September recipe on the fixtures: full pull split 80/86/92, the Safari page bend, the lamps and the meniscus", () => {
+test("the September recipe on the fixtures: one pull of 86 for every colour, the Safari page bend, the lamps and the meniscus", () => {
   const glass = read("app/components/LiquidGlass.jsx");
-  assert.match(glass, /export const PULL = \[80, 86, 92\];/);
+  assert.match(glass, /export const PULL = 86;/, "one pull, no colour split (26 Oct 2026: \"take away the rainbow\")");
   assert.match(glass, /export const BEZEL = 56;/);
   assert.match(glass, /const GLASS_N = 1\.5;/);
   assert.match(glass, /const bez = Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
-  for (const [f, id] of [["app/components/InfoDock.jsx", "lg-infodock"], ["app/components/PassportButton.jsx", "lg-passportbtn"], ["app/components/ControlCenter.jsx", "lg-deck"]]) {
+  assert.match(read("app/components/Masthead.jsx"), /useLiquidGlass\(glassRef, \{ id: "lg-masthead", strength: 1, open: MASTHEAD_OPEN, bend: FIXTURE_BEND, bezel: "fixture", shine: false \}\)/, "the Masthead: full strength, only its bottom edge lenses, the page bends under it on WebKit");
+  assert.match(read("app/components/Masthead.jsx"), /MASTHEAD_OPEN = Object\.freeze\(\{ top: false, right: false, bottom: true, left: false \}\)/);
+  for (const [f, id] of [["app/components/Masthead.jsx", "lg-masthead"], ["app/components/ControlCenter.jsx", "lg-deck"]]) {
     const src = read(f);
-    assert.match(src, new RegExp(`useLiquidGlass\\(glassRef, \\{ id: "${id}", strength: 1, bend: FIXTURE_BEND`), f + " runs the header's full strength, no extra prism, and bends the page on WebKit");
+    assert.match(src, new RegExp(`useLiquidGlass\\(glassRef, \\{ id: "${id}", strength: 1, (open: MASTHEAD_OPEN, )?bend: FIXTURE_BEND`), f + " runs the header's full strength, no extra prism, and bends the page on WebKit");
     assert.match(src, /useGlassLamps\(glassRef/, f + " carries the lamp under the water");
     assert.match(src, /shine: false/, f + " does not answer the pointer");
   }
@@ -141,13 +157,14 @@ test("the owner's second pass (19 Oct): hairline cuts, the 15% touch, the dark g
 
 test("the third pass (19 Oct): hinged keys, short cuts, a vent with no outline, a thin bezel, one stroke, the shine rim", () => {
   // every key but POST is a flap hinged on its top edge; the hinge is never drawn
-  for (const [f, n] of [["app/components/ControlCenter.jsx", 3], ["app/components/InfoDock.jsx", 1], ["app/components/PassportButton.jsx", 1]]) {
+  for (const [f, n, ref] of [["app/components/ControlCenter.jsx", 3, "glassRef"], ["app/components/InfoDock.jsx", 1, "keysRef"], ["app/components/PassportButton.jsx", 1, "keyRef"]]) {
     const src = read(f);
-    assert.match(src, /useHingedKeys\(glassRef/, f + " holds the pressed state");
+    assert.match(src, new RegExp("useHingedKeys\\(" + ref), f + " holds the pressed state");
     assert.ok((src.match(/\bhkey\b/g) || []).length >= n, f + " hinges its keys");
-    assert.match(src, /bezel: "fixture"/, f + " runs the one fixture bezel");
-    assert.match(src, /<i className="fxrim" aria-hidden="true" \/>/, f + " wears the shine rim");
   }
+  // the panes run the one fixture bezel; the deck wears the shine rim (the Masthead is flush with three screen edges: no rim)
+  for (const f of ["app/components/ControlCenter.jsx", "app/components/Masthead.jsx"]) assert.match(read(f), /bezel: "fixture"/, f + " runs the one fixture bezel");
+  assert.match(deck, /<i className="fxrim" aria-hidden="true" \/>/, "the deck wears the shine rim");
   assert.ok(!/ccpost[^"]*hkey|hkey[^"]*ccpost/.test(deck), "the upload disc is not hinged");
   assert.match(rules, /\.hkey \{\n  transform-origin: 50% 0;/, "hinged on the top edge");
   assert.match(rules, /\.hkey\[data-pressed\] \{\n  transform: perspective\(220px\) rotateX\(-17deg\)/, "the lower edge tips into the glass");
@@ -170,7 +187,7 @@ test("the bend is centred: no coloured map ever reaches a displacement, and the 
   const glass = read("app/components/LiquidGlass.jsx");
   const defs = glass.slice(glass.indexOf("export function LiquidGlassDefs"), glass.indexOf("export function restrictLens"));
   const passes = [...defs.matchAll(/<feDisplacementMap [^>]*\/>/g)].map((m) => m[0]);
-  assert.equal(passes.length, 6, "two passes for each of red, green and blue");
+  assert.equal(passes.length, 2, "two passes, sideways then up and down, every colour alike");
   for (const p of passes) {
     assert.match(p, /in2="lg[xy]a"/, "a grey map: " + p);
     assert.match(p, /(xChannelSelector="R" yChannelSelector="A")|(xChannelSelector="A" yChannelSelector="R")/, "one direction a pass: " + p);
@@ -190,7 +207,7 @@ test("the top fixtures shine like the deck: their gloss is the deck's at their h
   const halves = [...rules.matchAll(/--fx-sheen-half:\s*\n\s*linear-gradient\(180deg,[^)]*\)[^)]*\)[^)]*\) (\d+(?:\.\d+)?)px\)/g)].map((m) => Number(m[1]));
   assert.deepEqual(halves, [8, 8], "half the 16px top specular, both palettes");
   assert.equal((rules.match(/--fx-sheen-half:/g) || []).length, 2);
-  assert.match(rules, /\.fixture \.fxrim \{ opacity: 0\.6; \}/);
+  assert.ok(!/\.fixture \.fxrim/.test(rules), "the Masthead wears no rim: three of its edges are the screen's");
 });
 
 
@@ -214,8 +231,10 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
 });
 
 test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
-  assert.match(rules, /\.brandfix \{\n  position: fixed; z-index: 66; left: var\(--dk-edge\);/, "fixed, its left edge on the deck's");
-  assert.match(rules, /\.brandfix \{[^}]*height: calc\(var\(--u\) \* 88\);[^}]*flex-direction: column; justify-content: center;/s, "its middle on the top fixtures' middle");
+  // (26 Oct 2026) on the Masthead: in its flow, the strip's padding puts its left edge on the deck's
+  assert.match(rules, /\.brandfix \{\n  position: relative; flex: none; align-self: flex-start;/, "in the Masthead's row");
+  // (26 Oct 2026) the word's foot (row 140 of the artwork's 200) sits the stamp gap above the stamped line
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-w\) \* 140 \/ 900\);/s, "its foot over the stamped line");
   // (19 Oct) the name in metal, a touch bolder; the asterisk smaller, at the top of the capitals; a
   // thick translucent bar and one square under the word, within its width
   // the metal and its halo on the capitals only, so the red asterisk takes none of the green glow
@@ -227,18 +246,18 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   assert.ok(!/\.wmword i \{[^}]*-webkit-text-stroke/s.test(rules), "not bolded");
   // (25 Oct, late) THE LOGO IS THE OWNER'S IMAGE (public/model/logo.jpg); the name stays for assistive technology.
   // (26 Oct 2026: "make it more blue so it's visible, and phosphorus green in dark mode") two masks cut from
-  // it colour it: the word and bar in --wm-ink (a blue in light, the title card's chrome-to-mint in dark), the
+  // it colour it: the word (its bar cut, 26 Oct) in --wm-ink (a blue in light, the title card's chrome-to-mint in dark), the
   // asterisk in --warn (red in both, as the title card has it)
   assert.match(rules, /\.wmimg \{ position: relative; display: block; width: clamp\(107\.25px, 28\.875vw, 151\.25px\); aspect-ratio: 900 \/ 200; \}/, "top left, 25% then 10% bigger than half the Info Dock (owner, 26 Oct), the artwork's proportions");
-  assert.match(rules, /\.wmink \{ --wm-mask: url\(\/model\/logo-ink\.png\); background: var\(--wm-ink\); \}/);
+  assert.match(rules, /\.wmink \{ --wm-mask: url\(\/model\/logo-word-ink\.png\); background: var\(--wm-ink\); \}/);
   assert.match(rules, /\.wmstar \{ --wm-mask: url\(\/model\/logo-star\.png\); background: var\(--wm-star, var\(--warn\)\); \}/);
   assert.match(rules, /--wm-ink: var\(--metal\);/, "dark: the title card's chrome washing to phosphor green");
   // (same day: "let's go back to the original color for light mode") light paints the artwork's own colours
-  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: url\(\/model\/logo-light\.png\) center \/ 100% 100% no-repeat;\s*--wm-star: url\(\/model\/logo-light\.png\)/s, "light: the artwork's colours, darker (owner, 26 Oct: darker and bolder)");
+  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: url\(\/model\/logo-word-light\.png\) center \/ 100% 100% no-repeat;\s*--wm-star: url\(\/model\/logo-word-light\.png\)/s, "light: the artwork's colours, darker (owner, 26 Oct: darker and bolder)");
   assert.ok(!/#3f7ef2/.test(rules), "the blue is gone");
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: drop-shadow/, "dark glows, as the title card does");
   assert.ok(!/\.wordmark\.brandfix \{ (height: auto|mix-blend-mode)/.test(rules), "no blending, and no height override: the mark sits on the fixtures' middle");
-  for (const f of ["logo.jpg", "logo-ink.png", "logo-star.png", "logo-light.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
+  for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
   assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
   assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
   const wm = read("app/components/Wordmark.jsx");
@@ -250,7 +269,7 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
   assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
   assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");
-  assert.match(rules, /\[data-popup\] \.brandfix \{ transform: scale\(0\.92\); opacity: 0\.55; \}/, "it dims with the fixtures under a popup");
+  assert.ok(!/\[data-popup\] \.brandfix/.test(rules) && /\[data-popup\] \.fixture \{ opacity: 0\.55;/.test(rules), "it dims with the Masthead it sits on under a popup, once (26 Oct 2026)");
   assert.ok(!/\.feedmark/.test(rules), "the Feed's masthead mark is gone");
   // nothing italic: no rule, no default slant, no synthesized oblique
   const css = read("app/globals.css");
@@ -264,3 +283,145 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
   assert.deepEqual(offenders, [], "no component slants a word inline either");
 });
 
+
+// THE RED BEZEL LINE AND THE RAINBOW (owner, 26 Oct 2026). "The odd red bezel line" on a Feed piece card
+// and along the fixtures had two causes: the far-reach card's 2px red frame (gone), and the glass's
+// dispersion, red / green / blue pulled 80 / 86 / 92, which parted the colours into a red line on one edge
+// and a yellow-green one on the other. Slighter splits (84 / 86 / 88, the fixtures 83 / 86 / 89) and a
+// rainbow film inside the panes followed, and then the owner's last word: "take away the rainbow".
+// Declared: PULL is one number; every displacement in both chains (the panes' lens, Safari's page bend)
+// runs at that one pull; no channel is lifted out of a bent picture; no prism, no spread, no fixture pull;
+// no film; no live rule of a glass pane paints the iris colours or a conic gradient (the popup's retired
+// rim and film keep their rules only while they stay `content: none`); the reach frame stays gone; the page
+// bend stays confined to the pane.
+test("no rainbow on the glass: every colour bends alike on every pane, no film, no rainbow rim, no red frame", () => {
+  assert.ok(!/\.card\.reach[^{]*\{[^}]*(border|outline|box-shadow)[^}]*var\(--red\)/.test(rules), "no accent frame on a far-reach card");
+  const glass = read("app/components/LiquidGlass.jsx");
+  const code = glass.replace(/\/\/[^\n]*/g, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+  assert.match(code, /export const PULL = 86;/, "one pull");
+  assert.ok(!/PULL\s*=\s*\[|FIXTURE_PULL|spread|pulls\(|prism/.test(code), "no per-colour pull, no spread, no fixture pull, no prism");
+  const scales = [...code.matchAll(/feDisplacementMap[^>]*scale=(?:\{(\w+)\}|"\$\{(\w+)\}")/g)].map((m) => m[1] || m[2]);
+  assert.ok(scales.length >= 3, "the lens and the page bend both found");
+  assert.deepEqual([...new Set(scales)], ["pull"], "every displacement at the one pull");
+  assert.ok(!/values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/.test(code), "no red channel lifted out of a bent picture");
+  const bend = code.slice(code.indexOf("export function createPageBend"), code.indexOf("let serial = 0;"));
+  assert.equal([...bend.matchAll(/<feDisplacementMap data-pb="1"/g)].length, 1, "the page bend: one pull, in the pane's subregion");
+  assert.match(bend, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the pane the element is untouched");
+  // no film
+  const css = read("app/globals.css");
+  assert.ok(!/lgfilm/.test(code + css), "no rainbow film");
+  // no live rainbow on a glass pane
+  const PANES = /\.(fixture|masthead|ccenter|sheet|pfloatcard|lgpane|gxcard|ppdoc)\b/;
+  const live = [];
+  for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    if (!PANES.test(m[1]) || !/var\(--iris-[1-5]\)|conic-gradient/.test(m[2])) continue;
+    const sel = m[1].trim();
+    if (/^\.sheet::(after|before)$/.test(sel)) continue; // retired: checked below to stay `content: none`
+    live.push(sel);
+  }
+  assert.deepEqual(live, [], "no glass pane paints the rainbow");
+  assert.match(rules, /\.sheet::after \{\n  content: none;/, "the popup's rim stays off");
+  assert.match(rules, /\.sheet::before \{ content: none; \}/, "the popup's film stays off");
+});
+
+// THE STAMPED LINE (owner, 26 Oct 2026, the reference 4.jpg, "Ref 2"; then, the same day: no line left
+// under the word, "from thinner to larger", no colour but the blue block under the globe, thinner).
+// Declared before measuring:
+//   - nothing under the word but the stamped line: the word masks carry no ink below row 140; the old
+//     masks (logo-ink.png, logo-light.png, which carried the bar) are gone and nothing names them; the
+//     Wordmark draws only its two masks and the hidden name; no border, shadow or pseudo-element on the
+//     wordmark's parts; the Masthead's children are the wordmark, the line and the keys, nothing else;
+//   - graduated: four groups of [small, small, small, large], large = 2 x small, small strictly rising
+//     from group to group; every gap 0.45; fraction columns, so it fills its span at any width;
+//   - from the A's left edge (column 19 of 900, the word's first inked column) to the globe's centre,
+//     the last large block centred there;
+//   - a stamp, flat ("it should feel like a stamp", then "no shadow at all"): square edges and a tone in
+//     the glass (alpha at most 0.25), nothing else (the next test forbids every shadow); no colour of its
+//     own but the last block, blue in both themes — the V.1 light theme's ink, #08788a (the owner's
+//     picture 5.png, the FRONT COVER headline; 1d0caa6) — flat the same way;
+//   - thin: 12/900 of the wordmark's width with a floor of 1.5px (2px on a desktop, 1.5 on a phone),
+//     against the artwork's 45.
+test("the stamped line: nothing else under the word; graduated, flat stamped marks from the A to the globe, colourless but the one blue block, thin", async () => {
+  const css = read("app/globals.css");
+  // nothing else under the word
+  const sharp = (await import("sharp")).default;
+  for (const f of ["logo-word-ink.png", "logo-word-light.png"]) {
+    const { data, info } = await sharp(new URL("../public/model/" + f, import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    let inked = 0;
+    for (let y = 141; y < info.height; y++) for (let x = 0; x < info.width; x++) if (data[(y * info.width + x) * 4 + 3] > 0) inked++;
+    assert.equal(inked, 0, f + " carries no bar");
+  }
+  for (const f of ["logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " (the masks with the bar) is gone");
+  assert.ok(!/logo-ink\.png|logo-light\.png/.test(css), "nothing in the styles names the old masks");
+  const wm = read("app/components/Wordmark.jsx");
+  const drawn = [...wm.slice(wm.indexOf("return (")).matchAll(/className="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(drawn, ["wmimg", "wmink", "wmstar", "wmword idlabel", "wmcaps"], "the wordmark draws the word's two masks and its hidden name, nothing else");
+  assert.ok(!/\.(wordmark|brandfix|wmimg|wmink|wmstar)(::?(before|after))/.test(rules), "no pseudo-element under the word");
+  assert.ok(!/\.(wordmark|brandfix|wmimg|wmink|wmstar)\b[^{,]*\{[^}]*(border-bottom|text-decoration: underline|box-shadow)/.test(rules), "no rule or shadow under the word");
+  const mast = read("app/components/Masthead.jsx");
+  const body = mast.slice(mast.indexOf('<header ref={glassRef} className="masthead fixture">'), mast.indexOf("</header>"));
+  const kids = [...body.matchAll(/\n {6}<(\w+)(?: className="([^"]+)")?/g)].map((m) => m[2] || m[1]);
+  assert.deepEqual(kids, ["brandfix", "mhstamp", "mhkeys"], "the Masthead: the wordmark, the line, the keys");
+  assert.match(body, /\n {6}<Wordmark className="brandfix" \/>/);
+  // graduated
+  const small = JSON.parse(mast.match(/export const STAMP_SMALL = Object\.freeze\((\[[^\]]*\])\);/)[1]);
+  assert.match(mast, /export const STAMP = Object\.freeze\(STAMP_SMALL\.flatMap\(\(s\) => \[s, s, s, 2 \* s\]\)\);/, "three small and a large, the large twice the small");
+  assert.equal(small.length, 4, "four groups");
+  for (let i = 1; i < small.length; i++) assert.ok(small[i] > small[i - 1], "each group a size up");
+  assert.equal(small[0], 0.5, "starting from the thin ones");
+  assert.match(mast, /export const STAMP_GAP = 0\.45;/);
+  assert.match(mast, /STAMP\.map\(\(w, i\) => \(i === STAMP\.length - 1 \? `\$\{w \/ 2\}fr` : `\$\{w\}fr \$\{STAMP_GAP\}fr`\)\)\.join\(" "\)/, "fractions: it fills its span at every width");
+  assert.match(mast, /className=\{i === STAMP\.length - 1 \? "lit" : undefined\} style=\{\{ gridColumn: 2 \* i \+ 1 \}\}/, "each block in its own column, the last one the coloured one");
+  // the span
+  assert.match(rules, /\.mhstamp \{[^}]*left: calc\(var\(--dk-edge\) \+ var\(--wm-w\) \* 19 \/ 900\);/s, "from the A's left edge");
+  assert.match(rules, /\.mhstamp \{[^}]*right: calc\(var\(--dk-edge\) \+ var\(--u\) \* 97 \/ 2\);/s, "to the globe's centre (the last key, 97 units)");
+  const ink = await sharp(new URL("../public/model/logo-word-ink.png", import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  let first = -1;
+  for (let x = 0; x < 900 && first < 0; x++) for (let y = 0; y < 141; y++) if (ink.data[(y * 900 + x) * 4 + 3] > 40) { first = x; break; }
+  assert.equal(first, 19, "the A's left edge is column 19");
+  // a stamp: flat, crisp; one blue block
+  const bar = rules.match(/\.mhstamp i \{([^}]*)\}/)[1];
+  assert.match(bar, /border-radius: 0;/, "square, crisp edges");
+  assert.match(bar, /background: var\(--stamp-recess\);/, "a tone in the glass, not paint");
+  const alphas = (name) => [...css.matchAll(new RegExp(name + ": rgba\\([^)]*, ([\\d.]+)\\);", "g"))].map((m) => Number(m[1]));
+  assert.equal(alphas("--stamp-recess").length, 2, "a tone in each theme");
+  for (const a of alphas("--stamp-recess")) assert.ok(a > 0 && a <= 0.25, "a shade, no more: " + a);
+  assert.deepEqual([...rules.matchAll(/\.mhstamp i[^{]*\{[^}]*background: (?!var\(--stamp-recess\))[^;]+;/g)].map((m) => m[0].split("{")[0].trim()), [".mhstamp i.lit"], "the one coloured block");
+  assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "blue, twice its column, centred on the globe");
+  const blues = [...css.matchAll(/--stamp-blue: ([^;]+);/g)].map((m) => m[1]);
+  assert.deepEqual(blues, ["#08788a"], "one blue for both themes: the V.1 light ink of the FRONT COVER picture");
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(blues[0].slice(i, i + 2), 16));
+  assert.ok(b > r && b > g, "a blue");
+  assert.ok(!/--wm-bar|--wm-lit/.test(css), "the old fills are gone");
+  // thinner, and the measure is the wordmark's
+  assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "12 of 900, at least 1.5px: 2px on a desktop");
+  assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 18 \/ 900\);/, "the word clear of the line");
+  const wmw = rules.match(/\.masthead \{[^}]*--wm-w: (clamp\([^)]*\));/s)[1];
+  assert.match(rules, new RegExp("\\.wmimg \\{ position: relative; display: block; width: " + wmw.replace(/[()*.+]/g, "\\$&") + ";"), "the line's measure is the wordmark's");
+});
+
+// NO SHADOW ON THE STAMPED LINE (owner, 26 Oct 2026: "still too much, no shadow at all"). Declared before
+// measuring: no rule that names .mhstamp, and no rule that could reach its bars by cascade (a bare `i` or
+// `*`, or one ending in `i` or `*` under .masthead or .fixture), sets box-shadow, filter, backdrop-filter,
+// text-shadow, outline or border; the shadow tokens of the earlier stamps are gone. The blue block too.
+test("no shadow on the stamped line: no box-shadow, filter, text-shadow, outline or border reaches its bars", () => {
+  const css = read("app/globals.css");
+  const SHADOWY = /(^|;|\{)\s*(box-shadow|filter|-webkit-filter|backdrop-filter|-webkit-backdrop-filter|text-shadow|outline|border(-(top|bottom|left|right))?)\s*:/;
+  const offenders = [];
+  for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const selectors = m[1].split(",").map((x) => x.trim()).filter(Boolean);
+    const reaches = selectors.some((sel) => {
+      if (/mhstamp/.test(sel)) return true;
+      const parts = sel.split(/\s+|>/).filter(Boolean);
+      const last = parts[parts.length - 1];
+      if (!/^(i|\*)(:[\w-]+(\([^)]*\))?)*$/.test(last)) return false;
+      const ancestors = parts.slice(0, -1).join(" ");
+      return ancestors === "" || /^(:root|html|body|\[data-theme[^\]]*\]|:root\S*|\s)*(\.masthead|\.fixture)?\S*$/.test(ancestors) && (ancestors === "" || /\.masthead|\.fixture/.test(ancestors) || !/\./.test(ancestors));
+    });
+    if (reaches && SHADOWY.test("{" + m[2])) offenders.push(m[1].trim() + " { " + m[2].trim().slice(0, 80) + " }");
+  }
+  assert.deepEqual(offenders, [], "nothing shades the stamped line");
+  assert.ok(!/--stamp-sink|--stamp-catch|--stamp-edge/.test(css), "the shadow and hairline tokens are gone");
+  assert.match(rules, /\.mhstamp i \{[^}]*background: var\(--stamp-recess\);\s*\}/, "a tone and nothing else");
+  assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "the blue block: a flat blue, no shadow");
+});

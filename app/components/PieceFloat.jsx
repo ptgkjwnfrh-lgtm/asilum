@@ -37,7 +37,7 @@ export default function PieceFloat({ item, onClose }) {
   useEscape(onClose, true);
   useFocusTrap(layerRef, true);
   useTilt(cardRef, null, true);
-  const glass = useLiquidGlass(cardRef, { id: "lg-piecefloat", strength: 0.8, prism: 1 });
+  const glass = useLiquidGlass(cardRef, { id: "lg-piecefloat", strength: 0.8 });
   useEffect(() => {
     closeRef.current?.focus();
     const prev = document.body.style.overflow;

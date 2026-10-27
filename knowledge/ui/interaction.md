@@ -43,6 +43,26 @@ and tactility) are the law; what follows is the shipped reading.
   swaps in a slim slider with arrows and OPEN.
 - Rotating the session dial moves the carousel; swiping the carousel
   turns the dial.
+- THE SCROLL WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166;
+  `ScrollWheel.jsx`, `PostCards.jsx`, `lib/scrollwheel.js`): a click wheel
+  round the deck's POST disc, made of the fixtures' own liquid glass (one
+  bend for every colour, no rainbow, no added colour; four marks at
+  12 / 3 / 6 / 9 in the stamp tone). The disc ejects like a CD tray — the
+  plus rides up on a pill, a dark disc shows in its slot — and the wheel
+  grows round it; neither the plus nor the disc changed look. It SPAWNS on
+  its own while a Feed carousel (Figure 20) is centred on the screen (its
+  middle within 22% of the screen's, half of it in view) and turns THAT
+  carousel, a card every 45°, clockwise on — it never scrolls the page.
+  A tap on the plus (no popup up) brings up Post Selection's types as
+  small glass cards on a 3D ring above it, and the wheel turns the ring;
+  choosing the front card grows it into its composer popup in place. No
+  card navigates — LISTING shows its `soon` note. Arrows turn a notch,
+  Home / End the ends; Escape (the deck's alone — never handled twice),
+  the dark disc or a click away put the cards away, and with no cards
+  Escape snoozes the wheel until another carousel is centred. A popup,
+  search or another page put it all away. The 350f206 swipe-up opener is
+  gone. Reduced motion drops the travel and the coast. With a popup up a
+  tap still opens the hub and a long hold the compact menu, as before.
 
 ## Tactility (lib/haptics.js)
 - `tick`, `press`, `confirm`, `error`, `toggle` — short patterns through
