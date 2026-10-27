@@ -259,7 +259,7 @@ export function bottomBand(w, h) {
 // would. Bounded: only the elements the edge crosses, each filtered within
 // its own box; nothing on the rest of the page pays. place(rect) on every
 // change of the pane or the scroll; dispose() takes it all back.
-// Two panes can bend one card — the deck's edge and the Clear Disc over it
+// Two panes can bend one card — the deck's edge and the wheel over it
 // (27 Oct 2026) — so each adds ITS filter to the card's list and takes only
 // its own away; a bend that set and cleared the whole property undid the other.
 const urlOf = (u) => u.replace(/["']/g, "");
@@ -270,8 +270,9 @@ export function dropBend(node, url) {
   if (rest.length) node.style.filter = rest.join(" "); else node.style.removeProperty("filter");
 }
 
-// `ownChain` is the Clear Disc's prism (ClearDisc.jsx: the one glass that
-// parts the colours); every pane here passes none and bends every colour alike.
+// `ownChain` is a pane's own Safari chain: the wheel's V.1 rainbow
+// (RainbowGlass.jsx, the one glass that parts the colours); every other
+// pane passes none and bends every colour alike.
 export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null, ownChain = null }) {
   let svg = null;
   const bent = new Map(); // element -> filter node
@@ -449,7 +450,9 @@ export function lensFeatures(el) {
 }
 
 // `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
-export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true } = {}) {
+// `dispersion` swaps in a pane's own filter and Safari chain: only the wheel
+// passes one, the V.1 rainbow (RainbowGlass.jsx, 27 Oct 2026)
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true, dispersion = null } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
   const xRef = useRef(null);
@@ -459,7 +462,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
-    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open }) : null;
+    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open, ownChain: dispersion ? dispersion.chain(strength) : null }) : null;
     let raf = 0;
     const fit = () => {
       raf = 0;
@@ -504,7 +507,8 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       el.removeEventListener("pointerleave", onLeave);
       if (pageBend) pageBend.dispose();
     };
-  }, [elRef, id, active, open, strength, bend, bezel, shine]);
+  }, [elRef, id, active, open, strength, bend, bezel, shine, dispersion]);
+  if (dispersion) return <dispersion.Defs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} />;
   return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} />;
 }
 

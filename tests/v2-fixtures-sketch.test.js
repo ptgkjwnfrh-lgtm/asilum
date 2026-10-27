@@ -293,7 +293,7 @@ test("the wordmark is a fixture in the top-left corner, and nothing on the site 
 // runs at that one pull; no channel is lifted out of a bent picture; no prism, no spread, no fixture pull;
 // no film; no live rule of a glass pane paints the iris colours or a conic gradient (the popup's retired
 // rim and film keep their rules only while they stay `content: none`); the reach frame stays gone; the page
-// bend stays confined to the pane. (27 Oct 2026: the Clear Disc is the one exception, the next test.)
+// bend stays confined to the pane.
 test("no rainbow on the glass: every colour bends alike on every pane, no film, no rainbow rim, no red frame", () => {
   assert.ok(!/\.card\.reach[^{]*\{[^}]*(border|outline|box-shadow)[^}]*var\(--red\)/.test(rules), "no accent frame on a far-reach card");
   const glass = read("app/components/LiquidGlass.jsx");
@@ -324,79 +324,72 @@ test("no rainbow on the glass: every colour bends alike on every pane, no film, 
   assert.match(rules, /\.sheet::before \{ content: none; \}/, "the popup's film stays off");
 });
 
-// THE CLEAR DISC (owner, 27 Oct 2026: "i want this rainbow effect to be added to only the disc so the disc
-// kind of looks like the yeezus album cover … the cards on the feed would refract causing the rainbow warp
-// effect"). The one exception to the test above. Declared before measuring:
-//   - the Disc parts the colours: its backdrop filter (#lg-cd) bends red, green and blue each at its own
-//     pull (two passes a colour, three distinct pulls r < g < b), each colour kept alone and the three
-//     summed; its Safari chain does the same, three displacements inside the disc's square, and composes
-//     with the deck's bend on a card rather than replacing it;
-//   - the Disc wears the spectrum: spokes of the iris tokens off its middle, turning with --cd-turn (the
-//     wheel and the scroll, held still under reduced motion), a hub ringed dark, a thin clear rim;
-//   - NOTHING ELSE parts or paints the colours: the split (PRISM, a colour lifted alone out of a bent
-//     picture, #lg-cd) appears in no source file but ClearDisc.jsx; no rule on any glass element (anything
-//     with a backdrop-filter) paints the iris colours or a conic gradient but the Disc's (and the popup's
-//     retired rim and film, held at `content: none` above).
-test("the Clear Disc: the one glass that parts the colours — a clear CD whose lens splits the Feed into rainbow, and nothing else does", () => {
-  const cd = read("app/components/ClearDisc.jsx");
-  // the .jsx cannot be imported under node: the numbers are read from the source
-  const prism = Object.fromEntries([...cd.match(/export const PRISM = Object\.freeze\(\{ ([^}]+) \}\);/)[1].matchAll(/(\w): ([\d.]+)/g)].map((m) => [m[1], +m[2]]));
-  assert.ok(prism.r < prism.g && prism.g < prism.b, "red pulled least, blue most: the colours land apart");
-  assert.ok(prism.b / prism.r >= 3, "a strong split, the V.1 strip's, not a whisper");
-  assert.match(cd, /export const DISC_PULL = 0\.\d+;/);
-  // the backdrop filter: two passes per colour, each pass's scale named by its colour, three colour-only matrices, summed
-  const filter = cd.slice(cd.indexOf("<filter id={DISC_ID}"), cd.indexOf("</filter>"));
-  assert.match(cd, /export const DISC_ID = "lg-cd";/);
-  assert.equal([...filter.matchAll(/<feDisplacementMap key=\{c \+ "[xy]"\} data-ch=\{c\}/g)].length, 2, "a sideways and an up-and-down pass, for each colour");
-  assert.match(filter, /\{CH\.map\(\(c\) => \[/, "run once a colour");
-  assert.match(cd, /const CH = \["r", "g", "b"\];/);
-  assert.match(cd, /for \(const n of el\.querySelectorAll\("\[data-ch\]"\)\) n\.setAttribute\("scale", scales\[n\.getAttribute\("data-ch"\)\]\);/, "each pass at its colour's pull");
-  assert.match(cd, /r: "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0",\n  g: "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0",\n  b: "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0",/, "each colour kept alone");
-  assert.equal([...filter.matchAll(/operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/g)].length, 2, "the three summed");
-  assert.match(rules, /\.cdlens\[data-refract="1"\] \{ -webkit-backdrop-filter: var\(--lg-filter\) saturate\(180%\); backdrop-filter: var\(--lg-filter\) saturate\(180%\); \}/, "the Disc bends its backdrop through #lg-cd");
-  // the Safari chain
-  const chain = cd.slice(cd.indexOf("function prismChain"), cd.indexOf("export default function ClearDisc"));
-  assert.match(chain, /CH\.map\(\(c\) => `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="\$\{scales\[c\]\}"/, "one displacement a colour, inside the disc's square");
-  assert.match(chain, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the disc the card is untouched");
-  assert.match(cd, /createPageBend\(\{ id: DISC_ID, el, selector: FIXTURE_BEND, mapRef, ownChain: prismChain\(scales\) \}\)/);
-  const glass = read("app/components/LiquidGlass.jsx");
-  assert.match(glass, /addBend\(node, `url\(#\$\{f\.getAttribute\("id"\)\}\)`\);/, "a bend adds its own filter to a card's list");
-  assert.ok(!/node\.style\.filter = `url/.test(glass) && !/node\.style\.removeProperty\("filter"\); if/.test(glass), "and never overwrites or clears another pane's");
-  // the lens sees the Feed: a layer above the deck, never inside its Backdrop Root; the two panes above it are cut away under it
-  assert.match(cd, /return createPortal\(/, "on <body>, not in the deck");
-  assert.match(rules, /\.cdlens \{[^}]*position: fixed; z-index: 67;[^}]*pointer-events: none;/, "over the deck (66), the disc under it still the button");
-  assert.match(rules, /\.ccenter\[data-wheel="open"\] \.cctray \{\n[^}]*mask: radial-gradient\(circle calc\(var\(--disc\) \* 0\.45\)/, "the tray cut away under the disc");
-  assert.match(rules, /\.ccenter\[data-wheel="open"\] \.ccwheel \{\n[^}]*mask: radial-gradient\(circle calc\(var\(--disc\) \* 0\.45\) at 50% calc\(50% \+ var\(--eject\) \/ 2\)/, "the wheel cut away under the disc");
-  assert.match(deck, /<ClearDisc open=\{wheel\} anchorRef=\{spindleRef\} \/>/, "the dark disc became the Clear Disc");
-  // the surface: spokes of the iris tokens turning, a hub ringed dark, a thin rim
-  const spokes = rules.match(/\.cdlens::before \{([^}]*)\}/)[1];
-  assert.match(spokes, /conic-gradient\(from var\(--cd-turn, 0deg\),[^;]*var\(--iris-2\)[^;]*var\(--iris-4\)/, "the spectrum in spokes, turning");
-  assert.match(rules, /\.cdlens::after \{[^}]*inset: 30%; border-radius: 50%;[^}]*color-mix\(in srgb, var\(--shade\) 82%, transparent\) 68% 97%/, "the hub, ringed dark");
-  assert.match(cd, /if \(!still\) el\.style\.setProperty\("--cd-turn"/, "reduced motion: the spokes hold still");
-  assert.match(read("app/components/ScrollWheel.jsx"), /window\.dispatchEvent\(new CustomEvent\("asilum:wheel-turn", \{ detail: \{ angle: s\.angle \} \}\)\);/, "the wheel turns them");
-  // NOTHING ELSE: the split lives in ClearDisc.jsx alone
+// THE WHEEL'S RAINBOW (owner, 27 Oct 2026: "the disc is the actual liquid glass wheel … the bearing of the
+// disc or the center of the disc should be the upload button … i don't want the upload button to rotate,
+// only the disc … simply add whatever liquid glass rainbow effect the earlier version of asilum magazine had").
+// The one exception to the test above. Declared before measuring:
+//   - the rainbow is the V.1 magazine's, restored (LiquidGlass.jsx at bdd5397, 9 Sep): the bezel bends the
+//     backdrop through the colour map three times, red / green / blue pulled 80 / 86 / 92, each pass keeps
+//     its colour, the three are summed, the weight picture blends the lens into the clear middle; Safari's
+//     chain is the same three pulls, inside the pane's square;
+//   - it is the wheel's alone: only ScrollWheel.jsx passes it to the glass hook, the split (V1_PULL, a
+//     colour lifted alone out of a bent picture) lives in RainbowGlass.jsx alone among every source file,
+//     and no glass rule anywhere paints the iris colours or a conic gradient;
+//   - the wheel's pane can see the Feed: it is a layer on <body> one level under the deck (inside the deck,
+//     a Backdrop Root, the bend reached nothing), bending through its own filter;
+//   - the plus is the hub: the open wheel's centre is the ejected plus's centre, and turning moves the
+//     wheel's marks only — nothing rotates the plus;
+//   - the slot is empty: no Clear Disc, no CD styling anywhere.
+test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred on the plus, which never turns", () => {
+  const rg = read("app/components/RainbowGlass.jsx");
+  assert.match(rg, /export const V1_PULL = Object\.freeze\(\[80, 86, 92\]\);/, "V.1's three pulls");
+  const defs = rg.slice(rg.indexOf("function V1Defs"), rg.indexOf("function v1Chain"));
+  for (const [c, sc] of [["R", "sr"], ["G", "sg"], ["B", "sb"]]) {
+    assert.match(defs, new RegExp(`<feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale=\\{${sc}\\} xChannelSelector="R" yChannelSelector="G" result="bent${c}" />`), "the " + c + " pass");
+  }
+  assert.match(defs, /in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR"/, "each colour kept alone");
+  assert.match(defs, /in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens"/, "summed");
+  assert.match(defs, /<feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" \/>/, "blended into the clear middle by the weight");
+  const chain = rg.slice(rg.indexOf("function v1Chain"), rg.indexOf("export const V1_RAINBOW"));
+  assert.equal([...chain.matchAll(/<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="\$\{s[rgb]\}"/g)].length, 3, "Safari: the same three pulls, in the pane's square");
+  assert.match(chain, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the wheel a card is untouched");
+  // the wheel's alone
+  const sw = read("app/components/ScrollWheel.jsx");
+  assert.match(sw, /dispersion: V1_RAINBOW \}\);/, "the wheel passes it");
   const files = [];
   const walk = (dir) => { for (const f of readdirSync(new URL("../" + dir, import.meta.url))) { const p = dir + "/" + f; if (statSync(new URL("../" + p, import.meta.url)).isDirectory()) walk(p); else if (/\.(jsx?|mjs)$/.test(f)) files.push(p); } };
   walk("app"); walk("lib");
-  const SPLIT = /PRISM|prismScales|values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"|values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"|"lg-cd"|#lg-cd/;
-  const leaks = files.filter((f) => f !== "app/components/ClearDisc.jsx" && SPLIT.test(read(f).replace(/\/\/[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "")));
-  assert.deepEqual(leaks, [], "no other file parts the colours");
-  // and no other glass paints the spectrum
-  const panes = new Set();
-  for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) if (/backdrop-filter:\s*(?!none)/.test(m[2])) for (const c of m[1].matchAll(/\.([a-z][\w-]*)/g)) panes.add(c[1]);
-  for (const c of ["fixture", "masthead", "ccenter", "ccwheel", "cctray", "pccard", "sheet", "cdlens"]) assert.ok(panes.has(c) || c === "masthead", c + " is glass");
+  const code = (f) => read(f).replace(/\/\/[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "");
+  const users = files.filter((f) => /V1_RAINBOW|RainbowGlass/.test(code(f)) && f !== "app/components/RainbowGlass.jsx");
+  assert.deepEqual(users, ["app/components/ScrollWheel.jsx"], "no other pane takes the rainbow");
+  const SPLIT = /V1_PULL|PULL\s*=\s*\[|values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"|values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0"/;
+  const splitters = files.filter((f) => SPLIT.test(code(f)));
+  assert.deepEqual(splitters, ["app/components/RainbowGlass.jsx"], "no other file parts the colours");
   const painted = [];
   for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     if (!/var\(--iris-\d\)|conic-gradient/.test(m[2])) continue;
     const sel = m[1].trim();
-    const cls = [...sel.matchAll(/\.([a-z][\w-]*)/g)].map((c) => c[1]);
-    if (!cls.some((c) => panes.has(c) || c === "masthead" || c === "ccspindle" || c === "ccdisc")) continue;
     if (/^\.sheet::(after|before)$/.test(sel)) continue; // retired, `content: none` (the test above)
-    painted.push(sel);
+    if (/\.(fixture|masthead|ccenter|ccwheel|ccwglass|cctray|ccspindle|ccdisc|pccard|sheet|cdlens)\b/.test(sel)) painted.push(sel);
   }
-  assert.deepEqual(painted, [".cdlens::before"], "the spectrum is the Disc's alone");
-  // the plus keeps its look
-  assert.ok(!/cdlens|iris|conic/.test(rules.match(/\n\.ccdisc \{([^}]*)\}/)[1]), "the plus is not redrawn");
+  assert.deepEqual(painted, [], "the rainbow is refraction, never paint");
+  // the pane sees the Feed
+  assert.match(sw, /createPortal\(<span ref=\{glassRef\} className="ccwglass"/, "the wheel's pane on <body>");
+  assert.match(rules, /\.ccwglass \{\n  position: fixed; z-index: 65;/, "one level under the deck (66)");
+  assert.match(rules, /\.ccwglass\[data-refract="1"\] \{ -webkit-backdrop-filter: var\(--lg-filter\) saturate\(160%\); backdrop-filter: var\(--lg-filter\) saturate\(160%\); \}/);
+  assert.ok(!/\.ccwheel\[data-refract/.test(rules) && !/\.ccwheel \{[^}]*backdrop-filter/.test(rules), "the wheel in the deck draws no glass of its own");
+  // the plus is the hub
+  assert.match(read("app/globals.css"), /--cy: calc\(50% \+ var\(--u\) \* 3\);\s*\/\* the disc's centre in its key \*\//, "--cy is the plus's centre in its key");
+  assert.match(rules, /\.ccenter\[data-wheel="open"\] \.ccpostwrap \.tabl\.ccpost \{ transform: translateY\(calc\(-1 \* var\(--eject\)\)\);/, "the plus carried up by --eject");
+  assert.match(rules, /\.ccenter\[data-wheel="open"\] \.ccwheel \{\n  top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred where the plus is carried");
+  assert.match(rules, /\.ccwheel \{\n  position: absolute; z-index: 1; left: 50%; top: var\(--cy\);[^}]*transform: translate\(-50%, -50%\)/, "on its centre");
+  const turn = sw.slice(sw.indexOf("function turn("), sw.indexOf("function stopCoast"));
+  assert.match(turn, /if \(ringRef\.current\) ringRef\.current\.style\.transform = `rotate\(\$\{s\.angle\}deg\)`;/, "a turn moves the wheel's marks");
+  assert.equal([...turn.matchAll(/\.style\.transform/g)].length, 1, "and nothing else");
+  for (const m of rules.matchAll(/([^{}]*\.(ccpost|ccdisc)\b[^{}]*)\{([^}]*)\}/g)) assert.ok(!/rotate/.test(m[3]), "the plus never rotates: " + m[1].trim());
+  // the slot is empty
+  assert.ok(!existsSync(new URL("../app/components/ClearDisc.jsx", import.meta.url)), "no Clear Disc");
+  assert.ok(!/cdlens|ClearDisc|--cd-turn/.test(rules + read("app/components/ControlCenter.jsx")), "no CD styling");
 });
 
 // THE STAMPED LINE (owner, 26 Oct 2026, the reference 4.jpg, "Ref 2"; then, the same day: no line left

@@ -23,12 +23,13 @@
 //     composer popup ("post") over the root; LISTING says it is not here
 //     yet; nothing in the cards, Post Selection or the composer's
 //     signed-out note navigates to another page;
-//   - the material: the wheel is the fixtures' LiquidGlass (the same hook,
-//     the fixture bezel, no shine) and the fixtures' glass recipe; no ink
-//     ring, no accent, no rainbow on the wheel, the tray or the cards; the
-//     marks are the stamped tone;
-//   - the look: the plus (.ccdisc) and the dark disc (.ccspindle) keep their
-//     drawing; reduced motion drops the travel.
+//   - the material: the wheel's pane is the shared LiquidGlass hook and the
+//     fixtures' glass recipe, carrying the V.1 rainbow (27 Oct 2026; pinned
+//     in tests/v2-fixtures-sketch.test.js); no ink ring, no accent, no
+//     painted colour on the wheel, the tray or the cards; the marks are the
+//     stamped tone;
+//   - the look: the plus (.ccdisc) keeps its drawing; the slot (.ccspindle)
+//     is left an empty space (27 Oct); reduced motion drops the travel.
 
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -123,20 +124,20 @@ test("the plus brings up the POST cards: Post Selection's own types, the front c
   assert.match(read("app/components/SheetHost.jsx"), /post: \{/, "the composer is a popup view");
 });
 
-test("the material and the look: the fixtures' glass, no added colour, the plus as it was", () => {
+test("the material and the look: the fixtures' glass, no painted colour, the plus as it was, the slot empty", () => {
   const sw = read("app/components/ScrollWheel.jsx");
-  assert.match(sw, /useLiquidGlass\(ref, \{ id: "lg-wheel", strength: 1, bezel: "fixture", shine: false, active: open \}\)/, "the fixtures' LiquidGlass");
-  const glass = rules.match(/\.cctray, \.ccwheel \{([^}]*)\}/)[1];
+  assert.match(sw, /useLiquidGlass\(glassRef, \{ id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW \}\)/, "the shared LiquidGlass, with the V.1 rainbow");
+  const glass = rules.match(/\.cctray, \.ccwglass \{([^}]*)\}/)[1];
   assert.match(glass, /background: linear-gradient\(var\(--fx-tint\), var\(--fx-tint\)\), var\(--fx-glass\);/, "the fixtures' pane");
   assert.match(glass, /backdrop-filter: saturate\(160%\);/);
-  assert.match(rules, /\.ccwheel\[data-refract="1"\] \{[^}]*var\(--lg-filter\) saturate\(160%\)/, "the fixtures' bend");
+  assert.match(rules, /\.ccwglass\[data-refract="1"\] \{[^}]*var\(--lg-filter\) saturate\(160%\)/, "the pane bends through its own filter");
   for (const sel of [".ccwheel", ".ccwring", ".ccwtick", ".cctray", ".pcring", ".pccard"]) {
     const r = rule(sel) || "";
     assert.ok(!/var\(--(red|warn|sig|iris-\d)\)|conic-gradient|--holo|#[0-9a-f]{3,6}\b/i.test(r), sel + " adds no colour");
   }
   assert.ok(!/border: [\d.]+px solid/.test(rule(".ccwheel")), "no ink ring");
   assert.match(rule(".ccwtick"), /background: var\(--stamp-recess\);/, "the marks pressed in, in the glass's tone");
-  // the plus and the dark disc keep their drawing: nothing here restyles .ccdisc, and the dark disc is as built
+  // the plus keeps its drawing: nothing here restyles .ccdisc
   const block = rules.slice(rules.indexOf(".ccpostwrap {\n  --disc"), rules.indexOf(".pcsoon"));
   const plusRules = [...block.matchAll(/([^{}]*\.ccdisc[^{}]*)\{([^}]*)\}/g)];
   assert.ok(plusRules.length > 0, "the wheel's rules touch the plus only to let it be pressed and focused");
@@ -144,7 +145,8 @@ test("the material and the look: the fixtures' glass, no added colour, the plus 
     const props = m[2].split(";").map((d) => d.split(":")[0].trim()).filter(Boolean);
     assert.ok(props.every((p) => /^(pointer-events|outline|outline-offset)$/.test(p)), "the plus is not redrawn: " + m[1].trim() + " sets " + props.join(", "));
   }
-  // (27 Oct 2026) the dark disc became the Clear Disc, drawn over it on <body> (tests/v2-fixtures-sketch.test.js)
-  assert.match(rule(".ccspindle"), /border-radius: 50%; background: transparent;/, "the disc under the Clear Disc is still the button, undrawn");
+  // (27 Oct 2026) the slot "is simply meant to look like an empty space": no fill, no CD, nothing drawn on it
+  assert.match(rule(".ccspindle"), /border-radius: 50%; background: transparent;/, "the slot left empty");
+  assert.ok(!/\.ccspindle(::before|::after|\[)/.test(rules) && !/cdlens|ClearDisc/.test(rules + read("app/components/ControlCenter.jsx")), "nothing drawn on it, no CD");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{\n\s*\.ccenter \.ccpostwrap \.tabl\.ccpost, \.cctray, \.ccspindle, \.ccwheel, \.pcring, \.pcring3d, \.pccard,/, "reduced motion: no travel");
 });

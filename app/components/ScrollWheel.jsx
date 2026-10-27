@@ -1,30 +1,73 @@
 "use client";
 
 // app/components/ScrollWheel.jsx — THE WHEEL (owner, 26 Oct 2026; the
-// sketches 6.jpg and IMG_1166). A click wheel round the deck's POST disc,
-// made of the fixtures' own liquid glass — the same pane, the same bend
-// that moves every colour alike, no rainbow, "no added colors" — with four
-// marks at twelve, three, six and nine pressed into it in the glass's own
-// tone. It turns what the deck gives it: a Feed carousel that is centred on
+// sketches 6.jpg and IMG_1166; 27 Oct: "the disc is the actual liquid glass
+// wheel … the upload button should be its middle and its turning point …
+// i don't want the upload button to rotate, only the disc"). A click wheel
+// of liquid glass centred on the POST plus — the plus is its hub and never
+// turns — with four marks at twelve, three, six and nine pressed into it in
+// the glass's own tone. Its glass is the one pane that parts the colours:
+// the V.1 magazine's rainbow (27 Oct), so the Feed behind it bends and
+// splits like the FRONT COVER letters under the old strip. It turns what the deck gives it: a Feed carousel that is centred on
 // the screen, or the POST cards when the plus is pressed (ControlCenter.jsx
 // says which). A step every 45°, clockwise on (lib/scrollwheel.js). It is
 // the Disc's family: drag to turn, flick to coast, a tick each step, keys
 // step it, reduced motion drops the coast. Always mounted, so it grows and
 // folds as one transformation in CSS, never a popup fading in.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { angleOf, deltaDeg, stepsFor, coast, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
+import { V1_RAINBOW } from "./RainbowGlass.jsx";
 import { haptic } from "../../lib/haptics.js";
 
 const MARKS = [0, 90, 180, 270];
+// what the wheel bends where Safari cannot bend a backdrop: the Feed behind
+// it — never the deck's own ad strip, which sits over the wheel's glass
+export const WHEEL_BEND = ".card, .headline, .headsub, .demobanner, .ctmeta";
 
 export default function ScrollWheel({ open, label, onStep, onEnd }) {
   const ref = useRef(null);
   const ringRef = useRef(null);
+  const glassRef = useRef(null);
+  const [host, setHost] = useState(null);
   const state = useRef({ angle: 0, drag: null, v: 0, raf: 0, last: 0 });
-  // the fixtures' glass: the same component, the one bend, no shine
-  const glass = useLiquidGlass(ref, { id: "lg-wheel", strength: 1, bezel: "fixture", shine: false, active: open });
+  useEffect(() => { setHost(document.body); }, []);
+  // THE GLASS IS A LAYER OF ITS OWN (27 Oct 2026). The deck's glass is a
+  // backdrop-filter, which makes the deck a Backdrop Root: a backdrop-filter
+  // inside it sees only the deck's own paint, never the Feed — the wheel's
+  // bend reached nothing (stripes laid under it stayed straight). So the
+  // wheel's pane (.ccwglass) lives on <body>, one level under the deck,
+  // kept on the wheel's circle every frame it moves; the wheel in the deck
+  // keeps the hand, the keys and the turning marks, and the plus — its hub
+  // — paints over the glass. The pane carries the V.1 magazine's rainbow
+  // (RainbowGlass.jsx), the one glass that parts the colours, with V.1's
+  // own bezel; on Safari the cards under it are bent the same three ways.
+  const glass = useLiquidGlass(glassRef, { id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW });
+  useEffect(() => {
+    const el = ref.current, pane = glassRef.current;
+    if (!el || !pane) return undefined;
+    let raf = 0, until = performance.now() + 900;
+    const sync = () => {
+      raf = 0;
+      // the wheel's circle as drawn this frame (it grows out of the plus):
+      // sized, not scaled, so the glass's map is always drawn to its size
+      const b = el.getBoundingClientRect();
+      if (b.width) {
+        pane.style.width = `${b.width}px`; pane.style.height = `${b.height}px`;
+        pane.style.left = `${b.left}px`; pane.style.top = `${b.top}px`;
+        pane.style.opacity = getComputedStyle(el).opacity;
+      }
+      if (performance.now() < until) raf = requestAnimationFrame(sync);
+    };
+    const wake = () => { until = performance.now() + 900; if (!raf) raf = requestAnimationFrame(sync); };
+    sync();
+    wake();
+    window.addEventListener("resize", wake);
+    el.addEventListener("transitionend", wake);
+    return () => { window.removeEventListener("resize", wake); el.removeEventListener("transitionend", wake); if (raf) cancelAnimationFrame(raf); };
+  }, [open, host]);
 
   // the ring shows the turn; every STEP_DEG crossed moves what it turns
   function turn(deg) {
@@ -32,8 +75,6 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     const before = s.angle;
     s.angle += deg;
     if (ringRef.current) ringRef.current.style.transform = `rotate(${s.angle}deg)`;
-    // the Clear Disc's spokes turn with it (ClearDisc.jsx), like light across a CD
-    window.dispatchEvent(new CustomEvent("asilum:wheel-turn", { detail: { angle: s.angle } }));
     const steps = stepsFor(before, s.angle);
     if (steps) { haptic("tick"); onStep(steps); }
   }
@@ -123,10 +164,10 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
       onPointerCancel={up}
       onKeyDown={key}
     >
-      {glass}
       <span ref={ringRef} className="ccwring" aria-hidden="true">
         {MARKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
       </span>
+      {host ? createPortal(<span ref={glassRef} className="ccwglass" data-open={open ? "1" : undefined} aria-hidden="true">{glass}</span>, host) : null}
     </div>
   );
 }

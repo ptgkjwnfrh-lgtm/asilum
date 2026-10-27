@@ -3876,14 +3876,16 @@ body { font-size: 14px; }
 /* THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166). While a
    Feed carousel is centred, or the POST cards are up (ControlCenter.jsx),
    the deck carries data-wheel: the plus rides up out of the deck on a pill
-   tray, a dark disc shows in its slot, and the wheel grows out of the
-   plus's ring round the tray, its centre between the two, about 2.25 deck
-   heights across. The plus keeps the look it has ("don't change the look of
-   the upload or the disc"; the dark disc became the Clear Disc on 27 Oct,
-   below); the wheel and the tray are
-   the fixtures' own liquid glass ("the disc scroll wheel has to be made of
-   the same liquid glass as the fixtures. no added colors"): the same tint,
-   the same bend, the shadow and the lip, no ink ring, no coloured mark —
+   tray, its slot left an empty space, and the wheel grows out of the
+   plus's ring, CENTRED ON THE PLUS — the plus is its hub and turning point
+   and never turns itself (owner, 27 Oct: "the upload button should be its
+   middle and its turning point") — about 2.25 deck heights across. The
+   eject stays: centred on the plus where it sits in the deck, half the
+   wheel would hang below the screen's foot; raised, the whole wheel stands
+   above it. The plus keeps its look. The wheel and the tray are the
+   fixtures' liquid glass (the tint, the shadow and the lip, no ink ring, no
+   coloured mark), and the wheel's pane alone bends with the V.1 rainbow
+   (27 Oct, .ccwglass below) —
    the four marks at 12 / 3 / 6 / 9 are pressed into the glass in its own
    tone, like the Masthead's stamped line. One continuous transformation,
    reversed on close: opening, the tray first and then the wheel; closing,
@@ -3901,13 +3903,24 @@ body { font-size: 14px; }
 /* the ejected key's focus ring hugs its disc, not the travelled key box */
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible { outline: none; }
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible .ccdisc { outline: 2px solid var(--sig); outline-offset: 3px; }
-/* the tray and the wheel: the fixtures' glass */
-.cctray, .ccwheel {
+/* the tray and the wheel's pane: the fixtures' glass. The wheel's pane is
+   a layer on <body> (.ccwglass, ScrollWheel.jsx), one level under the deck:
+   inside the deck, a Backdrop Root, its bend could never reach the Feed */
+.cctray, .ccwglass {
   background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   isolation: isolate;
 }
-.ccwheel[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+/* THE V.1 RAINBOW, THE WHEEL'S ALONE (owner, 27 Oct 2026: "i want the images
+   behind the disc to cause liquid glass distortion and refraction to cause a
+   rainbow effect"): #lg-wheel is the magazine's 9 Sep filter, red / green /
+   blue pulled 80 / 86 / 92 (RainbowGlass.jsx) */
+.ccwglass[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.ccwglass {
+  position: fixed; z-index: 65; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
+  pointer-events: none; opacity: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
+}
+.ccwglass::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
 .cctray {
   position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--disc) / 2 - 3px);
   width: calc(var(--disc) + 6px); height: calc(var(--disc) + 6px); transform: translateX(-50%);
@@ -3920,7 +3933,7 @@ body { font-size: 14px; }
 }
 .ccspindle {
   position: absolute; z-index: 3; left: 50%; top: var(--cy); width: calc(var(--disc) * 0.9); height: calc(var(--disc) * 0.9);
-  padding: 0; border: 0; border-radius: 50%; background: transparent; /* the Clear Disc is drawn over it (.cdlens) */
+  padding: 0; border: 0; border-radius: 50%; background: transparent; /* the slot left empty (owner, 27 Oct: "simply meant to look like an empty space") */
   transform: translate(-50%, -50%) scale(0.3); opacity: 0; pointer-events: none;
   transition: transform 0.3s var(--tray-ease), opacity 0.2s;
 }
@@ -3928,17 +3941,18 @@ body { font-size: 14px; }
   transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: pointer;
   transition: transform 0.36s 0.12s var(--tray-ease), opacity 0.2s 0.12s;
 }
+/* the wheel in the deck: the hand, the keys and the turning marks; its pane is .ccwglass */
 .ccwheel {
   position: absolute; z-index: 1; left: 50%; top: var(--cy); width: var(--wheel-d); height: var(--wheel-d);
-  border-radius: calc(var(--wheel-d) / 2); border: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
+  border-radius: calc(var(--wheel-d) / 2); border: 0; background: none;
   transform: translate(-50%, -50%) scale(0.2); opacity: 0; pointer-events: none; touch-action: none;
   transition: top 0.32s var(--tray-ease), transform 0.32s var(--tray-ease), opacity 0.22s;
 }
+/* centred on the plus where the tray carries it: the plus is the hub (27 Oct) */
 .ccenter[data-wheel="open"] .ccwheel {
-  top: calc(var(--cy) - var(--eject) / 2); transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
+  top: calc(var(--cy) - var(--eject)); transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
   transition: top 0.46s 0.1s var(--tray-ease), transform 0.46s 0.1s var(--tray-ease), opacity 0.3s 0.1s;
 }
-.ccwheel::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
 .ccwheel:active { cursor: grabbing; }
 .ccwheel:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; }
 .ccwring { position: absolute; inset: 0; border-radius: inherit; }
@@ -3947,68 +3961,6 @@ body { font-size: 14px; }
   margin-left: calc(max(2px, calc(var(--u) * 4)) / -2); background: var(--stamp-recess);
   transform-origin: 50% calc(var(--wheel-d) / 2 - max(3px, calc(var(--u) * 8))); transform: rotate(var(--tick));
 }
-
-/* THE CLEAR DISC (owner, 27 Oct 2026: "i want this rainbow effect to be
-   added to only the disc so the disc kind of looks like the yeezus album
-   cover … the cards on the feed would refract causing the rainbow warp").
-   The dark disc in the wheel's middle becomes a clear CD (ClearDisc.jsx): a
-   fixed layer over the deck on the disc's circle — the deck's glass is a
-   Backdrop Root, so a lens inside it could never see the Feed. A silver
-   face, the spectrum in spokes off the middle (two bright pairs, dark
-   between, turning with the wheel and the scroll: --cd-turn), a clear hub
-   ringed in black, a thin clear rim. Beneath the face the backdrop is bent
-   with the colours parted (#lg-cd, the PRISM): the ONE glass that splits
-   them; every other pane bends every colour alike. Reduced motion: no
-   growth, no turning (the script holds --cd-turn). */
-.cdlens {
-  --cd-silver: var(--ink); --cd-spokes: 0.42; --cd-face: 8%;
-  position: fixed; z-index: 67; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
-  pointer-events: none; opacity: 0; transform: scale(0.3);
-  background:
-    radial-gradient(circle closest-side, transparent 92%, color-mix(in srgb, var(--cd-silver) 62%, transparent) 96%, color-mix(in srgb, var(--cd-silver) 22%, transparent) 99%, transparent 100%),
-    radial-gradient(circle closest-side, transparent 40%, color-mix(in srgb, var(--cd-silver) var(--cd-face), transparent) 41% 92%, transparent 93%);
-  box-shadow: 0 0 0 0.5px color-mix(in srgb, var(--shade) 30%, transparent);
-  transition: transform 0.3s cubic-bezier(0.3, 0.75, 0.25, 1), opacity 0.2s;
-}
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .cdlens { --cd-silver: var(--paper); --cd-spokes: 0.5; --cd-face: 12%; } }
-[data-theme="light"] .cdlens { --cd-silver: var(--paper); --cd-spokes: 0.5; --cd-face: 12%; }
-.cdlens[data-open] {
-  opacity: 1; transform: scale(1);
-  transition: transform 0.36s 0.12s cubic-bezier(0.3, 0.75, 0.25, 1), opacity 0.2s 0.12s;
-}
-/* the disc's circle is cut out of the tray and the wheel above it (the disc
-   covers the hole exactly): three panes of glass whiten the Feed past seeing,
-   so under the disc only the deck's one pane stays — the jewel case */
-.ccenter[data-wheel="open"] .cctray {
-  -webkit-mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(100% - var(--disc) / 2 - 3px), transparent 97%, black 100%);
-  mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(100% - var(--disc) / 2 - 3px), transparent 97%, black 100%);
-}
-.ccenter[data-wheel="open"] .ccwheel {
-  -webkit-mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(50% + var(--eject) / 2), transparent 97%, black 100%);
-  mask: radial-gradient(circle calc(var(--disc) * 0.45) at 50% calc(50% + var(--eject) / 2), transparent 97%, black 100%);
-}
-/* the face is kept clear and the bend saturated: what passes under is the rainbow, the spokes only hint it */
-.cdlens[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(180%); backdrop-filter: var(--lg-filter) saturate(180%); }
-.cdlens::before {
-  content: ""; position: absolute; inset: 0; border-radius: 50%; opacity: var(--cd-spokes);
-  background:
-    conic-gradient(from var(--cd-turn, 0deg),
-      transparent 0deg 38deg, var(--iris-5) 50deg, var(--iris-2) 64deg, var(--cd-silver) 74deg, var(--iris-3) 82deg, var(--iris-4) 94deg, var(--iris-1) 108deg, transparent 124deg 218deg,
-      var(--iris-1) 230deg, var(--iris-4) 244deg, var(--iris-3) 256deg, var(--cd-silver) 264deg, var(--iris-2) 274deg, var(--iris-5) 290deg, transparent 304deg 360deg),
-    conic-gradient(from var(--cd-turn, 0deg),
-      color-mix(in srgb, var(--shade) 34%, transparent) 0deg 26deg, transparent 44deg 136deg,
-      color-mix(in srgb, var(--shade) 34%, transparent) 154deg 206deg, transparent 224deg 316deg,
-      color-mix(in srgb, var(--shade) 34%, transparent) 334deg 360deg);
-  -webkit-mask: radial-gradient(circle closest-side, transparent 40%, #000 43% 90%, transparent 92%);
-  mask: radial-gradient(circle closest-side, transparent 40%, #000 43% 90%, transparent 92%);
-}
-.cdlens::after {
-  content: ""; position: absolute; inset: 30%; border-radius: 50%;
-  background: radial-gradient(circle closest-side,
-    color-mix(in srgb, var(--cd-silver) 14%, transparent) 0 54%, color-mix(in srgb, var(--cd-silver) 48%, transparent) 60%, transparent 64%,
-    color-mix(in srgb, var(--shade) 82%, transparent) 68% 97%, transparent 100%);
-}
-@media (prefers-reduced-motion: reduce) { .cdlens, .cdlens[data-open] { transition: none; } }
 
 /* THE POST CARDS (owner, 26 Oct 2026, IMG_1166: "if the upload button is
    pressed then small cards of the upload options should appear"): Post
@@ -4021,7 +3973,7 @@ body { font-size: 14px; }
 .pcring {
   --card-w: clamp(84px, 24vw, 108px); --card-h: calc(var(--card-w) * 1.5); --ring-r: calc(var(--card-w) * 1.15);
   position: absolute; z-index: 5; left: 50%; width: calc(var(--card-w) * 3.2); height: var(--card-h);
-  bottom: calc(100% - var(--cy) + var(--eject) / 2 + var(--wheel-d) / 2 + 12px);
+  bottom: calc(100% - var(--cy) + var(--eject) + var(--wheel-d) / 2 + 12px);
   transform: translateX(-50%) translateY(16px) scale(0.6); transform-origin: 50% 100%; opacity: 0; pointer-events: none;
   perspective: 900px; transition: transform 0.36s var(--tray-ease), opacity 0.22s;
 }

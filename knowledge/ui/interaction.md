@@ -45,12 +45,16 @@ and tactility) are the law; what follows is the shipped reading.
   turns the dial.
 - THE SCROLL WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166;
   `ScrollWheel.jsx`, `PostCards.jsx`, `lib/scrollwheel.js`): a click wheel
-  round the deck's POST disc, made of the fixtures' own liquid glass (one
-  bend for every colour, no rainbow, no added colour; four marks at
-  12 / 3 / 6 / 9 in the stamp tone). The disc ejects like a CD tray — the
-  plus rides up on a pill, the Clear Disc shows in its slot (a clear CD
-  that splits the Feed under it into rainbow, 27 Oct) — and the wheel
-  grows round it; the plus kept its look. It SPAWNS on
+  of liquid glass CENTRED ON THE POST PLUS — the plus is its hub and
+  turning point and never turns; only the wheel and its four marks
+  (12 / 3 / 6 / 9, in the stamp tone) do (owner, 27 Oct). The plus rides
+  up out of the deck on a pill, its slot left an empty space, and the
+  wheel grows round it there (raised, the whole wheel stands above the
+  screen's foot). The wheel's pane carries the V.1 magazine's rainbow
+  glass (`RainbowGlass.jsx`, red / green / blue pulled 80 / 86 / 92), so
+  the Feed behind it bends and splits like the FRONT COVER letters under
+  the old strip — the one glass that parts the colours. The pane is a
+  layer on <body> under the deck: inside the deck its bend saw nothing. It SPAWNS on
   its own while a Feed carousel (Figure 20) is centred on the screen (its
   middle within 22% of the screen's, half of it in view) and turns THAT
   carousel, a card every 45°, clockwise on — it never scrolls the page.

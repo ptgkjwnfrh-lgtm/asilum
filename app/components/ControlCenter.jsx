@@ -71,7 +71,6 @@ import { POST_TYPES } from "./PostSelection.jsx";
 import { useEscape, useClickAway } from "./dismiss.js";
 import ScrollWheel from "./ScrollWheel.jsx";
 import PostCards from "./PostCards.jsx";
-import ClearDisc from "./ClearDisc.jsx";
 import { haptic } from "../../lib/haptics.js";
 import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
@@ -153,7 +152,6 @@ export default function ControlCenter({ kind, pathname }) {
   const [centred, setCentred] = useState(null); // the centred carousel's stage
   const [snoozed, setSnoozed] = useState(null); // the carousel the wheel was put away from
   const postRef = useRef(null);
-  const spindleRef = useRef(null);
   const wrapRef = useRef(null);
   const canWheel = !popupUp && !inSearch;
   const wheel = canWheel && (cards || (!!centred && centred !== snoozed));
@@ -278,8 +276,7 @@ export default function ControlCenter({ kind, pathname }) {
           <PostCards open={cards && canWheel} index={ring} onIndex={setRing} onChoose={chooseCard} />
           <ScrollWheel open={wheel} label={cards ? "wheel: turn to choose what to post" : "wheel: turn to move the carousel"} onStep={wheelStep} onEnd={wheelEnd} />
           <span className="cctray" aria-hidden="true" />
-          <button ref={spindleRef} type="button" className="ccspindle" aria-label={cards ? "put the cards away" : "put the wheel away"} tabIndex={wheel ? 0 : -1} aria-hidden={wheel ? undefined : true} onClick={() => putAway(true)} />
-          <ClearDisc open={wheel} anchorRef={spindleRef} />
+          <button type="button" className="ccspindle" aria-label={cards ? "put the cards away" : "put the wheel away"} tabIndex={wheel ? 0 : -1} aria-hidden={wheel ? undefined : true} onClick={() => putAway(true)} />
           <button
             ref={postRef}
             type="button"
