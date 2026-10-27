@@ -49,7 +49,7 @@ export default function PostSelection() {
   return (
     <div className="postsel">
       <p className="deck">{cur.label.toLowerCase()} · {cur.means}</p>
-      <Disc name="post" items={POST_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon }))} index={i} onChange={(n) => { setI(n); setSoon(null); }} onSelect={choose} size={220} />
+      <Disc name="post" items={POST_TYPES.map((t) => ({ id: t.id, label: t.label, icon: t.icon }))} index={i} onChange={(n) => { setI(n); setSoon(null); }} onSelect={choose} size={220} finish="cd" />
       {soon ? <p className="fine soon postsoon" role="status">{POST_SOON[soon]}</p> : null}
     </div>
   );
