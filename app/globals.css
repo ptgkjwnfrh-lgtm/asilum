@@ -3551,7 +3551,16 @@ body { font-size: 14px; }
 .sheetbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 7px; background: none; color: var(--sig); cursor: pointer;
   font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; text-shadow: none; }
 .sheetbtn:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.sheetbody { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 28px; }
+.sheetbody { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* THE TABS KEPT ALIVE (owner, 27 Oct 2026; SheetHost.jsx): each view of each
+   tab is its own scroller; out of sight it stays laid out — hidden, inert —
+   so its scroll and state are as they were left. A dismissed popup stays
+   laid out too, unseen and untouchable (data-kept), and opens again with its
+   own entrance. */
+.sheetpane { position: absolute; inset: 0; overflow-y: auto; padding: 14px 18px 28px; }
+.sheetpane:not([data-live]) { visibility: hidden; pointer-events: none; }
+.sheetscrim[data-kept] { visibility: hidden; pointer-events: none; }
+.sheetscrim[data-kept] .sheet { animation: none; }
 .sheetnote .fine, .likesfine, .fine { font-size: 12px; line-height: 1.5; color: var(--grey); letter-spacing: 0.02em; }
 .sheetbody .deck { font-style: normal; font-family: var(--helv); font-size: 15px; color: var(--ink); }
 /* likes and result lists */
@@ -3617,7 +3626,7 @@ body { font-size: 14px; }
   .maptool { flex: 1; min-height: 64px; }
   .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - var(--head-h) - 8px - var(--cc-space)); } /* between the Masthead and the deck */
   .sheetscrim { align-items: flex-end; }
-  .sheetbody { padding-bottom: calc(var(--cc-space) + 12px); }
+  .sheetpane { padding-bottom: calc(var(--cc-space) + 12px); }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 360px) {
@@ -3866,9 +3875,7 @@ body { font-size: 14px; }
    labels the title, the session count and EXPAND overlapped at 375px; the
    aria-label still names each key */
 @media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
-.sheetcount { display: inline-block; margin-left: 10px; padding: 1px 6px; border-radius: 8px; border: 1px solid var(--line); font: 9px/14px var(--mich); letter-spacing: 0.1em; color: var(--grey); vertical-align: middle; }
 .sheet.roomy { height: min(74vh, 660px); }
-.sheet.hubsheet .sheetbody { display: flex; flex-direction: column; padding: 10px 14px 18px; }
 
 /* the Post disc's second life: the session indicator (1.25) */
 .ccpostwrap { position: relative; display: flex; }
@@ -4011,17 +4018,6 @@ body { font-size: 14px; }
   .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel, .pcring, .pcring3d, .pccard,
   .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost, .ccenter[data-wheel="open"] .cctray, .ccenter[data-wheel="open"] .ccspindle, .ccenter[data-wheel="open"] .ccwheel, .ccenter[data-cards="open"] .pcring { transition: none; }
 }
-.cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
-.ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }
-.ccmenu, .hubmenu {
-  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 70; min-width: 180px;
-  display: grid; gap: 2px; padding: 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg);
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--shade) 22%, transparent);
-  animation: sheetin 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.ccmenu button, .hubmenu button { display: block; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 10px/1.2 var(--mich); letter-spacing: 0.14em; }
-.ccmenu button:hover, .hubmenu button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); }
-.ccmenu button:disabled, .hubmenu button:disabled { color: var(--grey); cursor: not-allowed; }
 
 /* THE DISC (chapter 2) */
 .discwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -4060,43 +4056,13 @@ body { font-size: 14px; }
 .discarrow { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .discarrow .flip { transform: scaleX(-1); }
 .discgo { min-height: 36px; padding: 0 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--ink); color: var(--paper); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
-@media (prefers-reduced-motion: reduce) { .discring, .ccmenu, .hubmenu { animation: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .discring { animation: none; transition: none; } }
 
 /* POST SELECTION */
 .postsel { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
 .postsel .deck { margin: 0; text-align: center; }
 .postsoon { max-width: 320px; text-align: center; margin: 0; }
 
-/* THE SESSION HUB (chapter 1) */
-.hub { position: relative; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
-.hubnote, .hubundo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; font-size: 12px; color: var(--ink); }
-.hubundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--bg); border-color: var(--red); box-shadow: 0 12px 30px color-mix(in srgb, var(--shade) 18%, transparent); }
-.hubnote .txtbtn, .hubundo .txtbtn { font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); }
-.hubempty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 0; color: var(--grey); }
-.hubstage { position: relative; height: 176px; flex: none; }
-.hubpanels { position: absolute; inset: 0; perspective: 900px; }
-.sesspanel {
-  position: absolute; left: 50%; top: 50%; width: 164px; height: 150px; margin: -75px 0 0 -82px; padding: 12px; border-radius: 9px; border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  box-shadow: 0 14px 36px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
-  display: flex; flex-direction: column; gap: 6px; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none;
-  transform: translateX(calc(var(--k) * 96px)) translateZ(calc(var(--ak) * -120px)) rotateY(calc(var(--k) * -18deg));
-  opacity: calc(1 - var(--ak) * 0.22); z-index: calc(10 - var(--ak));
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s;
-}
-.sesspanel.sel { border-color: var(--red); }
-.sesspanel.hidden .sessthumb { filter: blur(6px); }
-.sessthumb { position: relative; display: flex; align-items: center; justify-content: center; height: 64px; border-radius: 7px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
-.sessveil { position: absolute; inset: auto 0 6px; text-align: center; font: 8px/1 var(--mich); letter-spacing: 0.16em; color: var(--grey); filter: none; }
-.sesstitle b { display: block; font: 10px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sesstitle input { width: 100%; min-height: 28px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: 10px/1.3 var(--mich); letter-spacing: 0.1em; }
-.sessmeta { font: 8px/1.3 var(--mich); letter-spacing: 0.12em; color: var(--grey); }
-.sessx { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--grey); cursor: pointer; font: 16px/1 var(--helv); display: inline-flex; align-items: center; justify-content: center; }
-.sessx:hover { color: var(--red); border-color: var(--red); }
-.hubcounter { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); font: 10px/1 var(--mich); letter-spacing: 0.12em; color: var(--ink); }
-.hubdial { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.hubhint { margin: 0; text-align: center; }
-@media (prefers-reduced-motion: reduce) { .sesspanel { transition: none; } }
 
 /* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
 /* the vertical wheel with slight overlap (blueprint "Two scrolling systems"):
@@ -4788,7 +4754,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .sheethead .sheettitle { padding: 0 6px; }
 .sheethead .sheetacts { gap: 4px; }
 /* a phone: the grip and the title's tracking give the title and its session count the room the keys took */
-@media (max-width: 480px) { .sheethead { gap: 4px; padding: 10px 6px; } .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } .sheethead .sheetcount { margin-left: 6px; } }
+@media (max-width: 480px) { .sheethead { gap: 4px; padding: 10px 6px; } .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } }
 
 /* =====================================================================
    THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
@@ -5426,7 +5392,7 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 10%, transparent) 100%); }
 
 /* THE HOLD MENU (PostCard.jsx HoldMenu): a veil over the card, a small menu in
-   the middle, the compact menu's own face (.ccmenu) */
+   the middle */
 .holdveil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border-radius: inherit; background: color-mix(in srgb, var(--paper) 55%, transparent); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: sheetin 0.16s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .holdveilx { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: default; }
 .holdveilx:focus-visible { outline: 2px solid var(--sig); outline-offset: -4px; }

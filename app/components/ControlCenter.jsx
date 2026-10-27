@@ -34,11 +34,11 @@
 // key beside it opens the honest MessagesSheet. CSS hides whichever is
 // not needed (.cckey-mail:has(.maildesk) .ccfallback).
 //
-// THE POST DISC HAS TWO LIVES (blueprint 1.25, 1.26): with no popup up it
-// opens Post Selection — the six types on the disc; while a popup is up it
-// IS the session indicator, with the `01/10` counter, and a tap opens the
-// session hub. A long hold on it opens the compact menu (New Session).
-// Posting is unavailable inside a popup; the passenger closes it first.
+// THE POST DISC: it brings up Post Selection's types as the POST cards; over
+// a popup it closes the popup first (posting is unavailable inside one). It
+// was also the session indicator — the `01/10` counter, the hub on a tap,
+// New Session on a long hold — until the ten-session hub was taken away
+// (owner, 27 Oct 2026: "lets get rid of the ten tabs that are hidden").
 //
 // THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166): the disc
 // ejects like a CD tray — the plus rides up out of the deck on a pill, a
@@ -63,9 +63,7 @@
 import { useEffect, useRef, useState } from "react";
 import { deckFor } from "../../lib/nav.js";
 import { DECK, scopeFor } from "../../lib/dock.js";
-import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
-import { counter, activeSession } from "../../lib/sessions.js";
-import { LONG_PRESS_MS } from "../../lib/disc.js";
+import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, setScope } from "../../lib/dockstate.js";
 import { centredIndex, ringItem } from "../../lib/scrollwheel.js";
 import { POST_TYPES } from "./PostSelection.jsx";
 import { useEscape, useClickAway } from "./dismiss.js";
@@ -93,6 +91,8 @@ export default function ControlCenter({ kind, pathname }) {
   // character opens reads the same query and shows no field of its own
   const searchPopupUp = !!(dock.sheet && dock.sheet.id === "search");
   const scope = scopeFor({ pathname, sheet: dock.sheet && dock.sheet.id, likesTab: dock.likesTab });
+  // each search keeps its own words (lib/dockstate.js setScope)
+  useEffect(() => { setScope(scope.id); }, [scope.id]);
   const fieldRef = useRef(null);
   // the OG liquid glass: the bezel, the cuts, the disc, the grill and the indicator bend what passes beneath
   const glassRef = useRef(null);
@@ -132,20 +132,18 @@ export default function ControlCenter({ kind, pathname }) {
       return;
     }
     if (id === "post") {
-      if (popupUp) { haptic("press"); toggleHub(); return; }
-      // the plus brings up the POST cards (and takes them down again)
+      // the plus brings up the POST cards (and takes them down again); over a
+      // popup it closes the popup and brings them up — it was the ten-session
+      // hub's indicator until the hub went (owner, 27 Oct 2026)
       haptic("press");
-      setMenu(false);
+      if (popupUp) { closeSheet(); setCards(true); return; }
       setCards((c) => !c);
       return;
     }
     if (id === "messages") { openSheet("messages"); return; }
   }
 
-  const popupUp = !!dock.sheet || !!dock.hub.hubOpen;
-  const active = activeSession(dock.hub);
-  const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
-  const [menu, setMenu] = useState(false);
+  const popupUp = !!dock.sheet;
   // THE WHEEL: out while a Feed carousel is centred, or while the POST cards are up
   const [cards, setCards] = useState(false);
   const [ring, setRing] = useState(0);
@@ -210,23 +208,10 @@ export default function ControlCenter({ kind, pathname }) {
     const t = requestAnimationFrame(() => { const f = wrapRef.current && wrapRef.current.querySelector(".pccard.front"); if (f) f.focus({ preventScroll: true }); });
     return () => cancelAnimationFrame(t);
   }, [cards]);
-  const hold = useRef(null);
-  function holdStart(e) {
-    if (e.button) return;
-    hold.current = { fired: false, t: setTimeout(() => { hold.current.fired = true; haptic("press"); setMenu(true); }, LONG_PRESS_MS) };
-  }
-  function holdEnd() {
-    const h = hold.current; hold.current = null;
-    if (!h) return;
-    clearTimeout(h.t);
-    if (!h.fired) press("post");
-  }
-  function holdCancel() { const h = hold.current; hold.current = null; if (h) clearTimeout(h.t); }
-
   function feedTap(e, dest) {
     // the press that left search does only that: no refresh on the way out
     if (leftSearch.current) { leftSearch.current = false; if ((pathname || "/") === dest.href) e.preventDefault(); return; }
-    if (dock.sheet || dock.hub.hubOpen) { e.preventDefault(); closeSheet(); return; }
+    if (dock.sheet) { e.preventDefault(); closeSheet(); return; }
     if ((pathname || "/") === dest.href && dest.href === "/") {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("asilum:feed-refresh"));
@@ -235,8 +220,8 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   // ANOTHER KEY LEAVES SEARCH (owner, 19 Oct 2026): on the press itself, before
-  // the key acts, so POST opens Post Selection rather than toggling the hub of
-  // the search popup, and MESSAGES opens over a closed search
+  // the key acts, so POST brings up its cards over a closed search, and
+  // MESSAGES opens over a closed search
   const leftSearch = useRef(false);
   function keyDown(e) {
     if (!inSearch) return;
@@ -269,8 +254,7 @@ export default function ControlCenter({ kind, pathname }) {
       );
     }
     if (k.kind === "disc") {
-      const cur = sheetIs("post") || sheetIs("postselect") || !!dock.hub.hubOpen;
-      const indicator = popupUp;
+      const cur = sheetIs("post") || sheetIs("postselect");
       return (
         <span key={k.id} className="ccpostwrap" ref={wrapRef}>
           <PostCards open={cards && canWheel} index={ring} onIndex={setRing} onChoose={chooseCard} />
@@ -280,29 +264,17 @@ export default function ControlCenter({ kind, pathname }) {
           <button
             ref={postRef}
             type="button"
-            className={"tabl ccpost" + (cur ? " cur" : "") + (indicator ? " ccsessions" : "")}
-            aria-label={indicator ? "sessions " + sessionCount : "post"}
+            className={"tabl ccpost" + (cur ? " cur" : "")}
+            aria-label="post"
             aria-pressed={cur}
             aria-expanded={canWheel ? cards : undefined}
-            onPointerDown={holdStart}
-            onPointerUp={holdEnd}
-            onPointerLeave={holdCancel}
-            onPointerCancel={holdCancel}
-            onContextMenu={(e) => e.preventDefault()}
+            onClick={() => press("post")}
           >
             <span className="ccdisc" data-lens-shape="ring" data-lens-band="11">
-              <Icon name={indicator ? "disc" : "plus"} size={24} />
-              {indicator && sessionCount ? <b className="cccount" aria-hidden="true">{sessionCount}</b> : null}
+              <Icon name="plus" size={24} />
             </span>
-            <span className="tbl">{indicator ? "SESSIONS" : k.label}</span>
+            <span className="tbl">{k.label}</span>
           </button>
-          {menu ? (
-            <div className="ccmenu" role="menu" aria-label="session actions">
-              <button type="button" role="menuitem" onClick={() => { setMenu(false); haptic("confirm"); newSession(); }}>NEW SESSION</button>
-              <button type="button" role="menuitem" onClick={() => { setMenu(false); openHub(); }}>SESSIONS</button>
-              <button type="button" role="menuitem" onClick={() => setMenu(false)}>CANCEL</button>
-            </div>
-          ) : null}
         </span>
       );
     }

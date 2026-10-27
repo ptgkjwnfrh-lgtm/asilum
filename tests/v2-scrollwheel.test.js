@@ -150,7 +150,7 @@ test("the wheel spawns over a centred carousel or the POST cards, and turns what
 });
 
 test("the plus brings up the POST cards: Post Selection's own types, the front card grows into its popup, nothing navigates", () => {
-  assert.match(cc, /if \(popupUp\) \{ haptic\("press"\); toggleHub\(\); return; \}/, "over a popup the plus is still the session hub");
+  assert.match(cc, /if \(popupUp\) \{ closeSheet\(\); setCards\(true\); return; \}/, "over a popup the plus closes it and brings up the cards (the session hub is gone, 27 Oct 2026)");
   assert.match(cc, /setCards\(\(c\) => !c\);/, "the plus brings the cards up and takes them down");
   assert.match(cc, /data-cards=\{cards && canWheel \? "open" : undefined\}/);
   assert.match(cc, /function chooseCard\(t\) \{\n\s*setCards\(false\);\n\s*openSheet\("post", \{ kind: t\.id, title: t\.label \}\);/, "a card opens its popup, the composer, over the root");

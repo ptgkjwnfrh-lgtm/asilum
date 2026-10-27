@@ -15,7 +15,7 @@
 // deck is searching its bar is the only field on screen.
 
 import { useEffect, useRef, useState } from "react";
-import { useDock, pushSheet, unpinTag, setQuery, flipToggle } from "../../lib/dockstate.js";
+import { useDock, pushSheet, unpinTag, setQuery, flipToggle, wordsOf } from "../../lib/dockstate.js";
 import AMark from "./AMark.jsx";
 import { TagChip } from "./TagChip.jsx";
 import { authorizedFetch, getUid, thumbFor } from "../../lib/client.js";
@@ -55,9 +55,11 @@ function QueryRow({ text, onPick }) {
 
 export default function SearchSheet() {
   const dock = useDock();
-  const q = String(dock.q || "").trim();
+  // the global search's own words (kept per scope: lib/dockstate.js wordsOf)
+  const words = wordsOf(dock, "global");
+  const q = String(words.q || "").trim();
   const { pieces: wantPieces, wire: wantPosts, asterisk } = dock.toggles;
-  const pins = dock.pins || [];
+  const pins = words.pins || [];
   const pinKey = pins.map((p) => p.key).join("|");
   const [tab, setTab] = useState("all");
   const [res, setRes] = useState({ q: "", items: [], total: 0, posts: [], places: [], related: [], person: null, note: null, loading: false, error: "" });
@@ -120,7 +122,7 @@ export default function SearchSheet() {
       {dock.mode !== "search" ? (
       <label className="srchfield">
         <Icon name="search" size={22} />
-        <input ref={fieldRef} type="search" value={dock.q} placeholder="Search ASILUM" aria-label="Search ASILUM" onChange={(e) => setQuery(e.target.value)} enterKeyHint="search" />
+        <input ref={fieldRef} type="search" value={words.q} placeholder="Search ASILUM" aria-label="Search ASILUM" onChange={(e) => setQuery(e.target.value)} enterKeyHint="search" />
         <button type="button" className={"srchamark" + (asterisk ? " on" : "")} aria-pressed={!!asterisk} onClick={() => { haptic("toggle"); flipToggle("asterisk"); }} title={asterisk ? "ASTERISK reads your Passport — tap to search without it" : "tap to let ASTERISK read your Passport"}>
           <AMark className={asterisk ? "on" : ""} label={asterisk ? "ASTERISK on" : "ASTERISK off"} />
         </button>

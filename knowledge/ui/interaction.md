@@ -1,37 +1,42 @@
 # Interaction grammar — V.2 (owner's blueprint, 17 October 2026)
 
-The blueprint's chapter 1 (popups and sessions) and chapter 2 (the Disc
+The blueprint's chapter 1 (popups and sessions — the sessions now kept
+quietly as tabs, 27 Oct 2026) and chapter 2 (the Disc
 and tactility) are the law; what follows is the shipped reading.
 
-## Popups (SheetHost.jsx, dockstate.js, sessions.js)
+## Popups (SheetHost.jsx, dockstate.js)
 - One popup at a time, over the root, at about 60% of the height; it
   grows to the full height for the keyboard and long editing (EXPAND, and
   automatically when a field inside takes focus).
-- A new popup REPLACES the one on screen; the previous one stays in the
-  session's history. Back and a swipe right restore it. A swipe down from
-  the header, Escape, CLOSE, or the FEED key dismiss it. A tap outside
-  dismisses a lightweight popup only — never a checkout, never an edit in
-  progress (`heavy` in the VIEWS table).
-- Dismissing keeps the session. The FEED key twice: the first tap
-  dismisses, the second refreshes the tab from the top.
+- A new popup opens over the one on screen, which waits under it: Back
+  and a swipe right return to it. A swipe down from the header, Escape,
+  CLOSE, or the FEED key dismiss it. A tap outside dismisses a
+  lightweight popup only — never a checkout, never an edit in progress
+  (`heavy` in the VIEWS table).
+- The FEED key twice: the first tap dismisses, the second refreshes the
+  tab from the top.
 - While a popup is up the fixtures shrink and go translucent
   (`[data-popup]` on the root). The page behind does not scroll.
 
-## Sessions (the universal session hub)
-- Up to ten preserved sessions, most recent first, each a chain of
-  popups; the counter reads `01/10`. Opening a popup extends the active
-  session; a new session is made from the deck's POST disc (long hold →
-  NEW SESSION) or from the hub's dial.
-- The deck's POST disc is the session indicator while a popup is up: it
-  wears the counter and a tap opens the hub (the carousel). Posting is
-  unavailable inside a popup.
-- The carousel: glass panels in a spatial row, `×` on the focused panel,
-  swipe up to close, UNDO for six seconds, rename from the dial's menu.
-  Previews are static; sensitive views (messages, bag, checkout) are
-  veiled unless the device reveals them. The eleventh session opens the
-  manager instead of closing anything.
-- Persistence is per device (`asilum-sessions-v2`); nothing is written
-  before the stored hub has been read.
+## Tabs (the session hub's laws, without its face — owner, 27 Oct 2026)
+- The ten-session hub is gone from sight: no carousel, no `01/10`
+  counter, no NEW SESSION, the POST disc is only the plus ("lets get rid
+  of the ten tabs that are hidden … i simply just dont want the session
+  subtabs as a confusing feature").
+- Its laws stay ("when i back out of a tab the tab must remain what i
+  last left it as"). Every popup belongs to a TAB, named by the view it
+  was opened as and what it was opened on. Dismissing keeps the tab
+  exactly as it was; opening it again resumes it — the detail that was
+  up, what was typed and chosen, the scroll. A popup opened over another
+  extends that tab; Back from a tab's first view dismisses and keeps it.
+- While the page lives each tab's views stay mounted out of sight
+  (hidden, inert, still laid out — `.sheetpane`, the six most recent);
+  on this device each tab's stack and scroll are kept (`asilum-tabs-v1`),
+  so after a reload a tab still resumes. Nothing pops open by itself.
+- The search keeps its words: leaving search keeps the half-typed query
+  and its pins, each scope its own (global, Messages, Likes, the map);
+  SEARCH gives them back with the search tab resumed. Likes and the map
+  filter by them only while the deck is searching.
 
 ## The Disc (Disc.jsx, lib/disc.js)
 - Drag to turn, flick to spin; momentum and friction; a magnetic snap
@@ -41,8 +46,6 @@ and tactility) are the law; what follows is the shipped reading.
 - Arrow keys turn it; Enter confirms. Reduced motion drops momentum.
 - Every disc can be turned Off per interface (`asilum-disc-<name>`); Off
   swaps in a slim slider with arrows and OPEN.
-- Rotating the session dial moves the carousel; swiping the carousel
-  turns the dial.
 - THE SCROLL WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166;
   `ScrollWheel.jsx`, `PostCards.jsx`, `lib/scrollwheel.js`): a click wheel
   of liquid glass CENTRED ON THE POST PLUS — the plus is its hub and
@@ -73,7 +76,7 @@ and tactility) are the law; what follows is the shipped reading.
   Escape snoozes the wheel until another carousel is centred. A popup,
   search or another page put it all away. The 350f206 swipe-up opener is
   gone. Reduced motion drops the travel and the coast. With a popup up a
-  tap still opens the hub and a long hold the compact menu, as before.
+  tap on the plus closes it and brings up the cards.
 
 ## Tactility (lib/haptics.js)
 - `tick`, `press`, `confirm`, `error`, `toggle` — short patterns through
