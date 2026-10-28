@@ -74,14 +74,37 @@ test("the finish: maps at the screen's pixels, the bent band alone smoothed", as
     assert.match(glass, /let s = Math\.min\(2, Math\.max\(1, dpr\)\);\n\s*while \(s > 1 && w \* h \* s \* s > MAP_MAX_PX\) s -= 0\.25;/);
   }
   delete global.window;
-  // every blur reads the bent picture, never the clear source
+  // (then: "smooth out the pixels even more … apple quality") two filters, and only ever inside the bent
+  // band: the backdrop PRE-FILTERED before it is bent (a squeeze then averages, rather than skipping
+  // pixels — a texture minified with its mipmaps), and the bent picture eased after; the clear middle
+  // reads the untouched source
   const rainbow = read("app/components/RainbowGlass.jsx");
   const blurs = [...(glass + rainbow).matchAll(/<feGaussianBlur[^>]*>/g)].map((m) => m[0]);
-  assert.ok(blurs.length >= 4, "the panes' lens, the page bend, the rainbow and its page chain");
-  for (const b of blurs) {
-    assert.ok(!/in="SourceGraphic"/.test(b), "never the clear source: " + b);
-    assert.match(b, /stdDeviation=(\{LENS_SMOOTH\}|"\$\{LENS_SMOOTH\}")/, "the one hairline: " + b);
+  const pre = blurs.filter((b) => /in="SourceGraphic"/.test(b)), post = blurs.filter((b) => !/in="SourceGraphic"/.test(b));
+  assert.equal(pre.length, 4, "the backdrop pre-filtered in all four chains (the panes, the page bend, the rainbow, its page chain)");
+  assert.equal(post.length, 4, "and the bend eased after, in all four");
+  for (const b of pre) {
+    assert.match(b, /data-(lens|pb)="1"/, "only inside the bent band: " + b);
+    assert.match(b, /stdDeviation=(\{LENS_PREFILTER\}|"\$\{LENS_PREFILTER\}") result="src"/, b);
   }
+  for (const b of post) assert.match(b, /stdDeviation=(\{LENS_SMOOTH\}|"\$\{LENS_SMOOTH\}")/, "the one hairline: " + b);
+  const bends = [...(glass + rainbow).matchAll(/<feDisplacementMap[^>]*>/g)].map((m) => m[0]).filter((b) => /data-(lens|pb)="1"/.test(b) && !/in="(sx|src|bent\w*)"/.test(b));
+  assert.deepEqual(bends, [], "every bend reads the pre-filtered backdrop (or the pass before it)");
+  assert.match(glass, /<feComposite in="SourceGraphic" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" \/>/, "the clear middle: the untouched source");
+  assert.match(glass, /export const LENS_PREFILTER = 0\.6;/);
+});
+
+// (then: "lets make the disc 15% bigger and slightly reposition it. the two ticks on the left and right and
+// the horizontal line in of the upload button should lie directly on the top edge of the center fixture
+// making sure all the lines line up and everything is flush") — the plus's lift is exactly its disc's
+// depth in its key, so its centre, the wheel's centre and its 3 and 9 o'clock marks sit on the deck's top
+// edge (measured in the browser: 702.39–702.41 against the edge's 702.41 at 375px)
+test("the disc: 15% bigger, its centre and its side marks on the deck's top edge", () => {
+  assert.match(css, /--eject: calc\(var\(--dk-h\) \/ 2 \+ var\(--u\) \* 3\);/, "lifted by exactly its depth in the key");
+  assert.match(css, /--cy: calc\(50% \+ var\(--u\) \* 3\);/, "which is where its disc sits (the key is --dk-h tall)");
+  assert.match(css, /\.ccrow \{ position: relative; flex: none; height: var\(--dk-h\);/, "the key's row is the deck's top --dk-h");
+  assert.match(css, /--wheel-d: calc\(var\(--dk-h\) \* 2\.25 \* 1\.15\);/, "15% bigger");
+  assert.match(css, /\.ccenter\[data-wheel="open"\] \.ccwheel \{\n  top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred on the plus");
 });
 
 test("the cards crisp, the deck a touch wider, the DM count on the envelope's top-left", () => {

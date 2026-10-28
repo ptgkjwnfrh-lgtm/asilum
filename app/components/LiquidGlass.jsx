@@ -222,6 +222,14 @@ export const PULL = 86;
 // is eased by LENS_SMOOTH px — a hairline, under a device pixel at 2×; the
 // clear middle is never touched.
 export const LENS_SMOOTH = 0.45;
+// (28 Oct, later: "smooth out the pixels even more … i want apple quality")
+// what was left was not the curve but its texture: where the lip squeezes
+// the backdrop hardest, side-by-side pixels sample source pixels several
+// apart with no averaging — the sparkle of a texture shrunk without its
+// mipmaps. So the backdrop is pre-filtered by LENS_PREFILTER px before it
+// is bent, in the bent band only (the clear middle reads the untouched
+// source), as a renderer filters a texture before it minifies it.
+export const LENS_PREFILTER = 0.6;
 export const MAP_MAX_PX = 700000;
 export function mapScale(w, h) {
   const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
@@ -257,7 +265,10 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
       {/* the lens chain, data-lens: restrictLens() confines these to the
           edge band when only one edge is open (the strip), so the clear
           middle costs nothing; every colour bends alike */}
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
+      {/* the backdrop pre-filtered before it is bent, so a squeeze averages
+          rather than skips (the clear middle below reads SourceGraphic) */}
+      <feGaussianBlur data-lens="1" in="SourceGraphic" stdDeviation={LENS_PREFILTER} result="src" />
+      <feDisplacementMap data-lens="1" in="src" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
       <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="bent" />
       {/* the bent band eased by a hairline: a displacement samples without
           smoothing, and its steps read as pixels (28 Oct 2026) */}
@@ -342,7 +353,8 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
       (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-      `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="bent"/>` +
+      `<feGaussianBlur data-pb="1" in="SourceGraphic" stdDeviation="${LENS_PREFILTER}" result="src"/>` +
+      `<feDisplacementMap data-pb="1" in="src" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="bent"/>` +
       `<feGaussianBlur data-pb="1" in="bent" stdDeviation="${LENS_SMOOTH}" result="lens"/>` +
       `<feComposite in="lens" in2="SourceGraphic" operator="over"/>`;
   };

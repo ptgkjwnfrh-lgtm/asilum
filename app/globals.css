@@ -3877,10 +3877,10 @@ body { font-size: 14px; }
    tray, its slot left an empty space, and the wheel grows out of the
    plus's ring, CENTRED ON THE PLUS — the plus is its hub and turning point
    and never turns itself (owner, 27 Oct: "the upload button should be its
-   middle and its turning point") — about 2.25 deck heights across. The
-   eject stays: centred on the plus where it sits in the deck, half the
-   wheel would hang below the screen's foot; raised, the whole wheel stands
-   above it. The plus keeps its look. The wheel and the tray are the
+   middle and its turning point") — 2.25 deck heights across, then 15% more
+   (28 Oct). The plus is lifted to the deck's top edge exactly (--eject), so
+   its stroke, the wheel's centre and its 3 and 9 o'clock marks lie on that
+   edge, flush (28 Oct); the wheel's lower half sits behind the deck. The plus keeps its look. The wheel and the tray are the
    fixtures' liquid glass (the tint, the shadow and the lip, no ink ring, no
    coloured mark), and the wheel's pane alone bends with the V.1 rainbow
    (27 Oct, .ccwglass below) —
@@ -3891,8 +3891,15 @@ body { font-size: 14px; }
 .ccpostwrap {
   --disc: max(34px, calc(var(--u) * 88));       /* the POST disc's size */
   --cy: calc(50% + var(--u) * 3);               /* the disc's centre in its key */
-  --eject: calc(var(--dk-h) * 0.62);            /* how far the tray carries the plus: just above the deck */
-  --wheel-d: calc(var(--dk-h) * 2.25);          /* the wheel, across */
+  /* the plus carried up to the deck's TOP EDGE (owner, 28 Oct 2026: "the two
+     ticks on the left and right and the horizontal line in of the upload
+     button should lie directly on the top edge of the center fixture"): the
+     key is the row's height (--dk-h) and its disc sits at --cy, half of it
+     plus 3 units down, so a lift of exactly that puts the plus's centre —
+     its horizontal stroke, the wheel's centre and its 3 and 9 o'clock
+     marks — on the deck's top edge, flush */
+  --eject: calc(var(--dk-h) / 2 + var(--u) * 3);
+  --wheel-d: calc(var(--dk-h) * 2.25 * 1.15);   /* the wheel, across: 15% bigger (28 Oct 2026) */
   --tray-ease: cubic-bezier(0.3, 0.75, 0.25, 1);
 }
 .ccenter .ccpostwrap .tabl.ccpost { z-index: 4; transition: transform 0.42s 0.12s var(--tray-ease); }

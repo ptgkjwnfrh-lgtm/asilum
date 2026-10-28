@@ -19,7 +19,7 @@
 // PULL; the owner's "take away the rainbow", 26 Oct), and
 // tests/v2-fixtures-sketch.test.js fails if the split reaches another glass.
 
-import { LENS_SMOOTH } from "./LiquidGlass.jsx";
+import { LENS_SMOOTH, LENS_PREFILTER } from "./LiquidGlass.jsx";
 
 export const V1_PULL = Object.freeze([80, 86, 92]);
 
@@ -31,9 +31,11 @@ function V1Defs({ id, mapRef, weightRef, strength = 1 }) {
     <filter id={id} colorInterpolationFilters="sRGB" x="0" y="0" width="100%" height="100%">
       <feImage ref={mapRef} preserveAspectRatio="none" result="lgmap" />
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
+      {/* pre-filtered before it is bent, as every pane's backdrop is (LiquidGlass.jsx LENS_PREFILTER) */}
+      <feGaussianBlur data-lens="1" in="SourceGraphic" stdDeviation={LENS_PREFILTER} result="src" />
+      <feDisplacementMap data-lens="1" in="src" in2="lgmap" scale={sr} xChannelSelector="R" yChannelSelector="G" result="bentR" />
+      <feDisplacementMap data-lens="1" in="src" in2="lgmap" scale={sg} xChannelSelector="R" yChannelSelector="G" result="bentG" />
+      <feDisplacementMap data-lens="1" in="src" in2="lgmap" scale={sb} xChannelSelector="R" yChannelSelector="G" result="bentB" />
       <feColorMatrix data-lens="1" in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR" />
       <feColorMatrix data-lens="1" in="bentG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG" />
       <feColorMatrix data-lens="1" in="bentB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB" />
@@ -58,9 +60,10 @@ function v1Chain(strength = 1) {
   return (imgId, webkit) => `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
     (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
     `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-    `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
-    `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
-    `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
+    `<feGaussianBlur data-pb="1" in="SourceGraphic" stdDeviation="${LENS_PREFILTER}" result="src"/>` +
+    `<feDisplacementMap data-pb="1" in="src" in2="map" scale="${sr}" xChannelSelector="R" yChannelSelector="G" result="bR"/>` +
+    `<feDisplacementMap data-pb="1" in="src" in2="map" scale="${sg}" xChannelSelector="R" yChannelSelector="G" result="bG"/>` +
+    `<feDisplacementMap data-pb="1" in="src" in2="map" scale="${sb}" xChannelSelector="R" yChannelSelector="G" result="bB"/>` +
     `<feColorMatrix data-pb="1" in="bR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cR"/>` +
     `<feColorMatrix data-pb="1" in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
     `<feColorMatrix data-pb="1" in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +

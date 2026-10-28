@@ -347,13 +347,14 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   assert.match(rg, /export const V1_PULL = Object\.freeze\(\[80, 86, 92\]\);/, "V.1's three pulls");
   const defs = rg.slice(rg.indexOf("function V1Defs"), rg.indexOf("function v1Chain"));
   for (const [c, sc] of [["R", "sr"], ["G", "sg"], ["B", "sb"]]) {
-    assert.match(defs, new RegExp(`<feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgmap" scale=\\{${sc}\\} xChannelSelector="R" yChannelSelector="G" result="bent${c}" />`), "the " + c + " pass");
+    // (28 Oct 2026) each pass bends the pre-filtered backdrop (LENS_PREFILTER), so a squeeze averages
+    assert.match(defs, new RegExp(`<feDisplacementMap data-lens="1" in="src" in2="lgmap" scale=\\{${sc}\\} xChannelSelector="R" yChannelSelector="G" result="bent${c}" />`), "the " + c + " pass");
   }
   assert.match(defs, /in="bentR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR"/, "each colour kept alone");
   assert.match(defs, /in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens"/, "summed");
   assert.match(defs, /<feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" \/>/, "blended into the clear middle by the weight");
   const chain = rg.slice(rg.indexOf("function v1Chain"), rg.indexOf("export const V1_RAINBOW"));
-  assert.equal([...chain.matchAll(/<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="\$\{s[rgb]\}"/g)].length, 3, "Safari: the same three pulls, in the pane's square");
+  assert.equal([...chain.matchAll(/<feDisplacementMap data-pb="1" in="src" in2="map" scale="\$\{s[rgb]\}"/g)].length, 3, "Safari: the same three pulls, in the pane's square");
   assert.match(chain, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the wheel a card is untouched");
   // the wheel's alone
   const sw = read("app/components/ScrollWheel.jsx");

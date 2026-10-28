@@ -64,9 +64,10 @@ and tactility) are the law; what follows is the shipped reading.
   of liquid glass CENTRED ON THE POST PLUS — the plus is its hub and
   turning point and never turns; only the wheel and its four marks
   (12 / 3 / 6 / 9, in the stamp tone) do (owner, 27 Oct). The plus rides
-  up out of the deck on a pill, its slot left an empty space, and the
-  wheel grows round it there (raised, the whole wheel stands above the
-  screen's foot). The wheel's pane carries the V.1 magazine's rainbow
+  up out of the deck on a pill to the deck's TOP EDGE exactly, its slot
+  left an empty space, and the wheel (15% bigger, 28 Oct) grows round it
+  there: the plus's stroke, the wheel's centre and its 3 and 9 o'clock
+  marks lie on that edge, flush. The wheel's pane carries the V.1 magazine's rainbow
   glass (`RainbowGlass.jsx`, red / green / blue pulled 80 / 86 / 92), so
   the Feed behind it bends and splits like the FRONT COVER letters under
   the old strip — the one glass that parts the colours. The pane is a
