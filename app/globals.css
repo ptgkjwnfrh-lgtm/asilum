@@ -5601,3 +5601,40 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .dmunread { grid-column: 3; grid-row: 2; justify-self: end; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: var(--paper); font: 9px/18px var(--mich); text-align: center; }
 .dmrow > button:hover .dmwho { color: var(--sig); }
 .dmrow > button:focus-visible { outline: 2px solid var(--sig); outline-offset: -2px; }
+
+/* THE VERTICAL STACK (owner, 28 Oct 2026, the stacking sketch: "Messages at the top are carouselled and
+   overlapped same as the bottom however messages in the middle are layer flat"; "the scrolling verticle
+   carousel stacking example should be applied to everything that scrolled verticley even the feed").
+   Every item of a vertical list rides a drum as it scrolls: flat through the middle of its scroller; near
+   the top and bottom edges it turns away (the edge side receding), shrinks a little and laps over its
+   neighbour toward the edge, the flatter one in front. Scroll-driven animations on the item's own
+   scroller (view(): the nearest scroll container), so nothing runs in script; the turn is transform only.
+   The bend is measured from the scroller's edges, the same --stk-zone for every item whatever its
+   height: at the bottom from where its top edge has come in (vstackin), at the top from where its bottom
+   edge is about to go (vstackout); the two add, and outside its zone each is the identity, so a flat item
+   draws exactly as it lays out (its transform is still a containing block: nothing fixed lives in a card). On the page the
+   drum's edges are the Masthead's foot and the deck's top, not the screen's; in a popup, a thread or any
+   inner scroller, its own edges. Reduced motion, or a browser without scroll timelines: every item flat. */
+:root { --stk-tilt: 56deg; --stk-lap: 48%; --stk-s: 0.84; --stk-persp: 760px; --stk-zone: min(30vh, 260px); --stk-top: 0px; --stk-bot: 0px; }
+.main { --stk-top: var(--head-h); --stk-bot: calc(var(--cc-row-h) + var(--cc-bottom)); }
+.sheetpane, .mailthread, .maillist { --stk-top: 0px; --stk-bot: 0px; --stk-zone: min(22vh, 150px); }
+@keyframes vstackin {
+  from { transform: perspective(var(--stk-persp)) translateY(calc(-1 * var(--stk-lap))) rotateX(calc(-1 * var(--stk-tilt))) scale(var(--stk-s)); }
+  to { transform: none; }
+}
+@keyframes vstackout {
+  from { transform: none; }
+  to { transform: perspective(var(--stk-persp)) translateY(var(--stk-lap)) rotateX(var(--stk-tilt)) scale(var(--stk-s)); }
+}
+@keyframes vstackz { 0%, 100% { z-index: 1; } 50% { z-index: 24; } }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :is(.fcell, .dmrow, .likerow, .bagrow, .noticerow, .srchgrid > li, .mailthread > li, .maillist > li, .brdcstlist > li) {
+      position: relative;
+      animation: vstackin linear both, vstackout linear both, vstackz linear both;
+      animation-composition: replace, add, replace;
+      animation-timeline: view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot));
+      animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%, cover 0% cover 100%;
+    }
+  }
+}

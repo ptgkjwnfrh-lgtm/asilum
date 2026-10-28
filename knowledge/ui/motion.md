@@ -28,6 +28,21 @@ Nothing is static; nothing is frantic. Motion communicates system activity.
   when a resize has settled (`MAP_SETTLE_MS`), a few rows a frame
   (`MAP_SLICE_MS`): measured on 28 Oct, the wheel opens and closes with
   no frame over 20ms and search with no long task (it had a 69ms one).
+- THE VERTICAL STACK (owner, 28 Oct 2026, the stacking sketch: "Messages
+  at the top are carouselled and overlapped same as the bottom however
+  messages in the middle are layer flat"; "applied to everything that
+  scrolled verticley even the feed"). Every item of a vertical list — the
+  Feed's cells, the messages page's rows, a thread, likes, the bag,
+  notices, search results, BRDCST — rides a drum: flat through the middle
+  of its scroller; within --stk-zone of the top or bottom edge it turns
+  its edge side away, shrinks a little and laps toward the edge, the
+  flatter item in front. CSS scroll-driven animations (`view()`), the bend
+  transform-only, measured from the scroller's edges by the item's leading
+  edge (never a share of its height). The page's edges are the Masthead's
+  foot and the deck's top; a popup's or inner list's are its own. Off
+  under reduced motion and where scroll timelines are missing.
+  `tests/v2-vstack.test.js`; measured on 28 Oct: the Feed scrolls with no
+  frame over 20ms, the same as with the stack off.
 - The passport→upload build carries an ever-so-slight motion blur
   (0.7px on the map wrapper, owner order Aug 12) during the growth
   window only — roadBuilder removes it 220ms before landing so the
