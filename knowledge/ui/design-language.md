@@ -1004,3 +1004,12 @@ add ticker should stretch all around it".
   logo's black (#001512, `--wm-ink`), unlit as the logo's word is. ADs is
   knocked out of a small (0.78em) solid red chip (`--warn`) glowing red as
   the logo's asterisk does, its word cut to the band's own tone.
+- Then: "fix the corners of the ad bar the rendering of the 3d wrap is kind
+  of choppy". Magnified 5x, each corner showed six vertical stripes: every
+  slice carried its own cloud and its own stepped shade, and the squeeze
+  kinked between slices. Now each side (`.adside`) is ONE smooth piece of
+  cloud, matched to the face where they meet, under ONE smooth shade
+  (`--ad-turn-c`, eased as 1 − cos of the turn toward the silhouette); only
+  the words are sliced, in 16 slices a side (`WRAP_SLICES`), and they fade
+  out (`.adsidewords` mask) before the silhouette so no squeezed glyph is
+  left as a smear. The crawl still holds 60 fps (worst frame 18 ms).

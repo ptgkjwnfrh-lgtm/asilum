@@ -401,7 +401,7 @@ button { font-family: var(--helv); }
   --ad-cloud-dark: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.11), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.08), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.07), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.08), transparent 70%), linear-gradient(180deg, rgba(40, 46, 52, 0.7), rgba(26, 30, 35, 0.76));
   --ad-cloud-light: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
   --ad-cloud: var(--ad-cloud-dark);
-  --ad-turn: linear-gradient(90deg, rgba(110, 118, 128, 0.5), rgba(110, 118, 128, 0.5));
+  --ad-turn-c: rgba(14, 18, 24, 0.55); /* the shade where the band turns from the light */
   --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --ad-glyph: #f4f9fc;
   --ad-glow: 0 0 1px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.3);
@@ -3516,19 +3516,28 @@ body { font-size: 14px; }
   font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
 }
 .adtrack { position: absolute; inset: 0; container-type: inline-size; }
-/* one cloudscape along the whole unrolled band: the face and every slice show their own stretch of it */
-.adface, .adslice { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
+/* one cloudscape along the band: the face shows its stretch unrolled, and each side is ONE smooth piece of
+   it (never sliced — sliced, every slice's cloud and shade stepped, and the turn read as stripes), matched
+   to the face where they meet */
+.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
 .adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; box-shadow: var(--ad-rim); }
-.adslice { width: calc(var(--arc) * var(--ad-r) + 1px); transform-origin: 0 50%; transform: scaleX(var(--s)); }
-.adslice.l { left: calc(var(--at) * var(--ad-r)); background-position: calc(-1 * var(--from) * var(--ad-r)) 0; }
-.adslice.r { left: calc(100cqw - var(--ad-r) + var(--at) * var(--ad-r)); background-position: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))) 0; }
-/* each slice dims as it turns from the light */
-.adslice::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: var(--ad-turn); opacity: calc(var(--sh) * 0.9); }
+.adside { width: var(--ad-r); }
+.adside.l { left: 0; background-position: calc(-1 * (var(--ad-q) - 1) * var(--ad-r)) 0; }
+.adside.r { right: 0; background-position: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r))) 0; }
+/* the side turns from the light: one smooth shade, deepening as 1 − cos of the turn toward the silhouette */
+.adside::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.adside.l::after { background: linear-gradient(90deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
+.adside.r::after { background: linear-gradient(270deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
+/* the words in fine slices, fading as they go round, so no squeezed glyph is left as a smear at the edge */
+.adsidewords { position: absolute; inset: 0; }
+.adside.l .adsidewords { -webkit-mask-image: linear-gradient(90deg, transparent 4%, #000 55%); mask-image: linear-gradient(90deg, transparent 4%, #000 55%); }
+.adside.r .adsidewords { -webkit-mask-image: linear-gradient(270deg, transparent 4%, #000 55%); mask-image: linear-gradient(270deg, transparent 4%, #000 55%); }
+.adslice { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * var(--ad-r)); width: calc(var(--arc) * var(--ad-r)); overflow: hidden; transform-origin: 0 50%; transform: scaleX(var(--s)); }
 /* the band, in its own unrolled coordinates in every piece: continuous round both sides */
 .adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
 .adface .adband { left: calc(-1 * var(--ad-q) * var(--ad-r)); }
-.adslice.l .adband { left: calc(-1 * var(--from) * var(--ad-r)); }
-.adslice.r .adband { left: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))); }
+.adside.l .adslice .adband { left: calc(-1 * var(--from) * var(--ad-r)); }
+.adside.r .adslice .adband { left: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))); }
 .adseq { display: flex; flex: none; }
 .adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
 .adword::after { content: "\00B7"; margin: 0 0.9em; opacity: 0.55; }

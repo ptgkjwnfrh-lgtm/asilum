@@ -21,7 +21,9 @@
 // squares". So: a band of cloud — frosted, heavier than the deck's glass —
 // across the deck edge to edge, turning round each side as a quarter
 // cylinder (lib/adcrawl.js wrapSlices), so the words squeeze to nothing at
-// the deck's silhouette and run on round the back; the entries crawl as one
+// the deck's silhouette and run on round the back (each side one smooth
+// piece of cloud and shade, the words over it in fine slices, fading into
+// the silhouette: "the rendering of the 3d wrap is kind of choppy"); the entries crawl as one
 // glowing white line of Share Tech Mono, right to left, out of the right side,
 // across the face and round the left; ADs is knocked out of a glowing white
 // chip at the face's left. Every entry prints its `ticker` words. The crawl
@@ -78,9 +80,14 @@ export default function AdStrip({ typing = false }) {
       ))}
     </span>
   );
-  // a slice of a side: the band's arc laid flat, squeezed from its left edge, dimmed as it turns
-  const slice = (side, g, n) => (
-    <span key={side + n} className={"adslice " + side} aria-hidden="true" style={{ "--at": g.at.toFixed(5), "--from": g.from.toFixed(5), "--s": g.scale.toFixed(5), "--sh": g.shade.toFixed(4) }}>{band(false)}</span>
+  // a side: one smooth piece of cloud and shade, the words over it in slices — each the band's arc laid
+  // flat and squeezed from its left edge — fading into the silhouette
+  const side = (sideKey, slices) => (
+    <span className={"adside " + sideKey} aria-hidden="true">
+      <span className="adsidewords">
+        {slices.map((g, n) => <span key={n} className="adslice" style={{ "--at": g.at.toFixed(5), "--from": g.from.toFixed(5), "--s": g.scale.toFixed(5) }}>{band(false)}</span>)}
+      </span>
+    </span>
   );
   return (
     <div
@@ -90,12 +97,12 @@ export default function AdStrip({ typing = false }) {
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
       <div className="adtrack" ref={trackRef}>
-        {WRAP.left.map((g, n) => slice("l", g, n))}
+        {side("l", WRAP.left)}
         <span className="adface" ref={faceRef}>
           {band(true)}
           <span className="adslot" aria-hidden="true">ADs</span>
         </span>
-        {WRAP.right.map((g, n) => slice("r", g, n))}
+        {side("r", WRAP.right)}
       </div>
     </div>
   );

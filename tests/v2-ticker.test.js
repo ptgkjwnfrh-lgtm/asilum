@@ -17,7 +17,9 @@
 // to make the ad text glow or something to make it more legible"; then
 // "obviously with dark mode since everything is dark the clouding can be dark
 // because the glow will make it ledgible. i think for light mode we can make
-// it black like the logo. also the add square should be red and smaller").
+// it black like the logo. also the add square should be red and smaller";
+// then "fix the corners of the ad bar the rendering of the 3d wrap is kind of
+// choppy").
 //
 // Declared before measuring:
 //   - what it prints: a BRDCST (the SPONSORED rows) and a listed event print
@@ -39,7 +41,11 @@
 //     (#001512), unlit; both clouds heavily puffed; it runs the
 //     deck's WHOLE width
 //     (the bubble has no side padding) and turns round each side as a
-//     quarter cylinder: WRAP_SLICES slices whose shown widths sum to the
+//     quarter cylinder — SMOOTHLY: each side's cloud and shade are one piece,
+//     never sliced (sliced, every slice's cloud and shade stepped and the turn
+//     read as stripes), the shade one gradient deepening toward the
+//     silhouette, the words fading out before it; the words alone are cut
+//     into WRAP_SLICES (at least 12) slices whose shown widths sum to the
 //     radius, squeezed ever harder toward the silhouette, the last nearly
 //     edge-on, the band continuous through every slice; the face (between
 //     the two radii) begins 34 units in, where the pill began 40, its height
@@ -137,7 +143,7 @@ test("the type and the band: Share Tech Mono at -8.5 to -9; dark — white and g
   const [l1, l2, l3, la, l5, l6, l7, lb] = haze(light);
   assert.ok(Math.min(l1, l2, l3, l5, l6, l7) >= 170, "light grey in light");
   assert.ok(Math.min(la, lb) >= 0.5 && Math.max(la, lb) <= 0.75, "clouded, never opaque");
-  assert.match(rule(".adface, .adslice"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and every slice");
+  assert.match(rule(".adface, .adside"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and each side");
 });
 
 test("the band wraps the whole deck: edge to edge, round each side as a quarter cylinder", () => {
@@ -147,7 +153,7 @@ test("the band wraps the whole deck: edge to edge, round each side as a quarter 
   assert.match(rule(".adstrip"), /height: calc\(var\(--u\) \* 52\);/, "its height unchanged");
   const w = wrapSlices();
   assert.equal(w.left.length, WRAP_SLICES);
-  assert.ok(WRAP_SLICES >= 4, "enough slices that the squeeze reads as a curve");
+  assert.ok(WRAP_SLICES >= 12, "enough slices that the squeeze reads as a curve, not kinks (6 kinked)");
   const shown = (side) => side.reduce((n, g) => n + g.scale * w.arc, 0);
   assert.ok(Math.abs(shown(w.left) - 1) < 1e-9 && Math.abs(shown(w.right) - 1) < 1e-9, "each side shows exactly one radius wide");
   assert.ok(Math.abs(w.arc * WRAP_SLICES - Math.PI / 2) < 1e-9, "each side is a quarter turn of band");
@@ -162,11 +168,23 @@ test("the band wraps the whole deck: edge to edge, round each side as a quarter 
     assert.ok(Math.abs(w.left[j].from - j * w.arc) < 1e-9 && Math.abs(w.right[j].from - j * w.arc) < 1e-9, "and the band runs on through them");
   }
   assert.match(rule(".adslice"), /transform-origin: 0 50%; transform: scaleX\(var\(--s\)\);/, "each slice squeezed from its own left edge");
+  // smooth: the side's cloud and shade are one piece; the slices carry the words and nothing else
+  assert.ok(!/background|::after|box-shadow/.test(rule(".adslice")) && !/\.adslice::after/.test(css), "a slice draws no cloud and no shade of its own");
+  assert.match(rule(".adside.l"), /left: 0; background-position: calc\(-1 \* \(var\(--ad-q\) - 1\) \* var\(--ad-r\)\) 0;/, "the left side's cloud meets the face's where they join");
+  for (const k of ["l", "r"]) {
+    const shade = rule(".adside." + k + "::after");
+    assert.match(shade, /linear-gradient\((90|270)deg, var\(--ad-turn-c\) 0%, /, "one gradient, darkest at the silhouette");
+    assert.match(shade, /transparent 100%\); \}?$|transparent 100%\)/, "and gone where the side meets the face");
+    assert.ok((shade.match(/color-mix/g) || []).length >= 3, "eased through several stops, not a step");
+    const fade = rule(".adside." + k + " .adsidewords");
+    assert.match(fade, /mask-image: linear-gradient\((90|270)deg, transparent \d+%, #000 \d+%\);/, "the words fade before the silhouette");
+  }
+  assert.match(read("app/components/AdStrip.jsx"), /<span className=\{"adside " \+ sideKey\} aria-hidden="true">\s*<span className="adsidewords">/);
   assert.match(css, /--ad-q: 1\.5708;/, "a quarter turn of band each side");
   // the band in its unrolled coordinates in every piece: continuous round both sides
   assert.match(css, /\.adface \.adband \{ left: calc\(-1 \* var\(--ad-q\) \* var\(--ad-r\)\); \}/);
-  assert.match(css, /\.adslice\.l \.adband \{ left: calc\(-1 \* var\(--from\) \* var\(--ad-r\)\); \}/);
-  assert.match(css, /\.adslice\.r \.adband \{ left: calc\(-1 \* \(100cqw - 2 \* var\(--ad-r\) \+ var\(--ad-q\) \* var\(--ad-r\) \+ var\(--from\) \* var\(--ad-r\)\)\); \}/);
+  assert.match(css, /\.adside\.l \.adslice \.adband \{ left: calc\(-1 \* var\(--from\) \* var\(--ad-r\)\); \}/);
+  assert.match(css, /\.adside\.r \.adslice \.adband \{ left: calc\(-1 \* \(100cqw - 2 \* var\(--ad-r\) \+ var\(--ad-q\) \* var\(--ad-r\) \+ var\(--from\) \* var\(--ad-r\)\)\); \}/);
   assert.match(read("app/components/AdStrip.jsx"), /track\.offsetWidth - 2 \* r \+ Math\.PI \* r/, "the crawl covers the whole unrolled band");
 });
 
