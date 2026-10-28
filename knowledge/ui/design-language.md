@@ -995,3 +995,12 @@ add ticker should stretch all around it".
   only round each letter — the band stays light grey and every letter
   reads, in both themes. Chosen from four tried live on the band (trial
   crops in the session notes, ticker-proof/round-4-legibility).
+- Then: "obviously with dark mode since everything is dark the clouding can
+  be dark because the glow will make it ledgible. i think for light mode we
+  can make it black like the logo. also the add square should be red and
+  smaller". The band is themed: in DARK a dark grey cloud
+  (`--ad-cloud-dark`, never black) with the words white and glowing white;
+  in LIGHT the light grey cloud (`--ad-cloud-light`) with the words the
+  logo's black (#001512, `--wm-ink`), unlit as the logo's word is. ADs is
+  knocked out of a small (0.78em) solid red chip (`--warn`) glowing red as
+  the logo's asterisk does, its word cut to the band's own tone.

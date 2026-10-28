@@ -388,31 +388,34 @@ button { font-family: var(--helv); }
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
   --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
   /* THE AD TICKER'S BAND (owner, 28 Oct 2026: "glowing white text … on an a
-     heavly clouded track", then "i said clouded no black, i just wanted it
-     more clouded than the fixture", then "why is it frosted dark make it
-     like light grey or something"): a light grey cloud, heavier than the
-     deck's near-clear glass, with white puffs in it — the same in both
-     themes; the words white and glowing in a smoke bloom (below) so they
-     read on the light grey; the ADs chip solid glowing white,
-     its word cut to the deck's ink */
-  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
+     heavly clouded track", "i said clouded no black … more clouded than the
+     fixture", "make it like light grey", "make the ad text glow … more
+     legible", then "obviously with dark mode since everything is dark the
+     clouding can be dark because the glow will make it ledgible. i think for
+     light mode we can make it black like the logo. also the add square
+     should be red and smaller"): in DARK a dark grey cloud (never black) and
+     the words white, glowing; in LIGHT a light grey cloud and the words the
+     logo's black (#001512), unlit, as the logo's word is; ADs knocked out of
+     a small solid red chip glowing red, as the logo's asterisk glows, its
+     word cut to the band's own tone */
+  --ad-cloud-dark: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.11), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.08), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.07), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.08), transparent 70%), linear-gradient(180deg, rgba(40, 46, 52, 0.7), rgba(26, 30, 35, 0.76));
+  --ad-cloud-light: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
+  --ad-cloud: var(--ad-cloud-dark);
   --ad-turn: linear-gradient(90deg, rgba(110, 118, 128, 0.5), rgba(110, 118, 128, 0.5));
   --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --ad-glyph: #f4f9fc;
-  /* (then: "we gotta find a way to make the ad text glow or something to make it more legible") the words
-     GLOW: a white core lit by a tight white halo, sitting in a deep smoke bloom that darkens the cloud just
-     round each letter — the light grey band stays light, and every letter reads */
-  --ad-glow: 0 0 1px #ffffff, 0 0 2px rgba(255, 255, 255, 0.75), 0 0 3px rgba(14, 20, 28, 0.95), 0 0 7px rgba(14, 20, 28, 0.75), 0 0 14px rgba(14, 20, 28, 0.5);
-  --ad-chip: #f6fbff;
-  --ad-chip-ink: #0b0e11;
-  --ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba(255, 255, 255, 0.7), 0 0 12px rgba(255, 255, 255, 0.35);
+  --ad-glow: 0 0 1px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.3);
+  --ad-chip: var(--warn);
+  --ad-chip-ink: #262c32; /* the dark band's tone */
+  --ad-chip-glow: 0 0 1px var(--warn), 0 0 5px color-mix(in srgb, var(--warn) 70%, transparent), 0 0 11px color-mix(in srgb, var(--warn) 35%, transparent);
   --helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif; /* the asterisk's face (the owner's artwork), the system's own: Helvetica's asterisk matched the artwork's (IoU 0.85), Neue's did not (0.60) */
 }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
   --wm-ink: #001512; /* the artwork's ink */
+  --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; /* the ticker in light: the logo's black on light grey */
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -3530,8 +3533,8 @@ body { font-size: 14px; }
 .adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
 .adword::after { content: "\00B7"; margin: 0 0.9em; opacity: 0.55; }
 a.adword:hover { color: var(--ad-chip); }
-/* the negative imprint: a solid glowing white chip at the face's left, the word cut out of it to the deck's ink; the words pass under it */
-.adslot { position: absolute; z-index: 1; left: calc(var(--u) * 10); top: 50%; transform: translateY(-50%); padding: 0.16em 0.34em 0.12em 0.3em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
+/* the negative imprint: a small solid red chip glowing red at the face's left, the word cut out of it to the band's tone; the words pass under it */
+.adslot { position: absolute; z-index: 1; left: calc(var(--u) * 10); top: 50%; transform: translateY(-50%); font-size: 0.78em; padding: 0.14em 0.3em 0.1em 0.26em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
 .adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; }
 .adstrip.held .adband { animation-play-state: paused; }
 @keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }

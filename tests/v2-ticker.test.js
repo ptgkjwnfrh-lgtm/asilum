@@ -13,7 +13,11 @@
 // to stretch the entirety of the fixture like i meant if the fixture was a
 // object the ad ticker would wrap around the whole thing 360 degrees not just
 // stuck on the middle, also get rid of those two red squares"; then "why is
-// it frosted dark make it like light grey or something").
+// it frosted dark make it like light grey or something"; "we gotta find a way
+// to make the ad text glow or something to make it more legible"; then
+// "obviously with dark mode since everything is dark the clouding can be dark
+// because the glow will make it ledgible. i think for light mode we can make
+// it black like the logo. also the add square should be red and smaller").
 //
 // Declared before measuring:
 //   - what it prints: a BRDCST (the SPONSORED rows) and a listed event print
@@ -28,11 +32,11 @@
 //   - the type: Share Tech Mono, weight 400, letter-spacing between -0.09em and
 //     -0.085em (Procreate's kerning is a per-cent of the em: -8.5 to -9);
 //     white with a glow;
-//   - the band: a LIGHT GREY cloud — a haze no darker than rgb 170 in any
-//     channel, with white puffs, more opaque than the deck's near-clear glass
-//     yet never opaque — one token, the same in both themes; the white words
-//     GLOW in a smoke bloom (a white core and halo over a dark bloom, dense at
-//     the letter, wider and fainter outward) so they read on it; it runs the
+//   - the band, by theme: in DARK a dark grey cloud (no channel above 70 nor
+//     below 15 — dark, never black — at 0.6–0.85, faint white puffs) and the
+//     words white, glowing white; in LIGHT a light grey cloud (no channel
+//     below 170, 0.5–0.75, white puffs) and the words the logo's black
+//     (#001512), unlit; both clouds heavily puffed; it runs the
 //     deck's WHOLE width
 //     (the bubble has no side padding) and turns round each side as a
 //     quarter cylinder: WRAP_SLICES slices whose shown widths sum to the
@@ -40,9 +44,10 @@
 //     edge-on, the band continuous through every slice; the face (between
 //     the two radii) begins 34 units in, where the pill began 40, its height
 //     unchanged;
-//   - the label: ADs knocked out of a solid glowing white chip (the chip
-//     white, the word the deck's ink), no red, no red glow; no status
-//     lights (the two red squares are gone).
+//   - the label: ADs knocked out of a SMALL solid red chip (--warn, smaller
+//     than the words) glowing red as the logo's asterisk does, its word cut
+//     to the band's own tone in each theme; no status lights (the two red
+//     squares are gone).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -98,7 +103,7 @@ test("the crawl: one sequence a loop, the track always covered, no timer swappin
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.adstrip\.run \.adband \{ animation: none; \} \}/);
 });
 
-test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, on a light grey cloud", () => {
+test("the type and the band: Share Tech Mono at -8.5 to -9; dark — white and glowing on a dark cloud; light — the logo's black on a light grey cloud", () => {
   const st = rule(".adstrip");
   assert.match(st, /font: 400 max\(10px, calc\(var\(--u\) \* 25\)\)\/1 var\(--mono\);/, "Share Tech Mono, regular");
   assert.match(read("app/globals.css"), /--mono: "Share Tech Mono"/);
@@ -106,28 +111,32 @@ test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, o
   assert.ok(ls <= -0.085 && ls >= -0.09, "the owner's -8.5 to -9: " + ls);
   assert.match(st, /color: var\(--ad-glyph\);/);
   assert.match(rule(".adword"), /text-shadow: var\(--ad-glow\);/, "glowing");
-  assert.match(css, /--ad-glyph: #f4f9fc;/, "white");
-  const clouds = [...css.matchAll(/--ad-cloud: ([^;]+);/g)].map((m) => m[1]);
-  assert.equal(clouds.length, 1, "one light grey band for both themes");
-  const c = clouds[0];
-  assert.ok((c.match(/radial-gradient\(/g) || []).length >= 5, "heavily clouded: puffs all along the band");
-  assert.ok([...c.matchAll(/radial-gradient\([^,]+, rgba\((\d+), (\d+), (\d+),/g)].every((m) => m.slice(1, 4).every((v) => Number(v) === 255)), "white puffs");
-  const base = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/);
-  assert.ok(base, "a haze under the puffs");
-  const [r1, g1, b1, a1, r2, g2, b2, a2] = base.slice(1).map(Number);
-  assert.ok(Math.min(r1, g1, b1, r2, g2, b2) >= 170, "light grey, never dark: " + base[0]);
-  assert.ok(Math.max(r1, g1, b1, r2, g2, b2) - Math.min(r1, g1, b1, r2, g2, b2) <= 40, "grey, not a colour");
-  assert.ok(Math.min(a1, a2) >= 0.5 && Math.max(a1, a2) <= 0.75, "more clouded than the glass, never opaque");
-  // (then: "make the ad text glow or something to make it more legible") a white core and halo on top, a
-  // smoke bloom beneath that darkens the cloud round each letter, ever wider and fainter
-  const glow = css.match(/--ad-glow: ([^;]+);/)[1].split(/,(?![^()]*\))/).map((x) => x.trim());
-  assert.match(glow[0], /^0 0 1px #ffffff$/, "a white core");
-  assert.match(glow[1], /^0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)$/, "lit by a tight white halo");
-  const bloom = glow.slice(2).map((g) => g.match(/^0 0 ([\d.]+)px rgba\((\d+), (\d+), (\d+), ([\d.]+)\)$/));
-  assert.ok(bloom.length >= 3 && bloom.every(Boolean), "a smoke bloom of at least three layers");
-  assert.ok(bloom.every((m) => Math.max(+m[2], +m[3], +m[4]) <= 40), "dark smoke");
-  for (let i = 1; i < bloom.length; i++) assert.ok(+bloom[i][1] > +bloom[i - 1][1] && +bloom[i][5] < +bloom[i - 1][5], "each wider and fainter");
-  assert.ok(+bloom[0][5] >= 0.9, "dense right at the letter, where legibility is won");
+  const tok = (name, src = css) => (src.match(new RegExp(name + ": ([^;]+);")) || [])[1];
+  const lightBlock = css.match(/\[data-theme="light"\] \{([^}]*--ad-cloud[^}]*)\}/)[1];
+  const lightMedia = css.match(/@media \(prefers-color-scheme: light\) \{ :root:not\(\[data-theme="dark"\]\) \{([^}]*--ad-cloud[^}]*)\} \}/)[1];
+  // dark (the root): a dark cloud, white glowing words
+  assert.equal(tok("--ad-cloud"), "var(--ad-cloud-dark)");
+  assert.equal(tok("--ad-glyph"), "#f4f9fc", "white in dark");
+  assert.match(tok("--ad-glow"), /^0 0 1px rgba\(255, 255, 255, [\d.]+\)(, 0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\))+$/, "glowing white in dark");
+  // light (both ways a page can be light): the light cloud, the logo's black, no glow
+  for (const blk of [lightBlock, lightMedia]) {
+    assert.equal(tok("--ad-cloud", blk), "var(--ad-cloud-light)");
+    assert.equal(tok("--ad-glyph", blk), "#001512", "the logo's black in light");
+    assert.equal(tok("--ad-glyph", blk), tok("--wm-ink", blk), "exactly the logo's ink");
+    assert.equal(tok("--ad-glow", blk), "none", "unlit, as the logo's word is");
+  }
+  const haze = (c) => { const m = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/); return m && m.slice(1).map(Number); };
+  const dark = tok("--ad-cloud-dark"), light = tok("--ad-cloud-light");
+  for (const c of [dark, light]) {
+    assert.ok((c.match(/radial-gradient\(/g) || []).length >= 5, "heavily clouded: puffs all along the band");
+    assert.ok([...c.matchAll(/radial-gradient\([^,]+, rgba\((\d+), (\d+), (\d+),/g)].every((m) => m.slice(1, 4).every((v) => Number(v) === 255)), "white puffs");
+  }
+  const [d1, d2, d3, da, d5, d6, d7, db] = haze(dark);
+  assert.ok(Math.max(d1, d2, d3, d5, d6, d7) <= 70 && Math.min(d1, d2, d3, d5, d6, d7) >= 15, "dark grey in dark — never black");
+  assert.ok(Math.min(da, db) >= 0.6 && Math.max(da, db) <= 0.85, "clouded, never opaque");
+  const [l1, l2, l3, la, l5, l6, l7, lb] = haze(light);
+  assert.ok(Math.min(l1, l2, l3, l5, l6, l7) >= 170, "light grey in light");
+  assert.ok(Math.min(la, lb) >= 0.5 && Math.max(la, lb) <= 0.75, "clouded, never opaque");
   assert.match(rule(".adface, .adslice"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and every slice");
 });
 
@@ -161,15 +170,17 @@ test("the band wraps the whole deck: edge to edge, round each side as a quarter 
   assert.match(read("app/components/AdStrip.jsx"), /track\.offsetWidth - 2 \* r \+ Math\.PI \* r/, "the crawl covers the whole unrolled band");
 });
 
-test("ADs: a negative imprint in a solid glowing white chip", () => {
+test("ADs: a negative imprint in a small solid red chip glowing red", () => {
   const strip = read("app/components/AdStrip.jsx");
   assert.match(strip, /<span className="adslot" aria-hidden="true">ADs<\/span>/);
   const chip = rule(".adslot");
   assert.match(chip, /background: var\(--ad-chip\); color: var\(--ad-chip-ink\); box-shadow: var\(--ad-chip-glow\);/);
-  assert.match(css, /--ad-chip: #f6fbff;/, "solid white");
-  assert.match(css, /--ad-chip-ink: #0b0e11;/, "the word cut to the deck's ink");
-  assert.match(css, /--ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba\(255, 255, 255, [\d.]+\)/, "glowing white");
-  assert.ok(!/var\(--red\)|--glow-r|var\(--warn\)/.test(chip), "no red");
+  assert.equal(css.match(/--ad-chip: ([^;]+);/)[1], "var(--warn)", "solid red");
+  assert.match(css, /--ad-chip-glow: 0 0 1px var\(--warn\), 0 0 [\d.]+px color-mix\(in srgb, var\(--warn\) \d+%, transparent\)/, "glowing red, as the logo's asterisk glows");
+  const size = Number(chip.match(/font-size: ([\d.]+)em;/)[1]);
+  assert.ok(size < 1 && size >= 0.65, "smaller than the words: " + size);
+  assert.match(css, /--ad-chip-ink: #262c32;/, "cut to the dark band's tone");
+  assert.match(css, /\[data-theme="light"\] \{[^}]*--ad-chip-ink: #c2c8ce;/, "and to the light band's");
   assert.ok(!/\.adslot[,)]/.test(css), "no group rule gives it the red glow any more");
   assert.ok(!/devlights|<Lamp/.test(strip), "no red squares");
 });
