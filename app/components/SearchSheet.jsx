@@ -124,7 +124,7 @@ export default function SearchSheet() {
         <Icon name="search" size={22} />
         <input ref={fieldRef} type="search" value={words.q} placeholder="Search ASILUM" aria-label="Search ASILUM" onChange={(e) => setQuery(e.target.value)} enterKeyHint="search" />
         <button type="button" className={"srchamark" + (asterisk ? " on" : "")} aria-pressed={!!asterisk} onClick={() => { haptic("toggle"); flipToggle("asterisk"); }} title={asterisk ? "ASTERISK reads your Passport — tap to search without it" : "tap to let ASTERISK read your Passport"}>
-          <AMark className={asterisk ? "on" : ""} label={asterisk ? "ASTERISK on" : "ASTERISK off"} />
+          <AMark solid className={asterisk ? "on" : ""} label={asterisk ? "ASTERISK on" : "ASTERISK off"} />
         </button>
       </label>
       ) : null}

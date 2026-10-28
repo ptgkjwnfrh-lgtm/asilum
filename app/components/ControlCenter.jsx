@@ -327,7 +327,7 @@ export default function ControlCenter({ kind, pathname }) {
               />
               {scope.id === "global" ? (
                 <button type="button" className={"ccamark" + (dock.toggles.asterisk ? " on" : "")} aria-pressed={!!dock.toggles.asterisk} onClick={() => { haptic("toggle"); flipToggle("asterisk"); }} title={dock.toggles.asterisk ? "ASTERISK reads your Passport — tap to search without it" : "tap to let ASTERISK read your Passport"}>
-                  <AMark className={dock.toggles.asterisk ? "on" : ""} label={dock.toggles.asterisk ? "ASTERISK on" : "ASTERISK off"} />
+                  <AMark solid className={dock.toggles.asterisk ? "on" : ""} label={dock.toggles.asterisk ? "ASTERISK on" : "ASTERISK off"} />
                 </button>
               ) : scope.wide ? (
                 <a className="ccwide" href={"/discover?q=" + encodeURIComponent(dock.q || "")} title={"searching " + scope.placeholder.replace(/^Search /, "")}>ALL →</a>

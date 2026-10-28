@@ -3479,8 +3479,10 @@ body { font-size: 14px; }
   animation: ccrise var(--dur-3) var(--ease-out);
 }
 @keyframes ccrise { from { opacity: 0; transform: translateY(10px); } }
+/* a little thinner (owner, 28 Oct 2026: "the search bar be a little thinner"): about 80% of the rise's
+   room, centred in it, never under 28px (a finger's row) */
 .ccfield {
-  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; height: 100%; max-height: 44px;
+  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; height: max(28px, calc(var(--u) * 68));
   padding: 0 6px 0 12px; border-radius: 999px; color: var(--grey);
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   background: color-mix(in srgb, var(--shade) 10%, transparent);
@@ -4578,6 +4580,12 @@ a.adword:hover { color: var(--ad-chip); }
 /* ---- |A|: a box with the letter A in it (A6, 18 Oct 2026) ---- */
 .amark { display: inline-grid; place-items: center; width: 1.25em; height: 1.25em; border: 1px solid currentColor; border-radius: 3px; font: 400 0.78em/1 var(--mich); letter-spacing: 0; vertical-align: -0.2em; box-sizing: border-box; }
 .amark.on { color: var(--red); border-color: var(--red); }
+/* the search fields' ASTERISK toggle (AMark solid): a solid red square, the A cut through it; off, dimmed */
+.amark.solid { width: 1.3em; height: 1.3em; border: 0; border-radius: 0; color: var(--warn); opacity: 0.42; transition: opacity var(--dur-2) var(--ease-out); }
+.amark.solid.on { color: var(--warn); opacity: 1; }
+.amark.solid svg { display: block; width: 100%; height: 100%; }
+.ccamark .amark.solid, .srchamark .amark.solid { font-size: 16px; } /* ~21px: the cut-out A reads at a glance in the 28px bar */
+.amarkcut { font: 400 12px/1 var(--mich); fill: black; } /* black in a mask: cut away */
 .mfaqr { width: 160px; height: 160px; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 6px; box-sizing: border-box; }
 .rkctl.stform { display: grid; grid-template-columns: 1fr; gap: 8px; max-width: 360px; }
 
