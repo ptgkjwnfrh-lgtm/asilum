@@ -5197,7 +5197,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fgrid {
   --fgap: 6px; /* tightened (owner, 25 Oct 2026: "tighten the spaces in between media to make them all a little bigger") */
   display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
-  grid-auto-rows: calc(((100cqw - (var(--fcols, 5) - 1) * var(--fgap)) / var(--fcols, 5) - var(--fgap)) / 2);
+  /* THE ROW (owner, 28 Oct 2026, the four sizes; lib/feed/tetris.js SIZE): six rows and their five gaps are a
+     large card, LARGE_SHARE (90%) of the screen's height — so a medium is half of it, a small a third */
+  grid-auto-rows: calc((var(--ed-feed-large, 90svh) - 5 * var(--fgap)) / 6);
   gap: var(--fgap); margin: 0 0 var(--ed-card-gap, 26px);
 }
 @media (min-width: 760px) { .fgrid { --fgap: 8px; } }
@@ -5631,6 +5633,9 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 :root { --stk-tilt: 56deg; --stk-lap: 48%; --stk-s: 0.84; --stk-persp: 760px; --stk-zone: min(30vh, 260px); --stk-top: 0px; --stk-bot: 0px; }
 .main { --stk-top: var(--head-h); --stk-bot: calc(var(--cc-row-h) + var(--cc-bottom)); }
 .sheetpane, .mailthread, .maillist { --stk-top: 0px; --stk-bot: 0px; --stk-zone: min(22vh, 150px); }
+/* the Feed's cards are big (a large one is 90% of the screen), so the drum is gentle there (owner, 28 Oct 2026:
+   "the carousel stacking looks too extreme on the feed lets somehow make it less extreme") */
+.fgrid { --stk-tilt: 16deg; --stk-lap: 5%; --stk-s: 0.96; --stk-persp: 1400px; --stk-zone: min(24vh, 220px); }
 @keyframes vstackin {
   from { transform: perspective(var(--stk-persp)) translateY(calc(-1 * var(--stk-lap))) rotateX(calc(-1 * var(--stk-tilt))) scale(var(--stk-s)); }
   to { transform: none; }

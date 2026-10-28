@@ -27,7 +27,15 @@
   (the house lines) rides on the deck.
 - **The Feed is one Tetris grid** (25 Oct, lib/feed/tetris.js): mixed card
   sizes, even gaps, no holes; carousels and the motion row are Figure 20
-  (Fig20.jsx), the ends turned and stacked.
+  (Fig20.jsx), the ends turned and stacked. THE FOUR SIZES ARE A HARD RULE
+  (owner, 28 Oct 2026): a LARGE card (still, motion, carousel, the motion
+  row) is 90% of the screen's height; a MEDIUM (a piece; a words-only post)
+  is half of it each way, four to a large's place; a SMALL (song, place) is
+  half its width and a third of its height, six to a large's place; a WIDE
+  SMALL (a BRDCST) is two smalls side by side. The feed is packed in TILES,
+  a large card's place each, holding a large card or an exact fill of the
+  others, so no gap opens; the kinds spread evenly and never leave two
+  bands (1.8 screens) in a row without a large card or without another.
 - **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
   upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
@@ -868,19 +876,23 @@ checked what a reader is actually served, which is the claim that matters.
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
   A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
   between `.pcrow` and `.pcacts`.
-- SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid (feedColsFor):
-  LISTING 3x8 | 4x8 (eighteen only) hero — never small, so the small piece
-  card (`.v-small`, `.pieceline`) is deleted; SONG and PLACE 2x4 | 2x8 |
-  3x4 square, 3x8 medium; BRDCST 6x4 strip; posts 6x16, with a BRDCST
-  6x20, words 6x12; CAROUSEL and RAIL 6x16; AD 6x4 | 3x8. LOOKAHEAD 9.
-  `preferredSpan` draws a card's size from its id; any other size costs
-  PREF (twenty rows); every card covers the lowest column (BOTTOM FIRST).
-  The size battery in tests/feed-tetris.test.js holds the variety, the
-  bottom-first rule and the hole bounds.
+- SIZE and SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid
+  (feedColsFor), rows sized from the screen (`.fgrid` grid-auto-rows: six
+  rows and five gaps are `--ed-feed-large`, 90svh): LARGE 6x6 (posts, with
+  or without a BRDCST, CAROUSEL, RAIL), MEDIUM 3x3 (LISTING hero, TRANSM
+  note), SMALL 3x2 (SONG, PLACE square), WIDE 6x2 (BRDCST strip); AD 6x2
+  adwide | 3x3 ad. One size a kind. tetrisPack lays TILES (TILE = 6): a
+  large card, or a fill — 2 mediums beside 3 smalls, 4 mediums, 6 smalls,
+  3 wides, 2 wides and 2 smalls, 1 wide and 4 smalls — the fill whose cards
+  stand earliest in the queue; the kinds spread by error diffusion,
+  checkered on even widths; the end is laid on lanes, wides first. The
+  braid (lib/feed/types.js) gives each post a tile's worth. The battery in
+  tests/feed-tetris.test.js: zero holes and every two-screen band mixed.
 - `.card.placecard.withphoto .placeopen > .placeglobe` keeps the globe
   absolute at the bottom right (a plain `.placeglobe` lost to the rule that
-  lifts the photo card's children); the name and type pad right to clear it. AD 5x4 adwide | 3x8 ad, laid only by
-  `fillAds` into level gaps at the feed's end, never lower than the feed;
+  lifts the photo card's children); the name and type pad right to clear it. AD 6x2 adwide | 3x3 ad, standing
+  in for a missing medium or wide in a fill, or laid by `fillAds` into level
+  gaps at the feed's end, never lower than the feed;
   `AdSpace.jsx` draws `.card.adspace`, a dashed open placement.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
   `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`

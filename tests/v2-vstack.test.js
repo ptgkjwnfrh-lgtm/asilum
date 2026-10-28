@@ -86,3 +86,13 @@ test("nothing fixed lives inside a stacked item", () => {
   const inside = fixed.filter((sel) => sel.split(",").some((one) => bases.some((b) => new RegExp(`\\${b}(\\b|\\s|>)`).test(one.trim()) && one.trim() !== b)));
   assert.deepEqual(inside, []);
 });
+
+test("the Feed's drum is gentle (owner, 28 Oct 2026: \"the carousel stacking looks too extreme on the feed\")", () => {
+  // declared: on the Feed every bend is less than the lists' — a smaller turn, a smaller lap, a smaller shrink
+  const root = css.match(/:root \{ --stk-tilt: (\d+)deg; --stk-lap: (\d+)%; --stk-s: ([\d.]+);/);
+  const feed = css.match(/\.fgrid \{ --stk-tilt: (\d+)deg; --stk-lap: (\d+)%; --stk-s: ([\d.]+);/);
+  assert.ok(root && feed, "both sets of numbers");
+  assert.ok(+feed[1] <= +root[1] / 2, `turn ${feed[1]}° against ${root[1]}°`);
+  assert.ok(+feed[2] <= +root[2] / 4, `lap ${feed[2]}% against ${root[2]}%`);
+  assert.ok(+feed[3] > +root[3] && +feed[3] < 1, `shrink to ${feed[3]} against ${root[3]}`);
+});
