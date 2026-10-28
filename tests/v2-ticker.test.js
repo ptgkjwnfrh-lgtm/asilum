@@ -12,7 +12,8 @@
 // black, i just wanted it more clouded than the fixture and i wanted the bar
 // to stretch the entirety of the fixture like i meant if the fixture was a
 // object the ad ticker would wrap around the whole thing 360 degrees not just
-// stuck on the middle, also get rid of those two red squares").
+// stuck on the middle, also get rid of those two red squares"; then "why is
+// it frosted dark make it like light grey or something").
 //
 // Declared before measuring:
 //   - what it prints: a BRDCST (the SPONSORED rows) and a listed event print
@@ -27,9 +28,11 @@
 //   - the type: Share Tech Mono, weight 400, letter-spacing between -0.09em and
 //     -0.085em (Procreate's kerning is a per-cent of the em: -8.5 to -9);
 //     white with a glow;
-//   - the band: clouded, NOT black — frosted grey haze with brighter puffs,
-//     more opaque than the deck's near-clear glass, never darker than a mid
-//     grey and never opaque, in each theme; it runs the deck's WHOLE width
+//   - the band: a LIGHT GREY cloud — a haze no darker than rgb 170 in any
+//     channel, with white puffs, more opaque than the deck's near-clear glass
+//     yet never opaque — one token, the same in both themes; the white words
+//     keep a hairline of shade at their edge so they hold on it; it runs the
+//     deck's WHOLE width
 //     (the bubble has no side padding) and turns round each side as a
 //     quarter cylinder: WRAP_SLICES slices whose shown widths sum to the
 //     radius, squeezed ever harder toward the silhouette, the last nearly
@@ -94,7 +97,7 @@ test("the crawl: one sequence a loop, the track always covered, no timer swappin
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.adstrip\.run \.adband \{ animation: none; \} \}/);
 });
 
-test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, on a clouded band — never black", () => {
+test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, on a light grey cloud", () => {
   const st = rule(".adstrip");
   assert.match(st, /font: 400 max\(10px, calc\(var\(--u\) \* 25\)\)\/1 var\(--mono\);/, "Share Tech Mono, regular");
   assert.match(read("app/globals.css"), /--mono: "Share Tech Mono"/);
@@ -104,15 +107,17 @@ test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, o
   assert.match(rule(".adword"), /text-shadow: var\(--ad-glow\);/, "glowing");
   assert.match(css, /--ad-glyph: #f4f9fc;/, "white");
   const clouds = [...css.matchAll(/--ad-cloud: ([^;]+);/g)].map((m) => m[1]);
-  assert.ok(clouds.length >= 2, "a cloud for the dark glass and one for the light");
-  for (const c of clouds) {
-    assert.ok((c.match(/radial-gradient\(/g) || []).length >= 5, "heavily clouded: puffs all along the band");
-    const base = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/);
-    assert.ok(base, "a haze under the puffs");
-    const [r1, , , a1, r2, , , a2] = base.slice(1).map(Number);
-    assert.ok(Math.min(r1, r2) >= 60, "grey, never black: " + base[0]);
-    assert.ok(Math.max(a1, a2) <= 0.6 && Math.min(a1, a2) >= 0.3, "frosted — more clouded than the glass, never opaque");
-  }
+  assert.equal(clouds.length, 1, "one light grey band for both themes");
+  const c = clouds[0];
+  assert.ok((c.match(/radial-gradient\(/g) || []).length >= 5, "heavily clouded: puffs all along the band");
+  assert.ok([...c.matchAll(/radial-gradient\([^,]+, rgba\((\d+), (\d+), (\d+),/g)].every((m) => m.slice(1, 4).every((v) => Number(v) === 255)), "white puffs");
+  const base = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/);
+  assert.ok(base, "a haze under the puffs");
+  const [r1, g1, b1, a1, r2, g2, b2, a2] = base.slice(1).map(Number);
+  assert.ok(Math.min(r1, g1, b1, r2, g2, b2) >= 170, "light grey, never dark: " + base[0]);
+  assert.ok(Math.max(r1, g1, b1, r2, g2, b2) - Math.min(r1, g1, b1, r2, g2, b2) <= 40, "grey, not a colour");
+  assert.ok(Math.min(a1, a2) >= 0.5 && Math.max(a1, a2) <= 0.75, "more clouded than the glass, never opaque");
+  assert.match(css, /--ad-glow: 0 0 1px rgba\(36, 44, 54, [\d.]+\), [^;]*0 0 7px rgba\(255, 255, 255, [\d.]+\);/, "a hairline of shade at the edge, then the white glow");
   assert.match(rule(".adface, .adslice"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and every slice");
 });
 

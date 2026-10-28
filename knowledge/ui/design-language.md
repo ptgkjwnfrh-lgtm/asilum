@@ -983,3 +983,8 @@ add ticker should stretch all around it".
   passing under it. The two red status lights are gone, and so is the
   `asilum:lamp` event that only they answered. Measured: 181 frames in 3 s,
   the worst 18 ms, no long task, with all twelve slices crawling.
+- Then: "why is it frosted dark make it like light grey or something". The
+  band is a LIGHT GREY cloud — one `--ad-cloud` for both themes, a haze of
+  rgb 196/202/208 to 178/185/192 at 0.62–0.66 under white puffs — and the
+  white words keep their glow with a hairline of shade at their edge
+  (`--ad-glow`) so they hold on the light grey.

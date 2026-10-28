@@ -389,16 +389,17 @@ button { font-family: var(--helv); }
   --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
   /* THE AD TICKER'S BAND (owner, 28 Oct 2026: "glowing white text … on an a
      heavly clouded track", then "i said clouded no black, i just wanted it
-     more clouded than the fixture"): frosted cloud, heavier than the deck's
-     near-clear glass — a milky grey haze with brighter puffs in it, a shade
-     deeper on the light glass so the white still reads, a shade paler on the
-     dark; the words white with a glow; the ADs chip solid glowing white, its
-     word cut to the deck's ink */
-  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.14), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.18), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.13), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.18), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.14), transparent 70%), linear-gradient(180deg, rgba(150, 160, 172, 0.34), rgba(120, 130, 142, 0.4));
-  --ad-turn: linear-gradient(90deg, rgba(40, 46, 54, 0.55), rgba(40, 46, 54, 0.55));
+     more clouded than the fixture", then "why is it frosted dark make it
+     like light grey or something"): a light grey cloud, heavier than the
+     deck's near-clear glass, with white puffs in it — the same in both
+     themes; the words white with a glow and a hairline of shade at their
+     edge so they hold on the light grey; the ADs chip solid glowing white,
+     its word cut to the deck's ink */
+  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
+  --ad-turn: linear-gradient(90deg, rgba(110, 118, 128, 0.5), rgba(110, 118, 128, 0.5));
   --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --ad-glyph: #f4f9fc;
-  --ad-glow: 0 0 1px rgba(255, 255, 255, 0.85), 0 0 6px rgba(255, 255, 255, 0.5);
+  --ad-glow: 0 0 1px rgba(36, 44, 54, 0.75), 0 0 2.5px rgba(36, 44, 54, 0.3), 0 0 7px rgba(255, 255, 255, 0.7);
   --ad-chip: #f6fbff;
   --ad-chip-ink: #0b0e11;
   --ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba(255, 255, 255, 0.7), 0 0 12px rgba(255, 255, 255, 0.35);
@@ -407,9 +408,8 @@ button { font-family: var(--helv); }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
   --wm-ink: #001512; /* the artwork's ink */
-  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.22), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.15), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.16), transparent 70%), linear-gradient(180deg, rgba(84, 96, 110, 0.5), rgba(64, 76, 90, 0.56));
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.22), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.15), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.16), transparent 70%), linear-gradient(180deg, rgba(84, 96, 110, 0.5), rgba(64, 76, 90, 0.56)); } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
