@@ -31,7 +31,8 @@
 //   - the band: a LIGHT GREY cloud — a haze no darker than rgb 170 in any
 //     channel, with white puffs, more opaque than the deck's near-clear glass
 //     yet never opaque — one token, the same in both themes; the white words
-//     keep a hairline of shade at their edge so they hold on it; it runs the
+//     GLOW in a smoke bloom (a white core and halo over a dark bloom, dense at
+//     the letter, wider and fainter outward) so they read on it; it runs the
 //     deck's WHOLE width
 //     (the bubble has no side padding) and turns round each side as a
 //     quarter cylinder: WRAP_SLICES slices whose shown widths sum to the
@@ -117,7 +118,16 @@ test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, o
   assert.ok(Math.min(r1, g1, b1, r2, g2, b2) >= 170, "light grey, never dark: " + base[0]);
   assert.ok(Math.max(r1, g1, b1, r2, g2, b2) - Math.min(r1, g1, b1, r2, g2, b2) <= 40, "grey, not a colour");
   assert.ok(Math.min(a1, a2) >= 0.5 && Math.max(a1, a2) <= 0.75, "more clouded than the glass, never opaque");
-  assert.match(css, /--ad-glow: 0 0 1px rgba\(36, 44, 54, [\d.]+\), [^;]*0 0 7px rgba\(255, 255, 255, [\d.]+\);/, "a hairline of shade at the edge, then the white glow");
+  // (then: "make the ad text glow or something to make it more legible") a white core and halo on top, a
+  // smoke bloom beneath that darkens the cloud round each letter, ever wider and fainter
+  const glow = css.match(/--ad-glow: ([^;]+);/)[1].split(/,(?![^()]*\))/).map((x) => x.trim());
+  assert.match(glow[0], /^0 0 1px #ffffff$/, "a white core");
+  assert.match(glow[1], /^0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)$/, "lit by a tight white halo");
+  const bloom = glow.slice(2).map((g) => g.match(/^0 0 ([\d.]+)px rgba\((\d+), (\d+), (\d+), ([\d.]+)\)$/));
+  assert.ok(bloom.length >= 3 && bloom.every(Boolean), "a smoke bloom of at least three layers");
+  assert.ok(bloom.every((m) => Math.max(+m[2], +m[3], +m[4]) <= 40), "dark smoke");
+  for (let i = 1; i < bloom.length; i++) assert.ok(+bloom[i][1] > +bloom[i - 1][1] && +bloom[i][5] < +bloom[i - 1][5], "each wider and fainter");
+  assert.ok(+bloom[0][5] >= 0.9, "dense right at the letter, where legibility is won");
   assert.match(rule(".adface, .adslice"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and every slice");
 });
 

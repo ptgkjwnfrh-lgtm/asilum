@@ -392,14 +392,17 @@ button { font-family: var(--helv); }
      more clouded than the fixture", then "why is it frosted dark make it
      like light grey or something"): a light grey cloud, heavier than the
      deck's near-clear glass, with white puffs in it — the same in both
-     themes; the words white with a glow and a hairline of shade at their
-     edge so they hold on the light grey; the ADs chip solid glowing white,
+     themes; the words white and glowing in a smoke bloom (below) so they
+     read on the light grey; the ADs chip solid glowing white,
      its word cut to the deck's ink */
   --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
   --ad-turn: linear-gradient(90deg, rgba(110, 118, 128, 0.5), rgba(110, 118, 128, 0.5));
   --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --ad-glyph: #f4f9fc;
-  --ad-glow: 0 0 1px rgba(36, 44, 54, 0.75), 0 0 2.5px rgba(36, 44, 54, 0.3), 0 0 7px rgba(255, 255, 255, 0.7);
+  /* (then: "we gotta find a way to make the ad text glow or something to make it more legible") the words
+     GLOW: a white core lit by a tight white halo, sitting in a deep smoke bloom that darkens the cloud just
+     round each letter — the light grey band stays light, and every letter reads */
+  --ad-glow: 0 0 1px #ffffff, 0 0 2px rgba(255, 255, 255, 0.75), 0 0 3px rgba(14, 20, 28, 0.95), 0 0 7px rgba(14, 20, 28, 0.75), 0 0 14px rgba(14, 20, 28, 0.5);
   --ad-chip: #f6fbff;
   --ad-chip-ink: #0b0e11;
   --ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba(255, 255, 255, 0.7), 0 0 12px rgba(255, 255, 255, 0.35);

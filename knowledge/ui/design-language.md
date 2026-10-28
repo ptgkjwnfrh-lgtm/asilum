@@ -988,3 +988,10 @@ add ticker should stretch all around it".
   rgb 196/202/208 to 178/185/192 at 0.62–0.66 under white puffs — and the
   white words keep their glow with a hairline of shade at their edge
   (`--ad-glow`) so they hold on the light grey.
+- Then: "we gotta find a way to make the ad text glow or something to make
+  it more legible". The words GLOW in a smoke bloom (`--ad-glow`): a white
+  core lit by a tight white halo, over a deep slate bloom (three layers,
+  dense at the letter, wider and fainter outward) that darkens the cloud
+  only round each letter — the band stays light grey and every letter
+  reads, in both themes. Chosen from four tried live on the band (trial
+  crops in the session notes, ticker-proof/round-4-legibility).
