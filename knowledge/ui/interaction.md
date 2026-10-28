@@ -74,7 +74,12 @@ and tactility) are the law; what follows is the shipped reading.
   layer on <body> under the deck: inside the deck its bend saw nothing.
   Its face pulls the Feed back toward the hub in four broad wedges, so
   what is behind it streaks outward like the Yeezus CD's spokes (the
-  "spokes" lens shape, the wheel's alone). Let go, it comes to rest on a
+  "spokes" lens shape, the wheel's alone). The lens is the WHOLE face
+  (`bezel: "full"`, 28 Oct: "the whole thing should get disorted") — no
+  straight half-line before the bend begins; the spokes start at the
+  plus's rim (`SPOKES.hub` 0.2). The pane mirrors the wheel's own CSS
+  move (same transform, same timing), never a script resizing it each
+  frame. Let go, it comes to rest on a
   detent: a card changes half-way between two detents, and the Disc's
   magnet (`lib/disc.js` tuning) draws the wheel onto the detent of the
   card in front — a flick coasts first (27 Oct). It SPAWNS on

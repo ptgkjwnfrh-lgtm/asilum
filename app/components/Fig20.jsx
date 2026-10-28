@@ -42,6 +42,7 @@ import { wrap, ringOffset, nearestTo, seamDrag, settleTarget } from "../../lib/f
 export const FLAT = 3;            // cards that lie flat
 const FLAT_SHARE = 0.72;          // of the width the flat cards may take
 const EDGE_DEG = 72;              // how far a stacked card turns
+export const GLIDE = 0.2;         // of the gap closed per 16.7ms of real time
 
 export default function Fig20({ items, render, label, aspect = 3 / 4, className = "", onSettle = null }) {
   const stageRef = useRef(null);
@@ -76,11 +77,20 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       const nL = offs.filter((d) => d < -half).length, nR = offs.filter((d) => d > half).length;
       const sl = Math.min(14, room / Math.max(1, Math.max(nL, nR) - 1));
       s.step = cw + gap;
+      // the cards' size changes only with the stage's: per frame, only their
+      // transforms move (28 Oct 2026, "EVERY ANIMATION SHOULD [BE] EXTREMELY
+      // SMOOTH" — re-sizing every card every frame re-laid them all out)
+      const size = cw.toFixed(1) + "x" + ch.toFixed(1) + "@" + top.toFixed(1);
+      const resize = size !== s.size;
+      s.size = size;
       for (let i = 0; i < cards.length; i++) {
         const c = cards[i];
-        c.style.width = cw.toFixed(1) + "px";
-        c.style.height = ch.toFixed(1) + "px";
-        c.style.top = top.toFixed(1) + "px";
+        if (resize || c.__f20 !== size) {
+          c.style.width = cw.toFixed(1) + "px";
+          c.style.height = ch.toFixed(1) + "px";
+          c.style.top = top.toFixed(1) + "px";
+          c.__f20 = size;
+        }
         const d = offs[i];
         const a = Math.abs(d), sgn = d < 0 ? -1 : 1;
         if (a <= half) {
@@ -104,14 +114,20 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
         c.style.zIndex = String(1000 - Math.round(a * 10));
       }
     };
-    const glide = () => {
+    // THE GLIDE, timed by the clock (28 Oct 2026): it closes GLIDE of the gap
+    // every 16.7ms of real time, so it is the same glide at 60, 90 or 120 Hz
+    // and a dropped frame catches up instead of stalling
+    const glide = (now) => {
       s.raf = 0;
+      const t = typeof now === "number" ? now : performance.now();
+      const dt = Math.min(64, s.lastT ? t - s.lastT : 16.667);
+      s.lastT = t;
       const diff = s.target - s.pos;
       if (still || Math.abs(diff) < 0.002) s.pos = s.target;
-      else s.pos += diff * 0.2;
+      else s.pos += diff * (1 - Math.pow(1 - GLIDE, dt / 16.667));
       layout();
       if (s.pos !== s.target) s.raf = requestAnimationFrame(glide);
-      else { stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } })); if (onSettle) onSettle(wrap(s.pos, n)); }
+      else { s.lastT = 0; stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } })); if (onSettle) onSettle(wrap(s.pos, n)); }
     };
     // the ring has no ends: any card, either way round
     const go = (to) => { s.target = to; if (!s.raf) s.raf = requestAnimationFrame(glide); };
@@ -133,7 +149,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       g.lastX = e.clientX; g.lastT = now;
       // the hand moves the ring, held back a little across the seam
       s.pos = s.target = seamDrag(g.pos, -dx / s.step, n);
-      if (s.raf) { cancelAnimationFrame(s.raf); s.raf = 0; }
+      if (s.raf) { cancelAnimationFrame(s.raf); s.raf = 0; s.lastT = 0; }
       layout();
     };
     const up = () => {

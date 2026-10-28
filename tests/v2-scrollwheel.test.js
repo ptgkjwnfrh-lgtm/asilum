@@ -171,7 +171,7 @@ test("the plus brings up the POST cards: Post Selection's own types, the front c
 
 test("the material and the look: the fixtures' glass, no painted colour, the plus as it was, the slot empty", () => {
   const sw = read("app/components/ScrollWheel.jsx");
-  assert.match(sw, /useLiquidGlass\(glassRef, \{ id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW \}\)/, "the shared LiquidGlass, with the V.1 rainbow");
+  assert.match(sw, /useLiquidGlass\(glassRef, \{ id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW, bezel: "full" \}\)/, "the shared LiquidGlass, with the V.1 rainbow");
   const glass = rules.match(/\.cctray, \.ccwglass \{([^}]*)\}/)[1];
   assert.match(glass, /background: linear-gradient\(var\(--fx-tint\), var\(--fx-tint\)\), var\(--fx-glass\);/, "the fixtures' pane");
   assert.match(glass, /backdrop-filter: saturate\(160%\);/);
@@ -193,5 +193,5 @@ test("the material and the look: the fixtures' glass, no painted colour, the plu
   // (27 Oct 2026) the slot "is simply meant to look like an empty space": no fill, no CD, nothing drawn on it
   assert.match(rule(".ccspindle"), /border-radius: 50%; background: transparent;/, "the slot left empty");
   assert.ok(!/\.ccspindle(::before|::after|\[)/.test(rules) && !/cdlens|ClearDisc/.test(rules + read("app/components/ControlCenter.jsx")), "nothing drawn on it, no CD");
-  assert.match(rules, /prefers-reduced-motion: reduce\) \{\n\s*\.ccenter \.ccpostwrap \.tabl\.ccpost, \.cctray, \.ccspindle, \.ccwheel, \.pcring, \.pcring3d, \.pccard,/, "reduced motion: no travel");
+  assert.match(rules, /prefers-reduced-motion: reduce\) \{\n\s*\.ccenter \.ccpostwrap \.tabl\.ccpost, \.cctray, \.ccspindle, \.ccwheel, \.ccwglass, \.ccwglass\[data-open\], \.pcring, \.pcring3d, \.pccard,/, "reduced motion: no travel, the wheel's glass with it");
 });

@@ -59,7 +59,7 @@ test("the seam's magnet: the hand is held back across it, and a flick stops on i
 
 test("the finish: maps at the screen's pixels, the bent band alone smoothed", async () => {
   const glass = read("app/components/LiquidGlass.jsx");
-  assert.match(glass, /export function drawRefractionMap\([^)]*, scale = 1\) \{/);
+  assert.match(glass, /export function drawRefractionMap\([^)]*, scale = 1, opts = \{\}\) \{/);
   assert.match(glass, /const S = Math\.max\(1, scale \|\| 1\);/, "the scale is the one asked for");
   assert.match(glass, /const W = Math\.max\(1, Math\.round\(w \* S\)\), H = Math\.max\(1, Math\.round\(h \* S\)\);/, "the canvas at the scale");
   assert.match(glass, /const x = \(px \+ 0\.5\) \/ S - 0\.5;/, "distances in CSS pixels, samples finer");
@@ -104,7 +104,7 @@ test("the disc: 15% bigger, its centre and its side marks on the deck's top edge
   assert.match(css, /--cy: calc\(50% \+ var\(--u\) \* 3\);/, "which is where its disc sits (the key is --dk-h tall)");
   assert.match(css, /\.ccrow \{ position: relative; flex: none; height: var\(--dk-h\);/, "the key's row is the deck's top --dk-h");
   assert.match(css, /--wheel-d: calc\(var\(--dk-h\) \* 2\.25 \* 1\.15\);/, "15% bigger");
-  assert.match(css, /\.ccenter\[data-wheel="open"\] \.ccwheel \{\n  top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred on the plus");
+  assert.match(css, /\.ccwheel \{\n  position: absolute; z-index: 1; left: 50%; top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred on the plus");
 });
 
 test("the cards crisp, the deck a touch wider, the DM count on the envelope's top-left", () => {

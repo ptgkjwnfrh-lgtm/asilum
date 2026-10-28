@@ -32,12 +32,19 @@ export const WHEEL_BEND = ".card, .headline, .headsub, .demobanner, .ctmeta";
 // the wedges narrowed by `sharp` (owner, 27 Oct: "stems out like in the
 // yeezus cover"; tuned over stripes: a partial pull made blobs, a near-full
 // pull back to the hub with broad wedges makes streaks — the stems)
-export const SPOKES = Object.freeze({ hub: 0.38, n: 2, reach: 0.95, sharp: 0.5 });
+// (28 Oct 2026, later: "extend the warp bezel all the way to the upload button
+// on the disc … half of a line is straight then the other half gets
+// distorted, the whole thing should get distorted") the spokes start at the
+// plus's own rim — its disc is about a fifth of the wheel's radius — and the
+// lens is the wheel's whole face (bezel "full"), so no ring of straight
+// lines is left between the bend and the plus
+export const SPOKES = Object.freeze({ hub: 0.2, n: 2, reach: 0.95, sharp: 0.5 });
 
 export default function ScrollWheel({ open, label, onStep, onEnd }) {
   const ref = useRef(null);
   const ringRef = useRef(null);
   const glassRef = useRef(null);
+  const probeRef = useRef(null); // measures --eject, the lift the wheel rises by
   const [host, setHost] = useState(null);
   const state = useRef({ angle: 0, drag: null, v: 0, raf: 0, last: 0 });
   useEffect(() => { setHost(document.body); }, []);
@@ -49,31 +56,37 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
   // kept on the wheel's circle every frame it moves; the wheel in the deck
   // keeps the hand, the keys and the turning marks, and the plus — its hub
   // — paints over the glass. The pane carries the V.1 magazine's rainbow
-  // (RainbowGlass.jsx), the one glass that parts the colours, with V.1's
-  // own bezel; on Safari the cards under it are bent the same three ways.
-  const glass = useLiquidGlass(glassRef, { id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW });
+  // (RainbowGlass.jsx), the one glass that parts the colours, its bezel the
+  // whole face ("full"); on Safari the cards under it are bent the same three ways.
+  const glass = useLiquidGlass(glassRef, { id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW, bezel: "full" });
+  // THE GLASS FOLLOWS BY CSS, NOT BY SCRIPT (28 Oct 2026: "EVERY ANIMATION
+  // SHOULD [BE] EXTREMELY SMOOTH"). The wheel moves only by transform; its
+  // layout box is always its resting circle. The pane is set once on that
+  // circle (open, resize, the deck settling) and makes the same move with the
+  // same timing in CSS (.ccwglass: --ej, the lift it rises by) — no per-frame
+  // measuring, no per-frame resize, and its map is drawn once, at rest.
   useEffect(() => {
-    const el = ref.current, pane = glassRef.current;
-    if (!el || !pane) return undefined;
-    let raf = 0, until = performance.now() + 900;
-    const sync = () => {
+    const el = ref.current, pane = glassRef.current, wrap = el && el.parentElement;
+    if (!el || !pane || !wrap) return undefined;
+    let raf = 0;
+    const place = () => {
       raf = 0;
-      // the wheel's circle as drawn this frame (it grows out of the plus):
-      // sized, not scaled, so the glass's map is always drawn to its size
-      const b = el.getBoundingClientRect();
-      if (b.width) {
-        pane.style.width = `${b.width}px`; pane.style.height = `${b.height}px`;
-        pane.style.left = `${b.left}px`; pane.style.top = `${b.top}px`;
-        pane.style.opacity = getComputedStyle(el).opacity;
-      }
-      if (performance.now() < until) raf = requestAnimationFrame(sync);
+      const w = el.offsetWidth;
+      if (!w) return;
+      const box = wrap.getBoundingClientRect();
+      // translate(-50%, -50%): the layout box's corner is the circle's centre
+      const cx = box.left + el.offsetLeft, cy = box.top + el.offsetTop;
+      pane.style.width = `${w}px`; pane.style.height = `${w}px`;
+      pane.style.left = `${(cx - w / 2).toFixed(2)}px`; pane.style.top = `${(cy - w / 2).toFixed(2)}px`;
+      const lift = probeRef.current ? probeRef.current.offsetHeight : 0;
+      pane.style.setProperty("--ej", `${lift}px`);
     };
-    const wake = () => { until = performance.now() + 900; if (!raf) raf = requestAnimationFrame(sync); };
-    sync();
-    wake();
+    const wake = () => { if (!raf) raf = requestAnimationFrame(place); };
+    place();
     window.addEventListener("resize", wake);
-    el.addEventListener("transitionend", wake);
-    return () => { window.removeEventListener("resize", wake); el.removeEventListener("transitionend", wake); if (raf) cancelAnimationFrame(raf); };
+    const deck = el.closest(".ccenter");
+    if (deck) deck.addEventListener("transitionend", wake);
+    return () => { window.removeEventListener("resize", wake); if (deck) deck.removeEventListener("transitionend", wake); if (raf) cancelAnimationFrame(raf); };
   }, [open, host]);
 
   // the ring shows the turn; every STEP_DEG crossed moves what it turns
@@ -183,6 +196,7 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
       onPointerCancel={up}
       onKeyDown={key}
     >
+      <i ref={probeRef} className="ccwprobe" aria-hidden="true" />
       <span ref={ringRef} className="ccwring" aria-hidden="true">
         {MARKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
       </span>

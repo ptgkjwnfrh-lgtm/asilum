@@ -46,7 +46,7 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(!/cccut|idcut/.test(read("app/components/InfoDock.jsx")), "the Info Dock's cuts left with its pane");
   const glass = read("app/components/LiquidGlass.jsx");
   assert.match(glass, /export function lensFeatures\(el\)/);
-  assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current, mapScale\(r\.width, r\.height\)\);/, "the map is drawn with the carvings, as two greys, at the screen's own pixels");
+  assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current, mapScale\(w, h\),/, "the map is drawn with the carvings, as two greys, at the screen's own pixels and its own (layout) size");
   // the grill sits centred under the POST disc: 40 + 123 + 127 + 162 / 2 = 371, stretched with the deck
   const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* \(371 \* var\(--dk-sx\) - ([\d.]+)\)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
   assert.ok(g, "the grill is placed in sketch units");
@@ -114,7 +114,8 @@ test("the September recipe on the fixtures: one pull of 86 for every colour, the
   assert.match(glass, /export const PULL = 86;/, "one pull, no colour split (26 Oct 2026: \"take away the rainbow\")");
   assert.match(glass, /export const BEZEL = 56;/);
   assert.match(glass, /const GLASS_N = 1\.5;/);
-  assert.match(glass, /const bez = Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
+  // (28 Oct 2026) or "full", the wheel's: the whole half, so its bend runs in to the plus
+  assert.match(glass, /const bez = bezel === "full" \? Math\.max\(6, Math\.min\(w, h\) \/ 2\)\n\s*: Math\.max\(6, Math\.min\(BEZEL, Math\.min\(w, h\) \/ 2, bezel \? \(bezel < 1 \? Math\.min\(w, h\) \* bezel : bezel\) : Infinity\)\);/, "56px at most, never past the middle, and as thin as the pane asks (a fraction, or px)");
   assert.match(read("app/components/Masthead.jsx"), /useLiquidGlass\(glassRef, \{ id: "lg-masthead", strength: 1, open: MASTHEAD_OPEN, bend: FIXTURE_BEND, bezel: "fixture", shine: false \}\)/, "the Masthead: full strength, only its bottom edge lenses, the page bends under it on WebKit");
   assert.match(read("app/components/Masthead.jsx"), /MASTHEAD_OPEN = Object\.freeze\(\{ top: false, right: false, bottom: true, left: false \}\)/);
   for (const [f, id] of [["app/components/Masthead.jsx", "lg-masthead"], ["app/components/ControlCenter.jsx", "lg-deck"]]) {
@@ -358,7 +359,7 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   assert.match(chain, /`<feComposite in="lens" in2="SourceGraphic" operator="over"\/>`/, "outside the wheel a card is untouched");
   // the wheel's alone
   const sw = read("app/components/ScrollWheel.jsx");
-  assert.match(sw, /dispersion: V1_RAINBOW \}\);/, "the wheel passes it");
+  assert.match(sw, /dispersion: V1_RAINBOW, bezel: "full" \}\);/, "the wheel passes it, over its whole face");
   const files = [];
   const walk = (dir) => { for (const f of readdirSync(new URL("../" + dir, import.meta.url))) { const p = dir + "/" + f; if (statSync(new URL("../" + p, import.meta.url)).isDirectory()) walk(p); else if (/\.(jsx?|mjs)$/.test(f)) files.push(p); } };
   walk("app"); walk("lib");
@@ -384,8 +385,9 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   // the plus is the hub
   assert.match(read("app/globals.css"), /--cy: calc\(50% \+ var\(--u\) \* 3\);\s*\/\* the disc's centre in its key \*\//, "--cy is the plus's centre in its key");
   assert.match(rules, /\.ccenter\[data-wheel="open"\] \.ccpostwrap \.tabl\.ccpost \{ transform: translateY\(calc\(-1 \* var\(--eject\)\)\);/, "the plus carried up by --eject");
-  assert.match(rules, /\.ccenter\[data-wheel="open"\] \.ccwheel \{\n  top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred where the plus is carried");
-  assert.match(rules, /\.ccwheel \{\n  position: absolute; z-index: 1; left: 50%; top: var\(--cy\);[^}]*transform: translate\(-50%, -50%\)/, "on its centre");
+  // (28 Oct 2026) it moves by transform alone: its box always rests where the plus is carried, and closed it is carried down by --eject
+  assert.match(rules, /\.ccwheel \{\n  position: absolute; z-index: 1; left: 50%; top: calc\(var\(--cy\) - var\(--eject\)\);/, "the wheel centred where the plus is carried");
+  assert.match(rules, /\.ccwheel \{\n  position: absolute; z-index: 1; left: 50%; top: calc\(var\(--cy\) - var\(--eject\)\);[^}]*transform: translate\(-50%, -50%\) translateY\(var\(--eject\)\) scale\(0\.2\);/, "on its centre; closed, carried down to the slot by transform");
   const turn = sw.slice(sw.indexOf("function turn("), sw.indexOf("function stopCoast"));
   assert.match(turn, /if \(ringRef\.current\) ringRef\.current\.style\.transform = `rotate\(\$\{s\.angle\}deg\)`;/, "a turn moves the wheel's marks");
   assert.equal([...turn.matchAll(/\.style\.transform/g)].length, 1, "and nothing else");
@@ -398,7 +400,7 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   assert.match(lg, /const pull = Math\.min\(1, \(f\.reach \* \(len - hub\)\) \/ \(PULL \/ 2\)\) \* env \* wedge;\n\s*vx -= \(ex \/ len\) \* pull; vy -= \(ey \/ len\) \* pull;/, "drawn back toward the hub along each ray");
   assert.match(lg, /else if \(kind === "spokes"\) out\.push\(\{ kind, cx:/, "read from the DOM like every carved shape");
   assert.match(sw, /<i className="ccwspokes" data-lens-shape="spokes" data-lens-hub=\{SPOKES\.hub\} data-lens-spokes=\{SPOKES\.n\} data-lens-reach=\{SPOKES\.reach\} data-lens-sharp=\{SPOKES\.sharp\} \/>/, "inside the wheel's pane");
-  assert.match(sw, /export const SPOKES = Object\.freeze\(\{ hub: 0\.38, n: 2, reach: 0\.95, sharp: 0\.5 \}\);/);
+  assert.match(sw, /export const SPOKES = Object\.freeze\(\{ hub: 0\.2, n: 2, reach: 0\.95, sharp: 0\.5 \}\);/, "the spokes start at the plus's rim (28 Oct 2026)");
   assert.deepEqual(files.filter((f) => /data-lens-shape="spokes"/.test(read(f))), ["app/components/ScrollWheel.jsx"], "the wheel's alone");
   assert.match(rules, /\.ccwspokes \{ position: absolute; inset: 0; border-radius: 50%; pointer-events: none; \}/, "a shape that paints nothing");
   // the slot is empty
