@@ -387,6 +387,19 @@ button { font-family: var(--helv); }
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
   --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
+  /* THE AD TICKER'S TRACK (owner, 28 Oct 2026: "glowing white text … on an a
+     heavly clouded track to make the text more visible"): smoked glass with
+     clouds in it, dark in both themes like the reference's display; the
+     words white with a glow; the ADs chip solid glowing white, its word cut
+     to the track's dark */
+  --ad-cloud: radial-gradient(22% 160% at 9% 25%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(28% 130% at 30% 90%, rgba(255, 255, 255, 0.11), transparent 70%), radial-gradient(20% 150% at 52% 15%, rgba(255, 255, 255, 0.14), transparent 70%), radial-gradient(30% 140% at 72% 80%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(22% 150% at 93% 30%, rgba(255, 255, 255, 0.15), transparent 70%), linear-gradient(180deg, rgba(30, 34, 38, 0.9), rgba(6, 8, 10, 0.95));
+  --ad-shade: rgba(0, 0, 0, 0.6);
+  --ad-glyph: #f4f9fc;
+  --ad-glow: 0 0 1px rgba(255, 255, 255, 0.85), 0 0 6px rgba(255, 255, 255, 0.5);
+  --ad-chip: #f6fbff;
+  --ad-chip-ink: #0b0e11;
+  --ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba(255, 255, 255, 0.7), 0 0 12px rgba(255, 255, 255, 0.35);
+  --ad-curl: 50deg; /* lib/adcrawl.js CURL_DEG */
   --helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif; /* the asterisk's face (the owner's artwork), the system's own: Helvetica's asterisk matched the artwork's (IoU 0.85), Neue's did not (0.60) */
 }
 [data-theme="light"] {
@@ -3470,31 +3483,55 @@ body { font-size: 14px; }
 .ccwide { flex: none; font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); text-decoration: none; padding: 6px 8px; white-space: nowrap; }
 .ccclose { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
-/* the ad strip: at the head of the Feed now (off the deck, 19 Oct 2026), a
-   rounded strip in the page's flow with its own stable height */
-/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): a long pill
-   beneath the keys and above the vent, the ticker's scroll wheel inside it.
-   The pill is 52 tall and ends 8 above the grill's top lip (11 + 11); it
-   reaches 18 up into the row's empty foot, under the cuts' lower ends (52),
-   so the deck grows by --ad-h alone */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
+/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): beneath the keys and
+   above the vent; it reaches 18 up into the row's empty foot, under the cuts'
+   lower ends (52), and ends above the grill's top lip, so the deck grows by
+   --ad-h alone.
+   THE TICKER ROUND THE DECK (owner, 28 Oct 2026, the MAD-S player's display;
+   AdStrip.jsx, lib/adcrawl.js): a heavily clouded track — dark, so the white
+   reads in both themes — whose face sits where the pill sat, ever so
+   slightly longer (it began 40 units in, now 34), and whose ends CURL away
+   round the deck's sides in perspective (--ad-e each, from 4 units in); the
+   entries crawl as one glowing white line of Share Tech Mono, regular, at
+   -0.0875em (the owner's "-8.5 to -9 kerning", Procreate's per-cent of the
+   em), out of the right curl, along the face and under the label; the label
+   is the status lights and ADs knocked out of a glowing white chip. */
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 4 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
 .adstrip {
-  height: calc(var(--u) * 52); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
-  font-size: 10px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
+  --ad-e: calc(var(--u) * 30 * var(--dk-sx)); /* each curl, seen from its own hinge (perspective() on the curl, not the track: from the track's middle the far curls went edge-on) */
+  position: relative; height: calc(var(--u) * 52); width: 100%; min-width: 0; margin: 0; box-sizing: border-box;
+  font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
 }
-.adline { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
-.adline:hover .adtext { color: var(--sig); }
+.adtrack { position: absolute; inset: 0; display: flex; container-type: inline-size; }
+.adcurl, .adface { position: relative; height: 100%; overflow: hidden; background: var(--ad-cloud); background-size: 100cqw 100%; }
+.adcurl { flex: none; width: var(--ad-e); }
+.adcurl.l { border-radius: 999px 0 0 999px; transform-origin: 100% 50%; transform: perspective(calc(var(--u) * 300)) rotateY(calc(-1 * var(--ad-curl))); background-position: 0 0; }
+.adcurl.r { border-radius: 0 999px 999px 0; transform-origin: 0 50%; transform: perspective(calc(var(--u) * 300)) rotateY(var(--ad-curl)); background-position: calc(var(--ad-e) - 100cqw) 0; }
+/* the curl turns away from the light */
+.adcurl::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.adcurl.l::after { background: linear-gradient(90deg, var(--ad-shade), transparent 90%); }
+.adcurl.r::after { background: linear-gradient(270deg, var(--ad-shade), transparent 90%); }
+.adface { flex: 1; min-width: 0; display: flex; align-items: center; background-position: calc(-1 * var(--ad-e)) 0; }
+.adlabel { flex: none; display: inline-flex; align-items: center; gap: calc(var(--u) * 12); padding: 0 calc(var(--u) * 10) 0 calc(var(--u) * 12); }
+/* the negative imprint: a solid glowing white chip, the word cut out of it to the track's own dark */
+.adslot { display: inline-block; padding: 0.16em 0.34em 0.12em 0.3em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
+.adwin { position: relative; flex: 1; align-self: stretch; min-width: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 calc(var(--u) * 30)); mask-image: linear-gradient(90deg, transparent, #000 calc(var(--u) * 30)); }
+.adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+.adwin .adband { left: calc(-1 * var(--win-x)); }
+.adcurl.r .adband { left: calc(var(--ad-e) - 100cqw); }
+.adseq { display: flex; flex: none; }
+.adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
+.adword::after { content: "\00B7"; margin: 0 0.9em; opacity: 0.55; }
+a.adword:hover { color: var(--ad-chip); }
+.adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; }
+.adstrip.held .adband { animation-play-state: paused; }
+@keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
+@media (prefers-reduced-motion: reduce) { .adstrip.run .adband { animation: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
 .adtag.sponsored { color: var(--red); border-color: var(--red); }
 .adtag.draft { color: var(--p2); border-color: var(--p2); }
 .adtag.asilum { color: var(--ink); border-color: var(--ink); }
-.adtext { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.adnav { display: inline-flex; align-items: center; gap: 4px; flex: none; }
-.adbtn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--grey); cursor: pointer; }
-.adbtn:hover { color: var(--ink); border-color: var(--ink); }
-.adbtn .flip { transform: scaleX(-1); }
-.adcount { font-size: 9px; letter-spacing: 0.12em; color: var(--grey); }
 
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
@@ -4660,8 +4697,6 @@ body { font-size: 14px; }
 .card.piece .fitline.demoflag { padding: 2px 12px 0; }
 .card.piece .tagrow { margin: 4px 0 0; padding: 0 12px 10px; }
 .card.piece:hover .imgwrap::before { content: none; }
-/* the deck's ad slot wears its name in red, as drawn */
-.adslot { flex: none; font: 400 11px/1 var(--mich); letter-spacing: 0.04em; color: var(--red); }
 /* the listing popup to 5.jpg: the ledger's word on the photograph, ♡ OFFER bag, the lines in Michroma */
 .lstbadge { position: absolute; top: 10px; left: 12px; z-index: 2; }
 .lstbadge.unverified .vbadgemark { background: none; border: 0; padding: 0; color: var(--ink); }
@@ -4807,7 +4842,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 :root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(70, 255, 150, 0.34)) drop-shadow(0 0 2px rgba(120, 255, 180, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
-:root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .adslot, .idkey.cur) { text-shadow: var(--glow-r); }
+:root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .idkey.cur) { text-shadow: var(--glow-r); }
 
 /* =====================================================================
    THE DEVICE'S OWN LANGUAGE, A LITTLE OF IT (owner, 18 Oct 2026; the 404
@@ -4844,7 +4879,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 @keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
 /* the deck's two status lights, at the end of the ad strip */
-.devlights { display: inline-flex; gap: 4px; margin-left: auto; flex: none; }
+.devlights { display: inline-flex; gap: 4px; flex: none; }
 .devlights .lamp { width: 8px; height: 8px; margin: 0; }
 .devlights .lamp + .lamp[data-blink="eject"] { animation-delay: 0.1s; }
 /* an MRZ line: words in the ink, chevrons in red, a block cursor blinking at the end */

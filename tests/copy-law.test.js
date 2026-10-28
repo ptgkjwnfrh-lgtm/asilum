@@ -110,6 +110,7 @@ test("the ticker carries the house lines when nothing eligible runs", () => {
     assert.ok(dock.includes(`"${line}"`), `the ticker must carry: ${line}`);
   }
   // And they are the FALLBACK — a placement, a draft or a listed event still wins the strip.
-  assert.match(cc, /HOUSE_LINES\[i % HOUSE_LINES\.length\]/);
-  assert.match(cc, /const cur = items && items\.length \? items\[i % items\.length\] : null;/);
+  // (28 Oct 2026) the entries crawl as one line now: the house lines are that line when nothing else runs
+  assert.match(cc, /: \(items === null \? \[\{ id: "wait", text: "…" \}\] : HOUSE_LINES\.map\(\(t, n\) => \(\{ id: "house" \+ n, text: t \}\)\)\);/);
+  assert.match(cc, /const words = items && items\.length\n\s*\? items\.map\(/, "anything eligible first");
 });

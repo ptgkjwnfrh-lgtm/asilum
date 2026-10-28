@@ -934,3 +934,36 @@ line should have the same glow".
   (`lib/mastline.js` lays the stretches; the music circle and the exploring
   key come and go) and the line fades in once laid. The Info Dock and
   Passport keys are 10% bigger (`--mk: 1.1` on `.masthead`).
+
+## 28 Oct 2026 — the ad ticker round the deck
+
+The owner, with the MAD-S player's wrap-round display as the reference
+(`ticker-proof/owner-reference-*.jpg` in the session notes): "stretch all
+the across the center fixture, so if the center fixture was a 3d object the
+add ticker should stretch all around it".
+- `AdStrip.jsx` is a heavily clouded track (`--ad-cloud`: smoked glass with
+  clouds in it, dark in BOTH themes so the white reads) whose face begins 34
+  units in, where the pill began 40 — "ever so slightly lengthened" — and
+  whose ends CURL away round the deck's sides: each `.adcurl` turns
+  `--ad-curl` (lib/adcrawl.js `CURL_DEG`, 50°) about its hinge in its own
+  `perspective()` (a vantage at the track's middle put the far curls
+  edge-on).
+- The entries no longer swap on a timer: they run as ONE line that crawls
+  right to left (lib/adcrawl.js: one sequence a loop, so no seam, at
+  `CRAWL_PX_S`), out of the right curl, along the face, fading under the
+  label. The band in the right curl is laid in the track's own coordinates,
+  so the words run on across the hinge, squeezed as they turn. It holds on
+  hover, focus and typing and stops under reduced motion. Measured: 181
+  frames in 3 s, the worst 19 ms, no long task.
+- Type: Share Tech Mono, regular, `letter-spacing: -0.0875em` (the owner's
+  "-8.5 to -9 kerning", Procreate's per-cent of the em — the same unit that
+  made the logo's "-15" with "5% tracking" come out at -0.096em), white
+  (`--ad-glyph`) with a glow (`--ad-glow`).
+- The label is the two status lights and ADs as a NEGATIVE IMPRINT: a solid
+  glowing white chip (`--ad-chip`, `--ad-chip-glow`) with the word cut to
+  the track's dark (`--ad-chip-ink`) — no longer red.
+- What it prints (`lib/placements.js`, `ticker` beside the labelled `line`):
+  a BRDCST and a listed event by their title alone; an ad as "AD: " and the
+  advertiser's own words (`adLine`; no ad source exists yet, so none runs);
+  a device's own promotion draft as an ad marked "(DRAFT)". Each entry still
+  speaks its label to assistive technology (a BRDCST is read as sponsored).

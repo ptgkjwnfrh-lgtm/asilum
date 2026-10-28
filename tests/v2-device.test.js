@@ -54,7 +54,8 @@ test("the warning lights: square, dark at rest, blinking like an eject light on 
   }
   // (19 Oct) the pair rides with the ad strip at the head of the Feed (AdStrip.jsx)
   const deck = strip(read("app/components/AdStrip.jsx"));
-  assert.match(deck, /<span className="devlights" ref=\{lightsRef\} aria-hidden="true"><Lamp \/><Lamp \/><\/span>/);
+  // (28 Oct 2026) by the ADs chip, in the ticker's label (aria-hidden there)
+  assert.match(deck, /<span className="adlabel" aria-hidden="true">\s*<span className="devlights" ref=\{lightsRef\}><Lamp \/><Lamp \/><\/span>/);
   assert.match(deck, /window\.addEventListener\("asilum:bag", on\)/, "a piece in the bag blinks the strip's lights");
   assert.match(rules, /\.lamp \{[^}]*width: 7px; height: 7px;[^}]*background: color-mix\(in srgb, var\(--warn\) 22%, transparent\)/s, "square, dark at rest");
   assert.match(rules, /\.lamp\[data-blink="eject"\] \{ animation: ejectlight 1\.8s steps\(1, end\) forwards; \}/, "it blinks and stays dark at the end");

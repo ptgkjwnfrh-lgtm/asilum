@@ -124,9 +124,10 @@ test("the piece card and the listing popup to the references: rounded photograph
   assert.match(listing, /priceLine\(item\)/);
   assert.match(listing, /"SIZE: " \+ item\.size\.label/);
   assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
-  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the ADs slot is red");
+  // (28 Oct 2026: "the glowing red "ADs" should be a negative imprint in a solid glowing white mini rectangle")
+  assert.match(css, /\.adslot \{[^}]*background: var\(--ad-chip\); color: var\(--ad-chip-ink\); box-shadow: var\(--ad-chip-glow\);/, "ADs knocked out of a glowing white chip");
   // (19 Oct) the strip left the deck for the head of the Feed (the owner's fixture sketch)
-  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">ADs<\/span>/, "no asterisk (owner, 25 Oct, last: overused)");
+  assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot">ADs<\/span>/, "no asterisk (owner, 25 Oct, last: overused); the label it sits in is hidden from assistive technology");
 });
 
 test("the BRDCST footer: collapsed to title and date, inline expansion, the map and the organizer's tickets", () => {
