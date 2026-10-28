@@ -22,7 +22,7 @@
 // not built — and says so; nothing here pretends.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useHold, HoldMenu, HoldKey } from "./HoldMenu.jsx";
+import { HoldMenu, CardDots } from "./HoldMenu.jsx";
 import { Cut } from "./Cut.jsx";
 import TransmissionText from "./TransmissionText.jsx";
 import SaveButton from "./SaveButton.jsx";
@@ -32,7 +32,6 @@ import { registerFeedVideo, feedPolicy } from "../../lib/media/feedplay.js";
 import { footerPages } from "../../lib/brdcst/index.js";
 import { postType, brdcstWhen, brdcstMoment } from "../../lib/feed/types.js";
 import { galleryOf } from "../../lib/feed/tetris.js";
-import { hideCard } from "../../lib/feed/hidden.js";
 import Fig20 from "./Fig20.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
@@ -223,15 +222,14 @@ export function brdcstLines(ev) {
 function BrdcstStrip({ p, id }) {
   const [menu, setMenu] = useState(false);
   const close = useCallback(() => setMenu(false), []);
-  const hold = useHold(() => setMenu(true));
   const a = p.attachments || {};
   const ev = a.event || (a.events && a.events[0]) || null;
   if (!ev) return null;
   const { big, small } = brdcstLines(ev);
   const what = "the broadcast " + ev.name;
   return (
-    <article className={"card wpostcard type-brdcst bstrip" + (ev.image ? " withphoto" : "")} data-id={id} data-type="BRDCST" aria-label={"broadcast: " + ev.name} {...hold}>
-      <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
+    <article className={"card wpostcard type-brdcst bstrip" + (ev.image ? " withphoto" : "")} data-id={id} data-type="BRDCST" aria-label={"broadcast: " + ev.name}>
+      <CardDots what={what} open={menu} onOpen={() => setMenu(true)} />
       <HoldMenu id={id} what={what} href={null} open={menu} onClose={close} />
       <button type="button" className="bsopen" onClick={() => { haptic("press"); openSheet("brdcst", { id: ev.id, title: "BRDCST" }); }} aria-label={"open the broadcast " + ev.name}>
         {ev.image ? <img className="bsimg" src={ev.image} alt="" loading="lazy" aria-hidden="true" /> : null}
@@ -241,8 +239,6 @@ function BrdcstStrip({ p, id }) {
           <span className="bswhen">{small}</span>
         </span>
       </button>
-      {/* the × as drawn on the strip: set aside on this device (lib/feed/hidden.js) */}
-      <button type="button" className="bspass" onClick={(e) => { e.stopPropagation(); haptic("press"); hideCard(id); }} aria-label={"set aside " + what} title="PASS"><Icon name="pass" size={22} /></button>
     </article>
   );
 }
@@ -325,7 +321,6 @@ export function Caption({ text, motion = false, videoRef = null }) {
 export default function PostCard({ post: p, engagement, onEngage }) {
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
-  const hold = useHold(() => setMenu(true));
   const videoRef = useRef(null);
   const sample = !!p.sample;
   const type = postType(p);
@@ -365,7 +360,8 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined} {...hold}>
+    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined}>
+      <CardDots what={what} open={menu} onOpen={() => setMenu(true)} />
       <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
       {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be
           comprised of the entire image — text and icons overlap it"): the
@@ -375,8 +371,6 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       <header className="p2head">
         <span className="p2orb">{sample ? <Avatar name={name} src={p.avatar || null} /> : <a href={p.mine ? "/profile" : "/u/" + encodeURIComponent(p.handle)} aria-label={"the author, " + name}><Avatar name={name} /></a>}</span>
         <span className="p2user">{sample ? name : <FriendName handle={p.handle}>{name}</FriendName>}</span>
-        {/* the keyboard's way into the hold menu */}
-        <HoldKey what={what} open={menu} onOpen={() => setMenu(true)} />
       </header>
       <Cut className="p2rule" />
       <div className="p2media">

@@ -5204,11 +5204,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell { position: relative; display: flex; min-width: 0; min-height: 0; container-type: inline-size; } /* a card's type scales with the card (cqw = its own width) */
 .fcell > .card { flex: 1; min-width: 0; min-height: 0; height: 100%; margin: 0; overflow: hidden; }
 
-/* PASS: an × on its bar at a card's corner */
-.cardpass { position: absolute; top: 8px; right: 8px; z-index: 4; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
-  background: color-mix(in srgb, var(--paper) 60%, transparent); color: var(--ink); cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: transform var(--dur-1) var(--ease-out); }
-.cardpass:active { transform: scale(0.94); }
-.cardpass .ic { width: 20px; height: 20px; }
 
 /* THE PIECE — hero: head (mode word, handle, PASS), photograph, name, size · price, actions */
 .fcell .card.piece { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
@@ -5251,7 +5246,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
 .pchandle { font: inherit; color: inherit; }
-.pchead .cardpass { position: static; flex: none; margin-left: auto; width: 30px; height: 30px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .pctitle { display: block; width: 100%; margin: 8px 0 0; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer;
   font: 400 clamp(10px, 6.4cqw, 18px)/1.25 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pcrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 0 0; font: 400 clamp(11px, 7.6cqw, 22px)/1.1 var(--mich); color: var(--ink); }
@@ -5329,9 +5323,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .bsbody { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .bsname { font: 400 clamp(18px, 9cqw, 56px)/1 var(--mich); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bswhen { font: 400 clamp(8px, 3.4cqw, 15px)/1.25 var(--mich); letter-spacing: 0.04em; color: inherit; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.bspass { position: absolute; top: 2cqw; right: 2.4cqw; z-index: 4; display: inline-grid; place-items: center; width: clamp(28px, 7cqw, 44px); height: clamp(28px, 7cqw, 44px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
-.card.bstrip.withphoto .bspass { color: var(--on-media); }
-.bspass .ic { width: 80%; height: 80%; }
 /* THE BRDCST POPUP (BrdcstSheet.jsx): the photograph clear */
 .bsheet { display: grid; gap: 12px; }
 .bsheetimg { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 7px; border: 1px solid var(--line); }
@@ -5422,8 +5413,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .p2user { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(14px, 7.2cqw, 40px)/1.1 var(--mich); letter-spacing: 0; color: var(--ink); }
 .p2user a { color: inherit; text-decoration: none; }
 .p2head > .modeltag { flex: none; }
-.p2head .cardpass { position: static; flex: none; width: clamp(28px, 8cqw, 44px); height: clamp(28px, 8cqw, 44px); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.p2head .cardpass .ic { width: 80%; height: 80%; }
 /* the rule under the head starts under the name, past the circle */
 /* the rule is the fixtures' own cut (owner, 25 Oct 2026, evening: "the red
    line should be replaced by the same type of lines in between the icons on
@@ -5503,8 +5492,18 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2:not(.withmedia) .p2foot { margin: 0 calc(-1 * var(--cardpadx, 3.6cqw)) calc(-0.8 * var(--cardpad, 3cqw)); padding: 2cqw var(--cardpadx, 3.6cqw) calc(0.8 * var(--cardpad, 3cqw));
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 10%, transparent) 100%); }
 
-/* THE HOLD MENU (PostCard.jsx HoldMenu): a veil over the card, a small menu in
-   the middle */
+/* THE CARD MENU (HoldMenu.jsx): a veil over the card, a small menu in the middle, opened by the
+   THREE DOTS in the card's top-right corner (owner, 28 Oct 2026: "for every card lets add three dot
+   buttons to the right corner to replace that touch and hold feature") — on every card of the Feed,
+   in the corner the retired × held; the card's own head line stops short of them */
+.carddots { position: absolute; top: 2cqw; right: 2.4cqw; z-index: 5; display: inline-grid; place-items: center; width: clamp(28px, 7cqw, 40px); height: clamp(28px, 7cqw, 40px); padding: 0; border: 0; border-radius: 50%; background: none; color: var(--on-card, var(--ink)); cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+.carddots .ic { width: 72%; height: 72%; }
+.carddots:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.carddots:active { transform: scale(0.94); }
+.carddots:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.withmedia .carddots, .card.bstrip.withphoto .carddots, .card.placecard.withphoto .carddots, .card.songcard .carddots { color: var(--on-media); }
+.card .p2user, .card .pchead { padding-right: clamp(28px, 7cqw, 40px); }
 .holdveil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border-radius: inherit; background: color-mix(in srgb, var(--paper) 55%, transparent); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: sheetin var(--dur-1) var(--ease-out); }
 .holdveilx { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: default; }
 .holdveilx:focus-visible { outline: 2px solid var(--sig); outline-offset: -4px; }
@@ -5512,9 +5511,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .holdmenu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 10px/1.2 var(--mich); letter-spacing: 0.14em; }
 .holdmenu button:hover, .holdmenu button:focus-visible { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); outline: none; }
 .holdmenu button .ic { flex: none; width: 18px; height: 18px; }
-.holdopt:focus-visible { position: absolute; top: 6px; right: 6px; width: auto; height: auto; margin: 0; padding: 4px 8px; clip: auto; clip-path: none; overflow: visible; border-radius: 8px; background: var(--bg); color: var(--ink); font: 400 9px/1.2 var(--mich); letter-spacing: 0.1em; z-index: 5; outline: 2px solid var(--sig); }
-.card.wpostcard.p2, .card.bstrip { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
-.p2text, .p2words { user-select: text; -webkit-user-select: text; }
 @media (prefers-reduced-motion: reduce) { .holdveil { animation: none; } }
 .card.wpostcard.p2 .brdcst .brdcstwhen { overflow-wrap: anywhere; }
 

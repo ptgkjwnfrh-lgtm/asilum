@@ -12,7 +12,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
-import { useHold, HoldMenu, HoldKey } from "./components/HoldMenu.jsx";
+import { HoldMenu, CardDots } from "./components/HoldMenu.jsx";
 import { Cut, CutDefs } from "./components/Cut.jsx";
 import AdSpace from "./components/AdSpace.jsx";
 import { demoImageFor } from "../lib/model/pieces.js";
@@ -1113,10 +1113,9 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const tap = useRef({ at: 0, timer: 0 });
   const [liked, setLiked] = useState(false);
   const [shared, setShared] = useState("");
-  // PASS lives in the hold menu (HoldMenu.jsx; owner, 25 Oct 2026: no × on a card's face)
+  // PASS lives in the card menu, behind the three dots (HoldMenu.jsx; owner, 25 Oct 2026: no × on a card's face)
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
-  const hold = useHold(() => setMenu(true));
   useEffect(() => () => clearTimeout(tap.current.timer), []);
   // one tap opens the listing a beat later; a second tap inside the window
   // cancels that and floats the piece instead
@@ -1161,7 +1160,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const size = it.size && (it.size.label || it.size.fitsLikeUS) ? it.size.label || it.size.fitsLikeUS : (typeof it.size === "string" ? it.size : "");
   const price = it.price != null && it.price !== "" ? `${it.price}${it.currency || "USD"}` : "";
   const what = "the piece " + (it.title || "");
-  const menuEl = <><HoldKey what={what} open={menu} onOpen={() => setMenu(true)} /><HoldMenu id={"piece:" + it.id} what={what} open={menu} onClose={closeMenu} onPass={onPass || null} /></>;
+  const menuEl = <><CardDots what={what} open={menu} onOpen={() => setMenu(true)} /><HoldMenu id={"piece:" + it.id} what={what} open={menu} onClose={closeMenu} onPass={onPass || null} /></>;
   const ink = { "--on-card": inkFor(thumbBase(it)) }; // the ink that reads on this card's ground
   // THE WORDS OVER THE PHOTOGRAPH (owner, 25 Oct 2026: "I want text to
   // overlap images"): the photograph fills the card; the head rides its top,
@@ -1169,7 +1168,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   // (owner, 25 Oct 2026, late) a listing is never a small card — the small
   // sizes are the songs' and the places' — so there is one piece card
   return (
-    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
+    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink}>
       {menuEl}
       <div className="pcphoto">
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">

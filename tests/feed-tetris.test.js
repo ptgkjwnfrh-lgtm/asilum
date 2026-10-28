@@ -181,16 +181,28 @@ test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rule
   const post = read("app/components/PostCard.jsx");
   // Figs. 8–11: circle, username, PASS, the red rule
   assert.match(post, /<header className="p2head">\n\s*<span className="p2orb">/);
-  // (25 Oct, later) PASS left the head for the HOLD MENU: a held press, a right-click or the keyboard's OPTIONS key
+  // (25 Oct, later) PASS left the head for the HOLD MENU; (28 Oct 2026: "for every card lets add three dot buttons
+  // to the right corner to replace that touch and hold feature") the menu opens from THREE DOTS, never a hold
   assert.ok(!/<PassKey/.test(post) && !/className="cardpass"/.test(post), "no × on a post's face");
   assert.match(post, /<HoldMenu id=\{cardId\} what=\{what\} href=\{sample \? null : href\} open=\{menu\} onClose=\{closeMenu\} \/>/);
   const holdm = read("app/components/HoldMenu.jsx");
-  assert.match(holdm, /s\.t = setTimeout\(\(\) => \{ s\.t = 0; s\.fired = true; haptic\("confirm"\); onHold\(\); \}, LONG_PRESS_MS\);/, "the one long-press clock");
-  assert.match(holdm, /if \(s\.t && Math\.hypot\(e\.clientX - s\.x, e\.clientY - s\.y\) > 8\) clear\(\);/, "a scroll is not a hold");
-  assert.match(holdm, /className="idlabel holdopt" aria-haspopup="menu"/, "a keyboard reaches the menu");
+  assert.ok(!/useHold|LONG_PRESS_MS|onContextMenu|HoldKey/.test(holdm), "no hold: the dots replace it");
+  assert.match(holdm, /<button type="button" className="carddots" aria-haspopup="menu" aria-expanded=\{open\} aria-label=\{"options for " \+ what\}/, "the dots: a real key, so a keyboard reaches the menu as a finger does");
+  assert.match(holdm, /<Icon name="dots" size=\{20\} \/>/);
   assert.match(holdm, /useEscape\(onClose, open\);/, "Escape puts it away (the one dismissal contract)");
   assert.match(holdm, /if \(onPass\) onPass\(\); else hideCard\(id\); onClose\(\);/, "PASS: the brain's signal on a piece, set aside on this device otherwise");
-  assert.match(post, /<HoldKey what=\{what\} open=\{menu\} onOpen=\{\(\) => setMenu\(true\)\} \/>/, "a keyboard reaches a post's menu");
+  assert.match(post, /<CardDots what=\{what\} open=\{menu\} onOpen=\{\(\) => setMenu\(true\)\} \/>\n\s*<HoldMenu id=\{cardId\}/, "a post's dots, in its corner");
+  // every card of the Feed: a post, a BRDCST strip, a piece, a song, a place — and no hold anywhere
+  for (const f of ["app/components/PostCard.jsx", "app/page.js", "app/components/SongCard.jsx", "app/components/PlaceCard.jsx"]) {
+    const src = read(f);
+    assert.match(src, /<CardDots what=\{what\} open=\{menu\} onOpen=\{\(\) => setMenu\(true\)\} \/>/, f + ": the three dots");
+    assert.ok(!/useHold|\{\.\.\.hold\}|HoldKey/.test(src), f + ": no touch-and-hold");
+  }
+  assert.match(read("app/components/PlaceCard.jsx"), /<HoldMenu id=\{"place:" \+ p\.id\} what=\{what\} open=\{menu\} onClose=\{closeMenu\} \/>/, "a place is set aside by the id the Feed filters on");
+  assert.ok(!/className="bspass"/.test(post), "the BRDCST strip's × folded into its menu");
+  const dotsCss = read("app/globals.css");
+  assert.match(dotsCss, /\.carddots \{ position: absolute; top: 2cqw; right: 2\.4cqw;/, "top-right, where the × was");
+  assert.ok(!/\.cardpass|\.bspass|\.holdopt/.test(dotsCss.replace(/\/\*[\s\S]*?\*\//g, "")), "the retired corner keys leave no rule");
   // (later) the red rules are CUTS (Cut.jsx): a band either side bends what lies beneath
   assert.match(post, /<Cut className="p2rule" \/>/);
   assert.ok(!/p2rule2/.test(post), "no line under the actions (owner, late)");
