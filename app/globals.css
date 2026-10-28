@@ -5554,3 +5554,21 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .dmbsend:disabled { opacity: 0.4; cursor: default; }
 .dmbnote { grid-column: 1 / -1; margin: 4px 2px 0; font-size: 11px; color: var(--grey); }
 @media (prefers-reduced-motion: reduce) { .dmbanner { animation: none; } .dmbreply { transition: none; } }
+
+/* THE FADED SQUARE (owner, 28 Oct 2026: "lets experiment with the cards. i kind of want them to be
+   squares but instead of bezels it has faded edges" — square corners, every card of the Feed). The
+   Feed's cards lose their 12px corner and their 1px --line bezel; each surface feathers out over its
+   last --card-fade into the page's own ground (the cards sit straight on the <html> gradient), all
+   four edges alike: two gradient masks, intersected. The carousel's housing has no surface, so its own
+   cards (.f20card) fade one by one; the AdSpace keeps its dashed outline (it marks an empty slot), only
+   squared. The fade's width is a Design Console knob (--ed-card-fade; 0 is a hard square edge); shipped,
+   it is 2.5% of the card's cell, between 5 and 10px — measured in the browser at 375 and 800, no
+   visible word or icon on any of the Feed's 87 cards lies inside it (at 3.5%/14px, four did). Cards elsewhere (popups, notices) keep the rounded rule. */
+.fgrid .fcell > .card, .fgrid .fcell .card.wpostcard.p2.withevent .p2stage, .fgrid .fcell .card.wpostcard.p2.withevent .brdcst, .fgrid .f20card { border-radius: 0; border: 0; }
+.fgrid .fcell > .card:not(.adspace):not(.f20post), .fgrid .f20card {
+  --card-fade: var(--ed-card-fade, clamp(5px, 2.5cqw, 10px));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--card-fade), #000 calc(100% - var(--card-fade)), transparent), linear-gradient(180deg, transparent, #000 var(--card-fade), #000 calc(100% - var(--card-fade)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--card-fade), #000 calc(100% - var(--card-fade)), transparent), linear-gradient(180deg, transparent, #000 var(--card-fade), #000 calc(100% - var(--card-fade)), transparent);
+  -webkit-mask-composite: source-in; mask-composite: intersect;
+}
+.fgrid .fcell > .card.adspace { border-radius: 0; border: 1px dashed color-mix(in srgb, var(--ink) 22%, transparent); }

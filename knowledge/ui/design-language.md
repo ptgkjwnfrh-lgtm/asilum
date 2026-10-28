@@ -1055,3 +1055,21 @@ add ticker should stretch all around it".
   band's words are laid first. Measured at 375px: the bezels land on the
   line (777.2) by 160 ms; the keys stop 5 px above it; fold and open hold
   60 fps (worst frame 17–19 ms).
+
+## 28 Oct 2026 — the faded squares (an experiment)
+
+The owner: "lets experiment with the cards. i kind of want them to be
+squares but instead of bezels it has faded edges" (square corners, every
+card of the Feed). The Feed's cards — pieces, posts, places, songs, BRDCST
+strips, a post's event stage and strip, and every carousel card — lose
+their 12px corner and their 1px `--line` bezel; each surface feathers out
+on all four edges into the page's own ground (two gradient masks,
+intersected) over `--card-fade`, shipped `clamp(5px, 2.5cqw, 10px)` —
+measured at 375 and 800, no visible word or icon on any of the 87 cards
+lies inside it (at 3.5cqw / 14px, four did: a BRDCST title, its icons, a
+carousel card's tag). The carousel's housing
+has no surface (its cards fade one by one); the AdSpace keeps its dashed
+outline, squared. The fade is the Design Console's `--ed-card-fade` (LAYOUT
+& SHAPE → feed card edge fade; 0 is a hard square). Cards outside the Feed
+keep the rounded floor. Scrolling 2114 px at 375 holds 60 fps (worst frame
+17 ms).

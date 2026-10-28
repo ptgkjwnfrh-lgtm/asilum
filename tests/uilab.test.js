@@ -65,9 +65,11 @@ test("the control registry is internally consistent", () => {
   // (--ed-gx-globe); 56 -> 57 the same day: the plus field's opacity
   // (--ed-plus-op). 57 -> 38 on 17 Oct (V.2): the header, ticker, status
   // bar, scanline, grid, haze, glow and nav-item controls retired with the
-  // chrome they tuned. This count is pinned on purpose — a control added
-  // without a decision changes this line first.
-  assert.equal(ALL_CONTROLS.length, 38);
+  // chrome they tuned. 38 -> 39 on 28 Oct 2026: the Feed cards' edge fade
+  // (--ed-card-fade, the owner's faded squares, "lets experiment"). This
+  // count is pinned on purpose — a control added without a decision changes
+  // this line first.
+  assert.equal(ALL_CONTROLS.length, 39);
 
   const keys = ALL_CONTROLS.map((c) => c.key);
   // A duplicated key is the copy-paste failure this file invites: ALLOWED_KEYS
