@@ -103,11 +103,12 @@ test("the page as drawn: ECHOS, the head, the rows", () => {
   assert.match(head, /<AMark solid label="ASTERISK in your messages — not built yet" \/>/, "the A is the solid square, and says it is not built");
   assert.ok(!/dmast[^>]*onClick/.test(head), "and does nothing it cannot do");
   const rows = desk.slice(desk.indexOf('<ul className="dmlist">'), desk.indexOf("</ul>", desk.indexOf('<ul className="dmlist">')));
-  assert.match(rows, /const ago = agoWords\(c\.lastActivityAt\);/);
+  // the row's age and its line come from rowPreview since the offer row (tests/v2-dm-offer-row.test.js)
+  assert.match(rows, /const line = rowPreview\(c\);\s*const ago = agoWords\(line\.at\);/);
   assert.match(rows, /<span className="dmface"><Avatar name=\{c\.handle \|\| "\?"\} \/><\/span>/);
   assert.match(rows, /\*\{c\.handle\}<i className="dmcur" aria-hidden="true">_<\/i>/);
   assert.match(rows, /<span className="dmwhen">\{ago \? ago \+ " >>" : ""\}<\/span>/);
-  assert.match(rows, /<i aria-hidden="true">:<\/i>\{c\.preview\.slice\(0, 90\)\}/);
+  assert.match(rows, /<i aria-hidden="true">:<\/i>\{line\.text\}/, "\":\" before the line the row shows");
   assert.match(rows, /onClick=\{\(\) => showThread\(c\.id\)\}/, "a row opens its thread");
   assert.match(css, /\.dmrow::after \{ content: ""; position: absolute;[^}]*height: 1px;/, "the hairline under each row");
   assert.match(css, /\.dmprev \{ grid-column: 2 \/ span 2; grid-row: 2;/, "the last words keep the second line");

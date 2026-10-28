@@ -5595,6 +5595,19 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .dmcur { font-style: normal; opacity: 0.55; }
 .dmwhen { grid-column: 3; grid-row: 1; align-self: start; font: 400 8.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--grey); white-space: nowrap; }
 .dmprev { grid-column: 2 / span 2; grid-row: 2; min-width: 0; padding-left: clamp(16px, 5vw, 44px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(13px, 3.4vw, 17px)/1.3 var(--mich); color: color-mix(in srgb, var(--ink) 86%, transparent); }
+/* the offer row (the sketch's ":SENT AN OFFER OF $25.50" and its boxed arrow): the price in the signal ink */
+.dmprev.dmoffer { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.4em; row-gap: 3px; color: var(--sig); }
+/* nothing in an offer is cut: where the line is too narrow the price goes to a second line, and only
+   "AN OFFER OF" gives way (an unread row at 375px has ~150px for it) — who sent it, the price, its state
+   and the arrow never do */
+.dmofferhead { display: flex; align-items: baseline; gap: 0.3em; min-width: 0; max-width: 100%; }
+.dmofferhead > i { flex: none; margin-right: -0.3em; }
+.dmofferside { flex: none; font-weight: 400; }
+.dmofferlead { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmofferprice { flex: none; display: inline-flex; align-items: baseline; gap: 0.4em; white-space: nowrap; }
+.dmofferamt { font-weight: 400; }
+.dmofferstate { color: var(--grey); }
+.dmofferic { flex: none; align-self: center; }
 .dmrow.unread .dmwho { color: var(--red); }
 /* an unread row: its count stands at the right of the preview line, the preview gives way to it */
 .dmrow.unread .dmprev { grid-column: 2; }

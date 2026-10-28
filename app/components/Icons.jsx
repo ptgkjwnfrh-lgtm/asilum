@@ -45,6 +45,8 @@ const GLYPHS = {
   stamp: <g {...P}><path d="M8.4 3.4h7.2a1.4 1.4 0 0 1 1.4 1.6l-1.2 7.8H8.2L7 5a1.4 1.4 0 0 1 1.4-1.6z" /><rect x="3.2" y="12.8" width="17.6" height="4.6" rx="1.6" /><path d="M5.6 20.6h12.8" /></g>,
   // three dots, the cards' menu key (28 Oct 2026): three small rings on one line
   dots: <g {...P}><circle cx="5.4" cy="12" r="1.15" /><circle cx="12" cy="12" r="1.15" /><circle cx="18.6" cy="12" r="1.15" /></g>,
+  // THE OFFER (owner's messages sketch, 28 Oct 2026): an arrow pointing up and left, in its box
+  offer: <g {...P}><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="2.4" /><path d="M16 16L8.4 8.4M8.4 13.6V8.4h5.2" /></g>,
   pass: <g {...P}><path d="M5.6 3.4l12.8 11.2M18.4 3.4L5.6 14.6" /><rect x="3.6" y="18.2" width="16.8" height="2.6" rx="1.3" /></g>,
   minus: <g {...P}><path d="M4.6 12h14.8" /></g>,
   locate: <g {...P}><rect x="8" y="8" width="8" height="8" rx="2.6" /><path d="M12 3.2v3M12 17.8v3M3.2 12h3M17.8 12h3" /></g>,

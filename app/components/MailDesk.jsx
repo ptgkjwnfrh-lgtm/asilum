@@ -49,7 +49,7 @@ import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
   composerCount, composerKey, mergeFolderItems, messageControls, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity, startSummaryPolling, takeDeskRequest, agoWords,
+  shouldPollActivity, startSummaryPolling, takeDeskRequest, agoWords, rowPreview,
 } from "../../lib/dm-desk.js";
 import { Avatar } from "./UserBits.jsx";
 import AMark from "./AMark.jsx";
@@ -1201,7 +1201,8 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
           ) : page ? (
             <ul className="dmlist">
               {items.map((c) => {
-                const ago = agoWords(c.lastActivityAt);
+                const line = rowPreview(c);
+                const ago = agoWords(line.at);
                 return (
                   <li key={c.id} className={"dmrow" + (c.unread ? " unread" : "")}>
                     <button type="button" onClick={() => showThread(c.id)}>
@@ -1211,7 +1212,18 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
                         {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
                       </span>
                       <span className="dmwhen">{ago ? ago + " >>" : ""}</span>
-                      <span className="dmprev">{c.preview ? <><i aria-hidden="true">:</i>{c.preview.slice(0, 90)}</> : <em>no preview</em>}</span>
+                      {line.kind === "offer" ? (
+                        <span className="dmprev dmoffer" aria-label={line.text}>
+                          <span className="dmofferhead"><i aria-hidden="true">:</i><b className="dmofferside">{line.side}</b><span className="dmofferlead">{line.lead}</span></span>
+                          <span className="dmofferprice">
+                            <b className="dmofferamt">{line.amount}</b>
+                            {line.state ? <span className="dmofferstate">· {line.state}</span> : null}
+                            <Icon name="offer" size={14} className="dmofferic" />
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="dmprev">{line.kind === "none" ? <em>no preview</em> : <><i aria-hidden="true">:</i>{line.text}</>}</span>
+                      )}
                       {c.unread ? <span className="dmunread" aria-label={c.unread + " unread"}>{c.unread}</span> : null}
                     </button>
                   </li>

@@ -513,6 +513,37 @@ test("mem and Postgres agree on the money scenario", { skip: !databaseUrl }, asy
   assert.equal(mem.sellerDelivery.moved, false); assert.equal(mem.payoutOpen, "releasable"); assert.equal(mem.released.net, 7500); assert.equal(mem.released.twice, "NOT_RELEASABLE");
 });
 
+// THE OFFER ROW (owner's messages sketch, 28 Oct 2026): the DM inbox read
+// carries each thread's newest Wardrobe offer through
+// latestOffersForConversations, which has a mem branch (a filter and a
+// reduction) and a Postgres one (DISTINCT ON). The tie-break, the party
+// filter and the state-now must come out the same, or the row prints a
+// different price on a preview deploy than in production.
+test("mem and Postgres agree on the offer row", { skip: !databaseUrl }, async () => {
+  const scenario = path.join(process.cwd(), "tests", "helpers", "dm-offer-row-scenario.mjs");
+  const memRun = await run(process.execPath, [scenario], {
+    env: { ...process.env, DATABASE_URL: "", TEST_DATABASE_URL: "" },
+  });
+  const pgRun = await run(process.execPath, [scenario], {
+    env: { ...process.env, DATABASE_URL: databaseUrl },
+  });
+  const mem = JSON.parse(memRun.stdout.trim().split("\n").pop());
+  const pg = JSON.parse(pgRun.stdout.trim().split("\n").pop());
+  assert.equal(mem.error, undefined, mem.error);
+  assert.equal(pg.error, undefined, pg.error);
+  for (const key of Object.keys(mem)) {
+    assert.deepEqual(pg[key], mem[key],
+      `backends diverge on "${key}":\n  mem = ${JSON.stringify(mem[key])}\n  pg  = ${JSON.stringify(pg[key])}`);
+  }
+  assert.deepEqual(Object.keys(pg).sort(), Object.keys(mem).sort());
+  assert.deepEqual(mem.buyerKeys, ["c1", "c2"], "the buyer sees only their own negotiations");
+  assert.deepEqual(mem.ownerKeys, ["c1", "c2", "c3"]);
+  assert.equal(mem.buyerC2.tieWinner, true, "a tie is broken by id");
+  assert.equal(mem.strangerSeesNothing, true);
+  assert.equal(mem.rows.buyer, "SENT AN OFFER OF $25.50");
+  assert.equal(mem.rows.owner, "RECEIVED AN OFFER OF $25.50 · EXPIRED");
+});
+
 // The §6 export has a mem branch and a Postgres branch, and docs/engineering/architecture.md makes
 // mem/pg parity a hard rule — the unit battery in tests/privacy-export.test.js
 // runs mem, so a Postgres-only fault in the export would ship green.
