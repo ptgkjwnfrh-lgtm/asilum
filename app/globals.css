@@ -365,7 +365,7 @@ button { font-family: var(--helv); }
    The --ed-fs-wordmark size now only reaches the hidden name. */
 .wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
   font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
-.wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 203.6; }
+.wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 220.45; } /* 121 to the baseline + the 16.85 gap + the 82.6 bar */
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
 .wmlitstar { filter: var(--wm-glow-r); }
@@ -3905,7 +3905,7 @@ a.adword:hover { color: var(--ad-chip); }
    line; it dims with the bar */
 .brandfix {
   position: relative; z-index: 2; flex: none; align-self: flex-start;
-  margin-top: calc(var(--mh-line-top) - var(--mh-gap) - var(--wm-u) * 203.6);
+  margin-top: calc(var(--mh-line-top) - var(--mh-gap) - var(--wm-u) * 220.45);
 }
 /* THE LINE (owner, 28 Oct 2026; Masthead.jsx, lib/mastline.js): thin, white,
    in the logo's white glow, just under the keys' glyphs and under the logo's

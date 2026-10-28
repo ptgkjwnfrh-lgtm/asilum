@@ -23,7 +23,8 @@
 // (Procreate's tracking and kerning come out at −15.5, −0.096em, between
 // every pair); the asterisk at 131, its top on the capitals' line and its
 // left edge on the A's; the bar flush under the baseline, 82.6 deep, from
-// just left of the A (3.3) to 976.9 across — past the M, as drawn.
+// just left of the A (3.3) to 976.9 across — past the M, as drawn; since the
+// same day it stands off the baseline by the Masthead's gap (WM.gap).
 //
 // Three layers on one box: the asterisk, glowing red (owner, the same day:
 // "the asterisk must glow red" — the bar's glow, the same radii, in the
@@ -37,8 +38,12 @@ export const WM = Object.freeze({
   x: Object.freeze([0, 155.2, 307.7, 337.7, 453, 604.3]), // A S I L U M, each origin
   starY: 94.2, // Helvetica's asterisk stands 0.717em above its baseline: its top on the capitals' line
   bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6 }),
+  // (owner, 28 Oct 2026: "that gap between the logo thick white line and the accent mast head white line
+  // lets add a gap of that thickness between the ASILUM word and the thick whiteline") the bar stands off
+  // the baseline by the Masthead's own gap, --mh-gap (18/900 of the measure), in these units: 18 × 120.75 / 129
+  gap: 16.85,
 });
-const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${+(WM.base + WM.bar.h).toFixed(1)}`;
+const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${+(WM.base + WM.gap + WM.bar.h).toFixed(2)}`;
 
 export default function Wordmark({ href = "/", className = "" }) {
   return (
@@ -48,7 +53,7 @@ export default function Wordmark({ href = "/", className = "" }) {
           <text className="wmstar" x="0" y={WM.starY}>*</text>
         </svg>
         <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
-          <rect className="wmbar" x={WM.bar.x} y={WM.base} width={WM.bar.w} height={WM.bar.h} />
+          <rect className="wmbar" x={WM.bar.x} y={WM.base + WM.gap} width={WM.bar.w} height={WM.bar.h} />
         </svg>
         <svg className="wmtype" viewBox={VIEW} focusable="false">
           <text className="wmink" x={WM.x.join(" ")} y={WM.base}>ASILUM</text>

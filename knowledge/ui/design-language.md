@@ -1073,3 +1073,11 @@ outline, squared. The fade is the Design Console's `--ed-card-fade` (LAYOUT
 & SHAPE → feed card edge fade; 0 is a hard square). Cards outside the Feed
 keep the rounded floor. Scrolling 2114 px at 375 holds 60 fps (worst frame
 17 ms).
+
+- The logo, 28 Oct 2026, later: "that gap between the logo thick white
+  line and the accent mast head white line lets add a gap of that thickness
+  between the ASILUM word and the thick whiteline". The bar stands off the
+  word's baseline by exactly the Masthead's gap (`WM.gap`, 18 × 120.75 / 129
+  = 16.85 of the logo's units = `--mh-gap`); the bar-to-line gap is
+  unchanged, so the word lifts by it. Measured: word→bar 2.17 px against
+  bar→line 2.18 px at 375, 3.02 against 3.04 at 800.

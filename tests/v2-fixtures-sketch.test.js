@@ -396,7 +396,9 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     inked left edge, the bar's ends and depth, and the asterisk's box within 2px of the artwork's
 //     2000 (Michroma's side bearings at 161, measured in Chromium, carry an origin to its ink), and the
 //     letters evenly spaced — one spacing between every pair, as Procreate's tracking sets it;
-//   - the asterisk's top on the capitals' line; the bar's top on the baseline;
+//   - the asterisk's top on the capitals' line; the bar's top on the baseline (in the artwork; since
+//     the owner's "add a gap of that thickness between the ASILUM word and the thick whiteline", the
+//     shipped bar stands off it by exactly the Masthead's gap — the next test);
 //   - ONE glow in two colours (then: "the asterisk must glow red"): the bar and the Masthead's line wear
 //     the white --wm-glow, the asterisk the red --wm-glow-r, radius for radius and strength for strength;
 //     nothing else wears either; the word wears no filter and no shadow;
@@ -421,7 +423,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
   assert.match(wm, /<text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text>/, "each letter at its own origin");
   assert.match(wm, /<text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text>/);
-  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.base\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar's top on the baseline");
+  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.base \+ WM\.gap\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar under the baseline, the gap between");
   for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
   assert.ok(!/logo[\w-]*\.(png|jpg)|wmimg|--wm-mask|--metal/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "nothing in the styles names the picture");
   // the owner's artwork, measured
@@ -478,8 +480,17 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "thin, just under the glyphs");
   assert.match(line, /filter: var\(--wm-glow\);/, "in the logo's glow");
   assert.match(rules, /\.mhline i \{[^}]*background: var\(--wm-bar\);[^}]*left: calc\(var\(--a\) \+ var\(--gl\) \* var\(--mh-break\) \/ 2\);\s*width: calc\(var\(--b\) - var\(--a\) - \(var\(--gl\) \+ var\(--gr\)\) \* var\(--mh-break\) \/ 2\);/s, "white stretches, broken by half a break each side");
-  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 203\.6\);/s, "the bar's foot the stamp gap above the line: the line under the bar");
-  assert.equal(121 + bar[2], 203.6, "203.6 is the bar's foot");
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 220\.45\);/s, "the bar's foot the stamp gap above the line: the line under the bar");
+  // (then: "that gap between the logo thick white line and the accent mast head white line lets add a gap of
+  // that thickness between the ASILUM word and the thick whiteline") the word stands off the bar by the
+  // same gap: --mh-gap is 18/900 of the measure, --wm-u the measure's 129/900 over 120.75, so the gap in
+  // the logo's units is 18 × 120.75 / 129 (measured: 2.17 vs 2.18px at 375, 3.02 vs 3.04 at 800)
+  const gap = Number(wm.match(/gap: ([\d.]+),/)[1]);
+  assert.ok(Math.abs(gap - (18 * 120.75) / 129) < 0.01, "word to bar = bar to line: " + gap);
+  assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 18 \/ 900\);/);
+  assert.ok(Math.abs(121 + gap + bar[2] - 220.45) < 0.01, "220.45 is the bar's foot");
+  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 976\.9 \/ 220\.45;/, "the box holds the word, the gap and the bar");
+  assert.match(wm, /const VIEW = `\$\{WM\.bar\.x\} 0 \$\{WM\.bar\.w\} \$\{\+\(WM\.base \+ WM\.gap \+ WM\.bar\.h\)\.toFixed\(2\)\}`;/);
   // the cuts: the deck's hairline, between keys, centred on the keys' row
   const cut = rules.match(/\.mhcuts i \{([^}]*)\}/)[1];
   const deckCut = rules.match(/\.cccut \{([^}]*)\}/)[1];
