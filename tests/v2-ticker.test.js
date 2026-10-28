@@ -235,7 +235,7 @@ test("the ticker's rule: open only online with an ad or a BRDCST to carry; folde
   assert.equal(tickerOpen(null), false, "still reading, folded");
   assert.equal(tickerOpen([it("sponsored")], false), false, "no service, folded");
   const strip = read("app/components/AdStrip.jsx");
-  assert.match(strip, /const open = tickerOpen\(items, online\);/);
+  assert.match(strip, /const open = test \? test === "open" : tickerOpen\(items, online\);/, "the rule decides, unless the console is testing it");
   assert.match(strip, /window\.addEventListener\("online", sync\);\s*window\.addEventListener\("offline", sync\);/, "service lost and found");
   assert.match(read("app/components/Placements.jsx"), /window\.addEventListener\("online", load\);/, "service back: read again at once");
   const cc = read("app/components/ControlCenter.jsx");
@@ -289,4 +289,35 @@ test("the glide never steps; the words are typed in and out, a whole character a
   assert.match(rule(".adband"), /mask-image: linear-gradient\(90deg, transparent var\(--t-out\), #000 var\(--t-out\), #000 var\(--t-in\), transparent var\(--t-in\)\);/, "hard edges: whole letters");
   assert.match(rule(".adband"), /white-space: pre;/, "every space a cell");
   assert.ok(!/steps\(/.test((css.match(/@keyframes adcrawl \{[^}]*\}[^}]*\}/) || [""])[0]), "the glide itself never steps");
+});
+
+// THE TICKER TEST (owner, 28 Oct 2026: "create a button so i can test the animation"). Declared before
+// measuring: the Design Console's TICKER section replays the opening (fold, then open once the fold has
+// finished), opens, folds, and goes back to live; it lasts for the page view only (nothing stored); with
+// nothing live to carry, the opened ticker runs entries that say they are samples — labelled SAMPLE,
+// linking nowhere — and live entries always run alongside; back to live, the rule decides again; and the
+// console stops above the deck, so the animation it drives stays in view.
+test("the Design Console can replay, open and fold the ticker — with labelled samples, for the page view only", async () => {
+  const { TICKER_SAMPLE, TICKER_TESTS } = await import("../lib/placements.js");
+  assert.deepEqual([...TICKER_TESTS], ["open", "fold"]);
+  for (const s of TICKER_SAMPLE) {
+    assert.equal(s.label, "SAMPLE", "labelled a sample");
+    assert.equal(s.href, null, "linking nowhere");
+    assert.match(s.ticker, /SAMPLE/, "and saying so on the band");
+  }
+  assert.ok(TICKER_SAMPLE.some((s) => s.kind === "ad") && TICKER_SAMPLE.some((s) => s.kind === "sponsored"), "one of each, so both kinds of line show");
+  const strip = read("app/components/AdStrip.jsx");
+  assert.match(strip, /window\.addEventListener\("asilum:ticker-test", on\);/);
+  assert.match(strip, /const items = test === "open" && !\(live \|\| \[\]\)\.some\(\(it\) => OPENS_TICKER\.includes\(it\.kind\)\) \? \[\.\.\.TICKER_SAMPLE, \.\.\.\(live \|\| \[\]\)\] : live;/, "samples only when nothing live opens it, and never instead of the live entries");
+  assert.match(strip, /const open = test \? test === "open" : tickerOpen\(items, online\);/, "back to live, the rule decides");
+  const dc = read("app/components/DesignConsole.jsx");
+  for (const label of ["REPLAY OPENING ▶", "OPEN", "FOLD", "BACK TO LIVE"]) assert.ok(dc.includes(">" + label + "</button>"), label);
+  assert.match(dc, /window\.dispatchEvent\(new CustomEvent\("asilum:ticker-test", \{ detail: \{ mode: m \} \}\)\)/);
+  assert.match(dc, /send\("fold"\);\s*replayTimer\.current = setTimeout\(\(\) => send\("open"\), TICKER_REPLAY_MS\);/, "replay: fold, then open");
+  const replay = Number(dc.match(/export const TICKER_REPLAY_MS = (\d+);/)[1]);
+  assert.ok(replay > 220 && replay <= 600, "open again once the fold (--dur-2, 220ms) has finished, and no slower");
+  const testFn = dc.slice(dc.indexOf("function testTicker"), dc.indexOf("function resetAll"));
+  assert.ok(!/localStorage|saveOverrides|sessionStorage/.test(testFn), "nothing stored: the page view only");
+  assert.match(rule(".dc"), /bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "the console stops above the deck");
+  assert.match(css, /\.dc \{ top: auto; left: 8px; right: 8px; bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "on a phone too");
 });

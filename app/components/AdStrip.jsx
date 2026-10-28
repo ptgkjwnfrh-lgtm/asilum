@@ -34,14 +34,23 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { crawlFor, wrapSlices, typingFor, monoText, SEP } from "../../lib/adcrawl.js";
-import { tickerOpen } from "../../lib/placements.js";
+import { tickerOpen, OPENS_TICKER, TICKER_SAMPLE, TICKER_TESTS } from "../../lib/placements.js";
 import { usePlacements } from "./Placements.jsx";
 
 // the two quarter cylinders, laid once
 const WRAP = wrapSlices();
 
 export default function AdStrip({ typing = false, onOpen = null }) {
-  const items = usePlacements();
+  const live = usePlacements();
+  // THE TEST (the Design Console's TICKER section): open or fold it by hand, for this page view only; open
+  // with nothing live to carry, it runs the labelled samples (lib/placements.js TICKER_SAMPLE)
+  const [test, setTest] = useState(null);
+  useEffect(() => {
+    const on = (e) => setTest(e.detail && TICKER_TESTS.includes(e.detail.mode) ? e.detail.mode : null);
+    window.addEventListener("asilum:ticker-test", on);
+    return () => window.removeEventListener("asilum:ticker-test", on);
+  }, []);
+  const items = test === "open" && !(live || []).some((it) => OPENS_TICKER.includes(it.kind)) ? [...TICKER_SAMPLE, ...(live || [])] : live;
   const [held, setHeld] = useState(false);
   // no service, nothing live: the ticker shuts to its line, and opens again the moment service returns
   // (the placements hook reads again on "online")
@@ -53,7 +62,7 @@ export default function AdStrip({ typing = false, onOpen = null }) {
     window.addEventListener("offline", sync);
     return () => { window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
   }, []);
-  const open = tickerOpen(items, online);
+  const open = test ? test === "open" : tickerOpen(items, online);
   useEffect(() => { if (onOpen) onOpen(open); }, [open, onOpen]);
   // the entries, as the ticker prints them, on the monospaced grid (folded, there are none to print)
   const words = (items || []).map((it) => ({ id: it.id, text: monoText(it.ticker || it.line), href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }));
