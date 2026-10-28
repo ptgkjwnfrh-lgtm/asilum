@@ -36,7 +36,8 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getUid, authorizedFetch } from "../../lib/client.js";
 import { startSummaryPolling, incomingSince, tapIntent, askDesk, LIVE_POLL_MS, BANNER_MS } from "../../lib/dm-desk.js";
 import { bodyRefusal } from "../../lib/dm.js";
-import { getDock, openSheet } from "../../lib/dockstate.js";
+import { closeSheet } from "../../lib/dockstate.js";
+import { MESSAGES_HREF } from "../../lib/nav.js";
 import { haptic } from "../../lib/haptics.js";
 import Icon from "./Icons.jsx";
 
@@ -53,13 +54,16 @@ export function useDmLive() {
   return useSyncExternalStore((fn) => { subs.add(fn); return () => subs.delete(fn); }, () => live, () => live);
 }
 
-/** Open the DM tab, on a conversation, a person or a folder when asked. */
+/** Go to the messages page (lib/nav.js MESSAGES_HREF; owner, 28 Oct 2026), on a conversation, a person or
+ *  a folder when asked — the desk takes the request as it opens, or at once if it is already open. Any
+ *  popup goes away first: the page is where the reader is going. */
 export function openDesk(what = null) {
   if (what) askDesk(what);
-  openSheet("messages");
+  closeSheet();
+  if (!deskOnScreen()) window.dispatchEvent(new CustomEvent("asilum:go", { detail: { href: MESSAGES_HREF } }));
 }
 
-const deskOnScreen = () => { const d = getDock(); return !!(d.sheet && d.sheet.id === "messages"); };
+const deskOnScreen = () => typeof window !== "undefined" && window.location.pathname.startsWith(MESSAGES_HREF);
 
 export default function DmLive() {
   const [banner, setBanner] = useState(null);   // { id, handle, preview, request }

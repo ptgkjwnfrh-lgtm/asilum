@@ -49,8 +49,10 @@ import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
   composerCount, composerKey, mergeFolderItems, messageControls, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity, startSummaryPolling, takeDeskRequest,
+  shouldPollActivity, startSummaryPolling, takeDeskRequest, agoWords,
 } from "../../lib/dm-desk.js";
+import { Avatar } from "./UserBits.jsx";
+import AMark from "./AMark.jsx";
 // STAGE C (V.2 brief §3–§4): the limit the server also keeps, so the
 // composer can say the count before the route refuses it.
 import { bodyRefusal } from "../../lib/dm.js";
@@ -83,7 +85,11 @@ function Envelope({ waiting, fault }) {
 // key opens the "messages" popup tab and this is its contents: no button of
 // its own, always open, no dialog chrome (the popup is the dialog), kept
 // alive with the tab so a thread left half-read resumes where it was.
-export default function MailDesk({ glyph = null, keyClass = "", embedded = false }) {
+// PAGE (owner, 28 Oct 2026, the messages sketch; MessagesPage.jsx): the same desk on the /messages page, its
+// list laid out as drawn — one search field, the NEW MESSAGE circle, the ASTERISK square; then each
+// conversation as the person's circle, *handle, ":" and the last message, how long ago ">>", over a hairline.
+// Threads, compose, offers, requests and the settings below are the desk's own, unchanged.
+export default function MailDesk({ glyph = null, keyClass = "", embedded = false, page = false }) {
   const [available, setAvailable] = useState(null); // null = unknown, false = feature absent
   const [counts, setCounts] = useState({ inbox: 0, requests: 0 });
   const [fault, setFault] = useState(false);
@@ -119,6 +125,7 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
   const [editing, setEditing] = useState(null);
   const [clearing, setClearing] = useState(false);
   const [searchQ, setSearchQ] = useState("");
+  const [composing, setComposing] = useState(false); // page: the NEW MESSAGE circle opens the handle finder
   const [hits, setHits] = useState(null);
   const [jumpTo, setJumpTo] = useState(null);
   const [sharing, setSharing] = useState(true);
@@ -640,6 +647,14 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
     } catch { setNote("that image could not be loaded."); }
   }
 
+  // the deck's search, in the messages scope, reaches the desk's own message search (ControlCenter.jsx
+  // "asilum:dm-find" — dispatched since V.2, read by nothing until the page, 28 Oct 2026)
+  useEffect(() => {
+    const onFind = (e) => { const q = e && e.detail && typeof e.detail.q === "string" ? e.detail.q : ""; showThread(null); setSearchQ(q); };
+    window.addEventListener("asilum:dm-find", onFind);
+    return () => window.removeEventListener("asilum:dm-find", onFind);
+  }, [showThread]);
+
   if (available !== true) return null;
 
   const waiting = counts.inbox + counts.requests > 0;
@@ -1028,6 +1043,43 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
           </>
         ) : (
           <>
+          {page ? (
+          <>
+          {/* the page's head, as drawn: the search field, the NEW MESSAGE circle, the ASTERISK square */}
+          <div className="dmhead">
+            <label className="dmsearch">
+              <Icon name="search" size={16} />
+              <input
+                type="search"
+                aria-label="search messages — *handle, words, *handle: words, or a quoted phrase"
+                value={searchQ}
+                placeholder="search messages…"
+                onChange={(e) => { setSearchQ(e.target.value); setNote(""); }}
+              />
+            </label>
+            <button type="button" className={"dmnew" + (composing ? " on" : "")} aria-pressed={composing} aria-label="new message — find someone by handle" title="NEW MESSAGE"
+              onClick={() => { setComposing((c) => { if (c) setQuery(""); return !c; }); }} />
+            {/* no ASTERISK reads your messages yet: the square is here, as drawn, and says so (a feature without the
+                real thing is disabled and says what it waits for) */}
+            <span className="dmast soon" title="ASTERISK in your messages — waits on the brain reading mail; not built yet">
+              <AMark solid label="ASTERISK in your messages — not built yet" />
+            </span>
+          </div>
+          {composing ? (
+            <label className="mailfind dmfind">
+              <input type="search" aria-label="find someone by handle" value={query} placeholder="find a handle…" autoFocus
+                onChange={(e) => { setQuery(e.target.value); setNote(""); }} />
+            </label>
+          ) : null}
+          <div className="dmfolders" role="tablist" aria-label="folders">
+            {["inbox", "requests"].map((f) => (
+              <button key={f} role="tab" aria-selected={folder === f} className={folder === f ? "cur" : ""} onClick={() => setFolder(f)}>
+                {f.toUpperCase()}{counts[f] ? <span className="mailtabn">{counts[f]}</span> : null}
+              </button>
+            ))}
+          </div>
+          </>
+          ) : (
           <div className="mailhead">
             <span className="psub">THE MAIL DESK</span>
             {/* aria-label only — this codebase has no visually-hidden utility,
@@ -1068,7 +1120,7 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
               ))}
             </div>
           </div>
-
+          )}
 
           {folder === "requests" ? (
             <p className="mailhint">
@@ -1146,6 +1198,26 @@ export default function MailDesk({ glyph = null, keyClass = "", embedded = false
             <p className="mailnote">
               {folder === "requests" ? "no requests." : "no messages yet."}
             </p>
+          ) : page ? (
+            <ul className="dmlist">
+              {items.map((c) => {
+                const ago = agoWords(c.lastActivityAt);
+                return (
+                  <li key={c.id} className={"dmrow" + (c.unread ? " unread" : "")}>
+                    <button type="button" onClick={() => showThread(c.id)}>
+                      <span className="dmface"><Avatar name={c.handle || "?"} /></span>
+                      <span className="dmwho">
+                        {c.handle ? <>*{c.handle}<i className="dmcur" aria-hidden="true">_</i></> : <em className="mailnohandle">an account with no public room</em>}
+                        {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
+                      </span>
+                      <span className="dmwhen">{ago ? ago + " >>" : ""}</span>
+                      <span className="dmprev">{c.preview ? <><i aria-hidden="true">:</i>{c.preview.slice(0, 90)}</> : <em>no preview</em>}</span>
+                      {c.unread ? <span className="dmunread" aria-label={c.unread + " unread"}>{c.unread}</span> : null}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           ) : (
             <ul className="maillist">
               {items.map((c) => (

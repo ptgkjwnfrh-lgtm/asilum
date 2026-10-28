@@ -6,10 +6,10 @@
 // the direct message tab").
 //
 // Declared before measuring:
-//   - the MESSAGES key opens the DM tab (the "messages" popup tab) and wears
-//     how many conversations wait; the deck no longer carries the desk's own
-//     panel or a fallback key;
-//   - the DM tab IS the live mail desk (embedded: no button, no dialog chrome
+//   - the MESSAGES key goes to the messages page (/messages, since 28 Oct
+//     2026; it was the "messages" popup tab) and wears how many conversations
+//     wait; the deck no longer carries the desk's own panel or a fallback key;
+//   - the page IS the live mail desk (embedded: no button, no dialog chrome
 //     of its own), or the honest reason it cannot be there; it checks with an
 //     op the route has (summary), never one it lacks;
 //   - news is a conversation that moved, is unread and is not muted; the first
@@ -32,7 +32,7 @@ const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const strip = (s) => s.replace(/\/\/[^\n]*/g, "").replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
 const live = strip(read("app/components/DmLive.jsx"));
 const deck = strip(read("app/components/ControlCenter.jsx"));
-const sheet = strip(read("app/components/MessagesSheet.jsx"));
+const sheet = strip(read("app/components/MessagesPage.jsx"));
 const desk = strip(read("app/components/MailDesk.jsx"));
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
@@ -66,21 +66,22 @@ test("the banner's reads fit the inbox budget with room for the desk", () => {
   assert.equal(M.BANNER_MS, 6000);
 });
 
-test("the MESSAGES key opens the DM tab and wears the count; the deck carries no desk panel", () => {
-  assert.match(deck, /if \(id === "messages"\) \{ openSheet\("messages"\); return; \}/);
-  assert.match(deck, /className=\{"tabl hkey ccdm" \+ \(cur \? " cur" : ""\)\} onClick=\{\(\) => press\("messages"\)\}/);
+test("the MESSAGES key goes to the messages page and wears the count; the deck carries no desk panel", () => {
+  assert.ok(!/openSheet\("messages"/.test(deck), "no messages popup any more");
+  assert.match(deck, /<a key=\{k\.id\} className=\{"tabl hkey ccdm" \+ \(cur \? " cur" : ""\)\} href=\{MESSAGES_HREF\} onClick=\{\(\) => \{ haptic\("press"\); closeSheet\(\); \}\}/);
+  assert.match(deck, /const cur = String\(pathname \|\| ""\)\.startsWith\(MESSAGES_HREF\);/, "lit on the page");
   assert.match(deck, /\{dm\.waiting \? <b className="dmcount" aria-hidden="true">/);
   assert.match(deck, /const dm = useDmLive\(\);/);
   assert.ok(!/MailDesk|ccfallback|cckey-mail/.test(deck), "no panel of the desk's own, no fallback key");
   assert.ok(!/\.ccenter \.(mailpanel|maildesk|cckey-mail)|ccfallback/.test(css), "and none of their styles");
 });
 
-test("the DM tab is the live desk, or the honest reason it cannot be", () => {
+test("the messages page is the live desk, or the honest reason it cannot be", () => {
   assert.match(sheet, /\/api\/dm\?op=summary/, "it asks with an op the route has");
   assert.ok(!/op=counts/.test(sheet), "never the op it lacks (it hung on 'opening…')");
-  assert.match(sheet, /\{why === "desk" && <MailDesk embedded \/>\}/);
+  assert.match(sheet, /\{why === "desk" && <MailDesk embedded page \/>\}/);
   for (const w of ["signed-out", "off", "away"]) assert.match(sheet, new RegExp(`why === "${w}"`));
-  assert.match(desk, /export default function MailDesk\(\{ glyph = null, keyClass = "", embedded = false \}\)/);
+  assert.match(desk, /export default function MailDesk\(\{ glyph = null, keyClass = "", embedded = false, page = false \}\)/);
   assert.match(desk, /\{embedded \? null : \(\n\s*<button/, "embedded: no button of its own");
   assert.match(desk, /role=\{embedded \? "region" : "dialog"\}/, "the popup is the dialog");
   assert.match(desk, /useFocusTrap\(panelRef, open && !embedded\);/);

@@ -30,7 +30,6 @@ import { useLiquidGlass } from "./LiquidGlass.jsx";
 import Icon from "./Icons.jsx";
 import LikesSheet from "./LikesSheet.jsx";
 import SearchSheet from "./SearchSheet.jsx";
-import MessagesSheet from "./MessagesSheet.jsx";
 import OverviewSheet from "./OverviewSheet.jsx";
 import BagSheet from "./BagSheet.jsx";
 import NoticesSheet from "./NoticesSheet.jsx";
@@ -47,7 +46,6 @@ import BrdcstSheet from "./BrdcstSheet.jsx";
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
   search: { title: "SEARCH", render: (p) => <SearchSheet {...p} />, roomy: true },
-  messages: { title: "MESSAGES", render: (p) => <MessagesSheet {...p} /> },
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
   bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },
   notices: { title: "NOTICES", render: (p) => <NoticesSheet {...p} /> },

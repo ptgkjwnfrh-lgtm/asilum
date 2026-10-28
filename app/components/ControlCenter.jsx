@@ -28,10 +28,11 @@
 // a global search opens the results popup over the root; a scoped search
 // filters the surface it belongs to live.
 //
-// The MESSAGES key opens the DM TAB (owner, 27 Oct 2026): the "messages"
-// popup tab, the live mail desk inside it (MessagesSheet.jsx), or the honest
-// reason it cannot be there. It wears how many conversations wait
-// (DmLive.jsx, which also draws the incoming-message banner).
+// The MESSAGES key goes to the MESSAGES PAGE (owner, 28 Oct 2026: "a direct
+// message page that the user will be brought to upon clicking the direct
+// message button"; it opened the "messages" popup tab since 27 Oct):
+// /messages (lib/nav.js MESSAGES_HREF, MessagesPage.jsx). It wears how many
+// conversations wait (DmLive.jsx, which also draws the incoming-message banner).
 //
 // THE POST DISC: it brings up Post Selection's types as the POST cards; over
 // a popup it closes the popup first (posting is unavailable inside one). It
@@ -60,7 +61,7 @@
 // which starts at the top (1.14).
 
 import { useEffect, useRef, useState } from "react";
-import { deckFor } from "../../lib/nav.js";
+import { deckFor, MESSAGES_HREF } from "../../lib/nav.js";
 import { DECK, scopeFor } from "../../lib/dock.js";
 import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, setScope } from "../../lib/dockstate.js";
 import { centredIndex, ringItem } from "../../lib/scrollwheel.js";
@@ -144,7 +145,6 @@ export default function ControlCenter({ kind, pathname }) {
       setCards((c) => !c);
       return;
     }
-    if (id === "messages") { openSheet("messages"); return; }
   }
 
   const popupUp = !!dock.sheet;
@@ -286,15 +286,14 @@ export default function ControlCenter({ kind, pathname }) {
       );
     }
     if (k.id === "messages") {
-      // THE DM TAB (owner, 27 Oct 2026: "the direct message button should up
-      // the direct message tab"): one key, the "messages" popup tab, wearing
-      // how many conversations wait (DmLive.jsx reads them)
-      const cur = sheetIs("messages");
+      // THE MESSAGES PAGE (owner, 28 Oct 2026): one key, a link to /messages, wearing how many
+      // conversations wait (DmLive.jsx reads them); a popup up goes away as the page comes
+      const cur = String(pathname || "").startsWith(MESSAGES_HREF);
       return (
-        <button key={k.id} type="button" className={"tabl hkey ccdm" + (cur ? " cur" : "")} onClick={() => press("messages")} aria-label={dm.waiting ? `messages — ${dm.waiting} waiting` : "messages"}>
+        <a key={k.id} className={"tabl hkey ccdm" + (cur ? " cur" : "")} href={MESSAGES_HREF} onClick={() => { haptic("press"); closeSheet(); }} aria-current={cur ? "page" : undefined} aria-label={dm.waiting ? `messages — ${dm.waiting} waiting` : "messages"}>
           <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
           {dm.waiting ? <b className="dmcount" aria-hidden="true">{dm.waiting > 9 ? "9+" : dm.waiting}</b> : null}
-        </button>
+        </a>
       );
     }
     // search: a mode

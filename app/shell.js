@@ -20,7 +20,7 @@
 // home.
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   clearFitProfile, getUid, setUid, authorizedFetch, SIGN_OUT_NOTICE,
 } from "../lib/client.js";
@@ -40,7 +40,15 @@ import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
 export default function Shell({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const pendingAdoptionRef = useRef(null);
+
+  // "asilum:go" { href }: a route change asked for by code that holds no router (the message desk's openDesk)
+  useEffect(() => {
+    const go = (e) => { const href = e && e.detail && e.detail.href; if (typeof href === "string" && href.startsWith("/") && !href.startsWith("//")) router.push(href); };
+    window.addEventListener("asilum:go", go);
+    return () => window.removeEventListener("asilum:go", go);
+  }, [router]);
   const deviceIdentityRef = useRef(null);
 
   useEffect(() => {

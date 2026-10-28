@@ -38,18 +38,36 @@ and tactility) are the law; what follows is the shipped reading.
   SEARCH gives them back with the search tab resumed. Likes and the map
   filter by them only while the deck is searching.
 
-## Direct messages (MessagesSheet.jsx, MailDesk.jsx, DmLive.jsx — 27 Oct 2026)
-- The MESSAGES key opens the DM TAB — the "messages" popup tab, the live
-  mail desk inside it (embedded), kept like every tab — and wears how many
-  conversations wait. Signed out, messaging off, or a store away, the tab
-  says which; nothing is simulated.
+## Direct messages (MessagesPage.jsx, MailDesk.jsx, DmLive.jsx — 27/28 Oct 2026)
+- THE MESSAGES PAGE (owner, 28 Oct 2026, the messages sketch: "a direct
+  message page that the user will be brought to upon clicking the direct
+  message button"): /messages (`lib/nav.js` MESSAGES_HREF), the one
+  exception to the popup law — it replaced the "messages" popup tab. As
+  drawn: ":ECHOS" over the live echo rail; [search] ○ [A] — the desk's
+  message search, the NEW MESSAGE circle (opens the handle finder), the
+  solid red ASTERISK square (`soon`: nothing reads mail yet); then a row
+  per conversation — face, *handle_, its age ("11 DAYS AGO >>",
+  `agoWords`: days to two weeks, then weeks, months, years), ":" and the
+  last words, a hairline under it. The deck's search in the messages
+  scope reaches the desk (`asilum:dm-find`).
+- The MESSAGES key is a link to the page, lit while on it, and wears how
+  many conversations wait. Signed out, messaging off, or a store away, the
+  page says which; nothing is simulated. Every other door — the banner,
+  a listing's OFFER, a storefront's MESSAGE — goes through `openDesk`,
+  which hands the desk what to show and asks the shell (`asilum:go`, a
+  same-site path only) to go there.
 - A message arriving while the app is on screen drops a glass banner from
   the top (who, the start of what they wrote; a request shows no words),
   gone after six seconds or a swipe up. ONE TAP opens the reply field and
   focuses it inside the tap, so a phone raises its keyboard; Enter sends
   through the DM API and marks the conversation read. A DOUBLE TAP (280 ms,
-  the Feed's own) opens the DM tab on that conversation; a request opens
-  REQUESTS. No banner over the DM tab itself; muted conversations stay quiet.
+  the Feed's own) opens the messages page on that conversation; a request
+  opens REQUESTS. No banner over the page itself; muted conversations stay
+  quiet.
+- Not yet: the sketch's offer row (":SENT AN OFFER OF $25.50" with its
+  arrow) needs the inbox to carry a conversation's latest Wardrobe offer
+  (`wardrobe_offers` by conversation), in both backends; until then a row
+  shows the last words only.
 
 ## The Disc (Disc.jsx, lib/disc.js)
 - Drag to turn, flick to spin; momentum and friction; a magnetic snap

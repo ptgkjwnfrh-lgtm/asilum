@@ -51,7 +51,7 @@ test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three 
   assert.match(listing, /const offerable = offerMode\(item\);/, "the popup asks the one law what OFFER does");
   assert.match(listing, /<span className="lstofferword quiet" title=\{offerable\.reason\}/, "a quiet OFFER is a label with its reason");
   assert.ok(!/OFFER<\/button>[^\n]*disabled|disabled[^\n]*>OFFER</.test(listing), "never a disabled OFFER button");
-  assert.match(listing, /openSheet\("messages", \{ title: "MESSAGES" \}\)/, "a Wardrobe OFFER starts with a message (13.4)");
+  assert.match(listing, /setNotice\("an offer starts with a message to the owner — the desk opens"\); openDesk\(\);/, "a Wardrobe OFFER starts with a message, on the messages page (13.4)");
   assert.match(listing, /postJSON\("\/api\/storefront\/offers"/, "a native OFFER is sent");
   assert.match(listing, /BEHIND THE PRODUCT/);
   assert.match(listing, /<AsteriskWhy item=\{item\} onNotice=\{setNotice\} \/>/, "the depth moved with the modal");
