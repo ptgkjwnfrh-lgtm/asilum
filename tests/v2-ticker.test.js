@@ -147,7 +147,8 @@ test("the type and the band: Share Tech Mono at -8.5 to -9; dark — white and g
 });
 
 test("the band wraps the whole deck: edge to edge, round each side as a quarter cylinder", () => {
-  assert.match(css, /\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* 30\);/, "no side padding: the band runs the deck's whole width");
+  assert.match(css, /\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* \d+\);/, "no side padding: the band runs the deck's whole width");
+  assert.match(rule(".adstrip"), /position: absolute; left: 0; right: 0;/, "edge to edge");
   const r = Number(rule(".adstrip").match(/--ad-r: calc\(var\(--u\) \* ([\d.]+) \* var\(--dk-sx\)\);/)[1]);
   assert.ok(r < 40 && 40 - r <= 6, "the face begins " + r + " units in, where the pill began 40: longer by at most 6 a side");
   assert.match(rule(".adstrip"), /height: calc\(var\(--u\) \* 52\);/, "its height unchanged");
@@ -253,18 +254,69 @@ test("the ticker's rule: open only online with an ad or a BRDCST to carry; folde
   assert.match(rule(".ccadline i"), /background: var\(--wm-bar\);[^}]*left: calc\(var\(--u\) \* var\(--a\) \* var\(--dk-sx\) \+ var\(--ad-brk\) \/ 2\); width: calc\(var\(--u\) \* \(var\(--b\) - var\(--a\)\) \* var\(--dk-sx\) - var\(--ad-brk\)\);/s, "broken by half a break each side of every cut");
   assert.match(css, /\.ccenter\[data-ad="line"\] \.ccadline \{ opacity: 1;/);
   // quick: every open and fold move on the ladder, none past --dur-3
-  for (const sel of [".adstrip", ".adstrip.shut", ".ccadline", '.ccenter[data-ad="line"] .ccadline', ".ccad"]) {
+  for (const sel of [".adtrack", ".adstrip.shut .adtrack", ".adrim", ".adstrip.shut .adrim", ".ccadline", '.ccenter[data-ad="line"] .ccadline', ".ccad"]) {
     const t = (rule(sel).match(/transition: ([^;]*);/) || [])[1] || "";
     assert.ok(t && !/--dur-4/.test(t), sel + " moves quickly: " + t);
   }
-  assert.match(rule(".adstrip.shut"), /transform: scaleY\(0\.04\); opacity: 0; pointer-events: none;/, "folded up into the line");
-  assert.match(strip, /inert=\{open \? undefined : ""/, "and out of reach while folded");
+  assert.match(rule(".adstrip.shut"), /pointer-events: none;/);
+  assert.match(strip, /inert=\{shown \? undefined : ""/, "and out of reach while folded");
+});
+
+// THE WINK (owner, 28 Oct 2026: "the transitions isnt clean for shit, the ticker should wink into the glow
+// white line and the bezels of the ticker should slightly glow so as its winking it looks clean"). Declared
+// before measuring: the band's centre line and the folded line are one place — a fixed height above the
+// deck's foot, open or folded (the band anchored to the bubble's foot), so nothing jumps; folding, the band
+// is clipped shut onto its centre line (never scaled: a scale would thin its bezels to nothing) while its
+// two bezels — hairlines glowing slightly, the band's whole length — travel exactly half the band each and
+// meet on that line; the broken line comes in as they arrive (after they have travelled most of the way)
+// and they fade after it is up; it goes the instant they part; the band closes faster than the deck
+// shortens on the same kind of curve, so the settling keys never cross it (measured in the browser: the
+// bezels land on the line within 0.1px, the keys stop 5px above it); the wink starts two frames after the
+// decision, so the band's words are laid before anything moves.
+test("the wink: the band clips shut onto its centre line, its glowing bezels meet there and become the line", () => {
+  const strip = read("app/components/AdStrip.jsx");
+  const cc = read("app/components/ControlCenter.jsx");
+  const n = (re, src = css) => Number(src.match(re)[1]);
+  const pad = n(/\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* (\d+)\);/);
+  const foot = n(/bottom: calc\(var\(--u\) \* (\d+)\); height: calc\(var\(--u\) \* 52\);/, rule(".adstrip"));
+  assert.equal(foot, pad, "the band stands on the bubble's padding, anchored to its foot");
+  const lineAt = n(/bottom: calc\(var\(--u\) \* (\d+) - var\(--ad-line-h\) \/ 2\);/, rule(".ccadline"));
+  assert.equal(lineAt, foot + 52 / 2, "the folded line lies on the band's centre line");
+  assert.ok(pad > 22, "and the band clears the grill's top lip (11 + 11)");
+  assert.match(cc, /<div className="ccad">\s*<span className="ccadline" aria-hidden="true">/, "the line lives in the bubble, measured from the same foot");
+  // clipped, never scaled
+  assert.match(css, /\.adstrip\.shut \.adtrack \{ clip-path: inset\(50% 0 50% 0\);/, "shut onto the centre line");
+  assert.ok(!/scaleY/.test(rule(".adstrip.shut") + rule(".adstrip")), "never squashed");
+  // the bezels: the band's whole length, glowing slightly, travelling half the band each
+  assert.match(strip, /<i className="adrim adrimtop" aria-hidden="true" \/>\s*<i className="adrim adrimbot" aria-hidden="true" \/>/);
+  assert.match(rule(".adrim"), /left: 0; right: 0; height: 1px;[^}]*background: var\(--ad-rim-c\); box-shadow: var\(--ad-rim-glow\);/s, "a hairline the band's whole length, glowing");
+  assert.match(css, /--ad-rim-glow: 0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)/, "slightly");
+  assert.match(css, /\.adstrip\.shut \.adrimtop \{ transform: translateY\(calc\(var\(--u\) \* 26 - 0\.5px\)\); \}/, "the top one down half the band");
+  assert.match(css, /\.adstrip\.shut \.adrimbot \{ transform: translateY\(calc\(var\(--u\) \* -26 \+ 0\.5px\)\); \}/, "the bottom one up half the band");
+  assert.ok(!/className="adrim [tb]"/.test(strip), "never the global .t chip's class (it padded the top bezel to 6px)");
+  // the hand-over: the line comes in as they arrive, they fade once it is up; it goes the instant they part
+  const ms = (t) => { const m = t.match(/opacity var\(--dur-(\d)\)(?: (\d+)ms)?/); return { dur: [60, 140, 220, 320, 460][Number(m[1])], delay: Number(m[2] || 0) }; };
+  const lineIn = ms(rule('.ccenter[data-ad="line"] .ccadline'));
+  const rimsOut = ms(rule(".adstrip.shut .adrim"));
+  const close = [60, 140, 220, 320, 460][n(/clip-path var\(--dur-(\d)\)/, rule(".adstrip.shut .adtrack"))];
+  assert.ok(lineIn.delay >= close * 0.6 && lineIn.delay < close, "the line comes in as the bezels arrive");
+  assert.ok(rimsOut.delay > lineIn.delay, "the bezels fade once the line is coming up, not before");
+  assert.match(rule(".ccadline"), /transition: opacity var\(--dur-0\) var\(--ease-out\);/, "the line goes the instant they part");
+  // the band closes faster than the deck shortens, on the same curve, so the keys never cross it
+  const deck = [60, 140, 220, 320, 460][n(/transition: height var\(--dur-(\d)\) var\(--ease-out\)/, rule(".ccenter"))];
+  assert.ok(close < deck, "the band shut before the keys have settled");
+  assert.match(rule(".adstrip.shut .adtrack"), /clip-path var\(--dur-\d\) var\(--ease-out\)/, "the same curve as the deck");
+  // two frames' grace, so the words are laid before the wink starts
+  assert.match(strip, /a = requestAnimationFrame\(\(\) => \{ b = requestAnimationFrame\(\(\) => setShown\(open\)\); \}\);/);
+  assert.match(strip, /useEffect\(\(\) => \{ if \(onOpen\) onOpen\(shown\); \}, \[shown, onOpen\]\);/, "the deck moves with the wink, not before it");
 });
 
 test("the bezel runs the band's whole length, round both sides", () => {
-  assert.match(rule(".adface, .adside"), /box-shadow: var\(--ad-rim\);/, "the face and both sides");
-  assert.match(css, /--ad-rim: inset 0 1px 0 rgba\(255, 255, 255, [\d.]+\), inset 0 -1px 0 rgba\(255, 255, 255, [\d.]+\);/, "top and bottom");
-  assert.ok(!/box-shadow/.test(rule(".adface")), "not the face's alone");
+  // (then, the wink) the bezels are their own hairlines over the whole band, so they can travel and glow
+  assert.match(rule(".adrim"), /position: absolute; z-index: 3; left: 0; right: 0;/, "edge to edge, over the face and both sides");
+  assert.match(rule(".adrimtop"), /top: 0;/);
+  assert.match(rule(".adrimbot"), /bottom: 0;/);
+  assert.ok(!/box-shadow/.test(rule(".adface") + rule(".adface, .adside")), "no inset edge on the face alone");
 });
 
 test("the glide never steps; the words are typed in and out, a whole character at a time, on the grid", async () => {

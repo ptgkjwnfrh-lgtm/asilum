@@ -1039,3 +1039,19 @@ add ticker should stretch all around it".
   60°) steps right one cell per cell of glide (`adtype`, `steps(n)`), so on
   screen each letter is typed in whole as it comes round the right side and
   typed out whole as it goes round the left. The side-fade mask is gone.
+- Then: "the transitions isnt clean … the ticker should wink into the glow
+  white line and the bezels of the ticker should slightly glow so as its
+  winking it looks clean". THE WINK: the band now stands on the bubble's
+  foot (absolute, 26 units up), so its centre line is a fixed 52 units
+  above the deck's foot, open or folded, and the folded line (now inside
+  the bubble) lies exactly there. Folding, the band is CLIPPED shut onto
+  that line (clip-path, never a scale), and its two bezels (`.adrim`,
+  hairlines the band's whole length glowing slightly, `--ad-rim-c` /
+  `--ad-rim-glow`) travel half the band each and meet on it — one glowing
+  line — as the broken line comes up under them; they fade after. The band
+  closes (`--dur-2`) faster than the deck shortens (`--dur-3`, the same
+  curve), so the keys settle onto the line and never cross it. Opening is
+  the reverse. The wink starts two frames after the decision, so the
+  band's words are laid first. Measured at 375px: the bezels land on the
+  line (777.2) by 160 ms; the keys stop 5 px above it; fold and open hold
+  60 fps (worst frame 17–19 ms).

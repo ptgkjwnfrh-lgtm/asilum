@@ -402,7 +402,8 @@ button { font-family: var(--helv); }
   --ad-cloud-light: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
   --ad-cloud: var(--ad-cloud-dark);
   --ad-turn-c: rgba(14, 18, 24, 0.55); /* the shade where the band turns from the light */
-  --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --ad-rim-c: rgba(255, 255, 255, 0.78); /* the bezels, glowing slightly (owner, 28 Oct 2026) */
+  --ad-rim-glow: 0 0 2px rgba(255, 255, 255, 0.6), 0 0 6px rgba(255, 255, 255, 0.28);
   --ad-glyph: #f4f9fc;
   --ad-glow: 0 0 1px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.3);
   --ad-chip: var(--warn);
@@ -3454,14 +3455,6 @@ body { font-size: 14px; }
   width: 1px; transform: translateX(-50%); border-radius: 1px; pointer-events: none;
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
-/* THE TICKER'S LINE (owner, 28 Oct 2026; ControlCenter.jsx AD_LINE): the ticker folded, one glowing white
-   line in the Masthead's glow under the keys — a stretch under each key, broken (--ad-brk) at every cut
-   between them — fading in as the band folds up into it */
-.ccadline { position: absolute; z-index: 2; left: 0; right: 0; top: calc(var(--u) * 138); height: max(1.5px, calc(var(--u) * 4)); pointer-events: none;
-  --ad-brk: calc(var(--u) * 14); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-1) var(--ease-in); }
-.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-3) 120ms var(--ease-out); }
-.ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
-  left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
 /* the foot grill: a vent cut through the glass under the post disc, like a
    phone's ventilation port (Figure 1.2); the glass warps around it */
 .ccgrill {
@@ -3520,30 +3513,52 @@ body { font-size: 14px; }
    glowing white line of Share Tech Mono, regular, at -0.0875em (the owner's
    "-8.5 to -9 kerning", Procreate's per-cent of the em); ADs is knocked out
    of a glowing white chip at the face's left. */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 30); box-sizing: border-box;
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 26); box-sizing: border-box;
   transition: height var(--dur-3) var(--ease-out); /* in step with the deck's own height, so the row never leaves the glass */ }
-/* OPEN AND SHUT (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse … if the
-   user has no service … [it] should open immediatly after regaining service, when a user first opens the
-   app the first animation should be the ticker opening. all these animations should be quick and
-   smooth"): the band folds up into the line under the keys and unfolds out of it; the page loads with
-   it folded, so its opening is the first thing that moves */
-.adstrip.shut { transform: scaleY(0.04); opacity: 0; pointer-events: none; transition: transform var(--dur-2) var(--ease-in), opacity var(--dur-1) var(--ease-in); }
+/* OPEN AND SHUT — THE WINK (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse
+   … the first animation should be the ticker opening. all these animations should be quick and smooth";
+   then "the transitions isnt clean … the ticker should wink into the glow white line and the bezels of the
+   ticker should slightly glow so as its winking it looks clean"). The band's centre line sits a fixed
+   52 units above the deck's foot (the bubble's 26 of padding and half its 52), open or folded, so
+   nothing has to jump: folding, the band is clipped shut onto that line from above and below while its
+   two glowing bezels travel in with the clip and meet on it — one glowing line — and the broken line
+   takes over exactly there as they fade; the keys settle down onto it as the deck shortens, more slowly
+   than the band closes, so they never cross it. Opening is the same, reversed. */
+.adtrack { clip-path: inset(0 0 0 0); transition: clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
+.adstrip.shut .adtrack { clip-path: inset(50% 0 50% 0); opacity: 0; transition: clip-path var(--dur-2) var(--ease-out), opacity var(--dur-0) 160ms var(--ease-in); }
+.adstrip.shut { pointer-events: none; }
+/* the bezels: a hairline along the band's top and bottom, glowing slightly, the whole length round both sides */
+.adrim { position: absolute; z-index: 3; left: 0; right: 0; height: 1px; pointer-events: none; background: var(--ad-rim-c); box-shadow: var(--ad-rim-glow);
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-1) var(--ease-out); }
+.adrimtop { top: 0; }
+.adrimbot { bottom: 0; }
+.adstrip.shut .adrim { opacity: 0; transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-1) 170ms var(--ease-in); }
+.adstrip.shut .adrimtop { transform: translateY(calc(var(--u) * 26 - 0.5px)); }
+.adstrip.shut .adrimbot { transform: translateY(calc(var(--u) * -26 + 0.5px)); }
+/* THE LINE (ControlCenter.jsx AD_LINE): where the bezels meet — on the band's centre line, a stretch under
+   each key, broken (--ad-brk) at every cut between them, in the Masthead's glow; it comes in as the
+   bezels arrive and goes the instant they part */
+.ccadline { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--u) * 52 - var(--ad-line-h) / 2); height: var(--ad-line-h); pointer-events: none;
+  --ad-line-h: max(1.5px, calc(var(--u) * 4)); --ad-brk: calc(var(--u) * 14); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-0) var(--ease-out); }
+.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-1) 150ms var(--ease-out); }
+.ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
+  left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
 .adprobe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
 .adstrip {
   --ad-r: calc(var(--u) * 34 * var(--dk-sx)); /* each side's radius: the face keeps the pill's place, a touch longer */
   --ad-q: 1.5708; /* a quarter turn, in radians: the arc of each side, in radii */
-  position: relative; height: calc(var(--u) * 52); width: 100%; min-width: 0; margin: 0; box-sizing: border-box;
+  /* anchored to the bubble's foot, so its centre line never moves while the bubble opens and folds */
+  position: absolute; left: 0; right: 0; bottom: calc(var(--u) * 26); height: calc(var(--u) * 52); min-width: 0; margin: 0; box-sizing: border-box;
   font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
-  transform-origin: 50% 0; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); /* unfolding out of the line */
 }
 .adtrack { position: absolute; inset: 0; container-type: inline-size; }
 /* one cloudscape along the band: the face shows its stretch unrolled, and each side is ONE smooth piece of
    it (never sliced — sliced, every slice's cloud and shade stepped, and the turn read as stripes), matched
    to the face where they meet */
-/* the bezel along its top and bottom edges runs the band's whole length, round both sides too (owner,
-   28 Oct 2026: "why does the bezel that is on the top and bottom of the ticker dissapear it should run
-   the entirety") */
-.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; box-shadow: var(--ad-rim); }
+/* (the bezel along its top and bottom edges is .adrim, above: it runs the band's whole length, round both
+   sides — owner, 28 Oct 2026: "why does the bezel that is on the top and bottom of the ticker dissapear
+   it should run the entirety") */
+.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
 .adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; }
 .adside { width: var(--ad-r); }
 .adside.l { left: 0; background-position: calc(-1 * (var(--ad-q) - 1) * var(--ad-r)) 0; }

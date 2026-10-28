@@ -343,7 +343,6 @@ export default function ControlCenter({ kind, pathname }) {
             {DECK.map((k) => key(k))}
           </div>
           <span className="cccap" aria-hidden="true" />
-          <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
         </div>
         {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
             central control fixture as a bubble … inside the bubble will be the ad
@@ -351,7 +350,10 @@ export default function ControlCenter({ kind, pathname }) {
             vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
             foot grill; the deck is taller by --ad-h to hold it — and only while the ticker
             is open: folded to its line, the deck is the row alone (28 Oct 2026) */}
-        <div className="ccad"><AdStrip typing={inSearch} onOpen={setAdOpen} /></div>
+        <div className="ccad">
+          <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
+          <AdStrip typing={inSearch} onOpen={setAdOpen} />
+        </div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />
       <i className="fxrim" aria-hidden="true" />

@@ -63,7 +63,15 @@ export default function AdStrip({ typing = false, onOpen = null }) {
     return () => { window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
   }, []);
   const open = test ? test === "open" : tickerOpen(items, online);
-  useEffect(() => { if (onOpen) onOpen(open); }, [open, onOpen]);
+  // the wink starts two frames after the decision, so the band's words are laid (and measured) first and
+  // the move begins on a clean frame — measured: opening with the render in its first frame dropped one
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    let a = 0, b = 0;
+    a = requestAnimationFrame(() => { b = requestAnimationFrame(() => setShown(open)); });
+    return () => { cancelAnimationFrame(a); cancelAnimationFrame(b); };
+  }, [open]);
+  useEffect(() => { if (onOpen) onOpen(shown); }, [shown, onOpen]);
   // the entries, as the ticker prints them, on the monospaced grid (folded, there are none to print)
   const words = (items || []).map((it) => ({ id: it.id, text: monoText(it.ticker || it.line), href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }));
   const key = words.map((w) => w.id + w.text).join("|");
@@ -119,10 +127,10 @@ export default function AdStrip({ typing = false, onOpen = null }) {
   const t = crawl.type;
   return (
     <div
-      className={"adstrip" + (crawl.seconds > 0 && t ? " run" : "") + (held || typing ? " held" : "") + (open ? " open" : " shut")}
+      className={"adstrip" + (crawl.seconds > 0 && t ? " run" : "") + (held || typing ? " held" : "") + (shown ? " open" : " shut")}
       aria-label="ads and placements"
-      aria-hidden={open ? undefined : true}
-      inert={open ? undefined : "" /* React 18: the attribute present is inert */}
+      aria-hidden={shown ? undefined : true}
+      inert={shown ? undefined : "" /* React 18: the attribute present is inert */}
       style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1 }}
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
@@ -135,6 +143,9 @@ export default function AdStrip({ typing = false, onOpen = null }) {
         </span>
         {side("r", WRAP.right)}
       </div>
+      {/* the bezels, glowing slightly: folding, they travel in and meet on the centre line (the wink) */}
+      <i className="adrim adrimtop" aria-hidden="true" />
+      <i className="adrim adrimbot" aria-hidden="true" />
     </div>
   );
 }
