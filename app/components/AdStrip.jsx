@@ -11,59 +11,52 @@
 // the reference): "lets have it stretch all the across the center fixture,
 // so if the center fixture was a 3d object the add ticker should stretch all
 // around it, the glowing red "ADs" should be a negative imprint in a solid
-// glowing white mini rectangle … glowing white text … on an a heavly
-// clouded track … i dont want its placement to move but i would like it
-// ever so slightly lengthened … use share tech mono in regular with a -8.5
-// to -9 kerning … all BRDCST should simply be displayed by their title and
-// all actual ads should start with "AD:"". So: a clouded track whose face
-// sits where the pill sat, a touch longer, and whose two ends CURL away
-// round the deck's sides in perspective (lib/adcrawl.js CURL_DEG); the
-// entries run as one glowing white line in Share Tech Mono that crawls out
-// of the right curl, along the face and under the label (lib/adcrawl.js);
-// the label is the status lights and ADs knocked out of a glowing white
-// chip, like the reference's FLAC. Every entry prints its `ticker` words.
-// The crawl holds on hover, focus, while the reader types, and under
-// reduced motion; it is not announced (each entry is a link with its label
-// spoken: a BRDCST is read as sponsored though it prints its title alone).
+// glowing white mini rectangle … the glowing white text … on an a heavly
+// clouded track … use share tech mono in regular with a -8.5 to -9 kerning
+// … all BRDCST should simply be displayed by their title and all actual ads
+// should start with "AD:""; then "i said clouded no black, i just wanted it
+// more clouded than the fixture and i wanted the bar to stretch the entirety
+// of the fixture like i meant if the fixture was a object the ad ticker would
+// wrap around the whole thing 360 degrees … also get rid of those two red
+// squares". So: a band of cloud — frosted, heavier than the deck's glass —
+// across the deck edge to edge, turning round each side as a quarter
+// cylinder (lib/adcrawl.js wrapSlices), so the words squeeze to nothing at
+// the deck's silhouette and run on round the back; the entries crawl as one
+// glowing white line of Share Tech Mono, right to left, out of the right side,
+// across the face and round the left; ADs is knocked out of a glowing white
+// chip at the face's left. Every entry prints its `ticker` words. The crawl
+// holds on hover, focus, while the reader types, and under reduced motion; it
+// is not announced (each entry is a link with its label spoken: a BRDCST is
+// read as sponsored though it prints its title alone).
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { HOUSE_LINES } from "../../lib/dock.js";
-import { crawlFor } from "../../lib/adcrawl.js";
+import { crawlFor, wrapSlices } from "../../lib/adcrawl.js";
 import { usePlacements } from "./Placements.jsx";
-import { Lamp, blinkLamp } from "./Blocks.jsx";
+
+// the two quarter cylinders, laid once
+const WRAP = wrapSlices();
 
 export default function AdStrip({ typing = false }) {
   const items = usePlacements();
-  // THE STATUS LIGHTS (owner, 18 Oct 2026: blinking squares that turn off,
-  // the CD tray's eject light): two red squares by the label, dark at rest;
-  // anything put in the bag or any purchase control's lamp makes them blink
-  // and settle dark again
-  const lightsRef = useRef(null);
-  useEffect(() => {
-    const on = () => blinkLamp(lightsRef.current, { quiet: true });
-    window.addEventListener("asilum:lamp", on);
-    window.addEventListener("asilum:bag", on);
-    return () => { window.removeEventListener("asilum:lamp", on); window.removeEventListener("asilum:bag", on); };
-  }, []);
   const [held, setHeld] = useState(false);
   // the entries, as the ticker prints them; with nothing eligible, the house lines
   const words = items && items.length
     ? items.map((it) => ({ id: it.id, text: it.ticker || it.line, href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }))
     : (items === null ? [{ id: "wait", text: "…" }] : HOUSE_LINES.map((t, n) => ({ id: "house" + n, text: t })));
   const key = words.map((w) => w.id + w.text).join("|");
-  // the crawl: one sequence measured, the band long enough to cover the track, one sequence a loop
-  const trackRef = useRef(null), winRef = useRef(null), seqRef = useRef(null);
-  const [crawl, setCrawl] = useState({ copies: 2, len: 0, seconds: 0, winX: 0 });
+  // the crawl: one sequence measured, the band long enough to cover its whole unrolled length, one sequence a loop
+  const trackRef = useRef(null), faceRef = useRef(null), seqRef = useRef(null);
+  const [crawl, setCrawl] = useState({ copies: 2, len: 0, seconds: 0 });
   useLayoutEffect(() => {
-    const track = trackRef.current, win = winRef.current;
-    if (!track || !win) return undefined;
+    const track = trackRef.current, face = faceRef.current;
+    if (!track || !face) return undefined;
     let raf = 0;
     const measure = () => {
       raf = 0;
-      const seq = seqRef.current;
-      const c = crawlFor(seq ? seq.getBoundingClientRect().width : 0, track.offsetWidth);
-      const winX = win.getBoundingClientRect().left - track.getBoundingClientRect().left;
-      setCrawl((p) => (p.copies === c.copies && Math.abs(p.len - c.len) < 0.25 && Math.abs(p.winX - winX) < 0.25 ? p : { ...c, winX }));
+      const seq = seqRef.current, r = face.offsetLeft;
+      const c = crawlFor(seq ? seq.getBoundingClientRect().width : 0, track.offsetWidth - 2 * r + Math.PI * r);
+      setCrawl((p) => (p.copies === c.copies && Math.abs(p.len - c.len) < 0.25 ? p : c));
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(measure); };
     measure();
@@ -85,23 +78,24 @@ export default function AdStrip({ typing = false }) {
       ))}
     </span>
   );
+  // a slice of a side: the band's arc laid flat, squeezed from its left edge, dimmed as it turns
+  const slice = (side, g, n) => (
+    <span key={side + n} className={"adslice " + side} aria-hidden="true" style={{ "--at": g.at.toFixed(5), "--from": g.from.toFixed(5), "--s": g.scale.toFixed(5), "--sh": g.shade.toFixed(4) }}>{band(false)}</span>
+  );
   return (
     <div
       className={"adstrip" + (crawl.seconds > 0 ? " run" : "") + (held || typing ? " held" : "")}
       aria-label="ads and placements"
-      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--win-x": `${crawl.winX}px` }}
+      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5) }}
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
       <div className="adtrack" ref={trackRef}>
-        <span className="adcurl l" aria-hidden="true" />
-        <span className="adface">
-          <span className="adlabel" aria-hidden="true">
-            <span className="devlights" ref={lightsRef}><Lamp /><Lamp /></span>
-            <span className="adslot">ADs</span>
-          </span>
-          <span className="adwin" ref={winRef}>{band(true)}</span>
+        {WRAP.left.map((g, n) => slice("l", g, n))}
+        <span className="adface" ref={faceRef}>
+          {band(true)}
+          <span className="adslot" aria-hidden="true">ADs</span>
         </span>
-        <span className="adcurl r" aria-hidden="true">{band(false)}</span>
+        {WRAP.right.map((g, n) => slice("r", g, n))}
       </div>
     </div>
   );

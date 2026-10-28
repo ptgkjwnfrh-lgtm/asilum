@@ -47,16 +47,15 @@ test("expanding a compacted description loads it in behind blocks: the caption, 
   assert.ok(!/>>>>/.test(read("app/components/Blocks.jsx")) && !/>>>>/.test(read("app/components/PostCard.jsx")), "no chevrons stand in for text any more");
 });
 
-test("the warning lights: square, dark at rest, blinking like an eject light on a purchase, a bag or an offer, then dark; the deck's pair answers", () => {
+test("the warning lights: square, dark at rest, blinking like an eject light on a purchase, a bag or an offer, then dark; the deck's pair is gone", () => {
   const listing = strip(read("app/components/ListingSheet.jsx"));
   for (const where of [/onClick=\{\(e\) => \{ blinkLamp\(e\); toBag\(\); \}\}[^\n]*<Lamp \/>/, /<button type="submit" className="buy" onClick=\{blinkLamp\}><Lamp \/>send ✓/, /onClick=\{async \(e\) => \{ blinkLamp\(e\); setBuying\(true\);/, /blinkLamp\(e\); setTimeout\(\(\) => setTicket\(true\), 420\);[^\n]*<Lamp \/>request purchase/]) {
     assert.match(listing, where);
   }
-  // (19 Oct) the pair rides with the ad strip at the head of the Feed (AdStrip.jsx)
+  // (28 Oct 2026: "get rid of those two red squares") the ticker's pair is gone, and nothing calls to it
   const deck = strip(read("app/components/AdStrip.jsx"));
-  // (28 Oct 2026) by the ADs chip, in the ticker's label (aria-hidden there)
-  assert.match(deck, /<span className="adlabel" aria-hidden="true">\s*<span className="devlights" ref=\{lightsRef\}><Lamp \/><Lamp \/><\/span>/);
-  assert.match(deck, /window\.addEventListener\("asilum:bag", on\)/, "a piece in the bag blinks the strip's lights");
+  assert.ok(!/devlights|<Lamp|blinkLamp/.test(deck), "no lights on the ticker");
+  assert.ok(!/devlights/.test(rules) && !/asilum:lamp/.test(read("app/components/Blocks.jsx")), "no rule and no event left for them");
   assert.match(rules, /\.lamp \{[^}]*width: 7px; height: 7px;[^}]*background: color-mix\(in srgb, var\(--warn\) 22%, transparent\)/s, "square, dark at rest");
   assert.match(rules, /\.lamp\[data-blink="eject"\] \{ animation: ejectlight 1\.8s steps\(1, end\) forwards; \}/, "it blinks and stays dark at the end");
   assert.match(rules, /@keyframes ejectlight \{[^}]*0%, 20%, 40%, 60% \{[^}]*\}\s*10%, 30%, 50%, 70%, 100% \{/s);

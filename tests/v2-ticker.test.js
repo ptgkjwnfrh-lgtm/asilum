@@ -8,7 +8,11 @@
 // move but i would like it ever so slightly lengthened … use share tech mono
 // in regular with a -8.5 to -9 kerning … all BRDCST should simply be
 // displayed by their title and all actual ads should start with "AD:"
-// following whatever the advertiser wants to put").
+// following whatever the advertiser wants to put"; then "i said clouded no
+// black, i just wanted it more clouded than the fixture and i wanted the bar
+// to stretch the entirety of the fixture like i meant if the fixture was a
+// object the ad ticker would wrap around the whole thing 360 degrees not just
+// stuck on the middle, also get rid of those two red squares").
 //
 // Declared before measuring:
 //   - what it prints: a BRDCST (the SPONSORED rows) and a listed event print
@@ -23,18 +27,23 @@
 //   - the type: Share Tech Mono, weight 400, letter-spacing between -0.09em and
 //     -0.085em (Procreate's kerning is a per-cent of the em: -8.5 to -9);
 //     white with a glow;
-//   - the track: heavily clouded and dark in BOTH themes (one token, never
-//     redefined per theme); its face begins 34 units in where the pill began
-//     40 — longer by at most 6 units a side ("ever so slightly"), its height
-//     unchanged; its ends curl away round the deck's sides in perspective
-//     seen from each hinge, the angle lib/adcrawl.js's CURL_DEG;
+//   - the band: clouded, NOT black — frosted grey haze with brighter puffs,
+//     more opaque than the deck's near-clear glass, never darker than a mid
+//     grey and never opaque, in each theme; it runs the deck's WHOLE width
+//     (the bubble has no side padding) and turns round each side as a
+//     quarter cylinder: WRAP_SLICES slices whose shown widths sum to the
+//     radius, squeezed ever harder toward the silhouette, the last nearly
+//     edge-on, the band continuous through every slice; the face (between
+//     the two radii) begins 34 units in, where the pill began 40, its height
+//     unchanged;
 //   - the label: ADs knocked out of a solid glowing white chip (the chip
-//     white, the word the track's dark), no red, no red glow.
+//     white, the word the deck's ink), no red, no red glow; no status
+//     lights (the two red squares are gone).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { tickerItems, adLine, titleLine } from "../lib/placements.js";
-import { crawlFor, CRAWL_PX_S, CURL_DEG } from "../lib/adcrawl.js";
+import { crawlFor, wrapSlices, CRAWL_PX_S, WRAP_SLICES } from "../lib/adcrawl.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -85,47 +94,67 @@ test("the crawl: one sequence a loop, the track always covered, no timer swappin
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.adstrip\.run \.adband \{ animation: none; \} \}/);
 });
 
-test("the type and the track: Share Tech Mono at -8.5 to -9, white and glowing, on a clouded track dark in both themes", () => {
-  const s = rule(".adstrip");
-  assert.match(s, /font: 400 max\(10px, calc\(var\(--u\) \* 25\)\)\/1 var\(--mono\);/, "Share Tech Mono, regular");
+test("the type and the band: Share Tech Mono at -8.5 to -9, white and glowing, on a clouded band — never black", () => {
+  const st = rule(".adstrip");
+  assert.match(st, /font: 400 max\(10px, calc\(var\(--u\) \* 25\)\)\/1 var\(--mono\);/, "Share Tech Mono, regular");
   assert.match(read("app/globals.css"), /--mono: "Share Tech Mono"/);
-  const ls = Number(s.match(/letter-spacing: (-?[\d.]+)em;/)[1]);
+  const ls = Number(st.match(/letter-spacing: (-?[\d.]+)em;/)[1]);
   assert.ok(ls <= -0.085 && ls >= -0.09, "the owner's -8.5 to -9: " + ls);
-  assert.match(s, /color: var\(--ad-glyph\);/);
+  assert.match(st, /color: var\(--ad-glyph\);/);
   assert.match(rule(".adword"), /text-shadow: var\(--ad-glow\);/, "glowing");
   assert.match(css, /--ad-glyph: #f4f9fc;/, "white");
   const clouds = [...css.matchAll(/--ad-cloud: ([^;]+);/g)].map((m) => m[1]);
-  assert.equal(clouds.length, 1, "one track for both themes");
-  assert.ok((clouds[0].match(/radial-gradient/g) || []).length >= 4, "heavily clouded");
-  const base = clouds[0].match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/);
-  assert.ok(base && Number(base[1]) < 40 && Number(base[4]) >= 0.85, "dark and dense under the clouds, so the white reads in light and dark");
-  assert.match(rule(".adcurl, .adface"), /background: var\(--ad-cloud\); background-size: 100cqw 100%;/, "one cloudscape across the face and the curls");
+  assert.ok(clouds.length >= 2, "a cloud for the dark glass and one for the light");
+  for (const c of clouds) {
+    assert.ok((c.match(/radial-gradient\(/g) || []).length >= 5, "heavily clouded: puffs all along the band");
+    const base = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/);
+    assert.ok(base, "a haze under the puffs");
+    const [r1, , , a1, r2, , , a2] = base.slice(1).map(Number);
+    assert.ok(Math.min(r1, r2) >= 60, "grey, never black: " + base[0]);
+    assert.ok(Math.max(a1, a2) <= 0.6 && Math.min(a1, a2) >= 0.3, "frosted — more clouded than the glass, never opaque");
+  }
+  assert.match(rule(".adface, .adslice"), /background: var\(--ad-cloud\);/, "one cloudscape along the face and every slice");
 });
 
-test("placed where it was, ever so slightly longer; its ends curl round the deck's sides", () => {
-  const pad = Number(css.match(/\.ccad \{[^}]*padding: 0 calc\(var\(--u\) \* ([\d.]+) \* var\(--dk-sx\)\)/)[1]);
-  const curl = Number(rule(".adstrip").match(/--ad-e: calc\(var\(--u\) \* ([\d.]+) \* var\(--dk-sx\)\);/)[1]);
-  const faceStart = pad + curl;
-  assert.ok(faceStart < 40 && 40 - faceStart <= 6, "the face begins " + faceStart + " units in, where the pill began 40: longer by at most 6 a side");
+test("the band wraps the whole deck: edge to edge, round each side as a quarter cylinder", () => {
+  assert.match(css, /\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* 30\);/, "no side padding: the band runs the deck's whole width");
+  const r = Number(rule(".adstrip").match(/--ad-r: calc\(var\(--u\) \* ([\d.]+) \* var\(--dk-sx\)\);/)[1]);
+  assert.ok(r < 40 && 40 - r <= 6, "the face begins " + r + " units in, where the pill began 40: longer by at most 6 a side");
   assert.match(rule(".adstrip"), /height: calc\(var\(--u\) \* 52\);/, "its height unchanged");
-  assert.match(rule(".adcurl.l"), /transform-origin: 100% 50%; transform: perspective\(calc\(var\(--u\) \* 300\)\) rotateY\(calc\(-1 \* var\(--ad-curl\)\)\);/, "the left end turns away about its hinge, seen from the hinge");
-  assert.match(rule(".adcurl.r"), /transform-origin: 0 50%; transform: perspective\(calc\(var\(--u\) \* 300\)\) rotateY\(var\(--ad-curl\)\);/, "and the right");
-  assert.equal(Number(css.match(/--ad-curl: ([\d.]+)deg;/)[1]), CURL_DEG, "the CSS turns the curls by lib/adcrawl.js's angle");
-  assert.ok(CURL_DEG >= 35 && CURL_DEG < 80, "away, never edge-on");
-  assert.ok(!/\.adtrack \{[^}]*perspective:/.test(css), "no shared vantage at the track's middle (from there the far curls went edge-on)");
-  // the band runs on through the right curl in the track's own coordinates: continuous across the hinge
-  assert.match(css, /\.adcurl\.r \.adband \{ left: calc\(var\(--ad-e\) - 100cqw\); \}/);
-  assert.match(css, /\.adwin \.adband \{ left: calc\(-1 \* var\(--win-x\)\); \}/);
+  const w = wrapSlices();
+  assert.equal(w.left.length, WRAP_SLICES);
+  assert.ok(WRAP_SLICES >= 4, "enough slices that the squeeze reads as a curve");
+  const shown = (side) => side.reduce((n, g) => n + g.scale * w.arc, 0);
+  assert.ok(Math.abs(shown(w.left) - 1) < 1e-9 && Math.abs(shown(w.right) - 1) < 1e-9, "each side shows exactly one radius wide");
+  assert.ok(Math.abs(w.arc * WRAP_SLICES - Math.PI / 2) < 1e-9, "each side is a quarter turn of band");
+  // left: outermost first, so the squeeze eases off toward the face; right: the mirror
+  for (let j = 1; j < WRAP_SLICES; j++) assert.ok(w.left[j].scale > w.left[j - 1].scale && w.right[j].scale < w.right[j - 1].scale, "ever harder toward the silhouette");
+  assert.ok(w.left[0].scale < 0.15 && w.right[WRAP_SLICES - 1].scale < 0.15, "nearly edge-on at the silhouette");
+  assert.ok(w.left[WRAP_SLICES - 1].scale > 0.95, "nearly flat where it meets the face");
+  // the slices tile the side with no gap: each begins where the last showed its end
+  for (let j = 1; j < WRAP_SLICES; j++) {
+    assert.ok(Math.abs(w.left[j].at - (w.left[j - 1].at + w.left[j - 1].scale * w.arc)) < 1e-9, "left tiles");
+    assert.ok(Math.abs(w.right[j].at - (w.right[j - 1].at + w.right[j - 1].scale * w.arc)) < 1e-9, "right tiles");
+    assert.ok(Math.abs(w.left[j].from - j * w.arc) < 1e-9 && Math.abs(w.right[j].from - j * w.arc) < 1e-9, "and the band runs on through them");
+  }
+  assert.match(rule(".adslice"), /transform-origin: 0 50%; transform: scaleX\(var\(--s\)\);/, "each slice squeezed from its own left edge");
+  assert.match(css, /--ad-q: 1\.5708;/, "a quarter turn of band each side");
+  // the band in its unrolled coordinates in every piece: continuous round both sides
+  assert.match(css, /\.adface \.adband \{ left: calc\(-1 \* var\(--ad-q\) \* var\(--ad-r\)\); \}/);
+  assert.match(css, /\.adslice\.l \.adband \{ left: calc\(-1 \* var\(--from\) \* var\(--ad-r\)\); \}/);
+  assert.match(css, /\.adslice\.r \.adband \{ left: calc\(-1 \* \(100cqw - 2 \* var\(--ad-r\) \+ var\(--ad-q\) \* var\(--ad-r\) \+ var\(--from\) \* var\(--ad-r\)\)\); \}/);
+  assert.match(read("app/components/AdStrip.jsx"), /track\.offsetWidth - 2 \* r \+ Math\.PI \* r/, "the crawl covers the whole unrolled band");
 });
 
 test("ADs: a negative imprint in a solid glowing white chip", () => {
   const strip = read("app/components/AdStrip.jsx");
-  assert.match(strip, /<span className="adslot">ADs<\/span>/);
+  assert.match(strip, /<span className="adslot" aria-hidden="true">ADs<\/span>/);
   const chip = rule(".adslot");
   assert.match(chip, /background: var\(--ad-chip\); color: var\(--ad-chip-ink\); box-shadow: var\(--ad-chip-glow\);/);
   assert.match(css, /--ad-chip: #f6fbff;/, "solid white");
-  assert.match(css, /--ad-chip-ink: #0b0e11;/, "the word cut to the track's dark");
+  assert.match(css, /--ad-chip-ink: #0b0e11;/, "the word cut to the deck's ink");
   assert.match(css, /--ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba\(255, 255, 255, [\d.]+\)/, "glowing white");
   assert.ok(!/var\(--red\)|--glow-r|var\(--warn\)/.test(chip), "no red");
   assert.ok(!/\.adslot[,)]/.test(css), "no group rule gives it the red glow any more");
+  assert.ok(!/devlights|<Lamp/.test(strip), "no red squares");
 });

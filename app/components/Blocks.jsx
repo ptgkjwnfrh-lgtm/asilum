@@ -100,8 +100,6 @@ export function blinkLamp(target, { quiet = false } = {}) {
     lamp.__off = setTimeout(() => lamp.removeAttribute("data-blink"), 1900);
   }
   if (!quiet) haptic("press");
-  // the deck's status lights answer every lamp (the device reporting)
-  try { if (!el.closest || !el.closest(".devlights")) window.dispatchEvent(new CustomEvent("asilum:lamp")); } catch {}
 }
 
 /** An MRZ-style line: words joined by "<", run out with "<", a blinking block cursor at the end. */

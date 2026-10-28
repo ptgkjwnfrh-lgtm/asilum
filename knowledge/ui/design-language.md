@@ -967,3 +967,19 @@ add ticker should stretch all around it".
   advertiser's own words (`adLine`; no ad source exists yet, so none runs);
   a device's own promotion draft as an ad marked "(DRAFT)". Each entry still
   speaks its label to assistive technology (a BRDCST is read as sponsored).
+- Then, the same day: "i said clouded no black, i just wanted it more
+  clouded than the fixture and i wanted the bar to stretch the entirety of
+  the fixture … wrap around the whole thing 360 degrees not just stuck on
+  the middle, also get rid of those two red squares". The band is frosted
+  grey CLOUD (`--ad-cloud`, one for the dark glass and a shade deeper for
+  the light, never black, never opaque), and it runs the deck's WHOLE width
+  (`.ccad` has no side padding). Each side is a quarter cylinder of radius
+  `--ad-r` drawn as `WRAP_SLICES` (6) flat slices (lib/adcrawl.js
+  `wrapSlices`: each the band's arc laid flat and squeezed from its left
+  edge by its shown width over its arc, dimmed by `--ad-turn` as it turns),
+  so the words narrow to nothing at the deck's silhouette and run on round
+  the back; the band is continuous through every slice. The perspective
+  curls and `CURL_DEG` are gone. ADs sits at the face's left, the words
+  passing under it. The two red status lights are gone, and so is the
+  `asilum:lamp` event that only they answered. Measured: 181 frames in 3 s,
+  the worst 18 ms, no long task, with all twelve slices crawling.

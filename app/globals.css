@@ -387,26 +387,29 @@ button { font-family: var(--helv); }
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
   --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
-  /* THE AD TICKER'S TRACK (owner, 28 Oct 2026: "glowing white text … on an a
-     heavly clouded track to make the text more visible"): smoked glass with
-     clouds in it, dark in both themes like the reference's display; the
-     words white with a glow; the ADs chip solid glowing white, its word cut
-     to the track's dark */
-  --ad-cloud: radial-gradient(22% 160% at 9% 25%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(28% 130% at 30% 90%, rgba(255, 255, 255, 0.11), transparent 70%), radial-gradient(20% 150% at 52% 15%, rgba(255, 255, 255, 0.14), transparent 70%), radial-gradient(30% 140% at 72% 80%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(22% 150% at 93% 30%, rgba(255, 255, 255, 0.15), transparent 70%), linear-gradient(180deg, rgba(30, 34, 38, 0.9), rgba(6, 8, 10, 0.95));
-  --ad-shade: rgba(0, 0, 0, 0.6);
+  /* THE AD TICKER'S BAND (owner, 28 Oct 2026: "glowing white text … on an a
+     heavly clouded track", then "i said clouded no black, i just wanted it
+     more clouded than the fixture"): frosted cloud, heavier than the deck's
+     near-clear glass — a milky grey haze with brighter puffs in it, a shade
+     deeper on the light glass so the white still reads, a shade paler on the
+     dark; the words white with a glow; the ADs chip solid glowing white, its
+     word cut to the deck's ink */
+  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.14), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.18), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.13), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.18), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.14), transparent 70%), linear-gradient(180deg, rgba(150, 160, 172, 0.34), rgba(120, 130, 142, 0.4));
+  --ad-turn: linear-gradient(90deg, rgba(40, 46, 54, 0.55), rgba(40, 46, 54, 0.55));
+  --ad-rim: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --ad-glyph: #f4f9fc;
   --ad-glow: 0 0 1px rgba(255, 255, 255, 0.85), 0 0 6px rgba(255, 255, 255, 0.5);
   --ad-chip: #f6fbff;
   --ad-chip-ink: #0b0e11;
   --ad-chip-glow: 0 0 1px #ffffff, 0 0 6px rgba(255, 255, 255, 0.7), 0 0 12px rgba(255, 255, 255, 0.35);
-  --ad-curl: 50deg; /* lib/adcrawl.js CURL_DEG */
   --helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif; /* the asterisk's face (the owner's artwork), the system's own: Helvetica's asterisk matched the artwork's (IoU 0.85), Neue's did not (0.60) */
 }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
   --wm-ink: #001512; /* the artwork's ink */
+  --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.22), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.15), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.16), transparent 70%), linear-gradient(180deg, rgba(84, 96, 110, 0.5), rgba(64, 76, 90, 0.56));
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; --ad-cloud: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.22), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.16), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.15), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.2), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.16), transparent 70%), linear-gradient(180deg, rgba(84, 96, 110, 0.5), rgba(64, 76, 90, 0.56)); } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -3488,42 +3491,44 @@ body { font-size: 14px; }
    lower ends (52), and ends above the grill's top lip, so the deck grows by
    --ad-h alone.
    THE TICKER ROUND THE DECK (owner, 28 Oct 2026, the MAD-S player's display;
-   AdStrip.jsx, lib/adcrawl.js): a heavily clouded track — dark, so the white
-   reads in both themes — whose face sits where the pill sat, ever so
-   slightly longer (it began 40 units in, now 34), and whose ends CURL away
-   round the deck's sides in perspective (--ad-e each, from 4 units in); the
-   entries crawl as one glowing white line of Share Tech Mono, regular, at
-   -0.0875em (the owner's "-8.5 to -9 kerning", Procreate's per-cent of the
-   em), out of the right curl, along the face and under the label; the label
-   is the status lights and ADs knocked out of a glowing white chip. */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 4 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
+   then "i said clouded no black, i just wanted it more clouded than the
+   fixture and i wanted the bar to stretch the entirety of the fixture … wrap
+   around the whole thing 360 degrees"; AdStrip.jsx, lib/adcrawl.js): a band
+   of cloud — frosted, heavier than the deck's own glass, never black — across
+   the deck edge to edge, turning round each side as a quarter cylinder of
+   radius --ad-r: WRAP_SLICES flat slices a side, each the band's arc laid
+   flat and squeezed from its left edge, so the words narrow to nothing at
+   the deck's silhouette and run on round the back. The entries crawl as one
+   glowing white line of Share Tech Mono, regular, at -0.0875em (the owner's
+   "-8.5 to -9 kerning", Procreate's per-cent of the em); ADs is knocked out
+   of a glowing white chip at the face's left. */
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 30); box-sizing: border-box; }
 .adstrip {
-  --ad-e: calc(var(--u) * 30 * var(--dk-sx)); /* each curl, seen from its own hinge (perspective() on the curl, not the track: from the track's middle the far curls went edge-on) */
+  --ad-r: calc(var(--u) * 34 * var(--dk-sx)); /* each side's radius: the face keeps the pill's place, a touch longer */
+  --ad-q: 1.5708; /* a quarter turn, in radians: the arc of each side, in radii */
   position: relative; height: calc(var(--u) * 52); width: 100%; min-width: 0; margin: 0; box-sizing: border-box;
   font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
 }
-.adtrack { position: absolute; inset: 0; display: flex; container-type: inline-size; }
-.adcurl, .adface { position: relative; height: 100%; overflow: hidden; background: var(--ad-cloud); background-size: 100cqw 100%; }
-.adcurl { flex: none; width: var(--ad-e); }
-.adcurl.l { border-radius: 999px 0 0 999px; transform-origin: 100% 50%; transform: perspective(calc(var(--u) * 300)) rotateY(calc(-1 * var(--ad-curl))); background-position: 0 0; }
-.adcurl.r { border-radius: 0 999px 999px 0; transform-origin: 0 50%; transform: perspective(calc(var(--u) * 300)) rotateY(var(--ad-curl)); background-position: calc(var(--ad-e) - 100cqw) 0; }
-/* the curl turns away from the light */
-.adcurl::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-.adcurl.l::after { background: linear-gradient(90deg, var(--ad-shade), transparent 90%); }
-.adcurl.r::after { background: linear-gradient(270deg, var(--ad-shade), transparent 90%); }
-.adface { flex: 1; min-width: 0; display: flex; align-items: center; background-position: calc(-1 * var(--ad-e)) 0; }
-.adlabel { flex: none; display: inline-flex; align-items: center; gap: calc(var(--u) * 12); padding: 0 calc(var(--u) * 10) 0 calc(var(--u) * 12); }
-/* the negative imprint: a solid glowing white chip, the word cut out of it to the track's own dark */
-.adslot { display: inline-block; padding: 0.16em 0.34em 0.12em 0.3em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
-.adwin { position: relative; flex: 1; align-self: stretch; min-width: 0; overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 calc(var(--u) * 30)); mask-image: linear-gradient(90deg, transparent, #000 calc(var(--u) * 30)); }
+.adtrack { position: absolute; inset: 0; container-type: inline-size; }
+/* one cloudscape along the whole unrolled band: the face and every slice show their own stretch of it */
+.adface, .adslice { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
+.adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; box-shadow: var(--ad-rim); }
+.adslice { width: calc(var(--arc) * var(--ad-r) + 1px); transform-origin: 0 50%; transform: scaleX(var(--s)); }
+.adslice.l { left: calc(var(--at) * var(--ad-r)); background-position: calc(-1 * var(--from) * var(--ad-r)) 0; }
+.adslice.r { left: calc(100cqw - var(--ad-r) + var(--at) * var(--ad-r)); background-position: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))) 0; }
+/* each slice dims as it turns from the light */
+.adslice::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: var(--ad-turn); opacity: calc(var(--sh) * 0.9); }
+/* the band, in its own unrolled coordinates in every piece: continuous round both sides */
 .adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
-.adwin .adband { left: calc(-1 * var(--win-x)); }
-.adcurl.r .adband { left: calc(var(--ad-e) - 100cqw); }
+.adface .adband { left: calc(-1 * var(--ad-q) * var(--ad-r)); }
+.adslice.l .adband { left: calc(-1 * var(--from) * var(--ad-r)); }
+.adslice.r .adband { left: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))); }
 .adseq { display: flex; flex: none; }
 .adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
 .adword::after { content: "\00B7"; margin: 0 0.9em; opacity: 0.55; }
 a.adword:hover { color: var(--ad-chip); }
+/* the negative imprint: a solid glowing white chip at the face's left, the word cut out of it to the deck's ink; the words pass under it */
+.adslot { position: absolute; z-index: 1; left: calc(var(--u) * 10); top: 50%; transform: translateY(-50%); padding: 0.16em 0.34em 0.12em 0.3em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
 .adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; }
 .adstrip.held .adband { animation-play-state: paused; }
 @keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
@@ -4879,9 +4884,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 @keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
 /* the deck's two status lights, at the end of the ad strip */
-.devlights { display: inline-flex; gap: 4px; flex: none; }
-.devlights .lamp { width: 8px; height: 8px; margin: 0; }
-.devlights .lamp + .lamp[data-blink="eject"] { animation-delay: 0.1s; }
 /* an MRZ line: words in the ink, chevrons in red, a block cursor blinking at the end */
 .mrzline { font: 13px/1.5 var(--mono); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; display: block; text-overflow: clip; }
 .mrzline b { font-weight: 400; color: var(--ink); }

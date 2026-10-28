@@ -54,8 +54,8 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble, beneath the keys and above the vent
   assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} \/><\/div>/, "the ad bubble on the deck");
   assert.ok(deck.indexOf('className="ccad"') > deck.indexOf('className="ccrow"'), "the bubble comes after the row of keys");
-  // (28 Oct 2026) the ticker curls round the deck's sides: the bubble reaches to 4 units in (tests/v2-ticker.test.js)
-  const ad = rules.match(/\.ccad \{[^}]*padding: 0 calc\(var\(--u\) \* 4 \* var\(--dk-sx\)\) calc\(var\(--u\) \* (\d+)\)/);
+  // (28 Oct 2026) the ticker wraps the whole deck: the bubble has no side padding (tests/v2-ticker.test.js)
+  const ad = rules.match(/\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* (\d+)\)/);
   const gr = rules.match(/\.ccgrill \{[^}]*bottom: calc\(var\(--u\) \* (\d+)\); height: max\(4px, calc\(var\(--u\) \* (\d+)\)\)/s);
   assert.ok(ad && gr, "the bubble and the grill are placed in sketch units");
   assert.ok(Number(ad[1]) > Number(gr[1]) + Number(gr[2]), "the bubble ends above the grill's top lip");
