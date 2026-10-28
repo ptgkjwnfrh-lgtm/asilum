@@ -19,6 +19,8 @@
 // PULL; the owner's "take away the rainbow", 26 Oct), and
 // tests/v2-fixtures-sketch.test.js fails if the split reaches another glass.
 
+import { LENS_SMOOTH } from "./LiquidGlass.jsx";
+
 export const V1_PULL = Object.freeze([80, 86, 92]);
 
 // the filter, as V.1 drew it (only the refs' names follow the shared hook's)
@@ -39,7 +41,9 @@ function V1Defs({ id, mapRef, weightRef, strength = 1 }) {
       <feComposite data-lens="1" in="chRG" in2="chB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens" />
       <feColorMatrix in="lgw" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="w" />
       <feColorMatrix in="lgw" type="matrix" values="-1 0 0 0 1  -1 0 0 0 1  -1 0 0 0 1  0 0 0 0 1" result="iw" />
-      <feComposite data-lens="1" in="lens" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
+      {/* the bent band eased by a hairline, as every pane's is (LiquidGlass.jsx LENS_SMOOTH) */}
+      <feGaussianBlur data-lens="1" in="lens" stdDeviation={LENS_SMOOTH} result="lensSmooth" />
+      <feComposite data-lens="1" in="lensSmooth" in2="w" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="lensW" />
       <feComposite in="SourceGraphic" in2="iw" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="frostW" />
       <feComposite in="lensW" in2="frostW" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" />
     </filter>
@@ -61,7 +65,8 @@ function v1Chain(strength = 1) {
     `<feColorMatrix data-pb="1" in="bG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="cG"/>` +
     `<feColorMatrix data-pb="1" in="bB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="cB"/>` +
     `<feComposite in="cR" in2="cG" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="cRG"/>` +
-    `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="lens"/>` +
+    `<feComposite in="cRG" in2="cB" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="bent"/>` +
+    `<feGaussianBlur data-pb="1" in="bent" stdDeviation="${LENS_SMOOTH}" result="lens"/>` +
     `<feComposite in="lens" in2="SourceGraphic" operator="over"/>`;
 }
 

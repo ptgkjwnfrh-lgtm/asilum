@@ -840,7 +840,8 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .floatscrim { position: absolute; inset: 0; background: none; border: 0; padding: 0; cursor: zoom-out; }
 .floathalo { position: absolute; border-radius: 7px; filter: blur(48px); opacity: 0.3; transform: scale(1.12); pointer-events: none; }
 .floatcard {
-  position: relative; border-radius: 7px; overflow: hidden; will-change: transform;
+  position: relative; border-radius: 7px; overflow: hidden; /* no will-change: a tilted card re-rasters crisp (28 Oct 2026) */
+  outline: 1px solid transparent; -webkit-backface-visibility: hidden; backface-visibility: hidden;
   padding: 0; border: 0; background: none; cursor: zoom-out; display: block;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   box-shadow: var(--sx, 0px) var(--sy, 40px) 90px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -3384,8 +3385,9 @@ body { font-size: 14px; }
   --u: clamp(0.4px, 0.1vw, 0.5px);
   /* WIDER (owner, 26 Oct 2026: "let's also widen the central control
      fixture"): the drawn 745 stretched sideways by --dk-sx; the cuts, the
-     grill and the insets that sit in it stretch with it, the heights do not */
-  --dk-sx: 1.1;
+     grill and the insets that sit in it stretch with it, the heights do not;
+     (28 Oct: "ever so slightly widen the center fixture") 1.1 → 1.14 */
+  --dk-sx: 1.14;
   --dk-w: calc(var(--u) * 745 * var(--dk-sx));
   --dk-h: calc(var(--u) * 175);
   --dk-r: calc(var(--u) * 18);
@@ -4862,7 +4864,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .pfloatclose { color: var(--ink); }
 .pfloatcard {
   position: relative; width: min(84vw, 380px); max-height: 86vh; overflow: hidden auto; padding: 14px 14px 16px;
-  border-radius: var(--radius-card); isolation: isolate; will-change: transform;
+  border-radius: var(--radius-card); isolation: isolate; outline: 1px solid transparent; /* no will-change: crisp when it tilts (28 Oct 2026) */
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
@@ -5249,11 +5251,17 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
 .f20stage:active { cursor: grabbing; }
 .f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
-.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(4px, 4.7%, 12px); overflow: hidden; background: var(--bg3); will-change: transform; }
+/* the cards drawn crisp (owner, 28 Oct 2026: "the cards … look rly pixley"):
+   no will-change — it froze each card's raster at its flat size and the
+   turn stretched that bitmap, so the edge swinging toward the viewer went
+   blocky; the browser now re-rasters a turned card at the size it shows.
+   A transparent outline gives a turned card's edges the smoothing the
+   compositor otherwise skips, and the far side is never drawn. */
+.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(4px, 4.7%, 12px); overflow: hidden; background: var(--bg3);
+  outline: 1px solid transparent; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .f20card img { -webkit-user-drag: none; pointer-events: none; }
 .f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
 .f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
-@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
 /* the motion row's 9:16 cards; the one in the middle plays */
 .mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
 .mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
@@ -5404,8 +5412,11 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
    opens it (the field is there all along, so the tap can focus it and a
    phone raises its keyboard). Reduced motion: it appears without the drop. */
 .ccenter .tabl.ccdm { position: relative; }
+/* the count sits over the envelope's top-left corner (owner, 28 Oct 2026:
+   "the notification bubble on the direct message button should sit overtop
+   of the button on its left corner") */
 .dmcount {
-  position: absolute; top: calc(var(--u) * 14); left: calc(50% + var(--u) * 14); min-width: 15px; height: 15px; padding: 0 4px;
+  position: absolute; z-index: 2; top: calc(50% - var(--u) * 34); right: calc(50% + var(--u) * 14); min-width: 15px; height: 15px; padding: 0 4px;
   border-radius: 999px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; text-align: center;
 }
 .mailpanel.embedded { position: static; z-index: auto; width: auto; max-height: none; padding: 0; border: 0; box-shadow: none; background: none; }

@@ -73,22 +73,28 @@ function bendProfile(t) {
 // grey (xNode, yNode) and recombined inside the filter, where nothing is
 // colour-managed. The colour picture (node) is still drawn for the
 // page-side bend.
-export function drawRefractionMap(node, weightNode, w, h, radius, open, features = null, bezel = null, xNode = null, yNode = null) {
+// `scale` (28 Oct 2026: the owner found the warps "rly pixley"): the map is
+// drawn at the screen's own pixels — a map of one sample per CSS pixel on a
+// 2× screen bent the backdrop in 2×2 steps, a staircase down every curve.
+// Distances stay in CSS pixels; only the sampling is finer.
+export function drawRefractionMap(node, weightNode, w, h, radius, open, features = null, bezel = null, xNode = null, yNode = null, scale = 1) {
+  const S = Math.max(1, scale || 1);
+  const W = Math.max(1, Math.round(w * S)), H = Math.max(1, Math.round(h * S));
   const c = document.createElement("canvas");
-  c.width = w; c.height = h;
+  c.width = W; c.height = H;
   const ctx = c.getContext("2d");
   const cw = document.createElement("canvas");
-  cw.width = w; cw.height = h;
+  cw.width = W; cw.height = H;
   const ctxw = cw.getContext("2d");
   if (!ctx || !ctxw) return;
-  const img = ctx.createImageData(w, h);
+  const img = ctx.createImageData(W, H);
   const d = img.data;
-  const imgw = ctxw.createImageData(w, h);
+  const imgw = ctxw.createImageData(W, H);
   const dw = imgw.data;
-  const cx = document.createElement("canvas"); cx.width = w; cx.height = h;
-  const cy = document.createElement("canvas"); cy.width = w; cy.height = h;
+  const cx = document.createElement("canvas"); cx.width = W; cx.height = H;
+  const cy = document.createElement("canvas"); cy.width = W; cy.height = H;
   const ctxx = cx.getContext("2d"), ctxy = cy.getContext("2d");
-  const imgx = ctxx ? ctxx.createImageData(w, h) : null, imgy = ctxy ? ctxy.createImageData(w, h) : null;
+  const imgx = ctxx ? ctxx.createImageData(W, H) : null, imgy = ctxy ? ctxy.createImageData(W, H) : null;
   const rad = Array.isArray(radius) ? radius : [radius, radius, radius, radius];
   const [rtl, rtr, rbr, rbl] = rad.map((v) => Math.max(0, Math.min(v || 0, w / 2, h / 2)));
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -105,8 +111,10 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
   // normalise the profile so the strongest bend uses the full channel
   let peak = 0;
   for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
+  for (let py = 0; py < H; py++) {
+    const y = (py + 0.5) / S - 0.5; // this sample's place, in CSS pixels
+    for (let px = 0; px < W; px++) {
+      const x = (px + 0.5) / S - 0.5;
       // distance to each OPEN edge (a closed edge is infinitely far)
       const dl = o.left ? x + 0.5 : Infinity, dr = o.right ? w - x - 0.5 : Infinity;
       const dt = o.top ? y + 0.5 : Infinity, db = o.bottom ? h - y - 0.5 : Infinity;
@@ -169,7 +177,7 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
         bw = Math.max(bw, 1 - t * 0.8);
       }
       vx = Math.max(-1, Math.min(1, vx)); vy = Math.max(-1, Math.min(1, vy));
-      const i = (y * w + x) * 4;
+      const i = (py * W + px) * 4;
       d[i] = Math.round(128 + vx * 127);
       d[i + 1] = Math.round(128 + vy * 127);
       d[i + 2] = 128;
@@ -206,6 +214,21 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
 // with it. The bend stays; the colours travel together. The header runs at
 // 1; the popups at 0.8.
 export const PULL = 86;
+// THE FINISH (owner, 28 Oct 2026: "the liquid glass warps look rly pixley …
+// make it look professional like apple level rendering"). Two causes, two
+// cures: the maps are drawn at the screen's own pixels (mapScale, up to 2×,
+// held under MAP_MAX_PX samples so a wide retina pane stays quick), and a
+// displacement samples its source without smoothing, so the bent band alone
+// is eased by LENS_SMOOTH px — a hairline, under a device pixel at 2×; the
+// clear middle is never touched.
+export const LENS_SMOOTH = 0.45;
+export const MAP_MAX_PX = 700000;
+export function mapScale(w, h) {
+  const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+  let s = Math.min(2, Math.max(1, dpr));
+  while (s > 1 && w * h * s * s > MAP_MAX_PX) s -= 0.25;
+  return s;
+}
 export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1 }) {
   const pull = (PULL * strength).toFixed(1);
   return (
@@ -235,7 +258,10 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
           edge band when only one edge is open (the strip), so the clear
           middle costs nothing; every colour bends alike */}
       <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
-      <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="lens" />
+      <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="bent" />
+      {/* the bent band eased by a hairline: a displacement samples without
+          smoothing, and its steps read as pixels (28 Oct 2026) */}
+      <feGaussianBlur data-lens="1" in="bent" stdDeviation={LENS_SMOOTH} result="lens" />
       {/* lens × weight + clear × (1 − weight): the weight picture read
           into COLOUR at full alpha, and its complement, so the blend is
           plain arithmetic — no alpha mask, nothing premultiplied to
@@ -316,7 +342,8 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
       (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-      `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="lens"/>` +
+      `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="bent"/>` +
+      `<feGaussianBlur data-pb="1" in="bent" stdDeviation="${LENS_SMOOTH}" result="lens"/>` +
       `<feComposite in="lens" in2="SourceGraphic" operator="over"/>`;
   };
   let serial = 0;
@@ -494,7 +521,7 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
       if (mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
         const cs = getComputedStyle(el);
         const radius = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius].map((v) => parseFloat(v) || 0);
-        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open, lensFeatures(el), bezel === "fixture" ? fixtureBezel() : bezel, xRef.current, yRef.current);
+        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open, lensFeatures(el), bezel === "fixture" ? fixtureBezel() : bezel, xRef.current, yRef.current, mapScale(r.width, r.height));
         if (refract) {
           el.style.setProperty("--lg-filter", `url(#${id})`);
           el.dataset.refract = "1";
@@ -567,7 +594,9 @@ export const GLASS_REACTIVE = ".lgrx";
 // same --u as globals.css (clamp(0.4px, 0.1vw, 0.5px)), so the Info Dock
 // and the globe bend over the same band the deck does (each still capped
 // at half its own height, which the 88-unit top fixtures barely reach).
-export const FIXTURE_BEZEL_UNITS = 175 * 0.26;
+// (28 Oct 2026, the owner: "for the liquid glass bar and the center fixture
+// i want their warp bezel extended slightly": 26% → 31%.)
+export const FIXTURE_BEZEL_UNITS = 175 * 0.31;
 export function fixtureBezel() {
   const u = Math.min(0.5, Math.max(0.4, (typeof window === "undefined" ? 1000 : window.innerWidth) * 0.001));
   return u * FIXTURE_BEZEL_UNITS;

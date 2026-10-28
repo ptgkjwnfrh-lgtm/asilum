@@ -27,8 +27,17 @@
 // wheel turns it too, by an f20step event, while it is centred. The page
 // still scrolls vertically through it (touch-action: pan-y). Reduced
 // motion: no gliding — the cards jump to their places.
+//
+// THE RING (owner, 28 Oct 2026: "for carousels they should be infinite,
+// however the first and last card should have a slight magnetic drag"):
+// past the last card comes the first, either way; every card takes its
+// place by its offset from the centre the short way round, so the stacks
+// either side always hold the rest. The seam between the last card and
+// the first holds the hand back a little and stops a flick on its card
+// (lib/fig20.js). Keys, the deck's wheel and a tap go round freely.
 
 import { useEffect, useRef } from "react";
+import { wrap, ringOffset, nearestTo, seamDrag, settleTarget } from "../../lib/fig20.js";
 
 export const FLAT = 3;            // cards that lie flat
 const FLAT_SHARE = 0.72;          // of the width the flat cards may take
@@ -62,8 +71,9 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       const mid = W / 2, top = (H - ch) / 2;
       const vis = cw * Math.cos((EDGE_DEG * Math.PI) / 180); // a turned card's footprint
       const room = Math.max(0, (W - flatW) / 2 - gap - vis);   // what each stack has beyond its first card
-      const centre = Math.round(s.pos);
-      const nL = Math.max(0, centre - Math.ceil(half)), nR = Math.max(0, n - 1 - centre - Math.ceil(half));
+      // each card's offset from the centre, the short way round the ring
+      const offs = Array.from(cards, (_, i) => ringOffset(i, s.pos, n));
+      const nL = offs.filter((d) => d < -half).length, nR = offs.filter((d) => d > half).length;
       const sl = Math.min(14, room / Math.max(1, Math.max(nL, nR) - 1));
       s.step = cw + gap;
       for (let i = 0; i < cards.length; i++) {
@@ -71,7 +81,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
         c.style.width = cw.toFixed(1) + "px";
         c.style.height = ch.toFixed(1) + "px";
         c.style.top = top.toFixed(1) + "px";
-        const d = i - s.pos;
+        const d = offs[i];
         const a = Math.abs(d), sgn = d < 0 ? -1 : 1;
         if (a <= half) {
           c.style.transformOrigin = "center center";
@@ -101,9 +111,10 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       else s.pos += diff * 0.2;
       layout();
       if (s.pos !== s.target) s.raf = requestAnimationFrame(glide);
-      else { stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: Math.round(s.pos) } })); if (onSettle) onSettle(Math.round(s.pos)); }
+      else { stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } })); if (onSettle) onSettle(wrap(s.pos, n)); }
     };
-    const go = (to) => { s.target = Math.max(0, Math.min(n - 1, to)); if (!s.raf) s.raf = requestAnimationFrame(glide); };
+    // the ring has no ends: any card, either way round
+    const go = (to) => { s.target = to; if (!s.raf) s.raf = requestAnimationFrame(glide); };
 
     const down = (e) => {
       if (e.button) return;
@@ -120,7 +131,8 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       const now = performance.now();
       g.v = (e.clientX - g.lastX) / Math.max(1, now - g.lastT);
       g.lastX = e.clientX; g.lastT = now;
-      s.pos = s.target = Math.max(-0.4, Math.min(n - 0.6, g.pos - dx / s.step));
+      // the hand moves the ring, held back a little across the seam
+      s.pos = s.target = seamDrag(g.pos, -dx / s.step, n);
       if (s.raf) { cancelAnimationFrame(s.raf); s.raf = 0; }
       layout();
     };
@@ -128,20 +140,20 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       const g = s.drag;
       s.drag = null;
       if (!g || !s.moved) return;
-      // a flick carries on a card or two
-      go(Math.round(s.pos - (g.v * 160) / s.step));
+      // a flick carries on a card or two, and stops on the card at the seam
+      go(settleTarget(s.pos, -(g.v * 160) / s.step, n));
     };
     const click = (e) => {
       if (s.moved) { e.preventDefault(); e.stopPropagation(); s.moved = false; return; }
       const card = e.target.closest && e.target.closest(".f20card");
       if (!card) return;
       const i = Array.prototype.indexOf.call(stage.children, card);
-      if (i >= 0 && i !== Math.round(s.pos)) { e.preventDefault(); e.stopPropagation(); go(i); }
+      if (i >= 0 && i !== wrap(s.pos, n)) { e.preventDefault(); e.stopPropagation(); go(nearestTo(i, s.pos, n)); }
     };
     const wheel = (e) => {
       if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
       e.preventDefault();
-      s.target = Math.max(0, Math.min(n - 1, s.target + e.deltaX / s.step));
+      s.target += e.deltaX / s.step;
       clearTimeout(s.snap);
       s.snap = setTimeout(() => go(Math.round(s.target)), 140);
       if (!s.raf) s.raf = requestAnimationFrame(glide);
@@ -154,8 +166,8 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
     // a step on or back, or to an end
     const step = (e) => {
       const d = (e && e.detail) || {};
-      if (d.to === "first") go(0);
-      else if (d.to === "last") go(n - 1);
+      if (d.to === "first") go(nearestTo(0, s.target, n));
+      else if (d.to === "last") go(nearestTo(n - 1, s.target, n));
       else if (Number.isFinite(d.by)) go(Math.round(s.target) + d.by);
     };
     stage.addEventListener("pointerdown", down);
@@ -169,8 +181,8 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
     const ro = new ResizeObserver(layout);
     ro.observe(stage);
     layout();
-    stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: Math.round(s.pos) } }));
-    if (onSettle) onSettle(Math.round(s.pos));
+    stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } }));
+    if (onSettle) onSettle(wrap(s.pos, n));
     return () => {
       ro.disconnect();
       if (s.raf) cancelAnimationFrame(s.raf);

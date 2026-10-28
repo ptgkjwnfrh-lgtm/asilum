@@ -20,9 +20,10 @@ const fr = (sel) => {
   return m[1].trim().split(/\s+/).map((v) => parseFloat(v));
 };
 
-test("the deck is the sketch's 745 × 175, stretched 1.1 sideways, and every cut sits on a seam between its columns", () => {
+test("the deck is the sketch's 745 × 175, stretched 1.14 sideways, and every cut sits on a seam between its columns", () => {
   // (owner, 26 Oct 2026: "let's also widen the central control fixture") the drawn 745, stretched by --dk-sx
-  assert.match(rules, /--dk-sx: 1\.1;\s*--dk-w: calc\(var\(--u\) \* 745 \* var\(--dk-sx\)\);/);
+  // (28 Oct 2026: "ever so slightly widen the center fixture") 1.1 → 1.14
+  assert.match(rules, /--dk-sx: 1\.14;\s*--dk-w: calc\(var\(--u\) \* 745 \* var\(--dk-sx\)\);/);
   assert.match(rules, /\.cccut \{[^}]*left: calc\(var\(--u\) \* var\(--cut-x\) \* var\(--dk-sx\)\);/, "the cuts stretch with it");
   assert.match(rules, /--dk-h: calc\(var\(--u\) \* 175\);/);
   const outer = fr(".ccrow");
@@ -45,7 +46,7 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(!/cccut|idcut/.test(read("app/components/InfoDock.jsx")), "the Info Dock's cuts left with its pane");
   const glass = read("app/components/LiquidGlass.jsx");
   assert.match(glass, /export function lensFeatures\(el\)/);
-  assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current\);/, "the map is drawn with the carvings, as two greys");
+  assert.match(glass, /drawRefractionMap\(mapRef\.current,[^\n]*, lensFeatures\(el\), bezel === "fixture" \? fixtureBezel\(\) : bezel, xRef\.current, yRef\.current, mapScale\(r\.width, r\.height\)\);/, "the map is drawn with the carvings, as two greys, at the screen's own pixels");
   // the grill sits centred under the POST disc: 40 + 123 + 127 + 162 / 2 = 371, stretched with the deck
   const g = rules.match(/\.ccgrill \{[^}]*left: calc\(var\(--u\) \* \(371 \* var\(--dk-sx\) - ([\d.]+)\)\); width: calc\(var\(--u\) \* ([\d.]+)\)/s);
   assert.ok(g, "the grill is placed in sketch units");
@@ -194,7 +195,8 @@ test("the bend is centred: no coloured map ever reaches a displacement, and the 
   }
   assert.match(defs, /<feColorMatrix in="lgx" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0\.5" result="lgxa" \/>/, "the alpha held at a half");
   assert.ok(!/in2="lgmap"/.test(defs), "the colour map is off the chain");
-  assert.match(glass, /export const FIXTURE_BEZEL_UNITS = 175 \* 0\.26;/, "one bezel for the deck, the Info Dock and the globe");
+  // (28 Oct 2026: "for the liquid glass bar and the center fixture i want their warp bezel extended slightly") 26% → 31%
+  assert.match(glass, /export const FIXTURE_BEZEL_UNITS = 175 \* 0\.31;/, "one bezel for the deck and the Masthead's bar");
   assert.match(glass, /Math\.min\(0\.5, Math\.max\(0\.4, [^\n]*\* 0\.001\)\)/, "in the same --u as globals.css");
   assert.match(rules, /--u: clamp\(0\.4px, 0\.1vw, 0\.5px\);/);
 });
