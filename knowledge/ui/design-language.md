@@ -887,3 +887,37 @@ checked what a reader is actually served, which is the claim that matters.
   maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.
 - `.wmimg` is `clamp(78px, 21vw, 110px)` wide.
 
+
+## 28 Oct 2026 — the new logo, and the Masthead's solid glowing line
+
+The owner's artwork (Procreate; `docs/brand/asilum-logo-2026-10-28.jpg`):
+"the asterisk should be in helvetica regular size font size 131 and
+"ASILUM" is in michroma regular size in font size 161 and tracking 5% with
+-15 kerning. the thick solid oblong white line should glow a stark white
+however the solid black text should not, the asterisk and the solid white
+line should have the same glow".
+- `Wordmark.jsx` sets it as TYPE in an SVG (sharp at every size), no
+  picture: two layers on one box, `.wmlit` (the Helvetica asterisk and the
+  bar) under `.wmtype` (the Michroma word, whose S laps the bar as drawn).
+  Geometry is `WM`, in the units of the word's 161, measured off the
+  artwork: every letter's origin (Procreate's tracking and kerning come out
+  at −15.5, −0.096em, between every pair), the asterisk's top on the
+  capitals' line and its left on the A's, the bar flush under the baseline,
+  82.6 deep, from 3.3 to 976.9 across — past the M. Measured against the
+  artwork at the same scale: the word IoU 0.917, the asterisk 0.851 in
+  Helvetica (0.598 in Helvetica Neue, so `--helvetica` puts Helvetica first).
+- ONE GLOW, white (`--wm-glow`): the asterisk, the bar and the Masthead's
+  line wear it and nothing else does; the word never glows. This glow is
+  the owner's and shows in both themes — the exception to "light never
+  glows". Colours: `--wm-ink` the artwork's near-black #001512 in light, a
+  flat phosphor mint #c4f2d6 in dark; `--wm-star` the house red (`--warn`);
+  `--wm-bar` white.
+- Placement is the old logo's: the left edge on the deck's, the capitals as
+  tall as the old ones (`--wm-u` = the old 129/900 of `--wm-w` over 120.75),
+  the baseline where the old word's foot sat.
+- THE LINE (`.mhline`) replaced the stamped line of graduated blocks: one
+  solid thin white line (`--mh-line-h`, 2px desktop / 1.5 phone) in the same
+  glow, from the bar's end (tucked a pixel under it) to the globe's centre,
+  its top on the word's baseline — the bar's top — so the two read as one
+  edge. `.mhstamp`, `STAMP*`, `--stamp-blue` and the logo masks are gone;
+  `--stamp-recess` stays for the wheel's marks.

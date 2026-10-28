@@ -18,17 +18,12 @@
 // Safari the page bends under that edge alone. The lamp under the water
 // follows the current key along the bar.
 //
-// THE STAMPED LINE (owner, 26 Oct 2026, the reference "4.jpg", Ref 2, then
-// "from thinner to larger"): the bar of blocks that sat under the word in
-// the artwork runs the length of the Masthead instead, pressed into the
-// glass — from the left edge of the A (not the asterisk) to the Passport's
-// globe. Graduated, left to right: three small and a large, four times,
-// each group a size up (small ½ → ¾ → 1 → 1¼, each large twice its group's
-// small), every gap 0.45; the last large block, blue, centred under the
-// globe. The columns are fractions, so the pattern fills its span exactly at
-// every width. The word's masks carry no bar (public/model/logo-word-ink.png,
-// logo-word-light.png — renamed from logo-ink / logo-light when the bar was
-// cut, so no cached copy of the old artwork can draw it under the word).
+// THE LINE (owner, 28 Oct 2026: "the broken line that stretches across the
+// masthead should be replaced by a solid thin white glowing line"): one solid
+// thin white line, glowing with the logo's own white glow (--wm-glow), runs
+// on from the end of the logo's bar to the Passport's globe, its top on the
+// word's baseline — the bar's top — so the logo's line and the Masthead's are
+// one edge. It replaced the stamped line of graduated blocks (26 Oct).
 
 import { useRef } from "react";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
@@ -38,13 +33,6 @@ import PassportButton from "./PassportButton.jsx";
 
 // a strip: the bottom is the only real edge of the glass (module constant — the glass hook's effect keys on it)
 export const MASTHEAD_OPEN = Object.freeze({ top: false, right: false, bottom: true, left: false });
-// left to right: four groups of three small and one large, each group a size up; the last is the blue one under the globe
-export const STAMP_SMALL = Object.freeze([0.5, 0.75, 1, 1.25]);
-export const STAMP = Object.freeze(STAMP_SMALL.flatMap((s) => [s, s, s, 2 * s]));
-export const STAMP_GAP = 0.45;
-// the grid: a bar, a gap, … ; the last bar's column is half its length (the line ends on the globe's
-// centre, and the blue block, twice its column, is centred there)
-export const STAMP_COLUMNS = STAMP.map((w, i) => (i === STAMP.length - 1 ? `${w / 2}fr` : `${w}fr ${STAMP_GAP}fr`)).join(" ");
 
 export default function Masthead({ kind, pathname }) {
   const glassRef = useRef(null);
@@ -54,9 +42,7 @@ export default function Masthead({ kind, pathname }) {
     <header ref={glassRef} className="masthead fixture">
       {glass}
       <Wordmark className="brandfix" />
-      <span className="mhstamp" aria-hidden="true" style={{ gridTemplateColumns: STAMP_COLUMNS }}>
-        {STAMP.map((w, i) => <i key={i} className={i === STAMP.length - 1 ? "lit" : undefined} style={{ gridColumn: 2 * i + 1 }} />)}
-      </span>
+      <span className="mhline" aria-hidden="true" />
       <div className="mhkeys">
         <InfoDock />
         <PassportButton kind={kind} pathname={pathname} />

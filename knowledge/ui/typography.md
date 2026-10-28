@@ -28,6 +28,13 @@ Text carries a faint glow (--glow-ink); red text uses --glow-r. Uppercase
 labels get letter-spacing ≥ 0.12em.
 
 
+## The logo (28 Oct 2026)
+
+`*ASILUM` is type set from the owner's artwork: ASILUM in Michroma at 161,
+the asterisk in Helvetica at 131 (`--helvetica`, the system's own face),
+−0.096em between every pair of letters, over a white bar — see
+design-language.md, 28 Oct 2026. The stack below is history.
+
 ## The wordmark stack (17 August)
 
 Three lines, and **all three are exactly the width of the ASILUM run**:

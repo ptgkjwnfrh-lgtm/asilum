@@ -235,43 +235,18 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
 
 test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
   // (26 Oct 2026) on the Masthead: in its flow, the strip's padding puts its left edge on the deck's
-  assert.match(rules, /\.brandfix \{\n  position: relative; flex: none; align-self: flex-start;/, "in the Masthead's row");
-  // (26 Oct 2026) the word's foot (row 140 of the artwork's 200) sits the stamp gap above the stamped line
-  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-w\) \* 140 \/ 900\);/s, "its foot over the stamped line");
-  // (19 Oct) the name in metal, a touch bolder; the asterisk smaller, at the top of the capitals; a
-  // thick translucent bar and one square under the word, within its width
-  // the metal and its halo on the capitals only, so the red asterisk takes none of the green glow
-  assert.match(rules, /\.wmcaps \{[^}]*background: var\(--metal\);[^}]*-webkit-text-stroke: 0\.5px var\(--metal-edge\);/s);
-  assert.match(rules, /\.wordmark \.wmcaps \{ filter: drop-shadow/);
-  assert.ok(!/\.wmword \{[^}]*(filter|background):/s.test(rules));
-  // the asterisk small and up in the corner, plain red: no stroke, no glow
-  assert.match(rules, /\.wmword i \{[^}]*font-size: 0\.6em;[^}]*top: -0\.68em;[^}]*color: var\(--warn\);[^}]*text-shadow: none; \}/s);
-  assert.ok(!/\.wmword i \{[^}]*-webkit-text-stroke/s.test(rules), "not bolded");
-  // (25 Oct, late) THE LOGO IS THE OWNER'S IMAGE (public/model/logo.jpg); the name stays for assistive technology.
-  // (26 Oct 2026: "make it more blue so it's visible, and phosphorus green in dark mode") two masks cut from
-  // it colour it: the word (its bar cut, 26 Oct) in --wm-ink (a blue in light, the title card's chrome-to-mint in dark), the
-  // asterisk in --warn (red in both, as the title card has it)
-  assert.match(rules, /\.wmimg \{ position: relative; display: block; width: clamp\(107\.25px, 28\.875vw, 151\.25px\); aspect-ratio: 900 \/ 200; \}/, "top left, 25% then 10% bigger than half the Info Dock (owner, 26 Oct), the artwork's proportions");
-  assert.match(rules, /\.wmink \{ --wm-mask: url\(\/model\/logo-word-ink\.png\); background: var\(--wm-ink\); \}/);
-  assert.match(rules, /\.wmstar \{ --wm-mask: url\(\/model\/logo-star\.png\); background: var\(--wm-star, var\(--warn\)\); \}/);
-  assert.match(rules, /--wm-ink: var\(--metal\);/, "dark: the title card's chrome washing to phosphor green");
-  // (same day: "let's go back to the original color for light mode") light paints the artwork's own colours
-  assert.match(rules, /\[data-theme="light"\] \{[^}]*--wm-ink: url\(\/model\/logo-word-light\.png\) center \/ 100% 100% no-repeat;\s*--wm-star: url\(\/model\/logo-word-light\.png\)/s, "light: the artwork's colours, darker (owner, 26 Oct: darker and bolder)");
-  assert.ok(!/#3f7ef2/.test(rules), "the blue is gone");
-  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.wmimg \{ filter: drop-shadow/, "dark glows, as the title card does");
-  assert.ok(!/\.wordmark\.brandfix \{ (height: auto|mix-blend-mode)/.test(rules), "no blending, and no height override: the mark sits on the fixtures' middle");
-  for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png"]) assert.ok(existsSync("public/model/" + f), f + " is in the model folder");
-  assert.equal((rules.match(/--metal: linear-gradient/g) || []).length, 2, "metal in both palettes");
-  assert.ok(!/\n\.wordmark \{[^}]*filter:/.test(rules), "no glow in light: the phosphor glow is dark-only");
+  assert.match(rules, /\.brandfix \{\n  position: relative; z-index: 2; flex: none; align-self: flex-start;/, "in the Masthead's row, over its line");
+  // (28 Oct 2026, the new logo: "the same placement as the old logo") its baseline where the old word's foot
+  // was, the stamp gap above the old line's top, and its capitals as tall as the old ones (rows 11–139 of 200)
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 121\);/s);
+  assert.match(rules, /--wm-u: calc\(var\(--wm-w\) \* 129 \/ 900 \/ 120\.75\);/);
+  assert.match(rules, /--wm-w: clamp\(107\.25px, 28\.875vw, 151\.25px\);/, "the old logo's measure");
   const wm = read("app/components/Wordmark.jsx");
-  assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/);
-  assert.match(wm, /<span className="wmimg" aria-hidden="true"><i className="wmink" \/><i className="wmstar" \/><\/span>/, "the artwork as two masked layers");
-  assert.ok(!/CHEVRON_CHANCE|wmchev|wmsq|wmblk/.test(wm), "the line, its square, the chevron run and the block bar are all retired for the picture");
-  // no red glows anywhere (owner, 19 Oct 2026)
-  for (const sel of ["\\.wmimg", "\\.wmstar"]) assert.ok(!new RegExp(sel + " \\{[^}]*box-shadow: 0 0").test(rules), sel + " does not glow");
+  assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");
+  assert.ok(!/CHEVRON_CHANCE|wmchev|wmsq|wmblk|wmimg/.test(wm), "the chevron run, the block bar and the masked picture are retired");
+  // no red glows anywhere (owner, 19 Oct 2026) — the asterisk's glow is the bar's white (28 Oct)
   assert.ok(!/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--warn\)/.test(rules), "no red text glows");
   assert.ok(!/box-shadow: 0 0 \d+px var\(--warn\)/.test(rules), "no red light glows");
-  assert.match(wm, /<span className="wmword idlabel"><i>\*<\/i><span className="wmcaps">ASILUM<\/span><\/span>/, "the name, for assistive technology");
   assert.ok(!/\[data-popup\] \.brandfix/.test(rules) && /\[data-popup\] \.fixture \{ opacity: 0\.55;/.test(rules), "it dims with the Masthead it sits on under a popup, once (26 Oct 2026)");
   assert.ok(!/\.feedmark/.test(rules), "the Feed's masthead mark is gone");
   // nothing italic: no rule, no default slant, no synthesized oblique
@@ -408,104 +383,85 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
   assert.ok(!/cdlens|ClearDisc|--cd-turn/.test(rules + read("app/components/ControlCenter.jsx")), "no CD styling");
 });
 
-// THE STAMPED LINE (owner, 26 Oct 2026, the reference 4.jpg, "Ref 2"; then, the same day: no line left
-// under the word, "from thinner to larger", no colour but the blue block under the globe, thinner).
+// THE NEW LOGO AND ITS LINE (owner, 28 Oct 2026: "new logo, the asterisk should be in helvetica regular
+// size font size 131 and "ASILUM" is in michroma regular size in font size 161 and tracking 5% with -15
+// kerning. the thick solid oblong white line should glow a stark white however the solid black text
+// should not, the asterisk and the solid white line should have the same glow, the broken line that
+// stretches across the masthead should be replaced by a solid thin white glowing line. the new logo
+// should have the same placement as the old logo"; "all the text information is from procreate").
 // Declared before measuring:
-//   - nothing under the word but the stamped line: the word masks carry no ink below row 140; the old
-//     masks (logo-ink.png, logo-light.png, which carried the bar) are gone and nothing names them; the
-//     Wordmark draws only its two masks and the hidden name; no border, shadow or pseudo-element on the
-//     wordmark's parts; the Masthead's children are the wordmark, the line and the keys, nothing else;
-//   - graduated: four groups of [small, small, small, large], large = 2 x small, small strictly rising
-//     from group to group; every gap 0.45; fraction columns, so it fills its span at any width;
-//   - from the A's left edge (column 19 of 900, the word's first inked column) to the globe's centre,
-//     the last large block centred there;
-//   - a stamp, flat ("it should feel like a stamp", then "no shadow at all"): square edges and a tone in
-//     the glass (alpha at most 0.25), nothing else (the next test forbids every shadow); no colour of its
-//     own but the last block, blue in both themes — the V.1 light theme's ink, #08788a (the owner's
-//     picture 5.png, the FRONT COVER headline; 1d0caa6) — flat the same way;
-//   - thin: 12/900 of the wordmark's width with a floor of 1.5px (2px on a desktop, 1.5 on a phone),
-//     against the artwork's 45.
-test("the stamped line: nothing else under the word; graduated, flat stamped marks from the A to the globe, colourless but the one blue block, thin", async () => {
+//   - the logo is type, not a picture: the word Michroma at 161, the asterisk Helvetica at 131, in one
+//     unit system; the old picture and its masks are gone and nothing names them;
+//   - it is the owner's artwork (docs/brand/asilum-logo-2026-10-28.jpg), measured there: every letter's
+//     inked left edge, the bar's ends and depth, and the asterisk's box within 2px of the artwork's
+//     2000 (Michroma's side bearings at 161, measured in Chromium, carry an origin to its ink), and the
+//     letters evenly spaced — one spacing between every pair, as Procreate's tracking sets it;
+//   - the asterisk's top on the capitals' line; the bar's top on the baseline;
+//   - ONE glow, white: the lit layer (the asterisk and the bar) and the Masthead's line wear --wm-glow,
+//     and nothing else does; the word wears no filter and no shadow;
+//   - the line is solid (one element, no children), white, thin (--mh-line-h), its top on the word's
+//     baseline (the bar's top), from the bar's end (tucked a pixel under it) to the globe's centre;
+//   - the Masthead's children are the wordmark, the line and the keys; the stamped line is gone
+//     (no .mhstamp, no STAMP, no --stamp-blue).
+test("the new logo: type set from the owner's artwork, one white glow on the asterisk and the bar, and the Masthead's solid glowing line", async () => {
   const css = read("app/globals.css");
-  // nothing else under the word
-  const sharp = (await import("sharp")).default;
-  for (const f of ["logo-word-ink.png", "logo-word-light.png"]) {
-    const { data, info } = await sharp(new URL("../public/model/" + f, import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    let inked = 0;
-    for (let y = 141; y < info.height; y++) for (let x = 0; x < info.width; x++) if (data[(y * info.width + x) * 4 + 3] > 0) inked++;
-    assert.equal(inked, 0, f + " carries no bar");
-  }
-  for (const f of ["logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " (the masks with the bar) is gone");
-  assert.ok(!/logo-ink\.png|logo-light\.png/.test(css), "nothing in the styles names the old masks");
   const wm = read("app/components/Wordmark.jsx");
-  const drawn = [...wm.slice(wm.indexOf("return (")).matchAll(/className="([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(drawn, ["wmimg", "wmink", "wmstar", "wmword idlabel", "wmcaps"], "the wordmark draws the word's two masks and its hidden name, nothing else");
-  assert.ok(!/\.(wordmark|brandfix|wmimg|wmink|wmstar)(::?(before|after))/.test(rules), "no pseudo-element under the word");
-  assert.ok(!/\.(wordmark|brandfix|wmimg|wmink|wmstar)\b[^{,]*\{[^}]*(border-bottom|text-decoration: underline|box-shadow)/.test(rules), "no rule or shadow under the word");
+  // type, in one unit system
+  assert.match(wm, /word: 161, star: 131, cap: 120\.75, base: 121,/);
+  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); fill: var\(--wm-ink\); \}/, "Michroma 161");
+  assert.match(rules, /\.wmstar \{ font: 400 131px var\(--helvetica\); fill: var\(--wm-star\); \}/, "Helvetica 131");
+  assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
+  assert.match(wm, /<text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text>/, "each letter at its own origin");
+  assert.match(wm, /<text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text>/);
+  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.base\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar's top on the baseline");
+  for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
+  assert.ok(!/logo[\w-]*\.(png|jpg)|wmimg|--wm-mask|--metal/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "nothing in the styles names the picture");
+  // the owner's artwork, measured
+  const nums = (re) => wm.match(re)[1].split(",").map(Number);
+  const X = nums(/x: Object\.freeze\(\[([^\]]*)\]\)/);
+  const bar = wm.match(/bar: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), h: ([\d.]+) \}\)/).slice(1).map(Number);
+  const starY = Number(wm.match(/starY: ([\d.]+),/)[1]);
+  const ADV = [171.06, 168.39, 45.28, 130.81, 166.66]; // A S I L U advances at 161 (Chromium, 28 Oct 2026)
+  const LSB = [5.03, 10.46, 15.09, 15.09, 10.69, 15.41]; // A S I L U M left side bearings at 161
+  const gaps = X.slice(1).map((x, i) => x - X[i] - ADV[i]);
+  for (const g of gaps) assert.ok(Math.abs(g - -15.5) <= 0.8, "one spacing between every pair: " + gaps.map((v) => v.toFixed(2)));
+  const sharp = (await import("sharp")).default;
+  const { data, info } = await sharp(new URL("../docs/brand/asilum-logo-2026-10-28.jpg", import.meta.url).pathname).raw().toBuffer({ resolveWithObject: true });
+  const W = info.width, C = info.channels, p = (x, y) => { const i = (y * W + x) * C; return [data[i], data[i + 1], data[i + 2]]; };
+  const dark = (q) => q[0] + q[1] + q[2] < 150, white = (q) => Math.min(...q) > 240, red = (q) => q[0] > 180 && q[1] < 90 && q[2] < 90;
+  const inkCols = []; for (let x = 0; x < W; x++) for (let y = 690; y < 915; y++) if (dark(p(x, y))) { inkCols.push(x); break; }
+  const lefts = inkCols.filter((x, i) => i === 0 || inkCols[i - 1] !== x - 1);
+  assert.equal(lefts.length, 6, "six letters in the artwork");
+  let capTop = 0; for (let y = 600; y < 915 && !capTop; y++) if (dark(p(743, y))) capTop = y; // the I's top
+  const k = (916 - capTop) / 120.75; // artwork pixels per unit: the capitals' 120.75
+  const ox = lefts[0] - LSB[0] * k; // the A's origin
+  X.forEach((x, i) => assert.ok(Math.abs(ox + (x + LSB[i]) * k - lefts[i]) <= 2, "ASILUM"[i] + " where the artwork has it: " + (ox + (x + LSB[i]) * k).toFixed(1) + " vs " + lefts[i]));
+  let wb = [W, 0, info.height, 0]; for (let y = 880; y < 1100; y++) for (let x = 0; x < W; x++) if (white(p(x, y))) wb = [Math.min(wb[0], x), Math.max(wb[1], x), Math.min(wb[2], y), Math.max(wb[3], y)];
+  assert.ok(Math.abs(ox + bar[0] * k - wb[0]) <= 2 && Math.abs(ox + (bar[0] + bar[1]) * k - (wb[1] + 1)) <= 2, "the bar's ends");
+  assert.ok(Math.abs(916 - wb[2]) <= 1 && Math.abs(bar[2] * k - (wb[3] + 1 - wb[2])) <= 2, "flush under the baseline, as deep as drawn");
+  let rb = [W, 0, info.height, 0]; for (let y = 600; y < 900; y++) for (let x = 100; x < 400; x++) if (red(p(x, y))) rb = [Math.min(rb[0], x), Math.max(rb[1], x), Math.min(rb[2], y), Math.max(rb[3], y)];
+  assert.ok(Math.abs(rb[0] - lefts[0]) <= 2, "the asterisk's left edge on the A's");
+  assert.ok(Math.abs(rb[2] - capTop) <= 2, "its top on the capitals' line");
+  assert.ok(Math.abs(starY - 0.717 * 131 - (121 - 120.75)) <= 1, "Helvetica's asterisk (0.717em tall above its baseline) set so");
+  // one white glow
+  assert.match(css, /--wm-glow: drop-shadow\(0 0 [\d.]+px #ffffff\)( drop-shadow\(0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)\))+;/, "white, stark");
+  const wearing = [...rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => /var\(--wm-glow\)/.test(m[2])).map((m) => m[1].trim()).sort();
+  assert.deepEqual(wearing, [".mhline", ".wmlit"], "the lit layer and the line, nothing else");
+  assert.match(rules, /\.wmlit \{ filter: var\(--wm-glow\); \}/);
+  assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");
+  assert.match(css, /--wm-bar: #ffffff;/);
+  // the line
   const mast = read("app/components/Masthead.jsx");
   const body = mast.slice(mast.indexOf('<header ref={glassRef} className="masthead fixture">'), mast.indexOf("</header>"));
   const kids = [...body.matchAll(/\n {6}<(\w+)(?: className="([^"]+)")?/g)].map((m) => m[2] || m[1]);
-  assert.deepEqual(kids, ["brandfix", "mhstamp", "mhkeys"], "the Masthead: the wordmark, the line, the keys");
-  assert.match(body, /\n {6}<Wordmark className="brandfix" \/>/);
-  // graduated
-  const small = JSON.parse(mast.match(/export const STAMP_SMALL = Object\.freeze\((\[[^\]]*\])\);/)[1]);
-  assert.match(mast, /export const STAMP = Object\.freeze\(STAMP_SMALL\.flatMap\(\(s\) => \[s, s, s, 2 \* s\]\)\);/, "three small and a large, the large twice the small");
-  assert.equal(small.length, 4, "four groups");
-  for (let i = 1; i < small.length; i++) assert.ok(small[i] > small[i - 1], "each group a size up");
-  assert.equal(small[0], 0.5, "starting from the thin ones");
-  assert.match(mast, /export const STAMP_GAP = 0\.45;/);
-  assert.match(mast, /STAMP\.map\(\(w, i\) => \(i === STAMP\.length - 1 \? `\$\{w \/ 2\}fr` : `\$\{w\}fr \$\{STAMP_GAP\}fr`\)\)\.join\(" "\)/, "fractions: it fills its span at every width");
-  assert.match(mast, /className=\{i === STAMP\.length - 1 \? "lit" : undefined\} style=\{\{ gridColumn: 2 \* i \+ 1 \}\}/, "each block in its own column, the last one the coloured one");
-  // the span
-  assert.match(rules, /\.mhstamp \{[^}]*left: calc\(var\(--dk-edge\) \+ var\(--wm-w\) \* 19 \/ 900\);/s, "from the A's left edge");
-  assert.match(rules, /\.mhstamp \{[^}]*right: calc\(var\(--dk-edge\) \+ var\(--u\) \* 97 \/ 2\);/s, "to the globe's centre (the last key, 97 units)");
-  const ink = await sharp(new URL("../public/model/logo-word-ink.png", import.meta.url).pathname).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  let first = -1;
-  for (let x = 0; x < 900 && first < 0; x++) for (let y = 0; y < 141; y++) if (ink.data[(y * 900 + x) * 4 + 3] > 40) { first = x; break; }
-  assert.equal(first, 19, "the A's left edge is column 19");
-  // a stamp: flat, crisp; one blue block
-  const bar = rules.match(/\.mhstamp i \{([^}]*)\}/)[1];
-  assert.match(bar, /border-radius: 0;/, "square, crisp edges");
-  assert.match(bar, /background: var\(--stamp-recess\);/, "a tone in the glass, not paint");
-  const alphas = (name) => [...css.matchAll(new RegExp(name + ": rgba\\([^)]*, ([\\d.]+)\\);", "g"))].map((m) => Number(m[1]));
-  assert.equal(alphas("--stamp-recess").length, 2, "a tone in each theme");
-  for (const a of alphas("--stamp-recess")) assert.ok(a > 0 && a <= 0.25, "a shade, no more: " + a);
-  assert.deepEqual([...rules.matchAll(/\.mhstamp i[^{]*\{[^}]*background: (?!var\(--stamp-recess\))[^;]+;/g)].map((m) => m[0].split("{")[0].trim()), [".mhstamp i.lit"], "the one coloured block");
-  assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "blue, twice its column, centred on the globe");
-  const blues = [...css.matchAll(/--stamp-blue: ([^;]+);/g)].map((m) => m[1]);
-  assert.deepEqual(blues, ["#08788a"], "one blue for both themes: the V.1 light ink of the FRONT COVER picture");
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(blues[0].slice(i, i + 2), 16));
-  assert.ok(b > r && b > g, "a blue");
-  assert.ok(!/--wm-bar|--wm-lit/.test(css), "the old fills are gone");
-  // thinner, and the measure is the wordmark's
-  assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "12 of 900, at least 1.5px: 2px on a desktop");
-  assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 18 \/ 900\);/, "the word clear of the line");
-  const wmw = rules.match(/\.masthead \{[^}]*--wm-w: (clamp\([^)]*\));/s)[1];
-  assert.match(rules, new RegExp("\\.wmimg \\{ position: relative; display: block; width: " + wmw.replace(/[()*.+]/g, "\\$&") + ";"), "the line's measure is the wordmark's");
-});
-
-// NO SHADOW ON THE STAMPED LINE (owner, 26 Oct 2026: "still too much, no shadow at all"). Declared before
-// measuring: no rule that names .mhstamp, and no rule that could reach its bars by cascade (a bare `i` or
-// `*`, or one ending in `i` or `*` under .masthead or .fixture), sets box-shadow, filter, backdrop-filter,
-// text-shadow, outline or border; the shadow tokens of the earlier stamps are gone. The blue block too.
-test("no shadow on the stamped line: no box-shadow, filter, text-shadow, outline or border reaches its bars", () => {
-  const css = read("app/globals.css");
-  const SHADOWY = /(^|;|\{)\s*(box-shadow|filter|-webkit-filter|backdrop-filter|-webkit-backdrop-filter|text-shadow|outline|border(-(top|bottom|left|right))?)\s*:/;
-  const offenders = [];
-  for (const m of rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selectors = m[1].split(",").map((x) => x.trim()).filter(Boolean);
-    const reaches = selectors.some((sel) => {
-      if (/mhstamp/.test(sel)) return true;
-      const parts = sel.split(/\s+|>/).filter(Boolean);
-      const last = parts[parts.length - 1];
-      if (!/^(i|\*)(:[\w-]+(\([^)]*\))?)*$/.test(last)) return false;
-      const ancestors = parts.slice(0, -1).join(" ");
-      return ancestors === "" || /^(:root|html|body|\[data-theme[^\]]*\]|:root\S*|\s)*(\.masthead|\.fixture)?\S*$/.test(ancestors) && (ancestors === "" || /\.masthead|\.fixture/.test(ancestors) || !/\./.test(ancestors));
-    });
-    if (reaches && SHADOWY.test("{" + m[2])) offenders.push(m[1].trim() + " { " + m[2].trim().slice(0, 80) + " }");
-  }
-  assert.deepEqual(offenders, [], "nothing shades the stamped line");
-  assert.ok(!/--stamp-sink|--stamp-catch|--stamp-edge/.test(css), "the shadow and hairline tokens are gone");
-  assert.match(rules, /\.mhstamp i \{[^}]*background: var\(--stamp-recess\);\s*\}/, "a tone and nothing else");
-  assert.match(rules, /\.mhstamp i\.lit \{ width: 200%; background: var\(--stamp-blue\); \}/, "the blue block: a flat blue, no shadow");
+  assert.deepEqual(kids, ["brandfix", "mhline", "mhkeys"], "the Masthead: the wordmark, the line, the keys");
+  assert.match(body, /\n {6}<span className="mhline" aria-hidden="true" \/>/, "one solid element, no blocks");
+  const line = rules.match(/\.mhline \{([^}]*)\}/)[1];
+  assert.match(line, /left: calc\(var\(--dk-edge\) \+ var\(--wm-u\) \* 976\.9 - 1px\);/, "from the bar's end, tucked under it");
+  assert.equal(976.9, bar[1], "the bar's width in the line's start");
+  assert.match(line, /right: calc\(var\(--dk-edge\) \+ var\(--u\) \* 97 \/ 2\);/, "to the globe's centre");
+  assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\) - var\(--mh-gap\)\); height: var\(--mh-line-h\);/, "its top on the baseline, thin");
+  assert.match(line, /background: var\(--wm-bar\); filter: var\(--wm-glow\);/, "white, in the logo's glow");
+  assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "2px on a desktop, 1.5 on a phone");
+  assert.ok(!/mhstamp|--stamp-blue/.test(css) && !/STAMP/.test(mast), "the stamped line is gone");
 });

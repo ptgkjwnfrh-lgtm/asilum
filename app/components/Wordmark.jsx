@@ -4,39 +4,53 @@
 // when the header left (V.2 Blueprint, owner, 17 Oct 2026) and lived on the
 // Feed's masthead; since 19 Oct 2026 it is a FIXTURE of its own (owner: "the
 // *ASILUM logo becomes a fixture that permanently sits in the left hand
-// corner"), mounted once by the shell (className "brandfix").
+// corner"), mounted once by the Masthead (className "brandfix").
 //
 // THE NAME IS "*ASILUM" (owner, 17 Oct 2026: "when they type it in I just
-// want it to look like *ASILUM"; "no more lower case i"). The MAGAZINE and
-// FASHION TERMINAL lines of the August lockup are retired with the word:
-// the asterisk and the six capitals are the whole mark, everywhere —
-// browser tab, social card, order mail, this component.
-// tests/brand-name.test.js enforces it.
+// want it to look like *ASILUM"; "no more lower case i"). The asterisk and
+// the six capitals are the whole name, everywhere — browser tab, social
+// card, order mail, this component. tests/brand-name.test.js enforces it.
 //
-// THE NEW LOGO (owner, 25 Oct 2026, late: "simply import the image I gave
-// you"): the owner's own artwork, public/model/logo.jpg — the red asterisk,
-// the slate word, the bar of blocks beneath it ending in the lighter blue —
-// drawn as given. The name stays in the markup for assistive technology and
-// for the brand's own law (tests/brand-name.test.js).
+// THE LOGO OF 28 OCT 2026 (owner: "new logo, the asterisk should be in
+// helvetica regular size font size 131 and "ASILUM" is in michroma regular
+// size in font size 161 and tracking 5% with -15 kerning. the thick solid
+// oblong white line should glow a stark white however the solid black text
+// should not, the asterisk and the solid white line should have the same
+// glow"; the numbers are Procreate's). Set as type, not an image, so it is
+// sharp at every size — the artwork (docs/brand/asilum-logo-2026-10-28.jpg)
+// measured, in the units of the word's 161: the capitals 120.75 tall (0.75em)
+// on a baseline at 121; each letter's origin where the artwork puts it
+// (Procreate's tracking and kerning come out at −15.5, −0.096em, between
+// every pair); the asterisk at 131, its top on the capitals' line and its
+// left edge on the A's; the bar flush under the baseline, 82.6 deep, from
+// just left of the A (3.3) to 976.9 across — past the M, as drawn.
 //
-// ITS COLOUR (owner, 26 Oct 2026: "make it more blue so it's visible, and
-// phosphorus green in dark mode", with the title card, ASILUM title card 15s
-// 1080p.mp4, for the dark): the artwork is two masks cut from logo.jpg —
-// logo-word-ink.png, the word (each pixel's darkness its opacity; its bar of
-// blocks was cut on 26 Oct 2026 — the Masthead's stamped line), and logo-star.png, the
-// asterisk — painted in --wm-ink and --wm-star: in light the artwork's own
-// colours (the owner, the same day: "let's go back to the original color for
-// light mode"); in dark the title card's chrome washing to mint, glowing, and
-// the asterisk red (--warn), as the card has it. 25% bigger than the 25 Oct
-// size, then 10% more, darker and bolder (owner, 26 Oct 2026): the masks'
-// letters thickened ~15px -> ~23px of the 900 (the bar untouched, so its
-// blocks keep their gaps), and light paints logo-word-light.png — the artwork's
-// slate x0.7, its blue-grey x0.75 and a deeper red.
+// Two layers on one box: the lit layer (the asterisk and the bar) carries
+// the glow — the same white glow as the Masthead's line (--wm-glow) — and
+// the type layer over it does not glow at all; the S's round foot laps the
+// bar, as in the artwork.
+
+/** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
+export const WM = Object.freeze({
+  word: 161, star: 131, cap: 120.75, base: 121,
+  x: Object.freeze([0, 155.2, 307.7, 337.7, 453, 604.3]), // A S I L U M, each origin
+  starY: 94.2, // Helvetica's asterisk stands 0.717em above its baseline: its top on the capitals' line
+  bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6 }),
+});
+const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${+(WM.base + WM.bar.h).toFixed(1)}`;
 
 export default function Wordmark({ href = "/", className = "" }) {
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
-      <span className="wmimg" aria-hidden="true"><i className="wmink" /><i className="wmstar" /></span>
+      <span className="wmart" aria-hidden="true">
+        <svg className="wmlit" viewBox={VIEW} focusable="false">
+          <text className="wmstar" x="0" y={WM.starY}>*</text>
+          <rect className="wmbar" x={WM.bar.x} y={WM.base} width={WM.bar.w} height={WM.bar.h} />
+        </svg>
+        <svg className="wmtype" viewBox={VIEW} focusable="false">
+          <text className="wmink" x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
+        </svg>
+      </span>
       <span className="wmword idlabel"><i>*</i><span className="wmcaps">ASILUM</span></span>
     </a>
   );
