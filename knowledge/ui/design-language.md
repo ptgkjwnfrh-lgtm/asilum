@@ -921,3 +921,16 @@ line should have the same glow".
   its top on the word's baseline — the bar's top — so the two read as one
   edge. `.mhstamp`, `STAMP*`, `--stamp-blue` and the logo masks are gone;
   `--stamp-recess` stays for the wheel's marks.
+- Then, the same day: "the asterisk must glow red" — `--wm-glow-r` is
+  `--wm-glow` radius for radius and strength for strength in `--warn`, on
+  the asterisk's own layer (`.wmlitstar`); the bar (`.wmlitbar`) and the
+  line keep the white. The logo keeps its size but lifts "more in the
+  corner": its bar's foot now sits the stamp gap above the line ("the line
+  should sit under the thick logo line"). The line runs from the logo's
+  left edge to the END of the Passport's hit box, just under the keys'
+  glyphs, BROKEN (`--mh-break`, 14 units) where two keys' hit boxes meet
+  and where the first key begins; a faint cut (`.mhcuts i`, the deck's
+  `.cccut` hairline, 65 units) stands between keys. The keys are measured
+  (`lib/mastline.js` lays the stretches; the music circle and the exploring
+  key come and go) and the line fades in once laid. The Info Dock and
+  Passport keys are 10% bigger (`--mk: 1.1` on `.masthead`).

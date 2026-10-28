@@ -68,9 +68,9 @@ test("the Masthead: a full-width glass strip, the wordmark at the left and the b
   // starts where the deck starts and the globe ends where it ends; the Info Dock and the Passport keep no pane.
   assert.match(rules, /\.fixture \{[^}]*height: var\(--head-h\); padding: env\(safe-area-inset-top, 0px\) var\(--dk-edge\) 0;/s);
   assert.match(rules, /\.fixture \{[^}]*justify-content: space-between;/s, "the wordmark at one end, the keys at the other");
-  assert.match(rules, /\.mhkeys \{[^}]*height: calc\(var\(--u\) \* 88\);/, "the keys in the sketch's 88-unit row");
-  assert.match(rules, /\.idkey \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "three keys of the drawn 292");
-  assert.match(rules, /\.passportbtn \{[^}]*width: calc\(var\(--u\) \* 97\);/s, "the globe a key of the same width");
+  assert.match(rules, /\.mhkeys \{[^}]*height: calc\(var\(--u\) \* 88 \* var\(--mk, 1\)\);/, "the keys in the sketch's 88-unit row (10% bigger since 28 Oct 2026, --mk)");
+  assert.match(rules, /\.idkey \{[^}]*width: calc\(var\(--u\) \* 97 \* var\(--mk, 1\)\);/s, "three keys of the drawn 292");
+  assert.match(rules, /\.passportbtn \{[^}]*width: calc\(var\(--u\) \* 97 \* var\(--mk, 1\)\);/s, "the globe a key of the same width");
   const mast = read("app/components/Masthead.jsx");
   assert.match(mast, /className="masthead fixture"/);
   assert.ok(mast.indexOf("<Wordmark") < mast.indexOf("<InfoDock") && mast.indexOf("<InfoDock") < mast.indexOf("<PassportButton"), "wordmark, then the dock's keys, then the globe");
@@ -236,9 +236,8 @@ test("another key leaves search: the deck rises only for SEARCH, and every other
 test("the wordmark is a fixture in the top-left corner, and nothing on the site is italic", () => {
   // (26 Oct 2026) on the Masthead: in its flow, the strip's padding puts its left edge on the deck's
   assert.match(rules, /\.brandfix \{\n  position: relative; z-index: 2; flex: none; align-self: flex-start;/, "in the Masthead's row, over its line");
-  // (28 Oct 2026, the new logo: "the same placement as the old logo") its baseline where the old word's foot
-  // was, the stamp gap above the old line's top, and its capitals as tall as the old ones (rows 11–139 of 200)
-  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 121\);/s);
+  // (28 Oct 2026, the new logo: "the same placement as the old logo", then "more in the corner") its capitals
+  // as tall as the old ones (rows 11–139 of 200), lifted so its bar sits over the line (the next test)
   assert.match(rules, /--wm-u: calc\(var\(--wm-w\) \* 129 \/ 900 \/ 120\.75\);/);
   assert.match(rules, /--wm-w: clamp\(107\.25px, 28\.875vw, 151\.25px\);/, "the old logo's measure");
   const wm = read("app/components/Wordmark.jsx");
@@ -397,13 +396,21 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     2000 (Michroma's side bearings at 161, measured in Chromium, carry an origin to its ink), and the
 //     letters evenly spaced — one spacing between every pair, as Procreate's tracking sets it;
 //   - the asterisk's top on the capitals' line; the bar's top on the baseline;
-//   - ONE glow, white: the lit layer (the asterisk and the bar) and the Masthead's line wear --wm-glow,
-//     and nothing else does; the word wears no filter and no shadow;
-//   - the line is solid (one element, no children), white, thin (--mh-line-h), its top on the word's
-//     baseline (the bar's top), from the bar's end (tucked a pixel under it) to the globe's centre;
-//   - the Masthead's children are the wordmark, the line and the keys; the stamped line is gone
-//     (no .mhstamp, no STAMP, no --stamp-blue).
-test("the new logo: type set from the owner's artwork, one white glow on the asterisk and the bar, and the Masthead's solid glowing line", async () => {
+//   - ONE glow in two colours (then: "the asterisk must glow red"): the bar and the Masthead's line wear
+//     the white --wm-glow, the asterisk the red --wm-glow-r, radius for radius and strength for strength;
+//     nothing else wears either; the word wears no filter and no shadow;
+//   - (then: "the line … should reach to the end of the hit box of the passport button. also the line
+//     should sit under the thick logo line … the logo should stay the same size but [more in the corner]
+//     … the info dock and passport buttons should be about 10% bigger, also the stretched mast head line
+//     should break at the gap points of the buttons and there should be faint lines in between the
+//     buttons like on the center fixture") the line is white, thin, in the white glow, under the bar
+//     (the logo lifted so its bar's foot is the stamp gap above the line) and just under the bigger
+//     glyphs; laid from the logo's left edge along every key showing to the globe's hit box, broken at
+//     the meetings (lib/mastline.js, the next test); the cuts the deck's hairline, 65 units, centred on
+//     the keys' row; the keys 10% bigger, the logo the same size;
+//   - the Masthead's children are the wordmark, the line, its cuts and the keys; the stamped line is
+//     gone (no .mhstamp, no STAMP, no --stamp-blue).
+test("the new logo: type set from the owner's artwork, one glow — red on the asterisk, white on the bar and the Masthead's line, broken at the keys", async () => {
   const css = read("app/globals.css");
   const wm = read("app/components/Wordmark.jsx");
   // type, in one unit system
@@ -443,25 +450,63 @@ test("the new logo: type set from the owner's artwork, one white glow on the ast
   assert.ok(Math.abs(rb[0] - lefts[0]) <= 2, "the asterisk's left edge on the A's");
   assert.ok(Math.abs(rb[2] - capTop) <= 2, "its top on the capitals' line");
   assert.ok(Math.abs(starY - 0.717 * 131 - (121 - 120.75)) <= 1, "Helvetica's asterisk (0.717em tall above its baseline) set so");
-  // one white glow
-  assert.match(css, /--wm-glow: drop-shadow\(0 0 [\d.]+px #ffffff\)( drop-shadow\(0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)\))+;/, "white, stark");
-  const wearing = [...rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => /var\(--wm-glow\)/.test(m[2])).map((m) => m[1].trim()).sort();
-  assert.deepEqual(wearing, [".mhline", ".wmlit"], "the lit layer and the line, nothing else");
-  assert.match(rules, /\.wmlit \{ filter: var\(--wm-glow\); \}/);
+  // one glow, in two colours (then: "the asterisk must glow red"): the bar's white and the asterisk's red,
+  // the same radii and the same strengths
+  const glow = css.match(/--wm-glow: ([^;]+);/)[1], glowR = css.match(/--wm-glow-r: ([^;]+);/)[1];
+  assert.match(glow, /^drop-shadow\(0 0 [\d.]+px #ffffff\)( drop-shadow\(0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)\))+$/, "white, stark");
+  // each drop-shadow as [radius, strength]: a bare colour is full strength, an rgba its alpha, a mix its share
+  const shape = (g) => g.split("drop-shadow(0 0 ").slice(1).map((t) => [parseFloat(t), (t.match(/(\d+)%/) || [])[1] ? Number(t.match(/(\d+)%/)[1]) / 100 : (t.match(/rgba\([^)]*, ([\d.]+)\)/) || [])[1] ? Number(t.match(/rgba\([^)]*, ([\d.]+)\)/)[1]) : 1]);
+  assert.equal(shape(glow).length, 3);
+  assert.deepEqual(shape(glowR), shape(glow), "the red glow is the white one's, radius for radius, strength for strength");
+  assert.ok(/var\(--warn\)/.test(glowR) && !/#fff|255, 255, 255/.test(glowR), "in the asterisk's own red");
+  const wearing = [...rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => /var\(--wm-glow(-r)?\)/.test(m[2])).map((m) => m[1].trim() + " " + m[2].match(/var\(--wm-glow(-r)?\)/)[0]).sort();
+  assert.deepEqual(wearing, [".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar and the line white, nothing else");
+  assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<text className="wmstar"/, "the asterisk on its own layer");
+  assert.match(wm, /<svg className="wmlit wmlitbar" viewBox=\{VIEW\} focusable="false">\s*<rect className="wmbar"/, "the bar on its own");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");
   assert.match(css, /--wm-bar: #ffffff;/);
   // the line
   const mast = read("app/components/Masthead.jsx");
   const body = mast.slice(mast.indexOf('<header ref={glassRef} className="masthead fixture">'), mast.indexOf("</header>"));
-  const kids = [...body.matchAll(/\n {6}<(\w+)(?: className="([^"]+)")?/g)].map((m) => m[2] || m[1]);
-  assert.deepEqual(kids, ["brandfix", "mhline", "mhkeys"], "the Masthead: the wordmark, the line, the keys");
-  assert.match(body, /\n {6}<span className="mhline" aria-hidden="true" \/>/, "one solid element, no blocks");
+  const kids = [...body.matchAll(/\n {6}<(\w+)(?: className=(?:"([^"]+)"|\{"(\w+)"))?/g)].map((m) => m[2] || m[3] || m[1]);
+  assert.deepEqual(kids, ["brandfix", "mhline", "mhcuts", "mhkeys"], "the Masthead: the wordmark, the line, its cuts, the keys");
+  assert.match(mast, /const next = mastLine\(mark \? mark\.getBoundingClientRect\(\)\.left - o : NaN, keys\);/, "from the logo's left edge, along the keys");
+  assert.match(mast, /\[\.\.\.row\.querySelectorAll\("\.idkey, \.passportbtn"\)\]\.filter\(\(k\) => k\.offsetWidth > 0\)\.map\(box\)/, "every key showing, the globe's hit box the last");
   const line = rules.match(/\.mhline \{([^}]*)\}/)[1];
-  assert.match(line, /left: calc\(var\(--dk-edge\) \+ var\(--wm-u\) \* 976\.9 - 1px\);/, "from the bar's end, tucked under it");
-  assert.equal(976.9, bar[1], "the bar's width in the line's start");
-  assert.match(line, /right: calc\(var\(--dk-edge\) \+ var\(--u\) \* 97 \/ 2\);/, "to the globe's centre");
-  assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\) - var\(--mh-gap\)\); height: var\(--mh-line-h\);/, "its top on the baseline, thin");
-  assert.match(line, /background: var\(--wm-bar\); filter: var\(--wm-glow\);/, "white, in the logo's glow");
+  assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "thin, just under the glyphs");
+  assert.match(line, /filter: var\(--wm-glow\);/, "in the logo's glow");
+  assert.match(rules, /\.mhline i \{[^}]*background: var\(--wm-bar\);[^}]*left: calc\(var\(--a\) \+ var\(--gl\) \* var\(--mh-break\) \/ 2\);\s*width: calc\(var\(--b\) - var\(--a\) - \(var\(--gl\) \+ var\(--gr\)\) \* var\(--mh-break\) \/ 2\);/s, "white stretches, broken by half a break each side");
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 203\.6\);/s, "the bar's foot the stamp gap above the line: the line under the bar");
+  assert.equal(121 + bar[2], 203.6, "203.6 is the bar's foot");
+  // the cuts: the deck's hairline, between keys, centred on the keys' row
+  const cut = rules.match(/\.mhcuts i \{([^}]*)\}/)[1];
+  const deckCut = rules.match(/\.cccut \{([^}]*)\}/)[1];
+  assert.equal(cut.match(/background: ([^;]+);/)[1], deckCut.match(/background: ([^;]+);/)[1], "the deck's own hairline colour");
+  assert.match(cut, /width: 1px; transform: translateX\(-50%\);/);
+  assert.match(cut, /top: calc\(env\(safe-area-inset-top, 0px\) \+ 33px - var\(--u\) \* 65 \/ 2\); height: calc\(var\(--u\) \* 65\);/, "as long as the deck's (65 units), on the row's middle");
   assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "2px on a desktop, 1.5 on a phone");
   assert.ok(!/mhstamp|--stamp-blue/.test(css) && !/STAMP/.test(mast), "the stamped line is gone");
+  // the keys 10% bigger ("the info dock and passport buttons should be about 10% bigger"), the logo not
+  assert.match(rules, /--mk: 1\.1;/);
+  for (const sel of ["\\.mhkeys \\{[^}]*height: calc\\(var\\(--u\\) \\* 88 \\* var\\(--mk, 1\\)\\)", "\\.idkey \\{[^}]*width: calc\\(var\\(--u\\) \\* 97 \\* var\\(--mk, 1\\)\\)", "\\.passportbtn \\{[^}]*width: calc\\(var\\(--u\\) \\* 97 \\* var\\(--mk, 1\\)\\)", "\\.idkey \\.ic \\{ width: calc\\(var\\(--u\\) \\* 50 \\* var\\(--mk, 1\\)\\)", "\\.passportbtn \\.ic \\{ width: calc\\(var\\(--u\\) \\* 50 \\* var\\(--mk, 1\\)\\)"]) assert.match(rules, new RegExp(sel, "s"), sel);
+  assert.match(rules, /--mh-line-top: calc\(33px \+ max\(var\(--u\) \* 25 \* var\(--mk\), 9\.5px \* var\(--mk\)\) \+ 2\.5px\);/, "the line still just under the (bigger) glyphs");
+  assert.match(rules, /--wm-w: clamp\(107\.25px, 28\.875vw, 151\.25px\);/, "the logo the same size");
+});
+
+// THE LINE'S STRETCHES (lib/mastline.js). Declared before measuring: one stretch from the logo to the
+// first key, one under each key; a break (half each side) wherever two stretches meet and nowhere else —
+// never at the logo's left edge, never at the globe's right edge, which the line reaches exactly; a cut
+// at each meeting of two keys and only there; keys out of order or empty are handled; no keys, no line.
+test("the Masthead's line: a stretch under the logo and one under each key, broken where they meet, a cut between keys", async () => {
+  const { mastLine, sameLine } = await import("../lib/mastline.js");
+  const keys = [{ left: 272, right: 315 }, { left: 186, right: 229 }, { left: 229, right: 272 }, { left: 315, right: 358 }];
+  const { segs, cuts } = mastLine(17, keys);
+  assert.deepEqual(segs.map((g) => [g.a, g.b, g.gl, g.gr]), [[17, 186, 0, 1], [186, 229, 1, 1], [229, 272, 1, 1], [272, 315, 1, 1], [315, 358, 1, 0]]);
+  assert.deepEqual(cuts, [229, 272, 315], "between keys only: none before the first, none after the globe");
+  assert.equal(segs[segs.length - 1].b, 358, "to the end of the globe's hit box");
+  assert.equal(segs[0].a, 17, "from the logo's left edge");
+  assert.deepEqual(mastLine(17, []), { segs: [], cuts: [] }, "no keys, no line");
+  assert.deepEqual(mastLine(NaN, keys), { segs: [], cuts: [] }, "no logo, no line");
+  assert.deepEqual(mastLine(17, [{ left: 200, right: 200 }, null, { left: 186, right: 229 }]).segs.length, 2, "an empty key draws nothing");
+  assert.ok(sameLine(mastLine(17, keys), mastLine(17.2, keys)) && !sameLine(mastLine(17, keys), mastLine(20, keys)), "re-laid only when it moves");
 });

@@ -25,10 +25,11 @@
 // left edge on the A's; the bar flush under the baseline, 82.6 deep, from
 // just left of the A (3.3) to 976.9 across — past the M, as drawn.
 //
-// Two layers on one box: the lit layer (the asterisk and the bar) carries
-// the glow — the same white glow as the Masthead's line (--wm-glow) — and
-// the type layer over it does not glow at all; the S's round foot laps the
-// bar, as in the artwork.
+// Three layers on one box: the asterisk, glowing red (owner, the same day:
+// "the asterisk must glow red" — the bar's glow, the same radii, in the
+// asterisk's own red, --wm-glow-r); the bar, glowing the stark white of the
+// Masthead's line (--wm-glow); and the type over them, which does not glow
+// at all — the S's round foot laps the bar, as in the artwork.
 
 /** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
 export const WM = Object.freeze({
@@ -43,8 +44,10 @@ export default function Wordmark({ href = "/", className = "" }) {
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
       <span className="wmart" aria-hidden="true">
-        <svg className="wmlit" viewBox={VIEW} focusable="false">
+        <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
           <text className="wmstar" x="0" y={WM.starY}>*</text>
+        </svg>
+        <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
           <rect className="wmbar" x={WM.bar.x} y={WM.base} width={WM.bar.w} height={WM.bar.h} />
         </svg>
         <svg className="wmtype" viewBox={VIEW} focusable="false">

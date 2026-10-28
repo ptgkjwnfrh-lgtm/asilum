@@ -356,18 +356,20 @@ button { font-family: var(--helv); }
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* THE WORDMARK (owner, 28 Oct 2026; Wordmark.jsx): the artwork set as type
-   in two layers on one box, measured in the units of the word's 161 (--wm-u
-   is one of them, on the Masthead). The lit layer — the Helvetica asterisk
-   and the bar — glows the stark white of --wm-glow, the Masthead's line's
-   own glow ("the asterisk and the solid white line should have the same
-   glow"); the Michroma word over it never glows ("the solid black text
-   should not"). The --ed-fs-wordmark size now only reaches the hidden name. */
+   in layers on one box, measured in the units of the word's 161 (--wm-u is
+   one of them, on the Masthead). The Helvetica asterisk glows red and the
+   bar glows the stark white of the Masthead's line — one glow, the same
+   radii, each in its own colour ("the asterisk and the solid white line
+   should have the same glow", then "the asterisk must glow red"); the
+   Michroma word over them never glows ("the solid black text should not").
+   The --ed-fs-wordmark size now only reaches the hidden name. */
 .wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
   font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
 .wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 203.6; }
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
-.wmlit { filter: var(--wm-glow); }
+.wmlitstar { filter: var(--wm-glow-r); }
+.wmlitbar { filter: var(--wm-glow); }
 .wmstar { font: 400 131px var(--helvetica); fill: var(--wm-star); }
 .wmbar { fill: var(--wm-bar); }
 .wmink { font: 400 161px var(--mich); fill: var(--wm-ink); }
@@ -378,12 +380,13 @@ button { font-family: var(--helv); }
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
   /* THE LOGO (owner, 28 Oct 2026): the word flat and unlit — the artwork's
      near-black in light, the phosphor mint in dark; the asterisk the house
-     red; the bar and the Masthead's line white, all three lit things wearing
-     ONE glow, stark white */
+     red, glowing red; the bar and the Masthead's line white, glowing stark
+     white — one glow (the same radii and strengths), each in its own colour */
   --wm-ink: #c4f2d6;
   --wm-star: var(--warn);
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
+  --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
   --helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif; /* the asterisk's face (the owner's artwork), the system's own: Helvetica's asterisk matched the artwork's (IoU 0.85), Neue's did not (0.60) */
 }
 [data-theme="light"] {
@@ -3724,21 +3727,21 @@ body { font-size: 14px; }
   height: var(--head-h); padding: env(safe-area-inset-top, 0px) var(--dk-edge) 0;
   border-radius: 0;
 }
-.mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88); }
+.mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88 * var(--mk, 1)); }
 .infodock { display: flex; align-items: stretch; }
 .passportbtn {
-  position: relative; display: inline-flex; flex: none; width: calc(var(--u) * 97); align-items: center; justify-content: center;
+  position: relative; display: inline-flex; flex: none; width: calc(var(--u) * 97 * var(--mk, 1)); align-items: center; justify-content: center;
   border-radius: calc(var(--u) * 7);
   color: var(--ink); text-decoration: none; transition: color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
-.passportbtn .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.passportbtn .ic { width: calc(var(--u) * 50 * var(--mk, 1)); height: calc(var(--u) * 50 * var(--mk, 1)); min-width: calc(19px * var(--mk, 1)); min-height: calc(19px * var(--mk, 1)); }
 .passportbtn.cur { color: var(--red); }
 .idkey {
   position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none;
-  width: calc(var(--u) * 97); height: 100%; border: 0; border-radius: calc(var(--u) * 7); background: none; color: var(--ink); cursor: pointer;
+  width: calc(var(--u) * 97 * var(--mk, 1)); height: 100%; border: 0; border-radius: calc(var(--u) * 7); background: none; color: var(--ink); cursor: pointer;
   transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
-.idkey .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.idkey .ic { width: calc(var(--u) * 50 * var(--mk, 1)); height: calc(var(--u) * 50 * var(--mk, 1)); min-width: calc(19px * var(--mk, 1)); min-height: calc(19px * var(--mk, 1)); }
 .idkey.cur { color: var(--red); }
 .idcount {
   position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
@@ -3791,33 +3794,48 @@ body { font-size: 14px; }
 .ccenter .tabl, .sheetbtn, .cctog { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
 
 /* THE WORDMARK'S PLACE (owner, 19 Oct 2026: "the *ASILUM logo becomes a
-   fixture that permanently sits in the left hand corner"; 26 Oct 2026: "so
-   the logo can sit on it"; 28 Oct 2026, the new logo: "the same placement as
-   the old logo"): on the Masthead at the left, its left edge in line with the
-   deck's, the capitals as tall as the old logo's and their baseline where the
-   old one's was (the stamp gap above the old line's top); it dims with the bar */
+   fixture that permanently sits in the left hand corner"; 28 Oct 2026, the
+   new logo: "the same placement as the old logo", then "more in the corner"
+   and "the line should sit under the thick logo line"): on the Masthead at
+   the left, its left edge in line with the deck's, the capitals as tall as
+   the old logo's; lifted so its bar ends the stamp gap above the Masthead's
+   line; it dims with the bar */
 .brandfix {
   position: relative; z-index: 2; flex: none; align-self: flex-start;
-  margin-top: calc(var(--mh-line-top) - var(--mh-gap) - var(--wm-u) * 121);
+  margin-top: calc(var(--mh-line-top) - var(--mh-gap) - var(--wm-u) * 203.6);
 }
-/* THE LINE (owner, 28 Oct 2026: "the broken line that stretches across the
-   masthead should be replaced by a solid thin white glowing line"): solid,
-   thin, white, in the logo's glow; it runs on from the end of the logo's bar
-   (tucked a pixel under it) to the Passport's globe, its top on the word's
-   baseline — the bar's top — so the two are one edge. */
+/* THE LINE (owner, 28 Oct 2026; Masthead.jsx, lib/mastline.js): thin, white,
+   in the logo's white glow, just under the keys' glyphs and under the logo's
+   bar, from the logo's left edge to the Passport's hit box; broken
+   (--mh-break) where two keys' hit boxes meet and where the first begins;
+   between two keys a faint cut, the deck's hairline (.cccut), centred on the
+   keys' row. The keys are 10% bigger (--mk, the same day: "the info dock and
+   passport buttons should be about 10% bigger"). */
 .masthead {
-  --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* the old logo's width: the measure everything here keeps */
+  --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* the old logo's width: the measure the logo keeps */
   --wm-u: calc(var(--wm-w) * 129 / 900 / 120.75); /* one unit of the logo's 161: the old capitals' height over the new capitals' 120.75 */
-  --mh-line-top: calc(33px + max(var(--u) * 25, 9.5px) + 2.5px); /* the row's middle, half a glyph, a breath */
+  --mk: 1.1; /* the keys' size */
+  --mh-line-top: calc(33px + max(var(--u) * 25 * var(--mk), 9.5px * var(--mk)) + 2.5px); /* the row's middle, half a glyph, a breath */
   --mh-line-h: max(1.5px, calc(var(--wm-w) * 12 / 900)); /* thin: 2px on a desktop, 1.5 on a phone */
   --mh-gap: calc(var(--wm-w) * 18 / 900);
+  --mh-break: calc(var(--u) * 14);
 }
 .mhline {
-  position: absolute; z-index: 1; pointer-events: none;
-  left: calc(var(--dk-edge) + var(--wm-u) * 976.9 - 1px);
-  right: calc(var(--dk-edge) + var(--u) * 97 / 2);
-  top: calc(env(safe-area-inset-top, 0px) + var(--mh-line-top) - var(--mh-gap)); height: var(--mh-line-h);
-  background: var(--wm-bar); filter: var(--wm-glow);
+  position: absolute; z-index: 1; left: 0; right: 0; pointer-events: none;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mh-line-top)); height: var(--mh-line-h);
+  filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-3) var(--ease-out);
+}
+.mhline.on { opacity: 1; }
+.mhline i {
+  position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
+  left: calc(var(--a) + var(--gl) * var(--mh-break) / 2);
+  width: calc(var(--b) - var(--a) - (var(--gl) + var(--gr)) * var(--mh-break) / 2);
+}
+.mhcuts { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.mhcuts i {
+  position: absolute; left: var(--x); top: calc(env(safe-area-inset-top, 0px) + 33px - var(--u) * 65 / 2); height: calc(var(--u) * 65);
+  width: 1px; transform: translateX(-50%); border-radius: 1px;
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
 /* notices (the bell's sheet) */
