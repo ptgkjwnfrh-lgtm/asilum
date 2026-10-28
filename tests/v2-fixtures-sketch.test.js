@@ -52,7 +52,7 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(g, "the grill is placed in sketch units");
   assert.equal(Number(g[1]) * 2, Number(g[2]), "the grill is centred on the disc");
   // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble, beneath the keys and above the vent
-  assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} \/><\/div>/, "the ad bubble on the deck");
+  assert.match(deck, /<div className="ccad"><AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} \/><\/div>/, "the ad bubble on the deck");
   assert.ok(deck.indexOf('className="ccad"') > deck.indexOf('className="ccrow"'), "the bubble comes after the row of keys");
   // (28 Oct 2026) the ticker wraps the whole deck: the bubble has no side padding (tests/v2-ticker.test.js)
   const ad = rules.match(/\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* (\d+)\)/);
@@ -461,7 +461,8 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.deepEqual(shape(glowR), shape(glow), "the red glow is the white one's, radius for radius, strength for strength");
   assert.ok(/var\(--warn\)/.test(glowR) && !/#fff|255, 255, 255/.test(glowR), "in the asterisk's own red");
   const wearing = [...rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => /var\(--wm-glow(-r)?\)/.test(m[2])).map((m) => m[1].trim() + " " + m[2].match(/var\(--wm-glow(-r)?\)/)[0]).sort();
-  assert.deepEqual(wearing, [".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar and the line white, nothing else");
+  // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
+  assert.deepEqual(wearing, [".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar, the Masthead's line and the ticker's line white, nothing else");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<text className="wmstar"/, "the asterisk on its own layer");
   assert.match(wm, /<svg className="wmlit wmlitbar" viewBox=\{VIEW\} focusable="false">\s*<rect className="wmbar"/, "the bar on its own");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");

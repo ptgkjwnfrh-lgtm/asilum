@@ -3,6 +3,11 @@
 Nothing is static; nothing is frantic. Motion communicates system activity.
 - NO opening animation (owner order, Aug 12 2026): the boot sweep is gone;
   every load lands directly on content. Do not reintroduce a load animation.
+  ONE EXCEPTION, the owner's own (28 Oct 2026: "when a user first opens the
+  app the first animation should be the ticker opening"): the deck renders
+  with the ad ticker folded to its line, and the ticker unfolding (when it
+  has an ad or a BRDCST to carry) is the first thing that moves. Nothing
+  else animates on load.
 - Idle life: LED blink on the active destination, ticker drift, ASTERISK
   dock canvas (spokes+orbit cores in Module Rail, breathing orb in Orb
   Hub), scanline roll bar, haze drift (40–60s cycles).

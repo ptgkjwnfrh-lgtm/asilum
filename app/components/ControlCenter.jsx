@@ -79,6 +79,11 @@ import { useHingedKeys } from "./hinge.js";
 /** Where the glass is cut, in the sketch's units from the deck's left edge
  *  (the deck is 745 wide): the two end caps and the four seams between keys. */
 const CUTS = [40, 163, 290, 452, 578, 705];
+/** THE TICKER'S LINE (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse and
+ *  turn into a glowing white line that acts like the one on the mast head, broken between the button
+ *  gaps"): with nothing to carry, the ticker folds into one glowing white line under the keys, a stretch
+ *  under each key, broken at every cut between them — from the first cut to the last. */
+export const AD_LINE = Object.freeze(CUTS.slice(0, -1).map((a, i) => Object.freeze([a, CUTS[i + 1]])));
 
 export default function ControlCenter({ kind, pathname }) {
   const dock = useDock();
@@ -146,6 +151,8 @@ export default function ControlCenter({ kind, pathname }) {
   const dm = useDmLive();
   // THE WHEEL: out while a Feed carousel is centred, or while the POST cards are up
   const [cards, setCards] = useState(false);
+  // the ticker open, or folded to its line (AdStrip.jsx decides: an ad or a BRDCST to carry, and service)
+  const [adOpen, setAdOpen] = useState(false);
   const [ring, setRing] = useState(0);
   const [centred, setCentred] = useState(null); // the centred carousel's stage
   const [snoozed, setSnoozed] = useState(null); // the carousel the wheel was put away from
@@ -300,7 +307,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-ad={adOpen ? "open" : "line"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined}>
       {glass}
       <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (
@@ -336,13 +343,15 @@ export default function ControlCenter({ kind, pathname }) {
             {DECK.map((k) => key(k))}
           </div>
           <span className="cccap" aria-hidden="true" />
+          <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
         </div>
         {/* THE AD BUBBLE (owner, 25 Oct 2026, last: "the ad ticker is added to the
             central control fixture as a bubble … inside the bubble will be the ad
             scroll wheel"; moved the same night: "beneath the buttons and above the
             vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
-            foot grill; the deck is taller by --ad-h to hold it */}
-        <div className="ccad"><AdStrip typing={inSearch} /></div>
+            foot grill; the deck is taller by --ad-h to hold it — and only while the ticker
+            is open: folded to its line, the deck is the row alone (28 Oct 2026) */}
+        <div className="ccad"><AdStrip typing={inSearch} onOpen={setAdOpen} /></div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />
       <i className="fxrim" aria-hidden="true" />

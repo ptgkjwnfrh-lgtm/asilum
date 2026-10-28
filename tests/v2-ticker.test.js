@@ -88,7 +88,7 @@ test("what the ticker prints: a BRDCST its title, an ad \"AD: \" and the adverti
   const hook = read("app/components/Placements.jsx");
   assert.ok(!/ads:/.test(hook), "nothing feeds ads yet — none is invented");
   const strip = read("app/components/AdStrip.jsx");
-  assert.match(strip, /text: it\.ticker \|\| it\.line/, "the ticker prints each entry's ticker words");
+  assert.match(strip, /text: monoText\(it\.ticker \|\| it\.line\)/, "the ticker prints each entry's ticker words");
   assert.match(strip, /said: it\.label\.toLowerCase\(\) \+ ": "/, "and speaks its label: a BRDCST is read as sponsored");
 });
 
@@ -102,7 +102,7 @@ test("the crawl: one sequence a loop, the track always covered, no timer swappin
   assert.equal(crawlFor(1000, 336).copies, 2);
   const strip = read("app/components/AdStrip.jsx");
   assert.ok(!/setInterval|ROTATE_MS|adnav|adbtn/.test(strip), "no timer swapping entries, no buttons");
-  assert.match(css, /\.adstrip\.run \.adband \{ animation: adcrawl var\(--crawl-s\) linear infinite; \}/);
+  assert.match(css, /\.adstrip\.run \.adband \{ animation: adcrawl var\(--crawl-s\) linear infinite, /, "a linear glide");
   assert.match(css, /@keyframes adcrawl \{ from \{ transform: translateX\(0\); \} to \{ transform: translateX\(calc\(-1 \* var\(--crawl-l\)\)\); \} \}/, "a transform, the compositor's");
   assert.match(css, /\.adstrip\.held \.adband \{ animation-play-state: paused; \}/);
   assert.match(strip, /\(held \|\| typing \? " held" : ""\)/, "held on hover, focus and typing");
@@ -176,10 +176,9 @@ test("the band wraps the whole deck: edge to edge, round each side as a quarter 
     assert.match(shade, /linear-gradient\((90|270)deg, var\(--ad-turn-c\) 0%, /, "one gradient, darkest at the silhouette");
     assert.match(shade, /transparent 100%\); \}?$|transparent 100%\)/, "and gone where the side meets the face");
     assert.ok((shade.match(/color-mix/g) || []).length >= 3, "eased through several stops, not a step");
-    const fade = rule(".adside." + k + " .adsidewords");
-    assert.match(fade, /mask-image: linear-gradient\((90|270)deg, transparent \d+%, #000 \d+%\);/, "the words fade before the silhouette");
   }
-  assert.match(read("app/components/AdStrip.jsx"), /<span className=\{"adside " \+ sideKey\} aria-hidden="true">\s*<span className="adsidewords">/);
+  // (then: the words are typed out before the silhouette instead of fading — the last test)
+  assert.match(read("app/components/AdStrip.jsx"), /<span className=\{"adside " \+ sideKey\} aria-hidden="true">\s*\{slices\.map/);
   assert.match(css, /--ad-q: 1\.5708;/, "a quarter turn of band each side");
   // the band in its unrolled coordinates in every piece: continuous round both sides
   assert.match(css, /\.adface \.adband \{ left: calc\(-1 \* var\(--ad-q\) \* var\(--ad-r\)\); \}/);
@@ -201,4 +200,93 @@ test("ADs: a negative imprint in a small solid red chip glowing red", () => {
   assert.match(css, /\[data-theme="light"\] \{[^}]*--ad-chip-ink: #c2c8ce;/, "and to the light band's");
   assert.ok(!/\.adslot[,)]/.test(css), "no group rule gives it the red glow any more");
   assert.ok(!/devlights|<Lamp/.test(strip), "no red squares");
+});
+
+// THE TICKER'S RULES, ITS BEZEL AND ITS TYPING (owner, 28 Oct 2026: "why does the the bezel that is on the
+// top and bottom of the ticker dissapear it should run the entirety, also lets give it some rules, if there
+// is now ads or brdcsts the ticker should collapse and turn into a glowing white line that acts like the one
+// on the mast head, broken between the button gaps. and the center fixture is allowed to shorten … if the
+// user has no service the ticker … should open immediatly after regaining service, when a user first opens
+// the app the first animation should be the ticker opening. all these animations should be quick and
+// smooth … all the adds on the ticker should be flowing extremely smooth like a rolex no actual ticking,
+// and instead of the text always appearing allow it to be typed in and typed out as its "circling" its way
+// around the track"). Declared before measuring:
+//   - the rule: open only online AND with an ad, a BRDCST or the device's own ad draft; a listed event or
+//     the house lines alone never hold it open; offline shuts it; "online" reads the placements again;
+//   - first load: the deck renders with the ticker folded (data-ad="line"), so its opening is the first
+//     thing that moves;
+//   - folded: the deck is the row alone (--ad-h 0), the bubble folds up into a glowing white line in the
+//     Masthead's glow under the keys — a stretch under each key, broken at each cut between them (AD_LINE:
+//     the cuts in pairs); the bubble's height moves in step with the deck's (same duration, same curve);
+//     every open/fold move on the ladder, none longer than --dur-3 (quick);
+//   - the bezel: the top and bottom rim lines on the face AND both sides;
+//   - the glide: linear, never stepped; the typing: only the mask's edges step, n steps a loop, n the
+//     sequence's cells, the loop exactly n cells; the edges on cell boundaries, round each side at
+//     TYPE_DEG; text folded onto the monospaced grid; the dot between entries is characters, not a margin.
+test("the ticker's rule: open only online with an ad or a BRDCST to carry; folded, a broken glowing line and a shorter deck", async () => {
+  const { tickerOpen, OPENS_TICKER } = await import("../lib/placements.js");
+  const it = (kind) => ({ kind });
+  assert.deepEqual([...OPENS_TICKER].sort(), ["ad", "draft", "sponsored"]);
+  assert.equal(tickerOpen([it("sponsored")]), true, "a BRDCST opens it");
+  assert.equal(tickerOpen([it("ad")]), true, "an ad opens it");
+  assert.equal(tickerOpen([it("draft")]), true, "the device's own ad request opens it, for its author");
+  assert.equal(tickerOpen([it("listed")]), false, "a listed event alone does not");
+  assert.equal(tickerOpen([]), false, "nothing to carry, folded");
+  assert.equal(tickerOpen(null), false, "still reading, folded");
+  assert.equal(tickerOpen([it("sponsored")], false), false, "no service, folded");
+  const strip = read("app/components/AdStrip.jsx");
+  assert.match(strip, /const open = tickerOpen\(items, online\);/);
+  assert.match(strip, /window\.addEventListener\("online", sync\);\s*window\.addEventListener\("offline", sync\);/, "service lost and found");
+  assert.match(read("app/components/Placements.jsx"), /window\.addEventListener\("online", load\);/, "service back: read again at once");
+  const cc = read("app/components/ControlCenter.jsx");
+  assert.match(cc, /const \[adOpen, setAdOpen\] = useState\(false\);/, "the first render is folded, so opening is the first move");
+  assert.match(cc, /data-ad=\{adOpen \? "open" : "line"\}/);
+  assert.match(css, /:root:has\(\.ccenter\[data-ad="line"\]\) \{ --ad-h: 0px; \}/, "folded, the deck is the row alone");
+  assert.match(rule(".ccad"), /transition: height var\(--dur-3\) var\(--ease-out\);/);
+  assert.match(css, /\.ccenter \{[^}]*transition: height var\(--dur-3\) var\(--ease-out\);/, "the bubble and the deck move in step");
+  // the line: the cuts in pairs, a stretch under each key, broken at each cut, in the Masthead's glow
+  const cuts = JSON.parse(cc.match(/const CUTS = (\[[^\]]*\]);/)[1]);
+  assert.match(cc, /export const AD_LINE = Object\.freeze\(CUTS\.slice\(0, -1\)\.map\(\(a, i\) => Object\.freeze\(\[a, CUTS\[i \+ 1\]\]\)\)\);/);
+  assert.equal(cuts.length - 1, 5, "five stretches, one under each key");
+  const line = rule(".ccadline");
+  assert.match(line, /filter: var\(--wm-glow\);/, "the Masthead's glow");
+  assert.match(rule(".ccadline i"), /background: var\(--wm-bar\);[^}]*left: calc\(var\(--u\) \* var\(--a\) \* var\(--dk-sx\) \+ var\(--ad-brk\) \/ 2\); width: calc\(var\(--u\) \* \(var\(--b\) - var\(--a\)\) \* var\(--dk-sx\) - var\(--ad-brk\)\);/s, "broken by half a break each side of every cut");
+  assert.match(css, /\.ccenter\[data-ad="line"\] \.ccadline \{ opacity: 1;/);
+  // quick: every open and fold move on the ladder, none past --dur-3
+  for (const sel of [".adstrip", ".adstrip.shut", ".ccadline", '.ccenter[data-ad="line"] .ccadline', ".ccad"]) {
+    const t = (rule(sel).match(/transition: ([^;]*);/) || [])[1] || "";
+    assert.ok(t && !/--dur-4/.test(t), sel + " moves quickly: " + t);
+  }
+  assert.match(rule(".adstrip.shut"), /transform: scaleY\(0\.04\); opacity: 0; pointer-events: none;/, "folded up into the line");
+  assert.match(strip, /inert=\{open \? undefined : ""/, "and out of reach while folded");
+});
+
+test("the bezel runs the band's whole length, round both sides", () => {
+  assert.match(rule(".adface, .adside"), /box-shadow: var\(--ad-rim\);/, "the face and both sides");
+  assert.match(css, /--ad-rim: inset 0 1px 0 rgba\(255, 255, 255, [\d.]+\), inset 0 -1px 0 rgba\(255, 255, 255, [\d.]+\);/, "top and bottom");
+  assert.ok(!/box-shadow/.test(rule(".adface")), "not the face's alone");
+});
+
+test("the glide never steps; the words are typed in and out, a whole character at a time, on the grid", async () => {
+  const { typingFor, monoText, SEP, TYPE_DEG } = await import("../lib/adcrawl.js");
+  const t = typingFor({ seqW: 361.9, cell: 4.525, r: 15.5, unrolled: 340 - 31 + Math.PI * 15.5 });
+  assert.equal(t.n, 80, "the sequence in cells");
+  assert.ok(Math.abs(t.len - 80 * 4.525) < 1e-9, "a loop is exactly n cells, so the steps keep time with the glide forever");
+  for (const e of [t.out, t.in]) assert.ok(Math.abs(e / 4.525 - Math.round(e / 4.525)) < 1e-9, "each edge on a cell boundary");
+  const reach = 15.5 * (Math.PI / 2 - (TYPE_DEG * Math.PI) / 180);
+  assert.ok(Math.abs(t.out - reach) <= 4.525 / 2 + 1e-9, "typed out round the left side, at TYPE_DEG");
+  assert.ok(t.in > t.out, "typed in after it is typed out, round the right side");
+  assert.equal(typingFor({ seqW: 0, cell: 4, r: 10, unrolled: 300 }), null, "nothing measured, no typing");
+  assert.ok(TYPE_DEG > 0 && TYPE_DEG < 90);
+  assert.equal(monoText("Café – “AD” …"), "Café – “AD” …", "the face carries Latin-1 and the common marks");
+  assert.equal(monoText("\u0101\u6771"), "a?", "a letter off the grid folds to its plain letter, anything else to ?");
+  assert.equal(SEP, "  \u00b7  ", "the dot between entries is five cells");
+  assert.match(read("app/components/AdStrip.jsx"), /text: monoText\(it\.ticker \|\| it\.line\)/, "every entry on the grid");
+  assert.ok(!/\.adword::after/.test(css), "no margin between entries to break the grid");
+  // the glide: linear; the typing: the mask's edges step, n a loop, in the band's own frame
+  assert.match(css, /\.adstrip\.run \.adband \{ animation: adcrawl var\(--crawl-s\) linear infinite, adtype var\(--crawl-s\) steps\(var\(--t-n\), end\) infinite; \}/);
+  assert.match(css, /@keyframes adtype \{ from \{ -webkit-mask-position: 0 0; mask-position: 0 0; \} to \{ -webkit-mask-position: var\(--crawl-l\) 0; mask-position: var\(--crawl-l\) 0; \} \}/, "one cell a step, a loop's worth in a loop");
+  assert.match(rule(".adband"), /mask-image: linear-gradient\(90deg, transparent var\(--t-out\), #000 var\(--t-out\), #000 var\(--t-in\), transparent var\(--t-in\)\);/, "hard edges: whole letters");
+  assert.match(rule(".adband"), /white-space: pre;/, "every space a cell");
+  assert.ok(!/steps\(/.test((css.match(/@keyframes adcrawl \{[^}]*\}[^}]*\}/) || [""])[0]), "the glide itself never steps");
 });

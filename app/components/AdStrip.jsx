@@ -4,8 +4,9 @@
 // (owner, 25 Oct 2026, last: beneath the keys and above the vent). What it
 // carries: live BRDCST campaigns in reach, this device's own promotion
 // drafts (to their author), then LISTED dated events from the places record
-// — lib/placements.js is the law — and with nothing eligible the house lines
-// (lib/dock.js HOUSE_LINES), never a blank and never an invented offer.
+// — lib/placements.js is the law. With no ad and no BRDCST it carries nothing
+// and folds to its line (28 Oct 2026; the house lines it used to fall back
+// on, lib/dock.js HOUSE_LINES, can no longer show), never an invented offer.
 //
 // HOW IT LOOKS (owner, 28 Oct 2026, the MAD-S player's wrap-round display as
 // the reference): "lets have it stretch all the across the center fixture,
@@ -31,34 +32,48 @@
 // is not announced (each entry is a link with its label spoken: a BRDCST is
 // read as sponsored though it prints its title alone).
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { HOUSE_LINES } from "../../lib/dock.js";
-import { crawlFor, wrapSlices } from "../../lib/adcrawl.js";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { crawlFor, wrapSlices, typingFor, monoText, SEP } from "../../lib/adcrawl.js";
+import { tickerOpen } from "../../lib/placements.js";
 import { usePlacements } from "./Placements.jsx";
 
 // the two quarter cylinders, laid once
 const WRAP = wrapSlices();
 
-export default function AdStrip({ typing = false }) {
+export default function AdStrip({ typing = false, onOpen = null }) {
   const items = usePlacements();
   const [held, setHeld] = useState(false);
-  // the entries, as the ticker prints them; with nothing eligible, the house lines
-  const words = items && items.length
-    ? items.map((it) => ({ id: it.id, text: it.ticker || it.line, href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }))
-    : (items === null ? [{ id: "wait", text: "…" }] : HOUSE_LINES.map((t, n) => ({ id: "house" + n, text: t })));
+  // no service, nothing live: the ticker shuts to its line, and opens again the moment service returns
+  // (the placements hook reads again on "online")
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const sync = () => setOnline(navigator.onLine !== false);
+    sync();
+    window.addEventListener("online", sync);
+    window.addEventListener("offline", sync);
+    return () => { window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
+  }, []);
+  const open = tickerOpen(items, online);
+  useEffect(() => { if (onOpen) onOpen(open); }, [open, onOpen]);
+  // the entries, as the ticker prints them, on the monospaced grid (folded, there are none to print)
+  const words = (items || []).map((it) => ({ id: it.id, text: monoText(it.ticker || it.line), href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }));
   const key = words.map((w) => w.id + w.text).join("|");
-  // the crawl: one sequence measured, the band long enough to cover its whole unrolled length, one sequence a loop
-  const trackRef = useRef(null), faceRef = useRef(null), seqRef = useRef(null);
-  const [crawl, setCrawl] = useState({ copies: 2, len: 0, seconds: 0 });
+  // the crawl and the typing: one sequence measured on the cell grid, the band long enough to cover its
+  // whole unrolled length, one sequence a loop, the typing edges on cell boundaries
+  const trackRef = useRef(null), faceRef = useRef(null), seqRef = useRef(null), probeRef = useRef(null);
+  const [crawl, setCrawl] = useState({ copies: 2, len: 0, seconds: 0, type: null });
   useLayoutEffect(() => {
     const track = trackRef.current, face = faceRef.current;
     if (!track || !face) return undefined;
     let raf = 0;
     const measure = () => {
       raf = 0;
-      const seq = seqRef.current, r = face.offsetLeft;
-      const c = crawlFor(seq ? seq.getBoundingClientRect().width : 0, track.offsetWidth - 2 * r + Math.PI * r);
-      setCrawl((p) => (p.copies === c.copies && Math.abs(p.len - c.len) < 0.25 ? p : c));
+      const seq = seqRef.current, probe = probeRef.current, r = face.offsetLeft;
+      const unrolled = track.offsetWidth - 2 * r + Math.PI * r;
+      const cell = probe ? probe.getBoundingClientRect().width / 20 : 0;
+      const type = typingFor({ seqW: seq ? seq.getBoundingClientRect().width : 0, cell, r, unrolled });
+      const c = crawlFor(type ? type.len : 0, unrolled);
+      setCrawl((p) => (p.copies === c.copies && Math.abs(p.len - c.len) < 0.01 && p.type && type && p.type.n === type.n && Math.abs(p.type.out - type.out) < 0.01 && Math.abs(p.type.in - type.in) < 0.01 ? p : { ...c, type }));
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(measure); };
     measure();
@@ -73,29 +88,36 @@ export default function AdStrip({ typing = false }) {
     <span className="adband">
       {Array.from({ length: crawl.copies }, (_, c) => (
         <span key={c} className="adseq" ref={live && c === 0 ? seqRef : undefined} aria-hidden={live && c === 0 ? undefined : true}>
-          {words.map((w) => (live && w.href
-            ? <a key={w.id} className="adword" href={w.href} aria-label={w.said} tabIndex={c === 0 ? undefined : -1}>{w.text}</a>
-            : <span key={w.id} className="adword">{w.text}</span>))}
+          {words.map((w) => (
+            <span key={w.id} className="adentry">
+              {live && w.href
+                ? <a className="adword" href={w.href} aria-label={w.said} tabIndex={c === 0 ? undefined : -1}>{w.text}</a>
+                : <span className="adword">{w.text}</span>}
+              <span className="adsep" aria-hidden="true">{SEP}</span>
+            </span>
+          ))}
         </span>
       ))}
     </span>
   );
   // a side: one smooth piece of cloud and shade, the words over it in slices — each the band's arc laid
-  // flat and squeezed from its left edge — fading into the silhouette
+  // flat and squeezed from its left edge
   const side = (sideKey, slices) => (
     <span className={"adside " + sideKey} aria-hidden="true">
-      <span className="adsidewords">
-        {slices.map((g, n) => <span key={n} className="adslice" style={{ "--at": g.at.toFixed(5), "--from": g.from.toFixed(5), "--s": g.scale.toFixed(5) }}>{band(false)}</span>)}
-      </span>
+      {slices.map((g, n) => <span key={n} className="adslice" style={{ "--at": g.at.toFixed(5), "--from": g.from.toFixed(5), "--s": g.scale.toFixed(5) }}>{band(false)}</span>)}
     </span>
   );
+  const t = crawl.type;
   return (
     <div
-      className={"adstrip" + (crawl.seconds > 0 ? " run" : "") + (held || typing ? " held" : "")}
+      className={"adstrip" + (crawl.seconds > 0 && t ? " run" : "") + (held || typing ? " held" : "") + (open ? " open" : " shut")}
       aria-label="ads and placements"
-      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5) }}
+      aria-hidden={open ? undefined : true}
+      inert={open ? undefined : "" /* React 18: the attribute present is inert */}
+      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1 }}
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
+      <span className="adprobe" ref={probeRef} aria-hidden="true">00000000000000000000</span>
       <div className="adtrack" ref={trackRef}>
         {side("l", WRAP.left)}
         <span className="adface" ref={faceRef}>

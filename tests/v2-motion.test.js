@@ -8,9 +8,10 @@
 //     cubic-bezier anywhere but the tokens themselves, and every transition's
 //     duration a token unless it is a deliberate long ambient one (≥ 0.6s) or
 //     a linear colour blend;
-//   - nothing animates layout but four named exceptions, each a box that must
+//   - nothing animates layout but five named exceptions, each a box that must
 //     truly change size (the deck rising for search, the fixtures with it, a
-//     caption opening to its text, the banner's reply field);
+//     caption opening to its text, the banner's reply field, and — since the
+//     ticker folds to a line — the ad bubble, in step with the deck);
 //   - the wheel and its tray move by transform, opacity and clip alone, and
 //     the wheel's glass makes the same move in CSS — no script resizing it
 //     every frame;
@@ -50,10 +51,11 @@ test("one ladder of durations, one set of curves", () => {
   assert.deepEqual(loose, [], "every transition on the ladder, with a curve");
 });
 
-test("nothing animates layout but four boxes that truly change size", () => {
+test("nothing animates layout but five boxes that truly change size", () => {
   const LAYOUT = /(^|[\s,])(top|left|width|height|max-height|min-height|margin[a-z-]*|padding[a-z-]*|bottom|right|inset)\s/;
   const offenders = rules.filter((r) => { const t = (r.body.match(/transition:([^;]*)/) || [])[1]; return t && LAYOUT.test(t); }).map((r) => r.sel).sort();
-  assert.deepEqual(offenders, [".ccenter", ".dmbreply", ".fixture, .ccenter", ".mfcaption"].sort(), "the deck rising for search, the fixtures with it, a caption opening, the reply field");
+  // (28 Oct 2026) and the ad bubble opening and folding, in step with the deck's own height
+  assert.deepEqual(offenders, [".ccad", ".ccenter", ".dmbreply", ".fixture, .ccenter", ".mfcaption"].sort(), "the deck rising for search, the fixtures with it, the ad bubble, a caption opening, the reply field");
 });
 
 test("the wheel moves by transform alone, and its glass makes the same move in CSS", () => {

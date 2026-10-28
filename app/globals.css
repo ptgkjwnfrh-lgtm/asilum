@@ -3409,6 +3409,9 @@ body { font-size: 14px; }
   --sheet-radius: calc(var(--radius-card) + 2px);
 }
 :root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
+/* the ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it
+   doesnt have to acomidate for the size of the ticker anymore"): the deck is the row alone */
+:root:has(.ccenter[data-ad="line"]) { --ad-h: 0px; }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
@@ -3450,6 +3453,14 @@ body { font-size: 14px; }
   width: 1px; transform: translateX(-50%); border-radius: 1px; pointer-events: none;
   background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
+/* THE TICKER'S LINE (owner, 28 Oct 2026; ControlCenter.jsx AD_LINE): the ticker folded, one glowing white
+   line in the Masthead's glow under the keys — a stretch under each key, broken (--ad-brk) at every cut
+   between them — fading in as the band folds up into it */
+.ccadline { position: absolute; z-index: 2; left: 0; right: 0; top: calc(var(--u) * 138); height: max(1.5px, calc(var(--u) * 4)); pointer-events: none;
+  --ad-brk: calc(var(--u) * 14); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-1) var(--ease-in); }
+.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-3) 120ms var(--ease-out); }
+.ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
+  left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
 /* the foot grill: a vent cut through the glass under the post disc, like a
    phone's ventilation port (Figure 1.2); the glass warps around it */
 .ccgrill {
@@ -3508,19 +3519,31 @@ body { font-size: 14px; }
    glowing white line of Share Tech Mono, regular, at -0.0875em (the owner's
    "-8.5 to -9 kerning", Procreate's per-cent of the em); ADs is knocked out
    of a glowing white chip at the face's left. */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 30); box-sizing: border-box; }
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 30); box-sizing: border-box;
+  transition: height var(--dur-3) var(--ease-out); /* in step with the deck's own height, so the row never leaves the glass */ }
+/* OPEN AND SHUT (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse … if the
+   user has no service … [it] should open immediatly after regaining service, when a user first opens the
+   app the first animation should be the ticker opening. all these animations should be quick and
+   smooth"): the band folds up into the line under the keys and unfolds out of it; the page loads with
+   it folded, so its opening is the first thing that moves */
+.adstrip.shut { transform: scaleY(0.04); opacity: 0; pointer-events: none; transition: transform var(--dur-2) var(--ease-in), opacity var(--dur-1) var(--ease-in); }
+.adprobe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
 .adstrip {
   --ad-r: calc(var(--u) * 34 * var(--dk-sx)); /* each side's radius: the face keeps the pill's place, a touch longer */
   --ad-q: 1.5708; /* a quarter turn, in radians: the arc of each side, in radii */
   position: relative; height: calc(var(--u) * 52); width: 100%; min-width: 0; margin: 0; box-sizing: border-box;
   font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
+  transform-origin: 50% 0; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); /* unfolding out of the line */
 }
 .adtrack { position: absolute; inset: 0; container-type: inline-size; }
 /* one cloudscape along the band: the face shows its stretch unrolled, and each side is ONE smooth piece of
    it (never sliced — sliced, every slice's cloud and shade stepped, and the turn read as stripes), matched
    to the face where they meet */
-.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
-.adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; box-shadow: var(--ad-rim); }
+/* the bezel along its top and bottom edges runs the band's whole length, round both sides too (owner,
+   28 Oct 2026: "why does the bezel that is on the top and bottom of the ticker dissapear it should run
+   the entirety") */
+.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; box-shadow: var(--ad-rim); }
+.adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; }
 .adside { width: var(--ad-r); }
 .adside.l { left: 0; background-position: calc(-1 * (var(--ad-q) - 1) * var(--ad-r)) 0; }
 .adside.r { right: 0; background-position: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r))) 0; }
@@ -3528,25 +3551,32 @@ body { font-size: 14px; }
 .adside::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .adside.l::after { background: linear-gradient(90deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
 .adside.r::after { background: linear-gradient(270deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
-/* the words in fine slices, fading as they go round, so no squeezed glyph is left as a smear at the edge */
-.adsidewords { position: absolute; inset: 0; }
-.adside.l .adsidewords { -webkit-mask-image: linear-gradient(90deg, transparent 4%, #000 55%); mask-image: linear-gradient(90deg, transparent 4%, #000 55%); }
-.adside.r .adsidewords { -webkit-mask-image: linear-gradient(270deg, transparent 4%, #000 55%); mask-image: linear-gradient(270deg, transparent 4%, #000 55%); }
 .adslice { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * var(--ad-r)); width: calc(var(--arc) * var(--ad-r)); overflow: hidden; transform-origin: 0 50%; transform: scaleX(var(--s)); }
 /* the band, in its own unrolled coordinates in every piece: continuous round both sides */
-.adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+.adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: pre; will-change: transform;
+  /* THE TYPING (lib/adcrawl.js typingFor): the words show only between the edge where they are typed in
+     (--t-in, round the right side) and the edge where they are typed out (--t-out, round the left), both
+     on the cell grid; the edges are a mask in the band's own frame */
+  -webkit-mask-image: linear-gradient(90deg, transparent var(--t-out), #000 var(--t-out), #000 var(--t-in), transparent var(--t-in));
+  mask-image: linear-gradient(90deg, transparent var(--t-out), #000 var(--t-out), #000 var(--t-in), transparent var(--t-in));
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-position: 0 0; mask-position: 0 0; }
 .adface .adband { left: calc(-1 * var(--ad-q) * var(--ad-r)); }
 .adside.l .adslice .adband { left: calc(-1 * var(--from) * var(--ad-r)); }
 .adside.r .adslice .adband { left: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))); }
-.adseq { display: flex; flex: none; }
+.adseq, .adentry { display: flex; flex: none; }
 .adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
-.adword::after { content: "\00B7"; margin: 0 0.9em; opacity: 0.55; }
+/* the dot between entries is characters on the grid too (lib/adcrawl.js SEP), never a margin */
+.adsep { flex: none; opacity: 0.55; text-shadow: var(--ad-glow); }
 a.adword:hover { color: var(--ad-chip); }
 /* the negative imprint: a small solid red chip glowing red at the face's left, the word cut out of it to the band's tone; the words pass under it */
 .adslot { position: absolute; z-index: 1; left: calc(var(--u) * 10); top: 50%; transform: translateY(-50%); font-size: 0.78em; padding: 0.14em 0.3em 0.1em 0.26em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
-.adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; }
+/* "flowing extremely smooth like a rolex no actual ticking": the band glides, linear, on the compositor;
+   only the typing edges step — one whole character each step, n steps a loop, so they keep time with
+   the glide forever */
+.adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite, adtype var(--crawl-s) steps(var(--t-n), end) infinite; }
 .adstrip.held .adband { animation-play-state: paused; }
 @keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
+@keyframes adtype { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--crawl-l) 0; mask-position: var(--crawl-l) 0; } }
 @media (prefers-reduced-motion: reduce) { .adstrip.run .adband { animation: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
 .adtag.sponsored { color: var(--red); border-color: var(--red); }

@@ -1013,3 +1013,29 @@ add ticker should stretch all around it".
   the words are sliced, in 16 slices a side (`WRAP_SLICES`), and they fade
   out (`.adsidewords` mask) before the silhouette so no squeezed glyph is
   left as a smear. The crawl still holds 60 fps (worst frame 18 ms).
+- Then, the ticker's RULES (owner, 28 Oct 2026): "if there is no ads or
+  brdcsts the ticker should collapse and turn into a glowing white line
+  that acts like the one on the mast head, broken between the button gaps.
+  and the center fixture is allowed to shorten … if the user has no service
+  … [it] should open immediatly after regaining service, when a user first
+  opens the app the first animation should be the ticker opening".
+  `tickerOpen` (lib/placements.js): open only ONLINE and with an ad, a
+  BRDCST or the device's own ad draft to carry — a listed event or the
+  house lines alone never hold it open. Folded (`.ccenter[data-ad="line"]`)
+  the deck is the row alone (`--ad-h: 0`), and one glowing white line in
+  the Masthead's glow runs under the keys, a stretch per key, broken at
+  every cut between them (ControlCenter.jsx `AD_LINE`). The page loads
+  folded, so the unfolding is the first move; "offline" folds it, "online"
+  reads the placements again and it opens at once. The bubble's height
+  moves in step with the deck's; every open/fold move is ≤ `--dur-3`.
+- The bezel (`--ad-rim`, the top and bottom lines) now runs round both
+  sides, not the face alone.
+- "flowing extremely smooth like a rolex no actual ticking … typed in and
+  typed out as its circling": the band glides linear on the compositor;
+  only the TYPING steps. The text is on Share Tech Mono's cell grid
+  (`monoText`; the dot between entries is the characters `SEP`, not a
+  margin); one loop is exactly n cells; a hard-edged mask on every band
+  (`--t-out` … `--t-in`, on cell boundaries round each side at `TYPE_DEG`,
+  60°) steps right one cell per cell of glide (`adtype`, `steps(n)`), so on
+  screen each letter is typed in whole as it comes round the right side and
+  typed out whole as it goes round the left. The side-fade mask is gone.
