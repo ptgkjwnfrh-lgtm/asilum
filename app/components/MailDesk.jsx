@@ -49,7 +49,7 @@ import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
   composerCount, composerKey, mergeFolderItems, messageControls, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity, startSummaryPolling,
+  shouldPollActivity, startSummaryPolling, takeDeskRequest,
 } from "../../lib/dm-desk.js";
 // STAGE C (V.2 brief §3–§4): the limit the server also keeps, so the
 // composer can say the count before the route refuses it.
@@ -79,11 +79,15 @@ function Envelope({ waiting, fault }) {
 
 // `glyph`: the deck draws its own messages glyph (the owner's fixture sketch,
 // 19 Oct 2026: a square speech bubble); the envelope stays the default.
-export default function MailDesk({ glyph = null, keyClass = "" }) {
+// `embedded` (27 Oct 2026): the desk as the DM TAB's own page — the MESSAGES
+// key opens the "messages" popup tab and this is its contents: no button of
+// its own, always open, no dialog chrome (the popup is the dialog), kept
+// alive with the tab so a thread left half-read resumes where it was.
+export default function MailDesk({ glyph = null, keyClass = "", embedded = false }) {
   const [available, setAvailable] = useState(null); // null = unknown, false = feature absent
   const [counts, setCounts] = useState({ inbox: 0, requests: 0 });
   const [fault, setFault] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(embedded);
   const [folder, setFolder] = useState("inbox");
   const [items, setItems] = useState(null);
   const [note, setNote] = useState("");
@@ -151,21 +155,21 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
     setPeer(NO_SIGNAL);
   }, []);
 
-  useEscape(() => setOpen(false), open);
+  useEscape(() => setOpen(false), open && !embedded);
   // 3.18: on Direct Messages the Info Dock disappears and only the music
   // circle stays, in the right corner — CSS on `data-dm` (slice 9)
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
-    if (open) document.documentElement.dataset.dm = "1"; else delete document.documentElement.dataset.dm;
+    if (open && !embedded) document.documentElement.dataset.dm = "1"; else delete document.documentElement.dataset.dm;
     return () => { delete document.documentElement.dataset.dm; };
-  }, [open]);
-  useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
+  }, [open, embedded]);
+  useClickAway(panelRef, () => setOpen(false), { active: open && !embedded, excludeRef: buttonRef });
   // THE THIRD PART OF THE DISMISSAL CONTRACT, which this panel never took. It
   // is a dialog over the page: Tab walked straight into the catalog behind it,
   // and closing left focus nowhere. useFocusTrap has been in this codebase
   // since the item modal, and it restores the origin on close — the half
   // people forget.
-  useFocusTrap(panelRef, open);
+  useFocusTrap(panelRef, open && !embedded);
 
   const poll = useCallback(async () => {
     const uid = getUid();
@@ -201,22 +205,30 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
 
   useEffect(() => startSummaryPolling(poll, { intervalMs: POLL_MS }), [poll]);
 
-  // Public profile/storefront surfaces open the existing mail desk rather
-  // than growing a second composer. The handle is only a search seed; the DM
-  // API still resolves the account, permissions, blocks and delivery rules.
+  // WHAT THE DESK IS ASKED TO SHOW (27 Oct 2026): the message banner's
+  // double tap names a conversation, a storefront's MESSAGE key names a
+  // person (only a search seed: the DM API still resolves the account,
+  // permissions, blocks and delivery rules), a request banner names the
+  // REQUESTS folder. DmLive.jsx opens the DM tab and leaves the ask in
+  // lib/dm-desk.js; the desk takes it when it mounts, or at once when it is
+  // already kept alive behind the tab.
   useEffect(() => {
-    function openToHandle(event) {
-      const handle = String(event?.detail?.handle || "").trim().toLowerCase().replace(/^\*/, "");
-      if (!/^[a-z0-9-]{3,24}$/.test(handle)) return;
-      showThread(null);
-      setFolder("inbox");
-      setSearchQ("");
-      setQuery(handle);
-      setNote("");
+    function take() {
+      const ask = takeDeskRequest();
+      if (!ask) return;
+      setSearchQ(""); setNote("");
+      if (ask.thread) { setFolder("inbox"); setQuery(""); showThread(String(ask.thread)); }
+      else if (ask.folder) { showThread(null); setQuery(""); setFolder(ask.folder === "requests" ? "requests" : "inbox"); }
+      else if (ask.handle) {
+        const handle = String(ask.handle).trim().toLowerCase().replace(/^\*/, "");
+        if (!/^[a-z0-9-]{3,24}$/.test(handle)) return;
+        showThread(null); setFolder("inbox"); setQuery(handle);
+      }
       setOpen(true);
     }
-    window.addEventListener("asilum:dm-open", openToHandle);
-    return () => window.removeEventListener("asilum:dm-open", openToHandle);
+    take();
+    window.addEventListener("asilum:dm-pending", take);
+    return () => window.removeEventListener("asilum:dm-pending", take);
   }, [showThread]);
 
   const loadFolder = useCallback(async (which, more = "") => {
@@ -635,7 +647,8 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
     : waiting ? `messages — ${counts.inbox + counts.requests} waiting` : "messages";
 
   return (
-    <div className="maildesk">
+    <div className={"maildesk" + (embedded ? " embedded" : "")}>
+      {embedded ? null : (
       <button
         ref={buttonRef}
         className={"mailbtn" + (keyClass ? " " + keyClass : "") + (open ? " cur" : "")}
@@ -648,6 +661,7 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
         {fault ? <span className="mailfault" title="unavailable">!</span>
           : waiting ? <span className="mailcount">{counts.inbox + counts.requests}</span> : null}
       </button>
+      )}
 
       {/* ONE panel element. Two sibling <div className="mailpanel"> branches
           made React tear down and rebuild the surface when a thread opened,
@@ -656,10 +670,10 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
           the surface does not. */}
       {open ? (
         <div
-          className="mailpanel"
+          className={"mailpanel" + (embedded ? " embedded" : "")}
           ref={panelRef}
-          role="dialog"
-          aria-modal="true"
+          role={embedded ? "region" : "dialog"}
+          aria-modal={embedded ? undefined : "true"}
           aria-label={threadId ? "conversation" : "the mail desk"}
           tabIndex={-1}
         >

@@ -28,11 +28,10 @@
 // a global search opens the results popup over the root; a scoped search
 // filters the surface it belongs to live.
 //
-// The MESSAGES key IS the mail desk's own button when the desk is
-// available (MailDesk.jsx renders it, with its counts and its panel); when
-// the desk renders nothing — signed out, or messaging off — the fallback
-// key beside it opens the honest MessagesSheet. CSS hides whichever is
-// not needed (.cckey-mail:has(.maildesk) .ccfallback).
+// The MESSAGES key opens the DM TAB (owner, 27 Oct 2026): the "messages"
+// popup tab, the live mail desk inside it (MessagesSheet.jsx), or the honest
+// reason it cannot be there. It wears how many conversations wait
+// (DmLive.jsx, which also draws the incoming-message banner).
 //
 // THE POST DISC: it brings up Post Selection's types as the POST cards; over
 // a popup it closes the popup first (posting is unavailable inside one). It
@@ -72,7 +71,7 @@ import PostCards from "./PostCards.jsx";
 import { haptic } from "../../lib/haptics.js";
 import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
-import MailDesk from "./MailDesk.jsx";
+import { useDmLive } from "./DmLive.jsx";
 import AMark from "./AMark.jsx";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
 import { useHingedKeys } from "./hinge.js";
@@ -144,6 +143,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   const popupUp = !!dock.sheet;
+  const dm = useDmLive();
   // THE WHEEL: out while a Feed carousel is centred, or while the POST cards are up
   const [cards, setCards] = useState(false);
   const [ring, setRing] = useState(0);
@@ -279,13 +279,15 @@ export default function ControlCenter({ kind, pathname }) {
       );
     }
     if (k.id === "messages") {
+      // THE DM TAB (owner, 27 Oct 2026: "the direct message button should up
+      // the direct message tab"): one key, the "messages" popup tab, wearing
+      // how many conversations wait (DmLive.jsx reads them)
+      const cur = sheetIs("messages");
       return (
-        <span key={k.id} className="cckey-mail">
-          <MailDesk glyph="messages" keyClass="hkey" />
-          <button type="button" className={"tabl hkey ccfallback" + (sheetIs("messages") ? " cur" : "")} onClick={() => press("messages")} aria-label="messages">
-            <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
-          </button>
-        </span>
+        <button key={k.id} type="button" className={"tabl hkey ccdm" + (cur ? " cur" : "")} onClick={() => press("messages")} aria-label={dm.waiting ? `messages — ${dm.waiting} waiting` : "messages"}>
+          <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
+          {dm.waiting ? <b className="dmcount" aria-hidden="true">{dm.waiting > 9 ? "9+" : dm.waiting}</b> : null}
+        </button>
       );
     }
     // search: a mode

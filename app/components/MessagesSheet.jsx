@@ -1,31 +1,41 @@
 "use client";
 
-// app/components/MessagesSheet.jsx — MESSAGES as a utility (V.2 brief,
-// owner, 1 Oct 2026, §1 + §3). The live mail desk (MailDesk.jsx — inbox,
-// requests, threads, block, mute, receipts) is unchanged and keeps its own
-// panel; the control center's MESSAGES key opens it directly whenever it
-// is available. This sheet is what the key opens when it is NOT: a signed
-// out reader, or a deployment with MESSAGING_ENABLED off. It says which,
-// and offers the one action that changes it. The dock's search in this
-// scope ("Search your messages") reaches only the mail desk's own find —
-// never the whole app (the brief: a private-message search can never
-// widen on its own).
+// app/components/MessagesSheet.jsx — THE DM TAB (owner, 27 Oct 2026: "the
+// direct message button should up the direct message tab"). The deck's
+// MESSAGES key opens this popup tab, and it is the live mail desk itself
+// (MailDesk.jsx, embedded: inbox, requests, threads, block, mute, receipts),
+// kept alive with the tab so a conversation left half-read resumes where it
+// was. When the desk cannot be here it says why, honestly: a signed-out
+// reader (the one action that changes it is offered), a deployment with
+// MESSAGING_ENABLED off (absent, never simulated), or a store that is not
+// answering. The message banner (DmLive.jsx) opens this tab on a
+// conversation with a double tap. The dock's search in this scope ("Search
+// your messages") reaches only the desk's own find — never the whole app.
 
 import { useEffect, useState } from "react";
 import { getUid, authorizedFetch } from "../../lib/client.js";
 import ModelTag from "./ModelTag.jsx";
+import MailDesk from "./MailDesk.jsx";
 
 export default function MessagesSheet() {
-  const [why, setWhy] = useState(null); // "signed-out" | "off" | null (checking)
+  // null = checking; "desk" | "signed-out" | "off" | "away"
+  const [why, setWhy] = useState(null);
   useEffect(() => {
-    const uid = getUid();
-    if (!uid || !uid.startsWith("sb-")) { setWhy("signed-out"); return; }
-    authorizedFetch("/api/dm?op=counts&user=" + encodeURIComponent(uid), { cache: "no-store" })
-      .then((r) => setWhy(r.status === 404 ? "off" : null))
-      .catch(() => setWhy("off"));
+    let gone = false;
+    const check = () => {
+      const uid = getUid();
+      if (!uid || !uid.startsWith("sb-")) { setWhy("signed-out"); return; }
+      authorizedFetch("/api/dm?op=summary&user=" + encodeURIComponent(uid), { cache: "no-store" })
+        .then((r) => { if (!gone) setWhy(r.ok ? "desk" : r.status === 404 ? "off" : r.status === 401 ? "signed-out" : "away"); })
+        .catch(() => { if (!gone) setWhy("away"); });
+    };
+    check();
+    window.addEventListener("asilum:identity", check);
+    return () => { gone = true; window.removeEventListener("asilum:identity", check); };
   }, []);
   return (
     <div className="msgsheet">
+      {why === "desk" && <MailDesk embedded />}
       {why === "signed-out" && (
         <>
           <p className="deck">Messages need an account.</p>
@@ -39,6 +49,7 @@ export default function MessagesSheet() {
           <p className="fine">The mail desk exists and is off by configuration (MESSAGING_ENABLED). Nothing here is simulated. <ModelTag kind="device">CONNECTION REQUIRED</ModelTag></p>
         </>
       )}
+      {why === "away" && <p className="fine" role="status">The mail desk is not answering right now — your messages are safe; try again in a moment.</p>}
       {why === null && <p className="pempty" role="status">opening the mail desk…</p>}
     </div>
   );

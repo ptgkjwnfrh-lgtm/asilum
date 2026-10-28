@@ -38,6 +38,19 @@ and tactility) are the law; what follows is the shipped reading.
   SEARCH gives them back with the search tab resumed. Likes and the map
   filter by them only while the deck is searching.
 
+## Direct messages (MessagesSheet.jsx, MailDesk.jsx, DmLive.jsx — 27 Oct 2026)
+- The MESSAGES key opens the DM TAB — the "messages" popup tab, the live
+  mail desk inside it (embedded), kept like every tab — and wears how many
+  conversations wait. Signed out, messaging off, or a store away, the tab
+  says which; nothing is simulated.
+- A message arriving while the app is on screen drops a glass banner from
+  the top (who, the start of what they wrote; a request shows no words),
+  gone after six seconds or a swipe up. ONE TAP opens the reply field and
+  focuses it inside the tap, so a phone raises its keyboard; Enter sends
+  through the DM API and marks the conversation read. A DOUBLE TAP (280 ms,
+  the Feed's own) opens the DM tab on that conversation; a request opens
+  REQUESTS. No banner over the DM tab itself; muted conversations stay quiet.
+
 ## The Disc (Disc.jsx, lib/disc.js)
 - Drag to turn, flick to spin; momentum and friction; a magnetic snap
   that ramps as the disc slows; a tick (haptic + visual) at each item

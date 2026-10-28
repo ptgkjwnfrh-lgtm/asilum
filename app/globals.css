@@ -3422,7 +3422,7 @@ body { font-size: 14px; }
 .ccrow { position: relative; flex: none; height: var(--dk-h); display: grid; grid-template-columns: 40fr 665fr 40fr; }
 .cctabs { display: grid; grid-template-columns: 123fr 127fr 162fr 126fr 127fr; min-width: 0; }
 .cccap { position: relative; }
-.ccenter .tabl, .ccenter .cckey-mail, .ccenter .ccpostwrap { min-width: 0; }
+.ccenter .tabl, .ccenter .ccpostwrap { min-width: 0; }
 .ccenter .tabl {
   position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
   padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 9); text-decoration: none;
@@ -3457,16 +3457,6 @@ body { font-size: 14px; }
 .cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .cckey.cur .ic { color: var(--red); }
-.ccenter .cckey-mail { position: relative; display: flex; }
-.ccenter .maildesk { position: static; display: flex; width: 100%; }
-.ccenter .mailbtn { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 9); border: 0; background: none; color: var(--ink); }
-.ccenter .mailbtn .ic { width: calc(var(--u) * 56); height: calc(var(--u) * 56); min-width: 20px; min-height: 20px; }
-.ccenter .mailbtn.cur { border: 0; }
-.ccenter .mailbtn.cur { color: var(--red); }
-.ccenter .mailword { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.ccenter .mailpanel { position: absolute; top: auto; bottom: calc(100% + 10px); left: 0; right: 0; width: auto; max-height: 60vh; overflow-y: auto;
-  border: 1px solid var(--line); border-radius: 11px; box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent); }
-.ccenter .cckey-mail .mailpanel { left: auto; right: calc(var(--u) * -250); width: min(360px, calc(100vw - 24px)); }
 /* the search bar the deck rises to hold: a groove of its own in the glass */
 .ccsearch {
   flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
@@ -3806,7 +3796,6 @@ body { font-size: 14px; }
 .ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
-.ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
 /* a key is a key whether it is an <a> or a <button> */
 .ccenter button.tabl { border: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
 .ccenter .cctabs .tabl { font-family: var(--mich); }
@@ -4047,7 +4036,7 @@ body { font-size: 14px; }
 .disccenter:active { transform: scale(0.94); }
 .disccenterlbl { font: 8px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
 .discprog { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); color: var(--red); transform: rotate(-90deg); pointer-events: none; }
-.discbadge { position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
+.discbadge { position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 999px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
 .disctoggle { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 7px; background: none; color: var(--grey); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
 .disctoggle:hover { color: var(--sig); border-color: var(--sig); }
 /* the disc turned off (2.7–2.10): a slim slider */
@@ -5405,3 +5394,45 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .p2text, .p2words { user-select: text; -webkit-user-select: text; }
 @media (prefers-reduced-motion: reduce) { .holdveil { animation: none; } }
 .card.wpostcard.p2 .brdcst .brdcstwhen { overflow-wrap: anywhere; }
+
+/* THE DM TAB AND THE MESSAGE BANNER (owner, 27 Oct 2026: "the direct
+   message button should up the direct message tab … a pop up message at
+   the top like a regualr ios message"; DmLive.jsx, MessagesSheet.jsx). The
+   MESSAGES key wears how many conversations wait; the mail desk sits in the
+   DM tab as its page (.embedded: no panel of its own); the banner drops from
+   the top in the fixtures' glass, folds its reply field away until a tap
+   opens it (the field is there all along, so the tap can focus it and a
+   phone raises its keyboard). Reduced motion: it appears without the drop. */
+.ccenter .tabl.ccdm { position: relative; }
+.dmcount {
+  position: absolute; top: calc(var(--u) * 14); left: calc(50% + var(--u) * 14); min-width: 15px; height: 15px; padding: 0 4px;
+  border-radius: 999px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; text-align: center;
+}
+.mailpanel.embedded { position: static; z-index: auto; width: auto; max-height: none; padding: 0; border: 0; box-shadow: none; background: none; }
+.dmbanner {
+  position: fixed; z-index: 200; top: max(8px, env(safe-area-inset-top)); left: 50%; width: min(420px, calc(100vw - 16px));
+  transform: translateX(-50%); display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 4px; padding: 10px 10px 10px 12px;
+  border-radius: var(--sheet-radius); color: var(--ink);
+  /* frosted, as a phone's banner is: the fixtures' glass over a veil of the
+     page's own ground, so the words read over any card */
+  background: linear-gradient(var(--fx-tint), var(--fx-tint)), linear-gradient(color-mix(in srgb, var(--bg) 58%, transparent), color-mix(in srgb, var(--bg) 58%, transparent)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%) blur(26px); backdrop-filter: saturate(160%) blur(26px);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  animation: dmdrop 0.42s cubic-bezier(0.2, 0.9, 0.25, 1.05); touch-action: pan-x;
+}
+@keyframes dmdrop { from { transform: translate(-50%, calc(-100% - 20px)); opacity: 0.4; } }
+.dmbtap { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.dmbface { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 12%, transparent); font: 13px/1 var(--mich); color: var(--ink); }
+.dmbtext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dmbwho { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.dmbwho b { font: 11px/1.2 var(--mich); letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmbwho small { font: 8px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
+.dmbwords { font-family: var(--helv); font-size: 13px; line-height: 1.3; color: var(--ink); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.dmbx { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--grey); cursor: pointer; }
+.dmbreply { grid-column: 1 / -1; display: flex; gap: 8px; max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.22s, opacity 0.18s, margin 0.22s; }
+.dmbreply[data-open] { max-height: 48px; opacity: 1; margin-top: 6px; }
+.dmbreply input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, transparent); color: var(--ink); font-family: var(--helv); font-size: 16px; }
+.dmbsend { flex: none; height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 9px/1 var(--mich); letter-spacing: 0.14em; cursor: pointer; }
+.dmbsend:disabled { opacity: 0.4; cursor: default; }
+.dmbnote { grid-column: 1 / -1; margin: 4px 2px 0; font-size: 11px; color: var(--grey); }
+@media (prefers-reduced-motion: reduce) { .dmbanner { animation: none; } .dmbreply { transition: none; } }
