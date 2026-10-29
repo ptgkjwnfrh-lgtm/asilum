@@ -365,7 +365,7 @@ button { font-family: var(--helv); }
    The --ed-fs-wordmark size now only reaches the hidden name. */
 .wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
   font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
-.wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 143.225; } /* the capitals' top to the bar's foot: the bar's top at the capitals' middle (60.625) + its 82.6 (Wordmark.jsx, THE WORD ON THE BRICK) */
+.wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 153.225; } /* the stem's top (-10) to the bar's foot (143.225): Wordmark.jsx, THE WORD ON THE BRICK and THE STEM */
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
 .wmlitstar { filter: var(--wm-glow-r); }
@@ -380,11 +380,11 @@ button { font-family: var(--helv); }
      language of the Masthead's old stamped line (26 Oct 2026) */
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
   /* THE LOGO (owner, 28 Oct 2026): the word flat and unlit — the artwork's
-     near-black in light, the phosphor mint in dark; its lower half, on the white bar, the artwork's black in
-     both (the same day, last); the asterisk the house
+     near-black in light, white in dark (it was the phosphor mint until "make the logo white instead of
+     green"); where it lies on the white bar or stem, the artwork's black in both; the asterisk the house
      red, glowing red; the bar and the Masthead's line white, glowing stark
      white — one glow (the same radii and strengths), each in its own colour */
-  --wm-ink: #c4f2d6;
+  --wm-ink: #ffffff; /* white in dark (owner, 28 Oct 2026: "for dark mode lets make the logo white instead of green") */
   --wm-ink-bar: #001512; /* the word's half on the white bar: the artwork's black, in both themes (28 Oct 2026, last) */
   --wm-star: var(--warn);
   --wm-bar: #ffffff;
@@ -3914,7 +3914,7 @@ a.adword:hover { color: var(--ad-chip); }
    line and the line running on from under it towards the keys, one white; it dims with the bar */
 .brandfix {
   position: relative; z-index: 2; flex: none; align-self: flex-start;
-  margin-top: calc(var(--mh-line-top) - var(--wm-u) * 143.225);
+  margin-top: calc(var(--mh-line-top) - var(--wm-u) * 153.225); /* the box's height: the stem's top to the bar's foot */
 }
 /* THE LINE (owner, 28 Oct 2026; Masthead.jsx, lib/mastline.js): thin, white,
    in the logo's white glow, just under the keys' glyphs and under the logo's
