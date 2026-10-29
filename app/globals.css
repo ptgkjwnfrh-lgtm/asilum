@@ -807,6 +807,15 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 94%, var(--ink)), color-mix(in srgb, var(--bg) 84%, var(--ink)));
   box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4); color: var(--ink); animation: eqopen var(--dur-2) var(--ease-out); }
 @keyframes eqopen { from { opacity: 0; transform: translateY(-4px); } }
+/* the source switch at the equaliser's head: FOR YOU or FOLLOWING, the light on the one playing */
+.eqsource { display: flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 0 2px 10px; border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.eqsrclbl { margin-right: auto; font: 7.5px/1 var(--mich); letter-spacing: 0.12em; color: var(--grey); }
+.eqsrc { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 0; border-radius: var(--radius-key); cursor: pointer; font: 8.5px/1 var(--mich); letter-spacing: 0.12em; color: var(--grey);
+  background: color-mix(in srgb, var(--shade) 10%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 25%, transparent); transition: transform var(--dur-1) var(--ease-out); }
+.eqsrc:active { transform: scale(0.96); }
+.eqsrc.on { color: var(--ink); background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 78%, var(--ink))); box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.45); }
+.eqsrc.on .eqchled { background: var(--warn); filter: var(--key-glow-r); }
+.eqsrc:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
 .eqchans { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .eqchan { display: grid; justify-items: center; gap: 6px; padding: 4px 0 2px; border: 0; background: none; cursor: pointer; color: inherit; }
 .eqchan[aria-disabled="true"] { cursor: default; }
@@ -3566,6 +3575,17 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
 .ccamark { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 32px; padding: 0 6px; border: 0; border-radius: 999px; background: none; color: var(--grey); cursor: pointer; }
 .ccwide { flex: none; font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); text-decoration: none; padding: 6px 8px; white-space: nowrap; }
 .ccclose { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
+/* DISCOVER in the search bar (29 Oct 2026): a key beside the field, the way to browse without typing (DiscoverSheet.jsx) */
+.ccdiscover { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 9px 0 7px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 7.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--ink); background: color-mix(in srgb, var(--shade) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); transition: transform var(--dur-1) var(--ease-out); } /* ringed as the field is: a border, never a shadow of the light ink */
+.ccdiscover:active { transform: scale(0.96); }
+/* once something is typed the key folds to its compass and the field takes the room (it was cut to "Searc") */
+.ccdiscover.folded { padding: 0 7px; }
+.ccdiscover.folded .ccdisclbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.ccdiscover:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+/* the label stays on a phone (it is the way to browse: a compass alone was not read as one); only the smallest
+   screens keep the compass alone, the label for assistive technology (below, after the popup's rules) */
 @media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
 /* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): beneath the keys and
    above the vent; it reaches 18 up into the row's empty foot, under the cuts'
@@ -4696,6 +4716,23 @@ a.adword:hover { color: var(--ad-chip); }
 .srchqmeta { font: 11px/1.3 var(--mono); letter-spacing: 0.1em; color: var(--grey); }
 .srchqgo { font: 18px/1 var(--helv); color: var(--sig); }
 .srchall { justify-self: start; font: 11px/1.4 var(--mich); letter-spacing: 0.16em; color: var(--sig); text-decoration: none; padding-top: 6px; }
+.srchdisc { border: 0; background: none; cursor: pointer; text-align: left; }
+/* THE DISCOVER POPUP (DiscoverSheet.jsx): the craving's fields stacked to the popup's width, then the rails */
+.discsheet { display: grid; gap: 16px; }
+.discsheet .deck { margin: 0; }
+.discsec { display: grid; gap: 8px; margin: 0; }
+.discsheet .cravinggrid { grid-template-columns: 1fr 1fr; }
+.discsheet .cravinggrid input, .discsheet .cravinggrid .btn { grid-column: 1 / -1; }
+.discsheet .cravinggrid select:last-of-type { grid-column: 1 / -1; }
+/* the rails at a popup's width: the head wraps — the title its own line, the note and the two actions under it — and
+   a card is narrower so the next one shows at the edge (it was cramped to a column, COLLAPSE and HIDE cut off) */
+.discsheet .rails { margin: 0; }
+.discsheet .railhead { flex-wrap: wrap; row-gap: 4px; }
+.discsheet .railmeta { flex: 1 1 100%; order: 2; }
+.discsheet .railact { order: 3; margin-left: 0; }
+.discsheet .railact + .railact { margin-left: 12px; }
+.discsheet .railcard { flex-basis: min(240px, 72%); }
+@media (max-width: 340px) { .ccdisclbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .ccdiscover { padding: 0 8px; } }
 /* the overview card inside search: the reference's soft icy card, the lettering behind the portrait's shoulder */
 .srchref .ovp { border-radius: 11px; padding: 18px 18px 14px 14px; background: color-mix(in srgb, var(--sig) 7%, var(--paper)); border-color: color-mix(in srgb, var(--sig) 18%, var(--line)); }
 .srchref .ovpname { font-size: clamp(26px, 6vw, 34px); }

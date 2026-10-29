@@ -47,6 +47,7 @@ import { SAMPLE_SONGS } from "../lib/model/songs.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed/choice.js";
+import { EMPTY_CRAVING, CRAVING_EVENT, readCraving, normalCraving, cravingActive, pointCraving } from "../lib/craving.js";
 import FeedEq from "./components/FeedEq.jsx";
 
 const DWELL_FLUSH_MS = 5000;
@@ -96,14 +97,20 @@ export default function Home() {
   const fit = useFitProfile();
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
-  const [cravingDraft, setCravingDraft] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
-  const [craving, setCraving] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
+  // THE CURRENT CRAVING lives in the search tab's DISCOVER popup since 29 Oct 2026 ("current cravings should live in
+  // search tab"; lib/craving.js, DiscoverSheet.jsx): the Feed follows the one this visit holds, and hears a new one
+  const [craving, setCraving] = useState(EMPTY_CRAVING);
+  useEffect(() => {
+    try { const held = readCraving(window.sessionStorage); if (cravingActive(held)) setCraving(held); } catch { /* none held */ }
+    const heard = (e) => { setTab("curated"); setCraving(normalCraving(e && e.detail)); };
+    window.addEventListener(CRAVING_EVENT, heard);
+    return () => window.removeEventListener(CRAVING_EVENT, heard);
+  }, []);
   const [connectOpen, setConnectOpen] = useState(false);
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
-  const [cravingOpen, setCravingOpen] = useState(false);
   const [stamp, setStamp] = useState("");
   const promptRef = useRef("");
   const boardParamRef = useRef("");
@@ -482,17 +489,8 @@ export default function Home() {
     }
   }, [feedQS]);
 
-  function applyCraving() {
-    setTab("curated");
-    setCravingOpen(false);
-    setCraving({ ...cravingDraft, text: cravingDraft.text.trim().slice(0, 240) });
-  }
-
-  function clearCraving() {
-    const empty = { text: "", occasion: "", mood: "", novelty: "discovery" };
-    setCravingDraft(empty);
-    setCraving(empty);
-  }
+  // clearing it here clears it everywhere (the DISCOVER popup reads the same visit's craving)
+  function clearCraving() { pointCraving(EMPTY_CRAVING); }
 
   const loadMore = useCallback(async () => {
     const user = uidRef.current;
@@ -878,8 +876,7 @@ export default function Home() {
     );
   }
 
-  const cravingActive =
-    craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery";
+  const cravingOn = cravingActive(craving);
 
   // Real zone composition of the loaded pass — printed as gutter
   // marginalia (magazine treatment, owner order Aug 13; every value is
@@ -920,18 +917,15 @@ export default function Home() {
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
           <EchoRail groups={rail} />
+          {/* THE ROW (owner, 29 Oct 2026: "the collaspable togge thing should replace current craving and following
+              and the toggle should be on the left"): the EQ key at the left, then what is playing — FOR YOU or
+              FOLLOWING, chosen in the EQ now; the craving is set in the search tab's DISCOVER, and while one steers
+              the Feed the row says so and can clear it */}
           <div className="fmodes seg">
-            <FeedEq choice={mix} onChange={changeMix} dock={eqDock} />
-            {[["curated", "FOR YOU"], ["following", "FOLLOWING"]].map(([k, label]) => (
-              <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
-                {label}
-              </button>
-            ))}
-            <button className="fmode cravtoggle" onClick={() => setCravingOpen((o) => !o)}>
-              CURRENT CRAVING {cravingActive ? "· ON" : ""} {cravingOpen ? "−" : "+"}
-            </button>
-            {cravingActive && (
-              <button className="txtbtn" onClick={clearCraving}>CLEAR CRAVING</button>
+            <FeedEq choice={mix} onChange={changeMix} dock={eqDock} source={tab === "following" ? "following" : "curated"} onSource={switchTab} />
+            <span className="fmode cur" aria-live="polite">{tab === "following" ? "FOLLOWING" : "FOR YOU"}</span>
+            {cravingOn && (
+              <button className="txtbtn" onClick={clearCraving}>CRAVING ON · CLEAR</button>
             )}
           </div>
           <div className="eqdock" ref={setEqDock} />
@@ -939,40 +933,6 @@ export default function Home() {
             <section className="wfocus" aria-label="pinned transmission">
               <div className="cclbl">PINNED TRANSMISSION · <a className="txtbtn" href="/">BACK TO THE STREAM</a></div>
               <PostCard post={pinned} engagement={engagement} onEngage={engage} />
-            </section>
-          )}
-
-          {cravingOpen && (
-            <section className="cravingline" aria-label="current craving">
-              <p className="cravnote">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
-              <div className="cravinggrid">
-                <input aria-label="what you are looking for"
-                  type="text"
-                  maxLength={240}
-                  placeholder="dark dinner look, clean but strange, airport armor…"
-                  value={cravingDraft.text}
-                  onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
-                  onKeyDown={(e) => e.key === "Enter" && applyCraving()}
-                />
-                <select aria-label="occasion" value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
-                  <option value="">any occasion</option>
-                  <option value="everyday">everyday</option><option value="work">work</option>
-                  <option value="date">date</option><option value="night">night</option>
-                  <option value="event">event</option><option value="travel">travel</option>
-                  <option value="outdoors">outdoors</option>
-                </select>
-                <select aria-label="mood" value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
-                  <option value="">any mood</option>
-                  <option value="quiet">quiet</option><option value="sharp">sharp</option>
-                  <option value="romantic">romantic</option><option value="experimental">experimental</option>
-                  <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
-                </select>
-                <select aria-label="novelty" value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
-                  <option value="safe">safe bet</option><option value="discovery">discovery</option>
-                  <option value="wildcard">wildcard</option>
-                </select>
-                <button className="btn" onClick={applyCraving}>POINT THE WAY</button>
-              </div>
             </section>
           )}
 

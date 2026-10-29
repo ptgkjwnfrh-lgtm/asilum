@@ -55,7 +55,9 @@ test("every kind on exactly one channel; an ad space and an echo on none", () =>
   assert.deepEqual(Object.keys(SPANS).filter((k) => !named.includes(k)).sort(), ["AD", "ECHO"]);
   for (const k of [...kinds, "AD"]) assert.equal(kindOf(card(k, 0)), k, "the fixture builds a " + k);
   assert.equal(channelOf(card("AD", 0)), null);
-  assert.deepEqual(CHANNEL_KEYS, ["stills", "motion", "listings", "words", "brdcst", "places", "music"]);
+  assert.deepEqual(CHANNEL_KEYS, ["stills", "motion", "listings", "notes", "brdcst", "places", "music"]);
+  assert.equal(CHANNELS.find((c) => c.key === "notes").label, "NOTES", "words alone are NOTES (owner: \"rename it to notes\")");
+  assert.deepEqual(normalChoice({ on: ["words", "music"] }).on, ["notes", "music"], "a mix kept as WORDS keeps its choice");
 });
 
 test("a muted channel takes its kinds out, and nothing else", () => {
@@ -112,7 +114,14 @@ test("the packer takes any mix without losing a card", () => {
 });
 
 test("the key and the panel: first in the row, open under it, closing as every transient surface does", () => {
-  assert.match(page, /<div className="fmodes seg">\s*<FeedEq choice=\{mix\} onChange=\{changeMix\} dock=\{eqDock\} \/>\s*\{\[\["curated", "FOR YOU"\]/, "first, then FOR YOU");
+  // (29 Oct 2026, "the collaspable togge thing should replace current craving and following and the toggle should be
+  // on the left") the key at the left, then what plays — FOR YOU or FOLLOWING, chosen in the EQ's source switch
+  assert.match(page, /<div className="fmodes seg">\s*<FeedEq choice=\{mix\} onChange=\{changeMix\} dock=\{eqDock\} source=\{tab === "following" \? "following" : "curated"\} onSource=\{switchTab\} \/>\s*<span className="fmode cur" aria-live="polite">\{tab === "following" \? "FOLLOWING" : "FOR YOU"\}<\/span>/, "the key first, then what plays");
+  const row = page.slice(page.indexOf('<div className="fmodes seg">'), page.indexOf('<div className="eqdock"'));
+  assert.ok(!/CURRENT CRAVING|\["following", "FOLLOWING"\]|cravtoggle/.test(row), "FOLLOWING and CURRENT CRAVING are gone from the row");
+  assert.match(eq, /export const SOURCES = Object\.freeze\(\[\["curated", "FOR YOU"\], \["following", "FOLLOWING"\]\]\);/);
+  assert.match(eq, /role="radio" aria-checked=\{source === k\}/, "the source switch names its state");
+  assert.match(eq, /onClick=\{\(\) => \{ if \(source !== k && onSource\) onSource\(k\); \}\}/);
   assert.match(page, /<div className="eqdock" ref=\{setEqDock\} \/>/, "the dock under the row");
   assert.match(page, /const shown = filterFeed\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), mix\);/, "the stream filtered before it is packed");
   assert.match(eq, /useEscape\(close, open\);/);

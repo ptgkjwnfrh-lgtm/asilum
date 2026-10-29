@@ -332,6 +332,14 @@ export default function ControlCenter({ kind, pathname }) {
                 <a className="ccwide" href={"/discover?q=" + encodeURIComponent(dock.q || "")} title={"searching " + scope.placeholder.replace(/^Search /, "")}>ALL →</a>
               ) : null}
             </label>
+            {/* DISCOVER (owner, 29 Oct 2026: "a quick button to take users to a discover page that makes sense because of
+                how our search toggle works"): the search popup waits for typing, so the bar itself carries the way to
+                browse without it — the DISCOVER popup (DiscoverSheet.jsx), where the current craving lives now */}
+            {scope.id === "global" ? (
+              <button type="button" className={"ccdiscover" + (String(dock.q || "").trim() ? " folded" : "")} onClick={() => { haptic("press"); openSheet("discover", { title: "DISCOVER" }); }} aria-label="discover: browse without typing">
+                <Icon name="compass" size={18} /><span className="ccdisclbl">DISCOVER</span>
+              </button>
+            ) : null}
             <button type="button" className="ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={18} /></button>
           </form>
         )}

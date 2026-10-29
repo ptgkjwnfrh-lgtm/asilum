@@ -154,7 +154,11 @@ test("the Disc: pointer physics from lib/disc.js, the centre confirms, the dwell
 
 test("Post Selection: the six types on the disc; LISTING and ECHO say `soon` and never pretend", () => {
   const body = strip(postsel);
-  for (const t of ["TRANSM", "STILL", "MOTION", "BRDCST", "LISTING", "ECHO"]) assert.match(body, new RegExp('label: "' + t + '"'));
+  // (29 Oct 2026, "rename it to notes and add that to the upload selection, also make custom upload symbols") words
+  // alone are NOTES, the composer's kind still transm; every type wears its own up-* symbol
+  for (const t of ["NOTES", "STILL", "MOTION", "BRDCST", "LISTING", "ECHO"]) assert.match(body, new RegExp('label: "' + t + '"'));
+  assert.match(body, /\{ id: "transm", label: "NOTES", icon: "up-notes", means: "words alone" \}/);
+  for (const id of ["notes", "still", "motion", "brdcst", "listing", "echo"]) assert.match(body, new RegExp('icon: "up-' + id + '"'));
   assert.match(body, /className="fine soon postsoon"/);
   assert.match(body, /pushSheet\("post", \{ kind: t\.id, title: t\.label \}\)/, "a type opens the one composer");
   assert.ok(!/fetch\(/.test(body), "nothing is faked with a request");

@@ -10,6 +10,10 @@
 // It closes on Escape and on a click away (dismiss.js). The last channel playing will not mute. The key rides in the
 // Feed's row of modes, which scrolls sideways on a phone and would clip anything hanging out of it, so the
 // equaliser opens into `dock`, a place the page keeps just under the row.
+//
+// THE SOURCE (owner, 29 Oct 2026, the same evening: "the collaspable togge thing should replace current craving and
+// following and the toggle should be on the left"): FOLLOWING left the row for the equaliser's head, a player's
+// source switch — FOR YOU or FOLLOWING, its light on the one playing. (The craving went to the search tab's DISCOVER.)
 
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -28,7 +32,9 @@ function EqGlyph() {
   );
 }
 
-export default function FeedEq({ choice, onChange, dock }) {
+export const SOURCES = Object.freeze([["curated", "FOR YOU"], ["following", "FOLLOWING"]]);
+
+export default function FeedEq({ choice, onChange, dock, source = "curated", onSource }) {
   const c = normalChoice(choice);
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null), panelRef = useRef(null);
@@ -52,7 +58,15 @@ export default function FeedEq({ choice, onChange, dock }) {
         <i className="eqled" aria-hidden="true" />
       </button>
       {open && dock ? createPortal(
-        <div className="eqpanel" ref={panelRef} id={id} role="group" aria-label="which kinds of card play on your feed">
+        <div className="eqpanel" ref={panelRef} id={id} role="group" aria-label="the feed's source and which kinds of card play on it">
+          <div className="eqsource" role="radiogroup" aria-label="source">
+            <span className="eqsrclbl" aria-hidden="true">SOURCE</span>
+            {SOURCES.map(([k, label]) => (
+              <button key={k} type="button" role="radio" aria-checked={source === k} className={"eqsrc" + (source === k ? " on" : "")} onClick={() => { if (source !== k && onSource) onSource(k); }}>
+                <i className="eqchled" aria-hidden="true" />{label}
+              </button>
+            ))}
+          </div>
           <div className="eqchans">
             {CHANNELS.map((ch) => {
               const on = c.on.includes(ch.key);

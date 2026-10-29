@@ -1227,3 +1227,21 @@ sideways and clipped it; over the cards, under the fixtures), an equaliser: STIL
 PLACES · MUSIC, a fader up when it plays, its light lit; the last channel playing will not mute; at the foot a hold
 switch, REMEMBER, which keeps the mix on this device (`asilum-feed-choice`) and, turned off, forgets it. The stream is
 filtered before it is packed; an ad space and an echo are on no channel. Escape and a click away close it.
+
+## 29 Oct 2026 — NOTES, THE UPLOAD SYMBOLS, THE ROW, THE CRAVING IN SEARCH, DISCOVER
+
+Owner: "rename it to notes and add that to the upload selection, also make custom upload symbols for the selection. the
+collaspable togge thing should replace current craving and following and the toggle should be on the left. and current
+cravings should live in search tab. we have to device a way for a quick button to take users to a discover page that
+makes sense because of how our search toggle works".
+- NOTES: words alone are NOTES — the EQ's channel (a mix kept as WORDS keeps its choice) and the upload card (the
+  composer's kind is still `transm`). Every upload type wears its own symbol (`Icons.jsx` up-notes, up-still,
+  up-motion, up-brdcst, up-listing, up-echo): a sheet, a camera, a frame of film, a mast, a tag, a story's rings.
+- THE ROW: the EQ key at the left, then what plays — FOR YOU or FOLLOWING, chosen in the EQ's SOURCE switch. FOLLOWING
+  and CURRENT CRAVING left the row; while a craving steers the Feed the row shows CRAVING ON · CLEAR.
+- THE CRAVING lives in the search tab now (`lib/craving.js`): kept for the visit (sessionStorage), told to the open
+  pages, followed by the Feed (its request carries it as before).
+- DISCOVER: the search popup waits for typing, so the deck's search bar carries a DISCOVER key (a compass; folded to
+  it once something is typed) and the empty search popup a line, both opening the DISCOVER popup (`DiscoverSheet.jsx`,
+  a view of the one popup): the current craving, the rails (a reading tapped is searched in the search tab; none, it
+  says so) and THE WHOLE INVENTORY → /discover.

@@ -30,6 +30,7 @@ import { useLiquidGlass } from "./LiquidGlass.jsx";
 import Icon from "./Icons.jsx";
 import LikesSheet from "./LikesSheet.jsx";
 import SearchSheet from "./SearchSheet.jsx";
+import DiscoverSheet from "./DiscoverSheet.jsx";
 import OverviewSheet from "./OverviewSheet.jsx";
 import BagSheet from "./BagSheet.jsx";
 import NoticesSheet from "./NoticesSheet.jsx";
@@ -46,6 +47,8 @@ import BrdcstSheet from "./BrdcstSheet.jsx";
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
   search: { title: "SEARCH", render: (p) => <SearchSheet {...p} />, roomy: true },
+  // the search tab's browse-without-typing face: the current craving, the rails, the whole inventory (29 Oct 2026)
+  discover: { title: "DISCOVER", render: (p) => <DiscoverSheet {...p} />, roomy: true },
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
   bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },
   notices: { title: "NOTICES", render: (p) => <NoticesSheet {...p} /> },

@@ -360,7 +360,7 @@ export default function PostCard({ post: p, engagement, onEngage }) {
   // a run of blocks (7; owner, 25 Oct: the blocks replace the chevrons); the
   // four counted actions (2–5) over a red rule (1).
   return (
-    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined}>
+    <article className={"card wpostcard p2 type-" + (carousel ? "carousel f20post" : type.toLowerCase()) + (sample ? " sample" : "") + (hasMedia ? " withmedia" : "") + (events ? " withevent" : "")} data-id={cardId} data-type={type} aria-label={(carousel ? "carousel of " + gallery.length + " photographs" : type === "TRANSM" ? "note" : type.toLowerCase()) + ": " + (p.title || name)} style={image && image.ink ? { "--on-card": image.ink } : undefined}>
       <CardDots what={what} open={menu} onOpen={() => setMenu(true)} />
       <HoldMenu id={cardId} what={what} href={sample ? null : href} open={menu} onClose={closeMenu} />
       {/* THE STAGE (owner, 25 Oct 2026, evening: "every media card should be

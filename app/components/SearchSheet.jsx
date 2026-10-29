@@ -136,6 +136,7 @@ export default function SearchSheet() {
       {pins.length ? <PinnedRow pins={pins} /> : null}
 
       {!q && <p className="srchfine">Handles, pieces, places, eras, a feeling. Nothing is searched until you type.</p>}
+      {!q && <button type="button" className="srchall srchdisc" onClick={() => { haptic("press"); pushSheet("discover", { title: "DISCOVER" }); }}>OR DISCOVER WITHOUT TYPING →</button>}
 
       {q && show("people") && overview && (
         <>
