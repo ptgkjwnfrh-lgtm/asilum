@@ -419,10 +419,10 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const wm = read("app/components/Wordmark.jsx");
   // type, in one unit system
   assert.match(wm, /word: 161, star: 131, cap: 120\.75, base: 121,/);
-  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); fill: var\(--wm-ink\); \}/, "Michroma 161");
+  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); \}/, "Michroma 161");
   assert.match(rules, /\.wmstar \{ font: 400 131px var\(--helvetica\); fill: var\(--wm-star\); \}/, "Helvetica 131");
   assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
-  assert.match(wm, /<g clipPath=\{`url\(#\$\{above\}\)`\}><g transform=\{SET\}><text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g><\/g>/, "each letter at its own origin");
+  assert.match(wm, /const word = \(cls\) => <g transform=\{SET\}><text className=\{cls\} x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g>;/, "each letter at its own origin");
   assert.match(wm, /<g transform=\{SET\}><text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text><\/g>/, "the asterisk in the word's set");
   assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.bar\.y\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar where the geometry puts it (below)");
   for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
@@ -467,7 +467,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar, .wmtron var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the bar (and the dark mark), the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmtron var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the mark's white shape, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter
@@ -479,7 +479,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   ks.forEach(([r, a], i) => { assert.ok(r <= ws[i][0], `layer ${i}: ${r}px no wider than ${ws[i][0]}px`); assert.ok(a < ws[i][1], `layer ${i}: ${a} fainter than ${ws[i][1]}`); });
   assert.match(rules, /:is\(\.ccenter \.tabl\.cur, \.idkey\.cur, \.passportbtn\.cur\) \{ color: var\(--warn\); \}/, "a selected key is the asterisk's red, in both themes");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmstar"/, "the asterisk on its own layer");
-  assert.match(wm, /<svg className="wmlit wmlitbar" viewBox=\{VIEW\} focusable="false">\s*<rect className="wmbar"/, "the bar on its own");
+  assert.match(wm, /<svg className="wmlit wmtron" viewBox=\{VIEW\} focusable="false">[\s\S]*?<rect className="wmbar" x=\{WM\.bar\.x\}/, "the bar in the white shape");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");
   assert.match(css, /--wm-bar: #ffffff;/);
   // the line
@@ -549,24 +549,28 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(tronSvg0(), /<rect className="wmbar" x=\{TIP\.x\} y=\{STEM\.y\} width=\{TIP\.w\} height=\{TIP\.h\} \/>/, "in the one masked shape");
   const tronSvg = tronSvg0();
   assert.match(tronSvg, /<mask id=\{knock\}[^>]*>\s*<rect[^>]*fill="#fff" \/>\s*\{word\("wmink wmknock"\)\}\s*<\/mask>/, "the letters cut out");
-  assert.match(tronSvg, /<g mask=\{`url\(#\$\{knock\}\)`\}>\s*<rect className="wmbar"[^>]*\/>\s*<rect className="wmbar" x=\{STEM\.x\}[^>]*\/>\s*<rect className="wmbar" x=\{TIP\.x\}[^>]*\/>\s*\{word\("wmink wmoutline"\)\}\s*<\/g>/, "the bar, the stem, the tip and the outline, one masked shape");
-  assert.match(wm, /<svg className="wmtronink" viewBox=\{VIEW\} focusable="false">\{word\("wmink wmhole"\)\}<\/svg>/, "the holes laid back dark");
-  assert.match(rules, /\.wmink\.wmhole \{ fill: var\(--paper\); \}/);
+  assert.match(tronSvg, /<g mask=\{`url\(#\$\{knock\}\)`\}>\s*<rect className="wmbar"[^>]*\/>\s*<rect className="wmbar" x=\{STEM\.x\}[^>]*\/>\s*<rect className="wmbar" x=\{TIP\.x\}[^>]*\/>\s*<rect className="wmbar" x=\{RISE\.x\}[^>]*\/>\s*\{word\("wmink wmoutline"\)\}\s*<\/g>/, "the bar, the stem, the tip, the rise and the outline, one masked shape");
+  // THE RISE (the same day: "extend the line upwards on the mast head and make the line extension go from the left
+  // and the end of the tip of the A … in the screen shot its shown as a outline but fill it in"): declared — from the
+  // bar's left end to the far end of the A's flat top (Michroma 96 at 161, set), filled, from the outline's top up past
+  // any Masthead's top edge (a phone's safe area included: ~90px of a 0.13px unit is ~700 units), inside the mask
+  const [rx, rw, ry] = wm.match(/rise: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), y: (-?[\d.]+) \}\)/).slice(1).map(Number);
+  assert.equal(rx, bar[0], "from the bar's left end");
+  assert.ok(Math.abs(rx + rw - (set[1] + set[0] * 96)) < 0.1, "to the far end of the A's tip: " + (rx + rw).toFixed(2));
+  assert.ok(ry <= -700, "up past the Masthead's top: " + ry);
+  assert.match(wm, /<rect className="wmbar" x=\{RISE\.x\} y=\{RISE\.y\} width=\{RISE\.w\} height=\{STEM\.y - RISE\.y \+ 0\.5\} \/>/, "down into the outline's top: one shape");
+  const maskY = Number(wm.match(/<mask id=\{knock\} maskUnits="userSpaceOnUse" x="-200" y="(-?\d+)"/)[1]);
+  assert.ok(maskY <= ry, "the mask reaches it (outside a mask's region nothing draws)");
+  assert.match(wm, /<svg className="wmtronink" viewBox=\{VIEW\} focusable="false">\{word\("wmink wmhole"\)\}<\/svg>/, "the holes laid back");
   assert.ok(wm.indexOf('className="wmtronink"') < wm.indexOf('className="wmlit wmlitstar"'), "the asterisk over it all");
-  // one mark a theme
-  assert.match(rules, /\.wmlitbar, \.wmtype \{ display: none; \}/, "dark: no word on the brick");
-  assert.match(rules, /\[data-theme="light"\] :is\(\.wmtron, \.wmtronink\) \{ display: none; \}/);
-  assert.match(rules, /\[data-theme="light"\] :is\(\.wmlitbar, \.wmtype\) \{ display: block; \}/);
-  assert.match(rules, /:root:not\(\[data-theme="dark"\]\) :is\(\.wmtron, \.wmtronink\) \{ display: none; \}/);
-  assert.match(css, /\[data-theme="light"\] \{[^}]*--wm-ink: #001512; --wm-ink-bar: #001512;/, "the artwork's black in light, all of it");
-  // the bar under the asterisk and the word; the word set twice, cut at the bar's top: the theme's ink above,
-  // the artwork's black on the white bar, in both themes
-  assert.ok(wm.indexOf('className="wmlit wmlitbar"') < wm.indexOf('className="wmlit wmlitstar"') && wm.indexOf('className="wmlit wmlitstar"') < wm.indexOf('className="wmtype"'), "the bar first, then the asterisk, then the word");
-  // cut at the bar's top, in the frame (outside the set's scale)
-  assert.match(wm, /<clipPath id=\{above\}><rect x="-200" y="-200" width="1400" height=\{200 \+ WM\.bar\.y\} \/><\/clipPath>/);
-  assert.match(wm, /<clipPath id=\{on\}><rect x="-200" y=\{WM\.bar\.y\} width="1400" height="400" \/><\/clipPath>/);
-  assert.match(wm, /<g clipPath=\{`url\(#\$\{on\}\)`\}><g transform=\{SET\}><text className="wmink wmonbar" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g><\/g>/);
-  assert.match(rules, /\.wmink\.wmonbar \{ fill: var\(--wm-ink-bar\); \}/);
+  // (the same day: "lets make it for light and dark mode but for lightmode the text should be black") one mark in
+  // both themes; its letters the ground's dark in dark, the artwork's black in light; the word on the brick is gone
+  assert.match(rules, /\.wmink\.wmhole \{ fill: var\(--wm-hole\); \}/);
+  assert.match(css, /:root \{[^}]*--wm-hole: var\(--paper\);/, "dark: the ground's dark");
+  assert.match(css, /\[data-theme="light"\] \{[^}]*--wm-hole: #001512;/, "light: the artwork's black");
+  assert.match(css, /@media \(prefers-color-scheme: light\) \{ :root:not\(\[data-theme="dark"\]\) \{ --wm-hole: #001512;/);
+  assert.ok(!/wmlitbar|wmtype|wmonbar|--wm-ink/.test(wm + css.replace(/\/\*[\s\S]*?\*\//g, "")), "no word-on-the-brick layers left, nor their inks");
+  assert.ok(!/display: none/.test((rules.match(/\.wmtron[^{]*\{[^}]*\}/g) || []).join("")), "the mark shows in both themes");
   assert.ok(!/--mh-gap/.test(css), "the gap the bar stood off by is gone with it");
   // the cuts: the deck's hairline, between keys, centred on the keys' row
   const cut = rules.match(/\.mhcuts i \{([^}]*)\}/)[1];

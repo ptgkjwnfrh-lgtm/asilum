@@ -369,38 +369,30 @@ button { font-family: var(--helv); }
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
 .wmlitstar { filter: var(--wm-glow-r); }
-.wmlitbar, .wmtron { filter: var(--wm-glow); }
+.wmtron { filter: var(--wm-glow); }
 .wmstar { font: 400 131px var(--helvetica); fill: var(--wm-star); }
 .wmbar { fill: var(--wm-bar); }
-.wmink { font: 400 161px var(--mich); fill: var(--wm-ink); }
-.wmink.wmonbar { fill: var(--wm-ink-bar); } /* the half on the white bar: the artwork's black in both themes */
-/* THE TRON MARK (Wordmark.jsx; owner, 28 Oct 2026: "lets mimic the tron logo just for dark mode"): the word's
-   outline as thick as its strokes, white like the bar; the letters cut out by the mask. Dark shows it; light
-   shows the word on the brick. */
+.wmink { font: 400 161px var(--mich); }
+/* THE TRON MARK (Wordmark.jsx; owner, 28 Oct 2026: "lets mimic the tron logo just for dark mode", then "lets make
+   it for light and dark mode but for lightmode the text should be black"): the word's outline as thick as its
+   strokes, white like the bar; the letters cut out by the mask and laid back in --wm-hole. */
 .wmink.wmoutline { fill: var(--wm-bar); stroke: var(--wm-bar); stroke-width: 28px; stroke-linejoin: round; } /* 2 × WM.tron.t: half of it outside the letter */
 .wmink.wmknock { fill: #000; } /* the mask's black: the letters' holes */
-.wmink.wmhole { fill: var(--paper); } /* the holes, kept dark over the glow */
-.wmlitbar, .wmtype { display: none; }
-[data-theme="light"] :is(.wmtron, .wmtronink) { display: none; }
-[data-theme="light"] :is(.wmlitbar, .wmtype) { display: block; }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) :is(.wmtron, .wmtronink) { display: none; }
-  :root:not([data-theme="dark"]) :is(.wmlitbar, .wmtype) { display: block; }
-}
+.wmink.wmhole { fill: var(--wm-hole); } /* the holes: the ground's dark in dark, the artwork's black in light */
 :root {
   /* the wheel's marks (.ccwtick): a tone in the glass, a shade darker on the
      light glass and a shade clearer on the dark, crisp, no shadow — the
      language of the Masthead's old stamped line (26 Oct 2026) */
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
   /* THE LOGO (owner, 28 Oct 2026): the word flat and unlit — the artwork's
-     near-black in light, above the white bar and on it; in dark there is no word to ink — its letters are cut
-     out of the white bar and their outline (THE TRON MARK); the asterisk the house
+     letters cut out of the white bar and their outline (THE TRON MARK), laid back dark in dark and the artwork's
+     black in light; the asterisk the house
      red, glowing red; the bar and the Masthead's line white, glowing stark
      white — one glow (the same radii and strengths), each in its own colour */
-  /* the word's ink, for the light theme's mark (below); dark draws no ink — its letters are cut out of the white
-     (THE TRON MARK, Wordmark.jsx; owner, 28 Oct 2026, last). Before it: green, white, red, the mint. */
-  --wm-ink: #001512;
-  --wm-ink-bar: #001512;
+  /* the letters' holes in the Tron mark (Wordmark.jsx): the dark ground in dark; the artwork's black in light
+     (owner, 28 Oct 2026: "for lightmode the text should be black"). Before it the word was inked: green, white,
+     red, the mint. */
+  --wm-hole: var(--paper);
   --wm-star: var(--warn);
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
@@ -431,10 +423,10 @@ button { font-family: var(--helv); }
 }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
-  --wm-ink: #001512; --wm-ink-bar: #001512; /* the artwork's ink, on the bar and off it */
+  --wm-hole: #001512; /* the artwork's black: the Tron mark's letters in light */
   --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; /* the ticker in light: the logo's black on light grey */
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; --wm-ink-bar: #001512; --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-hole: #001512; --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -5750,3 +5742,27 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) { color: var(--warn); }
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--key-glow-r); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }
+
+/* THE TICKER'S BUTTON (TickerButton.jsx; owner, 28 Oct 2026: "make like a phyical comic button in the middle right
+   on the page so i can open and close the ad ticker"): a comic push-button — inked outline, halftone face, a hard
+   offset shadow it sinks into when pressed — tilted a touch, at the middle of the right edge, over the page and
+   under the popups. Red while the ticker is folded (press to open), the deck's green-white while it is open. */
+:root { --comic-ink: #101214; --comic-hi: #ffffff; --comic-on: #e8f3ec; } /* the comic's ink, its highlight, its lit face */
+.tickbtn {
+  position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY(-50%) rotate(-6deg);
+  padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.tickbtnface {
+  display: grid; place-items: center; min-width: 54px; height: 40px; padding: 0 10px; border: 2.5px solid var(--comic-ink); border-radius: 12px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--comic-ink) 22%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px, var(--warn);
+  color: var(--comic-hi); font: 400 13px/1 var(--mich); letter-spacing: 0.06em;
+  -webkit-text-stroke: 1px var(--comic-ink); paint-order: stroke fill;
+  box-shadow: 0 6px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 45%, transparent);
+  transform: translateY(0); transition: transform var(--dur-0) var(--ease-out), box-shadow var(--dur-0) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+}
+.tickbtn.on .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); -webkit-text-stroke: 0; }
+.tickbtn:active .tickbtnface { transform: translateY(5px); box-shadow: 0 1px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 30%, transparent); }
+.tickbtn:focus-visible { outline: none; }
+.tickbtn:focus-visible .tickbtnface { outline: 2px solid var(--sig); outline-offset: 3px; }
+[data-popup] .tickbtn { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .tickbtnface { transition: none; } }
