@@ -226,7 +226,8 @@ test("the post card (owner's post sketch, 25 Oct 2026, IMG_1143): head, red rule
   assert.match(post, /className="wpcact soon" title="comments are not built yet"/);
   assert.ok(!/className="p2n"/.test(post) && !/count3/.test(post), "no counts, invented or otherwise");
   assert.match(read("app/components/Icons.jsx"), /strokeWidth: 1\.15,/, "one thin stroke");
-  assert.match(read("app/globals.css"), /\.p2acts \{[^}]*opacity: 0\.78; \}/, "a little transparent");
+  // (owner, 28 Oct 2026: "the like, comment, stamp, and share button should be a little bit more visible") 0.78 -> 0.92
+  assert.match(read("app/globals.css"), /\.p2acts \{[^}]*opacity: 0\.92; \}/, "a little transparent, less than before");
   // the ring: a real sound control, on a motion only
   assert.match(post, /\{motion && videoRef \? <SoundRing video=\{\(\) => videoRef\.current\} \/> : null\}/, "the sound ring on a motion's caption");
   const css = read("app/globals.css");

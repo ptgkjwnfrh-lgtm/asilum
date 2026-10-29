@@ -33,6 +33,7 @@ import SavePrompt from "./components/SavePrompt.jsx";
 import ControlCenter from "./components/ControlCenter.jsx";
 import SheetHost from "./components/SheetHost.jsx";
 import DmLive from "./components/DmLive.jsx";
+import InkWatch from "./components/InkWatch.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import Masthead from "./components/Masthead.jsx";
@@ -302,6 +303,7 @@ export default function Shell({ children }) {
       <SheetHost />
       {/* the incoming-message banner and the DM tab's count (27 Oct 2026) */}
       <DmLive />
+      <InkWatch />
 
       <AccountSignup />
       <SavePrompt />

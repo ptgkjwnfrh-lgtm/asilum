@@ -464,7 +464,9 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.ok(/var\(--warn\)/.test(glowR) && !/#fff|255, 255, 255/.test(glowR), "in the asterisk's own red");
   const wearing = [...rules.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter((m) => /var\(--wm-glow(-r)?\)/.test(m[2])).map((m) => m[1].trim() + " " + m[2].match(/var\(--wm-glow(-r)?\)/)[0]).sort();
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
-  assert.deepEqual(wearing, [".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar, the Masthead's line and the ticker's line white, nothing else");
+  // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
+  // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<text className="wmstar"/, "the asterisk on its own layer");
   assert.match(wm, /<svg className="wmlit wmlitbar" viewBox=\{VIEW\} focusable="false">\s*<rect className="wmbar"/, "the bar on its own");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");

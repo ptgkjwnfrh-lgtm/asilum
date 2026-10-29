@@ -5239,7 +5239,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); margin: 0; }
 .card.piece.v-hero .pcfoot .demoflag { color: var(--on-media); opacity: 0.85; }
 /* the actions float on the photograph too (owner, evening: "every media card should just be comprised of the images with everything floating on it") */
-.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.78; background: none; }
+.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.92; background: none; }
 .card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
 /* the hairline between the size and price and the actions (owner, 25 Oct
@@ -5451,15 +5451,15 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .p2ring.on { background: var(--ink); }
 /* the four actions, blue, counted — four equal columns, one glyph span, so
    the row reads even (owner, 25 Oct 2026) */
-.p2acts { position: relative; flex: none; display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; align-items: start; padding: 1cqw 10cqw 0; color: var(--sig); opacity: 0.78; }
+.p2acts { position: relative; flex: none; display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; align-items: start; padding: 1cqw 10cqw 0; color: var(--sig); opacity: 0.92; }
 .p2act { display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; min-width: 0; }
 .fcell .p2acts .wpcact, .p2acts .wpcact { width: clamp(26px, 8cqw, 40px); height: clamp(26px, 8cqw, 40px); color: var(--sig); }
 .fcell .p2acts .wpcact .ic, .p2acts .wpcact .ic { width: 72%; height: 72%; }
 .p2acts .wpcact.on { color: var(--red); }
 /* the shared .soon rule paints a word red; the bubble here is a quiet blue glyph that says it is not built */
-[data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.45; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
+[data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.6; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
 .p2n { font: 400 clamp(9px, 3.6cqw, 18px)/1 var(--mich); letter-spacing: 0.08em; color: var(--sig); }
-.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.55; }
+.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.7; }
 .p2acts .wpcshared { left: 11cqw; bottom: 100%; color: var(--ink); }
 /* what hangs beneath: the tagged pieces, the link, the BRDCST */
 .card.wpostcard.p2 .wpcpieces, .card.wpostcard.p2 .wpclink { margin: 2cqw 0 0; }
@@ -5704,3 +5704,22 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
     .fcell::before { animation: vcastout linear both; animation-timeline: --cell; animation-range: cover calc(100% - var(--stk-zone)) cover 100%; }
   }
 }
+
+/* THE REACTIVE INK (owner, 28 Oct 2026: "for all the text and symbols they must be reactive to go from dark to
+   light depending on the background to strengthen ledibility"; lib/ink.js, InkWatch.jsx). A block over a Feed
+   card wears data-ink by what is really under it; the ink follows, and a scrim under dark ink turns pale. */
+:root { --ink-on-bright: rgba(20, 40, 58, 0.9); --ink-on-dark: rgba(232, 241, 249, 0.92); }
+[data-ink="dark"] { --on-media: var(--ink-on-bright); --on-card: var(--ink-on-bright); }
+[data-ink="light"] { --on-media: var(--ink-on-dark); --on-card: var(--ink-on-dark); }
+.card.piece.v-hero .pchead[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2head[data-ink="dark"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 34%, transparent) 0%, transparent 100%); }
+.card.piece.v-hero .pcfoot[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2foot[data-ink="dark"] {
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--paper) 46%, transparent) 100%); }
+/* the rule under a post's name takes its head's ink */
+.p2head[data-ink="dark"] + .p2rule { --on-media: var(--ink-on-bright); }
+.p2head[data-ink="light"] + .p2rule { --on-media: var(--ink-on-dark); }
+/* THE ACCENT LINES OFF THE CARDS GLOW (owner, 28 Oct 2026: "all the accent lines that arent directly on a card
+   must glow so on the carousels the accent line underneath the username must glow"): Figure 20's head floats
+   on the page, so its rule is the Masthead's line — the stark white bar in the same glow */
+.card.wpostcard.p2.withmedia.f20post .p2rule::after { background: var(--wm-bar); }
+.card.wpostcard.p2.withmedia.f20post .p2rule { filter: var(--wm-glow); }

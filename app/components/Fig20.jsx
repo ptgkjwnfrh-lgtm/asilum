@@ -129,7 +129,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
       else s.pos += diff * (1 - Math.pow(1 - GLIDE, dt / 16.667));
       layout();
       if (s.pos !== s.target) s.raf = requestAnimationFrame(glide);
-      else { s.lastT = 0; stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } })); if (onSettle) onSettle(wrap(s.pos, n)); }
+      else { s.lastT = 0; stage.dispatchEvent(new CustomEvent("f20settle", { bubbles: true, detail: { index: wrap(s.pos, n) } })); if (onSettle) onSettle(wrap(s.pos, n)); } // the settle bubbles: the ink reads the new centre card (InkWatch.jsx)
     };
     // the ring has no ends: any card, either way round
     const go = (to) => { s.target = to; if (!s.raf) s.raf = requestAnimationFrame(glide); };
@@ -199,7 +199,7 @@ export default function Fig20({ items, render, label, aspect = 3 / 4, className 
     const ro = new ResizeObserver(layout);
     ro.observe(stage);
     layout();
-    stage.dispatchEvent(new CustomEvent("f20settle", { detail: { index: wrap(s.pos, n) } }));
+    stage.dispatchEvent(new CustomEvent("f20settle", { bubbles: true, detail: { index: wrap(s.pos, n) } }));
     if (onSettle) onSettle(wrap(s.pos, n));
     return () => {
       ro.disconnect();

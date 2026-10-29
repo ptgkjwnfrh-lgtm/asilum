@@ -37,6 +37,16 @@
   a large card's place each, holding a large card or an exact fill of the
   others, so no gap opens; the kinds spread evenly and never leave two
   bands (1.6 screens) in a row without a large card or without another.
+- **The ink reacts to its ground** (owner, 28 Oct 2026: "for all the text
+  and symbols they must be reactive to go from dark to light depending on the
+  background"): every block of words or marks over a Feed card (lib/ink.js
+  INK_ZONES) wears data-ink by what is really under it — the picture's own
+  pixels, or the page — read by app/components/InkWatch.jsx once the scroll
+  rests; a scrim under dark ink turns pale. A picture another site will not
+  share keeps the ink its card's ground gave it. The accent lines that float
+  on the page and not on a card (Figure 20's rule under the name) are the
+  Masthead's line: the white bar in its glow, light theme too (the owner's
+  exception to "light never glows", as the Masthead's own line is).
 - **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
   upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
