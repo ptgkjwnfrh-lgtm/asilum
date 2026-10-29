@@ -5724,7 +5724,10 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 
 /* THE SELECTED KEY ON A FIXTURE GLOWS LIKE THE ASTERISK (owner, 28 Oct 2026: "the red glow from a button being
    selected on the fixtures should glow red like the asterisk"): the deck's keys, the Info Dock's and the
-   Passport Button, when current, are the asterisk's red in its glow (--wm-glow-r), in both themes */
+   Passport Button, when current, are the asterisk's red in its glow, in both themes — softened (the owner, the
+   same day: "the glow is to intense lets lower it for the buttons"): the asterisk's three layers, each smaller and
+   fainter (--key-glow-r); the asterisk keeps its own */
+:root { --key-glow-r: drop-shadow(0 0 0.5px color-mix(in srgb, var(--warn) 80%, transparent)) drop-shadow(0 0 2.5px color-mix(in srgb, var(--warn) 45%, transparent)) drop-shadow(0 0 6px color-mix(in srgb, var(--warn) 18%, transparent)); }
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) { color: var(--warn); }
-:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--wm-glow-r); }
+:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--key-glow-r); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }
