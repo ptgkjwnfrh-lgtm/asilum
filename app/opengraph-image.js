@@ -74,7 +74,7 @@ export const contentType = "image/png";
 // them into a shared object the test cannot read.
 const BG = "#030505";    // --bg (blacker, 19 Oct 2026)
 const INK = "#e8eff1";   // --ink
-const RED = "#46ff96";   // --red (the accent: the original phosphor green in the dark theme, 19 Oct 2026)
+const RED = "#f4f9fc";   // --red (the accent: glowing white in the dark theme since 29 Oct 2026, "nomore green")
 const SIG = "#6e9cff";   // --sig
 const GREY = "#8a9ba3";  // --grey
 const FAINT = "#2a3a41"; // --faint

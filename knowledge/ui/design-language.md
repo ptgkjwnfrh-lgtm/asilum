@@ -1172,3 +1172,20 @@ disc"):
   page (the same 121,126,135 over the glass and over a white card): inside the Masthead's glass a blend sees only
   the glass's own layer, never the page beneath.
 - The wheel's disc wears the fixtures' shine rim (`.fxrim`), lit from the top since only its upper half shows.
+
+Later that evening (owner: "ok so i still wanted the negative logo to be see through however i wanted it to be
+seemlessly reactive to tint once passing over a really bright card, also lets make all the colors on darkmode
+glowing white nomore green, also the center fixture select buttons have a green glow it should be red"):
+- THE TINT FOLLOWS BRIGHT CARDS. The letters are see-through again; the tint (`.wmtint`) is hidden until read and
+  then clipped to the bright cards behind the word, their own boxes (`lib/ink.js` `tintPoints`, `tintClip`,
+  `TINT_BRIGHT` 0.85), re-read on every scroll frame (the page's and a carousel's), a resize, a load, a settle and
+  a theme turn (`Wordmark.jsx` `useCutTint`). "Bright" is a plain ground at 0.85 or more on a card, or a block
+  InkWatch has already read as sitting on a bright ground (`data-ink="dark"`, a light photograph's foot); pictures
+  and gradients are not (`InkWatch.jsx` `brightSurfaceAt`). Eight hit tests a frame and no pixel reads: a 300-frame
+  scroll at 375px dropped 1 frame with the tint and 1 without. The tint's edge rides the card's edge.
+- DARK IS WHITE, NOT GREEN. `--red` in dark is `#f4f9fc`, glowing white through `--glow`; the fixtures' paler
+  green override is gone; the dark headline is chrome washed to white in a white halo; the dark ground and the fog
+  are neutral greys to black; the caret, the passport's dark pattern and its link colour are white. The rainbows
+  (`--holo`, `--iris-*`, the passport strip's sweep) keep their green stop, as a rainbow does.
+- THE SELECTED KEY'S LAMP IS RED (`--lamp`, `--lamp-hot`, `--lamp-core`), in both themes; it was green in dark and
+  cyan in light. The selected keys themselves were already the asterisk's red.

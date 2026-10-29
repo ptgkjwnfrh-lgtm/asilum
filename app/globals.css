@@ -29,12 +29,13 @@ html { font-synthesis-style: none; }
   --grey: #8a9ba3;
   --faint: #2a3a41;
   --line: rgba(140, 170, 185, 0.22);
-  /* THE ORIGINAL PHOSPHOR GREEN (owner, 19 Oct 2026: "the greens on the
-     site besides on the fixtures look too white washed out — I want the
-     original phosphorus green"): the September build's signal green. The
-     fixtures keep the paler V.2 accent (:is(.fixture, .ccenter, .brandfix)
-     below). */
-  --red: #46ff96;
+  /* GLOWING WHITE (owner, 29 Oct 2026: "lets make all the colors on darkmode
+     glowing white nomore green"): the dark accent is white, glowing in its
+     own colour through --glow / --glow-r. It replaced the original phosphor
+     green (19 Oct, "I want the original phosphorus green") and the fixtures'
+     paler green (#8cf0a6), both gone. The asterisk and a selected key keep
+     the red (--warn). */
+  --red: #f4f9fc;
   /* ALL THE FONTS ARE MICHROMA (owner, 19 Oct 2026): the reading face, the
      serif slot and the description face all resolve to it; Inter stays only
      as the fallback for a glyph Michroma does not carry */
@@ -129,9 +130,11 @@ html { font-synthesis-style: none; }
   /* the lamps under the glass — a glow stick in water: a near-white core, a
      coloured halo, a wide faint spill. --lamp is the current destination at
      rest, --lamp-hot the hovered word, --lamp-pointer the cursor's trace. */
-  --lamp-core: rgba(214, 255, 232, 0.5);
-  --lamp: rgba(70, 255, 150, 0.3);
-  --lamp-hot: rgba(70, 255, 150, 0.3);
+  /* the lamp under a selected key is the asterisk's red (owner, 29 Oct 2026:
+     "the center fixture select buttons have a green glow it should be red") */
+  --lamp-core: rgba(255, 226, 222, 0.5);
+  --lamp: rgba(255, 65, 54, 0.3);
+  --lamp-hot: rgba(255, 65, 54, 0.3);
   --lamp-pointer: rgba(255, 255, 255, 0.03);
   /* the clickable word's resting light (the teal law, Aug 12): a horizontal
      smear and the glow — a token, so a hovered header word can keep exactly
@@ -167,9 +170,10 @@ html { font-synthesis-style: none; }
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 8%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 5%, transparent), transparent 64%),
     /* the OG ground (owner, 18 Oct: "I miss the soft gradient … green to
-       black"), blacker (19 Oct: "make the background more black"): a breath
-       of phosphor green at the top, black almost at once */
-    linear-gradient(180deg, #06120c 0%, #030907 30%, #010302 62%, #000000 100%);
+       black"), blacker (19 Oct: "make the background more black"), and no
+       green (29 Oct: "glowing white nomore green"): a breath of grey at the
+       top, black almost at once */
+    linear-gradient(180deg, #0b0d0e 0%, #060708 30%, #020303 62%, #000000 100%);
   /* SHADE AND SCRIM (owner, 18 Oct 2026: "on dark mode if there is a popup
      the background should be darker, not a cloudy white"). The popup's scrim
      and every shadow were mixed from --ink, which is near-white in the dark
@@ -287,9 +291,9 @@ html { font-synthesis-style: none; }
   --glass-shadow: 0 12px 36px rgba(11, 20, 22, 0.08), 0 1px 2px rgba(11, 20, 22, 0.05);
   --glass-pill: rgba(225, 248, 255, 0.5);
   --glass-pill-rim: rgba(255, 255, 255, 0.6);
-  --lamp-core: rgba(220, 250, 255, 0.55);
-  --lamp: rgba(0, 190, 235, 0.3);
-  --lamp-hot: rgba(0, 190, 235, 0.32);
+  --lamp-core: rgba(255, 232, 228, 0.55); /* the selected key's lamp red in light too (it was cyan) */
+  --lamp: rgba(210, 47, 34, 0.3);
+  --lamp-hot: rgba(210, 47, 34, 0.32);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* the light page: the icy ground of the 18 Oct reference falling a shade
      cooler towards the middle, the tinted light from the top corner */
@@ -378,8 +382,11 @@ button { font-family: var(--helv); }
 .wmcut { font: 400 161px var(--mich); fill: #000; stroke: #000; stroke-linejoin: miter; }
 /* THE TINT under the cut (29 Oct 2026: "tint the letters but i want the transition as smooth as possible,
    seamless, fast and reactive"): the word again, a little fuller than the hole (lib/wordmark.js TINT_BLEED), in
-   --wm-cut-tint, a translucent dark the glass shows through — a white card behind turns grey, the blue glass a
-   deeper blue, a dark card stays dark, per pixel and per frame. A theme turn eases the tint over --dur-2. */
+   --wm-cut-tint, a translucent dark — shown only where a really bright card lies behind the letters (then: "i
+   still wanted the negative logo to be see through however i wanted it to be seemlessly reactive to tint once
+   passing over a really bright card"): Wordmark.jsx clips it to those cards' boxes each scroll frame, so its edge
+   rides the card's. Hidden until read; a theme turn eases the tint over --dur-2. */
+.wmtint { clip-path: inset(50%); }
 .wmtintink { font: 400 161px var(--mich); fill: var(--wm-cut-tint); stroke: var(--wm-cut-tint); stroke-linejoin: miter; transition: fill var(--dur-2) var(--ease-out), stroke var(--dur-2) var(--ease-out); }
 @media (prefers-reduced-motion: reduce) { .wmtintink { transition: none; } }
 :root {
@@ -1747,7 +1754,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* ---- Phase 2: PASSPORT dossier ---- */
 .ppdoc { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
 .ppsec { height: 30px; position: relative; border-bottom: 1px solid var(--line);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%2377ffbb' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23e8eff1' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
 [data-theme="light"] .ppsec { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23177a8a' stroke-width='1' opacity='0.3'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
 .ppsec::after { content: ""; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent, rgba(150, 90, 255, 0.14) 30%, rgba(60, 220, 140, 0.12) 55%, rgba(70, 150, 255, 0.12) 75%, transparent); }
@@ -2336,7 +2343,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    unsupported */
 .tc-face { position: relative; z-index: 3; color: var(--ink); }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .tc-face { background: linear-gradient(178deg, var(--ink) 22%, var(--sig) 70%, var(--grey)); background: linear-gradient(178deg, color-mix(in oklab, var(--ink) 72%, #fff) 4%, var(--ink) 28%, color-mix(in oklab, var(--ink) 70%, var(--grey)) 47%, color-mix(in oklab, var(--ink) 55%, #fff) 51%, var(--sig) 72%, var(--grey) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(70, 255, 150, 0.22)); }
+  .tc-face { background: linear-gradient(178deg, var(--ink) 22%, var(--sig) 70%, var(--grey)); background: linear-gradient(178deg, color-mix(in oklab, var(--ink) 72%, #fff) 4%, var(--ink) 28%, color-mix(in oklab, var(--ink) 70%, var(--grey)) 47%, color-mix(in oklab, var(--ink) 55%, #fff) 51%, var(--sig) 72%, var(--grey) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.22)); }
 }
 /* the moving shadow — the only element allowed to glitch */
 .tc-streak { position: absolute; top: 0; left: 0; color: var(--sig); filter: blur(16px); transform: scaleX(1.5); transform-origin: left center; opacity: 0.3; pointer-events: none; animation: e4-drift 8s ease-in-out infinite alternate; }
@@ -4932,8 +4939,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 
 /* ---- the dark headline wears the OG title card: chrome letters washing to
-   mint with the phosphor halo (the owner's title-card reference) ---- */
-:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(70, 255, 150, 0.34)) drop-shadow(0 0 2px rgba(120, 255, 180, 0.5)); }
+   white with a white halo (the owner's title-card reference; mint and the
+   phosphor halo until 29 Oct 2026, "glowing white nomore green") ---- */
+:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.34)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
 :root:not([data-theme="light"]) :is(.sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice) { text-shadow: var(--glow-r); }
@@ -4944,9 +4952,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    warning lights that blink and go dark like a CD tray's eject light, and
    MRZ lines run out in chevrons with a blinking block cursor. --warn is the
    lights' and the chevrons' red in BOTH palettes (in dark the accent token
-   is phosphor green; a warning light is red on any device).
+   is glowing white since 29 Oct 2026; a warning light is red on any device).
    ===================================================================== */
-:root { --warn: #ff4136; --cursor: #6dffa8; }
+:root { --warn: #ff4136; --cursor: #f4f9fc; }
 [data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
 /* THE BLOCKS (owner's reference, 25 Oct 2026; lib/feed/blocks.js): text
    stands in as blocks — a run of even blocks while it loads in (Ref 1), and
@@ -4992,7 +5000,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    piece hangs over it as a card of the glass that turns with the
    phone or the cursor (useTilt). The photograph float wears the same fog.
    ===================================================================== */
-:root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(12, 30, 22, 0.22), rgba(2, 6, 4, 0.55)); }
+:root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(22, 25, 27, 0.22), rgba(4, 5, 6, 0.55)); } /* neutral, no green (29 Oct 2026) */
 [data-theme="light"] { --fog: radial-gradient(80% 60% at 50% 46%, rgba(255, 255, 255, 0.22), rgba(214, 232, 246, 0.5)); }
 .pfloat { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; perspective: 1200px; animation: floatfade var(--dur-3) var(--ease-out); }
 .pfloatfog { position: absolute; inset: 0; border: 0; padding: 0; cursor: zoom-out; background: var(--fog); -webkit-backdrop-filter: blur(9px) saturate(120%); backdrop-filter: blur(9px) saturate(120%); }
@@ -5034,7 +5042,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    name without "magazine".
    ===================================================================== */
 [data-theme="light"] .ppdoc { --sig: #0b7584; }
-:root:not([data-theme="light"]) .ppdoc { --sig: #46ff96; }
+:root:not([data-theme="light"]) .ppdoc { --sig: #f4f9fc; }
 .pv-s { stroke: var(--sig); opacity: 0.55; }
 .pv-p { stroke: var(--p2); opacity: 0.5; }
 .pv-r { stroke: var(--red); opacity: 0.75; }
@@ -5198,10 +5206,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 :root { --fx-rim-hi: rgba(255, 255, 255, 0.5); --fx-rim-lo: rgba(255, 255, 255, 0.12); }
 [data-theme="light"] { --fx-rim-hi: rgba(255, 255, 255, 0.95); --fx-rim-lo: rgba(255, 255, 255, 0.4); }
 
-/* the fixtures keep the V.2 accent (owner, 19 Oct 2026: the original phosphor
-   green is for the site "besides on the fixtures") */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; } }
-:root[data-theme="dark"] :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; }
 
 /* the post's action row, as the sketch draws it: four large outline glyphs
    spread across the media's foot, the author's circle at the far right */

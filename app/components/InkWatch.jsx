@@ -94,6 +94,30 @@ function mediaAt(x, y, zone) {
   return null;
 }
 
+// THE BRIGHT CARD UNDER A POINT, for the logo's tint (Wordmark.jsx; lib/ink.js TINT_BRIGHT): looking down through
+// the stack below `skip` (the Masthead), the first thing with a ground of its own. A block this watcher has read
+// answers with its reading (data-ink "dark" sits on a bright ground: a light photograph's foot under its scrim);
+// otherwise a picture or a gradient is no answer, and a plain colour as bright as TINT_BRIGHT, on a card, is. The
+// answer is that box. This reads styles and the watcher's own marks and hit tests a handful of points; it runs on
+// scroll frames, so it reads no pixels itself.
+export function brightSurfaceAt(x, y, skip, bright) {
+  for (const el of document.elementsFromPoint(x, y)) {
+    if (skip && skip.contains(el)) continue;
+    const zone = el.closest("[data-ink]");
+    if (zone && !(skip && skip.contains(zone))) return zone.dataset.ink === "dark" ? zone : null;
+    if (isMedia(el)) return null;
+    for (const m of el.querySelectorAll(":scope > img, :scope > video, :scope > picture > img")) {
+      const b = m.getBoundingClientRect();
+      if (x >= b.left && x <= b.right && y >= b.top && y <= b.bottom) return null;
+    }
+    const cs = getComputedStyle(el);
+    if (cs.backgroundImage !== "none") return null;
+    const l = colourLuma(cs.backgroundColor);
+    if (l == null) continue; // clear: what shows is further down
+    return l >= bright && el.closest(".card, .brdcst") ? el : null;
+  }
+  return null;
+}
 function measureZone(zone, ground) {
   const r = zone.getBoundingClientRect();
   if (!(r.width > 0) || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) return;

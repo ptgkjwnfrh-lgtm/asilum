@@ -47,17 +47,22 @@
 // of the brick's); and the glow comes off the brick's rim, as deep as the line is thick (rimPath), not off the
 // whole slab — so the halo is the line's halo all the way round.
 //
-// Then: "tint the letters but i want the transition as smooth as possible, seamless, fast and reactive". Under the
-// cut lies the word again in a translucent dark (.wmtint), the glass showing through it: it darkens a white card
-// behind the letters to grey and the glass to a deeper blue, pixel by pixel as things scroll under — no reading, no
-// waiting, no script (lib/wordmark.js TINT_BLEED). In dark it is clear.
+// Then: "tint the letters but i want the transition as smooth as possible, seamless, fast and reactive", and, the
+// tint on everywhere, "i still wanted the negative logo to be see through however i wanted it to be seemlessly
+// reactive to tint once passing over a really bright card". Under the cut lies the word again in a translucent
+// dark (.wmtint, lib/wordmark.js TINT_BLEED), shown ONLY where a really bright card lies behind the letters: each
+// scroll frame the logo asks what is under its word (eight points; InkWatch.jsx brightSurfaceAt) and clips the tint
+// to the bright cards' own boxes (lib/ink.js tintClip), so the tint's edge rides the card's edge in and out. Over
+// the glass and everything else the letters stay see-through. In dark the tint is clear.
 //
 // Four layers on one box: the glow (the brick's rim in --wm-glow, the stark white of the Masthead's line, clipped
 // away from the word's window so no haze fills the letters — glowWindow); the brick, unlit, the word cut out of it
 // by a mask, the tint showing through it; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
 
-import { useId } from "react";
-import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, BOLD, RUN, TINT_BLEED } from "../../lib/wordmark.js";
+import { useEffect, useId, useRef } from "react";
+import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, wordFrac, BOLD, RUN, TINT_BLEED } from "../../lib/wordmark.js";
+import { TINT_BRIGHT, TINT_NONE, tintPoints, tintClip } from "../../lib/ink.js";
+import { brightSurfaceAt } from "./InkWatch.jsx";
 
 /** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
 export const WM = Object.freeze({
@@ -77,15 +82,57 @@ const WINDOW = glowWindow(BOX);
 // the mask's plane: the brick's whole run and the box, with room
 const PLANE = { x: -RUN - 100, y: BOX.top - 100, w: RUN + BOX.end + 200, h: BOX.h + 200 };
 
+// the tint follows the bright cards behind the word: read on every scroll frame (and on a resize, a load, a
+// settle, a theme turn), written only when it changes; nothing in dark, where the tint is clear
+const WORD_AT = wordFrac(BOX);
+function useCutTint(artRef, tintRef) {
+  useEffect(() => {
+    const art = artRef.current, tint = tintRef.current;
+    if (!art || !tint) return undefined;
+    const skip = art.closest(".masthead") || art;
+    let raf = 0, last = "";
+    const set = (v) => { if (v !== last) { last = v; tint.style.clipPath = v; } };
+    const run = () => {
+      raf = 0;
+      if (getComputedStyle(document.documentElement).getPropertyValue("--wm-cut-tint").trim() === "transparent") { set(TINT_NONE); return; }
+      const a = art.getBoundingClientRect();
+      const word = { left: a.left + a.width * WORD_AT.x0, top: a.top + a.height * WORD_AT.y0, width: a.width * (WORD_AT.x1 - WORD_AT.x0), height: a.height * (WORD_AT.y1 - WORD_AT.y0) };
+      const found = new Set();
+      for (const [x, y] of tintPoints(word)) { const el = brightSurfaceAt(x, y, skip, TINT_BRIGHT); if (el) found.add(el); }
+      set(tintClip(a, [...found].map((el) => el.getBoundingClientRect())));
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
+    ask();
+    window.addEventListener("scroll", ask, { passive: true, capture: true }); // the page's scroll and a carousel's
+    window.addEventListener("resize", ask);
+    document.addEventListener("load", ask, true);
+    document.addEventListener("f20settle", ask);
+    const theme = new MutationObserver(ask);
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    mq.addEventListener("change", ask);
+    return () => {
+      window.removeEventListener("scroll", ask, { capture: true });
+      window.removeEventListener("resize", ask);
+      document.removeEventListener("load", ask, true);
+      document.removeEventListener("f20settle", ask);
+      theme.disconnect(); mq.removeEventListener("change", ask);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [artRef, tintRef]);
+}
+
 export default function Wordmark({ href = "/", className = "" }) {
   const cut = "wmc" + useId().replace(/:/g, "");
+  const artRef = useRef(null), tintRef = useRef(null);
+  useCutTint(artRef, tintRef);
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
-      <span className="wmart" aria-hidden="true">
+      <span ref={artRef} className="wmart" aria-hidden="true">
         <svg className="wmlit wmglow" viewBox={VIEW} focusable="false" style={{ clipPath: WINDOW }}>
           <path className="wmbar" d={RIM} fillRule="evenodd" />
         </svg>
-        <svg className="wmtint" viewBox={VIEW} focusable="false">
+        <svg ref={tintRef} className="wmtint" viewBox={VIEW} focusable="false">
           <g transform={SET}><text className="wmtintink" x={WM.x.join(" ")} y={WM.base} strokeWidth={(BOLD + TINT_BLEED) / WM.set.s}>ASILUM</text></g>
         </svg>
         <svg className="wmbrick" viewBox={VIEW} focusable="false">

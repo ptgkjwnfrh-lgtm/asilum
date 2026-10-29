@@ -26,7 +26,12 @@
 //     over white it sets the letters at least 3:1 (at most 5:1) against the white brick, and laid over the light
 //     glass it comes out darker still — it follows what is behind; in dark it is clear; no blend mode (a multiply
 //     was measured flat in the page: 121,126,135 over the glass and over a white card alike); a theme turn eases
-//     it, never under reduced motion.
+//     it, never under reduced motion;
+//   - ("i still wanted the negative logo to be see through however i wanted it to be seemlessly reactive to tint
+//     once passing over a really bright card") the tint is hidden until read and then clipped to the bright
+//     cards behind the word — their own boxes, cut to the logo's — re-read on every scroll frame (the page's and a
+//     carousel's), a resize, a load, a settle and a theme turn; "bright" is a plain ground at TINT_BRIGHT or more
+//     on a card, or a block InkWatch has read as sitting on a bright ground; pictures and gradients are not.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -166,7 +171,7 @@ test("the disc wears the fixtures' shine rim, lit along its visible top", () => 
 });
 
 test("the cut letters tinted by a translucent dark under them: per pixel, every frame, no script", () => {
-  assert.match(wm, /<svg className="wmtint" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmtintink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\} strokeWidth=\{\(BOLD \+ TINT_BLEED\) \/ WM\.set\.s\}>ASILUM<\/text><\/g>/, "the word again, as set, fuller than the cut");
+  assert.match(wm, /<svg ref=\{tintRef\} className="wmtint" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmtintink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\} strokeWidth=\{\(BOLD \+ TINT_BLEED\) \/ WM\.set\.s\}>ASILUM<\/text><\/g>/, "the word again, as set, fuller than the cut");
   assert.ok(TINT_BLEED > 0, "past the hole's soft edge");
   assert.ok(!/mix-blend-mode/.test(css.match(/\.wmtint[^{]*\{[^}]*\}/g).join(" ")), "no blend: a blend inside the glass never sees the page");
   assert.match(css, /\.wmtintink \{ font: 400 161px var\(--mich\); fill: var\(--wm-cut-tint\); stroke: var\(--wm-cut-tint\); stroke-linejoin: miter; transition: fill var\(--dur-2\) var\(--ease-out\), stroke var\(--dur-2\) var\(--ease-out\); \}/);
@@ -188,4 +193,45 @@ test("the cut letters tinted by a translucent dark under them: per pixel, every 
   assert.ok(white >= 3 && white <= 5, `over a white card the letters ${white.toFixed(2)}:1 against the brick, a tint not ink`);
   const glass = [143, 158, 174]; // the light glass through the cut, measured at 375px before the tint
   assert.ok(L(over(glass)) < L(over([255, 255, 255])) * 0.7, "over the glass darker still: it follows what is behind");
+});
+
+test("the tint shows only over a really bright card, clipped to its box, read every scroll frame", async () => {
+  const { TINT_BRIGHT, TINT_NONE, tintPoints, tintClip } = await import("../lib/ink.js");
+  const { wordFrac } = await import("../lib/wordmark.js");
+  assert.match(css, /\.wmtint \{ clip-path: inset\(50%\); \}/, "hidden until read: see-through by default");
+  assert.ok(TINT_BRIGHT >= 0.8 && TINT_BRIGHT < 0.92, "really bright: the white cards (0.92–1), not the glass");
+  // the points: along the word's top and its foot, across it
+  const word = { left: 40, top: 30, width: 100, height: 16 };
+  const pts = tintPoints(word);
+  assert.equal(pts.length, 8);
+  assert.deepEqual([...new Set(pts.map((p) => p[1]))], [31, 45], "the top and the foot, 1px inside");
+  assert.ok(pts.every(([x]) => x > 40 && x < 140), "across the word");
+  assert.deepEqual(tintPoints({ left: 0, top: 0, width: 0, height: 10 }), [], "no word, no points");
+  // the clip: the cards' boxes cut to the logo's, in its own pixels; none, nothing shows
+  const box = { left: 10, top: 20, width: 140, height: 20 };
+  assert.equal(tintClip(box, []), TINT_NONE);
+  assert.equal(tintClip(box, [{ left: 0, top: 100, right: 300, bottom: 400 }]), TINT_NONE, "a card below the logo tints nothing");
+  assert.equal(tintClip(box, [{ left: 0, top: 31.5, right: 300, bottom: 400 }]), 'path("M0 11.5H140V20H0Z")', "a card coming up under the word: only the part over it");
+  assert.equal(tintClip(box, [{ left: 0, top: 0, right: 300, bottom: 24 }, { left: 0, top: 32, right: 300, bottom: 90 }]), 'path("M0 0H140V4H0ZM0 12H140V20H0Z")', "two cards, the gap between them clear");
+  // the words: hidden until read, then the hook writes the clip each frame it changes
+  const fr = wordFrac();
+  assert.ok(fr.x0 > 0 && fr.x1 < 1 && fr.y0 > 0 && fr.y1 < 1, "the word inside the logo's box");
+  assert.match(wm, /<svg ref=\{tintRef\} className="wmtint"/);
+  assert.match(wm, /<span ref=\{artRef\} className="wmart"/);
+  assert.match(wm, /for \(const \[x, y\] of tintPoints\(word\)\) \{ const el = brightSurfaceAt\(x, y, skip, TINT_BRIGHT\); if \(el\) found\.add\(el\); \}/);
+  assert.match(wm, /set\(tintClip\(a, \[\.\.\.found\]\.map\(\(el\) => el\.getBoundingClientRect\(\)\)\)\);/);
+  assert.match(wm, /window\.addEventListener\("scroll", ask, \{ passive: true, capture: true \}\);/, "every scroll frame, the page's and a carousel's");
+  for (const ev of ['window.addEventListener("resize", ask)', 'document.addEventListener("load", ask, true)', 'document.addEventListener("f20settle", ask)', 'attributeFilter: ["data-theme"]']) assert.ok(wm.includes(ev), ev);
+  assert.match(wm, /const ask = \(\) => \{ if \(!raf\) raf = requestAnimationFrame\(run\); \};/, "once a frame at most");
+  assert.match(wm, /const set = \(v\) => \{ if \(v !== last\) \{ last = v; tint\.style\.clipPath = v; \} \};/, "written only when it changes");
+  assert.match(wm, /getPropertyValue\("--wm-cut-tint"\)\.trim\(\) === "transparent"\) \{ set\(TINT_NONE\); return; \}/, "nothing to do in dark");
+  // what counts as bright: InkWatch's reading of a block, else a plain bright ground on a card; never a picture or gradient
+  const ink = read("app/components/InkWatch.jsx");
+  const fn = ink.slice(ink.indexOf("export function brightSurfaceAt"), ink.indexOf("function measureZone"));
+  assert.match(fn, /if \(skip && skip\.contains\(el\)\) continue;/, "looking through the Masthead");
+  assert.match(fn, /return zone\.dataset\.ink === "dark" \? zone : null;/, "a read block: dark ink sits on a bright ground");
+  assert.match(fn, /if \(isMedia\(el\)\) return null;/);
+  assert.match(fn, /if \(cs\.backgroundImage !== "none"\) return null;/);
+  assert.match(fn, /return l >= bright && el\.closest\("\.card, \.brdcst"\) \? el : null;/);
+  assert.ok(!/getImageData|drawImage/.test(fn), "no pixels read on a scroll frame");
 });
