@@ -42,6 +42,16 @@ import { useId } from "react";
 // right"): the asterisk and the word together at WM.set.s of the artwork's size, scaled about their left edge
 // on the bar's top, so half the capitals still stand over the bar, and moved WM.set.dx along it.
 //
+// THE TRON MARK, DARK ONLY (the same day: "lets mimic the tron logo just for dark mode, there should be a
+// outline as thick as the font that outlines the top of the text now there should negative space in the brick
+// where the font would be and now we can ad back the asterisk line and make sure its connected with the
+// outline"): one white shape in the bar's glow — the bar, the word stroked WM.tron.t wide (Michroma's own
+// stroke: its I measured 15 wide at 161, its L's bar 13), and the asterisk's stem — with the six letters cut
+// out of it. On the bar the letters are holes; above it each is ringed by an outline as thick as its strokes;
+// the stem rises from the bar under the asterisk, flush with the bar's left end, into the A's outline, so the red
+// asterisk sits on the white; a tip fills the notch the outline's round corner left at the A's flat top.
+// Light keeps the word on the brick (above); the CSS shows one mark or the other by theme.
+//
 // Three layers on one box: the bar first (see THE WORD ON THE BRICK); the asterisk, glowing red (owner, the same day:
 // "the asterisk must glow red" — the bar's glow, the same radii, in the
 // asterisk's own red, --wm-glow-r); the bar, glowing the stark white of the
@@ -60,19 +70,52 @@ export const WM = Object.freeze({
   // the asterisk and the word: a touch smaller (s), a little to the right (dx, in these units), scaled about
   // (0, the bar's top) so their middle stays on the bar's edge
   set: Object.freeze({ s: 0.96, dx: 40 }),
+  // the dark mark (THE TRON MARK): the outline's thickness in the word's units (Michroma's stroke, 13 to 15);
+  // the asterisk's stem in the frame, flush with the bar's left end and the Masthead's line (owner, the same
+  // day: "make it flush with the line"), past the asterisk's ink (set: 43.8 to 84.2) into the A's outline,
+  // from the outline's top (the capitals' top less the outline, set) down into the bar; and the tip, closing
+  // the notch the outline's round corner left between the stem and the A's flat top ("that little gap of the
+  // tip of the a and the line lets close that"): from the stem to the A's top-left corner (Michroma: the
+  // apex's top runs 74 to 96 at 161, set 111.04), from the outline's top down to the capitals' top
+  tron: Object.freeze({
+    t: 14,
+    stem: Object.freeze({ x: 3.3, w: 96.7, y: -10.775 }),
+    tip: Object.freeze({ x: 99, w: 12.04, h: 13.44 }),
+  }),
+  top: -12, // the mark's highest edge: the outline's top, and a breath
 });
-const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${WM.foot}`;
+const VIEW = `${WM.bar.x} ${WM.top} ${WM.bar.w} ${WM.foot - WM.top}`;
+const STEM = WM.tron.stem, TIP = WM.tron.tip;
 const SET = `translate(${WM.set.dx} ${+(WM.bar.y * (1 - WM.set.s)).toFixed(4)}) scale(${WM.set.s})`;
 
 export default function Wordmark({ href = "/", className = "" }) {
   const id = useId().replace(/:/g, "");
-  const above = "wma" + id, on = "wmo" + id;
+  const above = "wma" + id, on = "wmo" + id, knock = "wmk" + id;
+  const word = (cls) => <g transform={SET}><text className={cls} x={WM.x.join(" ")} y={WM.base}>ASILUM</text></g>;
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
       <span className="wmart" aria-hidden="true">
         <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
           <rect className="wmbar" x={WM.bar.x} y={WM.bar.y} width={WM.bar.w} height={WM.bar.h} />
         </svg>
+        {/* dark: the bar, the stem and the word's outline as one white shape, the letters cut out of it */}
+        <svg className="wmlit wmtron" viewBox={VIEW} focusable="false">
+          <defs>
+            <mask id={knock} maskUnits="userSpaceOnUse" x="-200" y="-200" width="1600" height="600">
+              <rect x="-200" y="-200" width="1600" height="600" fill="#fff" />
+              {word("wmink wmknock")}
+            </mask>
+          </defs>
+          <g mask={`url(#${knock})`}>
+            <rect className="wmbar" x={WM.bar.x} y={WM.bar.y} width={WM.bar.w} height={WM.bar.h} />
+            <rect className="wmbar" x={STEM.x} y={STEM.y} width={STEM.w} height={WM.bar.y - STEM.y + 1} />
+            <rect className="wmbar" x={TIP.x} y={STEM.y} width={TIP.w} height={TIP.h} />
+            {word("wmink wmoutline")}
+          </g>
+        </svg>
+        {/* the holes kept dark: the glow reaches into a stroke barely 2px wide on a phone and greyed it, so the
+            letters are laid back over their holes in the dark ground, unlit (measured 28 Oct 2026, the 5x proof) */}
+        <svg className="wmtronink" viewBox={VIEW} focusable="false">{word("wmink wmhole")}</svg>
         <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
           <g transform={SET}><text className="wmstar" x="0" y={WM.starY}>*</text></g>
         </svg>
