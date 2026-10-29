@@ -95,6 +95,10 @@ test("the Feed's drum is gentle (owner, 28 Oct 2026: \"the carousel stacking loo
   assert.ok(+feed[1] <= +root[1] / 2, `turn ${feed[1]}° against ${root[1]}°`);
   assert.ok(+feed[2] <= +root[2] / 4, `lap ${feed[2]}% against ${root[2]}%`);
   assert.ok(+feed[3] > +root[3] && +feed[3] < 1, `shrink to ${feed[3]} against ${root[3]}`);
+  // (owner, 28 Oct 2026: "a large card on the bottom seems to be clipping over a little too much") a large card
+  // stands in front of its neighbours, so it must not lap: measured with a fill centred, its lap drew it 15px over
+  // the listings above; without, it stays 11px clear
+  assert.match(css, /\.fcell\.large \{ --stk-lap: 0%; \}/, "a large card does not lap");
 });
 
 test("SHADOWS (owner, 28 Oct 2026): a faint Masthead, its shade on the cards under it, the large cards' overcast", () => {

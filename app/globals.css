@@ -5638,6 +5638,10 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 /* the Feed's cards are big (a large one is 80% of the screen), so the drum is gentle there (owner, 28 Oct 2026:
    "the carousel stacking looks too extreme on the feed lets somehow make it less extreme") */
 .fgrid { --stk-tilt: 16deg; --stk-lap: 5%; --stk-s: 0.96; --stk-persp: 1400px; --stk-zone: min(24vh, 220px); }
+/* a large card does not lap: standing in front of its neighbours (its overcast, below), a lap of its own height
+   carried it a medium's corner over the cards above (owner, 28 Oct 2026: "a large card on the bottom seems to be
+   clipping over a little too much"); it turns and shrinks inside its own place */
+.fcell.large { --stk-lap: 0%; }
 
 /* SHADOWS (owner, 28 Oct 2026: "the masthead gives off a slight shadow but it should hardly be noticeable
    because it generates light however i want the stacked cards to have a slight shadow coming from the mast

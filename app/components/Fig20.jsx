@@ -40,7 +40,9 @@ import { useEffect, useRef } from "react";
 import { wrap, ringOffset, nearestTo, seamDrag, settleTarget } from "../../lib/fig20.js";
 
 export const FLAT = 3;            // cards that lie flat
-const FLAT_SHARE = 0.72;          // of the width the flat cards may take
+// (owner, 28 Oct 2026: "for the carousel stills and for the videos you may like lets slightly widen the
+// centered image") 0.72 -> 0.8: a post-sized cell's one flat card 11% wider, the stacks tucked further behind it
+const FLAT_SHARE = 0.8;           // of the width the flat cards may take
 const EDGE_DEG = 72;              // how far a stacked card turns
 export const GLIDE = 0.2;         // of the gap closed per 16.7ms of real time
 

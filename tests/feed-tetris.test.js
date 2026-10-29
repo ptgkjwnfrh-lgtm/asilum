@@ -352,6 +352,8 @@ test("FIGURE 20 for the carousels (owner, 25 Oct 2026, late: \"simply input figu
   // caption, counter or actions — and its cell draws no box around it
   const fig = read("app/components/Fig20.jsx");
   assert.match(fig, /export const FLAT = 3;/, "three flat");
+  // (owner, 28 Oct 2026: "slightly widen the centered image") measured at 375px: 261px -> 287px
+  assert.match(fig, /const FLAT_SHARE = 0\.8;/, "the centred card a little wider");
   // (same night: "invert the animations … I want it tucked outward") the right
   // stack turns by -deg and the left by +deg about their outer edges
   assert.match(fig, /rotateY\(\$\{\(-sgn \* EDGE_DEG \* ease\)\.toFixed\(1\)\}deg\)/, "the ends tucked outward");
