@@ -128,7 +128,7 @@ test("the type and the band: Share Tech Mono at -8.5 to -9; dark — white and g
   for (const blk of [lightBlock, lightMedia]) {
     assert.equal(tok("--ad-cloud", blk), "var(--ad-cloud-light)");
     assert.equal(tok("--ad-glyph", blk), "#001512", "the logo's black in light");
-    assert.equal(tok("--ad-glyph", blk), tok("--wm-hole", blk), "exactly the logo's ink (its letters in light, the Tron mark's)");
+    assert.equal(tok("--ad-glyph", blk), tok("--wm-ink", blk), "exactly the logo's ink");
     assert.equal(tok("--ad-glow", blk), "none", "unlit, as the logo's word is");
   }
   const haze = (c) => { const m = c.match(/linear-gradient\(180deg, rgba\((\d+), (\d+), (\d+), ([\d.]+)\), rgba\((\d+), (\d+), (\d+), ([\d.]+)\)\)$/); return m && m.slice(1).map(Number); };

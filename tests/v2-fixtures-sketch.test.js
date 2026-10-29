@@ -414,24 +414,21 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     the keys' row; the keys 10% bigger, the logo the same size;
 //   - the Masthead's children are the wordmark, the line, its cuts and the keys; the stamped line is
 //     gone (no .mhstamp, no STAMP, no --stamp-blue).
-const set0 = () => read("app/components/Wordmark.jsx").match(/set: Object\.freeze\(\{ s: ([\d.]+), dx: ([\d.]+) \}\)/).slice(1).map(Number);
 test("the new logo: type set from the owner's artwork, one glow — red on the asterisk, white on the bar and the Masthead's line, broken at the keys", async () => {
   const css = read("app/globals.css");
   const wm = read("app/components/Wordmark.jsx");
   // type, in one unit system
   assert.match(wm, /word: 161, star: 131, cap: 120\.75, base: 121,/);
-  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); \}/, "Michroma 161");
+  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); fill: var\(--wm-ink\); \}/, "Michroma 161, inked");
   assert.match(rules, /\.wmstar \{ font: 400 131px var\(--helvetica\); fill: var\(--wm-star\); \}/, "Helvetica 131");
   assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
-  assert.match(wm, /const word = \(cls\) => <g transform=\{SET\}><text className=\{cls\} x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g>;/, "each letter at its own origin");
+  assert.match(wm, /<g transform=\{SET\}><text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g>/, "each letter at its own origin");
   assert.match(wm, /<g transform=\{SET\}><text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text><\/g>/, "the asterisk in the word's set");
-  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.bar\.y\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar where the geometry puts it (below)");
   for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
   assert.ok(!/logo[\w-]*\.(png|jpg)|wmimg|--wm-mask|--metal/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "nothing in the styles names the picture");
-  // the owner's artwork, measured
+  // the owner's first artwork (28 Oct), measured: the letters' spacing and the asterisk still come from it
   const nums = (re) => wm.match(re)[1].split(",").map(Number);
   const X = nums(/x: Object\.freeze\(\[([^\]]*)\]\)/);
-  const bar = wm.match(/bar: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), h: ([\d.]+), y: ([\d.]+) \}\)/).slice(1).map(Number);
   const starY = Number(wm.match(/starY: ([\d.]+),/)[1]);
   const ADV = [171.06, 168.39, 45.28, 130.81, 166.66]; // A S I L U advances at 161 (Chromium, 28 Oct 2026)
   const LSB = [5.03, 10.46, 15.09, 15.09, 10.69, 15.41]; // A S I L U M left side bearings at 161
@@ -440,7 +437,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const sharp = (await import("sharp")).default;
   const { data, info } = await sharp(new URL("../docs/brand/asilum-logo-2026-10-28.jpg", import.meta.url).pathname).raw().toBuffer({ resolveWithObject: true });
   const W = info.width, C = info.channels, p = (x, y) => { const i = (y * W + x) * C; return [data[i], data[i + 1], data[i + 2]]; };
-  const dark = (q) => q[0] + q[1] + q[2] < 150, white = (q) => Math.min(...q) > 240, red = (q) => q[0] > 180 && q[1] < 90 && q[2] < 90;
+  const dark = (q) => q[0] + q[1] + q[2] < 150, red = (q) => q[0] > 180 && q[1] < 90 && q[2] < 90;
   const inkCols = []; for (let x = 0; x < W; x++) for (let y = 690; y < 915; y++) if (dark(p(x, y))) { inkCols.push(x); break; }
   const lefts = inkCols.filter((x, i) => i === 0 || inkCols[i - 1] !== x - 1);
   assert.equal(lefts.length, 6, "six letters in the artwork");
@@ -448,21 +445,11 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const k = (916 - capTop) / 120.75; // artwork pixels per unit: the capitals' 120.75
   const ox = lefts[0] - LSB[0] * k; // the A's origin
   X.forEach((x, i) => assert.ok(Math.abs(ox + (x + LSB[i]) * k - lefts[i]) <= 2, "ASILUM"[i] + " where the artwork has it: " + (ox + (x + LSB[i]) * k).toFixed(1) + " vs " + lefts[i]));
-  let wb = [W, 0, info.height, 0]; for (let y = 880; y < 1100; y++) for (let x = 0; x < W; x++) if (white(p(x, y))) wb = [Math.min(wb[0], x), Math.max(wb[1], x), Math.min(wb[2], y), Math.max(wb[3], y)];
-  const art = wm.match(/art: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+) \}\)/).slice(1).map(Number);
-  assert.ok(Math.abs(ox + art[0] * k - wb[0]) <= 2 && Math.abs(ox + (art[0] + art[1]) * k - (wb[1] + 1)) <= 2, "the artwork's bar's ends");
-  assert.ok(Math.abs(916 - wb[2]) <= 1 && Math.abs(bar[2] * k - (wb[3] + 1 - wb[2])) <= 2, "flush under the baseline, as deep as drawn");
-  // (owner, 28 Oct 2026: "shrink the brick from the left so it starts at the A, not past it") the shipped bar starts at
-  // the A's outline (its ink 5 at 161, the outline 14 further, set) and keeps the artwork's right end
-  assert.ok(Math.abs(bar[0] - (set0()[1] + set0()[0] * (5 - 14))) < 0.01, "the bar starts at the A's outline: " + bar[0]);
-  assert.ok(Math.abs(bar[0] + bar[1] - (art[0] + art[1])) < 0.01, "and ends where the artwork's does");
-  assert.match(rules, /\.wmart \{[^}]*width: calc\(var\(--wm-u\) \* 948\.84\);/, "the box as wide as the bar");
-  assert.ok(Math.abs(bar[1] - 948.84) < 0.001, "the CSS and the geometry agree on the width");
   let rb = [W, 0, info.height, 0]; for (let y = 600; y < 900; y++) for (let x = 100; x < 400; x++) if (red(p(x, y))) rb = [Math.min(rb[0], x), Math.max(rb[1], x), Math.min(rb[2], y), Math.max(rb[3], y)];
   assert.ok(Math.abs(rb[0] - lefts[0]) <= 2, "the asterisk's left edge on the A's");
   assert.ok(Math.abs(rb[2] - capTop) <= 2, "its top on the capitals' line");
   assert.ok(Math.abs(starY - 0.717 * 131 - (121 - 120.75)) <= 1, "Helvetica's asterisk (0.717em tall above its baseline) set so");
-  // one glow, in two colours (then: "the asterisk must glow red"): the bar's white and the asterisk's red,
+  // one glow, in two colours (then: "the asterisk must glow red"): the brick's white and the asterisk's red,
   // the same radii and the same strengths
   const glow = css.match(/--wm-glow: ([^;]+);/)[1], glowR = css.match(/--wm-glow-r: ([^;]+);/)[1];
   assert.match(glow, /^drop-shadow\(0 0 [\d.]+px #ffffff\)( drop-shadow\(0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)\))+$/, "white, stark");
@@ -475,7 +462,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmtron var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the mark's white shape, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmbrick var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter
@@ -487,7 +474,6 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   ks.forEach(([r, a], i) => { assert.ok(r <= ws[i][0], `layer ${i}: ${r}px no wider than ${ws[i][0]}px`); assert.ok(a < ws[i][1], `layer ${i}: ${a} fainter than ${ws[i][1]}`); });
   assert.match(rules, /:is\(\.ccenter \.tabl\.cur, \.idkey\.cur, \.passportbtn\.cur\) \{ color: var\(--warn\); \}/, "a selected key is the asterisk's red, in both themes");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmstar"/, "the asterisk on its own layer");
-  assert.match(wm, /<svg className="wmlit wmtron" viewBox=\{VIEW\} focusable="false">[\s\S]*?<rect className="wmbar" x=\{WM\.bar\.x\}/, "the bar in the white shape");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");
   assert.match(css, /--wm-bar: #ffffff;/);
   // the line
@@ -498,95 +484,18 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(mast, /const next = mastLine\(mark \? mark\.getBoundingClientRect\(\)\.left - o : NaN, keys\);/, "from the logo's left edge, along the keys");
   assert.match(mast, /\[\.\.\.row\.querySelectorAll\("\.idkey, \.passportbtn"\)\]\.filter\(\(k\) => k\.offsetWidth > 0\)\.map\(box\)/, "every key showing, the globe's hit box the last");
   const line = rules.match(/\.mhline \{([^}]*)\}/)[1];
-  assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "thin, just under the glyphs");
+  assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "just under the glyphs");
   assert.match(line, /filter: var\(--wm-glow\);/, "in the logo's glow");
   assert.match(rules, /\.mhline i \{[^}]*background: var\(--wm-bar\);[^}]*left: calc\(var\(--a\) \+ var\(--gl\) \* var\(--mh-break\) \/ 2\);\s*width: calc\(var\(--b\) - var\(--a\) - \(var\(--gl\) \+ var\(--gr\)\) \* var\(--mh-break\) \/ 2\);/s, "white stretches, broken by half a break each side");
-  // THE WORD ON THE BRICK (owner, 28 Oct 2026, last: "i want half of the asilum text to be sticking half way over
-  // the brick", then "move the brick up, i want it to sit ontop of the mast head line, the mast head line is like
-  // in the middle of the brick"): the bar's top on the capitals' middle, its foot on the line's top. Measured at
-  // 375px: the bar's top 35.9 = the capitals' middle 35.9; the bar's foot 46.5 = the line's top 46.5.
-  assert.ok(Math.abs(bar[3] - (121 - 120.75 / 2)) < 0.01, "the bar's top on the capitals' middle: " + bar[3]);
-  const foot = Number(wm.match(/foot: ([\d.]+),/)[1]);
-  assert.ok(Math.abs(foot - (bar[3] + bar[2])) < 0.01, "the mark's foot is the bar's: " + foot);
-  const top = Number(wm.match(/top: (-?[\d.]+),/)[1]);
-  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--wm-u\) \* 155\.225\);/s, "the bar's foot on the line's top");
-  assert.ok(Math.abs(foot - top - 155.225) < 0.001, "the CSS and the geometry agree: the box's top to the bar's foot");
-  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 948\.84 \/ 155\.225;/, "the box: the bar's width, the outline's top to the bar's foot");
-  assert.match(wm, /const VIEW = `\$\{WM\.bar\.x\} \$\{WM\.top\} \$\{WM\.bar\.w\} \$\{WM\.foot - WM\.top\}`;/);
-  // THE SET (the same day: "lets inside ever ever so slightly lower font size and move "*ASILUM" a bit to the
-  // right"): the asterisk and the word a touch smaller and a little right, scaled about the bar's top so half
-  // the capitals still stand over the bar (measured at 375px: the word from 22.4 against the bar's 17.6)
-  const set = wm.match(/set: Object\.freeze\(\{ s: ([\d.]+), dx: ([\d.]+) \}\)/).slice(1).map(Number);
-  assert.ok(set[0] < 1 && set[0] >= 0.9, "ever so slightly smaller: " + set[0]);
-  assert.ok(set[1] > 0 && set[1] <= 80, "a bit to the right: " + set[1]);
-  assert.match(wm, /const SET = `translate\(\$\{WM\.set\.dx\} \$\{\+\(WM\.bar\.y \* \(1 - WM\.set\.s\)\)\.toFixed\(4\)\}\) scale\(\$\{WM\.set\.s\}\)`;/, "scaled about the bar's top");
-  const scaledMid = bar[3] * set[0] + bar[3] * (1 - set[0]);
-  assert.ok(Math.abs(scaledMid - (121 - 120.75 / 2)) < 0.01, "the capitals' middle stays on the bar's top");
-  function tronSvg0() { return wm.slice(wm.indexOf('<svg className="wmlit wmtron"'), wm.indexOf('<svg className="wmtronink"')); }
-  // THE TRON MARK, DARK ONLY (the same day: "lets mimic the tron logo just for dark mode, there should be a outline
-  // as thick as the font that outlines the top of the text now there should negative space in the brick where
-  // the font would be and now we can ad back the asterisk line and make sure its connected with the outline").
-  // Declared before measuring: in dark one white shape in the bar's glow — the bar, the stem and the word's
-  // outline — with the letters cut out of it and laid back dark and unlit; the outline as thick as Michroma's
-  // stroke (measured 13 to 15 at 161), the stroke twice that (half lies inside the letter, under its hole); the
-  // stem from left of the asterisk's ink into the A's outline, from the outline's top down into the bar; light
-  // keeps the word on the brick, and neither theme draws the other's mark.
-  const t = Number(wm.match(/tron: Object\.freeze\(\{\s*t: ([\d.]+),/)[1]);
-  const [sx, sw, sy] = wm.match(/stem: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), y: (-?[\d.]+) \}\)/).slice(1).map(Number);
-  const [tx, tw, th] = wm.match(/tip: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), h: ([\d.]+) \}\)/).slice(1).map(Number);
-  assert.ok(t >= 13 && t <= 15, "the outline as thick as Michroma's stroke: " + t);
-  assert.match(rules, new RegExp("\\.wmink\\.wmoutline \\{ fill: var\\(--wm-bar\\); stroke: var\\(--wm-bar\\); stroke-width: " + 2 * t + "px; stroke-linejoin: round; \\}"), "stroked twice the outline: half outside the letter");
-  const starInk = [set[1] + set[0] * 4, set[1] + set[0] * 46], starTop = set[0] * -0.8 + bar[3] * (1 - set[0]);
-  assert.ok(sx <= starInk[0] - 5, "the stem starts left of the asterisk's ink: " + sx + " < " + starInk[0].toFixed(1));
-  // (then: "make it flush with the line") the stem's left edge is the bar's, where the Masthead's line begins
-  assert.equal(sx, bar[0], "flush with the bar's left end and the line");
-  // the A's left edge where the asterisk ends (Michroma at 161: 51 across at 41 down), set, less the outline
-  const aOutline = set[1] + set[0] * 51 - set[0] * t;
-  assert.ok(sx + sw >= aOutline + 5 && sx + sw >= starInk[1] + 5, "the stem runs into the A's outline, past the asterisk: " + (sx + sw));
-  const outlineTop = set[0] * (121 - 120.75) + bar[3] * (1 - set[0]) - set[0] * t;
-  assert.ok(Math.abs(sy - outlineTop) < 0.01, "the stem's top is the outline's: " + sy + " / " + outlineTop.toFixed(3));
-  assert.ok(sy < starTop - 5 && top <= outlineTop, "above the asterisk, inside the box");
-  assert.match(wm, /<rect className="wmbar" x=\{STEM\.x\} y=\{STEM\.y\} width=\{STEM\.w\} height=\{WM\.bar\.y - STEM\.y \+ 1\} \/>/, "down into the bar: one shape");
-  // (then: "that little gap of the tip of the a and the line lets close that") the tip fills from the stem to the
-  // A's top-left corner (Michroma: the apex's top 74 to 96 at 161; its counter opens 11 below), from the outline's
-  // top to the capitals' top — the notch closed, the A's counter untouched
-  const aCorner = set[1] + set[0] * 74, capsTop = set[0] * 0.25 + bar[3] * (1 - set[0]);
-  assert.ok(tx <= sx + sw, "the tip starts inside the stem");
-  assert.ok(Math.abs(tx + tw - aCorner) < 0.1, "and ends at the A's top-left corner: " + (tx + tw).toFixed(2) + " / " + aCorner.toFixed(2));
-  assert.ok(Math.abs(sy + th - capsTop) < 0.05, "from the outline's top to the capitals' top: " + (sy + th).toFixed(3) + " / " + capsTop.toFixed(3));
-  assert.match(tronSvg0(), /<rect className="wmbar" x=\{TIP\.x\} y=\{STEM\.y\} width=\{TIP\.w\} height=\{TIP\.h\} \/>/, "in the one masked shape");
-  const tronSvg = tronSvg0();
-  assert.match(tronSvg, /<mask id=\{knock\}[^>]*>\s*<rect[^>]*fill="#fff" \/>\s*\{word\("wmink wmknock"\)\}\s*<\/mask>/, "the letters cut out");
-  assert.match(tronSvg, /<g mask=\{`url\(#\$\{knock\}\)`\}>\s*<rect className="wmbar"[^>]*\/>\s*<rect className="wmbar" x=\{STEM\.x\}[^>]*\/>\s*<rect className="wmbar" x=\{TIP\.x\}[^>]*\/>\s*<rect className="wmbar" x=\{RISE\.x\}[^>]*\/>\s*\{word\("wmink wmoutline"\)\}\s*<\/g>/, "the bar, the stem, the tip, the rise and the outline, one masked shape");
-  // THE RISE (the same day: "extend the line upwards on the mast head and make the line extension go from the left
-  // and the end of the tip of the A … in the screen shot its shown as a outline but fill it in"): declared — from the
-  // bar's left end to the far end of the A's flat top (Michroma 96 at 161, set), filled, from the outline's top up past
-  // any Masthead's top edge (a phone's safe area included: ~90px of a 0.13px unit is ~700 units), inside the mask
-  const [rx, rw, ry] = wm.match(/rise: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), y: (-?[\d.]+) \}\)/).slice(1).map(Number);
-  assert.equal(rx, bar[0], "from the bar's left end");
-  assert.ok(Math.abs(rx + rw - (set[1] + set[0] * 96)) < 0.1, "to the far end of the A's tip: " + (rx + rw).toFixed(2));
-  assert.ok(ry <= -700, "up past the Masthead's top: " + ry);
-  assert.match(wm, /<rect className="wmbar" x=\{RISE\.x\} y=\{RISE\.y\} width=\{RISE\.w\} height=\{STEM\.y - RISE\.y \+ 0\.5\} \/>/, "down into the outline's top: one shape");
-  const maskY = Number(wm.match(/<mask id=\{knock\} maskUnits="userSpaceOnUse" x="-200" y="(-?\d+)"/)[1]);
-  assert.ok(maskY <= ry, "the mask reaches it (outside a mask's region nothing draws)");
-  assert.match(wm, /<svg className="wmtronink" viewBox=\{VIEW\} focusable="false">\{word\("wmink wmhole"\)\}<\/svg>/, "the holes laid back");
-  assert.ok(wm.indexOf('className="wmtronink"') < wm.indexOf('className="wmlit wmlitstar"'), "the asterisk over it all");
-  // (the same day: "lets make it for light and dark mode but for lightmode the text should be black") one mark in
-  // both themes; its letters the ground's dark in dark, the artwork's black in light; the word on the brick is gone
-  assert.match(rules, /\.wmink\.wmhole \{ fill: var\(--wm-hole\); \}/);
-  assert.match(css, /:root \{[^}]*--wm-hole: var\(--paper\);/, "dark: the ground's dark");
-  assert.match(css, /\[data-theme="light"\] \{[^}]*--wm-hole: #001512;/, "light: the artwork's black");
-  assert.match(css, /@media \(prefers-color-scheme: light\) \{ :root:not\(\[data-theme="dark"\]\) \{ --wm-hole: #001512;/);
-  assert.ok(!/wmlitbar|wmtype|wmonbar|--wm-ink/.test(wm + css.replace(/\/\*[\s\S]*?\*\//g, "")), "no word-on-the-brick layers left, nor their inks");
-  assert.ok(!/display: none/.test((rules.match(/\.wmtron[^{]*\{[^}]*\}/g) || []).join("")), "the mark shows in both themes");
-  assert.ok(!/--mh-gap/.test(css), "the gap the bar stood off by is gone with it");
+  assert.ok(!/--mh-gap/.test(css), "the gap the bar once stood off by is gone");
+  // (the evening before's marks are gone: the Tron mark's outline, holes, stem, tip and rise, and their inks)
+  assert.ok(!/wmtron|wmtronink|wmoutline|wmknock|wmhole|--wm-hole|STEM|RISE/.test(wm.replace(/\/\/[^\n]*/g, "") + css.replace(/\/\*[\s\S]*?\*\//g, "")), "no Tron mark left");
   // the cuts: the deck's hairline, between keys, centred on the keys' row
   const cut = rules.match(/\.mhcuts i \{([^}]*)\}/)[1];
   const deckCut = rules.match(/\.cccut \{([^}]*)\}/)[1];
   assert.equal(cut.match(/background: ([^;]+);/)[1], deckCut.match(/background: ([^;]+);/)[1], "the deck's own hairline colour");
   assert.match(cut, /width: 1px; transform: translateX\(-50%\);/);
   assert.match(cut, /top: calc\(env\(safe-area-inset-top, 0px\) \+ 33px - var\(--u\) \* 65 \/ 2\); height: calc\(var\(--u\) \* 65\);/, "as long as the deck's (65 units), on the row's middle");
-  assert.match(rules, /--mh-line-h: max\(1\.5px, calc\(var\(--wm-w\) \* 12 \/ 900\)\);/, "2px on a desktop, 1.5 on a phone");
   assert.ok(!/mhstamp|--stamp-blue/.test(css) && !/STAMP/.test(mast), "the stamped line is gone");
   // the keys 10% bigger ("the info dock and passport buttons should be about 10% bigger"), the logo not
   assert.match(rules, /--mk: 1\.1;/);

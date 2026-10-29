@@ -1103,7 +1103,7 @@ knob is gone with it.
   bar→line 2.18 px at 375, 3.02 against 3.04 at 800.
 
 
-## 28 Oct 2026, last — THE TRON MARK (the logo as it is now)
+## 28 Oct 2026, last — THE TRON MARK (superseded 29 Oct by THE LINE INTEGRATED, below)
 
 Through the evening the owner moved the word onto the brick ("half of the
 asilum text … sticking half way over the brick", the brick "ontop of the mast
@@ -1127,3 +1127,23 @@ it in") and the brick starting at the A ("not past it").
   width) and runs under it to the keys.
 - Tests: tests/v2-fixtures-sketch.test.js (the geometry, the shape, the holes,
   both themes).
+
+
+## 29 Oct 2026 — THE LINE INTEGRATED (the logo as it is now)
+
+The owner's reference (docs/brand/asilum-logo-2026-10-29.jpg): "new logo with
+the masthead line intergated".
+- `lib/wordmark.js` holds the reference measured in its own pixels (`REF`:
+  the word's ink, the brick 779–945, the line's top 914, the slant's corners
+  fitted at 996 and 1192, 34.6°) and lays it round the word as set (`WORD`;
+  `brickGeometry`, `brickPath`, `brickBox`). tests/v2-logo-line.test.js
+  re-measures the image against `REF`.
+- `Wordmark.jsx`: three layers — the brick (`.wmbrick`, one path in
+  `--wm-glow`: it runs off the screen's left edge, holds the word wholly,
+  and at its right end its top slants down, the bends rounded, into the
+  line); the word unlit in `--wm-ink` (the artwork's black, both themes);
+  the asterisk in `--wm-glow-r`. The word keeps its set (`WM.set`).
+- The Masthead's line takes the drawn thickness (`--mh-line-h`, 28.3 of the
+  logo's units: 3.6px on a phone, 5 on a desktop) and the brick's foot sits
+  on the line's foot (`.brandfix`), so the slant flows into the line, which
+  carries on to the keys, broken at their meetings as before.

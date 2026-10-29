@@ -365,34 +365,24 @@ button { font-family: var(--helv); }
    The --ed-fs-wordmark size now only reaches the hidden name. */
 .wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
   font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
-.wmart { position: relative; display: block; width: calc(var(--wm-u) * 948.84); aspect-ratio: 948.84 / 155.225; } /* the bar's width (from the A's outline) by the outline's top (-12) to the bar's foot (143.225): Wordmark.jsx */
+.wmart { position: relative; display: block; width: calc(var(--wm-u) * 1035.476); aspect-ratio: 1035.476 / 153.753; } /* lib/wordmark.js brickBox: from the deck's line to just past the toe, the brick's top (and a breath) to its foot */
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
 .wmlitstar { filter: var(--wm-glow-r); }
-.wmtron { filter: var(--wm-glow); }
+.wmbrick { filter: var(--wm-glow); }
 .wmstar { font: 400 131px var(--helvetica); fill: var(--wm-star); }
 .wmbar { fill: var(--wm-bar); }
-.wmink { font: 400 161px var(--mich); }
-/* THE TRON MARK (Wordmark.jsx; owner, 28 Oct 2026: "lets mimic the tron logo just for dark mode", then "lets make
-   it for light and dark mode but for lightmode the text should be black"): the word's outline as thick as its
-   strokes, white like the bar; the letters cut out by the mask and laid back in --wm-hole. */
-.wmink.wmoutline { fill: var(--wm-bar); stroke: var(--wm-bar); stroke-width: 28px; stroke-linejoin: round; } /* 2 × WM.tron.t: half of it outside the letter */
-.wmink.wmknock { fill: #000; } /* the mask's black: the letters' holes */
-.wmink.wmhole { fill: var(--wm-hole); } /* the holes: the ground's dark in dark, the artwork's black in light */
+.wmink { font: 400 161px var(--mich); fill: var(--wm-ink); } /* the word inside the brick, unlit */
 :root {
   /* the wheel's marks (.ccwtick): a tone in the glass, a shade darker on the
      light glass and a shade clearer on the dark, crisp, no shadow — the
      language of the Masthead's old stamped line (26 Oct 2026) */
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
-  /* THE LOGO (owner, 28 Oct 2026): the word flat and unlit — the artwork's
-     letters cut out of the white bar and their outline (THE TRON MARK), laid back dark in dark and the artwork's
-     black in light; the asterisk the house
-     red, glowing red; the bar and the Masthead's line white, glowing stark
-     white — one glow (the same radii and strengths), each in its own colour */
-  /* the letters' holes in the Tron mark (Wordmark.jsx): the dark ground in dark; the artwork's black in light
-     (owner, 28 Oct 2026: "for lightmode the text should be black"). Before it the word was inked: green, white,
-     red, the mint. */
-  --wm-hole: var(--paper);
+  /* THE LOGO (owner, 29 Oct 2026, "new logo with the masthead line intergated"): the word the artwork's black
+     inside the white brick, unlit, in both themes; the asterisk the house red, glowing red; the brick and the
+     Masthead's line white, glowing stark white — one glow (the same radii and strengths), each in its own
+     colour. (Before: the Tron mark's holes, and inks of green, white, red and mint.) */
+  --wm-ink: #001512;
   --wm-star: var(--warn);
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
@@ -423,10 +413,10 @@ button { font-family: var(--helv); }
 }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
-  --wm-hole: #001512; /* the artwork's black: the Tron mark's letters in light */
+  --wm-ink: #001512; /* the artwork's black, in light as in dark (the word is on the white brick) */
   --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; /* the ticker in light: the logo's black on light grey */
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-hole: #001512; --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: #001512; --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -3923,13 +3913,12 @@ a.adword:hover { color: var(--ad-chip); }
    new logo: "the same placement as the old logo", then "more in the corner"
    and "the line should sit under the thick logo line"): on the Masthead at
    the left, its left edge in line with the deck's, the capitals as tall as
-   the old logo's. ON THE LINE (owner, 28 Oct 2026, last: "move it down so its blended on the masthead broken
-   line", then "the brick should sit overtop the masthead line", then "move the brick up, i want it to sit
-   ontop of the mast head line"): the bar's foot (WM.foot, 143.225) on the line's top, the bar resting on the
-   line and the line running on from under it towards the keys, one white; it dims with the bar */
+   the old logo's. THE LINE INTEGRATED (owner, 29 Oct 2026: "new logo with the masthead line intergated"): the
+   brick's foot is the line's foot, the brick's shoulder slants down into the line, and the line runs on to the
+   keys, one white; it dims with the bar */
 .brandfix {
   position: relative; z-index: 2; flex: none; align-self: flex-start;
-  margin-top: calc(var(--mh-line-top) - var(--wm-u) * 155.225); /* the box's height: the outline's top to the bar's foot */
+  margin-top: calc(var(--mh-line-top) + var(--mh-line-h) - var(--wm-u) * 153.753); /* the line's foot less the box's height (lib/wordmark.js brickBox) */
 }
 /* THE LINE (owner, 28 Oct 2026; Masthead.jsx, lib/mastline.js): thin, white,
    in the logo's white glow, just under the keys' glyphs and under the logo's
@@ -3943,7 +3932,7 @@ a.adword:hover { color: var(--ad-chip); }
   --wm-u: calc(var(--wm-w) * 129 / 900 / 120.75); /* one unit of the logo's 161: the old capitals' height over the new capitals' 120.75 */
   --mk: 1.1; /* the keys' size */
   --mh-line-top: calc(33px + max(var(--u) * 25 * var(--mk), 9.5px * var(--mk)) + 2.5px); /* the row's middle, half a glyph, a breath */
-  --mh-line-h: max(1.5px, calc(var(--wm-w) * 12 / 900)); /* thin: 2px on a desktop, 1.5 on a phone */
+  --mh-line-h: calc(var(--wm-u) * 28.295); /* as thick as the reference draws it, the brick's toe (lib/wordmark.js thick): 3.6px on a phone, 5 on a desktop */
   --mh-break: calc(var(--u) * 14);
 }
 .mhline {
