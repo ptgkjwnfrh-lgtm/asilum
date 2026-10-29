@@ -25,8 +25,9 @@
 // line should break at the gap points of the buttons and there should be
 // faint lines in between the buttons like on the center fixture"): one thin
 // white line in the logo's white glow, a breath under the logo's bar, from
-// the logo's left edge to the Passport's hit box, broken where two keys'
-// hit boxes meet (and where the first key begins); between two keys stands
+// the logo's brick (since 29 Oct 2026 from where the brick ends, the toe's
+// curve; it ran under the whole brick before) to the Passport's hit box,
+// broken where two keys' hit boxes meet (and where the first key begins); between two keys stands
 // a faint cut, the deck's own hairline. The keys are measured (the music
 // circle and the exploring key come and go), so lib/mastline.js lays the
 // stretches; the line fades in once it is laid. It replaced the stamped
@@ -56,9 +57,12 @@ function useMastLine(ref) {
       // is measured by its layout width (unrounded), so a pressed key's hinge cannot narrow it
       const o = mast.getBoundingClientRect().left;
       const box = (el) => { const r = el.getBoundingClientRect(), mid = (r.left + r.right) / 2 - o, w = parseFloat(getComputedStyle(el).width) || el.offsetWidth; return { left: mid - w / 2, right: mid + w / 2 }; };
-      const mark = mast.querySelector(".brandfix");
+      // the line starts where the brick ends — its box's right edge is the end of the toe's curve (29 Oct 2026,
+      // "make the circled area flush"; lib/wordmark.js brickBox) — tucked one pixel under it, so the two whites
+      // overlap rather than meet edge to edge, which leaves a faint seam
+      const art = mast.querySelector(".brandfix .wmart");
       const keys = [...row.querySelectorAll(".idkey, .passportbtn")].filter((k) => k.offsetWidth > 0).map(box);
-      const next = mastLine(mark ? mark.getBoundingClientRect().left - o : NaN, keys);
+      const next = mastLine(art ? art.getBoundingClientRect().right - o - 1 : NaN, keys);
       setLine((prev) => (sameLine(prev, next) ? prev : next));
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(lay); };

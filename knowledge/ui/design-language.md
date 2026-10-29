@@ -1147,3 +1147,21 @@ the masthead line intergated".
   logo's units: 3.6px on a phone, 5 on a desktop) and the brick's foot sits
   on the line's foot (`.brandfix`), so the slant flows into the line, which
   carries on to the keys, broken at their meetings as before.
+
+The same evening, two rounds more (owner: "lets make the masthead line thinner and the lines under the buttons …
+make the font a little bolder and make the [text] negative, and keep the asterisk full and red"; then, circling
+the toe, "i still want the button breaks, make the circled area flush the curve kind of looks jagged and the glow
+doesnt look consistent throughout the whole thing … also can you add a thin white bezel line along the edge of the
+disc"):
+- The line is `LINE` (16 units: 2px on a phone, 2.9 on a desktop), the brick's line and the Masthead's alike; the
+  slant keeps the reference's angle, so the toe moves along. The breaks at the keys stay.
+- The bends are `BEND` (36 units), a curve, not the drawn 15's kink. The brick ENDS where the toe's curve lands
+  on the line; the Masthead's line starts there, a pixel under it (it ran on under the whole brick, its glow
+  stacked on the brick's).
+- The glow comes off the brick's RIM (`rimPath`, LINE deep all round, the line itself along the foot), not the
+  whole slab: measured at 800px, one pixel out the brick and the line both read 196 above, 199 and 188 below,
+  falling off alike. It is clipped away from a window round the word (`glowWindow`) so no haze fills the letters.
+- The word is CUT OUT of the brick (a mask), a `BOLD` stroke (5 units) thicker; the glass shows through. The
+  asterisk stays whole and red. `--wm-ink` is gone. In light, over a white card, the letters read faintly — the
+  glass is pale there.
+- The wheel's disc wears the fixtures' shine rim (`.fxrim`), lit from the top since only its upper half shows.

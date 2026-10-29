@@ -409,7 +409,7 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     buttons like on the center fixture") the line is white, thin, in the white glow, under the bar
 //     (since "move the brick up, i want it to sit ontop of the mast head line": the bar's foot on the
 //     line's top, the bar resting on it) and just under the bigger
-//     glyphs; laid from the logo's left edge along every key showing to the globe's hit box, broken at
+//     glyphs; laid from the brick's end (the logo's left edge until 29 Oct) along every key showing to the globe's hit box, broken at
 //     the meetings (lib/mastline.js, the next test); the cuts the deck's hairline, 65 units, centred on
 //     the keys' row; the keys 10% bigger, the logo the same size;
 //   - the Masthead's children are the wordmark, the line, its cuts and the keys; the stamped line is
@@ -419,10 +419,10 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const wm = read("app/components/Wordmark.jsx");
   // type, in one unit system
   assert.match(wm, /word: 161, star: 131, cap: 120\.75, base: 121,/);
-  assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); fill: var\(--wm-ink\); \}/, "Michroma 161, inked");
+  assert.match(rules, /\.wmcut \{ font: 400 161px var\(--mich\);/, "Michroma 161 (cut out of the brick since 29 Oct)");
   assert.match(rules, /\.wmstar \{ font: 400 131px var\(--helvetica\); fill: var\(--wm-star\); \}/, "Helvetica 131");
   assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
-  assert.match(wm, /<g transform=\{SET\}><text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text><\/g>/, "each letter at its own origin");
+  assert.match(wm, /<g transform=\{SET\}><text className="wmcut" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}/, "each letter at its own origin");
   assert.match(wm, /<g transform=\{SET\}><text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text><\/g>/, "the asterisk in the word's set");
   for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
   assert.ok(!/logo[\w-]*\.(png|jpg)|wmimg|--wm-mask|--metal/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "nothing in the styles names the picture");
@@ -462,7 +462,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmbrick var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter
@@ -474,14 +474,15 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   ks.forEach(([r, a], i) => { assert.ok(r <= ws[i][0], `layer ${i}: ${r}px no wider than ${ws[i][0]}px`); assert.ok(a < ws[i][1], `layer ${i}: ${a} fainter than ${ws[i][1]}`); });
   assert.match(rules, /:is\(\.ccenter \.tabl\.cur, \.idkey\.cur, \.passportbtn\.cur\) \{ color: var\(--warn\); \}/, "a selected key is the asterisk's red, in both themes");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmstar"/, "the asterisk on its own layer");
-  assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");
+  assert.ok(!/\.(wmcut|wmbrick|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow (the glow is the rim's alone, .wmglow)");
   assert.match(css, /--wm-bar: #ffffff;/);
   // the line
   const mast = read("app/components/Masthead.jsx");
   const body = mast.slice(mast.indexOf('<header ref={glassRef} className="masthead fixture">'), mast.indexOf("</header>"));
   const kids = [...body.matchAll(/\n {6}<(\w+)(?: className=(?:"([^"]+)"|\{"(\w+)"))?/g)].map((m) => m[2] || m[3] || m[1]);
   assert.deepEqual(kids, ["brandfix", "mhline", "mhcuts", "mhkeys"], "the Masthead: the wordmark, the line, its cuts, the keys");
-  assert.match(mast, /const next = mastLine\(mark \? mark\.getBoundingClientRect\(\)\.left - o : NaN, keys\);/, "from the logo's left edge, along the keys");
+  assert.match(mast, /const art = mast\.querySelector\("\.brandfix \.wmart"\);/);
+  assert.match(mast, /const next = mastLine\(art \? art\.getBoundingClientRect\(\)\.right - o - 1 : NaN, keys\);/, "from the brick's end (a pixel under it, 29 Oct), along the keys");
   assert.match(mast, /\[\.\.\.row\.querySelectorAll\("\.idkey, \.passportbtn"\)\]\.filter\(\(k\) => k\.offsetWidth > 0\)\.map\(box\)/, "every key showing, the globe's hit box the last");
   const line = rules.match(/\.mhline \{([^}]*)\}/)[1];
   assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "just under the glyphs");

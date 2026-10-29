@@ -34,10 +34,25 @@
 // The word keeps its set (WM.set: 0.96 of the artwork's size, +40), from the evening before. (Before it, that
 // evening: the word half over a brick, a Tron mark with an outline, a stem and a rise — replaced by this.)
 //
-// Three layers on one box: the brick, glowing the stark white of the Masthead's line (--wm-glow); the word over
-// it, unlit; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
+// THE SAME EVENING (owner: "lets make the masthead line thinner and the lines under the buttons and make the whole
+// thing flush it doesnt look flush and connected. and lets make the font a little bolder and make the [text]
+// negative, and keep the asterisk full and red"): the line is thinner (lib/wordmark.js LINE, and the brick's line
+// with it, the slant kept); the word is CUT OUT of the brick, the Masthead's glass showing through, a little bolder
+// (BOLD, a stroke round each letter of the cut); the asterisk stays whole and red over the brick.
+//
+// Then (owner, circling the toe: "i still want the button breaks, make the circled area flush the curve kind of
+// looks jagged and the glow doesnt look consistent throughout the whole thing, it looks like "*ASILUM" has a much
+// more highlighted underline, make the glow consistent"): the bends wider (BEND); the brick ends where its toe's
+// curve lands on the line and the Masthead's line starts there (it ran on under the whole brick, its glow on top
+// of the brick's); and the glow comes off the brick's rim, as deep as the line is thick (rimPath), not off the
+// whole slab — so the halo is the line's halo all the way round.
+//
+// Three layers on one box: the glow (the brick's rim in --wm-glow, the stark white of the Masthead's line, clipped
+// away from the word's window so no haze fills the letters — glowWindow); the brick, unlit, the word cut out of it
+// by a mask; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
 
-import { brickGeometry, brickPath, brickBox } from "../../lib/wordmark.js";
+import { useId } from "react";
+import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, BOLD, RUN } from "../../lib/wordmark.js";
 
 /** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
 export const WM = Object.freeze({
@@ -51,17 +66,28 @@ const SET = `translate(${WM.set.dx} ${+(60.625 * (1 - WM.set.s)).toFixed(4)}) sc
 const BRICK = brickGeometry();
 const BOX = brickBox(BRICK);
 const VIEW = `${BOX.x} ${BOX.top} ${BOX.w} ${BOX.h}`;
-const PATH = brickPath(BRICK, { end: BOX.end });
+const PATH = brickPath(BRICK);
+const RIM = rimPath(BRICK);
+const WINDOW = glowWindow(BOX);
+// the mask's plane: the brick's whole run and the box, with room
+const PLANE = { x: -RUN - 100, y: BOX.top - 100, w: RUN + BOX.end + 200, h: BOX.h + 200 };
 
 export default function Wordmark({ href = "/", className = "" }) {
+  const cut = "wmc" + useId().replace(/:/g, "");
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
       <span className="wmart" aria-hidden="true">
-        <svg className="wmlit wmbrick" viewBox={VIEW} focusable="false">
-          <path className="wmbar" d={PATH} />
+        <svg className="wmlit wmglow" viewBox={VIEW} focusable="false" style={{ clipPath: WINDOW }}>
+          <path className="wmbar" d={RIM} fillRule="evenodd" />
         </svg>
-        <svg className="wmtype" viewBox={VIEW} focusable="false">
-          <g transform={SET}><text className="wmink" x={WM.x.join(" ")} y={WM.base}>ASILUM</text></g>
+        <svg className="wmbrick" viewBox={VIEW} focusable="false">
+          <defs>
+            <mask id={cut} maskUnits="userSpaceOnUse" x={PLANE.x} y={PLANE.y} width={PLANE.w} height={PLANE.h}>
+              <rect className="wmplane" x={PLANE.x} y={PLANE.y} width={PLANE.w} height={PLANE.h} />
+              <g transform={SET}><text className="wmcut" x={WM.x.join(" ")} y={WM.base} strokeWidth={BOLD / WM.set.s}>ASILUM</text></g>
+            </mask>
+          </defs>
+          <path className="wmbar" d={PATH} mask={`url(#${cut})`} />
         </svg>
         <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
           <g transform={SET}><text className="wmstar" x="0" y={WM.starY}>*</text></g>

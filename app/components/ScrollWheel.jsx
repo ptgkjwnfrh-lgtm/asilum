@@ -203,6 +203,9 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
       {host ? createPortal(
         <span ref={glassRef} className="ccwglass" data-open={open ? "1" : undefined} aria-hidden="true">
           {glass}
+          {/* the bezel line round its edge, the deck's own shine rim (owner, 29 Oct 2026: "add a thin white bezel
+              line along the edge of the disc like how the center fixture and the masthead has bezel lines") */}
+          <i className="fxrim" aria-hidden="true" />
           {/* the spokes the face bends the Feed along, from the plus out (the Yeezus cover; LiquidGlass.jsx "spokes") */}
           <i className="ccwspokes" data-lens-shape="spokes" data-lens-hub={SPOKES.hub} data-lens-spokes={SPOKES.n} data-lens-reach={SPOKES.reach} data-lens-sharp={SPOKES.sharp} />
         </span>, host) : null}
