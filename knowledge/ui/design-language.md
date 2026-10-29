@@ -1189,3 +1189,16 @@ glowing white nomore green, also the center fixture select buttons have a green 
   (`--holo`, `--iris-*`, the passport strip's sweep) keep their green stop, as a rainbow does.
 - THE SELECTED KEY'S LAMP IS RED (`--lamp`, `--lamp-hot`, `--lamp-core`), in both themes; it was green in dark and
   cyan in light. The selected keys themselves were already the asterisk's red.
+
+## 29 Oct 2026 — THE CARD INK, READ AHEAD
+
+Owner: "the reactive fonts on the cards is slow and weird". Measured before: every block of words over a card came
+on screen without its reading and took its ink a median 0.5s later (0.8s at worst), then faded into it — the watcher
+waited for the scroll to rest and for idle time, because it found the picture under a block by hit-testing the
+screen. Now (`InkWatch.jsx`): a block is read a screen before it comes on (`AHEAD`), the picture under it found by
+geometry among its own cell's pictures — the highest-stacked (Figure 20's cards carry their z-index), then the most
+centred — with no hit test, so it works off the screen and nothing waits for the scroll; readings run in idle slices
+(`SLICE_MS`). The first reading lands as it is; only a later one (a settle, a theme turn, a late picture) eases
+(`[data-ink-ease]`). Measured after, 375px light: 31 of 31 blocks inked before they came on; no ink changed while
+on screen; 1 dropped frame in a 300-frame scroll, as before; the geometry chose the hit test's picture at 234 of 234
+points over seven screens.

@@ -36,11 +36,11 @@ test("the turn cross-fades on the ladder, and not when motion is reduced", () =>
   assert.match(css, /::view-transition-old\(root\), ::view-transition-new\(root\) \{ animation-duration: var\(--dur-2\); animation-timing-function: var\(--ease-out\); \}/);
 });
 
-test("the ink eases when it flips", () => {
+test("the ink eases when it flips (a later reading; the first lands as it is, 29 Oct 2026)", () => {
   assert.match(css, /@property --on-media \{ syntax: "<color>"; inherits: true; initial-value: #ffffff; \}/);
-  assert.match(css, /\[data-ink\] \{ transition: --on-media var\(--dur-2\) var\(--ease-out\); \}/);
+  assert.match(css, /\[data-ink\]\[data-ink-ease\] \{ transition: --on-media var\(--dur-2\) var\(--ease-out\); \}/);
   assert.ok(!/var\(--on-media,/.test(css), "nothing reads --on-media with a fallback (registering would have swallowed it)");
-  const dots = css.match(/\.fcell \.carddots\[data-ink\] \{ transition: ([^;]+); \}/)[1];
+  const dots = css.match(/\.fcell \.carddots\[data-ink\]\[data-ink-ease\] \{ transition: ([^;]+); \}/)[1];
   assert.match(dots, /background var\(--dur-1\) var\(--ease-out\), transform var\(--dur-1\) var\(--ease-out\)/, "the dots keep their press");
   assert.ok(!/@property --on-card/.test(css), "--on-card keeps its fallback (not registered)");
 });

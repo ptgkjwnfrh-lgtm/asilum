@@ -13,12 +13,24 @@
 // when the window is resized. A picture that cannot be read (another site's,
 // served without CORS) leaves its block as it was: the ink the card's
 // ground gave it, on its scrim. Nothing here moves on scroll.
+//
+// READ AHEAD (owner, 29 Oct 2026: "the reactive fonts on the cards is slow and
+// weird"). Measured: every block came on screen unread and took its ink a
+// median 0.5s later (0.8s at worst), then faded into it — it waited for the
+// scroll to rest, then for idle time, because it found the picture under a
+// block by hit-testing the screen, which only works on screen and dropped
+// frames mid-scroll. Now a block is read a screen before it arrives: the
+// picture under it is found by geometry, among its own cell's pictures (no
+// hit test, so off the screen works and nothing waits for the scroll to
+// rest), in idle slices of the frame. The first reading lands as it is; only
+// a later one (a settle, a theme turn, a picture loading late) eases.
 
 import { useEffect } from "react";
 import { INK_ZONES, lumaGrid, regionLuma, zoneOnPicture, inkOn, luma } from "../../lib/ink.js";
 
 const GRID = 24;
-export const QUIET_MS = 140; // how long the page rests before the blocks are read
+export const AHEAD = "100% 0px 100% 0px"; // a block is read a screen before it comes on (and after it leaves)
+const SLICE_MS = 3; // the idle time a reading needs left in the frame before it starts on another block
 // a picture's src -> its pixels on the small grid (or null: cannot be read). The pixels, not a brightness: a
 // picture's clear parts show what is behind it, which turns with the theme (measured 28 Oct 2026: a tile's
 // half-clear foot read bright in the light theme and kept its dark ink over the dark one)
@@ -79,21 +91,34 @@ function behind(media, ground) {
   return ground;
 }
 
-// the picture under a point: the first in the stack there, or one a wrapper holds (a picture that ignores the
-// pointer, as Figure 20's do, is not in the stack itself)
+// the picture under a point, by geometry: among the pictures of the block's own cell (never the block's own), the
+// ones drawn and showing there; where cards of a carousel overlap, the one whose card stacks highest (Figure 20
+// sets each card's z-index, the front one's 1000), and on a tie the one most centred on the point. No hit test,
+// so a block off the screen is read as well as one on it. (Checked against the hit test on the screen, 29 Oct
+// 2026: the most-centred rule alone chose a card behind the front one at 6 of 138 points.)
 const isMedia = (el) => el.tagName === "IMG" || el.tagName === "VIDEO";
-function mediaAt(x, y, zone) {
-  for (const el of document.elementsFromPoint(x, y)) {
-    if (zone.contains(el)) continue;
-    if (isMedia(el)) return el;
-    for (const m of el.querySelectorAll(":scope > img, :scope > video, :scope > picture > img")) {
-      const b = m.getBoundingClientRect();
-      if (x >= b.left && x <= b.right && y >= b.top && y <= b.bottom) return m;
-    }
+function stackOf(el, cell) {
+  for (let p = el; p && p !== cell; p = p.parentElement) {
+    const z = parseInt(getComputedStyle(p).zIndex, 10);
+    if (Number.isFinite(z)) return z;
   }
-  return null;
+  return 0;
 }
-
+function mediaUnder(x, y, zone) {
+  const cell = zone.closest(".fcell") || zone.closest(".card");
+  if (!cell) return null;
+  let best = null, bz = -Infinity, bd = Infinity;
+  for (const m of cell.querySelectorAll("img, video")) {
+    if (zone.contains(m) || !(m.offsetWidth > 0)) continue;
+    const b = m.getBoundingClientRect();
+    if (x < b.left || x > b.right || y < b.top || y > b.bottom) continue;
+    const cs = getComputedStyle(m);
+    if (cs.visibility === "hidden" || +cs.opacity < 0.05) continue;
+    const z = stackOf(m, cell), d = Math.hypot(x - (b.left + b.right) / 2, y - (b.top + b.bottom) / 2);
+    if (z > bz || (z === bz && d < bd)) { bz = z; bd = d; best = m; }
+  }
+  return best;
+}
 // THE BRIGHT CARD UNDER A POINT, for the logo's tint (Wordmark.jsx; lib/ink.js TINT_BRIGHT): looking down through
 // the stack below `skip` (the Masthead), the first thing with a ground of its own. A block this watcher has read
 // answers with its reading (data-ink "dark" sits on a bright ground: a light photograph's foot under its scrim);
@@ -120,11 +145,11 @@ export function brightSurfaceAt(x, y, skip, bright) {
 }
 function measureZone(zone, ground) {
   const r = zone.getBoundingClientRect();
-  if (!(r.width > 0) || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) return;
+  if (!(r.width > 0) || !(r.height > 0)) return;
   const ls = [];
   for (const fx of [0.2, 0.5, 0.8]) for (const fy of [0.3, 0.7]) {
-    const x = Math.min(innerWidth - 1, Math.max(0, r.left + r.width * fx)), y = Math.min(innerHeight - 1, Math.max(0, r.top + r.height * fy));
-    const media = mediaAt(x, y, zone);
+    const x = r.left + r.width * fx, y = r.top + r.height * fy;
+    const media = mediaUnder(x, y, zone);
     if (!media) { ls.push(ground); continue; }
     const g = gridOf(media);
     if (!g) { ls.push(null); continue; }
@@ -137,40 +162,40 @@ function measureZone(zone, ground) {
   }
   if (ls.some((l) => l == null)) return; // a picture not read yet (or never): leave the block as it is
   const ink = inkOn(ls.reduce((a, b) => a + b, 0) / ls.length);
-  if (ink && zone.dataset.ink !== ink) zone.dataset.ink = ink;
+  if (!ink || zone.dataset.ink === ink) return;
+  const first = !zone.dataset.ink;
+  zone.dataset.ink = ink;
+  // the first reading lands as it is (read ahead, it lands off the screen); from the next frame a change eases
+  if (first) requestAnimationFrame(() => { zone.dataset.inkEase = ""; });
 }
 
 export default function InkWatch() {
   useEffect(() => {
     const SEL = INK_ZONES.join(", ");
-    // each block is watched itself and read once it is mostly in view (a cell's own entry came while its far
-    // block was still off the screen, and was not read again)
+    // each block is watched itself and read as it comes within a screen of the view (AHEAD), in idle slices: a
+    // block at a time while the frame has SLICE_MS to spare, the rest in the next slice. No reading hit-tests the
+    // screen (mediaUnder works by geometry), so nothing waits for the scroll to rest (it did, 28 Oct, when a
+    // reading hit-tested the moving cards and dropped 23 frames in 300).
     const pending = new Set();
     let raf = 0;
-    const flush = () => {
+    const flush = (deadline) => {
       raf = 0;
-      if (performance.now() - lastScroll < QUIET_MS) { later(); return; }
       const ground = pageLuma();
-      for (const z of pending) if (z.isConnected) measureZone(z, ground);
-      pending.clear();
+      for (const z of pending) {
+        if (deadline && deadline.timeRemaining() < SLICE_MS && !deadline.didTimeout) break;
+        pending.delete(z);
+        if (z.isConnected) measureZone(z, ground);
+      }
+      if (pending.size) later();
     };
-    // READ WHEN THE PAGE IS STILL (measured 28 Oct 2026: reading while the drum turned — every reading a hit
-    // test against the moving cards — dropped 23 frames in 300 at a brisk scroll; none once deferred). The
-    // blocks asked for wait until the scroll has rested QUIET_MS, then are read in idle time.
-    let quiet = 0;
     const later = () => {
-      clearTimeout(quiet);
-      quiet = setTimeout(() => {
-        if (typeof requestIdleCallback === "function") raf = requestIdleCallback(flush, { timeout: 400 });
-        else raf = setTimeout(flush, 0);
-      }, QUIET_MS);
+      if (raf) return;
+      if (typeof requestIdleCallback === "function") raf = requestIdleCallback(flush, { timeout: 120 });
+      else raf = setTimeout(flush, 0);
     };
     const ask = (z) => { if (z) { pending.add(z); later(); } };
-    let lastScroll = 0;
-    const onScroll = () => { lastScroll = performance.now(); if (pending.size) later(); };
-    window.addEventListener("scroll", onScroll, { passive: true });
     const seen = new Set();
-    const io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) { seen.add(e.target); ask(e.target); } else seen.delete(e.target); } }, { threshold: [0, 0.6, 1] });
+    const io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) { seen.add(e.target); ask(e.target); } else seen.delete(e.target); } }, { rootMargin: AHEAD, threshold: 0 });
     const watch = () => document.querySelectorAll(SEL).forEach((z) => { if (!z.__ink) { z.__ink = true; io.observe(z); } });
     watch();
     let wr = 0;
@@ -200,8 +225,6 @@ export default function InkWatch() {
       window.removeEventListener("resize", onResize);
       mq.removeEventListener("change", again);
       clearTimeout(rt);
-      window.removeEventListener("scroll", onScroll);
-      clearTimeout(quiet);
       if (raf) { if (typeof cancelIdleCallback === "function") cancelIdleCallback(raf); clearTimeout(raf); }
       if (wr) cancelAnimationFrame(wr);
     };

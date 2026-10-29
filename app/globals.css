@@ -5743,8 +5743,11 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
    plain, without a fallback, so registering it changes nothing else. The dots read --on-card, which keeps its
    fallback (registering it would lose that), so they ease their own colour. */
 @property --on-media { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
-[data-ink] { transition: --on-media var(--dur-2) var(--ease-out); }
-.fcell .carddots[data-ink] { transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out), --on-media var(--dur-2) var(--ease-out); } /* its own press transitions kept */
+/* (29 Oct 2026, "the reactive fonts on the cards is slow and weird") a block's FIRST reading lands as it is — read a
+   screen ahead, it lands off the screen — and only a later one eases (InkWatch.jsx sets data-ink-ease the frame
+   after the first): a block coming on screen faded from the card's guess into its ink half a second late */
+[data-ink][data-ink-ease] { transition: --on-media var(--dur-2) var(--ease-out); }
+.fcell .carddots[data-ink][data-ink-ease] { transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out), --on-media var(--dur-2) var(--ease-out); } /* its own press transitions kept */
 [data-ink="dark"] { --on-media: var(--ink-on-bright); --on-card: var(--ink-on-bright); }
 [data-ink="light"] { --on-media: var(--ink-on-dark); --on-card: var(--ink-on-dark); }
 .card.piece.v-hero .pchead[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2head[data-ink="dark"] {
