@@ -3420,10 +3420,18 @@ body { font-size: 14px; }
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: calc(var(--radius-card) + 2px);
 }
-:root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
-/* the ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it
-   doesnt have to acomidate for the size of the ticker anymore"): the deck is the row alone */
-:root:has(.ccenter[data-ad="line"]) { --ad-h: 0px; }
+/* WHAT THE DECK'S STATES RESTYLE (28 Oct 2026, "tighten up all animations"): only what moves with them. The deck
+   searching (risen) and the ticker folded used to flip --cc-row-h and --ad-h on :root, which restyled all ~5,800
+   elements of a full Feed — measured 27–31ms, one dropped frame at the start of every fold, open and search (the
+   same change on the deck alone: under 0.1ms). Now they are set where they are read: the deck itself and the popup
+   layer it lifts. The page keeps the open ticker's clearance (--cc-space, the drum's foot), a few px more room when
+   it is folded, so the Feed is never restyled by the deck.
+   The ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it doesnt
+   have to acomidate for the size of the ticker anymore"): the deck is the row alone. */
+.ccenter[data-ad="line"] { --ad-h: 0px; }
+/* a popup risen with the deck (search) stands on its top: the row, the rise, and the ticker when it is open */
+body:has(.ccenter.ccsearching) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
+body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
@@ -5218,6 +5226,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 @media (min-width: 760px) { .fgrid { --fgap: 8px; } }
 .fcell { position: relative; display: flex; min-width: 0; min-height: 0; container-type: inline-size; } /* a card's type scales with the card (cqw = its own width) */
 .fcell > .card { flex: 1; min-width: 0; min-height: 0; height: 100%; margin: 0; overflow: hidden; }
+/* a card off the screen is not restyled, laid out or painted (28 Oct 2026, "tighten up all animations"): a theme
+   turn restyled all ~5,800 elements of a full Feed (measured 30–40ms a turn at 375px; with this, 18–20). On the card,
+   not the cell: the containment clips to the box, and the cell's cast shadows lie outside it; the card already
+   clips its own content. Figure 20 is left out — its stacks and its floating head and foot reach past its box. */
+.fcell > .card:not(.f20post) { content-visibility: auto; }
 
 
 /* THE PIECE — hero: head (mode word, handle, PASS), photograph, name, size · price, actions */
@@ -5718,6 +5731,13 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
    light depending on the background to strengthen ledibility"; lib/ink.js, InkWatch.jsx). A block over a Feed
    card wears data-ink by what is really under it; the ink follows, and a scrim under dark ink turns pale. */
 :root { --ink-on-bright: rgba(20, 40, 58, 0.9); --ink-on-dark: rgba(232, 241, 249, 0.92); }
+/* the flip eases (28 Oct 2026, "tighten up all animations"): a block's ink turns over --dur-2 instead of snapping
+   when it is read after a scroll. --on-media is registered as a colour so it can move; every consumer reads it
+   plain, without a fallback, so registering it changes nothing else. The dots read --on-card, which keeps its
+   fallback (registering it would lose that), so they ease their own colour. */
+@property --on-media { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+[data-ink] { transition: --on-media var(--dur-2) var(--ease-out); }
+.fcell .carddots[data-ink] { transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out), --on-media var(--dur-2) var(--ease-out); } /* its own press transitions kept */
 [data-ink="dark"] { --on-media: var(--ink-on-bright); --on-card: var(--ink-on-bright); }
 [data-ink="light"] { --on-media: var(--ink-on-dark); --on-card: var(--ink-on-dark); }
 .card.piece.v-hero .pchead[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2head[data-ink="dark"] {
@@ -5769,3 +5789,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .tickbtn:focus-visible .tickbtnface { outline: 2px solid var(--sig); outline-offset: 3px; }
 [data-popup] .sidebtns { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .tickbtnface { transition: none; } }
+
+/* THE THEME'S TURN (lib/theme.js applyTheme, 28 Oct 2026): the old page fades into the new, on the motion ladder */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-2); animation-timing-function: var(--ease-out); }

@@ -914,6 +914,10 @@ checked what a reader is actually served, which is the claim that matters.
 
 ## 28 Oct 2026 — the new logo, and the Masthead's solid glowing line
 
+(SUPERSEDED the same day by THE TRON MARK, at the end of this file: the layers
+and inks below are the logo's history. What still stands: the artwork's type,
+geometry and glows.)
+
 The owner's artwork (Procreate; `docs/brand/asilum-logo-2026-10-28.jpg`):
 "the asterisk should be in helvetica regular size font size 131 and
 "ASILUM" is in michroma regular size in font size 161 and tracking 5% with
@@ -1025,7 +1029,7 @@ add ticker should stretch all around it".
   smaller". The band is themed: in DARK a dark grey cloud
   (`--ad-cloud-dark`, never black) with the words white and glowing white;
   in LIGHT the light grey cloud (`--ad-cloud-light`) with the words the
-  logo's black (#001512, `--wm-ink`), unlit as the logo's word is. ADs is
+  logo's black (#001512, then `--wm-ink`, now `--wm-hole`), unlit as the logo's word is. ADs is
   knocked out of a small (0.78em) solid red chip (`--warn`) glowing red as
   the logo's asterisk does, its word cut to the band's own tone.
 - Then: "fix the corners of the ad bar the rendering of the 3d wrap is kind
@@ -1092,7 +1096,34 @@ knob is gone with it.
 - The logo, 28 Oct 2026, later: "that gap between the logo thick white
   line and the accent mast head white line lets add a gap of that thickness
   between the ASILUM word and the thick whiteline". The bar stands off the
-  word's baseline by exactly the Masthead's gap (`WM.gap`, 18 × 120.75 / 129
+  word's baseline by exactly the Masthead's gap (since superseded: the word now sits half over the bar, and
+  `WM.gap` and `--mh-gap` are gone) (`WM.gap`, 18 × 120.75 / 129
   = 16.85 of the logo's units = `--mh-gap`); the bar-to-line gap is
   unchanged, so the word lifts by it. Measured: word→bar 2.17 px against
   bar→line 2.18 px at 375, 3.02 against 3.04 at 800.
+
+
+## 28 Oct 2026, last — THE TRON MARK (the logo as it is now)
+
+Through the evening the owner moved the word onto the brick ("half of the
+asilum text … sticking half way over the brick", the brick "ontop of the mast
+head line"), set it a touch smaller and to the right (`WM.set`: 0.96, +40),
+then asked for a Tron logo ("negative space in the brick where the font would
+be … an outline as thick as the font … the asterisk line … connected with the
+outline"), in both themes ("for lightmode the text should be black"), with a
+rise up the Masthead ("from the left and the end of the tip of the A … fill
+it in") and the brick starting at the A ("not past it").
+- `Wordmark.jsx`: ONE white shape in the bar's glow (`.wmtron`, `--wm-glow`):
+  the bar (its top on the capitals' middle, its foot on the Masthead's line,
+  its left end at the A's outline, `WM.bar.x` 31.36), the word stroked to an
+  outline `WM.tron.t` = 14 wide (Michroma's own stroke: I 15, L's bar 13 at
+  161), the stem under the asterisk into the A's outline, the tip closing the
+  notch at the A's flat top, and the rise from the bar's left end to the A
+  tip's far end, up past the Masthead's top. The six letters are cut out
+  (mask) and laid back unlit (`.wmtronink`): `--wm-hole`, the ground's dark in
+  dark and the artwork's black #001512 in light. The red asterisk sits on the
+  stem in `--wm-glow-r`. `WM.art` keeps the artwork's bar for the artwork check.
+- The Masthead's line starts at the brick's left end (the box is the bar's
+  width) and runs under it to the keys.
+- Tests: tests/v2-fixtures-sketch.test.js (the geometry, the shape, the holes,
+  both themes).

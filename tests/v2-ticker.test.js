@@ -242,7 +242,12 @@ test("the ticker's rule: open only online with an ad or a BRDCST to carry; folde
   const cc = read("app/components/ControlCenter.jsx");
   assert.match(cc, /const \[adOpen, setAdOpen\] = useState\(false\);/, "the first render is folded, so opening is the first move");
   assert.match(cc, /data-ad=\{adOpen \? "open" : "line"\}/);
-  assert.match(css, /:root:has\(\.ccenter\[data-ad="line"\]\) \{ --ad-h: 0px; \}/, "folded, the deck is the row alone");
+  assert.match(css, /\.ccenter\[data-ad="line"\] \{ --ad-h: 0px; \}/, "folded, the deck is the row alone");
+  // (28 Oct 2026, "tighten up all animations") on the deck, never on :root: flipping a root variable restyled the
+  // whole page (measured 27–31ms on a full Feed, a dropped frame at every fold and open; on the deck alone, nil)
+  assert.ok(!/:root:has\(/.test(css), "no state of the deck restyles the root");
+  assert.match(css, /body:has\(\.ccenter\.ccsearching\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "a risen popup still stands on the risen deck");
+  assert.match(css, /body:has\(\.ccenter\.ccsearching\[data-ad="line"\]\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--dk-rise\)\); \}/, "and on the folded one");
   assert.match(rule(".ccad"), /transition: height var\(--dur-3\) var\(--ease-out\);/);
   assert.match(css, /\.ccenter \{[^}]*transition: height var\(--dur-3\) var\(--ease-out\);/, "the bubble and the deck move in step");
   // the line: the cuts in pairs, a stretch under each key, broken at each cut, in the Masthead's glow

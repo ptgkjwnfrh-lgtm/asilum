@@ -149,3 +149,12 @@ and tactility) are the law; what follows is the shipped reading.
 - Every username navigates to that user's page, everywhere.
 - Item depth lives in the item modal; feed cards stay title/price/fit +
   Favorite/Bag only (owner decree, July 6).
+
+## The side buttons (SideButtons.jsx — 28 Oct 2026, the owner's testing aids)
+- Two comic push-buttons at the middle of the right edge, hidden under a
+  popup: ADs opens a folded ticker and folds an open one (the Design
+  Console's own test event, this page view only, labelled samples when
+  nothing is live); LIGHT / DARK turns the theme through lib/theme.js
+  applyTheme (pinned, cross-faded; Settings uses the same turn). Kept
+  visible to everyone "for now while I test" (owner) — they float against
+  the shell law, so ask before anything ships beyond v2/build.

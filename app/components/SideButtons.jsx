@@ -9,12 +9,13 @@
 // live the ticker runs its labelled samples — it never invents an ad.
 //
 // THE THEME'S ("also add a button in the same spot to switch from light to dark"): a press turns the page to the
-// other theme and keeps it, the way Settings pins one (asilum-theme, data-theme on <html>); Settings' SYSTEM
-// hands it back to the device.
+// other theme and keeps it, through the same turn Settings makes (lib/theme.js applyTheme: pinned, cross-faded);
+// Settings' SYSTEM hands it back to the device.
 
 import { useEffect, useState } from "react";
 import { haptic } from "../../lib/haptics.js";
 import { TICKER_TESTS } from "../../lib/placements.js";
+import { applyTheme } from "../../lib/theme.js";
 
 const [OPEN, FOLD] = TICKER_TESTS;
 
@@ -62,8 +63,7 @@ function ThemeButton() {
   const next = theme === "dark" ? "light" : "dark";
   const press = () => {
     haptic("toggle");
-    document.documentElement.dataset.theme = next;
-    try { window.localStorage.setItem("asilum-theme", next); } catch {}
+    applyTheme(next); // pinned, cross-faded: the same turn Settings makes
   };
   return (
     <button type="button" className={"tickbtn themebtn " + theme} onClick={press}

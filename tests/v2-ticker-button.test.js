@@ -53,12 +53,14 @@ test("comic and physical, in tokens", () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.tickbtnface \{ transition: none; \} \}/);
 });
 
-test("the theme's button: the other theme, kept the way Settings keeps it, following whoever turns it", () => {
+test("the theme's button: the other theme, through the one turn Settings makes, following whoever turns it", () => {
   const theme = btn.slice(btn.indexOf("function ThemeButton"), btn.indexOf("export default function SideButtons"));
   assert.match(theme, /const next = theme === "dark" \? "light" : "dark";/);
-  assert.match(theme, /document\.documentElement\.dataset\.theme = next;\s*try \{ window\.localStorage\.setItem\("asilum-theme", next\); \} catch \{\}/, "pinned, as Settings pins it");
-  const settings = read("app/settings/page.js");
-  assert.match(settings, /document\.documentElement\.dataset\.theme = mode;\s*try \{ window\.localStorage\.setItem\("asilum-theme", mode\); \} catch \{\}/, "the same two writes Settings makes");
+  assert.match(theme, /applyTheme\(next\);/, "the shared turn (lib/theme.js)");
+  assert.match(read("app/settings/page.js"), /function setThemeMode\(mode\) \{\s*setTheme\(mode\);\s*applyTheme\(mode\);\s*\}/, "the same turn Settings makes");
+  const settings = read("app/settings/page.js"), at = settings.indexOf("function setThemeMode");
+  const settingsTurn = settings.slice(at, settings.indexOf("\n  }\n", at));
+  assert.ok(!/localStorage|dataset\.theme =/.test(theme + settingsTurn), "neither writes the theme itself any more");
   assert.match(theme, /mo\.observe\(document\.documentElement, \{ attributes: true, attributeFilter: \["data-theme"\] \}\);/);
   assert.match(theme, /aria-label=\{"switch to the " \+ next \+ " theme"\}/);
   assert.match(css, /\.themebtn \.tickbtnface \{ background-color: var\(--comic-ink\); color: var\(--comic-on\);/);

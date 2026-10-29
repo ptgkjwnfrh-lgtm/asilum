@@ -39,6 +39,12 @@ export default function DesignConsole() {
   // replay the deck's ad ticker on this device, for this page view only (AdStrip.jsx listens)
   const [tickerTest, setTickerTest] = useState(null);
   const replayTimer = useRef(null);
+  // the test may come from elsewhere too (the side button, SideButtons.jsx): the console shows what was sent last
+  useEffect(() => {
+    const heard = (e) => setTickerTest(e && e.detail && e.detail.mode ? e.detail.mode : null);
+    window.addEventListener("asilum:ticker-test", heard);
+    return () => window.removeEventListener("asilum:ticker-test", heard);
+  }, []);
   const rowRefs = useRef({});
   const hlRef = useRef(null);
   const flashTimer = useRef(null);
