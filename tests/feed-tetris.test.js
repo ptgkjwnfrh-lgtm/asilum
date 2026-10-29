@@ -146,6 +146,11 @@ test("places come in pairs after every ninth piece; a non-piece PASS is remember
   assert.match(read("lib/feed/hidden.js"), /remembered on this device only/, "says what it does and no more");
 });
 
+test("the model's songs are all samples", async () => {
+  const { SAMPLE_SONGS } = await import("../lib/model/songs.js");
+  assert.ok(SAMPLE_SONGS.length > 0 && SAMPLE_SONGS.every((x) => x.sample === true), "each record carries sample: true");
+});
+
 test("the page draws what the packer decides, and the cards are the sketch's", () => {
   const page = read("app/page.js");
   assert.match(page, /const \{ cells, rows \} = fillAds\(tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols, ads: true \}\), \{ cols: feedCols \}\);/, "the page packs with the ad space as filler");
@@ -166,6 +171,11 @@ test("the page draws what the packer decides, and the cards are the sketch's", (
   // Fig. 12: "SELL:handle", one line
   assert.match(page, /<b className="pcmode">\{mode\}\{who \? <span className="pchandle">\{mode \? ":" : ""\}\{who\}<\/span> : null\}<\/b>/, "SELL:handle — or the handle alone on a demo record");
   assert.match(read("app/components/SongCard.jsx"), /if \(!s \|\| !s\.title\) return null;/, "a song card only for a real record");
+  // (owner, 28 Oct 2026: "label the sample song cards SAMPLE") a sample record says so on its face, and to a
+  // screen reader; every one of the model's songs is a sample
+  assert.match(read("app/components/SongCard.jsx"), /\{s\.sample \? <ModelTag kind="sample" \/> : null\}/, "the SAMPLE tag");
+  assert.match(read("app/components/SongCard.jsx"), /\(s\.sample \? "sample song: " : "song: "\)/, "and its spoken name");
+  assert.match(read("app/globals.css"), /\.card\.songcard:has\(\.songart\.blank\) \.carddots \{ color: var\(--ink\); \}/, "the dots show on a card with no art");
 });
 
 // (retired 25 Oct 2026, late) the strip (Strip.jsx, X's "Videos for you") is

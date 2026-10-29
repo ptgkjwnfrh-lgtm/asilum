@@ -5303,6 +5303,10 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .songtitle { position: absolute; left: 6cqw; right: 6cqw; bottom: 6cqw; padding: 3cqw 5cqw; border-radius: 4cqw; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.4cqw/1.2 var(--mich); }
 .songtitle small { display: block; font-size: 0.75em; color: var(--grey); }
+/* a sample record says so, top left, opposite its three dots (owner, 28 Oct 2026) */
+.songcard .modeltag { position: absolute; top: 5cqw; left: 5cqw; z-index: 2; margin: 0; padding: 0.6cqw 3cqw; font-size: max(8px, 4.6cqw); background: color-mix(in srgb, var(--paper) 70%, transparent); }
+/* with no art behind them the dots are ink, not the over-media white (they vanished on a light card) */
+.card.songcard:has(.songart.blank) .carddots { color: var(--ink); }
 
 /* POSTS fill their cell: the media takes what the words and the footer leave */
 .fcell .card.wpostcard { display: flex; flex-direction: column; }
