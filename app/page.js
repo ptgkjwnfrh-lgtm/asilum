@@ -13,7 +13,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
 import { HoldMenu, CardDots } from "./components/HoldMenu.jsx";
-import { Cut, CutDefs } from "./components/Cut.jsx";
+import { CutDefs } from "./components/Cut.jsx";
 import AdSpace from "./components/AdSpace.jsx";
 import { demoImageFor } from "../lib/model/pieces.js";
 import { inkFor } from "../lib/model/stills.js";
@@ -1183,10 +1183,9 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
             <span className="pcsize">{size}</span>
             {price ? <span className="price">{price}</span> : null}
           </div>
-          {/* a hairline under the size and the price, over the actions (owner,
-              25 Oct 2026), then the actions close the same column, so the
-              rows stack and never sit on each other */}
-          <Cut className="pcrule" />
+          {/* the actions close the same column, so the rows stack and never sit on each other; no hairline over
+              them (owner, 28 Oct 2026: "the accent line … above the like stamp and share buttons is causing a
+              weird warp, take that out") */}
           <div className="pcacts" role="group" aria-label="piece actions">
         <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
         <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />

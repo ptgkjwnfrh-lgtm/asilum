@@ -466,7 +466,10 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"], "the asterisk red, the bar, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
+  // asterisk") and the fixtures' selected keys, in the asterisk's red glow
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmlitbar var(--wm-glow)", ".wmlitstar var(--wm-glow-r)", ":is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc var(--wm-glow-r)"].sort(), "the asterisk and the selected keys red, the bar, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  assert.match(rules, /:is\(\.ccenter \.tabl\.cur, \.idkey\.cur, \.passportbtn\.cur\) \{ color: var\(--warn\); \}/, "a selected key is the asterisk's red, in both themes");
   assert.match(wm, /<svg className="wmlit wmlitstar" viewBox=\{VIEW\} focusable="false">\s*<text className="wmstar"/, "the asterisk on its own layer");
   assert.match(wm, /<svg className="wmlit wmlitbar" viewBox=\{VIEW\} focusable="false">\s*<rect className="wmbar"/, "the bar on its own");
   assert.ok(!/\.(wmink|wmtype|wmart|wordmark|brandfix)\b[^{,]*\{[^}]*(filter|text-shadow|box-shadow)/.test(rules), "the word does not glow");

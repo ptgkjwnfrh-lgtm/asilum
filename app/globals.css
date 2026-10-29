@@ -4918,7 +4918,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 :root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(70, 255, 150, 0.34)) drop-shadow(0 0 2px rgba(120, 255, 180, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
-:root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .idkey.cur) { text-shadow: var(--glow-r); }
+:root:not([data-theme="light"]) :is(.sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice) { text-shadow: var(--glow-r); }
 
 /* =====================================================================
    THE DEVICE'S OWN LANGUAGE, A LITTLE OF IT (owner, 18 Oct 2026; the 404
@@ -5244,8 +5244,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
 /* the hairline between the size and price and the actions (owner, 25 Oct
    2026): the deck's cut, in the card's own ink so it reads on any tile */
-.card.piece.v-hero .pcrule { display: block; flex: none; height: 1px; border-radius: 1px; }
-.card.piece.v-hero .pcrule::after { background: color-mix(in srgb, var(--on-media) 45%, transparent); }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
@@ -5723,3 +5721,10 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
    on the page, so its rule is the Masthead's line — the stark white bar in the same glow */
 .card.wpostcard.p2.withmedia.f20post .p2rule::after { background: var(--wm-bar); }
 .card.wpostcard.p2.withmedia.f20post .p2rule { filter: var(--wm-glow); }
+
+/* THE SELECTED KEY ON A FIXTURE GLOWS LIKE THE ASTERISK (owner, 28 Oct 2026: "the red glow from a button being
+   selected on the fixtures should glow red like the asterisk"): the deck's keys, the Info Dock's and the
+   Passport Button, when current, are the asterisk's red in its glow (--wm-glow-r), in both themes */
+:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) { color: var(--warn); }
+:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--wm-glow-r); }
+.ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }

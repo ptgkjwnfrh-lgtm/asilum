@@ -885,7 +885,8 @@ checked what a reader is actually served, which is the claim that matters.
   icons sit on the text's edge (each button's slack pulled out by a negative
   margin). Nothing is pinned over the foot. The Feed's piece cards draw
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
-  A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
+  (28 Oct 2026: the hairline that sat here, a refracting `<Cut className="pcrule" />`, warped the
+  card, the owner said, and is gone) Formerly a hairline sat
   between `.pcrow` and `.pcacts`.
 - SIZE and SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid
   (feedColsFor), rows sized from the screen (`.fgrid` grid-auto-rows: six

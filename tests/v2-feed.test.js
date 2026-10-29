@@ -148,7 +148,9 @@ test("the piece card's words never sit on each other: one foot column, a bare ti
   // one stacked column (the actions inside .pcfoot, not pinned over it), no
   // rule positions .pcacts absolutely, and the Feed's piece cards draw the
   // tile without its initials and tag word, which printed under the name
-  assert.match(page, /className="pcrow">[\s\S]*?<\/div>\s*(\{\}\s*)?<Cut className="pcrule" \/>\s*<div className="pcacts"/, "the actions open inside the foot, a hairline between them and the size and price");
+  // (owner, 28 Oct 2026: the hairline over the actions "is causing a weird warp, take that out")
+  assert.match(page, /className="pcrow">[\s\S]*?<\/div>\s*(\{\}\s*|\{\/\*[\s\S]*?\*\/\}\s*)?<div className="pcacts"/, "the actions open inside the foot, right under the size and price");
+  assert.ok(!/pcrule/.test(page) && !/\.pcrule/.test(css), "no hairline over the actions, and no rule left for it");
   assert.ok(!/\.pcacts \{[^}]*position: absolute/.test(css), "nothing pins the actions over the foot");
   assert.match(css, /\.card\.piece\.v-hero \.pcfoot \{[^}]*flex-direction: column; gap: 2\.5cqw;/, "one even step between the rows");
   assert.equal((page.match(/thumbFor\(it, \{ bare: true \}\)/g) || []).length, 1, "the Feed's piece card draws a bare tile");
