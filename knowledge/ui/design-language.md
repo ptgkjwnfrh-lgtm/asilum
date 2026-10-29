@@ -29,13 +29,14 @@
   sizes, even gaps, no holes; carousels and the motion row are Figure 20
   (Fig20.jsx), the ends turned and stacked. THE FOUR SIZES ARE A HARD RULE
   (owner, 28 Oct 2026): a LARGE card (still, motion, carousel, the motion
-  row) is 90% of the screen's height; a MEDIUM (a piece; a words-only post)
+  row) is 80% of the screen's height (90% the same day, then "a large is
+  now 80%"); a MEDIUM (a piece; a words-only post)
   is half of it each way, four to a large's place; a SMALL (song, place) is
   half its width and a third of its height, six to a large's place; a WIDE
   SMALL (a BRDCST) is two smalls side by side. The feed is packed in TILES,
   a large card's place each, holding a large card or an exact fill of the
   others, so no gap opens; the kinds spread evenly and never leave two
-  bands (1.8 screens) in a row without a large card or without another.
+  bands (1.6 screens) in a row without a large card or without another.
 - **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
   upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
@@ -878,7 +879,7 @@ checked what a reader is actually served, which is the claim that matters.
   between `.pcrow` and `.pcacts`.
 - SIZE and SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid
   (feedColsFor), rows sized from the screen (`.fgrid` grid-auto-rows: six
-  rows and five gaps are `--ed-feed-large`, 90svh): LARGE 6x6 (posts, with
+  rows and five gaps are `--ed-feed-large`, 80svh): LARGE 6x6 (posts, with
   or without a BRDCST, CAROUSEL, RAIL), MEDIUM 3x3 (LISTING hero, TRANSM
   note), SMALL 3x2 (SONG, PLACE square), WIDE 6x2 (BRDCST strip); AD 6x2
   adwide | 3x3 ad. One size a kind. tetrisPack lays TILES (TILE = 6): a

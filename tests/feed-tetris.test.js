@@ -50,10 +50,10 @@ test("the grid: 5 columns on a phone, 10 on a tablet, 15 wide — the column sta
   assert.equal(feedColsFor(1440), 18);
   const css = read("app/globals.css");
   assert.match(css, /\.fgridwrap \{ container-type: inline-size;/);
-  // (owner, 28 Oct 2026) the row is sized from the screen: six rows and five gaps are a large card, 90% of it
-  assert.match(css, /grid-auto-rows: calc\(\(var\(--ed-feed-large, 90svh\) - 5 \* var\(--fgap\)\) \/ 6\);/, "a large card is 90% of the screen");
+  // (owner, 28 Oct 2026) the row is sized from the screen: six rows and five gaps are a large card, 80% of it (90% until the owner's "a large is now 80%")
+  assert.match(css, /grid-auto-rows: calc\(\(var\(--ed-feed-large, 80svh\) - 5 \* var\(--fgap\)\) \/ 6\);/, "a large card is 80% of the screen");
   assert.equal(SIZE.LARGE[1], 6, "the CSS divides by the large card's rows");
-  assert.equal(LARGE_SHARE, 0.9);
+  assert.equal(LARGE_SHARE, 0.8);
 });
 
 test("THE FOUR SIZES, a hard rule (owner, 28 Oct 2026)", () => {
@@ -73,7 +73,7 @@ test("THE FOUR SIZES, a hard rule (owner, 28 Oct 2026)", () => {
   for (const [k, cls] of Object.entries(CLASS_OF)) assert.deepEqual(SPANS[k].map(([w, h]) => [w, h]), [[...SIZE[cls]]], k + ": one size, its class's");
   assert.deepEqual(SPANS.AD.map(([w, h]) => [w, h]), [[...SIZE.WIDE], [...SIZE.MEDIUM]], "two ad spaces: BRDCST-size and medium");
   assert.deepEqual(SPANS.ECHO, [], "an echo lives on the rail above the stream");
-  assert.equal(SCREEN_ROWS, lh / 0.9);
+  assert.equal(SCREEN_ROWS, lh / 0.8);
   assert.equal(kindOf({ id: "x" }), "LISTING");
   assert.equal(kindOf({ id: "p", __post: still("p", { images: [{ src: "a" }, { src: "b" }] }) }), "CAROUSEL");
   assert.equal(kindOf({ id: "p", __post: still("p") }), "STILL");
@@ -102,7 +102,7 @@ test("every card is placed exactly once, inside the grid, overlapping nothing, t
 
 test("like Tetris: no gap between the cards; a full-width card never sits over a hole", () => {
   // (owner, 28 Oct 2026: "there must never be a large gap in between the cards") a row is a sixth of a large
-  // card, a sixth of 90% of the screen: any trapped cell is a large gap. Packed as the page packs.
+  // card, a sixth of 80% of the screen: any trapped cell is a large gap. Packed as the page packs.
   const list = feed();
   for (const cols of [6, 12, 18]) {
     const { cells } = fillAds(tetrisPack(list, { cols, ads: true }), { cols });
@@ -315,7 +315,7 @@ test("THE SIZE BATTERY: across 24 feeds, no gap and always a mix (owner, 28 Oct 
   // and there should never be 2 full scrolls where it is all mediums, smalls, and wide smalls or just larges
   // there must always be a mix". On 6, 12 and 18 columns, packed as the page packs (ads in the stream and at
   // the ragged end): no trapped cell anywhere, and every band two screens tall holds a large card and another.
-  // (The old battery allowed holes of 2/3/4% and pinned listings at least medium; with rows a sixth of 90% of
+  // (The old battery allowed holes of 2/3/4% and pinned listings at least medium; with rows a sixth of 80% of
   // the screen, any hole is a large gap, so the bound is zero.)
   const sample = (seed, n) => braid(
     Array.from({ length: n }, (_, i) => ({ id: seed + "-syn-" + i })),
