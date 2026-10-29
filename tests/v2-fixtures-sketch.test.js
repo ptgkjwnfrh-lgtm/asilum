@@ -80,7 +80,8 @@ test("the Masthead: a full-width glass strip, the wordmark at the left and the b
     assert.ok(!/useLiquidGlass|fxrim|\bfixture\b"/.test(src), f + " has no pane of its own");
   }
   // the popup clears the strip
-  assert.match(rules, /\.sheetscrim \{[^}]*padding: calc\(var\(--head-h\) \+ 8px\) 0 var\(--cc-space\);/s);
+  // (29 Oct 2026) the popup is a centred large card: clear of the Masthead (and the deck) by its own height
+  assert.match(rules, /--pop-clear: max\(calc\(var\(--head-h\) \+ 8px\), calc\(var\(--cc-row-h\) \+ var\(--cc-bottom\) \+ 8px\)\);/s);
 });
 
 test("the indicator light is gone, the plus is smaller, the fixtures' buttons are softer (owner, 26 Oct 2026)", () => {

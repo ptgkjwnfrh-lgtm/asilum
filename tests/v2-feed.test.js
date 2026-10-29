@@ -40,8 +40,9 @@ test("every card wears its type; media enlarges over the Feed; a piece opens the
   assert.match(card, /openSheet\("listing", \{ id: pc\.id, title: "LISTING" \}\)/, "a tagged piece opens its listing");
   assert.match(page, /openSheet\("listing", \{ item, title: "LISTING" \}\)/);
   assert.match(host, /listing: \{ title: "LISTING", render: \(p\) => <ListingSheet/);
-  assert.match(host, /media: \{ title: "STILL", render: \(p\) => <MediaFloat.*tall: true/);
-  assert.match(host, /echo: \{ title: "ECHO", render: \(p\) => <EchoViewer.*tall: true/);
+  // (29 Oct 2026) every popup is a large card: the media and the echo no longer ask for a taller one
+  assert.match(host, /media: \{ title: "STILL", render: \(p\) => <MediaFloat \{\.\.\.p\} \/> \},/);
+  assert.match(host, /echo: \{ title: "ECHO", render: \(p\) => <EchoViewer \{\.\.\.p\} \/> \},/);
 });
 
 test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three tags and BEHIND THE PRODUCT", () => {

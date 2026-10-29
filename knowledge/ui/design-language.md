@@ -1245,3 +1245,17 @@ makes sense because of how our search toggle works".
   it once something is typed) and the empty search popup a line, both opening the DISCOVER popup (`DiscoverSheet.jsx`,
   a view of the one popup): the current craving, the rails (a reading tapped is searched in the search tab; none, it
   says so) and THE WHOLE INVENTORY → /discover.
+
+## 29 Oct 2026 — EVERY POPUP IS A LARGE CARD
+
+Owner: "all the pop up tabs have to look like cards four rounded corners and it being centered in the screen, lowkey
+every pop up tab should be the size of a large card". The one popup (`SheetHost.jsx`) is one card for every view: a
+large card's width (`--pop-w`: a phone's Feed width, the screen less 16px; from 560px half the screen less 28px, the
+twelve-column Feed's large card, at most 460px) and its height (`--pop-h`: the Feed's own `--ed-feed-large`, 80% of the
+screen), centred in the screen, a card's corners (`--radius-card`). Its height gives way only to stay clear of the
+Masthead and the deck — the larger clearance at both ends, so it stays centred (`--pop-clear`; the deck read as it
+stands, its ticker folded or risen for the search). Retired: the views' roomy and tall heights, the EXPAND / SHRINK
+key, the search popup rising flat out of the deck (25 Oct), the phone's bottom sheet. A field in focus lifts the card
+under the Masthead, the same size. Measured: 375×812 — 359 × 628 (the large card 359 × 650; trimmed to clear the
+deck), 92px above and below; with the search's deck risen 359 × 538, 136.8 above and below; 800×900 — 372 × 681 (the
+large card 372 × 720), 214 / 214 across and 109.5 / 109.5 down; 12px corners; neither fixture overlapped.

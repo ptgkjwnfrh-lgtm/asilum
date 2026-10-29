@@ -3692,25 +3692,35 @@ a.adword:hover { color: var(--ad-chip); }
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
   position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;
-  padding: calc(var(--head-h) + 8px) 0 var(--cc-space); box-sizing: border-box; /* clear of the Masthead (26 Oct 2026) */
+  padding: 0; box-sizing: border-box; /* the card in the middle of the screen; its height keeps it clear of both fixtures (--pop-h) */
   background: var(--scrim);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-/* THE SEARCH (the owner's image 2, 25 Oct 2026): the centre control deck
-   morphs — the search popup rises out of it, its foot meeting the deck's
-   head in one housing; every other popup floats in the middle */
-.sheetscrim:has(> .sheet.deckrise) { align-items: flex-end; padding-bottom: calc(var(--cc-row-h) + var(--cc-bottom)); }
-.sheet.deckrise { border-radius: max(var(--sheet-radius), 19px) max(var(--sheet-radius), 19px) 0 0; border-bottom: 0; }
-/* THE POPUP (owner, 25 Oct 2026, evening): a large rounded square floating
-   in the middle of the screen, the page clouded behind it */
+/* THE POPUP IS A LARGE CARD (owner, 29 Oct 2026: "all the pop up tabs have to look like cards four rounded corners
+   and it being centered in the screen, lowkey every pop up tab should be the size of a large card"). Every view, the
+   search too (it rose out of the deck, 25 Oct, its foot square — retired), is one card: a large card's width
+   (a phone's Feed width; from 560px half the screen less a gap, as the twelve-column Feed's large card is, at most
+   460px) and its height (the Feed's --ed-feed-large, 80% of the screen), in the middle of the screen, the four
+   corners a card's. Its height gives way only to keep it clear of the Masthead and the deck (--pop-clear, the
+   larger of the two, both ends, so it stays centred). The page is clouded behind it. */
+:root { --pop-w: calc(100vw - 16px); }
+@media (min-width: 560px) { :root { --pop-w: min(calc(50vw - 28px), 460px); } }
+.sheetscrim {
+  --pop-clear: max(calc(var(--head-h) + 8px), calc(var(--cc-row-h) + var(--cc-bottom) + 8px));
+  --pop-h: min(var(--ed-feed-large, 80svh), calc(100svh - 2 * var(--pop-clear)));
+}
+/* the deck's height as it stands: its ticker folded (a popup over a folded deck is not cut short for a ticker
+   that is not there); the risen search's rules below win */
+body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .sheet {
-  width: min(var(--cc-w), calc(100vw - 20px)); height: 60vh; max-height: calc(100vh - var(--head-h) - 20px - var(--cc-space));
-  margin-bottom: 0; display: flex; flex-direction: column; min-height: 0;
-  background: var(--bg); border: 1px solid var(--line); border-radius: max(var(--sheet-radius), 19px);
+  width: var(--pop-w); height: var(--pop-h); max-height: none;
+  margin: 0; display: flex; flex-direction: column; min-height: 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-card);
   box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   animation: sheetin var(--dur-3) var(--ease-out);
 }
-.sheet.tall { height: calc(100vh - var(--head-h) - 20px - var(--cc-space)); }
+/* a field in focus: the card rises under the Masthead, the same size, clear of a phone's keyboard */
+.sheet.typing { align-self: flex-start; margin-top: calc(var(--head-h) + 8px); }
 @keyframes sheetin { from { transform: translateY(12px) scale(0.97); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -3795,9 +3805,6 @@ a.adword:hover { color: var(--ad-chip); }
   .maplayout { grid-template-columns: 1fr; }
   .maptools { position: static; flex-direction: row; order: -1; }
   .maptool { flex: 1; min-height: 64px; }
-  .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - var(--head-h) - 8px - var(--cc-space)); } /* between the Masthead and the deck */
-  .sheetscrim { align-items: flex-end; }
-  .sheetpane { padding-bottom: calc(var(--cc-space) + 12px); }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 360px) {
@@ -4053,7 +4060,6 @@ a.adword:hover { color: var(--ad-chip); }
    labels the title, the session count and EXPAND overlapped at 375px; the
    aria-label still names each key */
 @media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
-.sheet.roomy { height: min(74vh, 660px); }
 
 /* the Post disc's second life: the session indicator (1.25) */
 .ccpostwrap { position: relative; display: flex; }

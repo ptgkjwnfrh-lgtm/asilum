@@ -75,7 +75,7 @@ test("DISCOVER: a key in the search bar, a line in the empty search popup, one p
   const search = read("app/components/SearchSheet.jsx");
   assert.match(search, /\{!q && <button type="button" className="srchall srchdisc" onClick=\{\(\) => \{ haptic\("press"\); pushSheet\("discover", \{ title: "DISCOVER" \}\); \}\}>OR DISCOVER WITHOUT TYPING →<\/button>\}/, "the empty search popup leads there too");
   const host = read("app/components/SheetHost.jsx");
-  assert.match(host, /discover: \{ title: "DISCOVER", render: \(p\) => <DiscoverSheet \{\.\.\.p\} \/>, roomy: true \},/, "a view of the one popup, never a page");
+  assert.match(host, /discover: \{ title: "DISCOVER", render: \(p\) => <DiscoverSheet \{\.\.\.p\} \/> \},/, "a view of the one popup, never a page");
   const ds = read("app/components/DiscoverSheet.jsx");
   assert.match(ds, /const c = pointCraving\(draft\);/, "POINT THE WAY sets the app's craving");
   assert.match(ds, /<DiscoverRails onPickTags=\{pick\} empty=\{<p className="srchfine">/, "the rails, and when there are none it says so");

@@ -46,19 +46,19 @@ import BrdcstSheet from "./BrdcstSheet.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
-  search: { title: "SEARCH", render: (p) => <SearchSheet {...p} />, roomy: true },
+  search: { title: "SEARCH", render: (p) => <SearchSheet {...p} /> },
   // the search tab's browse-without-typing face: the current craving, the rails, the whole inventory (29 Oct 2026)
-  discover: { title: "DISCOVER", render: (p) => <DiscoverSheet {...p} />, roomy: true },
+  discover: { title: "DISCOVER", render: (p) => <DiscoverSheet {...p} /> },
   overview: { title: "OVERVIEW", render: (p) => <OverviewSheet {...p} /> },
   bag: { title: "BAG", render: (p) => <BagSheet {...p} /> },
   notices: { title: "NOTICES", render: (p) => <NoticesSheet {...p} /> },
   post: { title: "POST", render: (p) => <PostComposer compact {...p} />, heavy: true },
-  postselect: { title: "POST", render: (p) => <PostSelection {...p} />, roomy: true },
+  postselect: { title: "POST", render: (p) => <PostSelection {...p} /> },
   // THE ONE FEED (slice 3): the LISTING popup over the softened Feed; STILL
   // and MOTION enlarged with the caption on the media; the ECHO viewer
-  listing: { title: "LISTING", render: (p) => <ListingSheet {...p} />, roomy: true },
-  media: { title: "STILL", render: (p) => <MediaFloat {...p} />, tall: true },
-  echo: { title: "ECHO", render: (p) => <EchoViewer {...p} />, tall: true },
+  listing: { title: "LISTING", render: (p) => <ListingSheet {...p} /> },
+  media: { title: "STILL", render: (p) => <MediaFloat {...p} /> },
+  echo: { title: "ECHO", render: (p) => <EchoViewer {...p} /> },
   // a payment page is never dismissed by a tap outside (1.2); the route
   // itself arrives with native commerce
   checkout: { title: "CHECKOUT", render: () => null, heavy: true },
@@ -67,9 +67,9 @@ const VIEWS = {
   // the Passport's onboarding (14.11, slice 10c): five to seven questions on first opening; an edit in progress is heavy
   onboarding: { title: "PASSPORT", render: (p) => <Onboarding {...p} />, heavy: true },
   // the map above a post (5.5, slice 12): a BRDCST's event pinned, the ring around it
-  map: { title: "MAP", render: (p) => <MapSheet {...p} />, roomy: true },
+  map: { title: "MAP", render: (p) => <MapSheet {...p} /> },
   // the BRDCST popup (owner's drawing, 25 Oct 2026): the strip's photograph clear, the event's record
-  brdcst: { title: "BRDCST", render: (p) => <BrdcstSheet {...p} />, roomy: true },
+  brdcst: { title: "BRDCST", render: (p) => <BrdcstSheet {...p} /> },
 };
 
 const SWIPE_DOWN = 70;
@@ -113,7 +113,11 @@ export default function SheetHost() {
   const dock = useDock();
   useEffect(() => { watchOfflineQueue(); }, []);
   const ref = useRef(null);
-  const [tall, setTall] = useState(false);
+  // EVERY POPUP IS A LARGE CARD (owner, 29 Oct 2026: "all the pop up tabs have to look like cards four rounded corners
+  // and it being centered in the screen, lowkey every pop up tab should be the size of a large card"): one size, in
+  // the middle of the screen, so the EXPAND / SHRINK key and the views' own heights are gone. A field taking focus
+  // lifts the card to just under the Masthead, the same size, so a phone's keyboard does not cover it.
+  const [typing, setTyping] = useState(false);
   const popup = dock.sheet;
   const open = !!popup;
   const top = popup ? popup.top : null;
@@ -147,13 +151,12 @@ export default function SheetHost() {
   // the popup only a flat colour to bend.
   const glass = useLiquidGlass(ref, { id: "lg-popup", strength: 0.8, active: open, bend: ".card" });
 
-  // a new popup opens at its initial height; a field taking focus inside it
-  // lifts it to the full height so the keyboard never covers the input
-  useEffect(() => { setTall(!!(top && VIEWS[top.view] && VIEWS[top.view].tall)); }, [open, top && top.view]);
+  // a new popup opens in the middle; a field taking focus inside it lifts the card under the Masthead
+  useEffect(() => { setTyping(false); }, [open, top && top.view]);
   useEffect(() => {
     if (!open || !ref.current) return undefined;
     const node = ref.current;
-    const onFocus = (e) => { if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) setTall(true); };
+    const onFocus = (e) => { if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) setTyping(true); };
     node.addEventListener("focusin", onFocus);
     return () => node.removeEventListener("focusin", onFocus);
   }, [open]);
@@ -188,7 +191,7 @@ export default function SheetHost() {
 
   return (
     <div className="sheetscrim" data-kept={open ? undefined : "1"} onMouseDown={(e) => { if (open && e.target === e.currentTarget && lightweight) dismiss(); }}>
-      <section ref={ref} className={"sheet lgrx" + (tall ? " tall" : "") + (view && view.roomy ? " roomy" : "") + (top && top.view === "search" ? " deckrise" : "")} role="dialog" aria-modal={open ? "true" : undefined} aria-label={title || undefined} aria-hidden={open ? undefined : true} inert={open ? undefined : true}>
+      <section ref={ref} className={"sheet lgrx" + (typing ? " typing" : "")} role="dialog" aria-modal={open ? "true" : undefined} aria-label={title || undefined} aria-hidden={open ? undefined : true} inert={open ? undefined : true}>
         {glass}
         <header className={"sheethead" + (hasBack ? " hasback" : "")} onPointerDown={headDown} onPointerUp={headUp}>
           {hasBack ? (
@@ -196,9 +199,6 @@ export default function SheetHost() {
           ) : <span className="sheetgrip" aria-hidden="true" />}
           <h2 className="sheettitle">{title}</h2>
           <div className="sheetacts">
-            <button className="sheetbtn" onClick={() => setTall((t) => !t)} aria-label={tall ? "shrink the popup" : "expand the popup"} aria-pressed={tall}>
-              <Icon name={tall ? "minus" : "plus"} size={20} /><span>{tall ? "SHRINK" : "EXPAND"}</span>
-            </button>
             <button className="sheetbtn" onClick={dismiss} aria-label="close"><Icon name="close" size={20} /><span>CLOSE</span></button>
           </div>
         </header>
