@@ -515,9 +515,19 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(wm, /const SET = `translate\(\$\{WM\.set\.dx\} \$\{\+\(WM\.bar\.y \* \(1 - WM\.set\.s\)\)\.toFixed\(4\)\}\) scale\(\$\{WM\.set\.s\}\)`;/, "scaled about the bar's top");
   const scaledMid = bar[3] * set[0] + bar[3] * (1 - set[0]);
   assert.ok(Math.abs(scaledMid - (121 - 120.75 / 2)) < 0.01, "the capitals' middle stays on the bar's top");
-  // (the same day: "for dark mode the entire font should be red", then "just make the text all white" — white on
-  // the bar too, the owner's choice when asked) white, both halves, in dark
-  assert.match(css, /--wm-ink: #ffffff;\s*--wm-ink-bar: #ffffff;/, "white in dark, all of it");
+  // (the same day, after red and white: "lets go back to green but ig we can go for a darker green so its ledgible
+  // i dont want there to be a odd cross section") declared: in dark ONE ink for both halves (no seam at the bar's
+  // edge), green, and at least 4:1 (WCAG contrast) both on the bar's white and on the dark paper
+  const wmDark = css.match(/--wm-ink: (#[0-9a-f]{6});\s*--wm-ink-bar: (#[0-9a-f]{6});/i);
+  assert.ok(wmDark && wmDark[1] === wmDark[2], "one ink above the bar and on it");
+  const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+  const lum = (h) => { const n = parseInt(h.slice(1), 16); return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255); };
+  const contrast = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const wn = parseInt(wmDark[1].slice(1), 16), [inkR, inkG, inkB] = [(wn >> 16) & 255, (wn >> 8) & 255, wn & 255];
+  assert.ok(inkG > inkR && inkG > inkB, "green: " + wmDark[1]);
+  const wmPaper = css.match(/:root \{[^}]*--paper: (#[0-9a-f]{6});/i)[1];
+  assert.ok(contrast(wmDark[1], "#ffffff") >= 4, "legible on the bar's white: " + contrast(wmDark[1], "#ffffff").toFixed(2));
+  assert.ok(contrast(wmDark[1], wmPaper) >= 4, "legible on the dark paper " + wmPaper + ": " + contrast(wmDark[1], wmPaper).toFixed(2));
   assert.match(css, /\[data-theme="light"\] \{[^}]*--wm-ink: #001512; --wm-ink-bar: #001512;/, "the artwork's black in light, all of it");
   // the bar under the asterisk and the word; the word set twice, cut at the bar's top: the theme's ink above,
   // the artwork's black on the white bar, in both themes

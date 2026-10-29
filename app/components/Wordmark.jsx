@@ -32,8 +32,8 @@ import { useId } from "react";
 // brick, and the brick should sit overtop the masthead line"): the bar's top edge on the capitals' middle, so
 // the word's lower half stands on the bar and its upper half above it. The bar is drawn first, the asterisk
 // (above the bar) and the word over it. The word is set twice, cut at the bar's top: above it in the theme's
-// ink, on it in the bar's — the artwork's black, both, in light; white, both, in dark (owner, the same day: "just
-// make the text all white", white on the bar too, by their choice; before, red, white and the phosphor mint). The
+// ink, on it in the bar's — the artwork's black, both, in light; one darker green, both, in dark (owner, the same
+// day: "go back to green but … a darker green so its ledgible i dont want there to be a odd cross section"). The
 // Masthead rests the bar on its line (.brandfix: "move the brick up, i want it to sit ontop of the mast head
 // line"). (A stem rose from the bar's left end behind the asterisk for a while that day; then "forget the left
 // side asterisk" — it is gone.)
