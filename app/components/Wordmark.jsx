@@ -1,5 +1,7 @@
 "use client";
 
+import { useId } from "react";
+
 // app/components/Wordmark.jsx — THE WORDMARK. It left the shell's header
 // when the header left (V.2 Blueprint, owner, 17 Oct 2026) and lived on the
 // Feed's masthead; since 19 Oct 2026 it is a FIXTURE of its own (owner: "the
@@ -23,10 +25,18 @@
 // (Procreate's tracking and kerning come out at −15.5, −0.096em, between
 // every pair); the asterisk at 131, its top on the capitals' line and its
 // left edge on the A's; the bar flush under the baseline, 82.6 deep, from
-// just left of the A (3.3) to 976.9 across — past the M, as drawn; since the
-// same day it stands off the baseline by the Masthead's gap (WM.gap).
+// just left of the A (3.3) to 976.9 across — past the M, as drawn.
 //
-// Three layers on one box: the asterisk, glowing red (owner, the same day:
+// THE WORD ON THE BRICK (owner, 28 Oct 2026, last: "*ASILUM lets isolate that and move it down so its fully
+// overtop of the glowing white brick", then "i want half of the asilum text to be sticking half way over the
+// brick, and the brick should sit overtop the masthead line"): the bar's top edge on the capitals' middle, so
+// the word's lower half stands on the bar and its upper half above it. The bar is drawn first, the asterisk
+// (above the bar) and the word over it. The word is set twice, cut at the bar's top: above it in the theme's
+// ink (the artwork's black in light, the phosphor mint in dark), on it in the artwork's black — so both halves
+// read in either theme. The Masthead rests the bar on its line (.brandfix: "move the brick up, i want it to
+// sit ontop of the mast head line").
+//
+// Three layers on one box: the bar first (see THE WORD ON THE BRICK); the asterisk, glowing red (owner, the same day:
 // "the asterisk must glow red" — the bar's glow, the same radii, in the
 // asterisk's own red, --wm-glow-r); the bar, glowing the stark white of the
 // Masthead's line (--wm-glow); and the type over them, which does not glow
@@ -37,26 +47,32 @@ export const WM = Object.freeze({
   word: 161, star: 131, cap: 120.75, base: 121,
   x: Object.freeze([0, 155.2, 307.7, 337.7, 453, 604.3]), // A S I L U M, each origin
   starY: 94.2, // Helvetica's asterisk stands 0.717em above its baseline: its top on the capitals' line
-  bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6 }),
-  // (owner, 28 Oct 2026: "that gap between the logo thick white line and the accent mast head white line
-  // lets add a gap of that thickness between the ASILUM word and the thick whiteline") the bar stands off
-  // the baseline by the Masthead's own gap, --mh-gap (18/900 of the measure), in these units: 18 × 120.75 / 129
-  gap: 16.85,
+  // the bar's top on the capitals' middle (121 - 120.75 / 2): the word half over it
+  bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6, y: 60.625 }),
+  // the bar's foot (60.625 + 82.6), the mark's lowest edge: it rests on the Masthead's line
+  foot: 143.225,
 });
-const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${+(WM.base + WM.gap + WM.bar.h).toFixed(2)}`;
+const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${WM.foot}`;
 
 export default function Wordmark({ href = "/", className = "" }) {
+  const id = useId().replace(/:/g, "");
+  const above = "wma" + id, on = "wmo" + id;
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
       <span className="wmart" aria-hidden="true">
+        <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
+          <rect className="wmbar" x={WM.bar.x} y={WM.bar.y} width={WM.bar.w} height={WM.bar.h} />
+        </svg>
         <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
           <text className="wmstar" x="0" y={WM.starY}>*</text>
         </svg>
-        <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
-          <rect className="wmbar" x={WM.bar.x} y={WM.base + WM.gap} width={WM.bar.w} height={WM.bar.h} />
-        </svg>
         <svg className="wmtype" viewBox={VIEW} focusable="false">
-          <text className="wmink" x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
+          <defs>
+            <clipPath id={above}><rect x="-200" y="-200" width="1400" height={200 + WM.bar.y} /></clipPath>
+            <clipPath id={on}><rect x="-200" y={WM.bar.y} width="1400" height="400" /></clipPath>
+          </defs>
+          <text className="wmink" clipPath={`url(#${above})`} x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
+          <text className="wmink wmonbar" clipPath={`url(#${on})`} x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
         </svg>
       </span>
       <span className="wmword idlabel"><i>*</i><span className="wmcaps">ASILUM</span></span>

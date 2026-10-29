@@ -396,9 +396,9 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     inked left edge, the bar's ends and depth, and the asterisk's box within 2px of the artwork's
 //     2000 (Michroma's side bearings at 161, measured in Chromium, carry an origin to its ink), and the
 //     letters evenly spaced — one spacing between every pair, as Procreate's tracking sets it;
-//   - the asterisk's top on the capitals' line; the bar's top on the baseline (in the artwork; since
-//     the owner's "add a gap of that thickness between the ASILUM word and the thick whiteline", the
-//     shipped bar stands off it by exactly the Masthead's gap — the next test);
+//   - the asterisk's top on the capitals' line; the bar's top on the baseline in the artwork; shipped,
+//     since the owner's "i want half of the asilum text to be sticking half way over the brick", the bar's
+//     top on the capitals' middle, the word's lower half on the bar (the next test);
 //   - ONE glow in two colours (then: "the asterisk must glow red"): the bar and the Masthead's line wear
 //     the white --wm-glow, the asterisk the red --wm-glow-r, radius for radius and strength for strength;
 //     nothing else wears either; the word wears no filter and no shadow;
@@ -407,7 +407,8 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     … the info dock and passport buttons should be about 10% bigger, also the stretched mast head line
 //     should break at the gap points of the buttons and there should be faint lines in between the
 //     buttons like on the center fixture") the line is white, thin, in the white glow, under the bar
-//     (the logo lifted so its bar's foot is the stamp gap above the line) and just under the bigger
+//     (since "move the brick up, i want it to sit ontop of the mast head line": the bar's foot on the
+//     line's top, the bar resting on it) and just under the bigger
 //     glyphs; laid from the logo's left edge along every key showing to the globe's hit box, broken at
 //     the meetings (lib/mastline.js, the next test); the cuts the deck's hairline, 65 units, centred on
 //     the keys' row; the keys 10% bigger, the logo the same size;
@@ -421,15 +422,15 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(rules, /\.wmink \{ font: 400 161px var\(--mich\); fill: var\(--wm-ink\); \}/, "Michroma 161");
   assert.match(rules, /\.wmstar \{ font: 400 131px var\(--helvetica\); fill: var\(--wm-star\); \}/, "Helvetica 131");
   assert.match(css, /--helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif;/, "Helvetica first: its asterisk is the artwork's");
-  assert.match(wm, /<text className="wmink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text>/, "each letter at its own origin");
+  assert.match(wm, /<text className="wmink" clipPath=\{`url\(#\$\{above\}\)`\} x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text>/, "each letter at its own origin");
   assert.match(wm, /<text className="wmstar" x="0" y=\{WM\.starY\}>\*<\/text>/);
-  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.base \+ WM\.gap\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar under the baseline, the gap between");
+  assert.match(wm, /<rect className="wmbar" x=\{WM\.bar\.x\} y=\{WM\.bar\.y\} width=\{WM\.bar\.w\} height=\{WM\.bar\.h\} \/>/, "the bar where the geometry puts it (below)");
   for (const f of ["logo.jpg", "logo-word-ink.png", "logo-star.png", "logo-word-light.png", "logo-ink.png", "logo-light.png"]) assert.ok(!existsSync("public/model/" + f), f + " is gone");
   assert.ok(!/logo[\w-]*\.(png|jpg)|wmimg|--wm-mask|--metal/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "nothing in the styles names the picture");
   // the owner's artwork, measured
   const nums = (re) => wm.match(re)[1].split(",").map(Number);
   const X = nums(/x: Object\.freeze\(\[([^\]]*)\]\)/);
-  const bar = wm.match(/bar: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), h: ([\d.]+) \}\)/).slice(1).map(Number);
+  const bar = wm.match(/bar: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+), h: ([\d.]+), y: ([\d.]+) \}\)/).slice(1).map(Number);
   const starY = Number(wm.match(/starY: ([\d.]+),/)[1]);
   const ADV = [171.06, 168.39, 45.28, 130.81, 166.66]; // A S I L U advances at 161 (Chromium, 28 Oct 2026)
   const LSB = [5.03, 10.46, 15.09, 15.09, 10.69, 15.41]; // A S I L U M left side bearings at 161
@@ -492,17 +493,26 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "thin, just under the glyphs");
   assert.match(line, /filter: var\(--wm-glow\);/, "in the logo's glow");
   assert.match(rules, /\.mhline i \{[^}]*background: var\(--wm-bar\);[^}]*left: calc\(var\(--a\) \+ var\(--gl\) \* var\(--mh-break\) \/ 2\);\s*width: calc\(var\(--b\) - var\(--a\) - \(var\(--gl\) \+ var\(--gr\)\) \* var\(--mh-break\) \/ 2\);/s, "white stretches, broken by half a break each side");
-  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--mh-gap\) - var\(--wm-u\) \* 220\.45\);/s, "the bar's foot the stamp gap above the line: the line under the bar");
-  // (then: "that gap between the logo thick white line and the accent mast head white line lets add a gap of
-  // that thickness between the ASILUM word and the thick whiteline") the word stands off the bar by the
-  // same gap: --mh-gap is 18/900 of the measure, --wm-u the measure's 129/900 over 120.75, so the gap in
-  // the logo's units is 18 × 120.75 / 129 (measured: 2.17 vs 2.18px at 375, 3.02 vs 3.04 at 800)
-  const gap = Number(wm.match(/gap: ([\d.]+),/)[1]);
-  assert.ok(Math.abs(gap - (18 * 120.75) / 129) < 0.01, "word to bar = bar to line: " + gap);
-  assert.match(rules, /--mh-gap: calc\(var\(--wm-w\) \* 18 \/ 900\);/);
-  assert.ok(Math.abs(121 + gap + bar[2] - 220.45) < 0.01, "220.45 is the bar's foot");
-  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 976\.9 \/ 220\.45;/, "the box holds the word, the gap and the bar");
-  assert.match(wm, /const VIEW = `\$\{WM\.bar\.x\} 0 \$\{WM\.bar\.w\} \$\{\+\(WM\.base \+ WM\.gap \+ WM\.bar\.h\)\.toFixed\(2\)\}`;/);
+  // THE WORD ON THE BRICK (owner, 28 Oct 2026, last: "i want half of the asilum text to be sticking half way over
+  // the brick", then "move the brick up, i want it to sit ontop of the mast head line, the mast head line is like
+  // in the middle of the brick"): the bar's top on the capitals' middle, its foot on the line's top. Measured at
+  // 375px: the bar's top 35.9 = the capitals' middle 35.9; the bar's foot 46.5 = the line's top 46.5.
+  assert.ok(Math.abs(bar[3] - (121 - 120.75 / 2)) < 0.01, "the bar's top on the capitals' middle: " + bar[3]);
+  const foot = Number(wm.match(/foot: ([\d.]+),/)[1]);
+  assert.ok(Math.abs(foot - (bar[3] + bar[2])) < 0.01, "the mark's foot is the bar's: " + foot);
+  assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--wm-u\) \* 143\.225\);/s, "the bar's foot on the line's top");
+  assert.ok(Math.abs(foot - 143.225) < 0.001, "the CSS and the geometry agree");
+  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 976\.9 \/ 143\.225;/, "the box: the capitals' top to the bar's foot");
+  assert.match(wm, /const VIEW = `\$\{WM\.bar\.x\} 0 \$\{WM\.bar\.w\} \$\{WM\.foot\}`;/);
+  // the bar under the asterisk and the word; the word set twice, cut at the bar's top: the theme's ink above,
+  // the artwork's black on the white bar, in both themes
+  assert.ok(wm.indexOf('className="wmlit wmlitbar"') < wm.indexOf('className="wmlit wmlitstar"') && wm.indexOf('className="wmlit wmlitstar"') < wm.indexOf('className="wmtype"'), "the bar first, then the asterisk, then the word");
+  assert.match(wm, /<clipPath id=\{above\}><rect x="-200" y="-200" width="1400" height=\{200 \+ WM\.bar\.y\} \/><\/clipPath>/);
+  assert.match(wm, /<clipPath id=\{on\}><rect x="-200" y=\{WM\.bar\.y\} width="1400" height="400" \/><\/clipPath>/);
+  assert.match(wm, /<text className="wmink wmonbar" clipPath=\{`url\(#\$\{on\}\)`\} x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\}>ASILUM<\/text>/);
+  assert.match(rules, /\.wmink\.wmonbar \{ fill: var\(--wm-ink-bar\); \}/);
+  assert.match(css, /--wm-ink-bar: #001512;/, "the artwork's black on the bar");
+  assert.ok(!/--mh-gap/.test(css), "the gap the bar stood off by is gone with it");
   // the cuts: the deck's hairline, between keys, centred on the keys' row
   const cut = rules.match(/\.mhcuts i \{([^}]*)\}/)[1];
   const deckCut = rules.match(/\.cccut \{([^}]*)\}/)[1];
