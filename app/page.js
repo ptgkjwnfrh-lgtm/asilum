@@ -27,7 +27,7 @@ import {
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
-import { tetrisPack, fillAds, feedColsFor, motionRail } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, feedColsFor, motionRail, isLarge } from "../lib/feed/tetris.js";
 import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
 import MotionRail from "./components/MotionRail.jsx";
 import SongCard from "./components/SongCard.jsx";
@@ -855,7 +855,7 @@ export default function Home() {
       <div className="fgridwrap">
         <div className="fgrid" style={{ "--fcols": feedCols, "--frows": rows }}>
           {cells.map((c) => (
-            <div key={c.card.id} className={"fcell k-" + c.kind.toLowerCase().replace("+", "-") + " v-" + c.v} style={{ gridColumn: `${c.x + 1} / span ${c.w}`, gridRow: `${c.y + 1} / span ${c.h}` }}>
+            <div key={c.card.id} className={"fcell k-" + c.kind.toLowerCase().replace("+", "-") + " v-" + c.v + (isLarge(c.card) ? " large" : "")} style={{ gridColumn: `${c.x + 1} / span ${c.w}`, gridRow: `${c.y + 1} / span ${c.h}` }}>
               {renderCard(c.card, c.v)}
             </div>
           ))}

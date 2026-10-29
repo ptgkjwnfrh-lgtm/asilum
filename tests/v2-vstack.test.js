@@ -96,3 +96,30 @@ test("the Feed's drum is gentle (owner, 28 Oct 2026: \"the carousel stacking loo
   assert.ok(+feed[2] <= +root[2] / 4, `lap ${feed[2]}% against ${root[2]}%`);
   assert.ok(+feed[3] > +root[3] && +feed[3] < 1, `shrink to ${feed[3]} against ${root[3]}`);
 });
+
+test("SHADOWS (owner, 28 Oct 2026): a faint Masthead, its shade on the cards under it, the large cards' overcast", () => {
+  // declared before measuring:
+  //  - the Masthead's own shadow is faint and close: at most a quarter of the shade, no further than 14px;
+  //  - a Feed card turning up under the Masthead darkens from its top, only in the top bend's zone, and
+  //    Figure 20 (no card) takes no shade;
+  //  - a LARGE card casts its overcast past its top and bottom always, and stands in front of every other
+  //    card to cast it; any other card casts only in the stack's zones (the same ranges as the bend), the
+  //    two zones adding; every shadow layer is opacity only;
+  //  - the page marks a large cell by the packer's own rule.
+  const raw = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const mh = raw.match(/\.masthead\.fixture \{ box-shadow: 0 (\d+)px (\d+)px -\d+px color-mix\(in srgb, var\(--shade\) (\d+)%, transparent\), var\(--glass-lip\); \}/);
+  assert.ok(mh, "the Masthead's own shadow");
+  assert.ok(+mh[1] + +mh[2] <= 20 && +mh[3] <= 25, "faint and close");
+  assert.match(raw, /\.fcell::before \{[^}]*opacity: 0;[^}]*linear-gradient\(to bottom, color-mix\(in srgb, var\(--shade\) \d+%, transparent\), transparent \d+%\);/, "the shade falls from the top");
+  assert.match(gate, /\.fcell::before \{ animation: vcastout linear both; animation-timeline: --cell; animation-range: cover calc\(100% - var\(--stk-zone\)\) cover 100%; \}/, "only in the top zone");
+  assert.match(raw, /\.fcell:has\(\.f20post\)::before \{ content: none; \}/);
+  assert.match(raw, /\.fcell\.large::after \{ --cast-h: \d+px; left: 0; right: 0; opacity: 1; \}/, "a large card always casts");
+  assert.match(gate, /\.fcell:not\(\.large\)::after \{\s*animation: vcastin linear both, vcastout linear both; animation-composition: replace, add; animation-timeline: --cell, --cell;\s*animation-range: cover 0px cover var\(--stk-zone\), cover calc\(100% - var\(--stk-zone\)\) cover 100%;/, "the others only where they stack");
+  assert.match(gate, /\.fcell \{ view-timeline: --cell block; view-timeline-inset: var\(--stk-top\) var\(--stk-bot\); \}/, "the cell's own timeline, on the drum's edges");
+  for (const k of ["vcastin", "vcastout"]) assert.deepEqual([...new Set([...frames(k).matchAll(/([a-z-]+)\s*:/g)].map((p) => p[1]))], ["opacity"], k + " is opacity only");
+  const zl = frames("vstackzl").match(/z-index: (\d+);[^]*z-index: (\d+);/), z = frames("vstackz").match(/z-index: (\d+);[^]*z-index: (\d+);/);
+  assert.ok(Math.min(+zl[1], +zl[2]) > Math.max(+z[1], +z[2]), "a large card stands in front of every other");
+  assert.match(gate, /\.fcell\.large \{ animation-name: vstackin, vstackout, vstackzl; \}/);
+  const page = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
+  assert.match(page, /\(isLarge\(c\.card\) \? " large" : ""\)/, "the page marks a large cell by the packer's rule");
+});

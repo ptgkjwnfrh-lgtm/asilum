@@ -3832,6 +3832,8 @@ a.adword:hover { color: var(--ad-chip); }
   height: var(--head-h); padding: env(safe-area-inset-top, 0px) var(--dk-edge) 0;
   border-radius: 0;
 }
+/* the Masthead's own shadow, faint and close: it gives off light more than it blocks it (owner, 28 Oct 2026) */
+.masthead.fixture { box-shadow: 0 5px 14px -9px color-mix(in srgb, var(--shade) 22%, transparent), var(--glass-lip); }
 .mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88 * var(--mk, 1)); }
 .infodock { display: flex; align-items: stretch; }
 .passportbtn {
@@ -5636,6 +5638,35 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 /* the Feed's cards are big (a large one is 80% of the screen), so the drum is gentle there (owner, 28 Oct 2026:
    "the carousel stacking looks too extreme on the feed lets somehow make it less extreme") */
 .fgrid { --stk-tilt: 16deg; --stk-lap: 5%; --stk-s: 0.96; --stk-persp: 1400px; --stk-zone: min(24vh, 220px); }
+
+/* SHADOWS (owner, 28 Oct 2026: "the masthead gives off a slight shadow but it should hardly be noticeable
+   because it generates light however i want the stacked cards to have a slight shadow coming from the mast
+   head, a large card should have overcast shadows coming from its top and bottom on the cards that are above
+   and below it and all other cards should behave this way only if a card is stacked beneath it").
+   - The Masthead's own shadow: faint and close (.masthead.fixture, with the fixtures' rules).
+   - THE MASTHEAD'S SHADE: a Feed card turning up under the Masthead darkens from its top edge, the deeper
+     the nearer the edge (::before, the top bend's zone; not on Figure 20, which has no card to shade).
+   - THE OVERCAST: soft shadows cast past a card's top and bottom edges onto its neighbours (::after). A
+     large card casts them always, and stands in front of its neighbours to cast them; any other card only
+     in the stack's zones, where it laps over the card beneath it. The band on the far side of a card in a
+     zone lies under the flatter card in front, so only the shadow onto the card behind shows.
+   Each layer is opacity only, on the cell's own view timeline (--cell). */
+.fgrid { --cast: color-mix(in srgb, var(--shade) 32%, transparent); --cast-h: 22px; }
+.fcell::after {
+  content: ""; position: absolute; left: 4%; right: 4%; top: calc(-1 * var(--cast-h)); bottom: calc(-1 * var(--cast-h));
+  pointer-events: none; opacity: 0;
+  background:
+    radial-gradient(farthest-side at 50% 100%, var(--cast), transparent) top / 100% var(--cast-h) no-repeat,
+    radial-gradient(farthest-side at 50% 0%, var(--cast), transparent) bottom / 100% var(--cast-h) no-repeat;
+}
+.fcell.large::after { --cast-h: 40px; left: 0; right: 0; opacity: 1; }
+.fcell::before {
+  content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; border-radius: var(--radius-card);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--shade) 24%, transparent), transparent 58%);
+}
+.fcell:has(.f20post)::before { content: none; }
+@keyframes vcastin { from { opacity: 1; } to { opacity: 0; } }
+@keyframes vcastout { from { opacity: 0; } to { opacity: 1; } }
 @keyframes vstackin {
   from { transform: perspective(var(--stk-persp)) translateY(calc(-1 * var(--stk-lap))) rotateX(calc(-1 * var(--stk-tilt))) scale(var(--stk-s)); }
   to { transform: none; }
@@ -5645,6 +5676,7 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
   to { transform: perspective(var(--stk-persp)) translateY(var(--stk-lap)) rotateX(var(--stk-tilt)) scale(var(--stk-s)); }
 }
 @keyframes vstackz { 0%, 100% { z-index: 1; } 50% { z-index: 24; } }
+@keyframes vstackzl { 0%, 100% { z-index: 30; } 50% { z-index: 54; } }
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     :is(.fcell, .dmrow, .likerow, .bagrow, .noticerow, .srchgrid > li, .mailthread > li, .maillist > li, .brdcstlist > li) {
@@ -5654,5 +5686,13 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
       animation-timeline: view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot));
       animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%, cover 0% cover 100%;
     }
+    .fcell { view-timeline: --cell block; view-timeline-inset: var(--stk-top) var(--stk-bot); }
+    /* a large card stands in front of its neighbours, so its overcast falls on them */
+    .fcell.large { animation-name: vstackin, vstackout, vstackzl; }
+    .fcell:not(.large)::after {
+      animation: vcastin linear both, vcastout linear both; animation-composition: replace, add; animation-timeline: --cell, --cell;
+      animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%;
+    }
+    .fcell::before { animation: vcastout linear both; animation-timeline: --cell; animation-range: cover calc(100% - var(--stk-zone)) cover 100%; }
   }
 }

@@ -43,6 +43,13 @@ Nothing is static; nothing is frantic. Motion communicates system activity.
   under reduced motion and where scroll timelines are missing.
   `tests/v2-vstack.test.js`; measured on 28 Oct: the Feed scrolls with no
   frame over 20ms, the same as with the stack off.
+  On the Feed the drum is gentle (16deg, 5% lap), and it casts SHADOWS
+  (owner, 28 Oct 2026): the Masthead's own shadow is faint and close (it
+  gives off light); a card turning up under the Masthead darkens from its
+  top; a LARGE card casts an overcast past its top and bottom onto its
+  neighbours always, standing in front of them; any other card casts only
+  in the stack's zones, onto the card beneath it. Opacity-only layers on
+  the cell's view timeline; no frame over 20ms with them on.
 - The passport→upload build carries an ever-so-slight motion blur
   (0.7px on the map wrapper, owner order Aug 12) during the growth
   window only — roadBuilder removes it 220ms before landing so the
