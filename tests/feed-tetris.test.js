@@ -153,7 +153,8 @@ test("the model's songs are all samples", async () => {
 
 test("the page draws what the packer decides, and the cards are the sketch's", () => {
   const page = read("app/page.js");
-  assert.match(page, /const \{ cells, rows \} = fillAds\(tetrisPack\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), \{ cols: feedCols, ads: true \}\), \{ cols: feedCols \}\);/, "the page packs with the ad space as filler");
+  // (29 Oct 2026) the reader's mix filters the stream before it is packed (lib/feed/choice.js, tests/v2-feed-eq.test.js)
+  assert.match(page, /const shown = filterFeed\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), mix\);\n\s*const \{ cells, rows \} = fillAds\(tetrisPack\(shown, \{ cols: feedCols, ads: true \}\), \{ cols: feedCols \}\);/, "the page packs with the ad space as filler");
   assert.match(page, /style=\{\{ gridColumn: `\$\{c\.x \+ 1\} \/ span \$\{c\.w\}`, gridRow: `\$\{c\.y \+ 1\} \/ span \$\{c\.h\}` \}\}/, "every card at its grid place");
   assert.match(page, /const \{ rail, rest \} = motionRail\(streamPosts\);/);
   assert.ok(!/<Columns|placeInColumns|packFeed/.test(page), "the masonry columns are gone");

@@ -46,6 +46,8 @@ import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { SAMPLE_SONGS } from "../lib/model/songs.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
+import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed/choice.js";
+import FeedEq from "./components/FeedEq.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -80,6 +82,13 @@ const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 export default function Home() {
   const [epsilon, setEpsilon] = useState(false);
+  // THE FEED'S MIX (owner, 29 Oct 2026; lib/feed/choice.js, FeedEq.jsx): the kinds of card that play. The whole Feed
+  // until this device's remembered mix is read after mount (the server renders the whole Feed); kept here only
+  // while REMEMBER is on.
+  const [mix, setMix] = useState(DEFAULT_CHOICE);
+  const [eqDock, setEqDock] = useState(null); // where the equaliser opens: under the row of modes, outside its sideways scroll
+  useEffect(() => { try { setMix(readChoice(window.localStorage)); } catch { /* no storage: the whole Feed */ } }, []);
+  const changeMix = (next) => { let kept = next; try { kept = writeChoice(window.localStorage, next); } catch { /* the mix holds for this visit */ } setMix(kept); };
   const [epsilonAuto, setEpsilonAuto] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -848,9 +857,13 @@ export default function Home() {
     // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
     // every card at its grid place, in one size its kind allows, the gaps even
     // the gaps the packing leaves at the feed's ragged end take ad space (fillAds)
-    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols, ads: true }), { cols: feedCols });
+    const shown = filterFeed(feedList(list).filter((it) => !hidden.has(String(it.id))), mix);
+    const { cells, rows } = fillAds(tetrisPack(shown, { cols: feedCols, ads: true }), { cols: feedCols });
     return (
       <>
+      {list && list.length > 0 && shown.length === 0 ? (
+        <div className="empty">none of the kinds you have playing are in this part of the feed — open the mix (the faders beside FOR YOU) and bring another up.</div>
+      ) : null}
       <CutDefs />
       <div className="fgridwrap">
         <div className="fgrid" style={{ "--fcols": feedCols, "--frows": rows }}>
@@ -908,6 +921,7 @@ export default function Home() {
           </span>
           <EchoRail groups={rail} />
           <div className="fmodes seg">
+            <FeedEq choice={mix} onChange={changeMix} dock={eqDock} />
             {[["curated", "FOR YOU"], ["following", "FOLLOWING"]].map(([k, label]) => (
               <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
                 {label}
@@ -920,6 +934,7 @@ export default function Home() {
               <button className="txtbtn" onClick={clearCraving}>CLEAR CRAVING</button>
             )}
           </div>
+          <div className="eqdock" ref={setEqDock} />
           {pinned && (
             <section className="wfocus" aria-label="pinned transmission">
               <div className="cclbl">PINNED TRANSMISSION · <a className="txtbtn" href="/">BACK TO THE STREAM</a></div>

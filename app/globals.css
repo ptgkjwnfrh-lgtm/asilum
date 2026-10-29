@@ -784,6 +784,49 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .fmode.cur { color: var(--red); text-shadow: var(--glow-r); }
 .fmode.cur::after { content: " *"; }
 .fmodes .txtbtn { margin-left: auto; }
+/* THE FEED'S EQ (owner, 29 Oct 2026: "a collapsed filter button that looks like its from a music player … a remember
+   toggle so it remebers its feed choices"; FeedEq.jsx, lib/feed/choice.js). Shut, one key of a player's face: three
+   faders and a light, lit red while the mix is not the whole Feed. Open, the equaliser under it: a channel a kind,
+   its fader up when it plays, down when muted, its light lit; at the foot a hold switch, REMEMBER. */
+.feq { position: relative; display: inline-flex; align-self: center; margin-right: 4px; }
+.eqkey { position: relative; display: inline-grid; place-items: center; width: 40px; height: 28px; padding: 0; border: 0; border-radius: 8px; cursor: pointer;
+  color: var(--ink); background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 90%, var(--ink)), color-mix(in srgb, var(--bg) 74%, var(--ink)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 color-mix(in srgb, var(--shade) 28%, transparent), 0 1px 3px color-mix(in srgb, var(--shade) 32%, transparent);
+  transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out); }
+.eqkey:active, .eqkey.open { transform: scale(0.96); box-shadow: inset 0 1px 3px color-mix(in srgb, var(--shade) 40%, transparent), inset 0 -1px 0 rgba(255, 255, 255, 0.2); }
+.eqkey:focus-visible, .eqchan:focus-visible, .eqhold:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.eqglyph { width: 18px; height: 14px; }
+.eqglyph path { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: 0.55; }
+.eqglyph rect { fill: currentColor; }
+.eqled { position: absolute; top: 4px; right: 5px; width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 22%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqkey.mixed .eqled { background: var(--warn); filter: var(--key-glow-r); } /* the selected key's own red glow, no harder */
+/* the equaliser opens into the dock under the row of modes (the row scrolls sideways and would clip it): over the
+   Feed's cards (they stack to 54 as they ride the scroll, vstackzl), under the fixtures (64–66) */
+.eqdock { position: relative; height: 0; z-index: 60; }
+.eqpanel { position: absolute; left: 0; top: -4px; z-index: 60; width: min(340px, calc(100vw - 32px)); padding: 14px 12px 10px; border-radius: var(--radius-card);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 94%, var(--ink)), color-mix(in srgb, var(--bg) 84%, var(--ink)));
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4); color: var(--ink); animation: eqopen var(--dur-2) var(--ease-out); }
+@keyframes eqopen { from { opacity: 0; transform: translateY(-4px); } }
+.eqchans { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.eqchan { display: grid; justify-items: center; gap: 6px; padding: 4px 0 2px; border: 0; background: none; cursor: pointer; color: inherit; }
+.eqchan[aria-disabled="true"] { cursor: default; }
+.eqchled { width: 5px; height: 5px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 18%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqchan.on .eqchled { background: var(--warn); filter: var(--key-glow-r); }
+.eqtrack { position: relative; width: 4px; height: 46px; border-radius: 2px; background: color-mix(in srgb, var(--shade) 30%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); }
+.eqknob { position: absolute; left: 50%; top: 0; width: 16px; height: 9px; margin-left: -8px; border-radius: 3px; transform: translateY(37px); /* down: muted (the track's 46 less the knob's 9) */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 70%, var(--ink)));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.5); transition: transform var(--dur-2) var(--ease-out); }
+.eqchan.on .eqknob { transform: none; } /* up: playing; it slides by transform, never by layout */
+.eqname { max-width: 100%; font: 6.5px/1 var(--mich); letter-spacing: 0.02em; color: var(--grey); white-space: nowrap; } /* seven names in a phone's width: at 7.5px they ran together */
+.eqchan.on .eqname { color: var(--ink); }
+.eqhold { display: flex; align-items: center; gap: 9px; width: 100%; margin-top: 12px; padding: 9px 4px 2px; border: 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); background: none; cursor: pointer; color: inherit; text-align: left; }
+.eqslot { position: relative; flex: none; width: 30px; height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--shade) 28%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqhold.on .eqslot { background: color-mix(in srgb, var(--warn) 70%, transparent); }
+.eqslide { position: absolute; top: 2px; left: 2px; width: 12px; height: 10px; border-radius: 5px; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 72%, var(--ink))); box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); transition: transform var(--dur-2) var(--ease-out); }
+.eqhold.on .eqslide { transform: translateX(14px); }
+.eqholdword { font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+.eqholdstate { margin-left: auto; font: 7.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--grey); }
+@media (prefers-reduced-motion: reduce) { .eqkey, .eqknob, .eqslide, .eqslot, .eqled, .eqchled { transition: none; } .eqpanel { animation: none; } }
 .cravingline { margin: 0 0 14px; }
 .cravnote { font-size: 10px; color: var(--grey); margin: 0 0 8px; }
 .fpost { margin: 0 0 18px; }
@@ -5754,6 +5797,22 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
   background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 34%, transparent) 0%, transparent 100%); }
 .card.piece.v-hero .pcfoot[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2foot[data-ink="dark"] {
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--paper) 46%, transparent) 100%); }
+/* THE GROUND'S INK (owner, 29 Oct 2026: "all text should be reactive, glow when background is dark, solid black or
+   grey when background is light, so THE FEED should glow in light mode because its on a dark background";
+   lib/ink.js GROUND_TEXT, GroundInk.jsx). The words on the page's own ground carry --gl, worked out each scroll
+   frame from where they sit on the ground's gradient: 0 on a dark ground, 1 on a bright one. Their colour is a mix
+   of the glowing white and the solid ink by --gl, and their glow fades with it — a blend, never a jump; no colour
+   transition on them, which would trail the scroll. (Dark's ground is dark throughout: they glow white there.) */
+:root { --g-ink-on-light: #18232e; --g-ink-on-dark: #f4f9fc; }
+[data-ground] {
+  --g-ink: color-mix(in srgb, var(--g-ink-on-light) calc(var(--gl, 0) * 100%), var(--g-ink-on-dark));
+  --g-glow: 0 0 1px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 100%), transparent), 0 0 9px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 55%), transparent), 0 0 22px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 18%), transparent);
+}
+[data-theme="light"] .headline[data-ground] { color: var(--g-ink); text-shadow: var(--g-glow); }
+[data-theme] .seg > .fmode[data-ground]:not(.cur), [data-theme] .seg > .fmode[data-ground]:not(.cur):hover,
+.fmodes .txtbtn[data-ground], .filters .toggle[data-ground] {
+  color: var(--g-ink); text-shadow: var(--g-glow); transition: background var(--dur-2) var(--ease-out); }
+.f20post .p2head[data-ground], .f20post .p2foot[data-ground] { --on-media: var(--g-ink); text-shadow: var(--g-glow); }
 /* the rule under a post's name takes its head's ink */
 .p2head[data-ink="dark"] + .p2rule { --on-media: var(--ink-on-bright); }
 .p2head[data-ink="light"] + .p2rule { --on-media: var(--ink-on-dark); }

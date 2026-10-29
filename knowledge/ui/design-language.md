@@ -1202,3 +1202,28 @@ centred — with no hit test, so it works off the screen and nothing waits for t
 (`[data-ink-ease]`). Measured after, 375px light: 31 of 31 blocks inked before they came on; no ink changed while
 on screen; 1 dropped frame in a 300-frame scroll, as before; the geometry chose the hit test's picture at 234 of 234
 points over seven screens.
+
+## 29 Oct 2026 — THE GROUND'S INK, AND THE FEED'S EQ
+
+Owner: "all text should be reactive, glow when background is dark, solid black or grey when background is light, so
+THE FEED should glow in light mode because its on a dark background. also underneath the feed with the FOR YOU page
+select right next to it lets have a collapsed filter button that looks like its from a music player that allows users
+to change what types of cards show on their feed and at the bottom it has a remember toggle so it remebers its feed
+choices".
+
+THE GROUND'S INK (`lib/ink.js` GROUND_TEXT, GROUND, groundLuma, groundMix; `GroundInk.jsx`). Words on the page's own
+ground — every page's headline, the Feed's modes and filters, Figure 20's head and foot — carry `--gl`, worked out on
+every scroll frame from where they sit on the ground's fixed gradient (the light page's dark blue at the screen's top
+and foot, the ice between; dark's near-black). The CSS mixes their colour from glowing white to a solid near-black by
+`--gl`, and their glow fades with it: a blend across GROUND_BAND either side of GROUND_TURN (0.76), never a jump.
+Arithmetic on boxes, no hit test; re-read when the layout settles and the theme turns; on iOS WebKit (which scrolls a
+fixed background) by the page's height, told by `-webkit-touch-callout`. The card ink (InkWatch) leaves Figure 20's
+head and foot to it. Measured at 375px light: THE FEED glows at the top; every ground word matched its model within
+0.02; the largest change in a frame at 6px of travel 0.24; 1 dropped frame in 300, as before.
+
+THE FEED'S EQ (`lib/feed/choice.js`, `FeedEq.jsx`). First in the row of modes, before FOR YOU: a player's key with an
+equaliser's three faders and a light, lit red while the mix is not the whole Feed. Open (under the row, which scrolls
+sideways and clipped it; over the cards, under the fixtures), an equaliser: STILLS · MOTION · PIECES · WORDS · BRDCST ·
+PLACES · MUSIC, a fader up when it plays, its light lit; the last channel playing will not mute; at the foot a hold
+switch, REMEMBER, which keeps the mix on this device (`asilum-feed-choice`) and, turned off, forgets it. The stream is
+filtered before it is packed; an ad space and an echo are on no channel. Escape and a click away close it.

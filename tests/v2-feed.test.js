@@ -28,7 +28,7 @@ test("there is no Wire: the selector, the lanes, the in-page composer and the ho
 });
 
 test("the stream is one Tetris grid (owner's feed sketch, 25 Oct 2026): the packer places, the page draws", () => {
-  assert.match(page, /tetrisPack\(feedList\(list\)/);
+  assert.match(page, /filterFeed\(feedList\(list\)[^\n]*\n\s*const \{ cells, rows \} = fillAds\(tetrisPack\(shown,/, "the braided stream, the reader's mix, then the packer");
   assert.match(page, /className="fgrid" style=\{\{ "--fcols": feedCols, "--frows": rows \}\}/);
   assert.ok(!/feedwheel|feedfull|feedstrip|feedduo/.test(page + css), "the segments, the strip wrapper and the duo are gone");
 });

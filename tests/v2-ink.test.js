@@ -77,7 +77,8 @@ test("a block lands on the picture as object-fit draws it", () => {
 test("the blocks that read their ground", () => {
   assert.deepEqual([...INK_ZONES], [
     ".card.piece.v-hero .pchead", ".card.piece.v-hero .pcfoot",
-    ".card.wpostcard.p2.withmedia .p2head", ".card.wpostcard.p2.withmedia .p2foot",
+    // (29 Oct 2026) Figure 20's head and foot float on the page: they take the ground's ink (tests/v2-ground.test.js)
+    ".card.wpostcard.p2.withmedia:not(.f20post) .p2head", ".card.wpostcard.p2.withmedia:not(.f20post) .p2foot",
     ".card.placecard.withphoto .placeopen", ".card.bstrip.withphoto .bsopen", ".fcell .carddots",
   ]);
 });

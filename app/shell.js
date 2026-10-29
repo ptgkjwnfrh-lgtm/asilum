@@ -34,6 +34,7 @@ import ControlCenter from "./components/ControlCenter.jsx";
 import SheetHost from "./components/SheetHost.jsx";
 import DmLive from "./components/DmLive.jsx";
 import InkWatch from "./components/InkWatch.jsx";
+import GroundInk from "./components/GroundInk.jsx";
 import SideButtons from "./components/SideButtons.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
@@ -305,6 +306,7 @@ export default function Shell({ children }) {
       {/* the incoming-message banner and the DM tab's count (27 Oct 2026) */}
       <DmLive />
       <InkWatch />
+      <GroundInk />
       <SideButtons />
 
       <AccountSignup />
