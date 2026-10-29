@@ -47,12 +47,17 @@
 // of the brick's); and the glow comes off the brick's rim, as deep as the line is thick (rimPath), not off the
 // whole slab — so the halo is the line's halo all the way round.
 //
-// Three layers on one box: the glow (the brick's rim in --wm-glow, the stark white of the Masthead's line, clipped
+// Then: "tint the letters but i want the transition as smooth as possible, seamless, fast and reactive". Under the
+// cut lies the word again in a translucent dark (.wmtint), the glass showing through it: it darkens a white card
+// behind the letters to grey and the glass to a deeper blue, pixel by pixel as things scroll under — no reading, no
+// waiting, no script (lib/wordmark.js TINT_BLEED). In dark it is clear.
+//
+// Four layers on one box: the glow (the brick's rim in --wm-glow, the stark white of the Masthead's line, clipped
 // away from the word's window so no haze fills the letters — glowWindow); the brick, unlit, the word cut out of it
-// by a mask; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
+// by a mask, the tint showing through it; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
 
 import { useId } from "react";
-import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, BOLD, RUN } from "../../lib/wordmark.js";
+import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, BOLD, RUN, TINT_BLEED } from "../../lib/wordmark.js";
 
 /** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
 export const WM = Object.freeze({
@@ -79,6 +84,9 @@ export default function Wordmark({ href = "/", className = "" }) {
       <span className="wmart" aria-hidden="true">
         <svg className="wmlit wmglow" viewBox={VIEW} focusable="false" style={{ clipPath: WINDOW }}>
           <path className="wmbar" d={RIM} fillRule="evenodd" />
+        </svg>
+        <svg className="wmtint" viewBox={VIEW} focusable="false">
+          <g transform={SET}><text className="wmtintink" x={WM.x.join(" ")} y={WM.base} strokeWidth={(BOLD + TINT_BLEED) / WM.set.s}>ASILUM</text></g>
         </svg>
         <svg className="wmbrick" viewBox={VIEW} focusable="false">
           <defs>

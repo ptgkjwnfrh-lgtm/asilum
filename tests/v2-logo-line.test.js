@@ -20,11 +20,17 @@
 //     asterisk is whole and red in its own red glow; no ink token is left for the word;
 //   - the Masthead's line is LINE thick, starts a pixel under the brick's end, still broken at the keys;
 //   - the CSS box numbers are the module's;
-//   - the disc (the wheel's pane) wears the fixtures' shine rim, lit along its visible top.
+//   - the disc (the wheel's pane) wears the fixtures' shine rim, lit along its visible top;
+//   - ("tint the letters but i want the transition as smooth as possible, seamless, fast and reactive") under the
+//     cut lies the word again, fuller than the hole, in a TRANSLUCENT dark the glass shows through: in light, laid
+//     over white it sets the letters at least 3:1 (at most 5:1) against the white brick, and laid over the light
+//     glass it comes out darker still — it follows what is behind; in dark it is clear; no blend mode (a multiply
+//     was measured flat in the page: 121,126,135 over the glass and over a white card alike); a theme turn eases
+//     it, never under reduced motion.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { REF, WORD, RUN, LINE, BEND, BOLD, brickGeometry, brickPath, rimPath, brickBox, glowWindow } from "../lib/wordmark.js";
+import { REF, WORD, RUN, LINE, BEND, BOLD, TINT_BLEED, brickGeometry, brickPath, rimPath, brickBox, glowWindow } from "../lib/wordmark.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -118,8 +124,8 @@ test("the glow comes off the brick's rim, the line's depth, and keeps out of the
 });
 
 test("the word cut out of the brick, bolder; the asterisk whole and red", () => {
-  const order = ['className="wmlit wmglow"', 'className="wmbrick"', 'className="wmlit wmlitstar"'].map((c) => wm.indexOf(c));
-  assert.ok(order.every((v) => v > -1) && order[0] < order[1] && order[1] < order[2], "glow, brick, asterisk");
+  const order = ['className="wmlit wmglow"', 'className="wmtint"', 'className="wmbrick"', 'className="wmlit wmlitstar"'].map((c) => wm.indexOf(c));
+  assert.ok(order.every((v) => v > -1) && order.every((v, i) => i === 0 || order[i - 1] < v), "glow, tint, brick, asterisk");
   assert.match(wm, /const cut = "wmc" \+ useId\(\)\.replace\(\/:\/g, ""\);/, "a mask of its own per logo");
   assert.match(wm, /<mask id=\{cut\} maskUnits="userSpaceOnUse"/);
   assert.match(wm, /<rect className="wmplane" x=\{PLANE\.x\} y=\{PLANE\.y\} width=\{PLANE\.w\} height=\{PLANE\.h\} \/>/);
@@ -157,4 +163,29 @@ test("the disc wears the fixtures' shine rim, lit along its visible top", () => 
   assert.match(css, /\.ccwglass \.fxrim \{ background: linear-gradient\(180deg, var\(--fx-rim-hi\) 0%, var\(--fx-rim-lo\) 50%, var\(--fx-rim-lo\) 100%\); \}/, "bright at the top, never fading to nothing");
   assert.match(css, /\.ccwglass \{[^}]*border-radius: 50%;/, "round, so the rim (border-radius: inherit) is");
   assert.match(css, /\.fxrim \{[^}]*border-radius: inherit;/);
+});
+
+test("the cut letters tinted by a translucent dark under them: per pixel, every frame, no script", () => {
+  assert.match(wm, /<svg className="wmtint" viewBox=\{VIEW\} focusable="false">\s*<g transform=\{SET\}><text className="wmtintink" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\} strokeWidth=\{\(BOLD \+ TINT_BLEED\) \/ WM\.set\.s\}>ASILUM<\/text><\/g>/, "the word again, as set, fuller than the cut");
+  assert.ok(TINT_BLEED > 0, "past the hole's soft edge");
+  assert.ok(!/mix-blend-mode/.test(css.match(/\.wmtint[^{]*\{[^}]*\}/g).join(" ")), "no blend: a blend inside the glass never sees the page");
+  assert.match(css, /\.wmtintink \{ font: 400 161px var\(--mich\); fill: var\(--wm-cut-tint\); stroke: var\(--wm-cut-tint\); stroke-linejoin: miter; transition: fill var\(--dur-2\) var\(--ease-out\), stroke var\(--dur-2\) var\(--ease-out\); \}/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.wmtintink \{ transition: none; \} \}/);
+  const tok = (src) => (src.match(/--wm-cut-tint: ([^;]+);/) || [])[1];
+  const root = css.match(/:root \{([^}]*--wm-star[^}]*)\}/)[1];
+  const light = css.match(/\[data-theme="light"\] \{([^}]*--ad-cloud[^}]*)\}/)[1];
+  const media = css.match(/@media \(prefers-color-scheme: light\) \{ :root:not\(\[data-theme="dark"\]\) \{([^}]*--ad-cloud[^}]*)\} \}/)[1];
+  assert.equal(tok(root), "transparent", "dark: clear");
+  assert.ok(tok(light) && tok(light) === tok(media), "light: one tint, both ways");
+  const m = tok(light).match(/^rgba\((\d+), (\d+), (\d+), ([\d.]+)\)$/);
+  assert.ok(m, "translucent: " + tok(light));
+  const [r, g, b, a] = m.slice(1).map(Number);
+  assert.ok(a > 0.2 && a < 0.8, "the glass shows through it");
+  const over = (bg) => [r, g, b].map((c, i) => c * a + bg[i] * (1 - a));
+  const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const L = ([x, y, z]) => 0.2126 * lin(x) + 0.7152 * lin(y) + 0.0722 * lin(z);
+  const white = 1.05 / (L(over([255, 255, 255])) + 0.05);
+  assert.ok(white >= 3 && white <= 5, `over a white card the letters ${white.toFixed(2)}:1 against the brick, a tint not ink`);
+  const glass = [143, 158, 174]; // the light glass through the cut, measured at 375px before the tint
+  assert.ok(L(over(glass)) < L(over([255, 255, 255])) * 0.7, "over the glass darker still: it follows what is behind");
 });

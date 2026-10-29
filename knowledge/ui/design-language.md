@@ -1162,6 +1162,13 @@ disc"):
   whole slab: measured at 800px, one pixel out the brick and the line both read 196 above, 199 and 188 below,
   falling off alike. It is clipped away from a window round the word (`glowWindow`) so no haze fills the letters.
 - The word is CUT OUT of the brick (a mask), a `BOLD` stroke (5 units) thicker; the glass shows through. The
-  asterisk stays whole and red. `--wm-ink` is gone. In light, over a white card, the letters read faintly — the
-  glass is pale there.
+  asterisk stays whole and red. `--wm-ink` is gone.
+- THE TINT ("tint the letters but i want the transition as smooth as possible, seamless, fast and reactive"):
+  over a white card in light the holes vanished. Under the cut lies the word again (`.wmtint`, `TINT_BLEED` fuller
+  than the hole) in `--wm-cut-tint`, half a deep navy, TRANSLUCENT: the glass shows through it, so white behind
+  turns a cool grey, the blue glass a deeper blue, a dark card stays dark — per pixel, every frame, by plain
+  compositing, with nothing measured and nothing to wait for (InkWatch reads at scroll rest; this does not).
+  Dark's tint is clear; a theme turn eases it over `--dur-2`. A multiply was tried first and measured flat in the
+  page (the same 121,126,135 over the glass and over a white card): inside the Masthead's glass a blend sees only
+  the glass's own layer, never the page beneath.
 - The wheel's disc wears the fixtures' shine rim (`.fxrim`), lit from the top since only its upper half shows.

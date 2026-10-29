@@ -376,6 +376,12 @@ button { font-family: var(--helv); }
    black, a stroke round each (lib/wordmark.js BOLD) for "a little bolder" */
 .wmplane { fill: #fff; }
 .wmcut { font: 400 161px var(--mich); fill: #000; stroke: #000; stroke-linejoin: miter; }
+/* THE TINT under the cut (29 Oct 2026: "tint the letters but i want the transition as smooth as possible,
+   seamless, fast and reactive"): the word again, a little fuller than the hole (lib/wordmark.js TINT_BLEED), in
+   --wm-cut-tint, a translucent dark the glass shows through — a white card behind turns grey, the blue glass a
+   deeper blue, a dark card stays dark, per pixel and per frame. A theme turn eases the tint over --dur-2. */
+.wmtintink { font: 400 161px var(--mich); fill: var(--wm-cut-tint); stroke: var(--wm-cut-tint); stroke-linejoin: miter; transition: fill var(--dur-2) var(--ease-out), stroke var(--dur-2) var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .wmtintink { transition: none; } }
 :root {
   /* the wheel's marks (.ccwtick): a tone in the glass, a shade darker on the
      light glass and a shade clearer on the dark, crisp, no shadow — the
@@ -387,6 +393,7 @@ button { font-family: var(--helv); }
      — one glow (the same radii and strengths), each in its own colour. (Before: the word in the artwork's black,
      --wm-ink; the Tron mark's holes; inks of green, white, red and mint.) */
   --wm-star: var(--warn);
+  --wm-cut-tint: transparent; /* dark: clear — the dark glass already reads through the cut */
   --wm-bar: #ffffff;
   --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
   --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
@@ -416,9 +423,10 @@ button { font-family: var(--helv); }
 }
 [data-theme="light"] {
   --stamp-recess: rgba(13, 24, 33, 0.14);
+  --wm-cut-tint: rgba(13, 24, 40, 0.5); /* light: half a deep navy — over white a cool grey, over the glass a deeper blue */
   --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; /* the ticker in light: the logo's black on light grey */
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-cut-tint: rgba(13, 24, 40, 0.5); --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
