@@ -31,17 +31,16 @@ import { useId } from "react";
 // overtop of the glowing white brick", then "i want half of the asilum text to be sticking half way over the
 // brick, and the brick should sit overtop the masthead line"): the bar's top edge on the capitals' middle, so
 // the word's lower half stands on the bar and its upper half above it. The bar is drawn first, the asterisk
-// (above the bar) and the word over it. The word is set twice, cut at the white: off it in the theme's ink
-// (the artwork's black in light; white in dark — owner, the same day: "for dark mode lets make the logo white
-// instead of green"), on it in the artwork's black — so every part reads in either theme. The Masthead rests
-// the bar on its line (.brandfix: "move the brick up, i want it to sit ontop of the mast head line").
+// (above the bar) and the word over it. The word is set twice, cut at the bar's top: above it in the theme's
+// ink, on it in the bar's — the artwork's black, both, in light; the asterisk's red, both, in dark (owner, the
+// same day: "for dark mode the entire font should be red"; it was white, and the phosphor mint before). The
+// Masthead rests the bar on its line (.brandfix: "move the brick up, i want it to sit ontop of the mast head
+// line"). (A stem rose from the bar's left end behind the asterisk for a while that day; then "forget the left
+// side asterisk" — it is gone.)
 //
-// THE STEM (owner, the same day: "on the left side of the brick i want a line to steam from the brick going
-// upawards, the line should be thick enough to where the asterisk has the lines white background to be
-// visible on"): from the bar's left end straight up, flush with it, as wide as the asterisk's ink and a
-// margin (its ink measured in Chromium at 131px Helvetica: x 4 to 46, y -0.8 to 38.2), to a margin above the
-// asterisk's top; one white shape with the bar, in the bar's glow, the red asterisk on it. Where the A's leg
-// crosses it, the leg takes the black, as on the bar.
+// THE SET (the same day: "lets inside ever ever so slightly lower font size and move "*ASILUM" a bit to the
+// right"): the asterisk and the word together at WM.set.s of the artwork's size, scaled about their left edge
+// on the bar's top, so half the capitals still stand over the bar, and moved WM.set.dx along it.
 //
 // Three layers on one box: the bar first (see THE WORD ON THE BRICK); the asterisk, glowing red (owner, the same day:
 // "the asterisk must glow red" — the bar's glow, the same radii, in the
@@ -56,15 +55,14 @@ export const WM = Object.freeze({
   starY: 94.2, // Helvetica's asterisk stands 0.717em above its baseline: its top on the capitals' line
   // the bar's top on the capitals' middle (121 - 120.75 / 2): the word half over it
   bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6, y: 60.625 }),
-  // the stem up from the bar's left end: the asterisk's ink (4..46 across, -0.8..38.2 down) with ~9 to spare
-  stem: Object.freeze({ x: 3.3, w: 52, y: -10 }),
-  top: -10, // the mark's highest edge: the stem's top
   // the bar's foot (60.625 + 82.6), the mark's lowest edge: it rests on the Masthead's line
   foot: 143.225,
+  // the asterisk and the word: a touch smaller (s), a little to the right (dx, in these units), scaled about
+  // (0, the bar's top) so their middle stays on the bar's edge
+  set: Object.freeze({ s: 0.96, dx: 40 }),
 });
-const VIEW = `${WM.bar.x} ${WM.top} ${WM.bar.w} ${WM.foot - WM.top}`;
-// the white, as one shape: the stem and the bar
-const STEM_H = WM.bar.y - WM.stem.y;
+const VIEW = `${WM.bar.x} 0 ${WM.bar.w} ${WM.foot}`;
+const SET = `translate(${WM.set.dx} ${+(WM.bar.y * (1 - WM.set.s)).toFixed(4)}) scale(${WM.set.s})`;
 
 export default function Wordmark({ href = "/", className = "" }) {
   const id = useId().replace(/:/g, "");
@@ -74,27 +72,18 @@ export default function Wordmark({ href = "/", className = "" }) {
       <span className="wmart" aria-hidden="true">
         <svg className="wmlit wmlitbar" viewBox={VIEW} focusable="false">
           <rect className="wmbar" x={WM.bar.x} y={WM.bar.y} width={WM.bar.w} height={WM.bar.h} />
-          <rect className="wmbar wmstem" x={WM.stem.x} y={WM.stem.y} width={WM.stem.w} height={STEM_H + 1} />
         </svg>
         <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
-          <text className="wmstar" x="0" y={WM.starY}>*</text>
+          <g transform={SET}><text className="wmstar" x="0" y={WM.starY}>*</text></g>
         </svg>
         <svg className="wmtype" viewBox={VIEW} focusable="false">
           <defs>
-            {/* off the white: everything but the bar's band and the stem */}
-            <mask id={above} maskUnits="userSpaceOnUse" x="-200" y="-200" width="1400" height="600">
-              <rect x="-200" y="-200" width="1400" height="600" fill="#fff" />
-              <rect x="-200" y={WM.bar.y} width="1400" height="400" fill="#000" />
-              <rect x={WM.stem.x} y={WM.stem.y} width={WM.stem.w} height={STEM_H + 1} fill="#000" />
-            </mask>
-            {/* on the white: the bar's band and the stem */}
-            <clipPath id={on}>
-              <rect x="-200" y={WM.bar.y} width="1400" height="400" />
-              <rect x={WM.stem.x} y={WM.stem.y} width={WM.stem.w} height={STEM_H + 1} />
-            </clipPath>
+            <clipPath id={above}><rect x="-200" y="-200" width="1400" height={200 + WM.bar.y} /></clipPath>
+            <clipPath id={on}><rect x="-200" y={WM.bar.y} width="1400" height="400" /></clipPath>
           </defs>
-          <text className="wmink" mask={`url(#${above})`} x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
-          <text className="wmink wmonbar" clipPath={`url(#${on})`} x={WM.x.join(" ")} y={WM.base}>ASILUM</text>
+          {/* the cut is the frame's, outside the set's scale: the bar's top, wherever the letters stand */}
+          <g clipPath={`url(#${above})`}><g transform={SET}><text className="wmink" x={WM.x.join(" ")} y={WM.base}>ASILUM</text></g></g>
+          <g clipPath={`url(#${on})`}><g transform={SET}><text className="wmink wmonbar" x={WM.x.join(" ")} y={WM.base}>ASILUM</text></g></g>
         </svg>
       </span>
       <span className="wmword idlabel"><i>*</i><span className="wmcaps">ASILUM</span></span>
