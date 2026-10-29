@@ -59,8 +59,12 @@ export const WM = Object.freeze({
   word: 161, star: 131, cap: 120.75, base: 121,
   x: Object.freeze([0, 155.2, 307.7, 337.7, 453, 604.3]), // A S I L U M, each origin
   starY: 94.2, // Helvetica's asterisk stands 0.717em above its baseline: its top on the capitals' line
-  // the bar's top on the capitals' middle (121 - 120.75 / 2): the word half over it
-  bar: Object.freeze({ x: 3.3, w: 976.9, h: 82.6, y: 60.625 }),
+  // the artwork's bar, as measured: from just left of the A (3.3) to 976.9 across
+  art: Object.freeze({ x: 3.3, w: 976.9 }),
+  // the bar as shipped: its top on the capitals' middle (121 - 120.75 / 2), the word half over it; its left end at
+  // the A's outline (owner, 28 Oct 2026: "shrink the brick from the left so it starts at the A, not past it" — the A's
+  // ink starts 5 at 161, its outline 14 further, set: 40 + 0.96 × (5 - 14) = 31.36), its right end the artwork's
+  bar: Object.freeze({ x: 31.36, w: 948.84, h: 82.6, y: 60.625 }),
   // the bar's foot (60.625 + 82.6), the mark's lowest edge: it rests on the Masthead's line
   foot: 143.225,
   // the asterisk and the word: a touch smaller (s), a little to the right (dx, in these units), scaled about
@@ -75,11 +79,11 @@ export const WM = Object.freeze({
   // apex's top runs 74 to 96 at 161, set 111.04), from the outline's top down to the capitals' top
   tron: Object.freeze({
     t: 14,
-    stem: Object.freeze({ x: 3.3, w: 96.7, y: -10.775 }),
+    stem: Object.freeze({ x: 31.36, w: 68.64, y: -10.775 }),
     tip: Object.freeze({ x: 99, w: 12.04, h: 13.44 }),
     // THE RISE: from the bar's left end to the far end of the A's flat top (Michroma 96 at 161, set 132.16), from
     // the outline's top up past any Masthead's top edge (its foot overlaps the outline by half a unit)
-    rise: Object.freeze({ x: 3.3, w: 128.86, y: -900 }),
+    rise: Object.freeze({ x: 31.36, w: 100.8, y: -900 }),
   }),
   top: -12, // the mark's highest edge: the outline's top, and a breath
 });

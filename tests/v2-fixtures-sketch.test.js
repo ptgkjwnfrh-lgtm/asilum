@@ -414,6 +414,7 @@ test("the wheel's rainbow: the V.1 magazine's glass on the wheel alone, centred 
 //     the keys' row; the keys 10% bigger, the logo the same size;
 //   - the Masthead's children are the wordmark, the line, its cuts and the keys; the stamped line is
 //     gone (no .mhstamp, no STAMP, no --stamp-blue).
+const set0 = () => read("app/components/Wordmark.jsx").match(/set: Object\.freeze\(\{ s: ([\d.]+), dx: ([\d.]+) \}\)/).slice(1).map(Number);
 test("the new logo: type set from the owner's artwork, one glow — red on the asterisk, white on the bar and the Masthead's line, broken at the keys", async () => {
   const css = read("app/globals.css");
   const wm = read("app/components/Wordmark.jsx");
@@ -448,8 +449,15 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const ox = lefts[0] - LSB[0] * k; // the A's origin
   X.forEach((x, i) => assert.ok(Math.abs(ox + (x + LSB[i]) * k - lefts[i]) <= 2, "ASILUM"[i] + " where the artwork has it: " + (ox + (x + LSB[i]) * k).toFixed(1) + " vs " + lefts[i]));
   let wb = [W, 0, info.height, 0]; for (let y = 880; y < 1100; y++) for (let x = 0; x < W; x++) if (white(p(x, y))) wb = [Math.min(wb[0], x), Math.max(wb[1], x), Math.min(wb[2], y), Math.max(wb[3], y)];
-  assert.ok(Math.abs(ox + bar[0] * k - wb[0]) <= 2 && Math.abs(ox + (bar[0] + bar[1]) * k - (wb[1] + 1)) <= 2, "the bar's ends");
+  const art = wm.match(/art: Object\.freeze\(\{ x: ([\d.]+), w: ([\d.]+) \}\)/).slice(1).map(Number);
+  assert.ok(Math.abs(ox + art[0] * k - wb[0]) <= 2 && Math.abs(ox + (art[0] + art[1]) * k - (wb[1] + 1)) <= 2, "the artwork's bar's ends");
   assert.ok(Math.abs(916 - wb[2]) <= 1 && Math.abs(bar[2] * k - (wb[3] + 1 - wb[2])) <= 2, "flush under the baseline, as deep as drawn");
+  // (owner, 28 Oct 2026: "shrink the brick from the left so it starts at the A, not past it") the shipped bar starts at
+  // the A's outline (its ink 5 at 161, the outline 14 further, set) and keeps the artwork's right end
+  assert.ok(Math.abs(bar[0] - (set0()[1] + set0()[0] * (5 - 14))) < 0.01, "the bar starts at the A's outline: " + bar[0]);
+  assert.ok(Math.abs(bar[0] + bar[1] - (art[0] + art[1])) < 0.01, "and ends where the artwork's does");
+  assert.match(rules, /\.wmart \{[^}]*width: calc\(var\(--wm-u\) \* 948\.84\);/, "the box as wide as the bar");
+  assert.ok(Math.abs(bar[1] - 948.84) < 0.001, "the CSS and the geometry agree on the width");
   let rb = [W, 0, info.height, 0]; for (let y = 600; y < 900; y++) for (let x = 100; x < 400; x++) if (red(p(x, y))) rb = [Math.min(rb[0], x), Math.max(rb[1], x), Math.min(rb[2], y), Math.max(rb[3], y)];
   assert.ok(Math.abs(rb[0] - lefts[0]) <= 2, "the asterisk's left edge on the A's");
   assert.ok(Math.abs(rb[2] - capTop) <= 2, "its top on the capitals' line");
@@ -503,7 +511,7 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const top = Number(wm.match(/top: (-?[\d.]+),/)[1]);
   assert.match(rules, /\.brandfix \{[^}]*margin-top: calc\(var\(--mh-line-top\) - var\(--wm-u\) \* 155\.225\);/s, "the bar's foot on the line's top");
   assert.ok(Math.abs(foot - top - 155.225) < 0.001, "the CSS and the geometry agree: the box's top to the bar's foot");
-  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 976\.9 \/ 155\.225;/, "the box: the dark outline's top to the bar's foot");
+  assert.match(rules, /\.wmart \{[^}]*aspect-ratio: 948\.84 \/ 155\.225;/, "the box: the bar's width, the outline's top to the bar's foot");
   assert.match(wm, /const VIEW = `\$\{WM\.bar\.x\} \$\{WM\.top\} \$\{WM\.bar\.w\} \$\{WM\.foot - WM\.top\}`;/);
   // THE SET (the same day: "lets inside ever ever so slightly lower font size and move "*ASILUM" a bit to the
   // right"): the asterisk and the word a touch smaller and a little right, scaled about the bar's top so half

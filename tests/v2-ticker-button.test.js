@@ -1,5 +1,6 @@
-// tests/v2-ticker-button.test.js — THE TICKER'S BUTTON (owner, 28 Oct 2026: "make like a phyical comic button in
-// the middle right on the page so i can open and close the ad ticker").
+// tests/v2-ticker-button.test.js — THE SIDE BUTTONS (owner, 28 Oct 2026: "make like a phyical comic button in the
+// middle right on the page so i can open and close the ad ticker", then "also add a button in the same spot to
+// switch from light to dark").
 //
 // Declared before measuring:
 //   - mounted once, by the shell; at the middle of the page's right edge, fixed, over the page and under popups
@@ -8,20 +9,23 @@
 //     event and modes (lib/placements.js TICKER_TESTS) — so it is this page view only, and with nothing live the
 //     ticker runs its labelled samples, never an invented ad;
 //   - it follows the ticker itself (the AdStrip's `open` class), whoever moved it, and says which way it will go;
-//   - comic and physical: an inked outline, a hard offset shadow it sinks into when pressed; colours through tokens.
+//   - comic and physical: an inked outline, a hard offset shadow it sinks into when pressed; colours through tokens;
+//   - the theme's button, in the same stack: a press turns the page to the other theme and keeps it, exactly as
+//     Settings pins one (data-theme on <html>, asilum-theme), and it follows the theme whoever turns it.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { TICKER_TESTS } from "../lib/placements.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
-const btn = read("app/components/TickerButton.jsx");
+const btn = read("app/components/SideButtons.jsx");
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
 test("mounted once, at the middle of the right edge, over the page and under popups", () => {
-  assert.equal((read("app/shell.js").match(/<TickerButton \/>/g) || []).length, 1);
-  assert.match(css, /\.tickbtn \{\s*position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY\(-50%\) rotate\(-6deg\);/);
-  assert.match(css, /\[data-popup\] \.tickbtn \{ opacity: 0; pointer-events: none; \}/, "out of the way of a popup");
+  assert.equal((read("app/shell.js").match(/<SideButtons \/>/g) || []).length, 1);
+  assert.match(css, /\.sidebtns \{ position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY\(-50%\);/);
+  assert.match(btn, /<div className="sidebtns">\s*<TickerButton \/>\s*<ThemeButton \/>\s*<\/div>/, "the ticker's and the theme's, stacked");
+  assert.match(css, /\[data-popup\] \.sidebtns \{ opacity: 0; pointer-events: none; \}/, "out of the way of a popup");
 });
 
 test("a press folds an open ticker and opens a folded one, by the console's own test", () => {
@@ -40,11 +44,29 @@ test("it follows the ticker, and says which way it will go", () => {
 });
 
 test("comic and physical, in tokens", () => {
-  const face = css.match(/\.tickbtnface \{([^}]*)\}/)[1];
+  const face = css.match(/\n\.tickbtnface \{([^}]*)\}/)[1]; // the face's own rule, not a variant's
   assert.match(face, /border: 2\.5px solid var\(--comic-ink\);/, "inked");
   assert.match(face, /box-shadow: 0 6px 0 var\(--comic-ink\)/, "a hard offset shadow");
   assert.match(css, /\.tickbtn:active \.tickbtnface \{ transform: translateY\(5px\); box-shadow: 0 1px 0 var\(--comic-ink\)/, "it sinks into its shadow when pressed");
   assert.ok(!/#[0-9a-f]{3,6}\b/i.test(btn), "no colour in the component");
   assert.ok(!/#[0-9a-f]{3,6}\b/i.test(css.match(/\.tickbtn[^{]*\{[^}]*\}/g).join("")), "the button's rules only name tokens");
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.tickbtnface \{ transition: none; \} \}/);
+});
+
+test("the theme's button: the other theme, kept the way Settings keeps it, following whoever turns it", () => {
+  const theme = btn.slice(btn.indexOf("function ThemeButton"), btn.indexOf("export default function SideButtons"));
+  assert.match(theme, /const next = theme === "dark" \? "light" : "dark";/);
+  assert.match(theme, /document\.documentElement\.dataset\.theme = next;\s*try \{ window\.localStorage\.setItem\("asilum-theme", next\); \} catch \{\}/, "pinned, as Settings pins it");
+  const settings = read("app/settings/page.js");
+  assert.match(settings, /document\.documentElement\.dataset\.theme = mode;\s*try \{ window\.localStorage\.setItem\("asilum-theme", mode\); \} catch \{\}/, "the same two writes Settings makes");
+  assert.match(theme, /mo\.observe\(document\.documentElement, \{ attributes: true, attributeFilter: \["data-theme"\] \}\);/);
+  assert.match(theme, /aria-label=\{"switch to the " \+ next \+ " theme"\}/);
+  assert.match(css, /\.themebtn \.tickbtnface \{ background-color: var\(--comic-ink\); color: var\(--comic-on\);/);
+  assert.match(css, /\.themebtn\.dark \.tickbtnface \{ background-color: var\(--comic-on\); color: var\(--comic-ink\); \}/);
+});
+
+test("an owner's large-card size survives the first paint (the prepaint accepts what the console accepts)", () => {
+  // the console's control is in svh (lib/uilab.js --ed-feed-large); the prepaint once dropped it
+  assert.match(read("app/layout.js"), /\^\(none\|-\?\\\\d\+\(\\\\\.\\\\d\+\)\?\(px\|em\|s\|%\|svh\)\?\)\$/);
+  assert.match(read("lib/uilab.js"), /const SAFE_VALUE = \/\^\(none\|-\?\\d\+\(\\\.\\d\+\)\?\(px\|em\|s\|%\|svh\)\?\)\$\/;/);
 });

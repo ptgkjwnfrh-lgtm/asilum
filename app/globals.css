@@ -365,7 +365,7 @@ button { font-family: var(--helv); }
    The --ed-fs-wordmark size now only reaches the hidden name. */
 .wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
   font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
-.wmart { position: relative; display: block; width: calc(var(--wm-u) * 976.9); aspect-ratio: 976.9 / 155.225; } /* the outline's top (-12) to the bar's foot (143.225): Wordmark.jsx */
+.wmart { position: relative; display: block; width: calc(var(--wm-u) * 948.84); aspect-ratio: 948.84 / 155.225; } /* the bar's width (from the A's outline) by the outline's top (-12) to the bar's foot (143.225): Wordmark.jsx */
 .wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
 .wmlitstar { filter: var(--wm-glow-r); }
@@ -5743,15 +5743,18 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--key-glow-r); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }
 
-/* THE TICKER'S BUTTON (TickerButton.jsx; owner, 28 Oct 2026: "make like a phyical comic button in the middle right
-   on the page so i can open and close the ad ticker"): a comic push-button — inked outline, halftone face, a hard
+/* THE SIDE BUTTONS (SideButtons.jsx; owner, 28 Oct 2026: "make like a phyical comic button in the middle right
+   on the page so i can open and close the ad ticker", then "also add a button in the same spot to switch from light
+   to dark"): a comic push-button — inked outline, halftone face, a hard
    offset shadow it sinks into when pressed — tilted a touch, at the middle of the right edge, over the page and
    under the popups. Red while the ticker is folded (press to open), the deck's green-white while it is open. */
 :root { --comic-ink: #101214; --comic-hi: #ffffff; --comic-on: #e8f3ec; } /* the comic's ink, its highlight, its lit face */
-.tickbtn {
-  position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY(-50%) rotate(-6deg);
-  padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
+.sidebtns { position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY(-50%); display: grid; gap: 16px; justify-items: end; }
+.tickbtn { transform: rotate(-6deg); padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* the theme's button, tilted the other way: the dark face offers DARK on the light page, the pale face LIGHT on the dark */
+.themebtn { transform: rotate(5deg); }
+.themebtn .tickbtnface { background-color: var(--comic-ink); color: var(--comic-on); -webkit-text-stroke: 0; }
+.themebtn.dark .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); }
 .tickbtnface {
   display: grid; place-items: center; min-width: 54px; height: 40px; padding: 0 10px; border: 2.5px solid var(--comic-ink); border-radius: 12px;
   background: radial-gradient(circle, color-mix(in srgb, var(--comic-ink) 22%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px, var(--warn);
@@ -5764,5 +5767,5 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .tickbtn:active .tickbtnface { transform: translateY(5px); box-shadow: 0 1px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 30%, transparent); }
 .tickbtn:focus-visible { outline: none; }
 .tickbtn:focus-visible .tickbtnface { outline: 2px solid var(--sig); outline-offset: 3px; }
-[data-popup] .tickbtn { opacity: 0; pointer-events: none; }
+[data-popup] .sidebtns { opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .tickbtnface { transition: none; } }
