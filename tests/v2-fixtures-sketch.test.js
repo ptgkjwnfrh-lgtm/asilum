@@ -515,8 +515,9 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   assert.match(wm, /const SET = `translate\(\$\{WM\.set\.dx\} \$\{\+\(WM\.bar\.y \* \(1 - WM\.set\.s\)\)\.toFixed\(4\)\}\) scale\(\$\{WM\.set\.s\}\)`;/, "scaled about the bar's top");
   const scaledMid = bar[3] * set[0] + bar[3] * (1 - set[0]);
   assert.ok(Math.abs(scaledMid - (121 - 120.75 / 2)) < 0.01, "the capitals' middle stays on the bar's top");
-  // (the same day: "for dark mode the entire font should be red") the asterisk's red, both halves, in dark
-  assert.match(css, /--wm-ink: var\(--warn\);\s*--wm-ink-bar: var\(--warn\);/, "red in dark, all of it");
+  // (the same day: "for dark mode the entire font should be red", then "just make the text all white" — white on
+  // the bar too, the owner's choice when asked) white, both halves, in dark
+  assert.match(css, /--wm-ink: #ffffff;\s*--wm-ink-bar: #ffffff;/, "white in dark, all of it");
   assert.match(css, /\[data-theme="light"\] \{[^}]*--wm-ink: #001512; --wm-ink-bar: #001512;/, "the artwork's black in light, all of it");
   // the bar under the asterisk and the word; the word set twice, cut at the bar's top: the theme's ink above,
   // the artwork's black on the white bar, in both themes
