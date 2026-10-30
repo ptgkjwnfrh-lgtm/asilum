@@ -4075,6 +4075,8 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
   width: calc(var(--b) - var(--a) - (var(--gl) + var(--gr)) * var(--mh-break) / 2);
 }
 .mhcuts { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+/* the break, measured (Masthead.jsx): where the logo's tail ends, half a break short of the first key */
+.mhbrk { position: absolute; left: 0; top: 0; width: var(--mh-break); height: 0; visibility: hidden; pointer-events: none; }
 .mhcuts i {
   position: absolute; left: var(--x); top: calc(env(safe-area-inset-top, 0px) + 33px - var(--u) * 65 / 2); height: calc(var(--u) * 65);
   width: 1px; transform: translateX(-50%); border-radius: 1px;

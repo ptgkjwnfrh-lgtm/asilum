@@ -116,7 +116,7 @@ test("the glow comes off the brick's rim, the line's depth, and keeps out of the
   const ux = g.toe - g.shoulder, uy = g.line - g.top, len = Math.hypot(ux, uy);
   const dist = (x, y) => Math.abs((x - g.shoulder) * uy - (y - g.top) * ux) / len;
   assert.ok(Math.abs(dist(x1, y0) - LINE) < 0.01 && Math.abs(dist(x2, y2) - LINE) < 0.01, `the slant, LINE deep: ${dist(x1, y0)}, ${dist(x2, y2)}`);
-  assert.match(wm, /<svg className="wmlit wmglow" viewBox=\{VIEW\} focusable="false" style=\{\{ clipPath: WINDOW \}\}>\s*<path className="wmbar" d=\{RIM\} fillRule="evenodd" \/>/, "the rim glows, evenodd, clipped");
+  assert.match(wm, /<svg className="wmlit wmglow" viewBox=\{VIEW\} focusable="false" style=\{\{ clipPath: WINDOW \}\}>\s*<path className="wmbar" d=\{shape\.rim\} fillRule="evenodd" \/>/, "the rim glows, evenodd, clipped");
   assert.match(css, /\.wmglow \{ filter: var\(--wm-glow\); \}/, "in the line's own glow");
   // the window: round the word and its bold stroke, wholly inside the brick
   const box = brickBox(g), w = glowWindow(box);
@@ -133,9 +133,10 @@ test("the word cut out of the brick, bolder; the asterisk whole and red", () => 
   assert.ok(order.every((v) => v > -1) && order.every((v, i) => i === 0 || order[i - 1] < v), "glow, tint, brick, asterisk");
   assert.match(wm, /const cut = "wmc" \+ useId\(\)\.replace\(\/:\/g, ""\);/, "a mask of its own per logo");
   assert.match(wm, /<mask id=\{cut\} maskUnits="userSpaceOnUse"/);
-  assert.match(wm, /<rect className="wmplane" x=\{PLANE\.x\} y=\{PLANE\.y\} width=\{PLANE\.w\} height=\{PLANE\.h\} \/>/);
+  assert.match(wm, /<rect className="wmplane" x=\{plane\.x\} y=\{plane\.y\} width=\{plane\.w\} height=\{plane\.h\} \/>/);
+  assert.match(wm, /const plane = \{ \.\.\.PLANE, w: PLANE\.w \+ t \};/, "the plane covers the tail too");
   assert.match(wm, /<text className="wmcut" x=\{WM\.x\.join\(" "\)\} y=\{WM\.base\} strokeWidth=\{BOLD \/ WM\.set\.s\}>ASILUM<\/text>/, "bolder by BOLD in the logo's units, whatever the set's scale");
-  assert.match(wm, /<path className="wmbar" d=\{PATH\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the brick, the word cut from it");
+  assert.match(wm, /<path className="wmbar" d=\{shape\.path\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the brick, the word cut from it");
   assert.match(wm, /const PLANE = \{ x: -RUN - 100, y: BOX\.top - 100, w: RUN \+ BOX\.end \+ 200, h: BOX\.h \+ 200 \};/, "the mask's plane covers the brick's whole run");
   assert.match(css, /\.wmplane \{ fill: #fff; \}/);
   assert.match(css, /\.wmcut \{ font: 400 161px var\(--mich\); fill: #000; stroke: #000; stroke-linejoin: miter; \}/);
@@ -156,7 +157,7 @@ test("the box, the line and the CSS agree; the line starts at the brick's end, b
   assert.match(wm, /const VIEW = `\$\{BOX\.x\} \$\{BOX\.top\} \$\{BOX\.w\} \$\{BOX\.h\}`;/);
   assert.match(wm, /const PATH = brickPath\(BRICK\);/);
   const mast = read("app/components/Masthead.jsx");
-  assert.match(mast, /mastLine\(art \? art\.getBoundingClientRect\(\)\.right - o - 1 : NaN, keys\)/, "from a pixel under the brick's end");
+  assert.match(mast, /const laid = mastLine\(ar \? ar\.right - o : NaN, keys\);/, "from the brick's end");
   assert.match(css, /\.mhline i \{[^}]*left: calc\(var\(--a\) \+ var\(--gl\) \* var\(--mh-break\) \/ 2\);/, "still broken at the keys");
   assert.match(css, /--mh-break: calc\(var\(--u\) \* 14\);/);
 });
@@ -231,4 +232,31 @@ test("the tint shows only over a really bright card, clipped to its box, read ev
   assert.match(fn, /if \(cs\.backgroundImage !== "none"\) return null;/);
   assert.match(fn, /return l >= bright && el\.closest\("\.card, \.brdcst"\) \? el : null;/);
   assert.ok(!/getImageData|drawImage/.test(fn), "no pixels read on a scroll frame");
+});
+
+// THE TOE, ONE PIECE (owner, 29 Oct 2026, circling it again: "whats circled isnt clean it still looks jagged").
+// Declared before fixing, from the toe magnified 8x in the browser: the brick (SVG, edges anti-aliased) handed to the
+// Masthead's line (a box, edges on the pixel grid, tucked a pixel under) a quarter pixel apart, and each glowed by
+// itself, fading at its own end — the haze stopped dead at the seam. Kept fixed by: no seam at the toe at all — the
+// line's first stretch, from the toe to the first key, is the brick's own foot (the TAIL), in the brick's path, its
+// rim (the glow's source) and its cut's mask; the Masthead's line begins at the first break, half a break short of the
+// first key exactly as every other break. Measured after, at 711px: the tail ends at 350.9, the first key at 354.5,
+// the next stretch at 357.9 (the 7px break of every key); at 8x the white and the glow run unbroken round the toe.
+test("the toe is one piece: the line's first stretch is the brick's own foot, one white and one glow", () => {
+  const g = brickGeometry();
+  const plain = brickPath(g), tailed = brickPath(g, { tail: 120 });
+  const end = +(g.toe + g.bend).toFixed(3);
+  assert.ok(plain.includes(`${end} ${g.line} V${g.foot}`), "no tail: the brick ends at the toe's bend, as before");
+  assert.ok(tailed.includes(`${end} ${g.line} H${+(g.toe + g.bend + 120).toFixed(3)} V${g.foot}`), "a tail: the foot runs on along the line's top, then down");
+  assert.equal(tailed.replace(/ H[\d.]+ V/, " V"), plain, "and nothing else about the brick changes");
+  assert.ok(rimPath(g, { tail: 120 }).startsWith(tailed), "the glow's source runs on with it: along the tail the rim is the whole foot, the line");
+  const wm = read("app/components/Wordmark.jsx"), mast = read("app/components/Masthead.jsx");
+  assert.match(wm, /export default function Wordmark\(\{ href = "\/", className = "", tail = 0 \}\)/);
+  assert.match(wm, /path: brickPath\(BRICK, \{ tail: t \}\), rim: rimPath\(BRICK, \{ tail: t \}\)/, "the white and the glow from one path");
+  // the Masthead hands its first stretch to the logo and starts its own line at the first break
+  assert.match(mast, /const first = laid\.segs\[0\] && laid\.segs\[0\]\.gl === 0 \? laid\.segs\[0\] : null;/);
+  assert.match(mast, /const tail = first && ar && ar\.width > 0 \? Math\.max\(0, first\.b - first\.a - \(first\.gr \? brk \/ 2 : 0\)\) \* \(BOX_W \/ ar\.width\) : 0;/, "to half a break short of the first key, in the logo's units");
+  assert.match(mast, /segs: first \? laid\.segs\.slice\(1\) : laid\.segs/, "never drawn twice");
+  assert.ok(!/right - o - 1/.test(mast), "no tuck: there is no join left to hide");
+  assert.match(css, /\.mhbrk \{ position: absolute; left: 0; top: 0; width: var\(--mh-break\); height: 0; visibility: hidden; pointer-events: none; \}/, "the break measured from the CSS that sizes it");
 });

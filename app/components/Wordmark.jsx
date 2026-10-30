@@ -59,7 +59,7 @@
 // away from the word's window so no haze fills the letters — glowWindow); the brick, unlit, the word cut out of it
 // by a mask, the tint showing through it; and the asterisk, glowing red (--wm-glow-r, the same radii in the asterisk's own red).
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, wordFrac, BOLD, RUN, TINT_BLEED } from "../../lib/wordmark.js";
 import { TINT_BRIGHT, TINT_NONE, tintClip, INK_ZONES } from "../../lib/ink.js";
 import { brightBoxes, forgetGrounds } from "./InkWatch.jsx";
@@ -145,27 +145,32 @@ function useCutTint(artRef, tintRef) {
   }, [artRef, tintRef]);
 }
 
-export default function Wordmark({ href = "/", className = "" }) {
+/** `tail`: the Masthead's line's first stretch, in the logo's units past the toe's bend (lib/wordmark.js brickPath;
+ *  Masthead.jsx measures it), drawn as the brick's own so the toe is one white and one glow, never a seam. */
+export default function Wordmark({ href = "/", className = "", tail = 0 }) {
   const cut = "wmc" + useId().replace(/:/g, "");
+  const t = tail > 0 ? Math.round(tail * 1000) / 1000 : 0;
+  const shape = useMemo(() => (t ? { path: brickPath(BRICK, { tail: t }), rim: rimPath(BRICK, { tail: t }) } : { path: PATH, rim: RIM }), [t]);
+  const plane = { ...PLANE, w: PLANE.w + t }; // the cut's mask covers the tail too, or it would mask it away
   const artRef = useRef(null), tintRef = useRef(null);
   useCutTint(artRef, tintRef);
   return (
     <a className={"wordmark" + (className ? " " + className : "")} href={href} title="the feed" aria-label="*ASILUM — the feed">
       <span ref={artRef} className="wmart" aria-hidden="true">
         <svg className="wmlit wmglow" viewBox={VIEW} focusable="false" style={{ clipPath: WINDOW }}>
-          <path className="wmbar" d={RIM} fillRule="evenodd" />
+          <path className="wmbar" d={shape.rim} fillRule="evenodd" />
         </svg>
         <svg ref={tintRef} className="wmtint" viewBox={VIEW} focusable="false">
           <g transform={SET}><text className="wmtintink" x={WM.x.join(" ")} y={WM.base} strokeWidth={(BOLD + TINT_BLEED) / WM.set.s}>ASILUM</text></g>
         </svg>
         <svg className="wmbrick" viewBox={VIEW} focusable="false">
           <defs>
-            <mask id={cut} maskUnits="userSpaceOnUse" x={PLANE.x} y={PLANE.y} width={PLANE.w} height={PLANE.h}>
-              <rect className="wmplane" x={PLANE.x} y={PLANE.y} width={PLANE.w} height={PLANE.h} />
+            <mask id={cut} maskUnits="userSpaceOnUse" x={plane.x} y={plane.y} width={plane.w} height={plane.h}>
+              <rect className="wmplane" x={plane.x} y={plane.y} width={plane.w} height={plane.h} />
               <g transform={SET}><text className="wmcut" x={WM.x.join(" ")} y={WM.base} strokeWidth={BOLD / WM.set.s}>ASILUM</text></g>
             </mask>
           </defs>
-          <path className="wmbar" d={PATH} mask={`url(#${cut})`} />
+          <path className="wmbar" d={shape.path} mask={`url(#${cut})`} />
         </svg>
         <svg className="wmlit wmlitstar" viewBox={VIEW} focusable="false">
           <g transform={SET}><text className="wmstar" x="0" y={WM.starY}>*</text></g>

@@ -1334,3 +1334,11 @@ Filmed frame by frame at 375px (every transition paused and stepped 10ms), three
   the meeting second (`--dur-2`), so they touch as the line (0.26px off) and the hand-over is light alone (≥ 0.995).
   Opening, the bezels are lit over the line in the time it takes to go (`--dur-0`, out on ease-in), ≥ 0.96 throughout
   (it dipped to about half). Under reduced motion the ticker opens and folds at once (it winked regardless, before).
+
+### The logo's toe, one piece (29 Oct 2026, "whats circled isnt clean it still looks jagged")
+Magnified 8x, the toe was a seam: the bar (SVG, anti-aliased) handed to the Masthead's line (a box on the pixel
+grid, tucked a pixel under) a quarter pixel apart, each with its own glow fading at its own end — the haze stopped
+dead where the line's halo began. Now there is no join to hide: the line's first stretch, from the toe to the first
+key, is the bar's own foot (`lib/wordmark.js brickPath` `tail`, measured by `Masthead.jsx` in the logo's units) — one
+path, one rim glow, one mask — and the Masthead's line begins at the first break, half a break short of the first
+key like every other break.

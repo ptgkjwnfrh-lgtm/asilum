@@ -481,9 +481,9 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   const mast = read("app/components/Masthead.jsx");
   const body = mast.slice(mast.indexOf('<header ref={glassRef} className="masthead fixture">'), mast.indexOf("</header>"));
   const kids = [...body.matchAll(/\n {6}<(\w+)(?: className=(?:"([^"]+)"|\{"(\w+)"))?/g)].map((m) => m[2] || m[3] || m[1]);
-  assert.deepEqual(kids, ["brandfix", "mhline", "mhcuts", "mhkeys"], "the Masthead: the wordmark, the line, its cuts, the keys");
-  assert.match(mast, /const art = mast\.querySelector\("\.brandfix \.wmart"\);/);
-  assert.match(mast, /const next = mastLine\(art \? art\.getBoundingClientRect\(\)\.right - o - 1 : NaN, keys\);/, "from the brick's end (a pixel under it, 29 Oct), along the keys");
+  assert.deepEqual(kids, ["brandfix", "mhline", "mhbrk", "mhcuts", "mhkeys"], "the Masthead: the wordmark, the line, the break measured, its cuts, the keys");
+  assert.match(mast, /const art = mast\.querySelector\("\.brandfix \.wmart"\), ar = art \? art\.getBoundingClientRect\(\) : null;/);
+  assert.match(mast, /const laid = mastLine\(ar \? ar\.right - o : NaN, keys\);/, "from the brick's end, along the keys (its first stretch the logo's own since 29 Oct: tests/v2-logo-line.test.js)");
   assert.match(mast, /\[\.\.\.row\.querySelectorAll\("\.idkey, \.passportbtn"\)\]\.filter\(\(k\) => k\.offsetWidth > 0\)\.map\(box\)/, "every key showing, the globe's hit box the last");
   const line = rules.match(/\.mhline \{([^}]*)\}/)[1];
   assert.match(line, /top: calc\(env\(safe-area-inset-top, 0px\) \+ var\(--mh-line-top\)\); height: var\(--mh-line-h\);/, "just under the glyphs");

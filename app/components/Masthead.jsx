@@ -39,6 +39,9 @@ import Wordmark from "./Wordmark.jsx";
 import InfoDock from "./InfoDock.jsx";
 import PassportButton from "./PassportButton.jsx";
 import { mastLine, sameLine } from "../../lib/mastline.js";
+import { brickBox } from "../../lib/wordmark.js";
+
+const BOX_W = brickBox().w; // the logo's box, in its units
 
 // a strip: the bottom is the only real edge of the glass (module constant — the glass hook's effect keys on it)
 export const MASTHEAD_OPEN = Object.freeze({ top: false, right: false, bottom: true, left: false });
@@ -58,12 +61,18 @@ function useMastLine(ref) {
       const o = mast.getBoundingClientRect().left;
       const box = (el) => { const r = el.getBoundingClientRect(), mid = (r.left + r.right) / 2 - o, w = parseFloat(getComputedStyle(el).width) || el.offsetWidth; return { left: mid - w / 2, right: mid + w / 2 }; };
       // the line starts where the brick ends — its box's right edge is the end of the toe's curve (29 Oct 2026,
-      // "make the circled area flush"; lib/wordmark.js brickBox) — tucked one pixel under it, so the two whites
-      // overlap rather than meet edge to edge, which leaves a faint seam
-      const art = mast.querySelector(".brandfix .wmart");
+      // "make the circled area flush"; lib/wordmark.js brickBox). Its first stretch, from there to the first key, is
+      // drawn by the logo as the brick's own foot (the TAIL, in the logo's units: lib/wordmark.js brickPath) — one
+      // white and one glow round the toe; two pieces meeting there, however tucked, left a seam ("it still looks
+      // jagged", the same evening) — and this line begins at the first break
+      const art = mast.querySelector(".brandfix .wmart"), ar = art ? art.getBoundingClientRect() : null;
       const keys = [...row.querySelectorAll(".idkey, .passportbtn")].filter((k) => k.offsetWidth > 0).map(box);
-      const next = mastLine(art ? art.getBoundingClientRect().right - o - 1 : NaN, keys);
-      setLine((prev) => (sameLine(prev, next) ? prev : next));
+      const laid = mastLine(ar ? ar.right - o : NaN, keys);
+      const first = laid.segs[0] && laid.segs[0].gl === 0 ? laid.segs[0] : null;
+      const probe = mast.querySelector(".mhbrk"), brk = probe ? probe.getBoundingClientRect().width : 0;
+      const tail = first && ar && ar.width > 0 ? Math.max(0, first.b - first.a - (first.gr ? brk / 2 : 0)) * (BOX_W / ar.width) : 0;
+      const next = { ...laid, segs: first ? laid.segs.slice(1) : laid.segs, tail };
+      setLine((prev) => (sameLine(prev, next) && Math.abs((prev.tail || 0) - tail) < 0.5 ? prev : next));
     };
     const wake = () => { if (!raf) raf = requestAnimationFrame(lay); };
     lay();
@@ -82,10 +91,11 @@ export default function Masthead({ kind, pathname }) {
   return (
     <header ref={glassRef} className="masthead fixture">
       {glass}
-      <Wordmark className="brandfix" />
+      <Wordmark className="brandfix" tail={line ? line.tail : 0} />
       <span className={"mhline" + (line ? " on" : "")} aria-hidden="true">
         {line ? line.segs.map((g, i) => <i key={i} style={{ "--a": `${g.a}px`, "--b": `${g.b}px`, "--gl": g.gl, "--gr": g.gr }} />) : null}
       </span>
+      <span className="mhbrk" aria-hidden="true" />
       <span className="mhcuts" aria-hidden="true">
         {line ? line.cuts.map((c, i) => <i key={i} style={{ "--x": `${c}px` }} />) : null}
       </span>
