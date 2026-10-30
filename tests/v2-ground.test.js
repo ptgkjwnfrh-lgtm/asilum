@@ -61,7 +61,7 @@ test("the words on the ground, worked out each frame without a hit test", () => 
   assert.match(g, /const gl = groundMix\(groundLuma\(groundFrac\(r, at\), theme\)\);/);
   assert.match(g, /if \(el\.__gl != null && Math\.abs\(el\.__gl - gl\) < 0\.01\) continue;/, "written only when it moves");
   assert.match(g, /el\.style\.setProperty\("--gl", gl\.toFixed\(3\)\);/);
-  assert.match(g, /window\.addEventListener\("scroll", ask, \{ passive: true \}\);/, "every scroll frame");
+  assert.match(g, /const off = subscribeFrame\(\{\s*name: "ground-ink",/, "every scroll frame, in the one frame (lib/frame.js): read, then write");
   assert.match(g, /const ro = new ResizeObserver\(ask\);\s*ro\.observe\(document\.body\);/, "again when the layout settles");
   assert.match(g, /document\.fonts\.ready\.then\(ask/);
   assert.match(g, /attributeFilter: \["data-theme"\]/, "and when the theme turns");

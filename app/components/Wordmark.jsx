@@ -51,7 +51,7 @@
 // tint on everywhere, "i still wanted the negative logo to be see through however i wanted it to be seemlessly
 // reactive to tint once passing over a really bright card". Under the cut lies the word again in a translucent
 // dark (.wmtint, lib/wordmark.js TINT_BLEED), shown ONLY where a really bright card lies behind the letters: each
-// scroll frame the logo asks what is under its word (eight points; InkWatch.jsx brightSurfaceAt) and clips the tint
+// scroll frame the logo reads the bright cards in the band behind its word (InkWatch.jsx brightBoxes) and clips the tint
 // to the bright cards' own boxes (lib/ink.js tintClip), so the tint's edge rides the card's edge in and out. Over
 // the glass and everything else the letters stay see-through. In dark the tint is clear.
 //
@@ -61,8 +61,9 @@
 
 import { useEffect, useId, useRef } from "react";
 import { brickGeometry, brickPath, rimPath, brickBox, glowWindow, wordFrac, BOLD, RUN, TINT_BLEED } from "../../lib/wordmark.js";
-import { TINT_BRIGHT, TINT_NONE, tintPoints, tintClip } from "../../lib/ink.js";
-import { brightSurfaceAt } from "./InkWatch.jsx";
+import { TINT_BRIGHT, TINT_NONE, tintClip, INK_ZONES } from "../../lib/ink.js";
+import { brightBoxes, forgetGrounds } from "./InkWatch.jsx";
+import { subscribeFrame, requestFrame } from "../../lib/frame.js";
 
 /** The artwork's geometry, in the units of the word's 161 (measured 28 Oct 2026). */
 export const WM = Object.freeze({
@@ -89,35 +90,57 @@ function useCutTint(artRef, tintRef) {
   useEffect(() => {
     const art = artRef.current, tint = tintRef.current;
     if (!art || !tint) return undefined;
-    const skip = art.closest(".masthead") || art;
-    let raf = 0, last = "";
-    const set = (v) => { if (v !== last) { last = v; tint.style.clipPath = v; } };
-    const run = () => {
-      raf = 0;
-      if (getComputedStyle(document.documentElement).getPropertyValue("--wm-cut-tint").trim() === "transparent") { set(TINT_NONE); return; }
+    let last = "";
+    // THE BAND BEHIND THE WORD (29 Oct 2026, "checking the tracking"): the candidates — the cards, the BRDCSTs and
+    // the blocks the ink watcher reads — that lie behind the word are kept by an IntersectionObserver whose root is
+    // that band, worked out off the main thread; a frame reads only their boxes (InkWatch.jsx brightBoxes), with no
+    // hit test (eight a frame cost 2.9ms of 3.0 at 375px). The logo is on the fixed Masthead, so the band is fixed;
+    // it is measured again on a resize.
+    const CANDS = [".card", ".brdcst", ".f20card", ...INK_ZONES].join(", "); // (Figure 20's cards are white frames of their own)
+    const inBand = new Set();
+    let io = null, band = null;
+    const measure = () => {
       const a = art.getBoundingClientRect();
-      const word = { left: a.left + a.width * WORD_AT.x0, top: a.top + a.height * WORD_AT.y0, width: a.width * (WORD_AT.x1 - WORD_AT.x0), height: a.height * (WORD_AT.y1 - WORD_AT.y0) };
-      const found = new Set();
-      for (const [x, y] of tintPoints(word)) { const el = brightSurfaceAt(x, y, skip, TINT_BRIGHT); if (el) found.add(el); }
-      set(tintClip(a, [...found].map((el) => el.getBoundingClientRect())));
+      band = { left: a.left + a.width * WORD_AT.x0, top: a.top + a.height * WORD_AT.y0, right: a.left + a.width * WORD_AT.x1, bottom: a.top + a.height * WORD_AT.y1 };
+      if (io) io.disconnect();
+      inBand.clear();
+      // the observer's band reaches LEAD px past the word both ways: its news comes after a frame is drawn, so a card
+      // is known before it reaches the word (measured: at the word's own band, 9 frames in 400 missed a card arriving)
+      const LEAD = 100;
+      const above = Math.max(0, band.top - LEAD), below = Math.max(0, window.innerHeight - band.bottom - LEAD);
+      io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) inBand.add(e.target); else inBand.delete(e.target); } requestFrame(); }, { rootMargin: `-${above.toFixed(1)}px 0px -${below.toFixed(1)}px 0px` });
+      document.querySelectorAll(CANDS).forEach((el) => io.observe(el));
     };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
-    ask();
-    window.addEventListener("scroll", ask, { passive: true, capture: true }); // the page's scroll and a carousel's
-    window.addEventListener("resize", ask);
+    measure();
+    let mr = 0;
+    const more = new MutationObserver(() => { if (!mr) mr = requestAnimationFrame(() => { mr = 0; if (io) document.querySelectorAll(CANDS).forEach((el) => io.observe(el)); }); });
+    more.observe(document.body, { childList: true, subtree: true });
+    let rt = 0;
+    const onResize = () => { clearTimeout(rt); rt = setTimeout(measure, 150); };
+    window.addEventListener("resize", onResize);
+    // in the one frame (lib/frame.js): read the bright boxes in the band, then write the clip. The theme is read off
+    // the page's attribute (dark's tint is clear), never by a computed style
+    const off = subscribeFrame({
+      name: "logo-tint",
+      read() {
+        if (document.documentElement.dataset.theme !== "light" || !inBand.size || !band) return TINT_NONE;
+        return tintClip(art.getBoundingClientRect(), brightBoxes(inBand, band, TINT_BRIGHT));
+      },
+      write(v) { if (v != null && v !== last) { last = v; tint.style.clipPath = v; } },
+    });
+    const ask = requestFrame;
     document.addEventListener("load", ask, true);
     document.addEventListener("f20settle", ask);
-    const theme = new MutationObserver(ask);
+    const theme = new MutationObserver(() => { forgetGrounds(); ask(); });
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     mq.addEventListener("change", ask);
     return () => {
-      window.removeEventListener("scroll", ask, { capture: true });
-      window.removeEventListener("resize", ask);
+      off(); if (io) io.disconnect(); more.disconnect(); if (mr) cancelAnimationFrame(mr);
+      window.removeEventListener("resize", onResize); clearTimeout(rt);
       document.removeEventListener("load", ask, true);
       document.removeEventListener("f20settle", ask);
       theme.disconnect(); mq.removeEventListener("change", ask);
-      if (raf) cancelAnimationFrame(raf);
     };
   }, [artRef, tintRef]);
 }

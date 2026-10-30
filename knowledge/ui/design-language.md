@@ -1278,3 +1278,24 @@ like the text and make it into a curved square".
   as far up, near the top, at a press, never while searching; by `scale` about the plus's own centre, the plus's place
   scaled back as much, so the disc, the wheel and the POST cards keep their size and place. Measured: 0.85 of the
   width; the plus unchanged in size, moved (0.1, 0.48) px. 1 dropped frame in 300 at 6px a frame, as before.
+
+## 29 Oct 2026 — THE TRACKING, CLEANED (one frame for everything the scroll moves)
+
+Owner: "checking the tracking of everything, animations, reactions, effects, timing so everything is much cleaner".
+Measured first at 375px, a 300-frame scroll: five reactions each kept their own frame loop (the logo's tint, the ground's
+ink, the EQ key's return, the deck's shrink, the motion row's play), reading and writing in turn; the frame's script time
+a median 2.3ms, a 95th percentile 8.2ms; the logo's tint alone 2.9ms a frame — eight hit tests across the Feed's stacked
+cards, and a computed style read every frame to learn the theme.
+- `lib/frame.js`: one frame for all of them — every reader reads, then every writer writes; one frame asked for however
+  many ask; a subscriber's failure stays its own; `globalThis.__frameProfile` measures each one.
+- The logo's tint keeps the cards behind its word with an IntersectionObserver (its band reaching 100px past the word, so
+  a card is known before it arrives) and reads only their boxes (`InkWatch.jsx` brightBoxes; a card's own ground read
+  once and kept; a picture over the band counts as the picture); the theme off the page's attribute. It agreed with the
+  hit test it replaced in 392 of 400 frames, its edges within 2px in all 73 where both tinted. (Taking only pictures'
+  boxes out of a card was tried and measured worse: 253 of 400.)
+- The motion row plays or pauses only on a change, once a frame.
+- After: the frame's script time a median 0.2–0.3ms, a 95th percentile 0.4ms; the tint 0.05ms; 1 dropped frame in 300,
+  as before; the EQ key's return unchanged to the pixel.
+- TIMING: the POST card's grow is `--dur-3` (320ms) and the popup now waits that long (it waited 260 and opened over a
+  card still growing). Every transition was already on the ladder; the animations off it are loops (blinks, pulses,
+  drifts) and two deliberate settles (the stamp's 620ms "arrives a beat late", the map's 1.1s), left as they are.

@@ -125,6 +125,49 @@ function mediaUnder(x, y, zone) {
 // otherwise a picture or a gradient is no answer, and a plain colour as bright as TINT_BRIGHT, on a card, is. The
 // answer is that box. This reads styles and the watcher's own marks and hit tests a handful of points; it runs on
 // scroll frames, so it reads no pixels itself.
+// THE BRIGHT CARDS IN A BAND, WITHOUT A HIT TEST (29 Oct 2026, "checking the tracking of everything … so everything
+// is much cleaner"). The logo's tint asked brightSurfaceAt at eight points a frame: measured at 375px, 2.9ms of the
+// frame's 3.0 — every hit test walks the Feed's stacked, turned cards. Now an IntersectionObserver (computed off the
+// main thread) keeps the candidates in the band behind the word (Wordmark.jsx), and a frame reads only their boxes:
+// a block this watcher has read answers with its reading (dark ink sits on a bright ground); a card or a BRDCST
+// answers by its own plain ground, read once and kept (forgetGrounds clears it when the theme turns) — unless a
+// picture inside it lies over the band, for there the picture is what shows. (Taking only the pictures' boxes out
+// instead was tried and measured worse: 253 frames in 400 agreed with the hit test, against 392 — a card's ground
+// is covered by more than its pictures.)
+let groundGen = 0;
+const plainKept = new WeakMap();
+export function forgetGrounds() { groundGen++; }
+function plainBright(el, bright) {
+  const hit = plainKept.get(el);
+  if (hit && hit.gen === groundGen) return hit.v;
+  const cs = getComputedStyle(el);
+  const l = cs.backgroundImage === "none" ? colourLuma(cs.backgroundColor) : null;
+  const v = l != null && l >= bright;
+  plainKept.set(el, { gen: groundGen, v });
+  return v;
+}
+export function brightBoxes(cands, band, bright) {
+  const out = [];
+  for (const el of cands) {
+    if (!el.isConnected) continue;
+    const zone = el.hasAttribute("data-ink");
+    if (zone ? el.dataset.ink !== "dark" : !plainBright(el, bright)) continue;
+    const r = el.getBoundingClientRect();
+    if (r.bottom <= band.top || r.top >= band.bottom || r.right <= band.left || r.left >= band.right) continue;
+    if (!zone) {
+      let covered = false;
+      for (const m of el.querySelectorAll("img, video")) {
+        if (!(m.offsetWidth > 0)) continue;
+        const b = m.getBoundingClientRect();
+        if (b.bottom > Math.max(r.top, band.top) && b.top < Math.min(r.bottom, band.bottom) && b.right > band.left && b.left < band.right) { covered = true; break; }
+      }
+      if (covered) continue;
+    }
+    out.push(r);
+  }
+  return out;
+}
+
 export function brightSurfaceAt(x, y, skip, bright) {
   for (const el of document.elementsFromPoint(x, y)) {
     if (skip && skip.contains(el)) continue;

@@ -10,6 +10,7 @@
 
 import { useEffect } from "react";
 import { GROUND_TEXT, groundLuma, groundMix, groundFrac } from "../../lib/ink.js";
+import { subscribeFrame, requestFrame } from "../../lib/frame.js";
 
 // WebKit on iOS paints a fixed background as scrolling (app/globals.css, the html rule): there the ground runs the
 // page's height, not the screen's. Told by a property only that engine has (a platform-and-touch guess took a
@@ -21,24 +22,33 @@ export default function GroundInk() {
     const SEL = GROUND_TEXT.join(", ");
     const fixed = !groundScrolls();
     const near = new Set();
-    let raf = 0;
-    const run = () => {
-      raf = 0;
-      const theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
-      const at = { fixed, vh: window.innerHeight || 1, scrollY: window.scrollY, docH: document.documentElement.scrollHeight || 1 };
-      for (const el of near) {
-        if (!el.isConnected) { near.delete(el); continue; }
-        const r = el.getBoundingClientRect();
-        if (!(r.height > 0)) continue;
-        const gl = groundMix(groundLuma(groundFrac(r, at), theme));
-        if (el.__gl != null && Math.abs(el.__gl - gl) < 0.01) continue;
-        el.__gl = gl;
-        el.style.setProperty("--gl", gl.toFixed(3));
-        const side = gl > 0.5 ? "light" : "dark";
-        if (el.dataset.ground !== side) el.dataset.ground = side;
-      }
-    };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
+    // in the one frame (lib/frame.js): every word's place read first, then every change written
+    const off = subscribeFrame({
+      name: "ground-ink",
+      read() {
+        const theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+        const at = { fixed, vh: window.innerHeight || 1, scrollY: window.scrollY, docH: document.documentElement.scrollHeight || 1 };
+        const out = [];
+        for (const el of near) {
+          if (!el.isConnected) { near.delete(el); continue; }
+          const r = el.getBoundingClientRect();
+          if (!(r.height > 0)) continue;
+          const gl = groundMix(groundLuma(groundFrac(r, at), theme));
+          if (el.__gl != null && Math.abs(el.__gl - gl) < 0.01) continue;
+          out.push([el, gl]);
+        }
+        return out;
+      },
+      write(out) {
+        for (const [el, gl] of out || []) {
+          el.__gl = gl;
+          el.style.setProperty("--gl", gl.toFixed(3));
+          const side = gl > 0.5 ? "light" : "dark";
+          if (el.dataset.ground !== side) el.dataset.ground = side;
+        }
+      },
+    });
+    const ask = requestFrame;
     // the words within half a screen of the view are worked out each frame; the rest wait their turn
     const io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) near.add(e.target); else near.delete(e.target); } ask(); }, { rootMargin: "50% 0px 50% 0px" });
     const watch = () => document.querySelectorAll(SEL).forEach((el) => { if (!el.__ground) { el.__ground = true; io.observe(el); } });
@@ -46,8 +56,6 @@ export default function GroundInk() {
     let wr = 0;
     const mo = new MutationObserver(() => { if (!wr) wr = requestAnimationFrame(() => { wr = 0; watch(); ask(); }); });
     mo.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener("scroll", ask, { passive: true });
-    window.addEventListener("resize", ask);
     // the words move without a scroll when the page's layout settles under them (the fonts arrive, the Feed loads
     // above them): seen 29 Oct 2026, the modes kept the reading they had at mount, before the layout settled
     const ro = new ResizeObserver(ask);
@@ -57,11 +65,9 @@ export default function GroundInk() {
     const theme = new MutationObserver(() => { near.forEach((el) => { el.__gl = null; }); ask(); });
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     return () => {
+      off();
       io.disconnect(); mo.disconnect(); theme.disconnect(); ro.disconnect();
       window.removeEventListener("load", ask);
-      window.removeEventListener("scroll", ask);
-      window.removeEventListener("resize", ask);
-      if (raf) cancelAnimationFrame(raf);
       if (wr) cancelAnimationFrame(wr);
     };
   }, []);

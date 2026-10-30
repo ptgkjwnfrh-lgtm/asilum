@@ -43,7 +43,7 @@ test("the deck's shrink: down shrinks, up, the top and a press restore, jitter d
   // the deck: a press restores, searching never shrinks
   assert.match(cc, /function keyDown\(e\) \{\n\s*unshrink\(\); \/\/ a press brings the deck back to its size/);
   assert.match(cc, /data-shrunk=\{shrunk && !inSearch \? "1" : undefined\}/);
-  assert.match(cc, /shrinkRef\.current = shrinkStep\(shrinkRef\.current, window\.scrollY\); setShrunk\(shrinkRef\.current\.shrunk\);/, "read once a scroll frame");
+  assert.match(cc, /name: "deck-shrink",\s*read\(\) \{ shrinkRef\.current = shrinkStep\(shrinkRef\.current, window\.scrollY\); return shrinkRef\.current\.shrunk; \},\s*write\(on\) \{ setShrunk\(on\); \},/, "read once a scroll frame, in the one frame");
 });
 
 test("the deck scales about the plus's centre; the plus is scaled back, its size and place kept", () => {
@@ -87,6 +87,6 @@ test("the key: a curved square of the fixtures' glass, the house's symbol, react
   assert.match(css, /\.eqkey \{ --eq-glow-a: calc\(1 - var\(--gl, 0\)\); \}/, "its glow fades as the words' does");
   assert.match(css, /\.eqkey\[data-ground\] \{ color: var\(--g-ink\); \}/, "the words' blend of ink");
   assert.match(css, /\.eqkey\[data-ground\]\[data-bright\] \{ color: var\(--g-ink-on-light\); --eq-glow-a: 0; \}/, "over a bright card: the solid ink, no glow");
-  assert.match(eq, /bright = !!brightSurfaceAt\(r\.left \+ r\.width \/ 2, r\.top \+ r\.height \/ 2, el, TINT_BRIGHT\);/, "the logo's own test, only while it floats");
+  assert.match(eq, /const bright = next > 0 && !!brightSurfaceAt\(box\.left \+ box\.width \/ 2, natural \+ next \+ h \/ 2, el, TINT_BRIGHT\);/, "one point under where it will be drawn, only while it floats, read before anything is written");
   assert.match(css, /@media \(prefers-reduced-transparency: reduce\) \{ \.eqkey, \.eqkey\[data-refract="1"\] \{[^}]*backdrop-filter: none;/);
 });

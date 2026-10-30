@@ -32,39 +32,38 @@ import { useLiquidGlass } from "./LiquidGlass.jsx";
 import Icon from "./Icons.jsx";
 import { brightSurfaceAt } from "./InkWatch.jsx";
 import { TINT_BRIGHT } from "../../lib/ink.js";
+import { subscribeFrame } from "../../lib/frame.js";
 
-// the quick return: worked out each scroll frame from the key's own place in the page and how far it has been
-// scrolled away; one box read and one transform written a frame
+// the quick return, in the one frame (lib/frame.js): read where the key's place is, how far the page moved and what
+// lies under where the key will be drawn; then write its transform and its ink
 function useQuickReturn(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
-    let raf = 0, last = window.scrollY, offset = 0, q = -Infinity;
-    const run = () => {
-      raf = 0;
-      const y = window.scrollY, d = y - last; last = y;
-      // under the Masthead as it stands (its height counts a phone's notch, which --head-h's text cannot be read for)
-      const mast = document.querySelector(".masthead");
-      const stick = (mast ? mast.getBoundingClientRect().bottom : 66) + 8, h = el.offsetHeight || 40, hide = stick + h + 8;
-      if (q === -Infinity) q = -hide; // it starts out of sight: only scrolling up brings it
-      q = quickReturn(q, d, hide);
-      const natural = el.getBoundingClientRect().top - offset;
-      const next = quickOffset(natural, stick, q);
-      if (Math.abs(next - offset) > 0.1) { offset = next; el.style.transform = offset ? `translate3d(0, ${offset.toFixed(1)}px, 0)` : ""; }
-      el.classList.toggle("floating", offset > 0);
-      // floating over the Feed, it can sit on a white card, where the ground's glowing white would vanish: there its
-      // symbol takes the solid ink (the logo's own test, InkWatch.jsx brightSurfaceAt; one point, only while it floats)
-      const key = el.firstElementChild;
-      if (key) {
-        let bright = false;
-        if (offset > 0) { const r = key.getBoundingClientRect(); bright = !!brightSurfaceAt(r.left + r.width / 2, r.top + r.height / 2, el, TINT_BRIGHT); }
-        if (bright) key.dataset.bright = ""; else delete key.dataset.bright;
-      }
-    };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
-    window.addEventListener("scroll", ask, { passive: true });
-    window.addEventListener("resize", ask);
-    return () => { window.removeEventListener("scroll", ask); window.removeEventListener("resize", ask); if (raf) cancelAnimationFrame(raf); };
+    let last = window.scrollY, offset = 0, q = -Infinity;
+    return subscribeFrame({
+      name: "eq-return",
+      read() {
+        const y = window.scrollY, d = y - last; last = y;
+        // under the Masthead as it stands (its height counts a phone's notch, which --head-h's text cannot be read for)
+        const mast = document.querySelector(".masthead");
+        const stick = (mast ? mast.getBoundingClientRect().bottom : 66) + 8, h = el.offsetHeight || 40, hide = stick + h + 8;
+        if (q === -Infinity) q = -hide; // it starts out of sight: only scrolling up brings it
+        q = quickReturn(q, d, hide);
+        const box = el.getBoundingClientRect(), natural = box.top - offset;
+        const next = quickOffset(natural, stick, q);
+        // floating over the Feed, it can sit on a white card, where the ground's glowing white would vanish: there its
+        // symbol takes the solid ink (the logo's own test, InkWatch.jsx brightSurfaceAt; one point, only while it floats)
+        const bright = next > 0 && !!brightSurfaceAt(box.left + box.width / 2, natural + next + h / 2, el, TINT_BRIGHT);
+        return { next, bright };
+      },
+      write({ next, bright }) {
+        if (Math.abs(next - offset) > 0.1) { offset = next; el.style.transform = offset ? `translate3d(0, ${offset.toFixed(1)}px, 0)` : ""; }
+        el.classList.toggle("floating", offset > 0);
+        const key = el.firstElementChild;
+        if (key) { if (bright) key.dataset.bright = ""; else delete key.dataset.bright; }
+      },
+    });
   }, [ref]);
 }
 

@@ -77,6 +77,7 @@ import AMark from "./AMark.jsx";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
 import { useHingedKeys } from "./hinge.js";
 import { shrinkStep } from "../../lib/scrollmotion.js";
+import { subscribeFrame } from "../../lib/frame.js";
 
 /** Where the glass is cut, in the sketch's units from the deck's left edge
  *  (the deck is 745 wide): the two end caps and the four seams between keys. */
@@ -170,12 +171,13 @@ export default function ControlCenter({ kind, pathname }) {
   const [shrunk, setShrunk] = useState(false);
   const shrinkRef = useRef(null);
   useEffect(() => {
-    let raf = 0;
     shrinkRef.current = { last: window.scrollY, acc: 0, shrunk: false };
-    const run = () => { raf = 0; shrinkRef.current = shrinkStep(shrinkRef.current, window.scrollY); setShrunk(shrinkRef.current.shrunk); };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
-    window.addEventListener("scroll", ask, { passive: true });
-    return () => { window.removeEventListener("scroll", ask); if (raf) cancelAnimationFrame(raf); };
+    // in the one frame (lib/frame.js): read the page's place, then set the state
+    return subscribeFrame({
+      name: "deck-shrink",
+      read() { shrinkRef.current = shrinkStep(shrinkRef.current, window.scrollY); return shrinkRef.current.shrunk; },
+      write(on) { setShrunk(on); },
+    });
   }, []);
   function unshrink() {
     if (shrinkRef.current) shrinkRef.current = { ...shrinkRef.current, acc: 0, shrunk: false };

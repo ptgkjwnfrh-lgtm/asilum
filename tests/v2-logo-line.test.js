@@ -196,17 +196,10 @@ test("the cut letters tinted by a translucent dark under them: per pixel, every 
 });
 
 test("the tint shows only over a really bright card, clipped to its box, read every scroll frame", async () => {
-  const { TINT_BRIGHT, TINT_NONE, tintPoints, tintClip } = await import("../lib/ink.js");
+  const { TINT_BRIGHT, TINT_NONE, tintClip } = await import("../lib/ink.js");
   const { wordFrac } = await import("../lib/wordmark.js");
   assert.match(css, /\.wmtint \{ clip-path: inset\(50%\); \}/, "hidden until read: see-through by default");
   assert.ok(TINT_BRIGHT >= 0.8 && TINT_BRIGHT < 0.92, "really bright: the white cards (0.92–1), not the glass");
-  // the points: along the word's top and its foot, across it
-  const word = { left: 40, top: 30, width: 100, height: 16 };
-  const pts = tintPoints(word);
-  assert.equal(pts.length, 8);
-  assert.deepEqual([...new Set(pts.map((p) => p[1]))], [31, 45], "the top and the foot, 1px inside");
-  assert.ok(pts.every(([x]) => x > 40 && x < 140), "across the word");
-  assert.deepEqual(tintPoints({ left: 0, top: 0, width: 0, height: 10 }), [], "no word, no points");
   // the clip: the cards' boxes cut to the logo's, in its own pixels; none, nothing shows
   const box = { left: 10, top: 20, width: 140, height: 20 };
   assert.equal(tintClip(box, []), TINT_NONE);
@@ -218,13 +211,17 @@ test("the tint shows only over a really bright card, clipped to its box, read ev
   assert.ok(fr.x0 > 0 && fr.x1 < 1 && fr.y0 > 0 && fr.y1 < 1, "the word inside the logo's box");
   assert.match(wm, /<svg ref=\{tintRef\} className="wmtint"/);
   assert.match(wm, /<span ref=\{artRef\} className="wmart"/);
-  assert.match(wm, /for \(const \[x, y\] of tintPoints\(word\)\) \{ const el = brightSurfaceAt\(x, y, skip, TINT_BRIGHT\); if \(el\) found\.add\(el\); \}/);
-  assert.match(wm, /set\(tintClip\(a, \[\.\.\.found\]\.map\(\(el\) => el\.getBoundingClientRect\(\)\)\)\);/);
-  assert.match(wm, /window\.addEventListener\("scroll", ask, \{ passive: true, capture: true \}\);/, "every scroll frame, the page's and a carousel's");
-  for (const ev of ['window.addEventListener("resize", ask)', 'document.addEventListener("load", ask, true)', 'document.addEventListener("f20settle", ask)', 'attributeFilter: ["data-theme"]']) assert.ok(wm.includes(ev), ev);
-  assert.match(wm, /const ask = \(\) => \{ if \(!raf\) raf = requestAnimationFrame\(run\); \};/, "once a frame at most");
-  assert.match(wm, /const set = \(v\) => \{ if \(v !== last\) \{ last = v; tint\.style\.clipPath = v; \} \};/, "written only when it changes");
-  assert.match(wm, /getPropertyValue\("--wm-cut-tint"\)\.trim\(\) === "transparent"\) \{ set\(TINT_NONE\); return; \}/, "nothing to do in dark");
+  // (29 Oct 2026, "checking the tracking of everything") no hit test a frame: an IntersectionObserver keeps the cards in
+  // the band behind the word, and the one frame (lib/frame.js) reads their boxes, then writes the clip
+  assert.match(wm, /const CANDS = \[".card", ".brdcst", ".f20card", \.\.\.INK_ZONES\]\.join\(", "\);/, "the cards, the BRDCSTs, Figure 20's frames and the read blocks");
+  assert.match(wm, /io = new IntersectionObserver\(\(es\) => \{ for \(const e of es\) \{ if \(e\.isIntersecting\) inBand\.add\(e\.target\); else inBand\.delete\(e\.target\); \} requestFrame\(\); \}, \{ rootMargin:/, "the band, kept off the main thread");
+  assert.match(wm, /const LEAD = 100;/, "known before it reaches the word");
+  assert.match(wm, /return tintClip\(art\.getBoundingClientRect\(\), brightBoxes\(inBand, band, TINT_BRIGHT\)\);/);
+  assert.match(wm, /name: "logo-tint",/);
+  assert.match(wm, /write\(v\) \{ if \(v != null && v !== last\) \{ last = v; tint\.style\.clipPath = v; \} \},/, "written only when it changes");
+  assert.match(wm, /if \(document\.documentElement\.dataset\.theme !== "light" \|\| !inBand\.size \|\| !band\) return TINT_NONE;/, "nothing to do in dark, or with nothing behind the word — read off the theme's attribute, never a computed style");
+  assert.ok(!/getComputedStyle|elementsFromPoint|brightSurfaceAt/.test(wm.slice(wm.indexOf("function useCutTint"), wm.indexOf("export default function Wordmark"))), "no computed style and no hit test in a frame");
+  for (const ev of ['document.addEventListener("load", ask, true)', 'document.addEventListener("f20settle", ask)', 'attributeFilter: ["data-theme"]']) assert.ok(wm.includes(ev), ev);
   // what counts as bright: InkWatch's reading of a block, else a plain bright ground on a card; never a picture or gradient
   const ink = read("app/components/InkWatch.jsx");
   const fn = ink.slice(ink.indexOf("export function brightSurfaceAt"), ink.indexOf("function measureZone"));
