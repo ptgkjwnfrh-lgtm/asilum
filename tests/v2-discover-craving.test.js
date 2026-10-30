@@ -60,7 +60,7 @@ test("the craving: one for the app, for this visit, every value one the Feed kno
 test("the Feed follows the craving and no longer holds its form", () => {
   const page = read("app/page.js");
   assert.match(page, /const \[craving, setCraving\] = useState\(EMPTY_CRAVING\);/);
-  assert.match(page, /const held = readCraving\(window\.sessionStorage\); if \(cravingActive\(held\)\) setCraving\(held\);/, "the visit's craving, read after mount");
+  assert.match(page, /const held = readCraving\(window\.sessionStorage\); if \(cravingActive\(held\)\) \{ cravingHeldRef\.current = true; setCraving\(held\); \}/, "the visit's craving, read after mount");
   assert.match(page, /window\.addEventListener\(CRAVING_EVENT, heard\);/, "and a new one heard");
   assert.match(page, /if \(craving\.text\) qs\.set\("craving", craving\.text\);/, "the Feed's request carries it, as before");
   assert.ok(!/cravingDraft|cravingOpen|applyCraving|POINT THE WAY|className="cravinggrid"/.test(page), "the form left the Feed");
@@ -70,16 +70,16 @@ test("the Feed follows the craving and no longer holds its form", () => {
 
 test("DISCOVER: a key in the search bar, a line in the empty search popup, one popup view", () => {
   const cc = read("app/components/ControlCenter.jsx");
-  assert.match(cc, /\{scope\.id === "global" \? \(\s*<button type="button" className=\{"ccdiscover" \+ [^\n]*\} onClick=\{\(\) => \{ haptic\("press"\); openSheet\("discover", \{ title: "DISCOVER" \}\); \}\} aria-label="discover: browse without typing">/, "the global search bar's own key");
+  assert.match(cc, /\{scope\.id === "global" \? \(\s*<button type="button" className=\{"ccdiscover" \+ [^\n]*\} onClick=\{\(\) => \{ haptic\("press"\); goSheet\("discover", \{ title: "DISCOVER" \}\); \}\} aria-label="discover: browse without typing">/, "the global search bar's own key");
   assert.match(cc, /<Icon name="compass" size=\{18\} \/><span className="ccdisclbl">DISCOVER<\/span>/);
   const search = read("app/components/SearchSheet.jsx");
-  assert.match(search, /\{!q && <button type="button" className="srchall srchdisc" onClick=\{\(\) => \{ haptic\("press"\); pushSheet\("discover", \{ title: "DISCOVER" \}\); \}\}>OR DISCOVER WITHOUT TYPING →<\/button>\}/, "the empty search popup leads there too");
+  assert.match(search, /\{!q && <button type="button" className="srchall srchdisc" onClick=\{\(\) => \{ haptic\("press"\); goSheet\("discover", \{ title: "DISCOVER" \}\); \}\}>OR DISCOVER WITHOUT TYPING →<\/button>\}/, "the empty search popup leads there too");
   const host = read("app/components/SheetHost.jsx");
   assert.match(host, /discover: \{ title: "DISCOVER", render: \(p\) => <DiscoverSheet \{\.\.\.p\} \/> \},/, "a view of the one popup, never a page");
   const ds = read("app/components/DiscoverSheet.jsx");
   assert.match(ds, /const c = pointCraving\(draft\);/, "POINT THE WAY sets the app's craving");
   assert.match(ds, /<DiscoverRails onPickTags=\{pick\} empty=\{<p className="srchfine">/, "the rails, and when there are none it says so");
-  assert.match(ds, /setQuery\(words\);\s*pushSheet\("search", \{ title: "SEARCH" \}\);/, "a reading tapped is searched in the search tab");
+  assert.match(ds, /setQuery\(words\);\s*goSheet\("search", \{ title: "SEARCH" \}\);/, "a reading tapped is searched in the search tab");
   assert.match(ds, /<a className="srchall" href="\/discover">THE WHOLE INVENTORY →<\/a>/);
   const rails = read("app/components/DiscoverRails.jsx");
   assert.match(rails, /if \(!data\) return null;\s*if \(!data\.rails\?\.length\) return empty;/, "nothing invented when no reviewed source stands behind a rail");

@@ -51,7 +51,8 @@ export default function GroundInk() {
     const ask = requestFrame;
     // the words within half a screen of the view are worked out each frame; the rest wait their turn
     const io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) near.add(e.target); else near.delete(e.target); } ask(); }, { rootMargin: "50% 0px 50% 0px" });
-    const watch = () => document.querySelectorAll(SEL).forEach((el) => { if (!el.__ground) { el.__ground = true; io.observe(el); } });
+    const watched = new WeakSet(); // this observer's own (InkWatch.jsx: a mark on the element outlived it)
+    const watch = () => document.querySelectorAll(SEL).forEach((el) => { if (!watched.has(el)) { watched.add(el); io.observe(el); } });
     watch();
     let wr = 0;
     const mo = new MutationObserver(() => { if (!wr) wr = requestAnimationFrame(() => { wr = 0; watch(); ask(); }); });

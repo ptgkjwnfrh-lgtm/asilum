@@ -48,7 +48,7 @@ test("every scroll reaction joins the one frame, and keeps no loop of its own", 
   assert.match(frame, /window\.addEventListener\("scroll", requestFrame, \{ passive: true, capture: true \}\);/, "the page's scroll and a carousel's");
   assert.match(frame, /globalThis\.__frameProfile/, "and how its cost is measured");
   // the motion row tells a video to play or pause only on a change
-  assert.match(read("app/components/MotionRail.jsx"), /if \(now === was\) return;/);
+  assert.match(read("app/components/MotionRail.jsx"), /if \(now === was\) \{[\s\S]*?return;\s*\}/); // unchanged: only a refused centre video is asked again (bug run)
 });
 
 test("a timer waiting on a CSS motion waits as long as the motion", () => {

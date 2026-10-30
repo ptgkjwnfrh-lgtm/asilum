@@ -46,7 +46,15 @@ export default function MotionRail({ posts }) {
       read() { const r = stage.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; },
       write(inView) {
         const now = inView ? "in:" + centre : "out";
-        if (now === was) return;
+        if (now === was) {
+          // nothing changed, but the centre video is not playing (the browser refused it — Low Power Mode, a play
+          // policy — or paused it itself): it is asked again as the reader scrolls, as it was before the one frame
+          // (bug run, 29 Oct 2026)
+          if (!inView) return;
+          const v = stage.querySelectorAll(".f20card")[centre]?.querySelector("video");
+          if (v && v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+          return;
+        }
         was = now;
         stage.querySelectorAll(".f20card").forEach((card, i) => {
           const v = card.querySelector("video");

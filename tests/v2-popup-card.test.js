@@ -34,7 +34,12 @@ test("a large card's size, centred, a card's corners", () => {
   assert.match(css, /:root \{ --pop-w: calc\(100vw - 16px\); \}/, "a phone's Feed width");
   assert.match(css, /@media \(min-width: 560px\) \{ :root \{ --pop-w: min\(calc\(50vw - 28px\), 460px\); \} \}/, "the twelve-column Feed's large card");
   assert.match(css, /--pop-h: min\(var\(--ed-feed-large, 80svh\), calc\(100svh - 2 \* var\(--pop-clear\)\)\);/, "the Feed's own large height, giving way only to the fixtures");
-  assert.match(css, /\.sheet \{\n  width: var\(--pop-w\); height: var\(--pop-h\); max-height: none;[^}]*border-radius: var\(--radius-card\);/s, "a card's four corners");
+  assert.match(css, /\.sheet \{\n  margin: 0; display: flex;[^}]*border-radius: var\(--radius-card\);/s, "a card's four corners");
+  assert.match(css, /\.sheetscrim > \.sheet \{ width: var\(--pop-w\); height: var\(--pop-h\); max-height: none; \}/, "the large card's size, on the popup");
+  // (bug run, 29 Oct 2026) the size is the popup's alone: an overlay's sheet (sign-up, reset, connect) keeps its own
+  // height within the screen and scrolls, so a tall form on a short phone never puts its close key out of reach
+  assert.ok(!/(^|\n)\.sheet \{[^}]*height: var\(--pop-h\)/.test(css), "no bare .sheet rule takes the popup's height");
+  assert.match(css, /\.overlay > \.sheet \{ display: block; max-height: calc\(100svh - 40px\); overflow-y: auto; \}/, "an overlay's sheet scrolls within the screen");
   assert.match(css, /\.sheetscrim \{\n  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;\n  padding: 0;/, "in the middle of the screen");
   // the same arithmetic as the Feed: 375 → 359 (the grid's width there), 800 → 372, 1280 → 460 (the Feed's is 449 there, beside its rail)
   const w = (vw) => (vw < 560 ? vw - 16 : Math.min(vw / 2 - 28, 460));

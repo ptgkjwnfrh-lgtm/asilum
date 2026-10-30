@@ -469,3 +469,28 @@ test("A SMART MIX AND NO GAPS on the model's feed (owner, 26 Oct 2026)", async (
     }
   }
 });
+
+test("a Feed of one kind (the mix filtered to a channel) packs with no overlap and no hole — a strip at the top row too", async () => {
+  // declared before measuring (bug run, 29 Oct 2026): with only MUSIC playing, ten songs packed s0 alone at the
+  // top with a hole beside it and two songs on one place — a smalls strip starting at row 0 held its open slot
+  // as the number 0, which read as no slot. Every channel alone, on every grid: no overlap, no hole, every card once.
+  const { CHANNELS, filterFeed } = await import("../lib/feed/choice.js");
+  const song = (i) => ({ id: "s" + i, __song: { id: "s" + i, title: "t" + i } });
+  const place = (i) => ({ id: "pl" + i, __place: { id: "pl" + i } });
+  const lists = [
+    ["ten songs", Array.from({ length: 10 }, (_, i) => song(i))],
+    ["six places", Array.from({ length: 6 }, (_, i) => place(i))],
+    ["a small then a wide", [song(0), { id: "b", __post: { id: "b", attachments: { event: { id: "e" } } } }, song(1), song(2), song(3), song(4)]],
+    ...CHANNELS.map((ch) => [ch.label + " alone", filterFeed([...feed(), ...Array.from({ length: 9 }, (_, i) => song(i))], { on: [ch.key] })]),
+  ];
+  for (const [name, list] of lists) {
+    if (!list.length) continue;
+    for (const cols of [6, 12, 18]) {
+      const { cells } = fillAds(tetrisPack(list, { cols, ads: true }), { cols });
+      const m = audit(cells, cols);
+      assert.equal(m.overlaps, 0, `${name}, ${cols} columns: no overlap`);
+      assert.equal(m.holes, 0, `${name}, ${cols} columns: ${m.holes} holes`);
+      assert.deepEqual(cells.filter((c) => !c.card.__ad).map((c) => c.card.id).sort(), list.map((c) => c.id).sort(), `${name}, ${cols}: every card once`);
+    }
+  }
+});

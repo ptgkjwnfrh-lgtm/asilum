@@ -32,7 +32,7 @@ import { useLiquidGlass } from "./LiquidGlass.jsx";
 import Icon from "./Icons.jsx";
 import { brightSurfaceAt } from "./InkWatch.jsx";
 import { TINT_BRIGHT } from "../../lib/ink.js";
-import { subscribeFrame } from "../../lib/frame.js";
+import { subscribeFrame, requestFrame } from "../../lib/frame.js";
 
 // the quick return, in the one frame (lib/frame.js): read where the key's place is, how far the page moved and what
 // lies under where the key will be drawn; then write its transform and its ink
@@ -58,7 +58,9 @@ function useQuickReturn(ref) {
         return { next, bright };
       },
       write({ next, bright }) {
-        if (Math.abs(next - offset) > 0.1) { offset = next; el.style.transform = offset ? `translate3d(0, ${offset.toFixed(1)}px, 0)` : ""; }
+        // moved: one frame more, so what reads the key's place (its ground ink, GroundInk.jsx) reads where it now
+        // stands — in the one frame every read comes before every write, and the last scroll asks for no other
+        if (Math.abs(next - offset) > 0.1) { offset = next; el.style.transform = offset ? `translate3d(0, ${offset.toFixed(1)}px, 0)` : ""; requestFrame(); }
         el.classList.toggle("floating", offset > 0);
         const key = el.firstElementChild;
         if (key) { if (bright) key.dataset.bright = ""; else delete key.dataset.bright; }
@@ -77,7 +79,8 @@ export default function FeedEq({ choice, onChange, source = "curated", onSource,
   useQuickReturn(wrapRef);
   const id = "feq" + useId().replace(/:/g, "");
   const close = useCallback(() => setOpen(false), []);
-  useEscape(close, open);
+  // Escape from inside the equaliser gives the focus back to its key, not to the page (the panel it was in goes)
+  useEscape(() => { if (panelRef.current && panelRef.current.contains(document.activeElement) && keyRef.current) keyRef.current.focus(); close(); }, open);
   useClickAway(panelRef, close, { active: open, excludeRef: wrapRef }); // the key toggles; a click anywhere else closes
   const mixed = !allOn(c) || !!craving;
   return (
@@ -87,7 +90,7 @@ export default function FeedEq({ choice, onChange, source = "curated", onSource,
         type="button"
         className={"eqkey" + (open ? " open" : "") + (mixed ? " mixed" : "")}
         aria-expanded={open}
-        aria-controls={id}
+        aria-controls={open ? id : undefined}
         aria-label={`the feed's mix: ${allOn(c) ? "every kind playing" : `${c.on.length} of ${CHANNELS.length} kinds playing`}${source === "following" ? ", following" : ""}${craving ? ", a craving steering it" : ""}`}
         title="the feed's mix"
         onClick={() => setOpen((o) => !o)}
@@ -109,7 +112,12 @@ export default function FeedEq({ choice, onChange, source = "curated", onSource,
           {craving ? (
             <div className="eqcraving">
               <span>A CRAVING STEERS THE FEED</span>
-              <button type="button" className="txtbtn" onClick={onClearCraving}>CLEAR</button>
+              <button type="button" className="txtbtn" onClick={() => {
+                // the line goes with the craving: the focus moves to the source playing, still in the equaliser
+                const src = panelRef.current && panelRef.current.querySelector(".eqsrc.on");
+                if (onClearCraving) onClearCraving();
+                if (src) src.focus();
+              }}>CLEAR</button>
             </div>
           ) : null}
           <div className="eqchans">

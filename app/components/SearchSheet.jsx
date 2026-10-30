@@ -15,7 +15,7 @@
 // deck is searching its bar is the only field on screen.
 
 import { useEffect, useRef, useState } from "react";
-import { useDock, pushSheet, unpinTag, setQuery, flipToggle, wordsOf } from "../../lib/dockstate.js";
+import { useDock, pushSheet, goSheet, unpinTag, setQuery, flipToggle, wordsOf } from "../../lib/dockstate.js";
 import AMark from "./AMark.jsx";
 import { TagChip } from "./TagChip.jsx";
 import { authorizedFetch, getUid, thumbFor } from "../../lib/client.js";
@@ -136,7 +136,7 @@ export default function SearchSheet() {
       {pins.length ? <PinnedRow pins={pins} /> : null}
 
       {!q && <p className="srchfine">Handles, pieces, places, eras, a feeling. Nothing is searched until you type.</p>}
-      {!q && <button type="button" className="srchall srchdisc" onClick={() => { haptic("press"); pushSheet("discover", { title: "DISCOVER" }); }}>OR DISCOVER WITHOUT TYPING →</button>}
+      {!q && <button type="button" className="srchall srchdisc" onClick={() => { haptic("press"); goSheet("discover", { title: "DISCOVER" }); }}>OR DISCOVER WITHOUT TYPING →</button>}
 
       {q && show("people") && overview && (
         <>

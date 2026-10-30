@@ -103,7 +103,7 @@ test("the indicator light is gone, the plus is smaller, the fixtures' buttons ar
 test("search morphs the deck upward; the popup waits for the first character; one field on screen", () => {
   const press = deck.slice(deck.indexOf("function press(id)"), deck.indexOf('if (id === "post")'));
   assert.ok(!/openSheet\("search"\)/.test(press), "the search key does not open the popup");
-  assert.match(deck, /if \(scope\.id === "global" && v\.trim\(\) && !searchPopupUp\) openSheet\("search"\);/, "typing opens it");
+  assert.match(deck, /if \(scope\.id === "global" && v\.trim\(\) && !searchPopupUp\) goSheet\("search"\);/, "typing opens it (or goes back to it, never a second)");
   assert.match(rules, /\.ccenter\.ccsearching \{ height: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "the deck extends upward");
   assert.match(rules, /--ad-h: calc\(var\(--u\) \* 64\);/, "the deck is taller by the ad bubble");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.ccenter \{ transition: none; \} \.ccsearch \{ animation: none; \} \}/);

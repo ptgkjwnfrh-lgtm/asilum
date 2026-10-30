@@ -3730,14 +3730,19 @@ a.adword:hover { color: var(--ad-chip); }
    that is not there); the risen search's rules below win */
 body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .sheet {
-  width: var(--pop-w); height: var(--pop-h); max-height: none;
   margin: 0; display: flex; flex-direction: column; min-height: 0;
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-card);
   box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
   animation: sheetin var(--dur-3) var(--ease-out);
 }
+/* the popup's size, the large card's: on the popup only, never on an overlay's sheet (below) */
+.sheetscrim > .sheet { width: var(--pop-w); height: var(--pop-h); max-height: none; }
 /* a field in focus: the card rises under the Masthead, the same size, clear of a phone's keyboard */
 .sheet.typing { align-self: flex-start; margin-top: calc(var(--head-h) + 8px); }
+/* an overlay's sheet (the sign-up, the password reset, the first visit's connect) is not a popup and is not a large
+   card: it keeps its own height, never past the screen, and scrolls (bug run, 29 Oct 2026: the large card's size,
+   on every .sheet, left a tall sign-up growing off a short phone with its close key out of reach) */
+.overlay > .sheet { display: block; max-height: calc(100svh - 40px); overflow-y: auto; }
 @keyframes sheetin { from { transform: translateY(12px) scale(0.97); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }

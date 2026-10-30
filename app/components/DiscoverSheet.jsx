@@ -13,8 +13,8 @@
 //   - the way to the whole inventory, the /discover page.
 
 import { useEffect, useState } from "react";
-import { setQuery, pushSheet } from "../../lib/dockstate.js";
-import { EMPTY_CRAVING, OCCASIONS, MOODS, NOVELTIES, CRAVING_MAX, readCraving, cravingActive, pointCraving } from "../../lib/craving.js";
+import { setQuery, goSheet } from "../../lib/dockstate.js";
+import { EMPTY_CRAVING, OCCASIONS, MOODS, NOVELTIES, CRAVING_MAX, CRAVING_EVENT, readCraving, normalCraving, cravingActive, pointCraving } from "../../lib/craving.js";
 import { DiscoverRails } from "./DiscoverRails.jsx";
 import { haptic } from "../../lib/haptics.js";
 
@@ -24,6 +24,12 @@ export default function DiscoverSheet() {
   const [said, setSaid] = useState("");
   useEffect(() => {
     try { const c = readCraving(window.sessionStorage); setDraft(c); setHeld(c); } catch { /* none held */ }
+    // the popup stays mounted when it closes, so a craving pointed or cleared elsewhere (the Feed's EQ has CLEAR) is
+    // heard here too — else it showed the old one ON, and POINT THE WAY brought back what was just cleared (bug run,
+    // 29 Oct 2026)
+    const heard = (e) => { const c = normalCraving(e && e.detail); setHeld(c); setDraft(c); setSaid(""); }; // its own POINT says its line after
+    window.addEventListener(CRAVING_EVENT, heard);
+    return () => window.removeEventListener(CRAVING_EVENT, heard);
   }, []);
   const on = cravingActive(held);
 
@@ -44,7 +50,7 @@ export default function DiscoverSheet() {
     if (!words) return;
     haptic("press");
     setQuery(words);
-    pushSheet("search", { title: "SEARCH" });
+    goSheet("search", { title: "SEARCH" }); // back to the search under DISCOVER, never a second one stacked on it
   }
 
   return (

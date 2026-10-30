@@ -239,7 +239,10 @@ export default function InkWatch() {
     const ask = (z) => { if (z) { pending.add(z); later(); } };
     const seen = new Set();
     const io = new IntersectionObserver((es) => { for (const e of es) { if (e.isIntersecting) { seen.add(e.target); ask(e.target); } else seen.delete(e.target); } }, { rootMargin: AHEAD, threshold: 0 });
-    const watch = () => document.querySelectorAll(SEL).forEach((z) => { if (!z.__ink) { z.__ink = true; io.observe(z); } });
+    // what this observer watches, its own: a mark left on the element outlived the observer, and a second mount (React's
+    // strict mode in dev, a remount) found every zone marked and watched none (bug run, 29 Oct 2026)
+    const watched = new WeakSet();
+    const watch = () => document.querySelectorAll(SEL).forEach((z) => { if (!watched.has(z)) { watched.add(z); io.observe(z); } });
     watch();
     let wr = 0;
     const mo = new MutationObserver(() => { if (!wr) wr = requestAnimationFrame(() => { wr = 0; watch(); }); }); // once a frame at most

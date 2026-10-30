@@ -125,7 +125,7 @@ test("the key and the panel: at the right of THE FEED, the equaliser under it, c
   assert.match(eq, /onClick=\{\(\) => \{ if \(source !== k && onSource\) onSource\(k\); \}\}/);
   assert.match(eq, /\{craving \? \(\s*<div className="eqcraving">/, "the craving shows on the equaliser while it steers");
   assert.match(page, /const shown = filterFeed\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), mix\);/, "the stream filtered before it is packed");
-  assert.match(eq, /useEscape\(close, open\);/);
+  assert.match(eq, /useEscape\(\(\) => \{[^\n]*close\(\); \}, open\);/); // and the focus back to the key (bug run, 29 Oct 2026)
   assert.match(eq, /useClickAway\(panelRef, close, \{ active: open, excludeRef: wrapRef \}\);/, "a click away closes, the key toggles");
   assert.ok(!/createPortal|dock/.test(eq.replace(/\/\/[^\n]*/g, "")), "the equaliser hangs under the key, no dock");
   assert.match(eq, /aria-expanded=\{open\}/);

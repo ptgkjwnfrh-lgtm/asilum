@@ -63,7 +63,7 @@
 import { useEffect, useRef, useState } from "react";
 import { deckFor, MESSAGES_HREF } from "../../lib/nav.js";
 import { DECK, scopeFor } from "../../lib/dock.js";
-import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, setScope } from "../../lib/dockstate.js";
+import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, goSheet, closeSearch, leaveSearch, closeSheet, setScope } from "../../lib/dockstate.js";
 import { centredIndex, ringItem } from "../../lib/scrollwheel.js";
 import { POST_TYPES } from "./PostSelection.jsx";
 import { useEscape, useClickAway } from "./dismiss.js";
@@ -117,7 +117,7 @@ export default function ControlCenter({ kind, pathname }) {
   function submit(e) {
     e.preventDefault();
     const q = String(dock.q || "").trim();
-    if (scope.id === "global") { if (q && !searchPopupUp) openSheet("search"); return; }
+    if (scope.id === "global") { if (q && !searchPopupUp) goSheet("search"); return; }
     if (scope.id === "messages") {
       // the mail desk's own find, never the whole app
       window.dispatchEvent(new CustomEvent("asilum:dm-find", { detail: { q } }));
@@ -129,7 +129,7 @@ export default function ControlCenter({ kind, pathname }) {
     setQuery(v);
     setTyping(true);
     // the sub tab appears only once something is typed (Figure 1)
-    if (scope.id === "global" && v.trim() && !searchPopupUp) openSheet("search");
+    if (scope.id === "global" && v.trim() && !searchPopupUp) goSheet("search");
   }
 
   function press(id) {
@@ -361,7 +361,7 @@ export default function ControlCenter({ kind, pathname }) {
                 how our search toggle works"): the search popup waits for typing, so the bar itself carries the way to
                 browse without it — the DISCOVER popup (DiscoverSheet.jsx), where the current craving lives now */}
             {scope.id === "global" ? (
-              <button type="button" className={"ccdiscover" + (String(dock.q || "").trim() ? " folded" : "")} onClick={() => { haptic("press"); openSheet("discover", { title: "DISCOVER" }); }} aria-label="discover: browse without typing">
+              <button type="button" className={"ccdiscover" + (String(dock.q || "").trim() ? " folded" : "")} onClick={() => { haptic("press"); goSheet("discover", { title: "DISCOVER" }); }} aria-label="discover: browse without typing">
                 <Icon name="compass" size={18} /><span className="ccdisclbl">DISCOVER</span>
               </button>
             ) : null}

@@ -71,6 +71,8 @@ const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories",
   ...STOREFRONT_CATEGORIES.map((c) => c.id).filter((c) => c !== "clothing")];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
+// the notice a craving applied puts up; a Feed loaded without one takes it down (and no other notice)
+const CRAVING_NOTE = "current craving applied — your long-term taste was not rewritten";
 
 
 
@@ -99,9 +101,14 @@ export default function Home() {
   // THE CURRENT CRAVING lives in the search tab's DISCOVER popup since 29 Oct 2026 ("current cravings should live in
   // search tab"; lib/craving.js, DiscoverSheet.jsx): the Feed follows the one this visit holds, and hears a new one
   const [craving, setCraving] = useState(EMPTY_CRAVING);
+  // a craving this visit already holds: the boot does not load the Feed without it, since setting it reloads the Feed
+  // anyway (bug run, 29 Oct 2026: two /api/feed requests on every load, the first discarded but recorded as served)
+  const cravingHeldRef = useRef(false);
   useEffect(() => {
-    try { const held = readCraving(window.sessionStorage); if (cravingActive(held)) setCraving(held); } catch { /* none held */ }
-    const heard = (e) => { setTab("curated"); setCraving(normalCraving(e && e.detail)); };
+    try { const held = readCraving(window.sessionStorage); if (cravingActive(held)) { cravingHeldRef.current = true; setCraving(held); } } catch { /* none held */ }
+    // a craving pointed steers FOR YOU, so the Feed turns to it; one cleared leaves the reader where they are (the EQ's
+    // CLEAR used to throw a reader on FOLLOWING back to FOR YOU)
+    const heard = (e) => { const c = normalCraving(e && e.detail); if (cravingActive(c)) setTab("curated"); setCraving(c); };
     window.addEventListener(CRAVING_EVENT, heard);
     return () => window.removeEventListener(CRAVING_EVENT, heard);
   }, []);
@@ -475,7 +482,10 @@ export default function Home() {
       // V.2 14.9 (slice 10c): the Info Dock shows |A| while exploration is active
       try { window.dispatchEvent(new CustomEvent("asilum:exploration", { detail: data.exploration || { active: !!data.epsilonActive, auto: !!data.epsilonAuto, off: false } })); } catch {}
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
-      else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
+      else if (data.craving) setNotice(CRAVING_NOTE);
+      // a Feed without a craving takes the craving's notice down, and only that one (bug run, 29 Oct 2026: cleared from
+      // the EQ, the craving still said it was applied)
+      else setNotice((n) => (n === CRAVING_NOTE ? "" : n));
       dwellRef.current = { vis: new Map(), sent: new Set() };
       // (r19) a new serve: report examined slots against THIS id, once.
       servesRef.current = [];
@@ -646,7 +656,7 @@ export default function Home() {
         promptRef.current = q;
         setNotice(`The Asterisk system is routing this feed toward “${q}” without rewriting your Passport`);
       }
-      await loadFeed(user);
+      if (!cravingHeldRef.current) await loadFeed(user); // else the reload on the craving loads it, once
       if (sharedItem) {
         fetch("/api/related?item=" + encodeURIComponent(sharedItem) + "&limit=6")
           .then((r) => r.json())

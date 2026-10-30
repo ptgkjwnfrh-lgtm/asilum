@@ -207,7 +207,8 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   // screen, lowkey every pop up tab should be the size of a large card") every popup one centred large card; the
   // search no longer rises flat out of the deck, the phone's bottom sheet is gone (tests/v2-popup-card.test.js)
   assert.match(rules, /\.sheetscrim \{\n  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;/);
-  assert.match(rules, /\.sheet \{\n  width: var\(--pop-w\); height: var\(--pop-h\);[^}]*border-radius: var\(--radius-card\);/s);
+  assert.match(rules, /\.sheet \{\n  margin: 0; display: flex;[^}]*border-radius: var\(--radius-card\);/s);
+  assert.match(rules, /\.sheetscrim > \.sheet \{ width: var\(--pop-w\); height: var\(--pop-h\); max-height: none; \}/); // the popup's size, its own (bug run, 29 Oct 2026)
   assert.ok(!/deckrise/.test(rules + read("app/components/SheetHost.jsx")), "the search's flat foot is retired");
   assert.match(rules, /\.sheet\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
   assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);

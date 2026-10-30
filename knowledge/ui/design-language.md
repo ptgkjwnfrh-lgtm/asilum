@@ -1299,3 +1299,21 @@ cards, and a computed style read every frame to learn the theme.
 - TIMING: the POST card's grow is `--dur-3` (320ms) and the popup now waits that long (it waited 260 and opened over a
   card still growing). Every transition was already on the ladder; the animations off it are loops (blinks, pulses,
   drifts) and two deliberate settles (the stamp's 620ms "arrives a beat late", the map's 1.1s), left as they are.
+
+### The bug run (29 Oct 2026, "do another run through for bugs")
+Every route loaded clean at 375 and 800, light and dark (no console errors beyond the map's geolocation policy and the
+expected 404s). Found and fixed, each with a check that fails with the bug back in (`tests/v2-bug-run.test.js`,
+`tests/feed-tetris.test.js`, `tests/v2-popup-card.test.js`):
+- THE PACKER: a strip of smalls at the very top held its open slot as row 0, which read as no slot — a Feed of songs
+  alone (MUSIC as the only channel) put the first song by itself, a hole beside it, and two songs on one place.
+- ONE COPY OF A VIEW: DISCOVER pressed again, a rail tapped in DISCOVER, a character typed with DISCOVER on top each
+  stacked another live step (three DISCOVERs, two SEARCHes each fetching per keystroke). `goSheet` goes back to the
+  step the popup holds, or adds one.
+- THE CRAVING: DISCOVER now hears a craving cleared from the EQ (it showed the old one ON, and POINT brought it back);
+  a held craving loads the Feed once, not twice; CLEAR leaves a reader on FOLLOWING where they are.
+- THE OVERLAYS: the large card's size is the popup's alone; the sign-up, reset and connect sheets keep their own
+  height within the screen and scroll (a tall sign-up grew off a short phone, its × out of reach).
+- THE INK: the watchers keep their own set of what they watch (a mark on the element outlived the observer, and a
+  second mount — React's strict mode in dev — watched nothing).
+- THE EQ: `aria-controls` only while the panel is there; Escape and CLEAR keep the focus in the EQ; a moved key asks
+  one more frame so its ink reads where it stopped. THE MOTION ROW asks a refused centre video again.
