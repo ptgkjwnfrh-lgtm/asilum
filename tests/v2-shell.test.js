@@ -34,14 +34,14 @@ test("no CRT: scanlines, the grid, the glow and the wash are gone from the token
   for (const block of [":root {", '[data-theme="light"] {']) {
     const i = css.indexOf(block);
     const body = css.slice(i, css.indexOf("\n}", i));
-    assert.match(body, /--scan:\s*transparent;/, block + " --scan");
-    assert.match(body, /--grid-ln:\s*transparent;/, block + " --grid-ln");
     // (18 Oct, A6 third addendum) the phosphor glow is back in DARK only, in each word's own colour
     if (block === ":root {") assert.match(body, /--glow:\s*0 0 1px currentColor,/, block + " --glow glows in the word's own colour");
     else assert.match(body, /--glow:\s*none;/, block + " --glow");
-    assert.match(body, /--glow-ink:\s*none;/, block + " --glow-ink");
-    assert.match(body, /--backlight:\s*none;/, block + " --backlight");
-    assert.match(body, /--wash:\s*none;/, block + " --wash");
+  }
+  // (30 Oct 2026) the CRT tokens were held at transparent / none for weeks with
+  // nothing reading them; the junk sweep deleted them, so now none may exist
+  for (const token of ["--scan", "--grid-ln", "--glow-ink", "--backlight", "--wash"]) {
+    assert.ok(!new RegExp(token + "\\b").test(rules), token + " must be gone from globals.css");
   }
   // (second pass, 17 Oct) the chrome's rules are DELETED, not hidden — and so
   // are the header's, the old thumb bar's and the ORB HUB second interface's
