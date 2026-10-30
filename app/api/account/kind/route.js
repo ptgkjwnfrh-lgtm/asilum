@@ -15,7 +15,7 @@ import { accountIdFromIdentity, resolveRequestUser } from "../../../../lib/ident
 import { readJsonRequest } from "../../../../lib/security/json.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../../lib/security/rateLimit.js";
 import { requestSubject } from "../../../../lib/security/request.js";
-import { accountKind, readAccountKind, setAccountKind } from "../../../../lib/db/accountKinds.js";
+import { readAccountKind, setAccountKind } from "../../../../lib/db/accountKinds.js";
 import { CAPABILITIES, DEFAULT_KIND, isAccountKind, normalizeKind } from "../../../../lib/accounts.js";
 
 export const dynamic = "force-dynamic";

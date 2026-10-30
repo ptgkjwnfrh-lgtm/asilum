@@ -37,15 +37,6 @@ const SUBSYSTEMS = [
   { href: "/settings", label: "SETTINGS", meta: "control panel" },
 ];
 
-// The hairline field (owner order, Aug 13; diagonals swapped for
-// verticals same day): horizontal and vertical contrast lines, a few
-// thick, most thin, most barely there. Hand-placed and deterministic —
-// print texture, not motion, so no random at render.
-const HAIRLINES = [
-  "cvln-h1", "cvln-h2", "cvln-h3", "cvln-h4", "cvln-h5", "cvln-h6",
-  "cvln-v1", "cvln-v2", "cvln-v3", "cvln-v4", "cvln-v5",
-];
-
 export default function CoverPage() {
   const [feed, setFeed] = useState([]);
   const [looks, setLooks] = useState([]);

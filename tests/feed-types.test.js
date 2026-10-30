@@ -3,7 +3,7 @@
 // braid. Pure. The packing's own tests are tests/feed-tetris.test.js.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { pieceName, brdcstMoment, brdcstWhen, priceLine, offerMode, postType, weightOf, echoLive, echoRail, braid, WEIGHT, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
+import { pieceName, brdcstMoment, brdcstWhen, priceLine, offerMode, postType, echoLive, echoRail, braid, ECHO_TTL_MS, TYPES } from "../lib/feed/types.js";
 
 const post = (extra = {}) => ({ id: "p1", serverId: 1, handle: "a", at: 1000, text: "x", attachments: {}, ...extra });
 
@@ -17,12 +17,6 @@ test("the eight types and how a post earns one", () => {
   assert.equal(postType(post({ attachments: { event: { id: "e" }, media: [{ path: "a" }] } })), "STILL", "media with an event is media");
   assert.equal(postType(post({ attachments: { echo: { expiresAt: 1 } } })), "ECHO");
   assert.equal(postType(null), "TRANSM");
-});
-
-test("the blueprint's weights stand (the packing is lib/feed/tetris.js since 25 Oct 2026)", () => {
-  assert.equal(WEIGHT.STILL, 0.7); assert.equal(WEIGHT.MOTION, 0.7); assert.equal(WEIGHT["MEDIA+BRDCST"], 0.75);
-  assert.equal(WEIGHT.LISTING, 0.45); assert.equal(WEIGHT.PLACE, 0.2); assert.equal(WEIGHT.SONG, 0.2); assert.equal(WEIGHT.BRDCST, 0.1);
-  assert.equal(weightOf({ __post: post({ imageUrl: "/x.jpg", attachments: { event: { id: "e" } } }) }), 0.75, "media plus BRDCST is the heaviest");
 });
 
 test("ECHO: 24 hours by default, never live after expiry, never an echo without the mark", () => {

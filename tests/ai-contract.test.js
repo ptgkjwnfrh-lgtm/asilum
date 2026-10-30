@@ -208,7 +208,8 @@ test("every real() in lib/ states where the result came from", () => {
 test("every notImplemented() in lib/ names the capability it is standing in for", () => {
   const sites = callSites("notImplemented");
   // The floor proves the scanner works (it was 25 while the unbuilt job,
-  // feed, vision and recommendation facades existed; 18 remain, floor 15).
+  // feed, vision and recommendation facades existed; 18 until the junk sweep of
+  // 30 Oct 2026 deleted three uncalled placeholders; 15 remain, floor 15).
   assert.ok(sites.length >= 15, `found ${sites.length} notImplemented() call sites`);
 
   const unnamed = sites.filter((s) => s.args.length < 1);
@@ -222,7 +223,9 @@ test("every notImplemented() in lib/ names the capability it is standing in for"
 
 test("every mockMarked() in lib/ passes the data it is marking", () => {
   const sites = callSites("mockMarked");
-  assert.ok(sites.length >= 3, `found ${sites.length} mockMarked() call sites`);
+  // The floor proves the scanner works (3 until the uncalled musicProfile and
+  // mapGenre were deleted with the junk sweep of 30 Oct 2026; 1 remains).
+  assert.ok(sites.length >= 1, `found ${sites.length} mockMarked() call sites`);
   assert.deepEqual(sites.filter((s) => s.args.length < 1), []);
 });
 

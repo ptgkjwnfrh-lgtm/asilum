@@ -15,7 +15,7 @@
 import { NextResponse } from "next/server";
 import { applyExaminationReport, findServe, reportedIds } from "../../../lib/brain/index.js";
 import { examinedBridgeCounts, examinedImpressionsEnabled, MAX_EXAMINED_PER_SERVE } from "../../../lib/brain/attribution.js";
-import { mutateProfile, getProfile, bumpPopularity } from "../../../lib/db/index.js";
+import { mutateProfile, bumpPopularity } from "../../../lib/db/index.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consentState, observationAllowed } from "../../../lib/consent.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";

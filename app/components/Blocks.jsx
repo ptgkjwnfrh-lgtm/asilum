@@ -20,10 +20,6 @@
 //   blinkLamp(eventOrEl)      blinks the lamp inside the pressed control
 //                             like a CD tray's eject light — on, off, on,
 //                             off — then it goes dark.
-//   <MrzLine text="…" />      an MRZ-style line: words joined by "<", run
-//                             out with "<<<<" to the width, a block cursor
-//                             blinking at the end (the passport device,
-//                             not a placeholder).
 //
 // prefers-reduced-motion: the text is simply there, the lamp lights once and
 // goes dark without blinking, the cursor holds still.
@@ -38,7 +34,6 @@ const STEP_MS = 14;       // per character
 const MAX_MS = 900;       // a long description never takes longer than this
 
 const still = () => typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
 
 export function BlockText({ text, as: Tag = "span", className = "", play = 0 }) {
   const shownRef = useRef(null);
@@ -102,16 +97,3 @@ export function blinkLamp(target, { quiet = false } = {}) {
   if (!quiet) haptic("press");
 }
 
-/** An MRZ-style line: words joined by "<", run out with "<", a blinking block cursor at the end. */
-export function MrzLine({ words = [], width = 44, cursor = false }) {
-  const body = words.map((w) => String(w).toUpperCase().replace(/[^A-Z0-9*]+/g, "<")).join("<<");
-  const fill = Math.max(4, width - body.length);
-  const parts = body.split(/(<+)/);
-  return (
-    <span className="mrzline" aria-hidden="true">
-      {parts.map((p, i) => (p.startsWith("<") ? <i key={i}>{p}</i> : <b key={i}>{p}</b>))}
-      <i>{"<".repeat(fill)}</i>
-      {cursor ? <span className="mrzcursor" /> : null}
-    </span>
-  );
-}

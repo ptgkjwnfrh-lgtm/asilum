@@ -407,7 +407,9 @@ export async function POST(req) {
       }
       case "sync.run": {
         const { syncProducts } = await import("../../../lib/ingest/adapters/sync.js");
-        return NextResponse.json({ runs: await syncProducts({ query: body.query, limit: body.limit }) });
+        // category = an eBay lane (lib/ingest/ebay.js EBAY_CATEGORIES); hint = the catalog category for
+        // bare titles; only = one source; no query at all runs eBay's demo sweep across every lane
+        return NextResponse.json({ runs: await syncProducts({ query: body.query, limit: body.limit, category: body.category, hint: body.hint, only: body.only }) });
       }
       // ---- AI-foundation inspection (Day 9): admin/debug review ----
       case "ai.events": {

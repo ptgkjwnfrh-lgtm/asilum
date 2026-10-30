@@ -19,6 +19,9 @@ unavailable state — never a fake success. `describeAiConfig()` /
 | `EBAY_CLIENT_ID/SECRET` (+ approval) | eBay adapter | unset | adapter reports disabled |
 | `EBAY_DELETION_VERIFICATION_TOKEN` (+ optional `EBAY_DELETION_ENDPOINT`) | eBay account-deletion notification endpoint | unset | honest 503 (eBay's portal verification fails until set) |
 | `WOOCOMMERCE_STORE_APPROVED` + `WOOCOMMERCE_STORE_URL` | WooCommerce adapter | off | adapter reports disabled |
+| `ITUNES_SEARCH_ENABLED=1` | song previews on the SONG cards (`/api/music`, `lib/music/itunes.js`) | off | `?model=1` answers the SAMPLE songs with `enabled:false`; `?q=` answers 503 with the reason |
+| `TICKETMASTER_API_KEY` (+ `TICKETMASTER_COUNTRY`) | live concerts folded into `/api/places` (`lib/places/ticketmaster.js`) | unset | the register alone; the response's `live.enabled` is false with the reason; `live=0` always reads the register alone |
+| `PEXELS_API_KEY` (+ `PEXELS_QUERIES`) | licensed motions for the stream and the row (`/api/motion`, `lib/media/pexels.js`) | unset | `posts: []` with the reason, status 200; the generated test pattern stays |
 | `DEVICE_COOKIE_SECRET` | identity issuing | required (503 if unset in prod) | honest 503 |
 | `ADMIN_TOKEN` | admin surface | disabled if unset | honest 503 |
 | `DATABASE_EXPECTED_ROLE` / prod default `asilum_app` | least-privilege runtime | enforced in prod | fail-closed boot |

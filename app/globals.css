@@ -44,10 +44,6 @@ html { font-synthesis-style: none; }
   --serif: "Inter", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   /* --ed-* = DESIGN CONSOLE hand edits (lib/uilab.js). The fallback is the
      shipped design; an owner override lands inline on <html>. */
-  /* compacted (owner, 8 Sep: the divider up, the buttons up, the whole
-     header smaller) — 64/48 with a 10px float became 54/38 flush to the top */
-  --mq-h: var(--ed-mq-h, 62px);
-  --nav-h: 46px;
   /* V.2: no header. The band above the page is the fixtures' — the Info
      Dock and the Passport Button — plus the phone's top inset. */
   --head-h: calc(66px + env(safe-area-inset-top, 0px));
@@ -68,7 +64,6 @@ html { font-synthesis-style: none; }
   --glow: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 55%, transparent), 0 0 22px color-mix(in srgb, currentColor 18%, transparent);
   --glow-r: 0 0 1px currentColor, 0 0 10px color-mix(in srgb, currentColor 60%, transparent), 0 0 26px color-mix(in srgb, currentColor 22%, transparent);
   --glow-p: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 50%, transparent);
-  --glow-ink: none;
   /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
      line ONLY — ASILUM above it is left exactly as it shipped. Purely
      horizontal: the blur radius grows while the vertical offset stays 0, so the
@@ -76,14 +71,6 @@ html { font-synthesis-style: none; }
      offset copy — the first version had one and read as a misprint rather than
      a glow. Static, so no reduced-motion escape hatch is owed. */
   --mag-glow: none;
-  --grid-ln: transparent;
-  --scan: transparent;
-  --backlight: none;
-  /* The colour wash is its OWN fixed layer (body::before) — a second and third
-     gradient inside --backlight inherited the grid's 140px background-size and
-     tiled into a checkerboard (the owner saw it, 8 Sep). Fuchsia, soft purple,
-     soft blue: big, blurred, breathing. */
-  --wash: none;
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%);
   /* Filled controls carry no glow on phosphor — the fill is the light. */
   --glow-box-ink: none;
@@ -104,8 +91,6 @@ html { font-synthesis-style: none; }
      it should still cause the distortion"): no lip, no band — only a whisper
      of light on the bottom edge where the glass ends (Fresnel) */
   --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  --glass-rim: none;
-  --glass-rim-catch: rgba(255, 255, 255, 0.12); /* the edge nearest the pointer */
   /* the GLOSS, ever so slight and real (owner, 8 Sep): a thin specular along
      the top where the sheet meets the light, and one soft diagonal
      reflection band — a window in the glass — the way a real pane carries
@@ -134,8 +119,6 @@ html { font-synthesis-style: none; }
      "the center fixture select buttons have a green glow it should be red") */
   --lamp-core: rgba(255, 226, 222, 0.5);
   --lamp: rgba(255, 65, 54, 0.3);
-  --lamp-hot: rgba(255, 65, 54, 0.3);
-  --lamp-pointer: rgba(255, 255, 255, 0.03);
   /* the clickable word's resting light (the teal law, Aug 12): a horizontal
      smear and the glow — a token, so a hovered header word can keep exactly
      what it had at rest (owner, 9 Sep: the header's words are just words) */
@@ -145,7 +128,6 @@ html { font-synthesis-style: none; }
   /* one small plus (7 units wide, arms 1.2) centred in a 56-unit tile, so
      at the tilings below the pluses are 8, 11 and 15px with air between */
   --plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cpath d='M27.4 24.5h1.2v2.9h2.9v1.2h-2.9v2.9h-1.2v-2.9h-2.9v-1.2h2.9z' fill='%23000'/%3E%3C/svg%3E");
-  --holo: linear-gradient(118deg, #8cf0a6 0%, #6e9cff 25%, #b088ff 50%, #ff8fb1 75%, #8cf0a6 100%);
   /* ROUNDED EVERYWHERE (owner, 18 Oct 2026: "everything should be rounded
      out"; the hand-drawn rounded rectangles of the references): the three
      radii every shell-visible surface takes — a card or popup, a field, a
@@ -190,7 +172,6 @@ html { font-synthesis-style: none; }
   --iris-5: rgba(170, 120, 255, 0.95);
 }
 [data-theme="light"] {
-  --plus-k: 1;
   /* THE ICE ACCENT IS A COOL SKY-TEAL (owner, 9 Sep: "the opposite of the
      phosphorus green is this scary dark negative blue — change that to a cool
      tealish sky blue"). The family moved from a muddy blue-green (hue ~188)
@@ -260,24 +241,16 @@ html { font-synthesis-style: none; }
   --glow: none;
   --glow-r: none;
   --glow-p: none;
-  --glow-ink: none;
   --glow-box-ink: none;
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
   --mag-glow: none;
-  --grid-ln: transparent;
-  --scan: transparent;
-  /* Ice, warmed: faded pinks and yellows sit in the paper (owner order, 8 Sep). */
-  --backlight: none;
-  --wash: none;
   --chrome: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 60%);
   --glass: rgba(255, 255, 255, 0.72);
   --glass-deep: rgba(255, 255, 255, 0.82);
   --fx-glass: rgba(205, 240, 252, 0.22); /* September's light pane, icy and clear */
   --fx-tint: rgba(255, 255, 255, 0.275); /* the owner's touch of white: 15%, then 25%, then 27.5% (19 Oct) */
   --glass-lip: inset 0 -1px 0 rgba(255, 255, 255, 0.35);
-  --glass-rim: none;
-  --glass-rim-catch: rgba(255, 255, 255, 0.35);
   --glass-sheen:
     linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0px, rgba(255, 255, 255, 0.08) 3px, rgba(255, 255, 255, 0) 16px),
     linear-gradient(104deg, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.10) 45%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0.08) 56%, rgba(255, 255, 255, 0) 65%),
@@ -293,8 +266,6 @@ html { font-synthesis-style: none; }
   --glass-pill-rim: rgba(255, 255, 255, 0.6);
   --lamp-core: rgba(255, 232, 228, 0.55); /* the selected key's lamp red in light too (it was cyan) */
   --lamp: rgba(210, 47, 34, 0.3);
-  --lamp-hot: rgba(210, 47, 34, 0.32);
-  --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* the light page: the icy ground of the 18 Oct reference falling a shade
      cooler towards the middle, the tinted light from the top corner */
   --bg-grad:
@@ -307,8 +278,6 @@ html { font-synthesis-style: none; }
   /* light keeps the reference's slate wash under a popup (6.jpg) */
   --shade: #253749;
   --scrim: color-mix(in srgb, #1d3446 74%, transparent); /* the dark blue cloud under a popup (the owner's mockup, 25 Oct) */
-  /* ice: the sky-teal, the wash's pink and yellow, the peach, and round */
-  --holo: linear-gradient(118deg, #0c7a73 0%, #1d5fd6 25%, #4a52b5 50%, #ff8fb1 75%, #0c7a73 100%);
 }
 
 * { box-sizing: border-box; }
@@ -327,7 +296,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
-::selection { background: var(--red); color: var(--paper); }
 button { font-family: var(--helv); }
 
 /* ---- Shell: one fixed top header — wordmark row + destination row ---- */
@@ -349,15 +317,10 @@ button { font-family: var(--helv); }
    inherited so the pane's ::before/::after — the gloss and the bezel —
    read the values set on the pane: a pseudo-element inherits a custom
    property only when it is declared to inherit. */
-@property --lx { syntax: "<length-percentage>"; inherits: true; initial-value: 50%; }
-@property --ly { syntax: "<length-percentage>"; inherits: true; initial-value: 70%; }
-@property --ls { syntax: "<number>"; inherits: true; initial-value: 0; }
 @property --cx { syntax: "<length-percentage>"; inherits: true; initial-value: 50%; }
 @property --cy { syntax: "<length-percentage>"; inherits: true; initial-value: 70%; }
 @property --cs { syntax: "<number>"; inherits: true; initial-value: 0; }
 @property --gs { syntax: "<number>"; inherits: true; initial-value: 0; }
-
-@keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* THE WORDMARK (owner, 28 Oct 2026; Wordmark.jsx): the artwork set as type
    in layers on one box, measured in the units of the word's 161 (--wm-u is
@@ -469,10 +432,6 @@ button { font-family: var(--helv); }
 
 /* ---- Editorial headline + shared bits ---- */
 
-.headline {
-  font-size: clamp(42px, 7vw, 96px); font-weight: 900; letter-spacing: -0.045em;
-  line-height: 0.92; text-transform: uppercase; margin: 0 0 6px;
-}
 .headline .red { color: var(--red); }
 .deck { font-family: var(--serif); font-style: normal; font-size: 16px; font-weight: 500; color: var(--grey); margin: 0 0 16px; }
 
@@ -674,10 +633,6 @@ button { font-family: var(--helv); }
   padding: var(--ed-pad-btn-y, 12px) var(--ed-pad-btn-x, 19px); font-weight: 900; font-size: var(--ed-fs-btn, 13px); letter-spacing: 0.08em;
   text-transform: uppercase; cursor: pointer;
 }
-.btn:hover { background: var(--paper); color: var(--ink); }
-.btn.ghost { background: var(--paper); color: var(--ink); }
-.btn.ghost:hover { background: var(--ink); color: var(--paper); }
-.btn.ghost.active { color: var(--paper); background: var(--ink); }
 .btn.wide { width: 100%; margin-top: 6px; }
 .btn:disabled { opacity: 0.35; cursor: default; }
 
@@ -1224,7 +1179,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .pname { font-size: 27px; font-weight: 900; letter-spacing: -0.03em; }
 .pbio { font-family: var(--serif); font-style: normal; font-size: 14px; color: var(--grey); margin: 6px 0 8px; }
 .pcounts { display: flex; gap: 20px; font-size: 10px; letter-spacing: 0.1em; color: var(--grey); }
-.pcounts b { color: var(--ink); font-size: 14px; margin-right: 4px; }
 .phead2 > .btn, .phead2 > .followbtn { margin-top: 44px; }
 .pedit { display: block; border: 1px solid var(--line); padding: 7px 9px; font-family: var(--helv); font-size: 14px; margin-bottom: 6px; width: 100%; max-width: 380px; }
 .pedit.small { font-size: 12px; }
@@ -1497,14 +1451,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .notice-body { flex: 1; }
 .notice-x { border: none; background: none; cursor: pointer; font-size: 15px; line-height: 1; color: inherit; padding: 0 2px; }
 .notice-x:hover { opacity: 0.6; }
-@keyframes osroll { from { top: -18vh; } to { top: 104vh; } }
-/* the colour wash: one fixed layer, never tiled */
-body::before {
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: var(--wash);
-}
-@keyframes osdrift1 { to { transform: translate(6vw, 4vh) scale(1.15); } }
-@keyframes osdrift2 { to { transform: translate(-5vw, -3vh) scale(0.9); } }
 
 /* ASTERISK dock — the engine's living form */
 .os-dock { border-top: 1px solid var(--line); padding: 8px 2px 4px; display: flex; gap: 10px; align-items: center; }
@@ -1516,8 +1462,7 @@ body::before {
 .os-dock .t b { color: var(--p2); font-weight: 400; text-shadow: var(--glow-p); }
 
 /* surface polish: pills, radius, glow — applied to existing magazine classes */
-.main { padding-bottom: calc(var(--status-h) + 70px); }
-.btn, .fitbtn, .platform, .chip { border-radius: var(--ed-rad-btn, 999px); }
+.fitbtn, .platform, .chip { border-radius: var(--ed-rad-btn, 999px); }
 .btn { background: var(--bg3); color: var(--ink); border: 1px solid var(--line); font-weight: 400; letter-spacing: var(--ed-ls-btn, 0.14em); }
 .btn:hover { background: var(--bg2); color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 .btn.ghost { background: none; color: var(--ink); border-color: var(--line); }
@@ -1534,7 +1479,6 @@ button.soon, a.soon, .btn.soon, .btn.ghost.soon, .fitbtn.soon, .platform.soon { 
 .headline .red { text-shadow: var(--glow-r); margin-right: 0.06em; }
 .headsub { display: block; font-family: var(--mich); font-size: var(--ed-fs-headline, clamp(38px, 6vw, 84px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase;
   color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; margin: 0 0 10px; }
-@media (max-width: 760px) { .headsub { font-size: clamp(26px, 8vw, 48px); } }
 .deck { font-style: normal; color: var(--grey); font-size: var(--ed-fs-deck, 13px); }
 .search { border-bottom-color: var(--sig); caret-color: var(--sig); }
 .red { color: var(--red); text-shadow: var(--glow-r); }
@@ -1558,7 +1502,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvr > * { position: relative; }
 
 .cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
-.cvmastblock { display: grid; }
 .cvmastline { font-family: var(--mich); font-size: var(--ed-fs-covermast, clamp(44px, 7.5vw, 96px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase; }
 .cvmastline .red { margin-right: 0.06em; }
 .cvyear { display: flex; gap: 0.14em; }
@@ -1720,7 +1663,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wcright textarea { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 10px 14px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .wcright .wcap:focus, .wcright textarea:focus { border-bottom-color: var(--sig); }
 /* permalink focus — one transmission pinned above the wire */
-.wfocus { margin: 4px 0 30px; }
 .wpost { margin-bottom: 22px; }
 .wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
 .wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
@@ -1926,7 +1868,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .dcpreset { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.06em; }
 .dcpreset b { font-weight: 400; color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dcmsg { font-size: 9px; color: var(--grey); letter-spacing: 0.08em; }
-.dcmsg.err { color: var(--red); }
 .dcstatus { font-family: var(--helv); font-size: 12px; color: var(--grey); letter-spacing: 0.08em; }
 .dcstatus b { color: var(--red); font-weight: 400; text-shadow: var(--glow-r); }
 /* inspect mode: the page under the crosshair */
@@ -2108,7 +2049,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxheard { margin-top: 16px; display: grid; gap: 4px; }
 .gxheard .gxlabel { margin-bottom: 4px; }
 .gxheard em { font-style: normal; font-size: 11px; color: var(--grey); }
-.gxlinks { margin: 4px 0 30px; }
 @media (prefers-reduced-motion: reduce) { .ppwarp { transition: none; } }
 
 /* upload-station r2: the warped map settles as the page background; the
@@ -2176,7 +2116,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxchip.on .gxchipx:hover { color: var(--red); }
 .gxchip.on .gxchipx:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
-@keyframes gxfloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @media (max-width: 640px) { .gxfavgrid { grid-template-columns: 1fr; } .gxwall { columns: 2 120px; } }
 
 /* /stats: the asterisk entity at reading size (replaced BrainViz) */
@@ -2247,7 +2186,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    rules by cascade order; the row never paints over its neighbours) ---- */
 
 @media (max-width: 760px) {
-  :root { --mq-h: 54px; --nav-h: 36px; }
   /* MAGAZINE STAYS. The name is "*ASILUM" and the word is never
      dropped (owner directive, 17 Aug) — this rule used to hide it below 760px,
      so the corner logo read a bare "*ASILUM" on every phone and every narrow
@@ -3116,7 +3054,6 @@ a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
    rules and the words block by cascade order, on purpose.
    ===================================================================== */
 :root {
-  --ed-fs-nav: 13.5px; --ed-fs-tbtn: 13.5px; --ed-fs-navmeta: 9px;
   --ed-fs-deck: 14px; --ed-fs-btn: 14px; --ed-fs-chip: 13px;
   --ed-fs-headline: clamp(24px, 2.6vw, 34px); --ed-fs-cardttl: 15px; --ed-fs-cardprice: 15px;
   --ed-fs-covermast: clamp(34px, 4.6vw, 64px);
@@ -3249,7 +3186,6 @@ body { font-size: 14px; }
 .plmapwrap { margin: 4px 0 8px; }
 .plmeta { font-size: 10px; letter-spacing: 0.2em; color: var(--grey); margin: 6px 0; }
 .pllist { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
-.plcard { border: 1px solid var(--line); border-radius: 7px; background: var(--bg2); }
 .plcard.sel { border-color: var(--sig); }
 .plcardhead { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; width: 100%; text-align: left; padding: 10px 14px; background: none; border: 0; color: var(--ink); cursor: pointer; align-items: center; }
 .plkind { grid-column: 1; font-size: 9.5px; letter-spacing: 0.2em; color: var(--grey); }
@@ -3462,8 +3398,6 @@ body { font-size: 14px; }
    This block stays LAST: it overrides the V.2 simplification pass above.
    ===================================================================== */
 :root {
-  --nav-h: 0px;                 /* the destination row is gone */
-  --cc-w: min(760px, calc(100vw - 20px));
   /* THE SKETCH'S UNIT (owner's fixture sketch, 19 Oct 2026): every fixture
      size is a multiple of --u, the drawing's own pixel on its 1000-wide
      page — the deck is 745 × 175 of them — so the proportions are the
@@ -3492,7 +3426,6 @@ body { font-size: 14px; }
   --dk-edge: calc(50% - var(--dk-w) / 2); /* the deck's inset; the top fixtures line up with its right edge */
   --cc-row-h: calc(var(--dk-h) + var(--ad-h));
   --ad-h: calc(var(--u) * 64);  /* the ad bubble under the row, above the grill (owner, 25 Oct 2026, last: the ticker is on the deck again) */
-  --cc-gap: 10px;
   --cc-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: calc(var(--radius-card) + 2px);
@@ -3562,15 +3495,6 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
   /* no outline and no shadow (owner, 19 Oct): only the opening, darker at its top lip */
   background: linear-gradient(180deg, color-mix(in srgb, var(--shade) 50%, transparent), color-mix(in srgb, var(--shade) 20%, transparent));
 }
-.cckey {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-  min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 9px; border: 0; background: none; cursor: pointer;
-  font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); text-shadow: none;
-  transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
-}
-.cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
-.cckey.cur .ic { color: var(--red); }
 /* the search bar the deck rises to hold: a groove of its own in the glass */
 .ccsearch {
   flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
@@ -3608,7 +3532,7 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
 .ccdiscover:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
 /* the label stays on a phone (it is the way to browse: a compass alone was not read as one); only the smallest
    screens keep the compass alone, the label for assistive technology (below, after the popup's rules) */
-@media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ccsearch { animation: none; } }
 /* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): beneath the keys and
    above the vent; it reaches 18 up into the row's empty foot, under the cuts'
    lower ends (52), and ends above the grill's top lip, so the deck grows by
@@ -3854,9 +3778,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
   .maptool { flex: 1; min-height: 64px; }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 360px) {
-  .cckey span { font-size: 7px; }
-}
 
 /* the feed's "new above" pill (V.2 brief §2): what a return found above the
    anchor is offered, never scrolled into */
@@ -4016,9 +3937,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
 }
 [data-theme="light"] { --iris: 0.72; }
-@media (prefers-reduced-transparency: reduce) {
-  .fixture, .ccenter { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
-}
 
 /* the POST disc at the center of the deck: the sketch's ring with its plus,
    a raised lens of its own in the glass (the backdrop bends round it) */
@@ -4032,15 +3950,14 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 }
 .ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
-.ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
 /* a key is a key whether it is an <a> or a <button> */
 .ccenter button.tabl { border: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
 .ccenter .cctabs .tabl { font-family: var(--mich); }
 
 /* the deck's keys and the sheet buttons press like compact buttons (blueprint
    "compact buttons feel tactile"): a tiny depression, a spring back */
-.ccenter .tabl:not(.hkey):active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
-.ccenter .tabl, .sheetbtn, .cctog { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+.ccenter .tabl:not(.hkey):active, .sheetbtn:active { transform: scale(0.96); }
+.ccenter .tabl, .sheetbtn { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
 
 /* THE WORDMARK'S PLACE (owner, 19 Oct 2026: "the *ASILUM logo becomes a
    fixture that permanently sits in the left hand corner"; 28 Oct 2026, the
@@ -4102,7 +4019,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
    Masthead spans the page, so it fades and does not shrink */
 [data-popup] .fixture { opacity: 0.55; transition: opacity var(--dur-2) var(--ease-out); }
 [data-popup] .fixture:hover { opacity: 0.9; }
-.fixture { transition: opacity var(--dur-2) var(--ease-out); }
 /* a phone's header has no room for BACK, the title, the counter and two
    labelled buttons: with BACK up the action buttons keep their glyphs only */
 /* (18 Oct) on a phone the header's keys keep their glyphs only — with the
@@ -4110,7 +4026,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
    aria-label still names each key */
 @media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
 
-/* the Post disc's second life: the session indicator (1.25) */
+/* the POST disc's wrapper on the deck */
 .ccpostwrap { position: relative; display: flex; }
 
 /* THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166). While a
@@ -4142,7 +4058,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
      marks — on the deck's top edge, flush */
   --eject: calc(var(--dk-h) / 2 + var(--u) * 3);
   --wheel-d: calc(var(--dk-h) * 2.25 * 1.15);   /* the wheel, across: 15% bigger (28 Oct 2026) */
-  --tray-ease: var(--ease-out);
 }
 .ccenter .ccpostwrap .tabl.ccpost { z-index: 4; transition: transform var(--dur-3) 60ms var(--ease-in-out); }
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost { transform: translateY(calc(-1 * var(--eject))); transition: transform var(--dur-4) var(--ease-out); pointer-events: none; }
@@ -4316,10 +4231,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 
 
 /* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
-/* the vertical wheel with slight overlap (blueprint "Two scrolling systems"):
-   each packed segment rides a few pixels over the one before it */
-.typechip { display: inline-block; padding: 1px 6px; border: 1px solid var(--line); border-radius: 6px; font: 8px/1.5 var(--mich); letter-spacing: 0.14em; color: var(--grey); vertical-align: middle; }
-
 /* media in a card is a button: tap enlarges (MediaFloat) */
 .wpcmedia { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
 .wpcmedia img { width: 100%; display: block; }
@@ -4335,7 +4246,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .echorail { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 0 8px; scroll-snap-type: x proximity; }
 .echoring { flex: none; display: grid; justify-items: center; gap: 4px; width: 64px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; scroll-snap-align: start; position: relative; }
 .echoringface { display: inline-flex; padding: 3px; border-radius: 50%; background: conic-gradient(from 200deg, var(--red), var(--sig), var(--red)); }
-.echoringface .avatar, .echoringface .av { width: 48px; height: 48px; border: 2px solid var(--bg); }
+.echoringface .avatar { width: 48px; height: 48px; border: 2px solid var(--bg); }
 .echoname { max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 8px/1.3 var(--mich); letter-spacing: 0.08em; }
 .echocount { position: absolute; top: 0; right: 2px; min-width: 16px; padding: 0 4px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/16px var(--mich); text-align: center; }
 /* the ECHO viewer */
@@ -4345,7 +4256,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .echobar.done { background: var(--ink); }
 .echobar.cur::after { content: ""; position: absolute; inset: 0; width: calc(var(--p, 0) * 100%); background: var(--ink); }
 .echohead { display: flex; align-items: center; gap: 10px; font: 10px/1.3 var(--mich); letter-spacing: 0.1em; }
-.echohead .avatar, .echohead .av { width: 28px; height: 28px; }
+.echohead .avatar { width: 28px; height: 28px; }
 .echostage { position: relative; flex: 1; min-height: 320px; border-radius: 9px; overflow: hidden; background: color-mix(in srgb, var(--ink) 6%, transparent); touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: pointer; }
 .echostage img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .echotext { padding: 16px; font-size: 15px; line-height: 1.5; }
@@ -4797,7 +4708,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .srchref .ovpmore { font-size: 16px; color: var(--ink); }
 .srchref .ovpletter { font-size: 26px; }
 /* the popup surface in the light theme is the reference's icy glass */
-[data-theme="light"] .sheet { background: linear-gradient(180deg, #eef6fb, #e5eef5); border-color: color-mix(in srgb, var(--sig) 16%, transparent); }
 [data-theme="light"] .sheethead { border-bottom-color: color-mix(in srgb, var(--sig) 12%, transparent); }
 @media (max-width: 560px) { .srchref .ovp { grid-template-columns: 1fr; } .srchtabs { gap: 14px; } .srchtab { font-size: 14px; } }
 
@@ -4854,31 +4764,14 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .wpcstage .wpccarousel .wpcmedia { flex: 0 0 100%; }
 .wpcstage .wpccarousel .wpcmedia img { aspect-ratio: 4 / 5; border-radius: 0; }
 .wpcstage .wpcfig figcaption { position: absolute; top: 10px; left: 12px; font: 9px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--on-media); opacity: 0.8; }
-/* the handle, the caption and the actions, over the media */
-.wpcover { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: grid; gap: 3px; padding: 64px 16px 12px; color: var(--on-media); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.1) 25%, rgba(0, 0, 0, 0.58)); pointer-events: none; }
-.wpcover > * { pointer-events: auto; }
-.wpchandle { display: flex; align-items: center; gap: 10px; font: 400 clamp(15px, 4.4vw, 19px)/1.2 var(--mich); letter-spacing: 0.01em; }
-.wpchandle .friendmark { color: var(--on-media); }
-.wpcover .wpcttl { color: inherit; text-decoration: none; font: 400 12px/1.3 var(--mich); letter-spacing: 0.02em; }
-.wpcover .wpccap { margin: 0; max-width: none; font: 13px/1.4 var(--mono); letter-spacing: 0.01em; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.wpcover .wpccap a { color: inherit; }
-.wpcacts { position: relative; display: flex; align-items: center; gap: 14px; margin-top: 8px; }
 .wpcact { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; transition: transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out); }
 .wpcact b { font: 400 10px/1 var(--mich); }
 .wpcact:active { transform: scale(0.94); }
 .wpcact.on { color: var(--red); }
-/* the shared .soon rule ([data-theme] :is(… .btn.ghost.soon …), four classes deep) paints a word red; over a photograph the bubble is a quiet white glyph */
-.wpcact.quiet, [data-theme] .wpcacts .wpcact.wpcact.soon { opacity: 0.45; cursor: default; color: inherit; background: none; border: 0; box-shadow: none; text-shadow: none; }
+/* an action with no record behind it yet: a quiet glyph, not a button */
+.wpcact.quiet { opacity: 0.45; cursor: default; color: inherit; background: none; border: 0; box-shadow: none; text-shadow: none; }
 .wpcact.savew { font: inherit; letter-spacing: 0; text-transform: none; }
 .wpcshared { position: absolute; left: 0; bottom: 100%; font: 9px/1.3 var(--mich); letter-spacing: 0.1em; }
-.wpcorb { margin-left: auto; display: inline-flex; }
-.wpcorb a { display: inline-flex; border-radius: 50%; }
-.wpcorb .uavatar { width: 32px; height: 32px; border: 1.5px solid currentColor; border-radius: 50%; background: transparent; color: inherit; font-size: 10px; }
-/* a TRANSM: the same block, in the card's own ink */
-.wpcbody { display: grid; gap: 6px; padding: 14px 16px 10px; }
-.wpcbody .wpcover { position: static; padding: 0; color: var(--ink); background: none; }
-.wpcbody .wpccap { -webkit-line-clamp: 8; font: 14px/1.5 var(--helv); }
-.wpcbody .wpcorb .uavatar { border-color: var(--line); }
 .wpccredit { display: block; padding: 6px 16px 0; font: 9px/1.4 var(--mich); letter-spacing: 0.1em; color: var(--grey); }
 .wpccredit a { color: inherit; text-decoration: none; }
 .card.wpostcard .wpcpieces, .card.wpostcard .wpclink { margin: 10px 16px; }
@@ -4894,7 +4787,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .brdcstname > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .brdcstname .ic { flex: none; transition: transform var(--dur-2) var(--ease-out); }
 .brdcstname .ic.up { transform: rotate(180deg); }
-.brdcstast { font-style: normal; color: var(--red); margin-right: 1px; }
 .brdcstlist { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
 .brdcstmeta { padding: 0 0 4px 8px; font-family: var(--mich); letter-spacing: 0.08em; }
 .brdcstevhead { padding: 8px 8px; }
@@ -5000,7 +4892,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
-  .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
+  .sheet, .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
   [data-popup] .main { filter: none; }
 }
 
@@ -5019,7 +4911,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 button, .btn, a.btn { border-radius: var(--radius-key); }
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { border-radius: var(--radius-field); }
 .card, .noticerow, .likerow, .mapdrawer, .lstdepth, .modal, .overlay > .modal { border-radius: var(--radius-card); }
-.sheetbtn, .ccenter .tabl, .ccenter .mailbtn, .cckey, .cctog, .adtag, .typechip, .lstofferword { border-radius: var(--radius-key); }
+.sheetbtn, .ccenter .tabl, .ccenter .mailbtn, .adtag, .lstofferword { border-radius: var(--radius-key); }
 /* the small stickers on a card's photograph (DEMO / SAMPLE / origin) */
 .ostick { border-radius: 8px; }
 .ccfield, .ccsearch input, .onbinput, .behindcap { border-radius: var(--radius-field); }
@@ -5040,12 +4932,10 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    3. a thicker, brighter rim with a soft rainbow bloom just outside it.
    Reduced motion: no drift. Reduced transparency: none of it.
    ===================================================================== */
-@property --iris-drift { syntax: "<angle>"; inherits: true; initial-value: 0deg; }
-@keyframes irisdrift { to { --iris-drift: 360deg; } }
 :root { --iris-w: 2px; --iris-film: 0.16; }
 [data-theme="light"] { --iris-film: 0.22; }
 .sheet::after {
-  background: conic-gradient(from calc(var(--iris-a, 200deg) + var(--iris-drift, 0deg)) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
+  background: conic-gradient(from calc(var(--iris-a, 200deg)) at var(--iris-x, 30%) var(--iris-y, 0%), var(--iris-1), var(--iris-2), var(--iris-3), var(--iris-4), var(--iris-5), var(--iris-1));
   filter: saturate(1.35) brightness(1.08);
 }
 .sheet::before {
@@ -5054,7 +4944,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
       color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 100%), transparent),
       color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
     linear-gradient(calc(104deg + var(--tilt-x, 0) * 26deg), transparent 34%, color-mix(in srgb, var(--paper) 9%, transparent) 48%, color-mix(in srgb, var(--paper) 14%, transparent) 52%, transparent 66%),
-    conic-gradient(from calc(var(--iris-a, 200deg) * -1 + var(--iris-drift, 0deg)) at var(--iris-x, 50%) var(--iris-y, 50%),
+    conic-gradient(from calc(var(--iris-a, 200deg) * -1) at var(--iris-x, 50%) var(--iris-y, 50%),
       color-mix(in srgb, var(--iris-1) calc(var(--iris-film) * 100%), transparent),
       color-mix(in srgb, var(--iris-2) calc(var(--iris-film) * 100%), transparent),
       color-mix(in srgb, var(--iris-3) calc(var(--iris-film) * 100%), transparent),
@@ -5079,7 +4969,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 :root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.34)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
-:root:not([data-theme="light"]) :is(.sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice) { text-shadow: var(--glow-r); }
+:root:not([data-theme="light"]) :is(.sheettitle, .brdcstword, .friendmark, .srchtab.cur, .placedist, .lstprice) { text-shadow: var(--glow-r); }
 
 /* =====================================================================
    THE DEVICE'S OWN LANGUAGE, A LITTLE OF IT (owner, 18 Oct 2026; the 404
@@ -5089,8 +4979,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    lights' and the chevrons' red in BOTH palettes (in dark the accent token
    is glowing white since 29 Oct 2026; a warning light is red on any device).
    ===================================================================== */
-:root { --warn: #ff4136; --cursor: #f4f9fc; }
-[data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
+:root { --warn: #ff4136; }
+[data-theme="light"] { --warn: #d22f22; }
 /* THE BLOCKS (owner's reference, 25 Oct 2026; lib/feed/blocks.js): text
    stands in as blocks — a run of even blocks while it loads in (Ref 1), and
    a block the length of each word on a folded line (Ref 2). The block is
@@ -5115,18 +5005,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   10%, 30%, 50%, 70%, 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
 }
 @keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
-/* the deck's two status lights, at the end of the ad strip */
-/* an MRZ line: words in the ink, chevrons in red, a block cursor blinking at the end */
-.mrzline { font: 13px/1.5 var(--mono); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; display: block; text-overflow: clip; }
-.mrzline b { font-weight: 400; color: var(--ink); }
-.mrzline i { font-style: normal; color: var(--warn); }
-.mrzcursor { display: inline-block; width: 0.6em; height: 1em; margin-left: 2px; vertical-align: -0.12em; background: var(--cursor); animation: mrzblink 1.06s steps(1, end) infinite; }
-@keyframes mrzblink { 50% { opacity: 0; } }
-:root:not([data-theme="light"]) .mrzline b { color: var(--cursor); text-shadow: var(--glow); }
-@media (prefers-reduced-motion: reduce) { .mrzcursor { animation: none; } .lamp[data-blink] { animation: ejectonce 1.2s var(--ease-out) forwards; } }
-/* the post card's caption is a button now: a tap expands it */
-.wpccapbtn { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: inherit; }
-.wpcover .wpccap.full { display: block; -webkit-line-clamp: unset; max-height: 46vh; overflow-y: auto; font: 13px/1.45 var(--mono); }
+@media (prefers-reduced-motion: reduce) { .lamp[data-blink] { animation: ejectonce 1.2s var(--ease-out) forwards; } }
 
 /* =====================================================================
    FLOATING OVER THE FOG (owner, 18 Oct 2026: "floating in space that is
@@ -5357,10 +5236,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 
 /* the post's action row, as the sketch draws it: four large outline glyphs
    spread across the media's foot, the author's circle at the far right */
-.wpcacts { gap: clamp(14px, 6.5vw, 40px); }
 .wpcact { width: 48px; height: 48px; }
 .wpcact .ic { width: 30px; height: 30px; }
-.wpcorb .uavatar { width: 38px; height: 38px; }
 
 /* =====================================================================
    THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js
@@ -5480,6 +5357,16 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .songtitle { position: absolute; left: 6cqw; right: 6cqw; bottom: 6cqw; padding: 3cqw 5cqw; border-radius: 4cqw; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.4cqw/1.2 var(--mich); }
 .songtitle small { display: block; font-size: 0.75em; color: var(--grey); }
+/* a catalog record's preview (lib/music/itunes.js): the art is the play key, the
+   title stays on top of it so the store link is still a link; a held card's
+   title takes the accent, as every active thing does */
+.songplay { position: absolute; inset: 0; z-index: 1; padding: 0; border: 0; background: none; cursor: pointer; }
+.songtitle { z-index: 2; pointer-events: none; }
+.songtitle .songlink, .songtitle .songstate { pointer-events: auto; }
+.songtitle .songstate { color: var(--grey); }
+.card.songcard.held .songtitle .songstate { color: var(--red); }
+.songtitle .songlink { display: inline-block; margin-top: 1.2cqw; font-size: 0.6em; letter-spacing: 0.1em; color: var(--sig); text-decoration: none; }
+.songplay:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; border-radius: var(--radius-card); }
 /* a sample record says so, top left, opposite its three dots (owner, 28 Oct 2026) */
 .songcard .modeltag { position: absolute; top: 5cqw; left: 5cqw; z-index: 2; margin: 0; padding: 0.6cqw 3cqw; font-size: max(8px, 4.6cqw); background: color-mix(in srgb, var(--paper) 70%, transparent); }
 /* with no art behind them the dots are ink, not the over-media white (they vanished on a light card) */
@@ -5490,7 +5377,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .wpcstage { position: relative; flex: 1; min-height: 0; }
 .fcell .wpcstage .wpcfig, .fcell .wpcstage .wpcmedia { height: 100%; margin: 0; }
 .fcell .wpcstage img, .fcell .wpcstage video { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; max-height: none; }
-.fcell .wpcbody { flex: 1; min-height: 0; overflow: hidden; }
 
 /* THE BRDCST STRIP (the owner's drawing, 25 Oct 2026, evening): the event's
    photograph clouded across the strip, the badge in its white ring with the
@@ -5565,14 +5451,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fcell .brdcst { padding: 2.6cqw 4.5cqw; }
 /* the post overlay sizes to its card: a three-column still on a laptop is
    narrower than a phone's full-width one */
-.fcell .wpcover { padding: 18cqw 5cqw 3.5cqw; gap: 1cqw; }
-.fcell .wpchandle { font-size: clamp(10px, 6.4cqw, 20px); gap: 2.6cqw; }
-.fcell .wpcover .wpcttl { font-size: clamp(8.5px, 3.8cqw, 13px); }
-.fcell .wpcover .wpccap { font-size: clamp(9px, 4cqw, 14px); }
-.fcell .wpcacts { gap: clamp(4px, 6cqw, 40px); margin-top: 1.5cqw; }
 .fcell .wpcact { width: clamp(30px, 13cqw, 48px); height: clamp(30px, 13cqw, 48px); }
 .fcell .wpcact .ic { width: clamp(18px, 8.6cqw, 30px); height: clamp(18px, 8.6cqw, 30px); }
-.fcell .wpcorb .uavatar { width: clamp(26px, 10.5cqw, 38px); height: clamp(26px, 10.5cqw, 38px); }
 .fcell .wpccredit { padding: 1.6cqw 5cqw 0; font-size: clamp(7px, 2.6cqw, 9px); }
 
 /* =====================================================================
@@ -5635,8 +5515,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .p2acts .wpcact.on { color: var(--red); }
 /* the shared .soon rule paints a word red; the bubble here is a quiet blue glyph that says it is not built */
 [data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.6; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
-.p2n { font: 400 clamp(9px, 3.6cqw, 18px)/1 var(--mich); letter-spacing: 0.08em; color: var(--sig); }
-.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.7; }
 .p2acts .wpcshared { left: 11cqw; bottom: 100%; color: var(--ink); }
 /* what hangs beneath: the tagged pieces, the link, the BRDCST */
 .card.wpostcard.p2 .wpcpieces, .card.wpostcard.p2 .wpclink { margin: 2cqw 0 0; }
@@ -5663,7 +5541,7 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2.withmedia .blkline .blkw { background: color-mix(in srgb, var(--on-media) 82%, transparent); }
 .card.wpostcard.p2.withmedia .p2ring { border-color: var(--on-media); }
 .card.wpostcard.p2.withmedia .p2ring.on { background: var(--on-media); }
-.card.wpostcard.p2.withmedia .p2acts, .card.wpostcard.p2.withmedia .p2n, .card.wpostcard.p2.withmedia .p2acts .wpcact { color: var(--on-media); }
+.card.wpostcard.p2.withmedia .p2acts, .card.wpostcard.p2.withmedia .p2acts .wpcact { color: var(--on-media); }
 [data-theme] .card.wpostcard.p2.withmedia .p2acts .wpcact.wpcact.soon, .card.wpostcard.p2.withmedia .p2acts .wpcact.quiet { color: var(--on-media); }
 .card.wpostcard.p2.withmedia .p2acts .wpcact.on { color: var(--red); }
 /* THE ATTACHED BRDCST (owner, 25 Oct 2026, last): a thin gap between the post

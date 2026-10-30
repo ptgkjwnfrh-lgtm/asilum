@@ -17,7 +17,7 @@
 import { useEffect, useState } from "react";
 import {
   EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
-  saveFitProfile, saveServerFitProfile, sendJSON, postJSON, SIGN_OUT_NOTICE,
+  saveFitProfile, saveServerFitProfile, sendJSON, SIGN_OUT_NOTICE,
 } from "../../lib/client.js";
 import {
   convertMeasurementUnit, hasMeasurementProfile, MEASUREMENT_KEYS,
@@ -389,7 +389,6 @@ export default function ProfilePage() {
   );
 }
 
-
 function ProfileAccess() {
   const [authUser, setAuthUser] = useState(null);
   const [email, setEmail] = useState("");
@@ -567,8 +566,6 @@ function ProfileAccess() {
       window.dispatchEvent(new CustomEvent("asilum:auth-notice", { detail: message }));
     } catch {}
   }
-
-
 
   function unfollowPerson(handle) {
     setFollowUser(handle, false);
