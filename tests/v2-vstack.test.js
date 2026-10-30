@@ -127,3 +127,22 @@ test("SHADOWS (owner, 28 Oct 2026): a faint Masthead, its shade on the cards und
   const page = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
   assert.match(page, /\(isLarge\(c\.card\) \? " large" : ""\)/, "the page marks a large cell by the packer's rule");
 });
+
+// ONLY NEAR CELLS RIDE THE DRUM (going live, 30 Oct 2026: iPhone Safari, "a problem repeatedly occurred"). Measured on
+// the live Feed: all 121 cells held a matrix3d transform (the drum's first keyframe, filled backwards while off
+// screen), 384 composited layers, about 1.1 GB of layer memory at 3x — the page was killed. Declared: a Feed cell
+// rides the drum only while FeedNear.jsx marks it (within a screen of the view); every other cell has no animation,
+// so it is flat and no layer; the drum on near cells is unchanged.
+test("only a Feed cell within a screen of the view rides the drum; far cells are flat and no layer", () => {
+  const near = readFileSync(new URL("../app/components/FeedNear.jsx", import.meta.url), "utf8");
+  const page = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
+  const sheet = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(near, /export const NEAR_MARGIN = "100% 0px";/, "a screen's margin each way: turned before it shows");
+  assert.match(near, /if \(e\.isIntersecting\) e\.target\.dataset\.near = "";\s*else delete e\.target\.dataset\.near;/);
+  assert.match(near, /document\.querySelectorAll\("\.fgrid > \.fcell"\)/, "the Feed's cells, as they come");
+  assert.match(page, /import FeedNear from "\.\/components\/FeedNear\.jsx";/);
+  assert.match(page, /<FeedNear \/>/, "mounted on the Feed");
+  const block = sheet.slice(sheet.indexOf("@supports (animation-timeline: view())"));
+  assert.match(block, /\.fcell:not\(\[data-near\]\), \.fcell:not\(\[data-near\]\)::before, \.fcell:not\(\[data-near\]\)::after \{ animation: none; \}/, "far cells: no drum, no shade");
+  assert.ok(block.indexOf(".fcell:not([data-near])") > block.indexOf(".fcell.large { animation-name"), "after the large cells' rule, so it wins");
+});
