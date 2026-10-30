@@ -53,7 +53,7 @@ test("glowing white on the dark, solid on the ice, a smooth blend between", () =
 });
 
 test("the words on the ground, worked out each frame without a hit test", () => {
-  assert.deepEqual([...GROUND_TEXT], [".headline", ".fmodes .fmode", ".fmodes .txtbtn", ".filters .toggle", ".f20post .p2head", ".f20post .p2foot"]);
+  assert.deepEqual([...GROUND_TEXT], [".headline", ".fmodes .fmode", ".fmodes .txtbtn", ".filters .toggle", ".f20post .p2head", ".f20post .p2foot", ".eqkey"]);
   assert.ok(INK_ZONES.every((z) => !/\.f20post \.p2(head|foot)$/.test(z)) && INK_ZONES.some((z) => /:not\(\.f20post\) \.p2head/.test(z)), "Figure 20's head and foot left to the ground");
   const g = read("app/components/GroundInk.jsx");
   assert.match(read("app/shell.js"), /<InkWatch \/>\n\s*<GroundInk \/>/, "mounted once by the shell");

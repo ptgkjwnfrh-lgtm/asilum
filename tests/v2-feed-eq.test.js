@@ -99,7 +99,7 @@ test("REMEMBER keeps the mix on this device, and off forgets it", () => {
   const thrower = { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); }, removeItem() { throw new Error("blocked"); } };
   assert.deepEqual(readChoice(thrower).on, CHANNEL_KEYS, "a private window: the whole Feed");
   assert.deepEqual(writeChoice(thrower, { on: ["music"], remember: true }).on, ["music"], "and the mix still holds for the visit");
-  assert.match(page, /const \[mix, setMix\] = useState\(DEFAULT_CHOICE\);\n[^\n]*\n\s*useEffect\(\(\) => \{ try \{ setMix\(readChoice\(window\.localStorage\)\); \}/, "read after mount: the server renders the whole Feed");
+  assert.match(page, /const \[mix, setMix\] = useState\(DEFAULT_CHOICE\);\n\s*useEffect\(\(\) => \{ try \{ setMix\(readChoice\(window\.localStorage\)\); \}/, "read after mount: the server renders the whole Feed");
 });
 
 test("the packer takes any mix without losing a card", () => {
@@ -113,26 +113,29 @@ test("the packer takes any mix without losing a card", () => {
   }
 });
 
-test("the key and the panel: first in the row, open under it, closing as every transient surface does", () => {
-  // (29 Oct 2026, "the collaspable togge thing should replace current craving and following and the toggle should be
-  // on the left") the key at the left, then what plays — FOR YOU or FOLLOWING, chosen in the EQ's source switch
-  assert.match(page, /<div className="fmodes seg">\s*<FeedEq choice=\{mix\} onChange=\{changeMix\} dock=\{eqDock\} source=\{tab === "following" \? "following" : "curated"\} onSource=\{switchTab\} \/>\s*<span className="fmode cur" aria-live="polite">\{tab === "following" \? "FOLLOWING" : "FOR YOU"\}<\/span>/, "the key first, then what plays");
-  const row = page.slice(page.indexOf('<div className="fmodes seg">'), page.indexOf('<div className="eqdock"'));
-  assert.ok(!/CURRENT CRAVING|\["following", "FOLLOWING"\]|cravtoggle/.test(row), "FOLLOWING and CURRENT CRAVING are gone from the row");
+test("the key and the panel: at the right of THE FEED, the equaliser under it, closing as every transient surface does", () => {
+  // (29 Oct 2026, last: "fuck the for you take that shit out and just leave the feed … put it in the right corner of
+  // the screen inline with the fee[d]") the row of modes is gone; THE FEED and, at its right, the key — the source
+  // (FOR YOU or FOLLOWING), the mix and the craving all live in it
+  assert.match(page, /<header className="cthead">\s*<PageMast word="THE FEED" plain \/>\s*<FeedEq choice=\{mix\} onChange=\{changeMix\} source=\{tab === "following" \? "following" : "curated"\} onSource=\{switchTab\} craving=\{cravingOn\} onClearCraving=\{clearCraving\} \/>\s*<\/header>/, "THE FEED, then the key");
+  assert.ok(!/<div className="fmodes seg">|className="fmode cur"|eqDock|FOR YOU<\/span>/.test(page), "no row of modes, no FOR YOU on the Feed");
+  assert.match(css, /\.cthead > \.feq \{ margin-left: auto; \}/, "at the right");
   assert.match(eq, /export const SOURCES = Object\.freeze\(\[\["curated", "FOR YOU"\], \["following", "FOLLOWING"\]\]\);/);
   assert.match(eq, /role="radio" aria-checked=\{source === k\}/, "the source switch names its state");
   assert.match(eq, /onClick=\{\(\) => \{ if \(source !== k && onSource\) onSource\(k\); \}\}/);
-  assert.match(page, /<div className="eqdock" ref=\{setEqDock\} \/>/, "the dock under the row");
+  assert.match(eq, /\{craving \? \(\s*<div className="eqcraving">/, "the craving shows on the equaliser while it steers");
   assert.match(page, /const shown = filterFeed\(feedList\(list\)\.filter\(\(it\) => !hidden\.has\(String\(it\.id\)\)\), mix\);/, "the stream filtered before it is packed");
   assert.match(eq, /useEscape\(close, open\);/);
   assert.match(eq, /useClickAway\(panelRef, close, \{ active: open, excludeRef: wrapRef \}\);/, "a click away closes, the key toggles");
-  assert.match(eq, /\{open && dock \? createPortal\(/, "opened into the dock");
+  assert.ok(!/createPortal|dock/.test(eq.replace(/\/\/[^\n]*/g, "")), "the equaliser hangs under the key, no dock");
   assert.match(eq, /aria-expanded=\{open\}/);
   assert.match(eq, /aria-pressed=\{on\}/);
   assert.match(eq, /role="switch"\s*aria-checked=\{c\.remember\}/);
   assert.match(eq, /className=\{"eqkey" \+ \(open \? " open" : ""\) \+ \(mixed \? " mixed" : ""\)\}/);
-  assert.match(css, /\.eqkey\.mixed \.eqled \{ background: var\(--warn\); filter: var\(--key-glow-r\); \}/, "the light lit only while the mix is not the whole, in the selected key's own glow");
-  assert.match(css, /\.eqdock \{ position: relative; height: 0; z-index: 60; \}/, "over the cards (54), under the fixtures (64–66)");
+  assert.match(eq, /const mixed = !allOn\(c\) \|\| !!craving;/, "its light lit while the mix is not the whole, or a craving steers");
+  assert.match(css, /\.eqkey\.mixed \.eqled \{ background: var\(--warn\); filter: var\(--key-glow-r\); \}/, "in the selected key's own glow");
+  assert.match(css, /\.eqpanel \{ position: absolute; right: 0; top: calc\(100% \+ 8px\); z-index: 60;/, "under the key, from its right");
+  assert.match(css, /\.feq \{ position: relative; z-index: 60;/, "over the cards (54), under the fixtures (64–66)");
   assert.match(css, /\.eqchan\.on \.eqknob \{ transform: none; \}/, "a fader up when it plays");
   assert.match(css, /\.eqknob \{[^}]*transform: translateY\(37px\);/, "down when muted, by transform (never layout)");
   assert.match(css, /\.eqhold\.on \.eqslide \{ transform: translateX\(14px\); \}/);

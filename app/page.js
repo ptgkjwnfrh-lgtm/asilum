@@ -87,7 +87,6 @@ export default function Home() {
   // until this device's remembered mix is read after mount (the server renders the whole Feed); kept here only
   // while REMEMBER is on.
   const [mix, setMix] = useState(DEFAULT_CHOICE);
-  const [eqDock, setEqDock] = useState(null); // where the equaliser opens: under the row of modes, outside its sideways scroll
   useEffect(() => { try { setMix(readChoice(window.localStorage)); } catch { /* no storage: the whole Feed */ } }, []);
   const changeMix = (next) => { let kept = next; try { kept = writeChoice(window.localStorage, next); } catch { /* the mix holds for this visit */ } setMix(kept); };
   const [epsilonAuto, setEpsilonAuto] = useState(false);
@@ -860,7 +859,7 @@ export default function Home() {
     return (
       <>
       {list && list.length > 0 && shown.length === 0 ? (
-        <div className="empty">none of the kinds you have playing are in this part of the feed — open the mix (the faders beside FOR YOU) and bring another up.</div>
+        <div className="empty">none of the kinds you have playing are in this part of the feed — open the mix (the faders at the right of THE FEED) and bring another up.</div>
       ) : null}
       <CutDefs />
       <div className="fgridwrap">
@@ -893,11 +892,12 @@ export default function Home() {
 
   return (
     <div className="wrap ctr">
-      {/* THE HEAD (owner, 25 Oct 2026, last): THE FEED, then FOR YOU · FOLLOWING
-          and the sort bubble — no sub-line, no stamp, no catalog note; the ad
-          ticker lives on the deck now (ControlCenter.jsx) */}
+      {/* THE HEAD (owner, 29 Oct 2026: "fuck the for you take that shit out and just leave the feed … put it in the right
+          corner of the screen inline with the fee[d]"): THE FEED, and at the right the EQ key — the source, the mix and
+          the craving all live in it; the row of modes under the head is gone */}
       <header className="cthead">
         <PageMast word="THE FEED" plain />
+        <FeedEq choice={mix} onChange={changeMix} source={tab === "following" ? "following" : "curated"} onSource={switchTab} craving={cravingOn} onClearCraving={clearCraving} />
       </header>
       <p className="demoline idlabel" role="note">
         <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
@@ -917,18 +917,6 @@ export default function Home() {
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
           <EchoRail groups={rail} />
-          {/* THE ROW (owner, 29 Oct 2026: "the collaspable togge thing should replace current craving and following
-              and the toggle should be on the left"): the EQ key at the left, then what is playing — FOR YOU or
-              FOLLOWING, chosen in the EQ now; the craving is set in the search tab's DISCOVER, and while one steers
-              the Feed the row says so and can clear it */}
-          <div className="fmodes seg">
-            <FeedEq choice={mix} onChange={changeMix} dock={eqDock} source={tab === "following" ? "following" : "curated"} onSource={switchTab} />
-            <span className="fmode cur" aria-live="polite">{tab === "following" ? "FOLLOWING" : "FOR YOU"}</span>
-            {cravingOn && (
-              <button className="txtbtn" onClick={clearCraving}>CRAVING ON · CLEAR</button>
-            )}
-          </div>
-          <div className="eqdock" ref={setEqDock} />
           {pinned && (
             <section className="wfocus" aria-label="pinned transmission">
               <div className="cclbl">PINNED TRANSMISSION · <a className="txtbtn" href="/">BACK TO THE STREAM</a></div>

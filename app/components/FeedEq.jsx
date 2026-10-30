@@ -7,57 +7,97 @@
 // equaliser's three faders and a small light that is lit while the mix is not the whole Feed. Open, it is the
 // equaliser: a channel for each kind of card, a fader up when it plays and down when it is muted, its light lit;
 // and at the foot a hold switch, REMEMBER, which keeps the mix on this device (off, the mix lasts this visit).
-// It closes on Escape and on a click away (dismiss.js). The last channel playing will not mute. The key rides in the
-// Feed's row of modes, which scrolls sideways on a phone and would clip anything hanging out of it, so the
-// equaliser opens into `dock`, a place the page keeps just under the row.
+// It closes on Escape and on a click away (dismiss.js). The last channel playing will not mute.
 //
 // THE SOURCE (owner, 29 Oct 2026, the same evening: "the collaspable togge thing should replace current craving and
 // following and the toggle should be on the left"): FOLLOWING left the row for the equaliser's head, a player's
 // source switch — FOR YOU or FOLLOWING, its light on the one playing. (The craving went to the search tab's DISCOVER.)
+//
+// THE KEY BESIDE THE FEED (owner, the same evening: "fuck the for you take that shit out and just leave the feed, let
+// the toggle button be in liquid glass and have its little symbol glow and make the symbol match the rest of the
+// symbols and put it in the right corner of the screen inline with the fee[d]" … "the toggle button should appear if
+// the user scrolls up and if the user scrolls back down the toggle button should remain where it is so it appears like
+// its being scrolled back up"). The row of modes is gone; the key stands at the right of THE FEED, a pane of the
+// fixtures' liquid glass (useLiquidGlass), its symbol the house's own (Icons.jsx "eq": the fixtures' one stroke),
+// glowing in the ground's ink (lib/ink.js GROUND_TEXT). It comes back as a "quick return" (lib/scrollmotion.js): away
+// with the page as the reader scrolls down, down into view under the Masthead as they scroll up, and from there away
+// again at the page's own pace. The equaliser hangs under the key wherever it is. The craving, set in DISCOVER, shows
+// on the equaliser while it steers the Feed (the key's light is lit for it too), and can be cleared there.
 
-import { useCallback, useId, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { CHANNELS, allOn, toggleChannel, normalChoice } from "../../lib/feed/choice.js";
+import { quickReturn, quickOffset } from "../../lib/scrollmotion.js";
 import { useEscape, useClickAway } from "./dismiss.js";
+import { useLiquidGlass } from "./LiquidGlass.jsx";
+import Icon from "./Icons.jsx";
+import { brightSurfaceAt } from "./InkWatch.jsx";
+import { TINT_BRIGHT } from "../../lib/ink.js";
 
-function EqGlyph() {
-  // three faders, their knobs at three heights
-  return (
-    <svg className="eqglyph" viewBox="0 0 18 14" aria-hidden="true" focusable="false">
-      <path d="M3 1v12M9 1v12M15 1v12" />
-      <rect x="1" y="7.5" width="4" height="2.4" rx="1" />
-      <rect x="7" y="3" width="4" height="2.4" rx="1" />
-      <rect x="13" y="9.5" width="4" height="2.4" rx="1" />
-    </svg>
-  );
+// the quick return: worked out each scroll frame from the key's own place in the page and how far it has been
+// scrolled away; one box read and one transform written a frame
+function useQuickReturn(ref) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    let raf = 0, last = window.scrollY, offset = 0, q = -Infinity;
+    const run = () => {
+      raf = 0;
+      const y = window.scrollY, d = y - last; last = y;
+      // under the Masthead as it stands (its height counts a phone's notch, which --head-h's text cannot be read for)
+      const mast = document.querySelector(".masthead");
+      const stick = (mast ? mast.getBoundingClientRect().bottom : 66) + 8, h = el.offsetHeight || 40, hide = stick + h + 8;
+      if (q === -Infinity) q = -hide; // it starts out of sight: only scrolling up brings it
+      q = quickReturn(q, d, hide);
+      const natural = el.getBoundingClientRect().top - offset;
+      const next = quickOffset(natural, stick, q);
+      if (Math.abs(next - offset) > 0.1) { offset = next; el.style.transform = offset ? `translate3d(0, ${offset.toFixed(1)}px, 0)` : ""; }
+      el.classList.toggle("floating", offset > 0);
+      // floating over the Feed, it can sit on a white card, where the ground's glowing white would vanish: there its
+      // symbol takes the solid ink (the logo's own test, InkWatch.jsx brightSurfaceAt; one point, only while it floats)
+      const key = el.firstElementChild;
+      if (key) {
+        let bright = false;
+        if (offset > 0) { const r = key.getBoundingClientRect(); bright = !!brightSurfaceAt(r.left + r.width / 2, r.top + r.height / 2, el, TINT_BRIGHT); }
+        if (bright) key.dataset.bright = ""; else delete key.dataset.bright;
+      }
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
+    window.addEventListener("scroll", ask, { passive: true });
+    window.addEventListener("resize", ask);
+    return () => { window.removeEventListener("scroll", ask); window.removeEventListener("resize", ask); if (raf) cancelAnimationFrame(raf); };
+  }, [ref]);
 }
 
 export const SOURCES = Object.freeze([["curated", "FOR YOU"], ["following", "FOLLOWING"]]);
 
-export default function FeedEq({ choice, onChange, dock, source = "curated", onSource }) {
+export default function FeedEq({ choice, onChange, source = "curated", onSource, craving = false, onClearCraving }) {
   const c = normalChoice(choice);
   const [open, setOpen] = useState(false);
-  const wrapRef = useRef(null), panelRef = useRef(null);
+  const wrapRef = useRef(null), panelRef = useRef(null), keyRef = useRef(null);
+  const glass = useLiquidGlass(keyRef, { id: "lg-eqkey", strength: 0.8, shine: false, bezel: "fixture" });
+  useQuickReturn(wrapRef);
   const id = "feq" + useId().replace(/:/g, "");
   const close = useCallback(() => setOpen(false), []);
   useEscape(close, open);
   useClickAway(panelRef, close, { active: open, excludeRef: wrapRef }); // the key toggles; a click anywhere else closes
-  const mixed = !allOn(c);
+  const mixed = !allOn(c) || !!craving;
   return (
     <span className="feq" ref={wrapRef}>
       <button
+        ref={keyRef}
         type="button"
         className={"eqkey" + (open ? " open" : "") + (mixed ? " mixed" : "")}
         aria-expanded={open}
         aria-controls={id}
-        aria-label={mixed ? `the feed's mix: ${c.on.length} of ${CHANNELS.length} kinds playing` : "the feed's mix: every kind playing"}
+        aria-label={`the feed's mix: ${allOn(c) ? "every kind playing" : `${c.on.length} of ${CHANNELS.length} kinds playing`}${source === "following" ? ", following" : ""}${craving ? ", a craving steering it" : ""}`}
         title="the feed's mix"
         onClick={() => setOpen((o) => !o)}
       >
-        <EqGlyph />
+        {glass}
+        <Icon name="eq" size={20} />
         <i className="eqled" aria-hidden="true" />
       </button>
-      {open && dock ? createPortal(
+      {open ? (
         <div className="eqpanel" ref={panelRef} id={id} role="group" aria-label="the feed's source and which kinds of card play on it">
           <div className="eqsource" role="radiogroup" aria-label="source">
             <span className="eqsrclbl" aria-hidden="true">SOURCE</span>
@@ -67,6 +107,12 @@ export default function FeedEq({ choice, onChange, dock, source = "curated", onS
               </button>
             ))}
           </div>
+          {craving ? (
+            <div className="eqcraving">
+              <span>A CRAVING STEERS THE FEED</span>
+              <button type="button" className="txtbtn" onClick={onClearCraving}>CLEAR</button>
+            </div>
+          ) : null}
           <div className="eqchans">
             {CHANNELS.map((ch) => {
               const on = c.on.includes(ch.key);
@@ -99,7 +145,8 @@ export default function FeedEq({ choice, onChange, dock, source = "curated", onS
             <span className="eqholdword">REMEMBER</span>
             <span className="eqholdstate">{c.remember ? "ON — KEPT ON THIS DEVICE" : "OFF — THIS VISIT ONLY"}</span>
           </button>
-        </div>, dock) : null}
+        </div>
+      ) : null}
     </span>
   );
 }

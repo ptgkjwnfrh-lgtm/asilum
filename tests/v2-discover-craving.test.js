@@ -64,7 +64,7 @@ test("the Feed follows the craving and no longer holds its form", () => {
   assert.match(page, /window\.addEventListener\(CRAVING_EVENT, heard\);/, "and a new one heard");
   assert.match(page, /if \(craving\.text\) qs\.set\("craving", craving\.text\);/, "the Feed's request carries it, as before");
   assert.ok(!/cravingDraft|cravingOpen|applyCraving|POINT THE WAY|className="cravinggrid"/.test(page), "the form left the Feed");
-  assert.match(page, /\{cravingOn && \(\s*<button className="txtbtn" onClick=\{clearCraving\}>CRAVING ON · CLEAR<\/button>/, "while one steers, the row says so and can clear it");
+  assert.match(page, /craving=\{cravingOn\} onClearCraving=\{clearCraving\}/, "while one steers, the EQ says so and can clear it (the row is gone)");
   assert.match(page, /function clearCraving\(\) \{ pointCraving\(EMPTY_CRAVING\); \}/, "cleared here, cleared everywhere");
 });
 

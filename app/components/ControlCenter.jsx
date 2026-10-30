@@ -76,6 +76,7 @@ import { useDmLive } from "./DmLive.jsx";
 import AMark from "./AMark.jsx";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
 import { useHingedKeys } from "./hinge.js";
+import { shrinkStep } from "../../lib/scrollmotion.js";
 
 /** Where the glass is cut, in the sketch's units from the deck's left edge
  *  (the deck is 745 wide): the two end caps and the four seams between keys. */
@@ -159,6 +160,27 @@ export default function ControlCenter({ kind, pathname }) {
   const postRef = useRef(null);
   const wrapRef = useRef(null);
   const canWheel = !popupUp && !inSearch;
+  // THE DECK SHRINKS AS THE FEED GOES BY (owner, 29 Oct 2026: "when a user scrolls down the fixture should shrink 15%
+  // seamlessly and if a button on the fixture is pressed it should go back to orignial size seamlessly and smoothly
+  // however the disc and upload button should stay the same size … if a user scrolls up the size of the fixture
+  // should go back seamlessly"; lib/scrollmotion.js shrinkStep): read once a scroll frame, it sets data-shrunk and the
+  // CSS scales the deck by 0.85 about the plus's own centre, the plus's place (the disc, the wheel and the POST cards
+  // in it) scaled back by as much about the same point — so they keep their size and never move. Whole again at a
+  // press on any of its keys, on the way up, near the top, and while searching.
+  const [shrunk, setShrunk] = useState(false);
+  const shrinkRef = useRef(null);
+  useEffect(() => {
+    let raf = 0;
+    shrinkRef.current = { last: window.scrollY, acc: 0, shrunk: false };
+    const run = () => { raf = 0; shrinkRef.current = shrinkStep(shrinkRef.current, window.scrollY); setShrunk(shrinkRef.current.shrunk); };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
+    window.addEventListener("scroll", ask, { passive: true });
+    return () => { window.removeEventListener("scroll", ask); if (raf) cancelAnimationFrame(raf); };
+  }, []);
+  function unshrink() {
+    if (shrinkRef.current) shrinkRef.current = { ...shrinkRef.current, acc: 0, shrunk: false };
+    setShrunk(false);
+  }
   const wheel = canWheel && (cards || (!!centred && centred !== snoozed));
   // which carousel is centred: on scroll, resize, a refreshed feed
   useEffect(() => {
@@ -231,6 +253,7 @@ export default function ControlCenter({ kind, pathname }) {
   // MESSAGES opens over a closed search
   const leftSearch = useRef(false);
   function keyDown(e) {
+    unshrink(); // a press brings the deck back to its size
     if (!inSearch) return;
     const t = e.target && e.target.closest ? e.target.closest("a, button") : null;
     if (!t || t.closest(".ccsearch") || t.closest(".mailpanel") || t.getAttribute("aria-label") === "search") return;
@@ -306,7 +329,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-ad={adOpen ? "open" : "line"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-ad={adOpen ? "open" : "line"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined} data-shrunk={shrunk && !inSearch ? "1" : undefined}>
       {glass}
       <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (

@@ -49,6 +49,9 @@ const GLYPHS = {
   "up-brdcst": <g {...P}><circle cx="12" cy="9.6" r="1.6" /><path d="M12 11.2v9.2M9 20.4h6" /><path d="M8.8 6.4a4.5 4.5 0 0 0 0 6.4M15.2 6.4a4.5 4.5 0 0 1 0 6.4M6 3.6a8.4 8.4 0 0 0 0 12M18 3.6a8.4 8.4 0 0 1 0 12" /></g>,
   "up-listing": <g {...P}><path d="M12.8 3.4h6.4a1.4 1.4 0 0 1 1.4 1.4v6.4l-9.2 9.2a1.4 1.4 0 0 1-2 0l-5.8-5.8a1.4 1.4 0 0 1 0-2z" /><circle cx="16.2" cy="7.8" r="1.4" /></g>,
   "up-echo": <g {...P}><circle cx="12" cy="12" r="3" /><path d="M12 5.8A6.2 6.2 0 1 1 6.63 8.9" /><path d="M12 2.6A9.4 9.4 0 1 1 3.86 16.7" /></g>,
+  // THE FEED'S EQ (29 Oct 2026, "make the symbol match the rest of the symbols"): three faders in the house hand,
+  // their knobs at three heights, each track broken where its knob sits
+  eq: <g {...P}><path d="M6 3.6v9.2M6 16.4v4M12 3.6v2.4M12 9.6v10.8M18 3.6v6.6M18 13.8v6.6" /><rect x="3.6" y="12.8" width="4.8" height="3.6" rx="1.2" /><rect x="9.6" y="6" width="4.8" height="3.6" rx="1.2" /><rect x="15.6" y="10.2" width="4.8" height="3.6" rx="1.2" /></g>,
   // DISCOVER (the deck's search bar, 29 Oct 2026): a compass, its needle a diamond
   compass: <g {...P}><circle cx="12" cy="12" r="8.6" /><path d="M14.8 9.2l-1.6 4-4 1.6 1.6-4z" /></g>,
   plus: <g {...P}><path d="M12 4.6v14.8M4.6 12h14.8" /></g>,

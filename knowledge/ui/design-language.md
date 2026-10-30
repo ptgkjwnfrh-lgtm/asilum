@@ -1259,3 +1259,22 @@ key, the search popup rising flat out of the deck (25 Oct), the phone's bottom s
 under the Masthead, the same size. Measured: 375×812 — 359 × 628 (the large card 359 × 650; trimmed to clear the
 deck), 92px above and below; with the search's deck risen 359 × 538, 136.8 above and below; 800×900 — 372 × 681 (the
 large card 372 × 720), 214 / 214 across and 109.5 / 109.5 down; 12px corners; neither fixture overlapped.
+
+## 29 Oct 2026 — THE KEY BESIDE THE FEED, THE DECK THAT SHRINKS
+
+Owner: "fuck the for you take that shit out and just leave the feed, let the toggle button be in liquid glass and have
+its little symbol glow and make the symbol match the rest of the symbols and put it in the right corner of the screen
+inline with the fee[d]. also i would still want reactive shrinking on the center fixture …"; then "make the EQ reactive
+like the text and make it into a curved square".
+- The row of modes is gone from the Feed: THE FEED and, at its right, the EQ key (`FeedEq.jsx`) — a curved square
+  (`--radius-card`) of the fixtures' liquid glass, its symbol the house's (`Icons.jsx` eq, the fixtures' 1.5px stroke),
+  a ground word (`lib/ink.js` GROUND_TEXT): the words' blend of ink and their glow; floating over a bright card, the
+  solid ink and no glow (the logo's own test). The source (FOR YOU or FOLLOWING), the mix and the craving all live in
+  it; its light is lit while the mix is not the whole or a craving steers.
+- THE KEY COMES BACK (`lib/scrollmotion.js` quickReturn / quickOffset): away with the page as the reader scrolls down,
+  down into view under the Masthead by exactly the distance scrolled up, held there, away again at the page's pace.
+  Measured at 375px: 80 at rest; −52 after 600 down; −22 after 30 up; 74 after 150 more; 54 after 20 down.
+- THE DECK SHRINKS (`shrinkStep`, `ControlCenter.jsx` data-shrunk): 0.85 once the reader has run 12px down, whole once
+  as far up, near the top, at a press, never while searching; by `scale` about the plus's own centre, the plus's place
+  scaled back as much, so the disc, the wheel and the POST cards keep their size and place. Measured: 0.85 of the
+  width; the plus unchanged in size, moved (0.1, 0.48) px. 1 dropped frame in 300 at 6px a frame, as before.
