@@ -94,7 +94,12 @@ test("the iPhone recording: no empty line before the Feed answers, the Masthead 
   assert.match(page, /if \(isCurrent\(\)\) \{ setLoading\(false\); setLoaded\(true\);/, "a load answered");
   assert.match(page, /\{loaded && !loading && items\.length === 0 && \(\s*<div className="empty">Nothing matches/, "empty only once it has answered empty");
   assert.match(page, /\{loading && items\.length === 0 && <div className="empty">thinking…<\/div>\}/, "thinking only while nothing is shown");
-  assert.match(layout, /export const viewport = \{ width: "device-width", initialScale: 1, viewportFit: "cover" \};/, "the whole screen");
+  // (the viewport grew theme-color for the store shell, 30 Oct 2026; the three keys are the law, not the one line)
+  const viewport = layout.match(/export const viewport = \{([\s\S]*?)\n\};|export const viewport = \{(.*?)\};/);
+  assert.ok(viewport, "the root layout exports its viewport");
+  assert.match(viewport[1] || viewport[2], /width: "device-width"/);
+  assert.match(viewport[1] || viewport[2], /initialScale: 1\b/);
+  assert.match(viewport[1] || viewport[2], /viewportFit: "cover"/, "the whole screen");
   assert.match(css, /--head-h: calc\(66px \+ env\(safe-area-inset-top, 0px\)\);/, "the Masthead's height counts the status bar");
   assert.match(css, /@supports \(-webkit-touch-callout: none\) \{\s*\.fcell, \.fcell::before, \.fcell::after \{ animation: none; \}\s*\}/, "no drum on the Feed on iPhone Safari");
 });

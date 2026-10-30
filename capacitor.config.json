@@ -1,0 +1,22 @@
+{
+  "appId": "com.asilum.app",
+  "appName": "*ASILUM",
+  "webDir": "native/www",
+  "backgroundColor": "#030505",
+  "appendUserAgent": "ASILUM-App",
+  "server": {
+    "url": "https://www.asilummagazine.com",
+    "allowNavigation": ["www.asilummagazine.com", "asilummagazine.com"],
+    "errorPath": "index.html"
+  },
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "preferredContentMode": "mobile"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

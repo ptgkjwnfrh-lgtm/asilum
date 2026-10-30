@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the adaptive icon's ground: lib/grounds.js GROUND.dark (the foreground is scripts/store-assets.mjs's) -->
+    <color name="ic_launcher_background">#030505</color>
+</resources>

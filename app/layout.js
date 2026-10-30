@@ -4,6 +4,7 @@
 import "./globals.css";
 import Shell from "./shell.js";
 import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
+import { GROUND } from "../lib/grounds.js";
 
 // Site-level metadata. `metadataBase` makes every relative canonical and
 // og:url below resolve; without it Next emits them relative and they are
@@ -20,7 +21,16 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 // bar and the Masthead). The shell was built for it — the Masthead's height and padding and its line add
 // env(safe-area-inset-top), the deck's foot env(safe-area-inset-bottom) — but without viewport-fit=cover those
 // insets were 0 and Safari left the strip to the page.
-export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
+// THE BROWSER'S OWN CHROME IN THE GROUND'S COLOUR (the store shell, 30 Oct 2026): Safari's bars and Android's
+// task switcher take theme-color, one per scheme, from the same hex as the manifest and the native shell
+// (lib/grounds.js). The theme follows the device unless pinned in Settings; a pinned theme keeps the device's bar.
+export const viewport = {
+  width: "device-width", initialScale: 1, viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: GROUND.light },
+    { media: "(prefers-color-scheme: dark)", color: GROUND.dark },
+  ],
+};
 
 export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -31,6 +41,18 @@ export const metadata = {
   description:
     "A personalized culture and style terminal with native Storefront goods and clearly labeled synthetic sample records, routed through your optional Asterisk Passport.",
   alternates: { canonical: "/" },
+  // THE HOME SCREEN (the store shell, 30 Oct 2026): the icons scripts/store-assets.mjs draws from the wordmark,
+  // the home-screen name, and a standalone page under the status bar for "Add to Home Screen" (app/manifest.js
+  // is the manifest, linked by Next). The native shell in ios/ and android/ carries its own copies.
+  applicationName: "*ASILUM",
+  icons: {
+    icon: [
+      { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: { capable: true, title: "*ASILUM", statusBarStyle: "black-translucent" },
   openGraph: {
     title: "*ASILUM — personalized fashion terminal",
     description:
