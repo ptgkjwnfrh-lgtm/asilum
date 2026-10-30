@@ -3484,6 +3484,7 @@ body { font-size: 14px; }
   --ease-in: cubic-bezier(0.5, 0, 0.75, 0);        /* departures */
   --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1); /* a small settle past the mark: pops, drops */
   --ease-hinge: cubic-bezier(0.34, 1.7, 0.5, 1);   /* the hinged keys' spring back (19 Oct) */
+  --ease-deck: var(--ease-out);                    /* the deck's height: an arrival; folding the ticker, the in-out (the ads wink, 29 Oct 2026) */
   --dur-0: 60ms; --dur-1: 140ms; --dur-2: 220ms; --dur-3: 320ms; --dur-4: 460ms;
   --dk-h: calc(var(--u) * 175);
   --dk-r: calc(var(--u) * 18);
@@ -3505,6 +3506,10 @@ body { font-size: 14px; }
    The ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it doesnt
    have to acomidate for the size of the ticker anymore"): the deck is the row alone. */
 .ccenter[data-ad="line"] { --ad-h: 0px; }
+/* folding, the deck shortens on the band's own curve (the house's from-one-place-to-another), only longer, so the band
+   is always further shut than the keys have come down and they never cross it (the ads wink, 29 Oct 2026: with the
+   band on that curve and the deck still on ease-out, the keys came 0.9px into the closing band); opening, ease-out */
+.ccenter[data-ad="line"] { --ease-deck: var(--ease-in-out); }
 /* a popup risen with the deck (search) stands on its top: the row, the rise, and the ticker when it is open */
 body:has(.ccenter.ccsearching) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
 body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
@@ -3523,7 +3528,7 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
   bottom: var(--cc-bottom);
   display: flex; flex-direction: column; justify-content: flex-end;
   border-radius: var(--dk-r);
-  transition: height var(--dur-3) var(--ease-out);
+  transition: height var(--dur-3) var(--ease-deck);
 }
 /* SEARCH: the deck extends upward to make room for the bar (Figure 1) */
 .ccenter.ccsearching { height: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
@@ -3621,7 +3626,7 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
    "-8.5 to -9 kerning", Procreate's per-cent of the em); ADs is knocked out
    of a glowing white chip at the face's left. */
 .ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 26); box-sizing: border-box;
-  transition: height var(--dur-3) var(--ease-out); /* in step with the deck's own height, so the row never leaves the glass */ }
+  transition: height var(--dur-3) var(--ease-deck); /* in step with the deck's own height, so the row never leaves the glass */ }
 /* OPEN AND SHUT — THE WINK (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse
    … the first animation should be the ticker opening. all these animations should be quick and smooth";
    then "the transitions isnt clean … the ticker should wink into the glow white line and the bezels of the
@@ -3630,24 +3635,36 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
    nothing has to jump: folding, the band is clipped shut onto that line from above and below while its
    two glowing bezels travel in with the clip and meet on it — one glowing line — and the broken line
    takes over exactly there as they fade; the keys settle down onto it as the deck shortens, more slowly
-   than the band closes, so they never cross it. Opening is the same, reversed. */
+   than the band closes, so they never cross it. Opening is the same, reversed.
+   CLEANER (owner, 29 Oct 2026: "the ads wink isnt clean enough"; measured frame by frame at 375px): the band shut
+   80% in its first 60ms and crept the last 3px for 100ms more before the line came (a snap, a stall, then light);
+   the bezels met as two whole hairlines and only then did the ends vanish and the breaks open; opening, the line
+   was gone before the bezels were lit. Now the band and its bezels close as one lid, on the house's from-one-place-
+   to-another curve; the bezels take the line's own shape as they close (AdStrip.jsx --rim-open / --rim-shut, lib/
+   adcrawl.js rimClip), so where they meet they already are the line and the hand-over is light alone — the line
+   comes up under them as they touch, then they go; opening, they are lit over the line before it goes. */
 .adtrack { clip-path: inset(0 0 0 0); transition: clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
-.adstrip.shut .adtrack { clip-path: inset(50% 0 50% 0); opacity: 0; transition: clip-path var(--dur-2) var(--ease-out), opacity var(--dur-0) 160ms var(--ease-in); }
+.adstrip.shut .adtrack { clip-path: inset(50% 0 50% 0); opacity: 0; transition: clip-path var(--dur-2) var(--ease-in-out), opacity var(--dur-0) 160ms var(--ease-in); }
 .adstrip.shut { pointer-events: none; }
 /* the bezels: a hairline along the band's top and bottom, glowing slightly, the whole length round both sides */
 .adrim { position: absolute; z-index: 3; left: 0; right: 0; height: 1px; pointer-events: none; background: var(--ad-rim-c); box-shadow: var(--ad-rim-glow);
-  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-1) var(--ease-out); }
+  clip-path: var(--rim-open, none);
+  transition: transform var(--dur-3) var(--ease-out), clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
 .adrimtop { top: 0; }
 .adrimbot { bottom: 0; }
-.adstrip.shut .adrim { opacity: 0; transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-1) 170ms var(--ease-in); }
+/* folding, the shape is taken first (--dur-1) and the meeting second (--dur-2): they touch as the line, never as a
+   hairline still drawing in its ends (measured with both on --dur-2: 0.52px of shape left at the meeting) */
+.adstrip.shut .adrim { clip-path: var(--rim-shut, none); opacity: 0; transition: transform var(--dur-2) var(--ease-in-out), clip-path var(--dur-1) var(--ease-in-out), opacity var(--dur-1) 220ms var(--ease-in); }
 .adstrip.shut .adrimtop { transform: translateY(calc(var(--u) * 26 - 0.5px)); }
 .adstrip.shut .adrimbot { transform: translateY(calc(var(--u) * -26 + 0.5px)); }
 /* THE LINE (ControlCenter.jsx AD_LINE): where the bezels meet — on the band's centre line, a stretch under
    each key, broken (--ad-brk) at every cut between them, in the Masthead's glow; it comes in as the
-   bezels arrive and goes the instant they part */
+   bezels arrive and goes as they part, once they are lit over it (ease-in: it holds while they come up) */
 .ccadline { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--u) * 52 - var(--ad-line-h) / 2); height: var(--ad-line-h); pointer-events: none;
-  --ad-line-h: max(1.5px, calc(var(--u) * 4)); --ad-brk: calc(var(--u) * 14); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-0) var(--ease-out); }
-.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-1) 150ms var(--ease-out); }
+  --ad-line-h: max(1.5px, calc(var(--u) * 4)); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-0) var(--ease-in); }
+.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-1) 160ms var(--ease-out); }
+/* the break is the bubble's, so the bezels' shut shape breaks where the line does */
+.ccad { --ad-brk: calc(var(--u) * 14); }
 .ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
   left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
 .adprobe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
@@ -3701,6 +3718,8 @@ a.adword:hover { color: var(--ad-chip); }
 @keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
 @keyframes adtype { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--crawl-l) 0; mask-position: var(--crawl-l) 0; } }
 @media (prefers-reduced-motion: reduce) { .adstrip.run .adband { animation: none; } }
+/* the wink, still: under reduced motion the ticker is open or folded at once (it winked regardless, before) */
+@media (prefers-reduced-motion: reduce) { .adtrack, .adrim, .ccadline, .ccenter[data-ad="line"] .ccadline { transition: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
 .adtag.sponsored { color: var(--red); border-color: var(--red); }
 .adtag.draft { color: var(--p2); border-color: var(--p2); }
@@ -5191,14 +5210,18 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   box-shadow: var(--glass-shadow), var(--glass-lip);
-  transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out), height var(--dur-3) var(--ease-out), scale var(--dur-3) var(--ease-out);
+  transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out), height var(--dur-3) var(--ease-deck), scale var(--dur-3) var(--ease-out), translate var(--dur-3) var(--ease-deck);
 }
 /* THE DECK SHRINKS AS THE FEED GOES BY (owner, 29 Oct 2026; ControlCenter.jsx, lib/scrollmotion.js): 15% smaller while
    the reader scrolls down, by `scale` (no layout moves), about the plus's own centre — the row's middle and 3 units
    down (.ccpostwrap --cy) — and the plus's place scaled back by as much about the same point, so the disc, the wheel
    and the POST cards keep their size and their place (the wheel's pane on <body> never has to follow) */
 .ccenter { transform-origin: 50% calc(var(--dk-h) / 2 + var(--u) * 3); }
-.ccenter[data-shrunk] { scale: 0.85; }
+/* (the ads wink, 29 Oct 2026) the deck is anchored at its foot but shrinks about a point measured from its top, so
+   while shrunk a change of its height — the ticker opening or folding — slid its foot by 15% of the change (3.8px
+   at 375, the whole fixture moving under the wink). Lowered by 15% of the ticker's height, in step with the height
+   (the same duration and curve), the foot holds still; with the ticker folded nothing changes. */
+.ccenter[data-shrunk] { scale: 0.85; translate: 0 calc(var(--ad-h) * 0.15); }
 .ccpostwrap { transform-origin: 50% var(--cy); transition: scale var(--dur-3) var(--ease-out); }
 .ccenter[data-shrunk] .ccpostwrap { scale: calc(1 / 0.85); }
 @media (prefers-reduced-motion: reduce) { .ccpostwrap { transition: none; } }

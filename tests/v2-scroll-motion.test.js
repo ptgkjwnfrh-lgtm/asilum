@@ -47,11 +47,16 @@ test("the deck's shrink: down shrinks, up, the top and a press restore, jitter d
 });
 
 test("the deck scales about the plus's centre; the plus is scaled back, its size and place kept", () => {
-  assert.match(css, /\.ccenter\[data-shrunk\] \{ scale: 0\.85; \}/);
+  assert.match(css, /\.ccenter\[data-shrunk\] \{ scale: 0\.85; translate: 0 calc\(var\(--ad-h\) \* 0\.15\); \}/);
+  // (the ads wink, 29 Oct 2026) the foot holds still while the ticker opens or folds on a shrunk deck: lowered by 15% of
+  // the ticker's height, on the height's own duration and curve. Folded (--ad-h 0) the plus keeps its place exactly; open,
+  // it shrinks about a point 15% of the ticker's height lower (measured 3.8px at 375) — a rigid scale cannot keep both
+  // the foot still through the wink and the plus still through the shrink, and the wink is the one the eye follows.
+  assert.match(css, /\.fixture, \.ccenter \{[^}]*height var\(--dur-3\) var\(--ease-deck\)[^}]*translate var\(--dur-3\) var\(--ease-deck\);/s, "the translate on the height's own timing");
   assert.match(css, /\.ccenter\[data-shrunk\] \.ccpostwrap \{ scale: calc\(1 \/ 0\.85\); \}/, "the disc, the wheel and the cards keep their size");
   assert.match(css, /\.ccenter \{ transform-origin: 50% calc\(var\(--dk-h\) \/ 2 \+ var\(--u\) \* 3\); \}/, "about the plus's centre in the row");
   assert.match(css, /\.ccpostwrap \{ transform-origin: 50% var\(--cy\); transition: scale var\(--dur-3\) var\(--ease-out\); \}/, "scaled back about the same point");
-  assert.match(css, /\.fixture, \.ccenter \{[^}]*transition: [^;]*scale var\(--dur-3\) var\(--ease-out\);/s, "seamless, both ways");
+  assert.match(css, /\.fixture, \.ccenter \{[^}]*transition: [^;]*scale var\(--dur-3\) var\(--ease-out\)[,;]/s, "seamless, both ways");
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.ccpostwrap \{ transition: none; \} \}/);
   assert.ok(!/\.ccenter\[data-shrunk\][^{]*\{[^}]*(width|height|top|bottom|left|right|padding|margin)\s*:/.test(css), "no layout moves");
 });

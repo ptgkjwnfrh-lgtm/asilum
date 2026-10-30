@@ -100,7 +100,7 @@ test("the house lines are the owner's copy, kept verbatim; the ticker folds inst
   // ticker runs at the head of the Feed now, off the deck (AdStrip.jsx).
   const dock = read("lib/dock.js");
   const cc = read("app/components/AdStrip.jsx");
-  assert.match(read("app/components/ControlCenter.jsx"), /<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} \/>/, "the deck carries the strip, in its bubble (owner, 25 Oct 2026, last)");
+  assert.match(read("app/components/ControlCenter.jsx"), /<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} line=\{AD_LINE\} \/>/, "the deck carries the strip, in its bubble (owner, 25 Oct 2026, last)");
   // Verbatim, including the owner's spacing in "A S I L U M".
   for (const line of [
     "ARE YOU SEEKING A S I L U M",

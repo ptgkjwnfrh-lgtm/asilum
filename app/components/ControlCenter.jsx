@@ -166,7 +166,9 @@ export default function ControlCenter({ kind, pathname }) {
   // however the disc and upload button should stay the same size … if a user scrolls up the size of the fixture
   // should go back seamlessly"; lib/scrollmotion.js shrinkStep): read once a scroll frame, it sets data-shrunk and the
   // CSS scales the deck by 0.85 about the plus's own centre, the plus's place (the disc, the wheel and the POST cards
-  // in it) scaled back by as much about the same point — so they keep their size and never move. Whole again at a
+  // in it) scaled back by as much about the same point — so they keep their size, and with the ticker folded their place
+  // (open, the deck is lowered by 15% of the ticker's height so its foot holds through the ads wink, and the plus with
+  // it: globals.css .ccenter[data-shrunk]). Whole again at a
   // press on any of its keys, on the way up, near the top, and while searching.
   const [shrunk, setShrunk] = useState(false);
   const shrinkRef = useRef(null);
@@ -384,7 +386,7 @@ export default function ControlCenter({ kind, pathname }) {
             is open: folded to its line, the deck is the row alone (28 Oct 2026) */}
         <div className="ccad">
           <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
-          <AdStrip typing={inSearch} onOpen={setAdOpen} />
+          <AdStrip typing={inSearch} onOpen={setAdOpen} line={AD_LINE} />
         </div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />

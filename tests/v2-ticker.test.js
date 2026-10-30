@@ -247,8 +247,8 @@ test("the ticker's rule: open only online with an ad or a BRDCST to carry; folde
   assert.ok(!/:root:has\(/.test(css), "no state of the deck restyles the root");
   assert.match(css, /body:has\(\.ccenter\.ccsearching\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "a risen popup still stands on the risen deck");
   assert.match(css, /body:has\(\.ccenter\.ccsearching\[data-ad="line"\]\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--dk-rise\)\); \}/, "and on the folded one");
-  assert.match(rule(".ccad"), /transition: height var\(--dur-3\) var\(--ease-out\);/);
-  assert.match(css, /\.ccenter \{[^}]*transition: height var\(--dur-3\) var\(--ease-out\);/, "the bubble and the deck move in step");
+  assert.match(rule(".ccad"), /transition: height var\(--dur-3\) var\(--ease-deck\);/);
+  assert.match(css, /\.ccenter \{[^}]*transition: height var\(--dur-3\) var\(--ease-deck\);/, "the bubble and the deck move in step, on one curve");
   // the line: the cuts in pairs, a stretch under each key, broken at each cut, in the Masthead's glow
   const cuts = JSON.parse(cc.match(/const CUTS = (\[[^\]]*\]);/)[1]);
   assert.match(cc, /export const AD_LINE = Object\.freeze\(CUTS\.slice\(0, -1\)\.map\(\(a, i\) => Object\.freeze\(\[a, CUTS\[i \+ 1\]\]\)\)\);/);
@@ -305,11 +305,16 @@ test("the wink: the band clips shut onto its centre line, its glowing bezels mee
   const close = [60, 140, 220, 320, 460][n(/clip-path var\(--dur-(\d)\)/, rule(".adstrip.shut .adtrack"))];
   assert.ok(lineIn.delay >= close * 0.6 && lineIn.delay < close, "the line comes in as the bezels arrive");
   assert.ok(rimsOut.delay > lineIn.delay, "the bezels fade once the line is coming up, not before");
-  assert.match(rule(".ccadline"), /transition: opacity var\(--dur-0\) var\(--ease-out\);/, "the line goes the instant they part");
+  assert.match(rule(".ccadline"), /transition: opacity var\(--dur-0\) var\(--ease-in\);/, "the line goes as they part, held while they are lit over it");
+  assert.match(rule(".adrim"), /opacity var\(--dur-0\) var\(--ease-out\)/, "opening, the bezels are lit over the line in the time it takes to go (never a dip between)");
   // the band closes faster than the deck shortens, on the same curve, so the keys never cross it
-  const deck = [60, 140, 220, 320, 460][n(/transition: height var\(--dur-(\d)\) var\(--ease-out\)/, rule(".ccenter"))];
+  const deck = [60, 140, 220, 320, 460][n(/transition: height var\(--dur-(\d)\) var\(--ease-deck\)/, rule(".ccenter"))];
   assert.ok(close < deck, "the band shut before the keys have settled");
-  assert.match(rule(".adstrip.shut .adtrack"), /clip-path var\(--dur-\d\) var\(--ease-out\)/, "the same curve as the deck");
+  // (the ads wink cleaner, 29 Oct 2026) the band closes on the house's from-one-place-to-another curve, and folding,
+  // the deck shortens on that same curve (--ease-deck), only longer — so the band is always further shut than the keys
+  // have come down (measured: the keys at least 8.5px clear; on ease-out against it they came 0.9px into the band)
+  assert.match(rule(".adstrip.shut .adtrack"), /clip-path var\(--dur-2\) var\(--ease-in-out\)/, "one lid, no snap and stall");
+  assert.match(css, /\.ccenter\[data-ad="line"\] \{ --ease-deck: var\(--ease-in-out\); \}/, "the same curve as the deck, folding");
   // two frames' grace, so the words are laid before the wink starts
   assert.match(strip, /a = requestAnimationFrame\(\(\) => \{ b = requestAnimationFrame\(\(\) => setShown\(open\)\); \}\);/);
   assert.match(strip, /useEffect\(\(\) => \{ if \(onOpen\) onOpen\(shown\); \}, \[shown, onOpen\]\);/, "the deck moves with the wink, not before it");
@@ -376,4 +381,43 @@ test("the Design Console can replay, open and fold the ticker — with labelled 
   assert.ok(!/localStorage|saveOverrides|sessionStorage/.test(testFn), "nothing stored: the page view only");
   assert.match(rule(".dc"), /bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "the console stops above the deck");
   assert.match(css, /\.dc \{ top: auto; left: 8px; right: 8px; bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "on a phone too");
+});
+
+// THE WINK, CLEANER (owner, 29 Oct 2026: "the ads wink isnt clean enough"). Declared before measuring, at 375px, shrunk
+// and not, every transition paused and stepped 10ms (the harness is in the session notes, ads-wink/): the deck's foot
+// moves < 0.2px (it slid 3.8px on a shrunk deck); from 80% shut to shut ≤ 70ms (it crept 160ms); where the bezels meet
+// (≤ 0.5px apart) their stretches are the line's within 0.5px (they met whole, then lost their ends and opened their
+// breaks); the line shows no earlier than 2px from the meeting, and from the meeting on the brighter of line and bezels
+// is ≥ 0.9; opening, likewise ≥ 0.9 until the line is gone (it dipped to about half); the keys never cross the band.
+// Measured after: foot 0px; 60ms; 0.26px; 0 early; 0.995; 0.96; the keys ≥ 3.3px clear.
+test("the wink, cleaner: one lid, the bezels take the line's shape as they close, the light never dips, the foot stays", async () => {
+  const { rimClip, RIM_GLOW } = await import("../lib/adcrawl.js");
+  const strip = read("app/components/AdStrip.jsx"), cc = read("app/components/ControlCenter.jsx");
+  const line = [[40, 163], [163, 290], [290, 452]];
+  const open = rimClip(line, false), shut = rimClip(line, true);
+  const pts = (p) => p.slice(p.indexOf("(") + 1, -1).split(/, (?![^(]*\))/);
+  assert.equal(pts(open).length, pts(shut).length, "the same points, so the one eases into the other");
+  assert.equal(pts(shut).length, line.length * 4, "a comb: four corners a stretch");
+  // shut: the line's own stretches, half a break in from every cut and from both ends
+  assert.match(shut, /^polygon\(calc\(var\(--u\) \* 40 \* var\(--dk-sx\) \+ var\(--ad-brk\) \/ 2\) calc\(100% \+ 8px\), /, "it starts where the line starts");
+  assert.ok(shut.includes("calc(var(--u) * 163 * var(--dk-sx) - var(--ad-brk) / 2) -8px, calc(var(--u) * 163 * var(--dk-sx) - var(--ad-brk) / 2) calc(100% + 8px), calc(var(--u) * 163 * var(--dk-sx) + var(--ad-brk) / 2)"), "broken at the cut");
+  assert.ok(shut.endsWith("calc(var(--u) * 452 * var(--dk-sx) - var(--ad-brk) / 2) calc(100% + 8px))"), "it ends where the line ends");
+  // open: whole — past both ends by the glow's room, and no break at any cut
+  assert.match(open, /^polygon\(calc\(0% - 8px\) calc\(100% \+ 8px\), calc\(0% - 8px\) -8px, /, "past the left end");
+  assert.ok(open.endsWith("calc(100% + 8px) -8px, calc(100% + 8px) calc(100% + 8px))"), "past the right end");
+  assert.ok(!/ad-brk/.test(open), "no break while open");
+  assert.equal(RIM_GLOW, 8);
+  assert.equal(rimClip(null, true), "none", "no line given: no clip");
+  // wired: the deck gives the line, the strip sets both shapes, the CSS eases between them
+  assert.match(cc, /<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} line=\{AD_LINE\} \/>/);
+  assert.match(strip, /const rims = \{ open: rimClip\(line, false\), shut: rimClip\(line, true\) \};/);
+  assert.match(strip, /"--rim-open": rims\.open, "--rim-shut": rims\.shut/);
+  assert.match(css, /\.ccad \{ --ad-brk: calc\(var\(--u\) \* 14\); \}/, "the break is the bubble's: the line and the bezels break alike");
+  assert.match(rule(".adrim"), /clip-path: var\(--rim-open, none\);/);
+  // folding: the shape first (--dur-1), the meeting second (--dur-2), one curve; then the light changes hands
+  assert.match(css, /\.adstrip\.shut \.adrim \{ clip-path: var\(--rim-shut, none\); opacity: 0; transition: transform var\(--dur-2\) var\(--ease-in-out\), clip-path var\(--dur-1\) var\(--ease-in-out\), opacity var\(--dur-1\) 220ms var\(--ease-in\); \}/);
+  // the shrunk deck's foot holds through it
+  assert.match(css, /\.ccenter\[data-shrunk\] \{ scale: 0\.85; translate: 0 calc\(var\(--ad-h\) \* 0\.15\); \}/);
+  // and under reduced motion it does not wink at all
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.adtrack, \.adrim, \.ccadline, \.ccenter\[data-ad="line"\] \.ccadline \{ transition: none; \} \}/);
 });

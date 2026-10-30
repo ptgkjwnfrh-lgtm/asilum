@@ -1317,3 +1317,20 @@ expected 404s). Found and fixed, each with a check that fails with the bug back 
   second mount — React's strict mode in dev — watched nothing).
 - THE EQ: `aria-controls` only while the panel is there; Escape and CLEAR keep the focus in the EQ; a moved key asks
   one more frame so its ink reads where it stopped. THE MOTION ROW asks a refused centre video again.
+
+### The ads wink, cleaner (29 Oct 2026, "the ads wink isnt clean enough")
+Filmed frame by frame at 375px (every transition paused and stepped 10ms), three things made it read as dirty:
+- THE DECK SLID UNDER IT. A shrunk deck (the scroll's 15%) is anchored at its foot but scaled about a point measured
+  from its top, so the ticker changing the deck's height slid the foot 3.8px. `.ccenter[data-shrunk]` is now lowered
+  by 15% of `--ad-h`, on the height's own duration and curve: the foot holds still (0px). The price: with the ticker
+  open, the plus shrinks about a point 3.8px lower (folded, nothing changes) — a rigid scale cannot keep both.
+- A SNAP, A STALL, THEN LIGHT. On ease-out the band shut 80% in 60ms, crept 3px for 100ms, and the line came after.
+  The band and its bezels now close as one lid on `--ease-in-out` (80% → shut in 60ms); folding, the deck shortens on
+  the same curve (`--ease-deck`, the deck's own curve token), longer, so the keys stay ≥ 8.5px clear of the closing band. (Leaving search with the
+  ticker folded now lowers the deck on that curve too.)
+- THE BEZELS WERE NOT THE LINE. They met as two whole hairlines, then the ends vanished and the breaks opened as the
+  line took over. Each bezel is now clipped to the line's stretches as one comb polygon (`lib/adcrawl.js rimClip`,
+  `--rim-open` / `--rim-shut`): whole while open, the line's own shape shut; the shape is taken first (`--dur-1`) and
+  the meeting second (`--dur-2`), so they touch as the line (0.26px off) and the hand-over is light alone (≥ 0.995).
+  Opening, the bezels are lit over the line in the time it takes to go (`--dur-0`, out on ease-in), ≥ 0.96 throughout
+  (it dipped to about half). Under reduced motion the ticker opens and folds at once (it winked regardless, before).

@@ -33,14 +33,16 @@
 // read as sponsored though it prints its title alone).
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { crawlFor, wrapSlices, typingFor, monoText, SEP } from "../../lib/adcrawl.js";
+import { crawlFor, wrapSlices, typingFor, monoText, SEP, rimClip } from "../../lib/adcrawl.js";
 import { tickerOpen, OPENS_TICKER, TICKER_SAMPLE, TICKER_TESTS } from "../../lib/placements.js";
 import { usePlacements } from "./Placements.jsx";
 
 // the two quarter cylinders, laid once
 const WRAP = wrapSlices();
 
-export default function AdStrip({ typing = false, onOpen = null }) {
+export default function AdStrip({ typing = false, onOpen = null, line = null }) {
+  // the bezels' two shapes, whole and as the line (lib/adcrawl.js rimClip; `line` is ControlCenter.jsx AD_LINE)
+  const rims = { open: rimClip(line, false), shut: rimClip(line, true) };
   const live = usePlacements();
   // THE TEST (the Design Console's TICKER section): open or fold it by hand, for this page view only; open
   // with nothing live to carry, it runs the labelled samples (lib/placements.js TICKER_SAMPLE)
@@ -131,7 +133,7 @@ export default function AdStrip({ typing = false, onOpen = null }) {
       aria-label="ads and placements"
       aria-hidden={shown ? undefined : true}
       inert={shown ? undefined : "" /* React 18: the attribute present is inert */}
-      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1 }}
+      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1, "--rim-open": rims.open, "--rim-shut": rims.shut }}
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
       <span className="adprobe" ref={probeRef} aria-hidden="true">00000000000000000000</span>
@@ -143,7 +145,8 @@ export default function AdStrip({ typing = false, onOpen = null }) {
         </span>
         {side("r", WRAP.right)}
       </div>
-      {/* the bezels, glowing slightly: folding, they travel in and meet on the centre line (the wink) */}
+      {/* the bezels, glowing slightly: folding, they travel in, take the line's shape, and meet on the centre line as
+          the line itself (the wink) */}
       <i className="adrim adrimtop" aria-hidden="true" />
       <i className="adrim adrimbot" aria-hidden="true" />
     </div>
