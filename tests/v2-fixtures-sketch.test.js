@@ -106,7 +106,8 @@ test("search morphs the deck upward; the popup waits for the first character; on
   assert.match(deck, /if \(scope\.id === "global" && v\.trim\(\) && !searchPopupUp\) goSheet\("search"\);/, "typing opens it (or goes back to it, never a second)");
   assert.match(rules, /\.ccenter\.ccsearching \{ height: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "the deck extends upward");
   assert.match(rules, /--ad-h: calc\(var\(--u\) \* 64\);/, "the deck is taller by the ad bubble");
-  assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.ccenter \{ transition: none; \} \.ccsearch \{ animation: none; \} \}/);
+  assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.ccsearch \{ animation: none; \} \}/);
+  assert.match(rules, /prefers-reduced-motion: reduce\) \{\n  \.fixture, \.ccenter \{ transition: none; \}/, "the deck's own transition stops in the later block");
   assert.match(read("app/components/SearchSheet.jsx"), /\{dock\.mode !== "search" \? \(\n\s*<label className="srchfield">/, "the popup hides its own field while the deck's bar is up");
   assert.match(read("app/components/SheetHost.jsx"), /useFocusTrap\(ref, open, \{ companion: "\.ccsearch" \}\)/, "the popup does not steal the caret");
 });

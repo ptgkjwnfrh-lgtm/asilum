@@ -296,7 +296,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; text-decoration: none; }
-::selection { background: var(--red); color: var(--paper); }
 button { font-family: var(--helv); }
 
 /* ---- Shell: one fixed top header — wordmark row + destination row ---- */
@@ -433,10 +432,6 @@ button { font-family: var(--helv); }
 
 /* ---- Editorial headline + shared bits ---- */
 
-.headline {
-  font-size: clamp(42px, 7vw, 96px); font-weight: 900; letter-spacing: -0.045em;
-  line-height: 0.92; text-transform: uppercase; margin: 0 0 6px;
-}
 .headline .red { color: var(--red); }
 .deck { font-family: var(--serif); font-style: normal; font-size: 16px; font-weight: 500; color: var(--grey); margin: 0 0 16px; }
 
@@ -638,10 +633,6 @@ button { font-family: var(--helv); }
   padding: var(--ed-pad-btn-y, 12px) var(--ed-pad-btn-x, 19px); font-weight: 900; font-size: var(--ed-fs-btn, 13px); letter-spacing: 0.08em;
   text-transform: uppercase; cursor: pointer;
 }
-.btn:hover { background: var(--paper); color: var(--ink); }
-.btn.ghost { background: var(--paper); color: var(--ink); }
-.btn.ghost:hover { background: var(--ink); color: var(--paper); }
-.btn.ghost.active { color: var(--paper); background: var(--ink); }
 .btn.wide { width: 100%; margin-top: 6px; }
 .btn:disabled { opacity: 0.35; cursor: default; }
 
@@ -1188,7 +1179,6 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .pname { font-size: 27px; font-weight: 900; letter-spacing: -0.03em; }
 .pbio { font-family: var(--serif); font-style: normal; font-size: 14px; color: var(--grey); margin: 6px 0 8px; }
 .pcounts { display: flex; gap: 20px; font-size: 10px; letter-spacing: 0.1em; color: var(--grey); }
-.pcounts b { color: var(--ink); font-size: 14px; margin-right: 4px; }
 .phead2 > .btn, .phead2 > .followbtn { margin-top: 44px; }
 .pedit { display: block; border: 1px solid var(--line); padding: 7px 9px; font-family: var(--helv); font-size: 14px; margin-bottom: 6px; width: 100%; max-width: 380px; }
 .pedit.small { font-size: 12px; }
@@ -1472,8 +1462,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .os-dock .t b { color: var(--p2); font-weight: 400; text-shadow: var(--glow-p); }
 
 /* surface polish: pills, radius, glow — applied to existing magazine classes */
-.main { padding-bottom: calc(var(--status-h) + 70px); }
-.btn, .fitbtn, .platform, .chip { border-radius: var(--ed-rad-btn, 999px); }
+.fitbtn, .platform, .chip { border-radius: var(--ed-rad-btn, 999px); }
 .btn { background: var(--bg3); color: var(--ink); border: 1px solid var(--line); font-weight: 400; letter-spacing: var(--ed-ls-btn, 0.14em); }
 .btn:hover { background: var(--bg2); color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 .btn.ghost { background: none; color: var(--ink); border-color: var(--line); }
@@ -1490,7 +1479,6 @@ button.soon, a.soon, .btn.soon, .btn.ghost.soon, .fitbtn.soon, .platform.soon { 
 .headline .red { text-shadow: var(--glow-r); margin-right: 0.06em; }
 .headsub { display: block; font-family: var(--mich); font-size: var(--ed-fs-headline, clamp(38px, 6vw, 84px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase;
   color: color-mix(in srgb, var(--ink) 26%, transparent); text-shadow: none; margin: 0 0 10px; }
-@media (max-width: 760px) { .headsub { font-size: clamp(26px, 8vw, 48px); } }
 .deck { font-style: normal; color: var(--grey); font-size: var(--ed-fs-deck, 13px); }
 .search { border-bottom-color: var(--sig); caret-color: var(--sig); }
 .red { color: var(--red); text-shadow: var(--glow-r); }
@@ -1514,7 +1502,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .cvr > * { position: relative; }
 
 .cvmast { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
-.cvmastblock { display: grid; }
 .cvmastline { font-family: var(--mich); font-size: var(--ed-fs-covermast, clamp(44px, 7.5vw, 96px)); font-weight: 700; letter-spacing: 0.02em; line-height: 0.94; text-transform: uppercase; }
 .cvmastline .red { margin-right: 0.06em; }
 .cvyear { display: flex; gap: 0.14em; }
@@ -1676,7 +1663,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .wcright textarea { width: 100%; border: 0; background: var(--field-fill); border-radius: var(--radius-field); padding: 10px 14px; font: inherit; font-size: 15px; resize: vertical; outline: none; }
 .wcright .wcap:focus, .wcright textarea:focus { border-bottom-color: var(--sig); }
 /* permalink focus — one transmission pinned above the wire */
-.wfocus { margin: 4px 0 30px; }
 .wpost { margin-bottom: 22px; }
 .wposthead { font-family: var(--mich); font-size: 15px; letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
 .wpost .fposttext { white-space: pre-wrap; max-width: 68ch; }
@@ -2063,7 +2049,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxheard { margin-top: 16px; display: grid; gap: 4px; }
 .gxheard .gxlabel { margin-bottom: 4px; }
 .gxheard em { font-style: normal; font-size: 11px; color: var(--grey); }
-.gxlinks { margin: 4px 0 30px; }
 @media (prefers-reduced-motion: reduce) { .ppwarp { transition: none; } }
 
 /* upload-station r2: the warped map settles as the page background; the
@@ -3201,7 +3186,6 @@ body { font-size: 14px; }
 .plmapwrap { margin: 4px 0 8px; }
 .plmeta { font-size: 10px; letter-spacing: 0.2em; color: var(--grey); margin: 6px 0; }
 .pllist { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
-.plcard { border: 1px solid var(--line); border-radius: 7px; background: var(--bg2); }
 .plcard.sel { border-color: var(--sig); }
 .plcardhead { display: grid; grid-template-columns: 1fr auto; gap: 2px 14px; width: 100%; text-align: left; padding: 10px 14px; background: none; border: 0; color: var(--ink); cursor: pointer; align-items: center; }
 .plkind { grid-column: 1; font-size: 9.5px; letter-spacing: 0.2em; color: var(--grey); }
@@ -3548,7 +3532,7 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
 .ccdiscover:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
 /* the label stays on a phone (it is the way to browse: a compass alone was not read as one); only the smallest
    screens keep the compass alone, the label for assistive technology (below, after the popup's rules) */
-@media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .ccsearch { animation: none; } }
 /* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): beneath the keys and
    above the vent; it reaches 18 up into the row's empty foot, under the cuts'
    lower ends (52), and ends above the grill's top lip, so the deck grows by
@@ -3953,9 +3937,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
 }
 [data-theme="light"] { --iris: 0.72; }
-@media (prefers-reduced-transparency: reduce) {
-  .fixture, .ccenter { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
-}
 
 /* the POST disc at the center of the deck: the sketch's ring with its plus,
    a raised lens of its own in the glass (the backdrop bends round it) */
@@ -3969,7 +3950,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 }
 .ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
-.ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
 /* a key is a key whether it is an <a> or a <button> */
 .ccenter button.tabl { border: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
 .ccenter .cctabs .tabl { font-family: var(--mich); }
@@ -4039,7 +4019,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
    Masthead spans the page, so it fades and does not shrink */
 [data-popup] .fixture { opacity: 0.55; transition: opacity var(--dur-2) var(--ease-out); }
 [data-popup] .fixture:hover { opacity: 0.9; }
-.fixture { transition: opacity var(--dur-2) var(--ease-out); }
 /* a phone's header has no room for BACK, the title, the counter and two
    labelled buttons: with BACK up the action buttons keep their glyphs only */
 /* (18 Oct) on a phone the header's keys keep their glyphs only — with the
@@ -4729,7 +4708,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .srchref .ovpmore { font-size: 16px; color: var(--ink); }
 .srchref .ovpletter { font-size: 26px; }
 /* the popup surface in the light theme is the reference's icy glass */
-[data-theme="light"] .sheet { background: linear-gradient(180deg, #eef6fb, #e5eef5); border-color: color-mix(in srgb, var(--sig) 16%, transparent); }
 [data-theme="light"] .sheethead { border-bottom-color: color-mix(in srgb, var(--sig) 12%, transparent); }
 @media (max-width: 560px) { .srchref .ovp { grid-template-columns: 1fr; } .srchtabs { gap: 14px; } .srchtab { font-size: 14px; } }
 
@@ -4914,7 +4892,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
-  .fixture, .ccenter, .sheet, .fixture[data-refract="1"], .ccenter[data-refract="1"], .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
+  .sheet, .sheet[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
   [data-popup] .main { filter: none; }
 }
 

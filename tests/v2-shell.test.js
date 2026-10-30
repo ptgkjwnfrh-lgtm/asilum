@@ -260,5 +260,6 @@ test("softened corners: the radius scale is 12/9/7, nothing rounder than 13px bu
   const tooRoundU = radii.filter((v) => [...v.matchAll(/var\(--u\) \* (\d+)/g)].some((n) => +n[1] > 18));
   assert.deepEqual(tooRoundU, [], "no fixture corner above 18 of --u");
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s, "the post disc is still a circle");
-  assert.match(rules, /\.btn, \.fitbtn, \.platform, \.chip \{ border-radius: var\(--ed-rad-btn, 999px\); \}/, "the pills are still pills");
+  // (30 Oct 2026) .btn left this list: `button, .btn, a.btn` sets its corners later at the same specificity
+  assert.match(rules, /\.fitbtn, \.platform, \.chip \{ border-radius: var\(--ed-rad-btn, 999px\); \}/, "the pills are still pills");
 });
