@@ -189,7 +189,7 @@ test("the bend is centred: no coloured map ever reaches a displacement, and the 
   // up-and-down pull into a sideways one. Declared: every displacement reads a GREY map (lgxa / lgya), and
   // each pass reads the direction it leaves alone from the alpha channel, held at one half.
   const glass = read("app/components/LiquidGlass.jsx");
-  const defs = glass.slice(glass.indexOf("export function LiquidGlassDefs"), glass.indexOf("export function restrictLens"));
+  const defs = glass.slice(glass.indexOf("export function LiquidGlassDefs"), glass.indexOf("const urlOf"));
   const passes = [...defs.matchAll(/<feDisplacementMap [^>]*\/>/g)].map((m) => m[0]);
   assert.equal(passes.length, 2, "two passes, sideways then up and down, every colour alike");
   for (const p of passes) {

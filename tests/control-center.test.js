@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { UTILITIES, DECK, HOUSE_LINES, SEARCH_SCOPES, scopeFor, SEARCH_TOGGLES, toggleContent, stateKey, LAUNCH_PATH, MAP_TOOLS } from "../lib/dock.js";
+import { UTILITIES, DECK, SEARCH_SCOPES, scopeFor, toggleContent, stateKey, MAP_TOOLS } from "../lib/dock.js";
 import { restoreAnchor, newAbove } from "../lib/viewstate.js";
 import { tickerItems, placementLine, shortDate, PLACEMENT_LABELS } from "../lib/placements.js";
 import { placeNames, projector } from "../lib/roads/overpass.js";
@@ -37,7 +37,6 @@ test("search scopes carry the brief's exact placeholders and never widen on thei
 });
 
 test("Pieces and Wire are independent toggles with at least one on; ASTERISK is free", () => {
-  assert.deepEqual(SEARCH_TOGGLES.map((t) => t.id), ["pieces", "wire", "asterisk"]);
   const both = { pieces: true, wire: true, asterisk: true };
   const noPosts = toggleContent(both, "wire");
   assert.deepEqual(noPosts, { pieces: true, wire: false, asterisk: true });
@@ -46,7 +45,6 @@ test("Pieces and Wire are independent toggles with at least one on; ASTERISK is 
 });
 
 test("a fresh launch goes to the feed and nothing remembers a last tab", () => {
-  assert.equal(LAUNCH_PATH, "/");
   const dock = read("lib/dock.js") + read("lib/dockstate.js") + read("app/shell.js");
   assert.ok(!/last[-_]?tab|lastDestination|asilum-last/i.test(dock), "no last-tab memory anywhere in the shell");
 });
@@ -125,7 +123,6 @@ test("the theme follows the device unless a pick is pinned (blueprint 2.24)", ()
   const prepaint = layout.split("const PREPAINT")[1];
   assert.ok(/if\(t!=="dark"&&t!=="light"\)t=\(window\.matchMedia&&window\.matchMedia\("\(prefers-color-scheme: dark\)"\)\.matches\)\?"dark":"light";/.test(prepaint), "an unpinned theme is the device's");
   assert.ok(/localStorage\.getItem\("asilum-theme"\)/.test(prepaint), "a pinned pick wins");
-  assert.deepEqual([...HOUSE_LINES], ["ARE YOU SEEKING A S I L U M", "DISCOVERY - COMMERCE - COMMUNITY", "DISCOVER FROM ARCHIVES ACROSS THE WORLD"]);
 });
 
 test("there is no Wire: one Feed, the posts braided in, the listing a popup (blueprint, 17 Oct)", () => {

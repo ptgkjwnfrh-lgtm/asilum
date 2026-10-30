@@ -11,7 +11,6 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
-import { useOverlayDismiss } from "./components/dismiss.js";
 import { HoldMenu, CardDots } from "./components/HoldMenu.jsx";
 import { CutDefs } from "./components/Cut.jsx";
 import AdSpace from "./components/AdSpace.jsx";
@@ -24,7 +23,7 @@ import {
 import {
   observationOn, followedBrands, isDemoItem,
 } from "../lib/social.js";
-import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import { useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
 import { tetrisPack, fillAds, feedColsFor, motionRail, isLarge } from "../lib/feed/tetris.js";
@@ -75,8 +74,6 @@ const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "kni
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
 // the notice a craving applied puts up; a Feed loaded without one takes it down (and no other notice)
 const CRAVING_NOTE = "current craving applied — your long-term taste was not rewritten";
-
-
 
 // (Removed Aug 12 at the owner's word — "get rid of a lot of the excess
 // header stuff": the FollowMorse strip, THE SLIDE, LIVE OBSERVATION, and
@@ -129,7 +126,6 @@ export default function Home() {
   const loadingMoreRef = useRef(false);
   const feedGenRef = useRef(0);
   const sentinelRef = useRef(null);
-
 
   // The folio's edition date — set on mount like the cover's masthead.
   useEffect(() => {
@@ -1083,7 +1079,6 @@ function useFeedCols() {
   }, []);
   return cols;
 }
-
 
 // the window inside which a second tap makes a double tap — a mouse's
 // dblclick and a finger's double tap alike (iOS does not fire dblclick)

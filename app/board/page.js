@@ -38,7 +38,7 @@ import Studio from "../components/Studio.jsx";
 import ModelTag from "../components/ModelTag.jsx";
 import { listSaves, unsave, saveCounts } from "../../lib/save.js";
 import AddStamp from "../components/AddStamp.jsx";
-import { getLocation, basedInLine, confirmBaseCity, setLocation } from "../../lib/location.js";
+import { getLocation, basedInLine, setLocation } from "../../lib/location.js";
 
 const TABS = [
   { id: "collection", label: "COLLECTION" },

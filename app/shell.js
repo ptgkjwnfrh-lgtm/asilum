@@ -11,8 +11,8 @@
 // owner drew it on 19 Oct 2026. Secondary surfaces rise over the root from
 // SheetHost. Of the V.1 magazine header only the glass strip came back: no
 // marquee, no big search/bag/sign-in, no destination row. (The marquee's house
-// lines, lib/dock.js HOUSE_LINES, ran in the deck's ticker until 28 Oct 2026,
-// when a ticker with no ad or BRDCST began folding to its line instead.)
+// lines ran in the deck's ticker until 28 Oct 2026, when a ticker with no ad
+// or BRDCST began folding to its line instead.)
 //
 // What stays here is identity: the server-issued device cookie, the
 // Supabase session, adoption on sign-in, and what kind of account is

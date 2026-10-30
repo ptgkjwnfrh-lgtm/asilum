@@ -20,7 +20,6 @@ import { useEffect, useMemo, useState } from "react";
 import { listSaves, unsave } from "../../lib/save.js";
 import { useDock, setLikesTab, setQuery } from "../../lib/dockstate.js";
 import { getUid, authorizedFetch } from "../../lib/client.js";
-import ModelTag from "./ModelTag.jsx";
 
 const STATUS_WORD = { available: "AVAILABLE", sold: "SOLD", ended: "ENDED", removed: "REMOVED", unavailable: "UNAVAILABLE", price_changed: "PRICE CHANGED", source_unavailable: "SOURCE DOWN", unknown: "" };
 

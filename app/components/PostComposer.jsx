@@ -41,7 +41,7 @@ import { WIRE_CATEGORIES, WIRE_INTENTS } from "../../lib/model/media.js";
 import { TRANSMISSION_MAX, CAPTION_MAX, MAX_IMAGES, MAX_PIECES, LAYOUTS, LAYER_ALIGNS, LAYER_POSITIONS, LAYER_COLORS, graphemeCount } from "../../lib/posts/compose.js";
 import {
   newDraft, readDraft, writeDraft, clearDraft, attachMedia, detachMedia, restoreMedia, discardMedia,
-  setText, setTitle, setLayout, setLink, setEvent, addEvent, removeEvent, setPieces, setLayers, setVideo, describe,
+  setText, setTitle, setLayout, setLink, addEvent, removeEvent, setPieces, setLayers, setVideo, describe,
 } from "../../lib/posts/draft.js";
 import { preflightMotion, MOTION } from "../../lib/media/index.js";
 

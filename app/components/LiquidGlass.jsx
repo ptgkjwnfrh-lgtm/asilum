@@ -241,7 +241,6 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
   });
 }
 
-
 // The filter, once per pane (each pane needs its own id: its map is its own
 // size). Render it near the pane; it is 0×0 and paints nothing itself.
 // The pull at the edge: ONE pull for every colour, on every pane (owner, 26
@@ -303,9 +302,7 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
       <feColorMatrix in="lgx" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" result="lgxa" />
       <feColorMatrix in="lgy" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 0.5" result="lgya" />
       <feImage ref={weightRef} preserveAspectRatio="none" result="lgw" />
-      {/* the lens chain, data-lens: restrictLens() confines these to the
-          edge band when only one edge is open (the strip), so the clear
-          middle costs nothing; every colour bends alike */}
+      {/* the lens chain (data-lens): every colour bends alike */}
       {/* the backdrop pre-filtered before it is bent, so a squeeze averages
           rather than skips (the clear middle below reads SourceGraphic) */}
       <feGaussianBlur data-lens="1" in="SourceGraphic" stdDeviation={LENS_PREFILTER} result="src" />
@@ -328,25 +325,6 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
     <image ref={mapRef} width="0" height="0" />
     </svg>
   );
-}
-
-// Confine the lens chain of a pane's filter to the band inside its one open
-// edge (the strip: the bottom), in the pane's own pixels — the clear middle
-// then costs nothing on every scroll frame. `band` null lifts it.
-export function restrictLens(filterEl, band) {
-  if (!filterEl) return;
-  for (const n of filterEl.querySelectorAll("[data-lens]")) {
-    if (!band) { n.removeAttribute("x"); n.removeAttribute("y"); n.removeAttribute("width"); n.removeAttribute("height"); continue; }
-    n.setAttribute("x", "0");
-    n.setAttribute("y", band.y.toFixed(1));
-    n.setAttribute("width", band.width.toFixed(1));
-    n.setAttribute("height", band.height.toFixed(1));
-  }
-}
-// The band a strip's lens needs: the bezel plus its easing, at the bottom.
-export function bottomBand(w, h) {
-  const deep = Math.min(h, Math.ceil(BEZEL * 1.35) + 2);
-  return { y: h - deep, width: w, height: deep };
 }
 
 // THE PAGE-SIDE BEND. Where there is no backdrop refraction — WebKit never

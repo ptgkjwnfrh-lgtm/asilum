@@ -54,7 +54,7 @@ Nothing below is aspirational — every EXISTS/PARTIAL claim names the module.
 | Trend knowledge w/ sources, lifecycle, expiry | EXISTS | `lib/asterisk/trends.js` (one authority, Day 14) + `lib/ai/trendKnowledge.js` (sourced garment snapshot) + freshness CI (both layers, one review clock 2026-08-15). |
 | Cultural entities for rails | EXISTS | 274-entity catalog incl. runway-adjacent, film, music, figures. |
 | Rail registry / versioned rail items / per-user prefs | MISSING | Discover has the Asterisk read strip + `?tags=` pills; no named collapsible rails, no `discover_rails` tables. |
-| Soundtrack rail (manual) | PARTIAL | `lib/music-mapping` (curated genre/artist → tags, `musicProfile`) is exactly the compliant manual seam; no UI rail. |
+| Soundtrack rail (manual) | PARTIAL | `lib/music-mapping` (curated artist → tags, `mapArtist`) is exactly the compliant manual seam; no UI rail. |
 | Screen rail | PARTIAL | Film/TV entities exist w/ readings; no rail surface. |
 | Exploration rail | PARTIAL | Epsilon/far-reach bridge exists in the feed; not a Discover rail. |
 | Verified-event rails | MISSING | No event entity type with date+source verification; trend records are aesthetic/garment level. |
