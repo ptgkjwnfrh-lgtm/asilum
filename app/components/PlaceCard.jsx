@@ -15,13 +15,14 @@
 // drawn here (lib/places/registry.js placeRating draws one in the popup
 // only when a real source holds it).
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { haptic } from "../../lib/haptics.js";
 import { openSheet } from "../../lib/dockstate.js";
 import { discoveryCenter } from "../../lib/location.js";
 import { distanceMi } from "../../lib/brdcst/index.js";
 import { milesLabel } from "../../lib/places/registry.js";
 import Icon from "./Icons.jsx";
+import { HoldMenu, CardDots } from "./HoldMenu.jsx";
 
 /** "gallery" / "GALLERY" / "pop_up" → "Gallery", "Pop up". */
 export function kindWord(kind) {
@@ -30,6 +31,10 @@ export function kindWord(kind) {
 }
 
 export default function PlaceCard({ place: p }) {
+  // the three dots and the card menu, as on every card of the Feed (28 Oct 2026): PASS sets the place aside here
+  const [menu, setMenu] = useState(false);
+  const closeMenu = useCallback(() => setMenu(false), []);
+  const what = "the place " + p.name;
   const [miles, setMiles] = useState(null);
   useEffect(() => {
     const read = () => { const c = discoveryCenter(); setMiles(c ? distanceMi(c, p) : null); };
@@ -40,6 +45,8 @@ export default function PlaceCard({ place: p }) {
   const label = milesLabel(miles);
   return (
     <article className={"card placecard" + (p.image ? " withphoto" : "")} data-id={"place:" + p.id} data-type="PLACE" aria-label={"place: " + p.name}>
+      <CardDots what={what} open={menu} onOpen={() => setMenu(true)} />
+      <HoldMenu id={"place:" + p.id} what={what} open={menu} onClose={closeMenu} />
       <button type="button" className="placeopen" onClick={() => { haptic("press"); openSheet("map", { pin: p.id, title: "MAP" }); }} aria-label={"open the map for " + p.name}>
         {/* a record that carries a free-use photograph (lib/places/registry.js
             `image`, credited in public/model/credits.json) wears it; else the mark */}

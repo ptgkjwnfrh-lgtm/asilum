@@ -49,8 +49,10 @@ import { authorizedFetch, getUid, postJSON } from "../../lib/client.js";
 // register, STATE THAT OUTLIVES ITS CONTEXT.
 import {
   composerCount, composerKey, mergeFolderItems, messageControls, NO_SIGNAL, pageIsCurrent, reactionsAcross,
-  shouldPollActivity, startSummaryPolling,
+  shouldPollActivity, startSummaryPolling, takeDeskRequest, agoWords, rowPreview,
 } from "../../lib/dm-desk.js";
+import { Avatar } from "./UserBits.jsx";
+import AMark from "./AMark.jsx";
 // STAGE C (V.2 brief §3–§4): the limit the server also keeps, so the
 // composer can say the count before the route refuses it.
 import { bodyRefusal } from "../../lib/dm.js";
@@ -79,11 +81,19 @@ function Envelope({ waiting, fault }) {
 
 // `glyph`: the deck draws its own messages glyph (the owner's fixture sketch,
 // 19 Oct 2026: a square speech bubble); the envelope stays the default.
-export default function MailDesk({ glyph = null, keyClass = "" }) {
+// `embedded` (27 Oct 2026): the desk as the DM TAB's own page — the MESSAGES
+// key opens the "messages" popup tab and this is its contents: no button of
+// its own, always open, no dialog chrome (the popup is the dialog), kept
+// alive with the tab so a thread left half-read resumes where it was.
+// PAGE (owner, 28 Oct 2026, the messages sketch; MessagesPage.jsx): the same desk on the /messages page, its
+// list laid out as drawn — one search field, the NEW MESSAGE circle, the ASTERISK square; then each
+// conversation as the person's circle, *handle, ":" and the last message, how long ago ">>", over a hairline.
+// Threads, compose, offers, requests and the settings below are the desk's own, unchanged.
+export default function MailDesk({ glyph = null, keyClass = "", embedded = false, page = false }) {
   const [available, setAvailable] = useState(null); // null = unknown, false = feature absent
   const [counts, setCounts] = useState({ inbox: 0, requests: 0 });
   const [fault, setFault] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(embedded);
   const [folder, setFolder] = useState("inbox");
   const [items, setItems] = useState(null);
   const [note, setNote] = useState("");
@@ -115,6 +125,7 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
   const [editing, setEditing] = useState(null);
   const [clearing, setClearing] = useState(false);
   const [searchQ, setSearchQ] = useState("");
+  const [composing, setComposing] = useState(false); // page: the NEW MESSAGE circle opens the handle finder
   const [hits, setHits] = useState(null);
   const [jumpTo, setJumpTo] = useState(null);
   const [sharing, setSharing] = useState(true);
@@ -151,21 +162,21 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
     setPeer(NO_SIGNAL);
   }, []);
 
-  useEscape(() => setOpen(false), open);
+  useEscape(() => setOpen(false), open && !embedded);
   // 3.18: on Direct Messages the Info Dock disappears and only the music
   // circle stays, in the right corner — CSS on `data-dm` (slice 9)
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
-    if (open) document.documentElement.dataset.dm = "1"; else delete document.documentElement.dataset.dm;
+    if (open && !embedded) document.documentElement.dataset.dm = "1"; else delete document.documentElement.dataset.dm;
     return () => { delete document.documentElement.dataset.dm; };
-  }, [open]);
-  useClickAway(panelRef, () => setOpen(false), { active: open, excludeRef: buttonRef });
+  }, [open, embedded]);
+  useClickAway(panelRef, () => setOpen(false), { active: open && !embedded, excludeRef: buttonRef });
   // THE THIRD PART OF THE DISMISSAL CONTRACT, which this panel never took. It
   // is a dialog over the page: Tab walked straight into the catalog behind it,
   // and closing left focus nowhere. useFocusTrap has been in this codebase
   // since the item modal, and it restores the origin on close — the half
   // people forget.
-  useFocusTrap(panelRef, open);
+  useFocusTrap(panelRef, open && !embedded);
 
   const poll = useCallback(async () => {
     const uid = getUid();
@@ -201,22 +212,30 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
 
   useEffect(() => startSummaryPolling(poll, { intervalMs: POLL_MS }), [poll]);
 
-  // Public profile/storefront surfaces open the existing mail desk rather
-  // than growing a second composer. The handle is only a search seed; the DM
-  // API still resolves the account, permissions, blocks and delivery rules.
+  // WHAT THE DESK IS ASKED TO SHOW (27 Oct 2026): the message banner's
+  // double tap names a conversation, a storefront's MESSAGE key names a
+  // person (only a search seed: the DM API still resolves the account,
+  // permissions, blocks and delivery rules), a request banner names the
+  // REQUESTS folder. DmLive.jsx opens the DM tab and leaves the ask in
+  // lib/dm-desk.js; the desk takes it when it mounts, or at once when it is
+  // already kept alive behind the tab.
   useEffect(() => {
-    function openToHandle(event) {
-      const handle = String(event?.detail?.handle || "").trim().toLowerCase().replace(/^\*/, "");
-      if (!/^[a-z0-9-]{3,24}$/.test(handle)) return;
-      showThread(null);
-      setFolder("inbox");
-      setSearchQ("");
-      setQuery(handle);
-      setNote("");
+    function take() {
+      const ask = takeDeskRequest();
+      if (!ask) return;
+      setSearchQ(""); setNote("");
+      if (ask.thread) { setFolder("inbox"); setQuery(""); showThread(String(ask.thread)); }
+      else if (ask.folder) { showThread(null); setQuery(""); setFolder(ask.folder === "requests" ? "requests" : "inbox"); }
+      else if (ask.handle) {
+        const handle = String(ask.handle).trim().toLowerCase().replace(/^\*/, "");
+        if (!/^[a-z0-9-]{3,24}$/.test(handle)) return;
+        showThread(null); setFolder("inbox"); setQuery(handle);
+      }
       setOpen(true);
     }
-    window.addEventListener("asilum:dm-open", openToHandle);
-    return () => window.removeEventListener("asilum:dm-open", openToHandle);
+    take();
+    window.addEventListener("asilum:dm-pending", take);
+    return () => window.removeEventListener("asilum:dm-pending", take);
   }, [showThread]);
 
   const loadFolder = useCallback(async (which, more = "") => {
@@ -628,6 +647,14 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
     } catch { setNote("that image could not be loaded."); }
   }
 
+  // the deck's search, in the messages scope, reaches the desk's own message search (ControlCenter.jsx
+  // "asilum:dm-find" — dispatched since V.2, read by nothing until the page, 28 Oct 2026)
+  useEffect(() => {
+    const onFind = (e) => { const q = e && e.detail && typeof e.detail.q === "string" ? e.detail.q : ""; showThread(null); setSearchQ(q); };
+    window.addEventListener("asilum:dm-find", onFind);
+    return () => window.removeEventListener("asilum:dm-find", onFind);
+  }, [showThread]);
+
   if (available !== true) return null;
 
   const waiting = counts.inbox + counts.requests > 0;
@@ -635,7 +662,8 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
     : waiting ? `messages — ${counts.inbox + counts.requests} waiting` : "messages";
 
   return (
-    <div className="maildesk">
+    <div className={"maildesk" + (embedded ? " embedded" : "")}>
+      {embedded ? null : (
       <button
         ref={buttonRef}
         className={"mailbtn" + (keyClass ? " " + keyClass : "") + (open ? " cur" : "")}
@@ -648,6 +676,7 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
         {fault ? <span className="mailfault" title="unavailable">!</span>
           : waiting ? <span className="mailcount">{counts.inbox + counts.requests}</span> : null}
       </button>
+      )}
 
       {/* ONE panel element. Two sibling <div className="mailpanel"> branches
           made React tear down and rebuild the surface when a thread opened,
@@ -656,10 +685,10 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
           the surface does not. */}
       {open ? (
         <div
-          className="mailpanel"
+          className={"mailpanel" + (embedded ? " embedded" : "")}
           ref={panelRef}
-          role="dialog"
-          aria-modal="true"
+          role={embedded ? "region" : "dialog"}
+          aria-modal={embedded ? undefined : "true"}
           aria-label={threadId ? "conversation" : "the mail desk"}
           tabIndex={-1}
         >
@@ -1014,6 +1043,43 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
           </>
         ) : (
           <>
+          {page ? (
+          <>
+          {/* the page's head, as drawn: the search field, the NEW MESSAGE circle, the ASTERISK square */}
+          <div className="dmhead">
+            <label className="dmsearch">
+              <Icon name="search" size={16} />
+              <input
+                type="search"
+                aria-label="search messages — *handle, words, *handle: words, or a quoted phrase"
+                value={searchQ}
+                placeholder="search messages…"
+                onChange={(e) => { setSearchQ(e.target.value); setNote(""); }}
+              />
+            </label>
+            <button type="button" className={"dmnew" + (composing ? " on" : "")} aria-pressed={composing} aria-label="new message — find someone by handle" title="NEW MESSAGE"
+              onClick={() => { setComposing((c) => { if (c) setQuery(""); return !c; }); }} />
+            {/* no ASTERISK reads your messages yet: the square is here, as drawn, and says so (a feature without the
+                real thing is disabled and says what it waits for) */}
+            <span className="dmast soon" title="ASTERISK in your messages — waits on the brain reading mail; not built yet">
+              <AMark solid label="ASTERISK in your messages — not built yet" />
+            </span>
+          </div>
+          {composing ? (
+            <label className="mailfind dmfind">
+              <input type="search" aria-label="find someone by handle" value={query} placeholder="find a handle…" autoFocus
+                onChange={(e) => { setQuery(e.target.value); setNote(""); }} />
+            </label>
+          ) : null}
+          <div className="dmfolders" role="tablist" aria-label="folders">
+            {["inbox", "requests"].map((f) => (
+              <button key={f} role="tab" aria-selected={folder === f} className={folder === f ? "cur" : ""} onClick={() => setFolder(f)}>
+                {f.toUpperCase()}{counts[f] ? <span className="mailtabn">{counts[f]}</span> : null}
+              </button>
+            ))}
+          </div>
+          </>
+          ) : (
           <div className="mailhead">
             <span className="psub">THE MAIL DESK</span>
             {/* aria-label only — this codebase has no visually-hidden utility,
@@ -1054,7 +1120,7 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
               ))}
             </div>
           </div>
-
+          )}
 
           {folder === "requests" ? (
             <p className="mailhint">
@@ -1132,6 +1198,38 @@ export default function MailDesk({ glyph = null, keyClass = "" }) {
             <p className="mailnote">
               {folder === "requests" ? "no requests." : "no messages yet."}
             </p>
+          ) : page ? (
+            <ul className="dmlist">
+              {items.map((c) => {
+                const line = rowPreview(c);
+                const ago = agoWords(line.at);
+                return (
+                  <li key={c.id} className={"dmrow" + (c.unread ? " unread" : "")}>
+                    <button type="button" onClick={() => showThread(c.id)}>
+                      <span className="dmface"><Avatar name={c.handle || "?"} /></span>
+                      <span className="dmwho">
+                        {c.handle ? <>*{c.handle}<i className="dmcur" aria-hidden="true">_</i></> : <em className="mailnohandle">an account with no public room</em>}
+                        {c.muted ? <span className="mailmutedot" title="muted">·MUTED</span> : null}
+                      </span>
+                      <span className="dmwhen">{ago ? ago + " >>" : ""}</span>
+                      {line.kind === "offer" ? (
+                        <span className="dmprev dmoffer" aria-label={line.text}>
+                          <span className="dmofferhead"><i aria-hidden="true">:</i><b className="dmofferside">{line.side}</b><span className="dmofferlead">{line.lead}</span></span>
+                          <span className="dmofferprice">
+                            <b className="dmofferamt">{line.amount}</b>
+                            {line.state ? <span className="dmofferstate">· {line.state}</span> : null}
+                            <Icon name="offer" size={14} className="dmofferic" />
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="dmprev">{line.kind === "none" ? <em>no preview</em> : <><i aria-hidden="true">:</i>{line.text}</>}</span>
+                      )}
+                      {c.unread ? <span className="dmunread" aria-label={c.unread + " unread"}>{c.unread}</span> : null}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           ) : (
             <ul className="maillist">
               {items.map((c) => (

@@ -107,6 +107,9 @@ test("the copies that agree today are named, so a new one is noticed", () => {
   assert.deepEqual(copied.sort(), [
     "CONTRIB_CAP=8 in 2 files",
     "CO_ENGAGE_SPAN=5 in 2 files",
+    // the Feed's double tap (app/page.js) and the message banner's (lib/dm-desk.js), kept equal on purpose
+    // (27 Oct 2026) so a double tap feels the same everywhere
+    "DOUBLE_TAP_MS=280 in 2 files",
     "FETCH_TIMEOUT_MS=10000 in 3 files",
     "MAX_SLOT=999 in 2 files",
     "TASTE_LONG=0.6 in 2 files",

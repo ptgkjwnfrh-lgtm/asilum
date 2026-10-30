@@ -10,8 +10,9 @@
 // SEARCH · POST · MESSAGES · ACCOUNT, its cuts and the foot grill), as the
 // owner drew it on 19 Oct 2026. Secondary surfaces rise over the root from
 // SheetHost. Of the V.1 magazine header only the glass strip came back: no
-// marquee, no big search/bag/sign-in, no destination row; the house lines of
-// the marquee run in the deck's ticker (lib/dock.js HOUSE_LINES).
+// marquee, no big search/bag/sign-in, no destination row. (The marquee's house
+// lines, lib/dock.js HOUSE_LINES, ran in the deck's ticker until 28 Oct 2026,
+// when a ticker with no ad or BRDCST began folding to its line instead.)
 //
 // What stays here is identity: the server-issued device cookie, the
 // Supabase session, adoption on sign-in, and what kind of account is
@@ -19,7 +20,7 @@
 // home.
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   clearFitProfile, getUid, setUid, authorizedFetch, SIGN_OUT_NOTICE,
 } from "../lib/client.js";
@@ -31,14 +32,26 @@ import { DEFAULT_KIND } from "../lib/accounts.js";
 import SavePrompt from "./components/SavePrompt.jsx";
 import ControlCenter from "./components/ControlCenter.jsx";
 import SheetHost from "./components/SheetHost.jsx";
+import DmLive from "./components/DmLive.jsx";
+import InkWatch from "./components/InkWatch.jsx";
+import GroundInk from "./components/GroundInk.jsx";
+import SideButtons from "./components/SideButtons.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import Masthead from "./components/Masthead.jsx";
 import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
-export default function Shell({ children }) {
+export default function Shell({ children, testControls = true }) {
   const pathname = usePathname();
+  const router = useRouter();
   const pendingAdoptionRef = useRef(null);
+
+  // "asilum:go" { href }: a route change asked for by code that holds no router (the message desk's openDesk)
+  useEffect(() => {
+    const go = (e) => { const href = e && e.detail && e.detail.href; if (typeof href === "string" && href.startsWith("/") && !href.startsWith("//")) router.push(href); };
+    window.addEventListener("asilum:go", go);
+    return () => window.removeEventListener("asilum:go", go);
+  }, [router]);
   const deviceIdentityRef = useRef(null);
 
   useEffect(() => {
@@ -290,6 +303,11 @@ export default function Shell({ children }) {
       <MusicHost />
       <ControlCenter kind={accountKind} pathname={pathname} />
       <SheetHost />
+      {/* the incoming-message banner and the DM tab's count (27 Oct 2026) */}
+      <DmLive />
+      <InkWatch />
+      <GroundInk />
+      {testControls ? <SideButtons /> : null /* test controls: never on the live site (app/layout.js) */}
 
       <AccountSignup />
       <SavePrompt />

@@ -38,6 +38,7 @@ import { ColorEvidenceLine, OriginLine, useFitProfile } from "./ProductSignals.j
 import VerificationBadge from "./VerificationBadge.jsx";
 import FloatView, { askTilt } from "./FloatView.jsx";
 import SaveButton from "./SaveButton.jsx";
+import { openDesk } from "./DmLive.jsx";
 import TicketFlow from "./TicketFlow.jsx";
 import AsteriskWhy from "./AsteriskWhy.jsx";
 import { demoImageFor } from "../../lib/model/pieces.js";
@@ -187,7 +188,7 @@ export default function ListingSheet({ item: given, id }) {
           {offerable.mode === "native"
             ? <button type="button" className={"lstofferword" + (offer.open ? " on" : "")} aria-pressed={offer.open} title={offerable.reason} onClick={() => { haptic("press"); setOffer((o) => ({ ...o, open: !o.open })); }}>OFFER</button>
             : offerable.mode === "wardrobe"
-              ? <button type="button" className="lstofferword" title={offerable.reason} onClick={() => { haptic("press"); setNotice("an offer starts with a message to the owner — the desk opens"); openSheet("messages", { title: "MESSAGES" }); }}>OFFER</button>
+              ? <button type="button" className="lstofferword" title={offerable.reason} onClick={() => { haptic("press"); setNotice("an offer starts with a message to the owner — the desk opens"); openDesk(); }}>OFFER</button>
               : <span className="lstofferword quiet" title={offerable.reason} aria-label={"OFFER — " + offerable.reason}>OFFER</span>}
           <button type="button" className={"lstact" + (bagged ? " on" : "")} onClick={(e) => { blinkLamp(e); toBag(); }} aria-pressed={bagged} aria-label={bagged ? "in the bag" : "add to the bag"} title={bagged ? "IN BAG ✓" : "BAG"}><Icon name="bag" size={24} /><Lamp /></button>
           <SaveButton className="lstact lststamp" icon="hourglass" kind="piece" id={item.id} title={[item.brand, item.title].filter(Boolean).join(" — ")} image={item.img || ""} href={"/?item=" + encodeURIComponent(item.id)} meta={item.price ? `${item.currency || "USD"} ${item.price}` : ""} tags={tags} item={item} labels={["STAMP", "STAMPED ✓"]} />

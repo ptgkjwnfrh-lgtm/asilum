@@ -65,10 +65,33 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
   assert.match(light, /--sig:\s*#1d5fd6;/, "links and chosen things are blue");
   assert.match(light, /--red:\s*#c9372a;/, "the accent is the reference's red (the asterisk, the active tab)");
   assert.match(light, /--ink:\s*#253749;/, "slate ink, as the reference reads");
-  // (19 Oct 2026) a blacker ground, and the original phosphor green back (the fixtures keep #8cf0a6)
+  // (19 Oct 2026) a blacker ground; (29 Oct 2026, "lets make all the colors on darkmode glowing white nomore green")
+  // the dark accent glowing white, on the fixtures too — the phosphor green and the fixtures' paler green gone
   assert.match(dark, /--bg:\s*#030505;/);
-  assert.match(dark, /--red:\s*#46ff96;/, "the dark accent is the original phosphor green");
-  assert.match(css, /:root\[data-theme="dark"\] :is\(\.fixture, \.ccenter, \.brandfix\) \{ --red: #8cf0a6; \}/, "the fixtures keep the paler accent");
+  assert.match(dark, /--red:\s*#f4f9fc;/, "the dark accent is white (it glows through --glow)");
+  assert.ok(!/--red:\s*#(46ff96|8cf0a6)/i.test(css), "no green accent left, on the site or the fixtures");
+  // no green in dark at all: every colour in a rule that applies in dark (not a light-only rule), comments aside, is
+  // checked; the rainbows (--holo, --iris-*, the passport strip's iridescent sweep) keep their green stop, as a
+  // rainbow does
+  const rulesOnly = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const greens = [];
+  for (const m of rulesOnly.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const sel = m[1].trim();
+    if (/data-theme="light"\]|prefers-color-scheme: light/.test(sel)) continue;
+    for (const decl of m[2].split(";")) {
+      if (/^\s*--(holo|iris-\d)\s*:/.test(decl) || /rgba\(150, 90, 255, 0\.14\)/.test(decl)) continue;
+      for (const c of decl.matchAll(/#([0-9a-f]{6})\b|%23([0-9a-f]{6})|rgba?\((\d+),\s*(\d+),\s*(\d+)/gi)) {
+        const [r, g, b] = c[1] || c[2] ? [0, 2, 4].map((i) => parseInt((c[1] || c[2]).slice(i, i + 2), 16)) : [c[3], c[4], c[5]].map(Number);
+        if (g > r + 50 && g > b + 20) greens.push(sel.slice(-50) + " → " + c[0]);
+      }
+    }
+  }
+  const lightOnly = greens.filter((g) => !/--cursor: #1d7a4c/.test(g));
+  assert.deepEqual(lightOnly, [], "no green left in dark");
+  // a selected key's lamp is the asterisk's red, in both themes ("the center fixture select buttons have a green
+  // glow it should be red")
+  assert.match(dark, /--lamp: rgba\(255, 65, 54, 0\.3\);/);
+  assert.match(light, /--lamp: rgba\(210, 47, 34, 0\.3\);/);
   assert.match(dark, /--sig:\s*#6e9cff;/);
 });
 
@@ -180,11 +203,13 @@ test("the OG reactive rainbow liquid glass: on the fixtures, the deck and every 
   assert.match(read("app/components/SheetHost.jsx"), /bend: "\.card"/, "where WebKit cannot bend a backdrop, the cards under the popup's edges bend");
   assert.match(rules, /\.sheetscrim \{ -webkit-backdrop-filter: none; backdrop-filter: none; \}/, "the scrim is no backdrop root, so the popup has a page to bend");
   assert.match(rules, /\[data-popup\] \.main \{ filter: blur\(14px\) saturate\(0\.8\);/, "the page is clouded under a popup (25 Oct, evening)");
-  // the popup floats in the middle of the screen, a large rounded square
+  // (29 Oct 2026, "all the pop up tabs have to look like cards four rounded corners and it being centered in the
+  // screen, lowkey every pop up tab should be the size of a large card") every popup one centred large card; the
+  // search no longer rises flat out of the deck, the phone's bottom sheet is gone (tests/v2-popup-card.test.js)
   assert.match(rules, /\.sheetscrim \{\n  position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;/);
-  assert.match(rules, /\.sheet \{\n  width: min\(var\(--cc-w\), calc\(100vw - 20px\)\);[^}]*border-radius: max\(var\(--sheet-radius\), 19px\);/s);
-  assert.match(rules, /\.sheetscrim:has\(> \.sheet\.deckrise\) \{ align-items: flex-end; padding-bottom: calc\(var\(--cc-row-h\) \+ var\(--cc-bottom\)\); \}/, "the search rises out of the deck (the owner's image 2)");
-  assert.match(read("app/components/SheetHost.jsx"), /\(top && top\.view === "search" \? " deckrise" : ""\)/);
+  assert.match(rules, /\.sheet \{\n  margin: 0; display: flex;[^}]*border-radius: var\(--radius-card\);/s);
+  assert.match(rules, /\.sheetscrim > \.sheet \{ width: var\(--pop-w\); height: var\(--pop-h\); max-height: none; \}/); // the popup's size, its own (bug run, 29 Oct 2026)
+  assert.ok(!/deckrise/.test(rules + read("app/components/SheetHost.jsx")), "the search's flat foot is retired");
   assert.match(rules, /\.sheet\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
   assert.match(rules, /\.fixture\[data-refract="1"\], \.ccenter\[data-refract="1"\] \{[^}]*var\(--lg-filter\)/s);
   assert.match(rules, /prefers-reduced-transparency: reduce\) \{[^}]*\.sheet\[data-refract="1"\][^}]*backdrop-filter: none/s, "reduced transparency drops the glass");
@@ -231,7 +256,7 @@ test("softened corners: the radius scale is 12/9/7, nothing rounder than 13px bu
   const radii = [...rules.matchAll(/border-radius:([^;}]*)/g)].map((m) => m[1]);
   const tooRound = radii.filter((v) => !v.includes("--sheet-radius") && [...v.matchAll(/(?<![\w.])(\d+(?:\.\d+)?)px/g)].some((n) => +n[1] > 13 && +n[1] < 100));
   assert.deepEqual(tooRound, [], "no rounded rectangle above 13px");
-  assert.equal(radii.filter((v) => v.includes("max(var(--sheet-radius), 19px)")).length, 2, "the popup at 19 (was 36, then 26), floating and risen from the deck");
+  assert.equal(radii.filter((v) => v.includes("max(var(--sheet-radius), 19px)")).length, 0, "the popup is a card now (29 Oct 2026): a card's corners, 12 (it was 19, 26, 36)");
   const tooRoundU = radii.filter((v) => [...v.matchAll(/var\(--u\) \* (\d+)/g)].some((n) => +n[1] > 18));
   assert.deepEqual(tooRoundU, [], "no fixture corner above 18 of --u");
   assert.match(rules, /\.ccdisc \{[^}]*border-radius: 50%;/s, "the post disc is still a circle");

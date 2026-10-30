@@ -20,7 +20,9 @@ import { ringItem, ringSpin } from "../../lib/scrollwheel.js";
 import { haptic } from "../../lib/haptics.js";
 import Icon from "./Icons.jsx";
 
-export const GROW_MS = 260;
+// the card's grow is the ladder's --dur-3 (app/globals.css .pccard: transform var(--dur-3)); the popup waits for it to
+// end (29 Oct 2026, "checking … timing": it waited 260 and cut a 320ms grow short, the popup over a card still growing)
+export const GROW_MS = 320;
 
 export default function PostCards({ open, index, onIndex, onChoose }) {
   const n = POST_TYPES.length;

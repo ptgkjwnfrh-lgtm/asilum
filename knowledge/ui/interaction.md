@@ -1,37 +1,73 @@
 # Interaction grammar — V.2 (owner's blueprint, 17 October 2026)
 
-The blueprint's chapter 1 (popups and sessions) and chapter 2 (the Disc
+The blueprint's chapter 1 (popups and sessions — the sessions now kept
+quietly as tabs, 27 Oct 2026) and chapter 2 (the Disc
 and tactility) are the law; what follows is the shipped reading.
 
-## Popups (SheetHost.jsx, dockstate.js, sessions.js)
+## Popups (SheetHost.jsx, dockstate.js)
 - One popup at a time, over the root, at about 60% of the height; it
   grows to the full height for the keyboard and long editing (EXPAND, and
   automatically when a field inside takes focus).
-- A new popup REPLACES the one on screen; the previous one stays in the
-  session's history. Back and a swipe right restore it. A swipe down from
-  the header, Escape, CLOSE, or the FEED key dismiss it. A tap outside
-  dismisses a lightweight popup only — never a checkout, never an edit in
-  progress (`heavy` in the VIEWS table).
-- Dismissing keeps the session. The FEED key twice: the first tap
-  dismisses, the second refreshes the tab from the top.
+- A new popup opens over the one on screen, which waits under it: Back
+  and a swipe right return to it. A swipe down from the header, Escape,
+  CLOSE, or the FEED key dismiss it. A tap outside dismisses a
+  lightweight popup only — never a checkout, never an edit in progress
+  (`heavy` in the VIEWS table).
+- The FEED key twice: the first tap dismisses, the second refreshes the
+  tab from the top.
 - While a popup is up the fixtures shrink and go translucent
   (`[data-popup]` on the root). The page behind does not scroll.
 
-## Sessions (the universal session hub)
-- Up to ten preserved sessions, most recent first, each a chain of
-  popups; the counter reads `01/10`. Opening a popup extends the active
-  session; a new session is made from the deck's POST disc (long hold →
-  NEW SESSION) or from the hub's dial.
-- The deck's POST disc is the session indicator while a popup is up: it
-  wears the counter and a tap opens the hub (the carousel). Posting is
-  unavailable inside a popup.
-- The carousel: glass panels in a spatial row, `×` on the focused panel,
-  swipe up to close, UNDO for six seconds, rename from the dial's menu.
-  Previews are static; sensitive views (messages, bag, checkout) are
-  veiled unless the device reveals them. The eleventh session opens the
-  manager instead of closing anything.
-- Persistence is per device (`asilum-sessions-v2`); nothing is written
-  before the stored hub has been read.
+## Tabs (the session hub's laws, without its face — owner, 27 Oct 2026)
+- The ten-session hub is gone from sight: no carousel, no `01/10`
+  counter, no NEW SESSION, the POST disc is only the plus ("lets get rid
+  of the ten tabs that are hidden … i simply just dont want the session
+  subtabs as a confusing feature").
+- Its laws stay ("when i back out of a tab the tab must remain what i
+  last left it as"). Every popup belongs to a TAB, named by the view it
+  was opened as and what it was opened on. Dismissing keeps the tab
+  exactly as it was; opening it again resumes it — the detail that was
+  up, what was typed and chosen, the scroll. A popup opened over another
+  extends that tab; Back from a tab's first view dismisses and keeps it.
+- While the page lives each tab's views stay mounted out of sight
+  (hidden, inert, still laid out — `.sheetpane`, the six most recent);
+  on this device each tab's stack and scroll are kept (`asilum-tabs-v1`),
+  so after a reload a tab still resumes. Nothing pops open by itself.
+- The search keeps its words: leaving search keeps the half-typed query
+  and its pins, each scope its own (global, Messages, Likes, the map);
+  SEARCH gives them back with the search tab resumed. Likes and the map
+  filter by them only while the deck is searching.
+
+## Direct messages (MessagesPage.jsx, MailDesk.jsx, DmLive.jsx — 27/28 Oct 2026)
+- THE MESSAGES PAGE (owner, 28 Oct 2026, the messages sketch: "a direct
+  message page that the user will be brought to upon clicking the direct
+  message button"): /messages (`lib/nav.js` MESSAGES_HREF), the one
+  exception to the popup law — it replaced the "messages" popup tab. As
+  drawn: ":ECHOS" over the live echo rail; [search] ○ [A] — the desk's
+  message search, the NEW MESSAGE circle (opens the handle finder), the
+  solid red ASTERISK square (`soon`: nothing reads mail yet); then a row
+  per conversation — face, *handle_, its age ("11 DAYS AGO >>",
+  `agoWords`: days to two weeks, then weeks, months, years), ":" and the
+  last words, a hairline under it. The deck's search in the messages
+  scope reaches the desk (`asilum:dm-find`).
+- The MESSAGES key is a link to the page, lit while on it, and wears how
+  many conversations wait. Signed out, messaging off, or a store away, the
+  page says which; nothing is simulated. Every other door — the banner,
+  a listing's OFFER, a storefront's MESSAGE — goes through `openDesk`,
+  which hands the desk what to show and asks the shell (`asilum:go`, a
+  same-site path only) to go there.
+- A message arriving while the app is on screen drops a glass banner from
+  the top (who, the start of what they wrote; a request shows no words),
+  gone after six seconds or a swipe up. ONE TAP opens the reply field and
+  focuses it inside the tap, so a phone raises its keyboard; Enter sends
+  through the DM API and marks the conversation read. A DOUBLE TAP (280 ms,
+  the Feed's own) opens the messages page on that conversation; a request
+  opens REQUESTS. No banner over the page itself; muted conversations stay
+  quiet.
+- Not yet: the sketch's offer row (":SENT AN OFFER OF $25.50" with its
+  arrow) needs the inbox to carry a conversation's latest Wardrobe offer
+  (`wardrobe_offers` by conversation), in both backends; until then a row
+  shows the last words only.
 
 ## The Disc (Disc.jsx, lib/disc.js)
 - Drag to turn, flick to spin; momentum and friction; a magnetic snap
@@ -41,15 +77,30 @@ and tactility) are the law; what follows is the shipped reading.
 - Arrow keys turn it; Enter confirms. Reduced motion drops momentum.
 - Every disc can be turned Off per interface (`asilum-disc-<name>`); Off
   swaps in a slim slider with arrows and OPEN.
-- Rotating the session dial moves the carousel; swiping the carousel
-  turns the dial.
 - THE SCROLL WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166;
   `ScrollWheel.jsx`, `PostCards.jsx`, `lib/scrollwheel.js`): a click wheel
-  round the deck's POST disc, made of the fixtures' own liquid glass (one
-  bend for every colour, no rainbow, no added colour; four marks at
-  12 / 3 / 6 / 9 in the stamp tone). The disc ejects like a CD tray — the
-  plus rides up on a pill, a dark disc shows in its slot — and the wheel
-  grows round it; neither the plus nor the disc changed look. It SPAWNS on
+  of liquid glass CENTRED ON THE POST PLUS — the plus is its hub and
+  turning point and never turns; only the wheel and its four marks
+  (12 / 3 / 6 / 9, in the stamp tone) do (owner, 27 Oct). The plus rides
+  up out of the deck on a pill to the deck's TOP EDGE exactly, its slot
+  left an empty space, and the wheel (15% bigger, 28 Oct) grows round it
+  there: the plus's stroke, the wheel's centre and its 3 and 9 o'clock
+  marks lie on that edge, flush. The wheel's pane carries the V.1 magazine's rainbow
+  glass (`RainbowGlass.jsx`, red / green / blue pulled 80 / 86 / 92), so
+  the Feed behind it bends and splits like the FRONT COVER letters under
+  the old strip — the one glass that parts the colours. The pane is a
+  layer on <body> under the deck: inside the deck its bend saw nothing.
+  Its face pulls the Feed back toward the hub in four broad wedges, so
+  what is behind it streaks outward like the Yeezus CD's spokes (the
+  "spokes" lens shape, the wheel's alone). The lens is the WHOLE face
+  (`bezel: "full"`, 28 Oct: "the whole thing should get disorted") — no
+  straight half-line before the bend begins; the spokes start at the
+  plus's rim (`SPOKES.hub` 0.2). The pane mirrors the wheel's own CSS
+  move (same transform, same timing), never a script resizing it each
+  frame. Let go, it comes to rest on a
+  detent: a card changes half-way between two detents, and the Disc's
+  magnet (`lib/disc.js` tuning) draws the wheel onto the detent of the
+  card in front — a flick coasts first (27 Oct). It SPAWNS on
   its own while a Feed carousel (Figure 20) is centred on the screen (its
   middle within 22% of the screen's, half of it in view) and turns THAT
   carousel, a card every 45°, clockwise on — it never scrolls the page.
@@ -62,7 +113,7 @@ and tactility) are the law; what follows is the shipped reading.
   Escape snoozes the wheel until another carousel is centred. A popup,
   search or another page put it all away. The 350f206 swipe-up opener is
   gone. Reduced motion drops the travel and the coast. With a popup up a
-  tap still opens the hub and a long hold the compact menu, as before.
+  tap on the plus closes it and brings up the cards.
 
 ## Tactility (lib/haptics.js)
 - `tick`, `press`, `confirm`, `error`, `toggle` — short patterns through
@@ -98,3 +149,12 @@ and tactility) are the law; what follows is the shipped reading.
 - Every username navigates to that user's page, everywhere.
 - Item depth lives in the item modal; feed cards stay title/price/fit +
   Favorite/Bag only (owner decree, July 6).
+
+## The side buttons (SideButtons.jsx — 28 Oct 2026, the owner's testing aids)
+- Two comic push-buttons at the middle of the right edge, hidden under a
+  popup: ADs opens a folded ticker and folds an open one (the Design
+  Console's own test event, this page view only, labelled samples when
+  nothing is live); LIGHT / DARK turns the theme through lib/theme.js
+  applyTheme (pinned, cross-faded; Settings uses the same turn). Kept
+  visible to everyone "for now while I test" (owner) — they float against
+  the shell law, so ask before anything ships beyond v2/build.

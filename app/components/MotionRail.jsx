@@ -20,6 +20,7 @@ import { Cut } from "./Cut.jsx";
 import { Caption } from "./PostCard.jsx";
 import { openSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
+import { subscribeFrame, requestFrame } from "../../lib/frame.js";
 
 function videoOf(p) {
   const a = p.attachments || {};
@@ -37,20 +38,34 @@ export default function MotionRail({ posts }) {
     const stage = root.querySelector(".f20stage");
     if (!stage) return undefined;
     let centre = Math.floor((posts.length - 1) / 2); // Figure 20 opens in the middle
-    const play = () => {
-      const r = stage.getBoundingClientRect();
-      const inView = r.bottom > 0 && r.top < window.innerHeight;
-      stage.querySelectorAll(".f20card").forEach((card, i) => {
-        const v = card.querySelector("video");
-        if (!v) return;
-        if (i === centre && inView) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
-        else v.pause();
-      });
-    };
-    settleRef.current = (i) => { centre = i; play(); };
-    window.addEventListener("scroll", play, { passive: true });
-    play();
-    return () => { settleRef.current = null; window.removeEventListener("scroll", play); };
+    // (29 Oct 2026, "checking the tracking of everything") once a frame, in the one frame (lib/frame.js), not on every
+    // scroll event; and only a change plays or pauses — a video already playing is not told to play again
+    let was = "";
+    const off = subscribeFrame({
+      name: "motion-play",
+      read() { const r = stage.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight; },
+      write(inView) {
+        const now = inView ? "in:" + centre : "out";
+        if (now === was) {
+          // nothing changed, but the centre video is not playing (the browser refused it — Low Power Mode, a play
+          // policy — or paused it itself): it is asked again as the reader scrolls, as it was before the one frame
+          // (bug run, 29 Oct 2026)
+          if (!inView) return;
+          const v = stage.querySelectorAll(".f20card")[centre]?.querySelector("video");
+          if (v && v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+          return;
+        }
+        was = now;
+        stage.querySelectorAll(".f20card").forEach((card, i) => {
+          const v = card.querySelector("video");
+          if (!v) return;
+          if (i === centre && inView) { const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+          else v.pause();
+        });
+      },
+    });
+    settleRef.current = (i) => { centre = i; requestFrame(); };
+    return () => { settleRef.current = null; off(); };
   }, [posts]);
   const onSettle = useCallback((i) => { setAt(i); if (settleRef.current) settleRef.current(i); }, []);
   const cur = posts[Math.max(0, Math.min(posts.length - 1, at))] || {};

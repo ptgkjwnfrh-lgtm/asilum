@@ -9,6 +9,7 @@
 // state; no control exists that does nothing.
 
 import { useEffect, useState } from "react";
+import { applyTheme, THEME_KEY } from "../../lib/theme.js";
 import Notice from "../components/Notice.jsx";
 import { getUid, postJSON, sendJSON, authorizedFetch, clearLocalPersonalizationData, brainEnabled } from "../../lib/client.js";
 import { observationOn, setObservation } from "../../lib/social.js";
@@ -94,7 +95,7 @@ export default function SettingsPage() {
     setObserve(observationOn());
     // "system" = no stored pick; the shell follows the device preference.
     let storedTheme = null;
-    try { storedTheme = window.localStorage.getItem("asilum-theme"); } catch {}
+    try { storedTheme = window.localStorage.getItem(THEME_KEY); } catch {}
     setTheme(storedTheme === "dark" || storedTheme === "light" ? storedTheme : "system");
     setHaptics(hapticsEnabled());
     // Clear stale flags: the old simulated-import "connected" marker, and
@@ -141,16 +142,10 @@ export default function SettingsPage() {
     <button className={"fitbtn" + (cur === value ? " active" : "")} aria-pressed={cur === value} onClick={() => { setMediaPreferences({ [name]: value }); haptic("toggle"); }}>{label}</button>
   );
 
+  // the turn itself is lib/theme.js applyTheme, shared with the side button (28 Oct 2026)
   function setThemeMode(mode) {
     setTheme(mode);
-    if (mode === "system") {
-      try { window.localStorage.removeItem("asilum-theme"); } catch {}
-      document.documentElement.dataset.theme =
-        window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      return;
-    }
-    document.documentElement.dataset.theme = mode;
-    try { window.localStorage.setItem("asilum-theme", mode); } catch {}
+    applyTheme(mode);
   }
 
   return (

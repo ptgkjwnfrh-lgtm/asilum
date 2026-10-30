@@ -19,13 +19,16 @@ import { pushSheet } from "../../lib/dockstate.js";
 import { haptic } from "../../lib/haptics.js";
 import Disc from "./Disc.jsx";
 
+// (owner, 29 Oct 2026: "rename it to notes and add that to the upload selection, also make custom upload symbols
+// for the selection") words alone are a NOTE on the cards and in the Feed's mix (the composer's kind stays
+// "transm", the record's TRANSMISSION); each type wears its own symbol (Icons.jsx, the up-* glyphs)
 export const POST_TYPES = Object.freeze([
-  { id: "transm", label: "TRANSM", icon: "list", means: "text" },
-  { id: "still", label: "STILL", icon: "stamp", means: "a photo" },
-  { id: "motion", label: "MOTION", icon: "feed", means: "a video" },
-  { id: "brdcst", label: "BRDCST", icon: "locate", means: "an event or a promotion" },
-  { id: "listing", label: "LISTING", icon: "bag", means: "a product for sale" },
-  { id: "echo", label: "ECHO", icon: "disc", means: "a temporary story" },
+  { id: "transm", label: "NOTES", icon: "up-notes", means: "words alone" },
+  { id: "still", label: "STILL", icon: "up-still", means: "a photo" },
+  { id: "motion", label: "MOTION", icon: "up-motion", means: "a video" },
+  { id: "brdcst", label: "BRDCST", icon: "up-brdcst", means: "an event or a promotion" },
+  { id: "listing", label: "LISTING", icon: "up-listing", means: "a product for sale" },
+  { id: "echo", label: "ECHO", icon: "up-echo", means: "a temporary story" },
 ]);
 
 // what is not here yet says so (the POST cards on the deck read it too)

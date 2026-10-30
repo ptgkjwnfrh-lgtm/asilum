@@ -292,8 +292,9 @@ test("the panel is a thread that receives, and a desk that leads with the mail",
 
   // and the dismissal contract is complete: the panel is a dialog, it traps
   // focus, and closing gives focus back — the half people forget.
-  assert.match(panel, /useFocusTrap\(panelRef, open\)/);
-  assert.match(panel, /role="dialog"/);
+  // (27 Oct 2026) embedded in the DM tab the popup owns the trap; the desk traps only as a panel of its own
+  assert.match(panel, /useFocusTrap\(panelRef, open && !embedded\)/);
+  assert.match(panel, /role=\{embedded \? "region" : "dialog"\}/, "a dialog as a panel of its own; a region inside the DM tab, whose popup is the dialog");
   assert.match(panel, /aria-live="polite"/, "and a failure is announced, not just drawn");
 });
 

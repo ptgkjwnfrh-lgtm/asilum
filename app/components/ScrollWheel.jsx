@@ -1,30 +1,93 @@
 "use client";
 
 // app/components/ScrollWheel.jsx — THE WHEEL (owner, 26 Oct 2026; the
-// sketches 6.jpg and IMG_1166). A click wheel round the deck's POST disc,
-// made of the fixtures' own liquid glass — the same pane, the same bend
-// that moves every colour alike, no rainbow, "no added colors" — with four
-// marks at twelve, three, six and nine pressed into it in the glass's own
-// tone. It turns what the deck gives it: a Feed carousel that is centred on
+// sketches 6.jpg and IMG_1166; 27 Oct: "the disc is the actual liquid glass
+// wheel … the upload button should be its middle and its turning point …
+// i don't want the upload button to rotate, only the disc"). A click wheel
+// of liquid glass centred on the POST plus — the plus is its hub and never
+// turns — with four marks at twelve, three, six and nine pressed into it in
+// the glass's own tone. Its glass is the one pane that parts the colours:
+// the V.1 magazine's rainbow (27 Oct), so the Feed behind it bends and
+// splits like the FRONT COVER letters under the old strip. It turns what the deck gives it: a Feed carousel that is centred on
 // the screen, or the POST cards when the plus is pressed (ControlCenter.jsx
 // says which). A step every 45°, clockwise on (lib/scrollwheel.js). It is
-// the Disc's family: drag to turn, flick to coast, a tick each step, keys
-// step it, reduced motion drops the coast. Always mounted, so it grows and
+// the Disc's family: drag to turn, flick to coast, a tick each step, the
+// Disc's magnet onto a detent when let go, keys step it, reduced motion
+// drops the coast. Always mounted, so it grows and
 // folds as one transformation in CSS, never a popup fading in.
 
-import { useEffect, useRef } from "react";
-import { angleOf, deltaDeg, stepsFor, coast, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { angleOf, deltaDeg, stepsFor, magnetStep, restAngle, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
+import { V1_RAINBOW } from "./RainbowGlass.jsx";
 import { haptic } from "../../lib/haptics.js";
 
 const MARKS = [0, 90, 180, 270];
+// what the wheel bends where Safari cannot bend a backdrop: the Feed behind
+// it — never the deck's own ad strip, which sits over the wheel's glass
+export const WHEEL_BEND = ".card, .headline, .headsub, .demobanner, .ctmeta";
+// the spokes: from the plus's ring (hub, a share of the radius) out to the
+// rim, n × 2 wedges, each point pulled `reach` of the way back to the hub,
+// the wedges narrowed by `sharp` (owner, 27 Oct: "stems out like in the
+// yeezus cover"; tuned over stripes: a partial pull made blobs, a near-full
+// pull back to the hub with broad wedges makes streaks — the stems)
+// (28 Oct 2026, later: "extend the warp bezel all the way to the upload button
+// on the disc … half of a line is straight then the other half gets
+// distorted, the whole thing should get distorted") the spokes start at the
+// plus's own rim — its disc is about a fifth of the wheel's radius — and the
+// lens is the wheel's whole face (bezel "full"), so no ring of straight
+// lines is left between the bend and the plus
+export const SPOKES = Object.freeze({ hub: 0.2, n: 2, reach: 0.95, sharp: 0.5 });
 
 export default function ScrollWheel({ open, label, onStep, onEnd }) {
   const ref = useRef(null);
   const ringRef = useRef(null);
+  const glassRef = useRef(null);
+  const probeRef = useRef(null); // measures --eject, the lift the wheel rises by
+  const [host, setHost] = useState(null);
   const state = useRef({ angle: 0, drag: null, v: 0, raf: 0, last: 0 });
-  // the fixtures' glass: the same component, the one bend, no shine
-  const glass = useLiquidGlass(ref, { id: "lg-wheel", strength: 1, bezel: "fixture", shine: false, active: open });
+  useEffect(() => { setHost(document.body); }, []);
+  // THE GLASS IS A LAYER OF ITS OWN (27 Oct 2026). The deck's glass is a
+  // backdrop-filter, which makes the deck a Backdrop Root: a backdrop-filter
+  // inside it sees only the deck's own paint, never the Feed — the wheel's
+  // bend reached nothing (stripes laid under it stayed straight). So the
+  // wheel's pane (.ccwglass) lives on <body>, one level under the deck,
+  // kept on the wheel's circle every frame it moves; the wheel in the deck
+  // keeps the hand, the keys and the turning marks, and the plus — its hub
+  // — paints over the glass. The pane carries the V.1 magazine's rainbow
+  // (RainbowGlass.jsx), the one glass that parts the colours, its bezel the
+  // whole face ("full"); on Safari the cards under it are bent the same three ways.
+  const glass = useLiquidGlass(glassRef, { id: "lg-wheel", strength: 1, shine: false, active: open && !!host, bend: WHEEL_BEND, dispersion: V1_RAINBOW, bezel: "full" });
+  // THE GLASS FOLLOWS BY CSS, NOT BY SCRIPT (28 Oct 2026: "EVERY ANIMATION
+  // SHOULD [BE] EXTREMELY SMOOTH"). The wheel moves only by transform; its
+  // layout box is always its resting circle. The pane is set once on that
+  // circle (open, resize, the deck settling) and makes the same move with the
+  // same timing in CSS (.ccwglass: --ej, the lift it rises by) — no per-frame
+  // measuring, no per-frame resize, and its map is drawn once, at rest.
+  useEffect(() => {
+    const el = ref.current, pane = glassRef.current, wrap = el && el.parentElement;
+    if (!el || !pane || !wrap) return undefined;
+    let raf = 0;
+    const place = () => {
+      raf = 0;
+      const w = el.offsetWidth;
+      if (!w) return;
+      const box = wrap.getBoundingClientRect();
+      // translate(-50%, -50%): the layout box's corner is the circle's centre
+      const cx = box.left + el.offsetLeft, cy = box.top + el.offsetTop;
+      pane.style.width = `${w}px`; pane.style.height = `${w}px`;
+      pane.style.left = `${(cx - w / 2).toFixed(2)}px`; pane.style.top = `${(cy - w / 2).toFixed(2)}px`;
+      const lift = probeRef.current ? probeRef.current.offsetHeight : 0;
+      pane.style.setProperty("--ej", `${lift}px`);
+    };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(place); };
+    place();
+    window.addEventListener("resize", wake);
+    const deck = el.closest(".ccenter");
+    if (deck) deck.addEventListener("transitionend", wake);
+    return () => { window.removeEventListener("resize", wake); if (deck) deck.removeEventListener("transitionend", wake); if (raf) cancelAnimationFrame(raf); };
+  }, [open, host]);
 
   // the ring shows the turn; every STEP_DEG crossed moves what it turns
   function turn(deg) {
@@ -73,14 +136,26 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     if (!d || d.id !== e.pointerId) return;
     s.drag = null;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (still || Math.abs(d.v) < STOP_DEG_PER_S || performance.now() - d.t > 80) return;
-    // a flick: the wheel coasts, slowing by the Disc's friction
-    s.v = d.v; s.last = performance.now();
+    // a fresh flick coasts first; any release ends on a detent
+    const flick = !still && Math.abs(d.v) >= STOP_DEG_PER_S && performance.now() - d.t <= 80;
+    settle(flick ? d.v : 0, still);
+  }
+
+  // THE MAGNET (owner, 27 Oct 2026: "a subtle magnetic snapping attached to
+  // the cards and the disc"): let go, the wheel coasts and then the Disc's
+  // pull draws it onto the detent of the card in front (lib/scrollwheel.js
+  // magnetStep). Reduced motion: straight onto the detent, no glide.
+  function settle(v, still) {
+    const s = state.current;
+    stopCoast();
+    if (still) { turn(restAngle(s.angle) - s.angle); return; }
+    s.v = v; s.last = performance.now();
     const step = (now) => {
       const dt = now - s.last; s.last = now;
-      s.v = coast(s.v, dt);
-      if (!s.v) { s.raf = 0; return; }
-      turn((s.v * dt) / 1000);
+      const next = magnetStep({ angle: s.angle, velocity: s.v }, dt);
+      s.v = next.velocity;
+      turn(next.angle - s.angle);
+      if (next.settled) { s.raf = 0; return; }
       s.raf = requestAnimationFrame(step);
     };
     s.raf = requestAnimationFrame(step);
@@ -95,8 +170,8 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     e.preventDefault();
     stopCoast();
     if (k === "first" || k === "last") { onEnd(k); return; }
-    // a key turns the ring a step's worth, so the marks move with it
-    turn(k * STEP_DEG);
+    // a key turns the ring a step's worth, from its detent onto the next
+    turn(restAngle(state.current.angle) + k * STEP_DEG - state.current.angle);
   }
 
   // closing stops a coast mid-turn
@@ -121,10 +196,19 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
       onPointerCancel={up}
       onKeyDown={key}
     >
-      {glass}
+      <i ref={probeRef} className="ccwprobe" aria-hidden="true" />
       <span ref={ringRef} className="ccwring" aria-hidden="true">
         {MARKS.map((t) => <i key={t} className="ccwtick" style={{ "--tick": `${t}deg` }} />)}
       </span>
+      {host ? createPortal(
+        <span ref={glassRef} className="ccwglass" data-open={open ? "1" : undefined} aria-hidden="true">
+          {glass}
+          {/* the bezel line round its edge, the deck's own shine rim (owner, 29 Oct 2026: "add a thin white bezel
+              line along the edge of the disc like how the center fixture and the masthead has bezel lines") */}
+          <i className="fxrim" aria-hidden="true" />
+          {/* the spokes the face bends the Feed along, from the plus out (the Yeezus cover; LiquidGlass.jsx "spokes") */}
+          <i className="ccwspokes" data-lens-shape="spokes" data-lens-hub={SPOKES.hub} data-lens-spokes={SPOKES.n} data-lens-reach={SPOKES.reach} data-lens-sharp={SPOKES.sharp} />
+        </span>, host) : null}
     </div>
   );
 }

@@ -73,22 +73,48 @@ function bendProfile(t) {
 // grey (xNode, yNode) and recombined inside the filter, where nothing is
 // colour-managed. The colour picture (node) is still drawn for the
 // page-side bend.
-export function drawRefractionMap(node, weightNode, w, h, radius, open, features = null, bezel = null, xNode = null, yNode = null) {
+// `scale` (28 Oct 2026: the owner found the warps "rly pixley"): the map is
+// drawn at the screen's own pixels — a map of one sample per CSS pixel on a
+// 2× screen bent the backdrop in 2×2 steps, a staircase down every curve.
+// Distances stay in CSS pixels; only the sampling is finer.
+// `opts.sliced` (28 Oct 2026, "EVERY ANIMATION SHOULD [BE] EXTREMELY SMOOTH"):
+// the map is computed a few rows at a time, at most MAP_SLICE_MS a frame, and
+// put in place when whole — no frame is ever held for it (a redraw used to
+// hold one for ~60ms); `opts.cancelled()` drops a draw a newer one replaced.
+// Returns a Promise (true when put in place) when sliced.
+export const MAP_SLICE_MS = 6;
+// THE PROFILE AS A TABLE: Snell's law on the squircle costs an atan, an asin,
+// a tan and a pow per sample; read from 1024 steps, linearly, it is the same
+// curve at a sliver of the cost
+let PROFILE = null;
+function profile(t) {
+  if (!PROFILE) {
+    let peak = 0;
+    for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
+    PROFILE = new Float32Array(1025);
+    for (let i = 0; i <= 1024; i++) PROFILE[i] = bendProfile(i / 1024) / (peak || 1);
+  }
+  const f = Math.max(0, Math.min(1, t)) * 1024, i = f | 0;
+  return i >= 1024 ? PROFILE[1024] : PROFILE[i] + (PROFILE[i + 1] - PROFILE[i]) * (f - i);
+}
+export function drawRefractionMap(node, weightNode, w, h, radius, open, features = null, bezel = null, xNode = null, yNode = null, scale = 1, opts = {}) {
+  const S = Math.max(1, scale || 1);
+  const W = Math.max(1, Math.round(w * S)), H = Math.max(1, Math.round(h * S));
   const c = document.createElement("canvas");
-  c.width = w; c.height = h;
+  c.width = W; c.height = H;
   const ctx = c.getContext("2d");
   const cw = document.createElement("canvas");
-  cw.width = w; cw.height = h;
+  cw.width = W; cw.height = H;
   const ctxw = cw.getContext("2d");
   if (!ctx || !ctxw) return;
-  const img = ctx.createImageData(w, h);
+  const img = ctx.createImageData(W, H);
   const d = img.data;
-  const imgw = ctxw.createImageData(w, h);
+  const imgw = ctxw.createImageData(W, H);
   const dw = imgw.data;
-  const cx = document.createElement("canvas"); cx.width = w; cx.height = h;
-  const cy = document.createElement("canvas"); cy.width = w; cy.height = h;
+  const cx = document.createElement("canvas"); cx.width = W; cx.height = H;
+  const cy = document.createElement("canvas"); cy.width = W; cy.height = H;
   const ctxx = cx.getContext("2d"), ctxy = cy.getContext("2d");
-  const imgx = ctxx ? ctxx.createImageData(w, h) : null, imgy = ctxy ? ctxy.createImageData(w, h) : null;
+  const imgx = ctxx ? ctxx.createImageData(W, H) : null, imgy = ctxy ? ctxy.createImageData(W, H) : null;
   const rad = Array.isArray(radius) ? radius : [radius, radius, radius, radius];
   const [rtl, rtr, rbr, rbl] = rad.map((v) => Math.max(0, Math.min(v || 0, w / 2, h / 2)));
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -101,12 +127,15 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
   // fixtures' bezel is a thin band that fades out, never a thick visible
   // ring (owner, 19 Oct 2026: "it should be a gradient")
   // a number under 1 is a fraction of the short side, 1 or more is px
-  const bez = Math.max(6, Math.min(BEZEL, Math.min(w, h) / 2, bezel ? (bezel < 1 ? Math.min(w, h) * bezel : bezel) : Infinity));
+  // "full" (28 Oct 2026, the wheel: "the whole thing should get distorted"):
+  // the bezel is the pane's whole half, so the bend runs in to the middle
+  const bez = bezel === "full" ? Math.max(6, Math.min(w, h) / 2)
+    : Math.max(6, Math.min(BEZEL, Math.min(w, h) / 2, bezel ? (bezel < 1 ? Math.min(w, h) * bezel : bezel) : Infinity));
   // normalise the profile so the strongest bend uses the full channel
-  let peak = 0;
-  for (let i = 1; i < 200; i++) peak = Math.max(peak, bendProfile(i / 200));
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
+  const row = (py) => {
+    const y = (py + 0.5) / S - 0.5; // this sample's place, in CSS pixels
+    for (let px = 0; px < W; px++) {
+      const x = (px + 0.5) / S - 0.5;
       // distance to each OPEN edge (a closed edge is infinitely far)
       const dl = o.left ? x + 0.5 : Infinity, dr = o.right ? w - x - 0.5 : Infinity;
       const dt = o.top ? y + 0.5 : Infinity, db = o.bottom ? h - y - 0.5 : Infinity;
@@ -126,13 +155,34 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
         ny = sy; inside = dy;
       }
       let m = 0;
-      if (inside >= 0 && inside < bez) m = bendProfile(inside / bez) / (peak || 1);
+      if (inside >= 0 && inside < bez) m = profile(inside / bez);
       // the bezel's weight: 1 at the lip, easing to 0 a little past the bend
       let bw = Math.max(0, Math.min(1, 1 - inside / (bez * 1.35)));
       let vx = -nx * m, vy = -ny * m; // pull inward along -normal
       // the carved shapes: each pulls what lies near its outline TOWARDS the
       // outline, from both sides, so the backdrop stretches into the cut
       for (const f of feats) {
+        // THE SPOKES (the wheel's alone, owner 27 Oct 2026: "edit the disc
+        // refracting so it kinda of stems out like in the yeezus cover"): in
+        // f.n × 2 wedges round the hub, what lies under the face is drawn in
+        // toward the hub — each point pulls f.reach of the way to the hub's
+        // ring, so the Feed streaks outward along the spokes the way the
+        // cover's light does; the wedges fade in off the hub and out before
+        // the rim, where the bezel takes over
+        if (f.kind === "spokes") {
+          const ex = x + 0.5 - f.cx, ey = y + 0.5 - f.cy;
+          const len = Math.hypot(ex, ey) || 1;
+          const hub = f.r * f.hub;
+          const t = (len - hub) / (f.r - hub);
+          if (t <= 0 || t >= 1) continue;
+          const ease = (u) => { const c = Math.max(0, Math.min(1, u)); return c * c * (3 - 2 * c); };
+          const env = ease(t / 0.22) * ease((1 - t) / 0.2);
+          const wedge = Math.pow(Math.abs(Math.cos(f.n * Math.atan2(ey, ex))), f.sharp);
+          const pull = Math.min(1, (f.reach * (len - hub)) / (PULL / 2)) * env * wedge;
+          vx -= (ex / len) * pull; vy -= (ey / len) * pull;
+          bw = Math.max(bw, env * wedge);
+          continue;
+        }
         const px = f.kind === "cut" ? f.x : f.kind === "slot" ? Math.max(f.x0, Math.min(f.x1, x + 0.5)) : f.cx;
         const py = f.kind === "cut" ? Math.max(f.y0, Math.min(f.y1, y + 0.5)) : f.cy;
         const ex = x + 0.5 - px, ey = y + 0.5 - py;
@@ -148,7 +198,7 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
         bw = Math.max(bw, 1 - t * 0.8);
       }
       vx = Math.max(-1, Math.min(1, vx)); vy = Math.max(-1, Math.min(1, vy));
-      const i = (y * w + x) * 4;
+      const i = (py * W + px) * 4;
       d[i] = Math.round(128 + vx * 127);
       d[i + 1] = Math.round(128 + vy * 127);
       d[i + 2] = 128;
@@ -161,16 +211,34 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
       const wt = Math.round(255 * bw * bw * (3 - 2 * bw)); // smoothstep, as a grey
       dw[i] = wt; dw[i + 1] = wt; dw[i + 2] = wt; dw[i + 3] = 255;
     }
+  };
+  const finish = () => {
+    ctx.putImageData(img, 0, 0);
+    ctxw.putImageData(imgw, 0, 0);
+    node.setAttribute("href", c.toDataURL("image/png"));
+    weightNode.setAttribute("href", cw.toDataURL("image/png"));
+    if (xNode && yNode && imgx && imgy) {
+      ctxx.putImageData(imgx, 0, 0); ctxy.putImageData(imgy, 0, 0);
+      xNode.setAttribute("href", cx.toDataURL("image/png"));
+      yNode.setAttribute("href", cy.toDataURL("image/png"));
+    }
+  };
+  if (!opts.sliced) {
+    for (let py = 0; py < H; py++) row(py);
+    finish();
+    return undefined;
   }
-  ctx.putImageData(img, 0, 0);
-  ctxw.putImageData(imgw, 0, 0);
-  node.setAttribute("href", c.toDataURL("image/png"));
-  weightNode.setAttribute("href", cw.toDataURL("image/png"));
-  if (xNode && yNode && imgx && imgy) {
-    ctxx.putImageData(imgx, 0, 0); ctxy.putImageData(imgy, 0, 0);
-    xNode.setAttribute("href", cx.toDataURL("image/png"));
-    yNode.setAttribute("href", cy.toDataURL("image/png"));
-  }
+  return new Promise((resolve) => {
+    let py = 0;
+    const step = () => {
+      if (opts.cancelled && opts.cancelled()) { resolve(false); return; }
+      const t0 = performance.now();
+      while (py < H && performance.now() - t0 < MAP_SLICE_MS) row(py++);
+      if (py < H) requestAnimationFrame(step);
+      else { finish(); resolve(true); }
+    };
+    requestAnimationFrame(step);
+  });
 }
 
 
@@ -185,6 +253,31 @@ export function drawRefractionMap(node, weightNode, w, h, radius, open, features
 // with it. The bend stays; the colours travel together. The header runs at
 // 1; the popups at 0.8.
 export const PULL = 86;
+// THE FINISH (owner, 28 Oct 2026: "the liquid glass warps look rly pixley …
+// make it look professional like apple level rendering"). Two causes, two
+// cures: the maps are drawn at the screen's own pixels (mapScale, up to 2×,
+// held under MAP_MAX_PX samples so a wide retina pane stays quick), and a
+// displacement samples its source without smoothing, so the bent band alone
+// is eased by LENS_SMOOTH px — a hairline, under a device pixel at 2×; the
+// clear middle is never touched.
+export const LENS_SMOOTH = 0.45;
+// (28 Oct, later: "smooth out the pixels even more … i want apple quality")
+// what was left was not the curve but its texture: where the lip squeezes
+// the backdrop hardest, side-by-side pixels sample source pixels several
+// apart with no averaging — the sparkle of a texture shrunk without its
+// mipmaps. So the backdrop is pre-filtered by LENS_PREFILTER px before it
+// is bent, in the bent band only (the clear middle reads the untouched
+// source), as a renderer filters a texture before it minifies it.
+export const LENS_PREFILTER = 0.6;
+export const MAP_MAX_PX = 700000;
+/** How long a pane must hold still before its map is redrawn. */
+export const MAP_SETTLE_MS = 90;
+export function mapScale(w, h) {
+  const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+  let s = Math.min(2, Math.max(1, dpr));
+  while (s > 1 && w * h * s * s > MAP_MAX_PX) s -= 0.25;
+  return s;
+}
 export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 1 }) {
   const pull = (PULL * strength).toFixed(1);
   return (
@@ -213,8 +306,14 @@ export function LiquidGlassDefs({ id, mapRef, weightRef, xRef, yRef, strength = 
       {/* the lens chain, data-lens: restrictLens() confines these to the
           edge band when only one edge is open (the strip), so the clear
           middle costs nothing; every colour bends alike */}
-      <feDisplacementMap data-lens="1" in="SourceGraphic" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
-      <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="lens" />
+      {/* the backdrop pre-filtered before it is bent, so a squeeze averages
+          rather than skips (the clear middle below reads SourceGraphic) */}
+      <feGaussianBlur data-lens="1" in="SourceGraphic" stdDeviation={LENS_PREFILTER} result="src" />
+      <feDisplacementMap data-lens="1" in="src" in2="lgxa" scale={pull} xChannelSelector="R" yChannelSelector="A" result="sx" />
+      <feDisplacementMap data-lens="1" in="sx" in2="lgya" scale={pull} xChannelSelector="A" yChannelSelector="R" result="bent" />
+      {/* the bent band eased by a hairline: a displacement samples without
+          smoothing, and its steps read as pixels (28 Oct 2026) */}
+      <feGaussianBlur data-lens="1" in="bent" stdDeviation={LENS_SMOOTH} result="lens" />
       {/* lens × weight + clear × (1 − weight): the weight picture read
           into COLOUR at full alpha, and its complement, so the blend is
           plain arithmetic — no alpha mask, nothing premultiplied to
@@ -259,7 +358,21 @@ export function bottomBand(w, h) {
 // would. Bounded: only the elements the edge crosses, each filtered within
 // its own box; nothing on the rest of the page pays. place(rect) on every
 // change of the pane or the scroll; dispose() takes it all back.
-export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null }) {
+// Two panes can bend one card — the deck's edge and the wheel over it
+// (27 Oct 2026) — so each adds ITS filter to the card's list and takes only
+// its own away; a bend that set and cleared the whole property undid the other.
+const urlOf = (u) => u.replace(/["']/g, "");
+const bendList = (node, url) => (node.style.filter || "").split(/\s+(?=url\()/).filter((u) => u && urlOf(u) !== urlOf(url));
+export function addBend(node, url) { node.style.filter = [...bendList(node, url), url].join(" "); }
+export function dropBend(node, url) {
+  const rest = bendList(node, url);
+  if (rest.length) node.style.filter = rest.join(" "); else node.style.removeProperty("filter");
+}
+
+// `ownChain` is a pane's own Safari chain: the wheel's V.1 rainbow
+// (RainbowGlass.jsx, the one glass that parts the colours); every other
+// pane passes none and bends every colour alike.
+export function createPageBend({ id, el, selector, strength = 1, mapRef, open = null, ownChain = null }) {
   let svg = null;
   const bent = new Map(); // element -> filter node
   const o = open || { top: true, right: true, bottom: true, left: true };
@@ -281,7 +394,9 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     return `<feFlood flood-color="rgb(128,128,128)" result="flat"/>` +
       (webkit ? `<feImage href="#${imgId}" result="pane"/>` : `<feImage preserveAspectRatio="none" result="pane"/>`) +
       `<feComposite in="pane" in2="flat" operator="over" result="map"/>` +
-      `<feDisplacementMap data-pb="1" in="SourceGraphic" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="lens"/>` +
+      `<feGaussianBlur data-pb="1" in="SourceGraphic" stdDeviation="${LENS_PREFILTER}" result="src"/>` +
+      `<feDisplacementMap data-pb="1" in="src" in2="map" scale="${pull}" xChannelSelector="R" yChannelSelector="G" result="bent"/>` +
+      `<feGaussianBlur data-pb="1" in="bent" stdDeviation="${LENS_SMOOTH}" result="lens"/>` +
       `<feComposite in="lens" in2="SourceGraphic" operator="over"/>`;
   };
   let serial = 0;
@@ -369,13 +484,13 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
         f.setAttribute("color-interpolation-filters", "sRGB");
         f.setAttribute("primitiveUnits", "userSpaceOnUse");
         f.setAttribute("x", "0"); f.setAttribute("y", "0"); f.setAttribute("width", "100%"); f.setAttribute("height", "100%");
-        f.innerHTML = chain(img ? img.getAttribute("id") : "");
+        f.innerHTML = (ownChain || chain)(img ? img.getAttribute("id") : "", webkit);
         // the picture that carries the map: the <image> element (WebKit) or
         // the feImage itself (everything else) — both take x/y/width/height
         f.__img = img || f.querySelector("feImage");
         svg.appendChild(f);
         bent.set(node, f);
-        node.style.filter = `url(#${f.getAttribute("id")})`;
+        addBend(node, `url(#${f.getAttribute("id")})`);
       }
       const img = f.__img;
       if (img.getAttribute("href") !== href) img.setAttribute("href", href);
@@ -389,11 +504,11 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
     }
     for (const [node, f] of bent) {
       if (under.has(node)) continue;
-      node.style.removeProperty("filter"); if (f.__img !== f.querySelector("feImage")) f.__img.remove(); f.remove(); bent.delete(node);
+      dropBend(node, `url(#${f.getAttribute("id")})`); if (f.__img !== f.querySelector("feImage")) f.__img.remove(); f.remove(); bent.delete(node);
     }
   };
   const dispose = () => {
-    for (const [node] of bent) node.style.removeProperty("filter");
+    for (const [node, f] of bent) dropBend(node, `url(#${f.getAttribute("id")})`);
     bent.clear();
     if (svg) { svg.remove(); svg = null; }
   };
@@ -416,14 +531,19 @@ export function createPageBend({ id, el, selector, strength = 1, mapRef, open = 
 // filtered within its own box; nothing on the rest of the page pays.
 // The shapes carved into a pane, read from the DOM: every descendant marked
 // data-lens-shape — "cut" (a vertical groove: its centre line), "ring" (a
-// circle: the element's box), "slot" (a stadium: the element's box) — in the
+// circle: the element's box), "slot" (a stadium: the element's box),
+// "spokes" (the wheel's radiating pull: the element's box, data-lens-hub /
+// -spokes / -reach / -sharp; 27 Oct 2026) — in the
 // pane's own pixels. data-lens-band widens or narrows the bend around it.
 export function lensFeatures(el) {
   const box = el.getBoundingClientRect();
+  // in the pane's own (layout) pixels, whatever scale a transform draws it at this frame
+  const sx = (el.offsetWidth ? box.width / el.offsetWidth : 1) || 1, sy = (el.offsetHeight ? box.height / el.offsetHeight : 1) || 1;
   const out = [];
   for (const n of el.querySelectorAll("[data-lens-shape]")) {
-    const b = n.getBoundingClientRect();
-    if (!b.width && !b.height) continue;
+    const v = n.getBoundingClientRect();
+    if (!v.width && !v.height) continue;
+    const b = { left: box.left + (v.left - box.left) / sx, top: box.top + (v.top - box.top) / sy, width: v.width / sx, height: v.height / sy };
     const kind = n.getAttribute("data-lens-shape");
     const band = parseFloat(n.getAttribute("data-lens-band")) || 10;
     const gain = parseFloat(n.getAttribute("data-lens-gain")) || undefined; // how hard it pulls (a cut barely does)
@@ -431,12 +551,15 @@ export function lensFeatures(el) {
     if (kind === "cut") out.push({ kind, x: l + b.width / 2, y0: t, y1: t + b.height, band, gain });
     else if (kind === "ring") out.push({ kind, cx: l + b.width / 2, cy: t + b.height / 2, r: b.width / 2, band, gain });
     else if (kind === "slot") { const r = b.height / 2; out.push({ kind, x0: l + r, x1: l + b.width - r, cy: t + r, r, band, gain }); }
+    else if (kind === "spokes") out.push({ kind, cx: l + b.width / 2, cy: t + b.height / 2, r: b.width / 2, hub: parseFloat(n.getAttribute("data-lens-hub")) || 0.3, n: parseFloat(n.getAttribute("data-lens-spokes")) || 2, reach: parseFloat(n.getAttribute("data-lens-reach")) || 0.5, sharp: parseFloat(n.getAttribute("data-lens-sharp")) || 1.4 });
   }
   return out;
 }
 
 // `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
-export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true } = {}) {
+// `dispersion` swaps in a pane's own filter and Safari chain: only the wheel
+// passes one, the V.1 rainbow (RainbowGlass.jsx, 27 Oct 2026)
+export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true, dispersion = null } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
   const xRef = useRef(null);
@@ -446,31 +569,52 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
-    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open }) : null;
-    let raf = 0;
-    const fit = () => {
+    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open, ownChain: dispersion ? dispersion.chain(strength) : null }) : null;
+    let raf = 0, gen = 0;
+    // the bend is PLACED cheaply wherever the pane is (a scroll moves only
+    // that); the map is DRAWN only when the pane's size or shape changes
+    const placeBend = () => { raf = 0; if (pageBend) pageBend.place(el.getBoundingClientRect()); };
+    const fit = (sliced = false) => {
       raf = 0;
       const r = el.getBoundingClientRect();
-      if (mapRef.current && weightRef.current && r.width > 0 && r.height > 0) {
+      // THE MAP AT THE PANE'S OWN SIZE (28 Oct 2026): its layout box, never
+      // its box as a transform draws it this frame — a pane growing in by
+      // scale (the wheel, a popup sliding in) would otherwise get a map of
+      // its shrunken self, stretched
+      const w = el.offsetWidth || r.width, h = el.offsetHeight || r.height;
+      if (mapRef.current && weightRef.current && w > 0 && h > 0) {
         const cs = getComputedStyle(el);
-        const radius = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius].map((v) => parseFloat(v) || 0);
-        drawRefractionMap(mapRef.current, weightRef.current, Math.round(r.width), Math.round(r.height), radius, open, lensFeatures(el), bezel === "fixture" ? fixtureBezel() : bezel, xRef.current, yRef.current);
+        // a % radius is a share of the box (the wheel's 50% is its circle), not that many px
+        const rad = (v) => (/%\s*$/.test(v) ? (parseFloat(v) / 100) * Math.min(w, h) : parseFloat(v)) || 0;
+        const radius = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius].map(rad);
+        const mine = ++gen;
+        const drawn = drawRefractionMap(mapRef.current, weightRef.current, Math.round(w), Math.round(h), radius, open, lensFeatures(el), bezel === "fixture" ? fixtureBezel() : bezel, xRef.current, yRef.current, mapScale(w, h),
+          { sliced: sliced === true, cancelled: () => mine !== gen });
         if (refract) {
           el.style.setProperty("--lg-filter", `url(#${id})`);
           el.dataset.refract = "1";
         } else if (pageBend) {
           pageBend.place(r);
+          if (drawn) drawn.then((ok) => { if (ok) placeBend(); });
         }
       }
     };
-    const ro = new ResizeObserver(() => { if (!raf) raf = requestAnimationFrame(fit); });
+    // A RESIZE IS DRAWN WHEN IT SETTLES (28 Oct 2026, "EVERY ANIMATION
+    // SHOULD [BE] EXTREMELY SMOOTH"): a map is a canvas at the screen's pixels
+    // and an encoded image; drawing one on every frame of a pane growing (the
+    // deck rising for search) was the jank. While it moves the last map is
+    // stretched with it; MAP_SETTLE_MS after it stops, the true one is drawn.
+    let settle = 0;
+    // and drawn a few rows a frame (sliced), so not even that one frame is held
+    const ro = new ResizeObserver(() => { clearTimeout(settle); settle = setTimeout(() => fit(true), MAP_SETTLE_MS); });
     ro.observe(el);
     fit();
     // the page can still scroll under the pane on a phone: re-place the bend
     // — on alternate frames (9 Sep, the owner's Safari lag): the map trails
     // the edge by at most one frame, and WebKit re-rasterises half as often
     let skip = false;
-    const onScroll = () => { if (!pageBend || raf) return; skip = !skip; if (!skip) raf = requestAnimationFrame(fit); };
+    // (28 Oct 2026) a scroll re-places the bend; it never redraws the map
+    const onScroll = () => { if (!pageBend || raf) return; skip = !skip; if (!skip) raf = requestAnimationFrame(placeBend); };
     if (pageBend) window.addEventListener("scroll", onScroll, { passive: true });
     const onMove = (e) => {
       const r = el.getBoundingClientRect();
@@ -485,13 +629,16 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     }
     return () => {
       ro.disconnect();
+      clearTimeout(settle);
+      gen += 1; // a sliced draw still running is dropped
       window.removeEventListener("scroll", onScroll);
       if (raf) cancelAnimationFrame(raf);
       el.removeEventListener("pointermove", onMove);
       el.removeEventListener("pointerleave", onLeave);
       if (pageBend) pageBend.dispose();
     };
-  }, [elRef, id, active, open, strength, bend, bezel, shine]);
+  }, [elRef, id, active, open, strength, bend, bezel, shine, dispersion]);
+  if (dispersion) return <dispersion.Defs id={id} mapRef={mapRef} weightRef={weightRef} strength={strength} />;
   return <LiquidGlassDefs id={id} mapRef={mapRef} weightRef={weightRef} xRef={xRef} yRef={yRef} strength={strength} />;
 }
 
@@ -526,7 +673,9 @@ export const GLASS_REACTIVE = ".lgrx";
 // same --u as globals.css (clamp(0.4px, 0.1vw, 0.5px)), so the Info Dock
 // and the globe bend over the same band the deck does (each still capped
 // at half its own height, which the 88-unit top fixtures barely reach).
-export const FIXTURE_BEZEL_UNITS = 175 * 0.26;
+// (28 Oct 2026, the owner: "for the liquid glass bar and the center fixture
+// i want their warp bezel extended slightly": 26% → 31%.)
+export const FIXTURE_BEZEL_UNITS = 175 * 0.31;
 export function fixtureBezel() {
   const u = Math.min(0.5, Math.max(0.4, (typeof window === "undefined" ? 1000 : window.innerWidth) * 0.001));
   return u * FIXTURE_BEZEL_UNITS;
@@ -547,7 +696,10 @@ export function useGlassReactive() {
       // lean and the scroll, eased so the colours flow rather than jump
       const toward = (Math.atan2(s.py - 0.5, s.px - 0.5) * 180) / Math.PI;
       s.ta = 200 + toward * 0.6 + s.tx * 40 + s.scroll * 0.18;
-      s.a += (s.ta - s.a) * 0.18;
+      // eased by the clock, not the frame: the same glide at 60, 90 or 120 Hz
+      const now = performance.now(), dt = Math.min(64, s.lt ? now - s.lt : 16.667);
+      s.lt = now;
+      s.a += (s.ta - s.a) * (1 - Math.pow(1 - 0.18, dt / 16.667));
       const ix = (50 + (s.px - 0.5) * 70 + s.tx * 30).toFixed(1) + "%";
       const iy = (50 + (s.py - 0.5) * 70 + s.ty * 30).toFixed(1) + "%";
       const a = s.a.toFixed(1) + "deg";
@@ -559,6 +711,7 @@ export function useGlassReactive() {
         el.style.setProperty("--tilt-y", s.ty.toFixed(3));
       }
       if (Math.abs(s.ta - s.a) > 0.2) s.raf = requestAnimationFrame(tick);
+      else s.lt = 0;
     };
     const wake = () => { if (!s.raf) s.raf = requestAnimationFrame(tick); };
     const onMove = (e) => { if (s.gyro) return; s.px = e.clientX / W(); s.py = e.clientY / H(); s.tx = (s.px - 0.5) * 2; s.ty = (s.py - 0.5) * 2; wake(); };
@@ -620,7 +773,8 @@ export function useGlassLamps(elRef, { active = true, current = ".cur" } = {}) {
       light.style.setProperty("--cs", "1");
     };
     let raf = 0;
-    const fit = () => {
+    // the lamp layer kept on the pane (cheap: a rect and two styles)
+    const follow = () => {
       raf = 0;
       const r = el.getBoundingClientRect();
       light.style.top = `${r.top}px`;
@@ -631,7 +785,7 @@ export function useGlassLamps(elRef, { active = true, current = ".cur" } = {}) {
       light.style.opacity = getComputedStyle(el).opacity;
       placeCurrent();
     };
-    const wake = () => { if (!raf) raf = requestAnimationFrame(fit); };
+    const wake = () => { if (!raf) raf = requestAnimationFrame(follow); };
     const ro = new ResizeObserver(wake);
     ro.observe(el);
     const mo = new MutationObserver(wake); // a key turning current, a popup shrinking the fixture
@@ -639,7 +793,7 @@ export function useGlassLamps(elRef, { active = true, current = ".cur" } = {}) {
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-popup", "data-media", "data-dm"] });
     window.addEventListener("resize", wake);
     el.addEventListener("transitionend", wake);
-    fit();
+    follow();
     return () => {
       ro.disconnect(); mo.disconnect();
       window.removeEventListener("resize", wake);

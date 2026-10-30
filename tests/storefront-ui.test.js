@@ -70,8 +70,12 @@ test("public storefront reuses Passport social, messaging, sharing, and reportin
   assert.match(storefront, /new CustomEvent\("asilum:dm-open", \{ detail: \{ handle \} \}\)/);
   assert.match(storefront, /navigator\.share/);
   assert.match(storefront, /op: "report", handle/);
-  assert.match(mail, /window\.addEventListener\("asilum:dm-open", openToHandle\)/);
-  assert.match(mail, /window\.removeEventListener\("asilum:dm-open", openToHandle\)/);
+  // (27 Oct 2026) the storefront's MESSAGE key opens the DM tab on that person: DmLive answers the event and
+  // leaves the ask for the desk, which takes it when it mounts or at once
+  const dmlive = read("../app/components/DmLive.jsx");
+  assert.match(dmlive, /function onOpen\(event\) \{ openDesk\(\{ handle: event\?\.detail\?\.handle \|\| "" \}\); \}/);
+  assert.match(dmlive, /window\.addEventListener\("asilum:dm-open", onOpen\)/);
+  assert.match(mail, /else if \(ask\.handle\) \{/);
 });
 
 test("storefront and bag quantity controls have scoped visible focus", () => {

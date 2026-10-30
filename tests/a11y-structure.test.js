@@ -70,8 +70,11 @@ test("card images are presentational, so each card announces one name", () => {
 test("the listing popup is a labelled, modal dialog with a named close (V.2: the item detail is the LISTING popup)", () => {
   const src = code("app/components/SheetHost.jsx");
   assert.match(src, /role="dialog"/, "it announces as a dialog");
-  assert.match(src, /aria-modal="true"/, "and as modal, so the page behind is inert");
-  assert.match(src, /aria-label=\{title\}/, "and it is named by the popup's title");
+  // (27 Oct 2026) a dismissed popup is kept, out of sight, so its tabs resume as they were left: it is modal
+  // and named while it is open, and hidden and inert while it is not
+  assert.match(src, /aria-modal=\{open \? "true" : undefined\}/, "and as modal while open, so the page behind is inert");
+  assert.match(src, /aria-label=\{title \|\| undefined\}/, "and it is named by the popup's title");
+  assert.match(src, /aria-hidden=\{open \? undefined : true\} inert=\{open \? undefined : true\}/, "kept out of sight, it is hidden and inert");
   assert.match(src, /aria-label="close"/, "the close control has a name — × alone is not one");
   assert.ok(!/item-detail-title/.test(code("app/page.js")), "the page's own modal is gone");
 });

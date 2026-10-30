@@ -14,7 +14,7 @@ import { authorizedFetch, postJSON, getUid, thumbFor } from "../../lib/client.js
 /** The named, collapsible Discover strips. Content derives LIVE from reviewed
  *  cultural sources — nothing here is a hand-written editorial list, so a rail
  *  with no reviewed sources behind it renders empty rather than invented. */
-export function DiscoverRails({ onPickTags }) {
+export function DiscoverRails({ onPickTags, empty = null }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
   const alive = useRef(false);
@@ -65,7 +65,8 @@ export function DiscoverRails({ onPickTags }) {
     for (const rail of rails) await setPref(rail, { hidden: false });
   }
 
-  if (!data || !data.rails?.length) return null;
+  if (!data) return null;
+  if (!data.rails?.length) return empty; // (the DISCOVER popup says so; the page shows nothing)
   const visible = data.rails.filter((rail) => !rail.hidden);
   const hidden = data.rails.filter((rail) => rail.hidden);
 
