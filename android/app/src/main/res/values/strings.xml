@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">*ASILUM</string>
+    <string name="title_activity_main">*ASILUM</string>
+    <string name="package_name">com.asilum.app</string>
+    <string name="custom_url_scheme">com.asilum.app</string>
+</resources>
