@@ -28,17 +28,17 @@
 // a global search opens the results popup over the root; a scoped search
 // filters the surface it belongs to live.
 //
-// The MESSAGES key IS the mail desk's own button when the desk is
-// available (MailDesk.jsx renders it, with its counts and its panel); when
-// the desk renders nothing — signed out, or messaging off — the fallback
-// key beside it opens the honest MessagesSheet. CSS hides whichever is
-// not needed (.cckey-mail:has(.maildesk) .ccfallback).
+// The MESSAGES key goes to the MESSAGES PAGE (owner, 28 Oct 2026: "a direct
+// message page that the user will be brought to upon clicking the direct
+// message button"; it opened the "messages" popup tab since 27 Oct):
+// /messages (lib/nav.js MESSAGES_HREF, MessagesPage.jsx). It wears how many
+// conversations wait (DmLive.jsx, which also draws the incoming-message banner).
 //
-// THE POST DISC HAS TWO LIVES (blueprint 1.25, 1.26): with no popup up it
-// opens Post Selection — the six types on the disc; while a popup is up it
-// IS the session indicator, with the `01/10` counter, and a tap opens the
-// session hub. A long hold on it opens the compact menu (New Session).
-// Posting is unavailable inside a popup; the passenger closes it first.
+// THE POST DISC: it brings up Post Selection's types as the POST cards; over
+// a popup it closes the popup first (posting is unavailable inside one). It
+// was also the session indicator — the `01/10` counter, the hub on a tap,
+// New Session on a long hold — until the ten-session hub was taken away
+// (owner, 27 Oct 2026: "lets get rid of the ten tabs that are hidden").
 //
 // THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166): the disc
 // ejects like a CD tray — the plus rides up out of the deck on a pill, a
@@ -61,11 +61,9 @@
 // which starts at the top (1.14).
 
 import { useEffect, useRef, useState } from "react";
-import { deckFor } from "../../lib/nav.js";
+import { deckFor, MESSAGES_HREF } from "../../lib/nav.js";
 import { DECK, scopeFor } from "../../lib/dock.js";
-import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, closeSearch, leaveSearch, closeSheet, toggleHub, newSession, openHub } from "../../lib/dockstate.js";
-import { counter, activeSession } from "../../lib/sessions.js";
-import { LONG_PRESS_MS } from "../../lib/disc.js";
+import { useDock, setMode, setQuery, setTyping, flipToggle, openSheet, goSheet, closeSearch, leaveSearch, closeSheet, setScope } from "../../lib/dockstate.js";
 import { centredIndex, ringItem } from "../../lib/scrollwheel.js";
 import { POST_TYPES } from "./PostSelection.jsx";
 import { useEscape, useClickAway } from "./dismiss.js";
@@ -74,14 +72,21 @@ import PostCards from "./PostCards.jsx";
 import { haptic } from "../../lib/haptics.js";
 import AdStrip from "./AdStrip.jsx";
 import Icon from "./Icons.jsx";
-import MailDesk from "./MailDesk.jsx";
+import { useDmLive } from "./DmLive.jsx";
 import AMark from "./AMark.jsx";
 import { useLiquidGlass, useGlassLamps, FIXTURE_BEND } from "./LiquidGlass.jsx";
 import { useHingedKeys } from "./hinge.js";
+import { shrinkStep } from "../../lib/scrollmotion.js";
+import { subscribeFrame } from "../../lib/frame.js";
 
 /** Where the glass is cut, in the sketch's units from the deck's left edge
  *  (the deck is 745 wide): the two end caps and the four seams between keys. */
 const CUTS = [40, 163, 290, 452, 578, 705];
+/** THE TICKER'S LINE (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse and
+ *  turn into a glowing white line that acts like the one on the mast head, broken between the button
+ *  gaps"): with nothing to carry, the ticker folds into one glowing white line under the keys, a stretch
+ *  under each key, broken at every cut between them — from the first cut to the last. */
+export const AD_LINE = Object.freeze(CUTS.slice(0, -1).map((a, i) => Object.freeze([a, CUTS[i + 1]])));
 
 export default function ControlCenter({ kind, pathname }) {
   const dock = useDock();
@@ -93,6 +98,8 @@ export default function ControlCenter({ kind, pathname }) {
   // character opens reads the same query and shows no field of its own
   const searchPopupUp = !!(dock.sheet && dock.sheet.id === "search");
   const scope = scopeFor({ pathname, sheet: dock.sheet && dock.sheet.id, likesTab: dock.likesTab });
+  // each search keeps its own words (lib/dockstate.js setScope)
+  useEffect(() => { setScope(scope.id); }, [scope.id]);
   const fieldRef = useRef(null);
   // the OG liquid glass: the bezel, the cuts, the disc, the grill and the indicator bend what passes beneath
   const glassRef = useRef(null);
@@ -110,7 +117,7 @@ export default function ControlCenter({ kind, pathname }) {
   function submit(e) {
     e.preventDefault();
     const q = String(dock.q || "").trim();
-    if (scope.id === "global") { if (q && !searchPopupUp) openSheet("search"); return; }
+    if (scope.id === "global") { if (q && !searchPopupUp) goSheet("search"); return; }
     if (scope.id === "messages") {
       // the mail desk's own find, never the whole app
       window.dispatchEvent(new CustomEvent("asilum:dm-find", { detail: { q } }));
@@ -122,7 +129,7 @@ export default function ControlCenter({ kind, pathname }) {
     setQuery(v);
     setTyping(true);
     // the sub tab appears only once something is typed (Figure 1)
-    if (scope.id === "global" && v.trim() && !searchPopupUp) openSheet("search");
+    if (scope.id === "global" && v.trim() && !searchPopupUp) goSheet("search");
   }
 
   function press(id) {
@@ -132,28 +139,52 @@ export default function ControlCenter({ kind, pathname }) {
       return;
     }
     if (id === "post") {
-      if (popupUp) { haptic("press"); toggleHub(); return; }
-      // the plus brings up the POST cards (and takes them down again)
+      // the plus brings up the POST cards (and takes them down again); over a
+      // popup it closes the popup and brings them up — it was the ten-session
+      // hub's indicator until the hub went (owner, 27 Oct 2026)
       haptic("press");
-      setMenu(false);
+      if (popupUp) { closeSheet(); setCards(true); return; }
       setCards((c) => !c);
       return;
     }
-    if (id === "messages") { openSheet("messages"); return; }
   }
 
-  const popupUp = !!dock.sheet || !!dock.hub.hubOpen;
-  const active = activeSession(dock.hub);
-  const sessionCount = popupUp && active ? counter(dock.hub, active.id) : "";
-  const [menu, setMenu] = useState(false);
+  const popupUp = !!dock.sheet;
+  const dm = useDmLive();
   // THE WHEEL: out while a Feed carousel is centred, or while the POST cards are up
   const [cards, setCards] = useState(false);
+  // the ticker open, or folded to its line (AdStrip.jsx decides: an ad or a BRDCST to carry, and service)
+  const [adOpen, setAdOpen] = useState(false);
   const [ring, setRing] = useState(0);
   const [centred, setCentred] = useState(null); // the centred carousel's stage
   const [snoozed, setSnoozed] = useState(null); // the carousel the wheel was put away from
   const postRef = useRef(null);
   const wrapRef = useRef(null);
   const canWheel = !popupUp && !inSearch;
+  // THE DECK SHRINKS AS THE FEED GOES BY (owner, 29 Oct 2026: "when a user scrolls down the fixture should shrink 15%
+  // seamlessly and if a button on the fixture is pressed it should go back to orignial size seamlessly and smoothly
+  // however the disc and upload button should stay the same size … if a user scrolls up the size of the fixture
+  // should go back seamlessly"; lib/scrollmotion.js shrinkStep): read once a scroll frame, it sets data-shrunk and the
+  // CSS scales the deck by 0.85 about the plus's own centre, the plus's place (the disc, the wheel and the POST cards
+  // in it) scaled back by as much about the same point — so they keep their size, and with the ticker folded their place
+  // (open, the deck is lowered by 15% of the ticker's height so its foot holds through the ads wink, and the plus with
+  // it: globals.css .ccenter[data-shrunk]). Whole again at a
+  // press on any of its keys, on the way up, near the top, and while searching.
+  const [shrunk, setShrunk] = useState(false);
+  const shrinkRef = useRef(null);
+  useEffect(() => {
+    shrinkRef.current = { last: window.scrollY, acc: 0, shrunk: false };
+    // in the one frame (lib/frame.js): read the page's place, then set the state
+    return subscribeFrame({
+      name: "deck-shrink",
+      read() { shrinkRef.current = shrinkStep(shrinkRef.current, window.scrollY); return shrinkRef.current.shrunk; },
+      write(on) { setShrunk(on); },
+    });
+  }, []);
+  function unshrink() {
+    if (shrinkRef.current) shrinkRef.current = { ...shrinkRef.current, acc: 0, shrunk: false };
+    setShrunk(false);
+  }
   const wheel = canWheel && (cards || (!!centred && centred !== snoozed));
   // which carousel is centred: on scroll, resize, a refreshed feed
   useEffect(() => {
@@ -210,23 +241,10 @@ export default function ControlCenter({ kind, pathname }) {
     const t = requestAnimationFrame(() => { const f = wrapRef.current && wrapRef.current.querySelector(".pccard.front"); if (f) f.focus({ preventScroll: true }); });
     return () => cancelAnimationFrame(t);
   }, [cards]);
-  const hold = useRef(null);
-  function holdStart(e) {
-    if (e.button) return;
-    hold.current = { fired: false, t: setTimeout(() => { hold.current.fired = true; haptic("press"); setMenu(true); }, LONG_PRESS_MS) };
-  }
-  function holdEnd() {
-    const h = hold.current; hold.current = null;
-    if (!h) return;
-    clearTimeout(h.t);
-    if (!h.fired) press("post");
-  }
-  function holdCancel() { const h = hold.current; hold.current = null; if (h) clearTimeout(h.t); }
-
   function feedTap(e, dest) {
     // the press that left search does only that: no refresh on the way out
     if (leftSearch.current) { leftSearch.current = false; if ((pathname || "/") === dest.href) e.preventDefault(); return; }
-    if (dock.sheet || dock.hub.hubOpen) { e.preventDefault(); closeSheet(); return; }
+    if (dock.sheet) { e.preventDefault(); closeSheet(); return; }
     if ((pathname || "/") === dest.href && dest.href === "/") {
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("asilum:feed-refresh"));
@@ -235,10 +253,11 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   // ANOTHER KEY LEAVES SEARCH (owner, 19 Oct 2026): on the press itself, before
-  // the key acts, so POST opens Post Selection rather than toggling the hub of
-  // the search popup, and MESSAGES opens over a closed search
+  // the key acts, so POST brings up its cards over a closed search, and
+  // MESSAGES opens over a closed search
   const leftSearch = useRef(false);
   function keyDown(e) {
+    unshrink(); // a press brings the deck back to its size
     if (!inSearch) return;
     const t = e.target && e.target.closest ? e.target.closest("a, button") : null;
     if (!t || t.closest(".ccsearch") || t.closest(".mailpanel") || t.getAttribute("aria-label") === "search") return;
@@ -269,8 +288,7 @@ export default function ControlCenter({ kind, pathname }) {
       );
     }
     if (k.kind === "disc") {
-      const cur = sheetIs("post") || sheetIs("postselect") || !!dock.hub.hubOpen;
-      const indicator = popupUp;
+      const cur = sheetIs("post") || sheetIs("postselect");
       return (
         <span key={k.id} className="ccpostwrap" ref={wrapRef}>
           <PostCards open={cards && canWheel} index={ring} onIndex={setRing} onChoose={chooseCard} />
@@ -280,40 +298,29 @@ export default function ControlCenter({ kind, pathname }) {
           <button
             ref={postRef}
             type="button"
-            className={"tabl ccpost" + (cur ? " cur" : "") + (indicator ? " ccsessions" : "")}
-            aria-label={indicator ? "sessions " + sessionCount : "post"}
+            className={"tabl ccpost" + (cur ? " cur" : "")}
+            aria-label="post"
             aria-pressed={cur}
             aria-expanded={canWheel ? cards : undefined}
-            onPointerDown={holdStart}
-            onPointerUp={holdEnd}
-            onPointerLeave={holdCancel}
-            onPointerCancel={holdCancel}
-            onContextMenu={(e) => e.preventDefault()}
+            onClick={() => press("post")}
           >
             <span className="ccdisc" data-lens-shape="ring" data-lens-band="11">
-              <Icon name={indicator ? "disc" : "plus"} size={24} />
-              {indicator && sessionCount ? <b className="cccount" aria-hidden="true">{sessionCount}</b> : null}
+              <Icon name="plus" size={24} />
             </span>
-            <span className="tbl">{indicator ? "SESSIONS" : k.label}</span>
+            <span className="tbl">{k.label}</span>
           </button>
-          {menu ? (
-            <div className="ccmenu" role="menu" aria-label="session actions">
-              <button type="button" role="menuitem" onClick={() => { setMenu(false); haptic("confirm"); newSession(); }}>NEW SESSION</button>
-              <button type="button" role="menuitem" onClick={() => { setMenu(false); openHub(); }}>SESSIONS</button>
-              <button type="button" role="menuitem" onClick={() => setMenu(false)}>CANCEL</button>
-            </div>
-          ) : null}
         </span>
       );
     }
     if (k.id === "messages") {
+      // THE MESSAGES PAGE (owner, 28 Oct 2026): one key, a link to /messages, wearing how many
+      // conversations wait (DmLive.jsx reads them); a popup up goes away as the page comes
+      const cur = String(pathname || "").startsWith(MESSAGES_HREF);
       return (
-        <span key={k.id} className="cckey-mail">
-          <MailDesk glyph="messages" keyClass="hkey" />
-          <button type="button" className={"tabl hkey ccfallback" + (sheetIs("messages") ? " cur" : "")} onClick={() => press("messages")} aria-label="messages">
-            <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
-          </button>
-        </span>
+        <a key={k.id} className={"tabl hkey ccdm" + (cur ? " cur" : "")} href={MESSAGES_HREF} onClick={() => { haptic("press"); closeSheet(); }} aria-current={cur ? "page" : undefined} aria-label={dm.waiting ? `messages — ${dm.waiting} waiting` : "messages"}>
+          <Icon name="messages" size={22} /><span className="tbl">{k.label}</span>
+          {dm.waiting ? <b className="dmcount" aria-hidden="true">{dm.waiting > 9 ? "9+" : dm.waiting}</b> : null}
+        </a>
       );
     }
     // search: a mode
@@ -326,7 +333,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-ad={adOpen ? "open" : "line"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined} data-shrunk={shrunk && !inSearch ? "1" : undefined}>
       {glass}
       <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (
@@ -346,12 +353,20 @@ export default function ControlCenter({ kind, pathname }) {
               />
               {scope.id === "global" ? (
                 <button type="button" className={"ccamark" + (dock.toggles.asterisk ? " on" : "")} aria-pressed={!!dock.toggles.asterisk} onClick={() => { haptic("toggle"); flipToggle("asterisk"); }} title={dock.toggles.asterisk ? "ASTERISK reads your Passport — tap to search without it" : "tap to let ASTERISK read your Passport"}>
-                  <AMark className={dock.toggles.asterisk ? "on" : ""} label={dock.toggles.asterisk ? "ASTERISK on" : "ASTERISK off"} />
+                  <AMark solid className={dock.toggles.asterisk ? "on" : ""} label={dock.toggles.asterisk ? "ASTERISK on" : "ASTERISK off"} />
                 </button>
               ) : scope.wide ? (
                 <a className="ccwide" href={"/discover?q=" + encodeURIComponent(dock.q || "")} title={"searching " + scope.placeholder.replace(/^Search /, "")}>ALL →</a>
               ) : null}
             </label>
+            {/* DISCOVER (owner, 29 Oct 2026: "a quick button to take users to a discover page that makes sense because of
+                how our search toggle works"): the search popup waits for typing, so the bar itself carries the way to
+                browse without it — the DISCOVER popup (DiscoverSheet.jsx), where the current craving lives now */}
+            {scope.id === "global" ? (
+              <button type="button" className={"ccdiscover" + (String(dock.q || "").trim() ? " folded" : "")} onClick={() => { haptic("press"); goSheet("discover", { title: "DISCOVER" }); }} aria-label="discover: browse without typing">
+                <Icon name="compass" size={18} /><span className="ccdisclbl">DISCOVER</span>
+              </button>
+            ) : null}
             <button type="button" className="ccclose" onClick={closeSearch} aria-label="close search"><Icon name="close" size={18} /></button>
           </form>
         )}
@@ -367,8 +382,12 @@ export default function ControlCenter({ kind, pathname }) {
             central control fixture as a bubble … inside the bubble will be the ad
             scroll wheel"; moved the same night: "beneath the buttons and above the
             vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
-            foot grill; the deck is taller by --ad-h to hold it */}
-        <div className="ccad"><AdStrip typing={inSearch} /></div>
+            foot grill; the deck is taller by --ad-h to hold it — and only while the ticker
+            is open: folded to its line, the deck is the row alone (28 Oct 2026) */}
+        <div className="ccad">
+          <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
+          <AdStrip typing={inSearch} onOpen={setAdOpen} line={AD_LINE} />
+        </div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />
       <i className="fxrim" aria-hidden="true" />

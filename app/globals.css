@@ -29,12 +29,13 @@ html { font-synthesis-style: none; }
   --grey: #8a9ba3;
   --faint: #2a3a41;
   --line: rgba(140, 170, 185, 0.22);
-  /* THE ORIGINAL PHOSPHOR GREEN (owner, 19 Oct 2026: "the greens on the
-     site besides on the fixtures look too white washed out — I want the
-     original phosphorus green"): the September build's signal green. The
-     fixtures keep the paler V.2 accent (:is(.fixture, .ccenter, .brandfix)
-     below). */
-  --red: #46ff96;
+  /* GLOWING WHITE (owner, 29 Oct 2026: "lets make all the colors on darkmode
+     glowing white nomore green"): the dark accent is white, glowing in its
+     own colour through --glow / --glow-r. It replaced the original phosphor
+     green (19 Oct, "I want the original phosphorus green") and the fixtures'
+     paler green (#8cf0a6), both gone. The asterisk and a selected key keep
+     the red (--warn). */
+  --red: #f4f9fc;
   /* ALL THE FONTS ARE MICHROMA (owner, 19 Oct 2026): the reading face, the
      serif slot and the description face all resolve to it; Inter stays only
      as the fallback for a glyph Michroma does not carry */
@@ -129,9 +130,11 @@ html { font-synthesis-style: none; }
   /* the lamps under the glass — a glow stick in water: a near-white core, a
      coloured halo, a wide faint spill. --lamp is the current destination at
      rest, --lamp-hot the hovered word, --lamp-pointer the cursor's trace. */
-  --lamp-core: rgba(214, 255, 232, 0.5);
-  --lamp: rgba(70, 255, 150, 0.3);
-  --lamp-hot: rgba(70, 255, 150, 0.3);
+  /* the lamp under a selected key is the asterisk's red (owner, 29 Oct 2026:
+     "the center fixture select buttons have a green glow it should be red") */
+  --lamp-core: rgba(255, 226, 222, 0.5);
+  --lamp: rgba(255, 65, 54, 0.3);
+  --lamp-hot: rgba(255, 65, 54, 0.3);
   --lamp-pointer: rgba(255, 255, 255, 0.03);
   /* the clickable word's resting light (the teal law, Aug 12): a horizontal
      smear and the glow — a token, so a hovered header word can keep exactly
@@ -167,9 +170,10 @@ html { font-synthesis-style: none; }
     radial-gradient(120% 60% at 88% -8%, color-mix(in srgb, var(--page-tint) 8%, transparent), transparent 62%),
     radial-gradient(90% 55% at -6% 104%, color-mix(in srgb, var(--p2) 5%, transparent), transparent 64%),
     /* the OG ground (owner, 18 Oct: "I miss the soft gradient … green to
-       black"), blacker (19 Oct: "make the background more black"): a breath
-       of phosphor green at the top, black almost at once */
-    linear-gradient(180deg, #06120c 0%, #030907 30%, #010302 62%, #000000 100%);
+       black"), blacker (19 Oct: "make the background more black"), and no
+       green (29 Oct: "glowing white nomore green"): a breath of grey at the
+       top, black almost at once */
+    linear-gradient(180deg, #0b0d0e 0%, #060708 30%, #020303 62%, #000000 100%);
   /* SHADE AND SCRIM (owner, 18 Oct 2026: "on dark mode if there is a popup
      the background should be darker, not a cloudy white"). The popup's scrim
      and every shadow were mixed from --ink, which is near-white in the dark
@@ -287,9 +291,9 @@ html { font-synthesis-style: none; }
   --glass-shadow: 0 12px 36px rgba(11, 20, 22, 0.08), 0 1px 2px rgba(11, 20, 22, 0.05);
   --glass-pill: rgba(225, 248, 255, 0.5);
   --glass-pill-rim: rgba(255, 255, 255, 0.6);
-  --lamp-core: rgba(220, 250, 255, 0.55);
-  --lamp: rgba(0, 190, 235, 0.3);
-  --lamp-hot: rgba(0, 190, 235, 0.32);
+  --lamp-core: rgba(255, 232, 228, 0.55); /* the selected key's lamp red in light too (it was cyan) */
+  --lamp: rgba(210, 47, 34, 0.3);
+  --lamp-hot: rgba(210, 47, 34, 0.32);
   --lamp-pointer: rgba(255, 255, 255, 0.10);
   /* the light page: the icy ground of the 18 Oct reference falling a shade
      cooler towards the middle, the tinted light from the top corner */
@@ -355,69 +359,81 @@ button { font-family: var(--helv); }
 
 @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-/* THE WORDMARK, AS THE TITLE CARD (owner, 19 Oct 2026, the launch card's
-   picture: "the logo should look like that"): the capitals in metal — in
-   dark the card's chrome washing to mint under the phosphor halo, in light
-   brushed steel (light never glows) — a touch bolder (Michroma has one
-   weight; a fine stroke in the metal's own edge carries it); the asterisk
-   the card's chunky red one, about seven-tenths of the capitals' height and
-   hung from their top line (Michroma's asterisk is 0.56em tall from the cap
-   line at 0.75em, so 0.93em of it, lifted 0.054em, puts its top on the
-   capitals'); under the word a thick translucent bar and one lit square,
-   within the word's width. */
-.wordmark { flex: none; display: inline-flex; flex-direction: column; align-items: stretch; gap: 0.22em;
-  font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); font-weight: 400; letter-spacing: 0.04em; line-height: 1; text-decoration: none; }
-.wmword { display: inline-block; white-space: nowrap; }
-.wmcaps { background: var(--metal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 0.5px var(--metal-edge); }
-/* the asterisk: small, up in the top-left corner of the word's box — its top
-   above the capitals' line, inside the line box (owner, 19 Oct 2026: "smaller
-   and move it up in the corner more"); plain red, no stroke, no glow */
-.wmword i { font-style: normal; font-size: 0.6em; line-height: 1; position: relative; top: -0.68em; margin-right: 0.1em;
-  color: var(--warn); -webkit-text-fill-color: var(--warn); text-shadow: none; }
-/* the bar of blocks under the word (the new logo, 25 Oct 2026): each block
-   --w bar-heights wide, the gap one fifth of a height, the last one lit in
-   the lighter blue; the bar is as wide as the word */
-/* the logo as the owner drew it (public/model/logo.jpg): its white ground
-   multiplies away on the light page; dark inverts and screens it */
-.wmimg { position: relative; display: block; width: clamp(107.25px, 28.875vw, 151.25px); aspect-ratio: 900 / 200; } /* about half the Info Dock (owner, 25 Oct), then 25% bigger and 10% more (owner, 26 Oct 2026) */
-/* the logo recoloured (owner, 26 Oct 2026): two masks cut from the owner's
-   artwork, the word in --wm-ink, the asterisk in --warn (the bar of blocks
-   left the masks the same day: it is the Masthead's stamped line, .mhstamp) */
-.wmink, .wmstar { position: absolute; inset: 0; -webkit-mask: var(--wm-mask) center / 100% 100% no-repeat; mask: var(--wm-mask) center / 100% 100% no-repeat; }
-.wmink { --wm-mask: url(/model/logo-word-ink.png); background: var(--wm-ink); }
-.wmstar { --wm-mask: url(/model/logo-star.png); background: var(--wm-star, var(--warn)); }
-/* dark: the title card's glow round the green (a mask clips its own
-   element's filter, so the glow sits on the wrapper) */
-:root:not([data-theme="light"]) .wmimg { filter: drop-shadow(0 0 0.6px rgba(180, 255, 210, 0.55)) drop-shadow(0 0 7px rgba(110, 240, 160, 0.3)); }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .wmimg { filter: none; } }
+/* THE WORDMARK (owner, 28 Oct 2026; Wordmark.jsx): the artwork set as type
+   in layers on one box, measured in the units of the word's 161 (--wm-u is
+   one of them, on the Masthead). The Helvetica asterisk glows red and the
+   bar glows the stark white of the Masthead's line — one glow, the same
+   radii, each in its own colour ("the asterisk and the solid white line
+   should have the same glow", then "the asterisk must glow red"); the
+   Michroma word over them never glows ("the solid black text should not").
+   The --ed-fs-wordmark size now only reaches the hidden name. */
+.wordmark { flex: none; display: inline-block; line-height: 0; text-decoration: none;
+  font-family: var(--mich); font-size: var(--ed-fs-wordmark, 19px); }
+.wmart { position: relative; display: block; width: calc(var(--wm-u) * 1073.763); aspect-ratio: 1073.763 / 153.753; } /* lib/wordmark.js brickBox: from the deck's line to the toe's end, the brick's top (and a breath) to its foot */
+.wmart svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.wmart text { text-rendering: geometricPrecision; font-kerning: none; letter-spacing: 0; }
+.wmlitstar { filter: var(--wm-glow-r); }
+.wmglow { filter: var(--wm-glow); } /* the brick's glow, off its rim (lib/wordmark.js rimPath), clipped away from the word (glowWindow) */
+.wmstar { font: 400 131px var(--helvetica); fill: var(--wm-star); }
+.wmbar { fill: var(--wm-bar); }
+/* the word cut out of the brick (29 Oct 2026, "make the [text] negative"): the mask's plane white, the letters
+   black, a stroke round each (lib/wordmark.js BOLD) for "a little bolder" */
+.wmplane { fill: #fff; }
+.wmcut { font: 400 161px var(--mich); fill: #000; stroke: #000; stroke-linejoin: miter; }
+/* THE TINT under the cut (29 Oct 2026: "tint the letters but i want the transition as smooth as possible,
+   seamless, fast and reactive"): the word again, a little fuller than the hole (lib/wordmark.js TINT_BLEED), in
+   --wm-cut-tint, a translucent dark — shown only where a really bright card lies behind the letters (then: "i
+   still wanted the negative logo to be see through however i wanted it to be seemlessly reactive to tint once
+   passing over a really bright card"): Wordmark.jsx clips it to those cards' boxes each scroll frame, so its edge
+   rides the card's. Hidden until read; a theme turn eases the tint over --dur-2. */
+.wmtint { clip-path: inset(50%); }
+.wmtintink { font: 400 161px var(--mich); fill: var(--wm-cut-tint); stroke: var(--wm-cut-tint); stroke-linejoin: miter; transition: fill var(--dur-2) var(--ease-out), stroke var(--dur-2) var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .wmtintink { transition: none; } }
 :root {
-  /* the title card's letters: chrome at the top washing to mint */
-  --metal: linear-gradient(180deg, #f6fcf9 0%, #e2f7ec 30%, #b5efcd 58%, #8ee8b3 100%);
-  --metal-edge: rgba(214, 255, 232, 0.35);
-  /* the stamped line (.mhstamp): a stamp, flat (owner, 26 Oct 2026: "still
-     too much, no shadow at all") — only a tone in the glass, a shade darker
-     on the light glass and a shade clearer on the dark, with crisp edges and
-     no shadow of any kind; one blue block, under the globe: the V.1 light
-     theme's ink, the teal-blue of its FRONT COVER headline (owner, 26 Oct
-     2026, the picture 5.png; --ink #08788a from 1d0caa6), in both themes */
+  /* the wheel's marks (.ccwtick): a tone in the glass, a shade darker on the
+     light glass and a shade clearer on the dark, crisp, no shadow — the
+     language of the Masthead's old stamped line (26 Oct 2026) */
   --stamp-recess: rgba(255, 255, 255, 0.12); /* on the dark glass the recess reads a shade clearer */
-  --stamp-blue: #08788a;
-  /* the logo's ink (owner, 26 Oct 2026): the title card's chrome washing to phosphor green */
-  --wm-ink: var(--metal);
+  /* THE LOGO (owner, 29 Oct 2026, "new logo with the masthead line intergated", then "make the [text] negative,
+     and keep the asterisk full and red"): the word cut out of the white brick, the glass showing through, in both
+     themes; the asterisk the house red, glowing red; the brick and the Masthead's line white, glowing stark white
+     — one glow (the same radii and strengths), each in its own colour. (Before: the word in the artwork's black,
+     --wm-ink; the Tron mark's holes; inks of green, white, red and mint.) */
+  --wm-star: var(--warn);
+  --wm-cut-tint: transparent; /* dark: clear — the dark glass already reads through the cut */
+  --wm-bar: #ffffff;
+  --wm-glow: drop-shadow(0 0 0.75px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 11px rgba(255, 255, 255, 0.5));
+  --wm-glow-r: drop-shadow(0 0 0.75px var(--warn)) drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 90%, transparent)) drop-shadow(0 0 11px color-mix(in srgb, var(--warn) 50%, transparent));
+  /* THE AD TICKER'S BAND (owner, 28 Oct 2026: "glowing white text … on an a
+     heavly clouded track", "i said clouded no black … more clouded than the
+     fixture", "make it like light grey", "make the ad text glow … more
+     legible", then "obviously with dark mode since everything is dark the
+     clouding can be dark because the glow will make it ledgible. i think for
+     light mode we can make it black like the logo. also the add square
+     should be red and smaller"): in DARK a dark grey cloud (never black) and
+     the words white, glowing; in LIGHT a light grey cloud and the words the
+     logo's black (#001512), unlit, as the logo's word is; ADs knocked out of
+     a small solid red chip glowing red, as the logo's asterisk glows, its
+     word cut to the band's own tone */
+  --ad-cloud-dark: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.11), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.08), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.07), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.1), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.08), transparent 70%), linear-gradient(180deg, rgba(40, 46, 52, 0.7), rgba(26, 30, 35, 0.76));
+  --ad-cloud-light: radial-gradient(14% 150% at 6% 30%, rgba(255, 255, 255, 0.34), transparent 70%), radial-gradient(18% 130% at 24% 85%, rgba(255, 255, 255, 0.26), transparent 70%), radial-gradient(14% 150% at 41% 20%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(18% 140% at 60% 80%, rgba(255, 255, 255, 0.24), transparent 70%), radial-gradient(14% 150% at 78% 25%, rgba(255, 255, 255, 0.32), transparent 70%), radial-gradient(14% 130% at 95% 75%, rgba(255, 255, 255, 0.26), transparent 70%), linear-gradient(180deg, rgba(196, 202, 208, 0.62), rgba(178, 185, 192, 0.66));
+  --ad-cloud: var(--ad-cloud-dark);
+  --ad-turn-c: rgba(14, 18, 24, 0.55); /* the shade where the band turns from the light */
+  --ad-rim-c: rgba(255, 255, 255, 0.78); /* the bezels, glowing slightly (owner, 28 Oct 2026) */
+  --ad-rim-glow: 0 0 2px rgba(255, 255, 255, 0.6), 0 0 6px rgba(255, 255, 255, 0.28);
+  --ad-glyph: #f4f9fc;
+  --ad-glow: 0 0 1px rgba(255, 255, 255, 0.9), 0 0 4px rgba(255, 255, 255, 0.6), 0 0 10px rgba(255, 255, 255, 0.3);
+  --ad-chip: var(--warn);
+  --ad-chip-ink: #262c32; /* the dark band's tone */
+  --ad-chip-glow: 0 0 1px var(--warn), 0 0 5px color-mix(in srgb, var(--warn) 70%, transparent), 0 0 11px color-mix(in srgb, var(--warn) 35%, transparent);
+  --helvetica: Helvetica, "Helvetica Neue", Arial, sans-serif; /* the asterisk's face (the owner's artwork), the system's own: Helvetica's asterisk matched the artwork's (IoU 0.85), Neue's did not (0.60) */
 }
 [data-theme="light"] {
-  --metal: linear-gradient(180deg, #74848f 0%, #2d3b48 32%, #9eabb6 48%, #1f2c38 56%, #61717f 80%, #384856 100%);
-  --metal-edge: rgba(37, 55, 73, 0.45);
   --stamp-recess: rgba(13, 24, 33, 0.14);
-  /* the logo in light: the owner's artwork in its own colours (owner, 26 Oct
-     2026: "let's go back to the original color for light mode"), then
-     "darker and bolder": logo-word-light.png is the artwork's slate, blue-grey
-     and red, each darkened, painted through the same (bolder) masks */
-  --wm-ink: url(/model/logo-word-light.png) center / 100% 100% no-repeat;
-  --wm-star: url(/model/logo-word-light.png) center / 100% 100% no-repeat;
+  --wm-cut-tint: rgba(13, 24, 40, 0.5); /* light: half a deep navy — over white a cool grey, over the glass a deeper blue */
+  --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; /* the ticker in light: the logo's black on light grey */
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-ink: url(/model/logo-word-light.png) center / 100% 100% no-repeat; --wm-star: url(/model/logo-word-light.png) center / 100% 100% no-repeat; } }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --wm-cut-tint: rgba(13, 24, 40, 0.5); --ad-cloud: var(--ad-cloud-light); --ad-glyph: #001512; --ad-glow: none; --ad-chip-ink: #c2c8ce; } }
 @keyframes osblink { 50% { opacity: 0.35; } }
 .search {
   width: 460px; max-width: 40vw; border: none; border-bottom: 1px solid var(--line);
@@ -563,7 +579,7 @@ button { font-family: var(--helv); }
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   margin-top: 10px; padding-top: 9px;
   border-top: 1px solid color-mix(in oklab, var(--sig) 22%, transparent);
-  animation: stampknow-in 620ms ease-out both;
+  animation: stampknow-in 620ms var(--ease-out) both;
 }
 .stampknow-mark { color: var(--red); font-size: 13px; line-height: 1; }
 .stampknow-say {
@@ -740,7 +756,7 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   display: block;
 }
 .card .imgwrap { overflow: hidden; cursor: pointer; }
-.card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur-4) var(--ease-out); }
 .card .imgwrap:hover img { transform: scale(var(--ed-zoom, 1.045)); }
 .card .body { padding: 8px 0 0; }
 .card .ttl { font-weight: 900; font-size: var(--ed-fs-cardttl, 14.5px); line-height: 1.25; text-transform: uppercase; letter-spacing: 0.01em; cursor: pointer; }
@@ -768,6 +784,75 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
 .fmode.cur { color: var(--red); text-shadow: var(--glow-r); }
 .fmode.cur::after { content: " *"; }
 .fmodes .txtbtn { margin-left: auto; }
+/* THE FEED'S EQ (owner, 29 Oct 2026: "a collapsed filter button that looks like its from a music player … a remember
+   toggle so it remebers its feed choices"; FeedEq.jsx, lib/feed/choice.js). Shut, one key of a player's face: three
+   faders and a light, lit red while the mix is not the whole Feed. Open, the equaliser under it: a channel a kind,
+   its fader up when it plays, down when muted, its light lit; at the foot a hold switch, REMEMBER. */
+/* (the same evening: "let the toggle button be in liquid glass and have its little symbol glow and make the symbol
+   match the rest of the symbols and put it in the right corner of the screen inline with the fee[d]") the key stands
+   at the right of THE FEED, a round pane of the fixtures' glass (useLiquidGlass: the same tint, lift, lip, sheen and
+   refraction), its symbol the house's (Icons.jsx "eq", the fixtures' 1.5px stroke) glowing in its own colour, which is
+   the ground's ink (lib/ink.js GROUND_TEXT). It comes back as a quick return (lib/scrollmotion.js): its transform
+   written each scroll frame, over the Feed's cards (they stack to 54, vstackzl), under the fixtures (64–66); the
+   equaliser hangs under it, from its right. */
+.cthead > .feq { margin-left: auto; }
+.cthead:has(> .feq) { align-items: center; flex-wrap: nowrap; } /* the key level with THE FEED (it sat 6px high on the head's foot line) */
+.feq { position: relative; z-index: 60; display: inline-flex; align-self: center; flex: none; will-change: transform; }
+.eqkey { position: relative; isolation: isolate; display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-card); cursor: pointer; /* a curved square (owner, the same evening: "make it into a curved square") */
+  color: var(--ink); background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  transition: transform var(--dur-1) var(--ease-out); }
+.eqkey[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.eqkey::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
+/* REACTIVE LIKE THE TEXT (owner, the same evening: "make the EQ reactive like the text"): its symbol is a ground word —
+   the same blend of the glowing white and the solid ink by --gl (GroundInk.jsx), its glow fading as the words' does
+   (--g-glow's three layers, by 1 - --gl); floating over a bright card, the solid ink and no glow */
+.eqkey { --eq-glow-a: calc(1 - var(--gl, 0)); }
+.eqkey[data-ground] { color: var(--g-ink); }
+.eqkey[data-ground][data-bright] { color: var(--g-ink-on-light); --eq-glow-a: 0; } /* floating over a bright card: the solid ink */
+.eqkey .ic * { vector-effect: non-scaling-stroke; stroke-width: 1.5px; }
+.eqkey .ic { filter: drop-shadow(0 0 1px color-mix(in srgb, var(--g-ink-on-dark) calc(var(--eq-glow-a) * 100%), transparent)) drop-shadow(0 0 4px color-mix(in srgb, var(--g-ink-on-dark) calc(var(--eq-glow-a) * 55%), transparent)) drop-shadow(0 0 10px color-mix(in srgb, var(--g-ink-on-dark) calc(var(--eq-glow-a) * 18%), transparent)); } /* the symbol glows as the words do */
+.eqkey:active, .eqkey.open { transform: scale(0.96); }
+@media (prefers-reduced-transparency: reduce) { .eqkey, .eqkey[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); } }
+.eqkey:focus-visible, .eqchan:focus-visible, .eqhold:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.eqled { position: absolute; top: 7px; right: 7px; width: 4px; height: 4px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 22%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqkey.mixed .eqled { background: var(--warn); filter: var(--key-glow-r); } /* the selected key's own red glow, no harder */
+/* the craving, while one steers the Feed (set in DISCOVER), on the equaliser's head with its CLEAR */
+.eqcraving { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -4px 0 12px; font: 7.5px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--warn); }
+.eqpanel { position: absolute; right: 0; top: calc(100% + 8px); z-index: 60; width: min(340px, calc(100vw - 32px)); padding: 14px 12px 10px; border-radius: var(--radius-card);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 94%, var(--ink)), color-mix(in srgb, var(--bg) 84%, var(--ink)));
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4); color: var(--ink); animation: eqopen var(--dur-2) var(--ease-out); }
+@keyframes eqopen { from { opacity: 0; transform: translateY(-4px); } }
+/* the source switch at the equaliser's head: FOR YOU or FOLLOWING, the light on the one playing */
+.eqsource { display: flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 0 2px 10px; border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+.eqsrclbl { margin-right: auto; font: 7.5px/1 var(--mich); letter-spacing: 0.12em; color: var(--grey); }
+.eqsrc { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 0; border-radius: var(--radius-key); cursor: pointer; font: 8.5px/1 var(--mich); letter-spacing: 0.12em; color: var(--grey);
+  background: color-mix(in srgb, var(--shade) 10%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 25%, transparent); transition: transform var(--dur-1) var(--ease-out); }
+.eqsrc:active { transform: scale(0.96); }
+.eqsrc.on { color: var(--ink); background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 78%, var(--ink))); box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.45); }
+.eqsrc.on .eqchled { background: var(--warn); filter: var(--key-glow-r); }
+.eqsrc:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.eqchans { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.eqchan { display: grid; justify-items: center; gap: 6px; padding: 4px 0 2px; border: 0; background: none; cursor: pointer; color: inherit; }
+.eqchan[aria-disabled="true"] { cursor: default; }
+.eqchled { width: 5px; height: 5px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 18%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqchan.on .eqchled { background: var(--warn); filter: var(--key-glow-r); }
+.eqtrack { position: relative; width: 4px; height: 46px; border-radius: 2px; background: color-mix(in srgb, var(--shade) 30%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); }
+.eqknob { position: absolute; left: 50%; top: 0; width: 16px; height: 9px; margin-left: -8px; border-radius: 3px; transform: translateY(37px); /* down: muted (the track's 46 less the knob's 9) */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 70%, var(--ink)));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.5); transition: transform var(--dur-2) var(--ease-out); }
+.eqchan.on .eqknob { transform: none; } /* up: playing; it slides by transform, never by layout */
+.eqname { max-width: 100%; font: 6.5px/1 var(--mich); letter-spacing: 0.02em; color: var(--grey); white-space: nowrap; } /* seven names in a phone's width: at 7.5px they ran together */
+.eqchan.on .eqname { color: var(--ink); }
+.eqhold { display: flex; align-items: center; gap: 9px; width: 100%; margin-top: 12px; padding: 9px 4px 2px; border: 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); background: none; cursor: pointer; color: inherit; text-align: left; }
+.eqslot { position: relative; flex: none; width: 30px; height: 14px; border-radius: 7px; background: color-mix(in srgb, var(--shade) 28%, transparent); box-shadow: inset 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); transition: background var(--dur-2) var(--ease-out); }
+.eqhold.on .eqslot { background: color-mix(in srgb, var(--warn) 70%, transparent); }
+.eqslide { position: absolute; top: 2px; left: 2px; width: 12px; height: 10px; border-radius: 5px; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 96%, var(--ink)), color-mix(in srgb, var(--bg) 72%, var(--ink))); box-shadow: 0 1px 2px color-mix(in srgb, var(--shade) 45%, transparent); transition: transform var(--dur-2) var(--ease-out); }
+.eqhold.on .eqslide { transform: translateX(14px); }
+.eqholdword { font: 9px/1 var(--mich); letter-spacing: 0.14em; }
+.eqholdstate { margin-left: auto; font: 7.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--grey); }
+@media (prefers-reduced-motion: reduce) { .eqkey, .eqknob, .eqslide, .eqslot, .eqled, .eqchled { transition: none; } .eqpanel { animation: none; } }
 .cravingline { margin: 0 0 14px; }
 .cravnote { font-size: 10px; color: var(--grey); margin: 0 0 8px; }
 .fpost { margin: 0 0 18px; }
@@ -834,17 +919,18 @@ button.soon:hover, a.soon:hover, .btn.soon:hover, .btn.ghost.soon:hover,
   position: fixed; inset: 0; z-index: 90; background: var(--fog); cursor: zoom-out;
   -webkit-backdrop-filter: blur(18px) saturate(115%); backdrop-filter: blur(18px) saturate(115%);
   display: flex; align-items: center; justify-content: center;
-  perspective: 1100px; animation: floatfade 0.3s ease;
+  perspective: 1100px; animation: floatfade var(--dur-3) var(--ease-out);
 }
 .float::before { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 55% at 50% 52%, rgba(255, 255, 255, 0.05), transparent 70%); }
 .floatscrim { position: absolute; inset: 0; background: none; border: 0; padding: 0; cursor: zoom-out; }
 .floathalo { position: absolute; border-radius: 7px; filter: blur(48px); opacity: 0.3; transform: scale(1.12); pointer-events: none; }
 .floatcard {
-  position: relative; border-radius: 7px; overflow: hidden; will-change: transform;
+  position: relative; border-radius: 7px; overflow: hidden; /* no will-change: a tilted card re-rasters crisp (28 Oct 2026) */
+  outline: 1px solid transparent; -webkit-backface-visibility: hidden; backface-visibility: hidden;
   padding: 0; border: 0; background: none; cursor: zoom-out; display: block;
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   box-shadow: var(--sx, 0px) var(--sy, 40px) 90px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  animation: floatin 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: floatin var(--dur-4) var(--ease-out);
 }
 .floatcard img, .floathalo img { display: block; width: 100%; height: auto; object-fit: cover; }
 .floatcard::after {
@@ -976,7 +1062,7 @@ table.stats th { font-size: 10px; font-weight: 800; text-transform: uppercase; l
 /* the stylist's thick floating frame — marks the anchor piece and owned
    wardrobe pieces only (true highlights; owner order, Aug 13) */
 .otfitem .tdrfs { left: 8px; top: -12px; width: 152px; height: 128px; border-width: 7px; opacity: 0.88; z-index: 2; }
-.otfitem img { width: 132px; height: 168px; object-fit: cover; display: block; transition: transform 0.4s ease; }
+.otfitem img { width: 132px; height: 168px; object-fit: cover; display: block; transition: transform var(--dur-4) var(--ease-out); }
 .otfitem:hover img { transform: scale(1.04); }
 .otfttl { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; line-height: 1.3; margin-top: 6px; }
 .otfitem:hover .otfttl { color: var(--red); }
@@ -1737,7 +1823,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* ---- Phase 2: PASSPORT dossier ---- */
 .ppdoc { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
 .ppsec { height: 30px; position: relative; border-bottom: 1px solid var(--line);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%2377ffbb' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23e8eff1' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
 [data-theme="light"] .ppsec { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23177a8a' stroke-width='1' opacity='0.3'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
 .ppsec::after { content: ""; position: absolute; inset: 0;
   background: linear-gradient(90deg, transparent, rgba(150, 90, 255, 0.14) 30%, rgba(60, 220, 140, 0.12) 55%, rgba(70, 150, 255, 0.12) 75%, transparent); }
@@ -1780,7 +1866,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    An industrial side instrument: every slider writes one --ed-* token.
    Chrome is token-only and deliberately NOT self-editable. ---- */
 .dc {
-  position: fixed; top: calc(var(--head-h) + 8px); right: 10px; bottom: calc(var(--status-h) + 8px);
+  /* it stops above the deck, so the deck — and the ticker test below — stays in view (28 Oct 2026) */
+  position: fixed; top: calc(var(--head-h) + 8px); right: 10px; bottom: calc(var(--cc-bottom) + var(--dk-h) + var(--ad-h) + 12px);
   width: 316px; z-index: 90; display: flex; flex-direction: column;
   background: var(--bg2); border: 1px solid var(--line); border-radius: 7px;
   backdrop-filter: blur(12px); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
@@ -1851,7 +1938,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   font-size: 12px; color: var(--red); text-shadow: var(--glow-r); background: var(--bg3);
   padding: 0 6px; border-radius: 4px; white-space: nowrap; }
 @media (max-width: 760px) {
-  .dc { top: auto; left: 8px; right: 8px; bottom: 12px; width: auto; max-height: 58vh; }
+  .dc { top: auto; left: 8px; right: 8px; bottom: calc(var(--cc-bottom) + var(--dk-h) + var(--ad-h) + 12px); width: auto; max-height: 58vh; }
 }
 @media (prefers-reduced-motion: reduce) {
   .dcinspect.on, .dcrow.flash { animation: none; }
@@ -1937,7 +2024,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* the veil drops fast so the still frame reads as the passport's own map
    isolated — the base the build expands from */
 .ppbuildveil { position: absolute; inset: 0; background: var(--bg); opacity: 0;
-  transition: opacity 0.25s ease; }
+  transition: opacity var(--dur-2) var(--ease-out); }
 /* map layers at 0.5, passport-fit, static — the base never moves or
    rescales; glow matches the passport hologram: roads carry
    .pvroads-hot's filter, stars .pvstars-hot's, buildings stay
@@ -1953,7 +2040,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppbuild-hot { filter: drop-shadow(0 0 4px var(--sig)) drop-shadow(0 0 12px var(--sig)); }
 /* /upload's background gradient fades in over the last stretch so the
    final frame is pixel-identical to the landing page */
-.ppbuildgrad { position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s ease 1.05s;
+.ppbuildgrad { position: absolute; inset: 0; opacity: 0; transition: opacity var(--dur-4) 1.05s var(--ease-out);
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 62%, transparent),
     color-mix(in srgb, var(--bg) 30%, transparent) 45%,
     color-mix(in srgb, var(--bg) 68%, transparent)); }
@@ -1983,7 +2070,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxdrop {
   display: grid; justify-items: center; gap: 7px; text-align: center;
   border: 1.5px dashed var(--line); border-radius: 9px; padding: 30px 20px;
-  cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  cursor: pointer; transition: border-color var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out);
 }
 .gxdrop b { font-size: 13px; letter-spacing: 0.08em; font-weight: 400; }
 .gxdrop em { font-style: normal; font-size: 10px; color: var(--grey); max-width: 46ch; line-height: 1.6; }
@@ -1994,7 +2081,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxbtn {
   border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
   color: var(--ink); font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.2em;
-  padding: 11px 22px; cursor: pointer; transition: color 0.15s, border-color 0.15s, background 0.15s;
+  padding: 11px 22px; cursor: pointer; transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
 }
 .gxbtn:hover:not(:disabled) { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 .gxbtn:disabled { opacity: 0.4; cursor: default; }
@@ -2003,7 +2090,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxchip {
   border: 1px solid var(--line); border-radius: 999px; background: var(--bg3);
   color: var(--ink); font-family: var(--helv); font-size: 12px; letter-spacing: 0.05em;
-  padding: 8px 16px; cursor: pointer; transition: color 0.15s, border-color 0.15s, transform 0.15s;
+  padding: 8px 16px; cursor: pointer; transition: color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
 .gxchip:hover { color: var(--sig); border-color: var(--sig); transform: translateY(-1px); }
 .gxchip:active { transform: scale(0.96); }
@@ -2030,7 +2117,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* the map settles back once the page is open (owner, 9 Sep: first "45% less
    of what it showed", then "settle at 40%" — 0.5 → 0.4); the first frame keeps
    the warp's 0.5 so the passport hand-off stays continuous */
-.gxmap { transition: opacity 1.1s ease; }
+.gxmap { transition: opacity 1.1s var(--ease-out); }
 .gxmap.settled { opacity: 0.4; }
 @media (prefers-reduced-motion: reduce) { .gxmap { transition: none; } }
 .gxmap svg { width: 100%; height: 100%; }
@@ -2065,7 +2152,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .gxtile .gxtilex { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px;
   border: none; border-radius: 50%; background: color-mix(in srgb, var(--bg) 72%, transparent);
   color: var(--ink); font-size: 13px; line-height: 1; cursor: pointer; opacity: 0;
-  transition: opacity 0.15s; }
+  transition: opacity var(--dur-1) var(--ease-out); }
 .gxtile:hover .gxtilex { opacity: 1; }
 .gxtile .gxtilex:hover { color: var(--red); }
 .gxfavgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
@@ -2105,7 +2192,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 /* ever-so-slight motion blur on the passport→upload build (owner order,
    Aug 12): rides only the growth window; roadBuilder removes the class
    220ms before landing so the final frame stays pixel-identical */
-.ppwarp .ppbuildmap { transition: filter 0.22s ease; }
+.ppwarp .ppbuildmap { transition: filter var(--dur-2) var(--ease-out); }
 .ppwarp.ppwarp-motion .ppbuildmap { filter: blur(0.7px); }
 
 /* ---- SETTINGS rack (owner order, Aug 12: old music-making software —
@@ -2226,7 +2313,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .moment-actions .btn { flex: 1; font-weight: 700; }
 .moment-fine { font-size: 10px; color: var(--grey); margin: 10px 0 0; line-height: 1.5; }
 @media (prefers-reduced-motion: no-preference) {
-  .asterisk-moment { animation: moment-in .18s ease-out; }
+  .asterisk-moment { animation: moment-in var(--dur-2) var(--ease-out); }
   @keyframes moment-in { from { transform: translateY(6px); opacity: 0; } }
 }
 
@@ -2290,7 +2377,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .e4-status p:first-child { color: var(--sig); text-shadow: var(--glow); }
 
 .e4-ways { margin-top: clamp(20px, 4vw, 34px); display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-.e4-dest { display: flex; align-items: baseline; gap: 10px; padding: 13px 16px; border: 1px solid var(--line); background: var(--bg2); color: var(--ink); text-decoration: none; font-family: var(--helv); letter-spacing: 0.14em; transition: border-color 0.15s, box-shadow 0.15s, color 0.15s; }
+.e4-dest { display: flex; align-items: baseline; gap: 10px; padding: 13px 16px; border: 1px solid var(--line); background: var(--bg2); color: var(--ink); text-decoration: none; font-family: var(--helv); letter-spacing: 0.14em; transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out); }
 .e4-dest b { font-family: var(--mich); font-size: 13px; font-weight: 400; letter-spacing: 0.22em; }
 .e4-dest-go { color: var(--red); text-shadow: var(--glow-r); }
 .e4-dest-meta { margin-left: auto; font-size: 11px; letter-spacing: 0.2em; color: var(--grey); }
@@ -2325,7 +2412,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    unsupported */
 .tc-face { position: relative; z-index: 3; color: var(--ink); }
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .tc-face { background: linear-gradient(178deg, var(--ink) 22%, var(--sig) 70%, var(--grey)); background: linear-gradient(178deg, color-mix(in oklab, var(--ink) 72%, #fff) 4%, var(--ink) 28%, color-mix(in oklab, var(--ink) 70%, var(--grey)) 47%, color-mix(in oklab, var(--ink) 55%, #fff) 51%, var(--sig) 72%, var(--grey) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(70, 255, 150, 0.22)); }
+  .tc-face { background: linear-gradient(178deg, var(--ink) 22%, var(--sig) 70%, var(--grey)); background: linear-gradient(178deg, color-mix(in oklab, var(--ink) 72%, #fff) 4%, var(--ink) 28%, color-mix(in oklab, var(--ink) 70%, var(--grey)) 47%, color-mix(in oklab, var(--ink) 55%, #fff) 51%, var(--sig) 72%, var(--grey) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.22)); }
 }
 /* the moving shadow — the only element allowed to glitch */
 .tc-streak { position: absolute; top: 0; left: 0; color: var(--sig); filter: blur(16px); transform: scaleX(1.5); transform-origin: left center; opacity: 0.3; pointer-events: none; animation: e4-drift 8s ease-in-out infinite alternate; }
@@ -2419,7 +2506,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   color: var(--red);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .mailglyph.open .mailseal { animation: mailseal-in .22s ease-out; }
+  .mailglyph.open .mailseal { animation: mailseal-in var(--dur-2) var(--ease-out); }
   @keyframes mailseal-in { from { transform: scale(.4) rotate(-30deg); opacity: 0; } }
 }
 .mailword { font-weight: 700; }
@@ -2596,7 +2683,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .connpick b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .connring { display: grid; justify-items: center; gap: 4px; }
 .connslots { list-style: none; margin: 0; padding: 0; height: 168px; display: grid; align-content: center; perspective: 600px; }
-.connslot { font-size: 11px; color: var(--grey); transform: translateY(calc(var(--k) * 2px)) rotateX(calc(var(--k) * -18deg)); opacity: calc(1 - abs(var(--k)) * .22); transition: transform .18s, opacity .18s; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+.connslot { font-size: 11px; color: var(--grey); transform: translateY(calc(var(--k) * 2px)) rotateX(calc(var(--k) * -18deg)); opacity: calc(1 - abs(var(--k)) * .22); transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out); white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 .connslots.still .connslot { transition: none; transform: none; }
 .connslot.sel { color: var(--ink); font-weight: 600; font-size: 13px; }
 .connsel { font-size: 11px; margin: 0; }
@@ -2608,7 +2695,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .wstack:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
 .wstackpos { grid-column: 1 / -1; text-align: center; margin: 0; }
 .wstackcards { list-style: none; margin: 0; padding: 0; position: relative; height: 230px; perspective: 900px; }
-.wslot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateX(calc(var(--o) * 118px)) rotateY(calc(var(--o) * -32deg)) scale(calc(1 - abs(var(--o)) * .14)); opacity: calc(1 - abs(var(--o)) * .3); z-index: calc(10 - abs(var(--o))); transition: transform .22s ease, opacity .22s ease; }
+.wslot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateX(calc(var(--o) * 118px)) rotateY(calc(var(--o) * -32deg)) scale(calc(1 - abs(var(--o)) * .14)); opacity: calc(1 - abs(var(--o)) * .3); z-index: calc(10 - abs(var(--o))); transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
 .wslot.sel { z-index: 20; }
 .wstack.still .wslot { transition: none; transform: translate(-50%, -50%) translateX(calc(var(--o) * 118px)); }
 .wslotbtn { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
@@ -2644,7 +2731,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .mailreactn { font-size: 9px; color: var(--grey); }
 /* The palette stays out of the way until the message is hovered or focused —
    five buttons under every bubble would out-shout the conversation. */
-.mailmsgacts { display: flex; gap: 3px; opacity: 0; transition: opacity .12s; }
+.mailmsgacts { display: flex; gap: 3px; opacity: 0; transition: opacity var(--dur-1) var(--ease-out); }
 .mailmsg:hover .mailmsgacts, .mailmsgacts:focus-within { opacity: 1; }
 @media (hover: none) { .mailmsgacts { opacity: 1; } }
 .mailmsgacts button { font: inherit; font-size: 11px; line-height: 1; padding: 2px 4px;
@@ -3110,7 +3197,7 @@ body { font-size: 14px; }
 .tnetyoulbl { fill: var(--grey); }
 .tnetnode { cursor: pointer; }
 .tnetnode:focus-visible, .fmappin:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
-.tnetnode .tnetdot { fill: var(--bg3); stroke: var(--grey); stroke-width: 1.2; transition: r 0.2s, stroke 0.2s; }
+.tnetnode .tnetdot { fill: var(--bg3); stroke: var(--grey); stroke-width: 1.2; transition: r var(--dur-2) var(--ease-out), stroke var(--dur-2) var(--ease-out); }
 .tnetnode.inferred .tnetdot { stroke: var(--sig); fill: color-mix(in srgb, var(--sig) 22%, var(--bg3)); }
 .tnetnode.manual .tnetdot { stroke: var(--red); fill: color-mix(in srgb, var(--red) 28%, var(--bg3)); }
 .tnetnode.curated .tnetdot { stroke: var(--p2); stroke-dasharray: 3 3; }
@@ -3287,7 +3374,7 @@ body { font-size: 14px; }
 [data-theme] .seg > .tab, [data-theme] .seg > .fmode, [data-theme] .seg > .fmode.cur, [data-theme] .seg > .tab.cur,
 [data-theme] .seg > .tab:hover, [data-theme] .seg > .fmode:hover {
   font-family: var(--mich); font-size: 11px; letter-spacing: 0.14em; padding: 7px 14px; border-radius: 9px; border: 0;
-  background: none; color: var(--grey); text-shadow: none; box-shadow: none; transition: background 0.18s, color 0.18s; text-decoration: none; }
+  background: none; color: var(--grey); text-shadow: none; box-shadow: none; transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out); text-decoration: none; }
 [data-theme] .seg > .tab:hover, [data-theme] .seg > .fmode:hover { color: var(--ink); }
 [data-theme] .seg > .tab.cur, [data-theme] .seg > .fmode.cur, [data-theme] .seg > .tab.cur:hover, [data-theme] .seg > .fmode.cur:hover {
   background: var(--bg); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.18), 0 0 0 1px color-mix(in srgb, var(--shade) 10%, transparent); }
@@ -3304,7 +3391,7 @@ body { font-size: 14px; }
 .ppdocacts { display: flex; gap: 10px; justify-content: flex-end; padding: 10px 14px 14px; position: relative; z-index: 3; }
 .ppbtn { font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; padding: 11px 18px; border-radius: 7px; cursor: pointer;
   border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); background: color-mix(in srgb, var(--bg) 78%, transparent); color: var(--ink);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform 0.12s, background 0.18s; }
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform var(--dur-1) var(--ease-out), background var(--dur-2) var(--ease-out); }
 .ppbtn:hover { background: var(--bg); }
 .ppbtn:active { transform: scale(0.98); }
 .ppbtn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
@@ -3317,7 +3404,7 @@ body { font-size: 14px; }
 .smapcanvas:active { cursor: grabbing; }
 .smapempty { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; letter-spacing: 0.12em; color: var(--grey); }
 .smapyou { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: #2f7cf6; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47,124,246,0.22), 0 2px 6px rgba(0,0,0,0.35); }
-.smappin { position: absolute; width: 30px; height: 30px; margin: -30px 0 0 -15px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--red); border: 2px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.35); cursor: pointer; padding: 0; transition: transform 0.15s; }
+.smappin { position: absolute; width: 30px; height: 30px; margin: -30px 0 0 -15px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--red); border: 2px solid #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.35); cursor: pointer; padding: 0; transition: transform var(--dur-1) var(--ease-out); }
 .smappin i { display: block; transform: rotate(45deg); font-style: normal; font-family: var(--mich); font-size: 10.5px; color: #fff; line-height: 26px; text-align: center; }
 .smappin.sample { background: #8e8e93; }
 .smappin.creator { background: #2f7cf6; }
@@ -3384,9 +3471,21 @@ body { font-size: 14px; }
   --u: clamp(0.4px, 0.1vw, 0.5px);
   /* WIDER (owner, 26 Oct 2026: "let's also widen the central control
      fixture"): the drawn 745 stretched sideways by --dk-sx; the cuts, the
-     grill and the insets that sit in it stretch with it, the heights do not */
-  --dk-sx: 1.1;
+     grill and the insets that sit in it stretch with it, the heights do not;
+     (28 Oct: "ever so slightly widen the center fixture") 1.1 → 1.14 */
+  --dk-sx: 1.14;
   --dk-w: calc(var(--u) * 745 * var(--dk-sx));
+  /* THE MOTION SYSTEM (owner, 28 Oct 2026: "EVERY ANIMATION SHOULD [BE]
+     EXTREMELY SMOOTH, LOCK DOWN THE TIMING AND MAKE SURE ITS ANIMATION STUDIO
+     SMOOTH"): one set of curves and one ladder of durations for every move,
+     and every move on transform, opacity or clip — never on layout */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);      /* arrivals: quick off the mark, a long soft landing */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);   /* from one place to another */
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);        /* departures */
+  --ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1); /* a small settle past the mark: pops, drops */
+  --ease-hinge: cubic-bezier(0.34, 1.7, 0.5, 1);   /* the hinged keys' spring back (19 Oct) */
+  --ease-deck: var(--ease-out);                    /* the deck's height: an arrival; folding the ticker, the in-out (the ads wink, 29 Oct 2026) */
+  --dur-0: 60ms; --dur-1: 140ms; --dur-2: 220ms; --dur-3: 320ms; --dur-4: 460ms;
   --dk-h: calc(var(--u) * 175);
   --dk-r: calc(var(--u) * 18);
   --dk-rise: calc(var(--u) * 112);   /* how far the deck extends upward for the search bar */
@@ -3398,7 +3497,22 @@ body { font-size: 14px; }
   --cc-space: calc(var(--cc-row-h) + var(--ad-h) + var(--cc-bottom) + 28px);
   --sheet-radius: calc(var(--radius-card) + 2px);
 }
-:root:has(.ccenter.ccsearching) { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
+/* WHAT THE DECK'S STATES RESTYLE (28 Oct 2026, "tighten up all animations"): only what moves with them. The deck
+   searching (risen) and the ticker folded used to flip --cc-row-h and --ad-h on :root, which restyled all ~5,800
+   elements of a full Feed — measured 27–31ms, one dropped frame at the start of every fold, open and search (the
+   same change on the deck alone: under 0.1ms). Now they are set where they are read: the deck itself and the popup
+   layer it lifts. The page keeps the open ticker's clearance (--cc-space, the drum's foot), a few px more room when
+   it is folded, so the Feed is never restyled by the deck.
+   The ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it doesnt
+   have to acomidate for the size of the ticker anymore"): the deck is the row alone. */
+.ccenter[data-ad="line"] { --ad-h: 0px; }
+/* folding, the deck shortens on the band's own curve (the house's from-one-place-to-another), only longer, so the band
+   is always further shut than the keys have come down and they never cross it (the ads wink, 29 Oct 2026: with the
+   band on that curve and the deck still on ease-out, the keys came 0.9px into the closing band); opening, ease-out */
+.ccenter[data-ad="line"] { --ease-deck: var(--ease-in-out); }
+/* a popup risen with the deck (search) stands on its top: the row, the rise, and the ticker when it is open */
+body:has(.ccenter.ccsearching) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
+body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
@@ -3414,7 +3528,7 @@ body { font-size: 14px; }
   bottom: var(--cc-bottom);
   display: flex; flex-direction: column; justify-content: flex-end;
   border-radius: var(--dk-r);
-  transition: height 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: height var(--dur-3) var(--ease-deck);
 }
 /* SEARCH: the deck extends upward to make room for the bar (Figure 1) */
 .ccenter.ccsearching { height: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
@@ -3422,11 +3536,11 @@ body { font-size: 14px; }
 .ccrow { position: relative; flex: none; height: var(--dk-h); display: grid; grid-template-columns: 40fr 665fr 40fr; }
 .cctabs { display: grid; grid-template-columns: 123fr 127fr 162fr 126fr 127fr; min-width: 0; }
 .cccap { position: relative; }
-.ccenter .tabl, .ccenter .cckey-mail, .ccenter .ccpostwrap { min-width: 0; }
+.ccenter .tabl, .ccenter .ccpostwrap { min-width: 0; }
 .ccenter .tabl {
   position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
   padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 9); text-decoration: none;
-  color: var(--ink); text-shadow: none; transition: background 0.18s, color 0.18s, transform 0.12s;
+  color: var(--ink); text-shadow: none; transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
 .ccenter .tabl .ic { width: calc(var(--u) * 56); height: calc(var(--u) * 56); min-width: 20px; min-height: 20px; }
 .ccenter .tabl.cur { color: var(--red); }
@@ -3452,30 +3566,22 @@ body { font-size: 14px; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   min-height: 52px; min-width: 52px; padding: 4px 6px; border-radius: 9px; border: 0; background: none; cursor: pointer;
   font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.1em; color: var(--grey); text-shadow: none;
-  transition: background 0.18s, color 0.18s;
+  transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
 }
 .cckey:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .cckey.cur { color: var(--ink); background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .cckey.cur .ic { color: var(--red); }
-.ccenter .cckey-mail { position: relative; display: flex; }
-.ccenter .maildesk { position: static; display: flex; width: 100%; }
-.ccenter .mailbtn { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: calc(var(--u) * 6) 0 0; border-radius: calc(var(--u) * 9); border: 0; background: none; color: var(--ink); }
-.ccenter .mailbtn .ic { width: calc(var(--u) * 56); height: calc(var(--u) * 56); min-width: 20px; min-height: 20px; }
-.ccenter .mailbtn.cur { border: 0; }
-.ccenter .mailbtn.cur { color: var(--red); }
-.ccenter .mailword { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.ccenter .mailpanel { position: absolute; top: auto; bottom: calc(100% + 10px); left: 0; right: 0; width: auto; max-height: 60vh; overflow-y: auto;
-  border: 1px solid var(--line); border-radius: 11px; box-shadow: 0 18px 50px color-mix(in srgb, var(--shade) 16%, transparent); }
-.ccenter .cckey-mail .mailpanel { left: auto; right: calc(var(--u) * -250); width: min(360px, calc(100vw - 24px)); }
 /* the search bar the deck rises to hold: a groove of its own in the glass */
 .ccsearch {
   flex: none; display: flex; align-items: center; gap: calc(var(--u) * 14);
   height: var(--dk-rise); padding: calc(var(--u) * 26) calc(var(--u) * 40 * var(--dk-sx)) 0;
-  animation: ccrise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: ccrise var(--dur-3) var(--ease-out);
 }
 @keyframes ccrise { from { opacity: 0; transform: translateY(10px); } }
+/* a little thinner (owner, 28 Oct 2026: "the search bar be a little thinner"): about 80% of the rise's
+   room, centred in it, never under 28px (a finger's row) */
 .ccfield {
-  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; height: 100%; max-height: 44px;
+  flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; height: max(28px, calc(var(--u) * 68));
   padding: 0 6px 0 12px; border-radius: 999px; color: var(--grey);
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   background: color-mix(in srgb, var(--shade) 10%, transparent);
@@ -3491,55 +3597,171 @@ body { font-size: 14px; }
 .ccamark { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 32px; padding: 0 6px; border: 0; border-radius: 999px; background: none; color: var(--grey); cursor: pointer; }
 .ccwide { flex: none; font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); text-decoration: none; padding: 6px 8px; white-space: nowrap; }
 .ccclose { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; }
+/* DISCOVER in the search bar (29 Oct 2026): a key beside the field, the way to browse without typing (DiscoverSheet.jsx) */
+.ccdiscover { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 9px 0 7px; border: 0; border-radius: 999px; cursor: pointer;
+  font: 7.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--ink); background: color-mix(in srgb, var(--shade) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); transition: transform var(--dur-1) var(--ease-out); } /* ringed as the field is: a border, never a shadow of the light ink */
+.ccdiscover:active { transform: scale(0.96); }
+/* once something is typed the key folds to its compass and the field takes the room (it was cut to "Searc") */
+.ccdiscover.folded { padding: 0 7px; }
+.ccdiscover.folded .ccdisclbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.ccdiscover:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+/* the label stays on a phone (it is the way to browse: a compass alone was not read as one); only the smallest
+   screens keep the compass alone, the label for assistive technology (below, after the popup's rules) */
 @media (prefers-reduced-motion: reduce) { .ccenter { transition: none; } .ccsearch { animation: none; } }
-/* the ad strip: at the head of the Feed now (off the deck, 19 Oct 2026), a
-   rounded strip in the page's flow with its own stable height */
-/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): a long pill
-   beneath the keys and above the vent, the ticker's scroll wheel inside it.
-   The pill is 52 tall and ends 8 above the grill's top lip (11 + 11); it
-   reaches 18 up into the row's empty foot, under the cuts' lower ends (52),
-   so the deck grows by --ad-h alone */
-.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 calc(var(--u) * 40 * var(--dk-sx)) calc(var(--u) * 30); box-sizing: border-box; }
+/* THE AD BUBBLE on the deck (owner, 25 Oct 2026, last): beneath the keys and
+   above the vent; it reaches 18 up into the row's empty foot, under the cuts'
+   lower ends (52), and ends above the grill's top lip, so the deck grows by
+   --ad-h alone.
+   THE TICKER ROUND THE DECK (owner, 28 Oct 2026, the MAD-S player's display;
+   then "i said clouded no black, i just wanted it more clouded than the
+   fixture and i wanted the bar to stretch the entirety of the fixture … wrap
+   around the whole thing 360 degrees"; AdStrip.jsx, lib/adcrawl.js): a band
+   of cloud — frosted, heavier than the deck's own glass, never black — across
+   the deck edge to edge, turning round each side as a quarter cylinder of
+   radius --ad-r: WRAP_SLICES flat slices a side, each the band's arc laid
+   flat and squeezed from its left edge, so the words narrow to nothing at
+   the deck's silhouette and run on round the back. The entries crawl as one
+   glowing white line of Share Tech Mono, regular, at -0.0875em (the owner's
+   "-8.5 to -9 kerning", Procreate's per-cent of the em); ADs is knocked out
+   of a glowing white chip at the face's left. */
+.ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 26); box-sizing: border-box;
+  transition: height var(--dur-3) var(--ease-deck); /* in step with the deck's own height, so the row never leaves the glass */ }
+/* OPEN AND SHUT — THE WINK (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse
+   … the first animation should be the ticker opening. all these animations should be quick and smooth";
+   then "the transitions isnt clean … the ticker should wink into the glow white line and the bezels of the
+   ticker should slightly glow so as its winking it looks clean"). The band's centre line sits a fixed
+   52 units above the deck's foot (the bubble's 26 of padding and half its 52), open or folded, so
+   nothing has to jump: folding, the band is clipped shut onto that line from above and below while its
+   two glowing bezels travel in with the clip and meet on it — one glowing line — and the broken line
+   takes over exactly there as they fade; the keys settle down onto it as the deck shortens, more slowly
+   than the band closes, so they never cross it. Opening is the same, reversed.
+   CLEANER (owner, 29 Oct 2026: "the ads wink isnt clean enough"; measured frame by frame at 375px): the band shut
+   80% in its first 60ms and crept the last 3px for 100ms more before the line came (a snap, a stall, then light);
+   the bezels met as two whole hairlines and only then did the ends vanish and the breaks open; opening, the line
+   was gone before the bezels were lit. Now the band and its bezels close as one lid, on the house's from-one-place-
+   to-another curve; the bezels take the line's own shape as they close (AdStrip.jsx --rim-open / --rim-shut, lib/
+   adcrawl.js rimClip), so where they meet they already are the line and the hand-over is light alone — the line
+   comes up under them as they touch, then they go; opening, they are lit over the line before it goes. */
+.adtrack { clip-path: inset(0 0 0 0); transition: clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
+.adstrip.shut .adtrack { clip-path: inset(50% 0 50% 0); opacity: 0; transition: clip-path var(--dur-2) var(--ease-in-out), opacity var(--dur-0) 160ms var(--ease-in); }
+.adstrip.shut { pointer-events: none; }
+/* the bezels: a hairline along the band's top and bottom, glowing slightly, the whole length round both sides */
+.adrim { position: absolute; z-index: 3; left: 0; right: 0; height: 1px; pointer-events: none; background: var(--ad-rim-c); box-shadow: var(--ad-rim-glow);
+  clip-path: var(--rim-open, none);
+  transition: transform var(--dur-3) var(--ease-out), clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
+.adrimtop { top: 0; }
+.adrimbot { bottom: 0; }
+/* folding, the shape is taken first (--dur-1) and the meeting second (--dur-2): they touch as the line, never as a
+   hairline still drawing in its ends (measured with both on --dur-2: 0.52px of shape left at the meeting) */
+.adstrip.shut .adrim { clip-path: var(--rim-shut, none); opacity: 0; transition: transform var(--dur-2) var(--ease-in-out), clip-path var(--dur-1) var(--ease-in-out), opacity var(--dur-1) 220ms var(--ease-in); }
+.adstrip.shut .adrimtop { transform: translateY(calc(var(--u) * 26 - 0.5px)); }
+.adstrip.shut .adrimbot { transform: translateY(calc(var(--u) * -26 + 0.5px)); }
+/* THE LINE (ControlCenter.jsx AD_LINE): where the bezels meet — on the band's centre line, a stretch under
+   each key, broken (--ad-brk) at every cut between them, in the Masthead's glow; it comes in as the
+   bezels arrive and goes as they part, once they are lit over it (ease-in: it holds while they come up) */
+.ccadline { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--u) * 52 - var(--ad-line-h) / 2); height: var(--ad-line-h); pointer-events: none;
+  --ad-line-h: max(1.5px, calc(var(--u) * 4)); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-0) var(--ease-in); }
+.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-1) 160ms var(--ease-out); }
+/* the break is the bubble's, so the bezels' shut shape breaks where the line does */
+.ccad { --ad-brk: calc(var(--u) * 14); }
+.ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
+  left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
+.adprobe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
 .adstrip {
-  height: calc(var(--u) * 52); flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 0 14px; margin: 0;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--paper) 22%, transparent);
-  font-size: 10px; letter-spacing: 0.08em; color: var(--ink); overflow: hidden;
+  --ad-r: calc(var(--u) * 34 * var(--dk-sx)); /* each side's radius: the face keeps the pill's place, a touch longer */
+  --ad-q: 1.5708; /* a quarter turn, in radians: the arc of each side, in radii */
+  /* anchored to the bubble's foot, so its centre line never moves while the bubble opens and folds */
+  position: absolute; left: 0; right: 0; bottom: calc(var(--u) * 26); height: calc(var(--u) * 52); min-width: 0; margin: 0; box-sizing: border-box;
+  font: 400 max(10px, calc(var(--u) * 25))/1 var(--mono); letter-spacing: -0.0875em; color: var(--ad-glyph);
 }
-.adline { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; color: var(--ink); text-decoration: none; }
-.adline:hover .adtext { color: var(--sig); }
+.adtrack { position: absolute; inset: 0; container-type: inline-size; }
+/* one cloudscape along the band: the face shows its stretch unrolled, and each side is ONE smooth piece of
+   it (never sliced — sliced, every slice's cloud and shade stepped, and the turn read as stripes), matched
+   to the face where they meet */
+/* (the bezel along its top and bottom edges is .adrim, above: it runs the band's whole length, round both
+   sides — owner, 28 Oct 2026: "why does the bezel that is on the top and bottom of the ticker dissapear
+   it should run the entirety") */
+.adface, .adside { position: absolute; top: 0; bottom: 0; overflow: hidden; background: var(--ad-cloud); background-size: calc(100cqw - 2 * var(--ad-r) + 2 * var(--ad-q) * var(--ad-r)) 100%; }
+.adface { left: var(--ad-r); right: var(--ad-r); display: flex; align-items: center; background-position: calc(-1 * var(--ad-q) * var(--ad-r)) 0; }
+.adside { width: var(--ad-r); }
+.adside.l { left: 0; background-position: calc(-1 * (var(--ad-q) - 1) * var(--ad-r)) 0; }
+.adside.r { right: 0; background-position: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r))) 0; }
+/* the side turns from the light: one smooth shade, deepening as 1 − cos of the turn toward the silhouette */
+.adside::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.adside.l::after { background: linear-gradient(90deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
+.adside.r::after { background: linear-gradient(270deg, var(--ad-turn-c) 0%, color-mix(in srgb, var(--ad-turn-c) 62%, transparent) 10%, color-mix(in srgb, var(--ad-turn-c) 28%, transparent) 30%, color-mix(in srgb, var(--ad-turn-c) 9%, transparent) 60%, transparent 100%); }
+.adslice { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * var(--ad-r)); width: calc(var(--arc) * var(--ad-r)); overflow: hidden; transform-origin: 0 50%; transform: scaleX(var(--s)); }
+/* the band, in its own unrolled coordinates in every piece: continuous round both sides */
+.adband { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: pre; will-change: transform;
+  /* THE TYPING (lib/adcrawl.js typingFor): the words show only between the edge where they are typed in
+     (--t-in, round the right side) and the edge where they are typed out (--t-out, round the left), both
+     on the cell grid; the edges are a mask in the band's own frame */
+  -webkit-mask-image: linear-gradient(90deg, transparent var(--t-out), #000 var(--t-out), #000 var(--t-in), transparent var(--t-in));
+  mask-image: linear-gradient(90deg, transparent var(--t-out), #000 var(--t-out), #000 var(--t-in), transparent var(--t-in));
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-position: 0 0; mask-position: 0 0; }
+.adface .adband { left: calc(-1 * var(--ad-q) * var(--ad-r)); }
+.adside.l .adslice .adband { left: calc(-1 * var(--from) * var(--ad-r)); }
+.adside.r .adslice .adband { left: calc(-1 * (100cqw - 2 * var(--ad-r) + var(--ad-q) * var(--ad-r) + var(--from) * var(--ad-r))); }
+.adseq, .adentry { display: flex; flex: none; }
+.adword { flex: none; color: inherit; text-decoration: none; text-shadow: var(--ad-glow); }
+/* the dot between entries is characters on the grid too (lib/adcrawl.js SEP), never a margin */
+.adsep { flex: none; opacity: 0.55; text-shadow: var(--ad-glow); }
+a.adword:hover { color: var(--ad-chip); }
+/* the negative imprint: a small solid red chip glowing red at the face's left, the word cut out of it to the band's tone; the words pass under it */
+.adslot { position: absolute; z-index: 1; left: calc(var(--u) * 10); top: 50%; transform: translateY(-50%); font-size: 0.78em; padding: 0.14em 0.3em 0.1em 0.26em; border-radius: 2px; background: var(--ad-chip); color: var(--ad-chip-ink); box-shadow: var(--ad-chip-glow); line-height: 1; }
+/* "flowing extremely smooth like a rolex no actual ticking": the band glides, linear, on the compositor;
+   only the typing edges step — one whole character each step, n steps a loop, so they keep time with
+   the glide forever */
+.adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite, adtype var(--crawl-s) steps(var(--t-n), end) infinite; }
+.adstrip.held .adband { animation-play-state: paused; }
+@keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
+@keyframes adtype { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--crawl-l) 0; mask-position: var(--crawl-l) 0; } }
+@media (prefers-reduced-motion: reduce) { .adstrip.run .adband { animation: none; } }
+/* the wink, still: under reduced motion the ticker is open or folded at once (it winked regardless, before) */
+@media (prefers-reduced-motion: reduce) { .adtrack, .adrim, .ccadline, .ccenter[data-ad="line"] .ccadline { transition: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
 .adtag.sponsored { color: var(--red); border-color: var(--red); }
 .adtag.draft { color: var(--p2); border-color: var(--p2); }
 .adtag.asilum { color: var(--ink); border-color: var(--ink); }
-.adtext { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.adnav { display: inline-flex; align-items: center; gap: 4px; flex: none; }
-.adbtn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--grey); cursor: pointer; }
-.adbtn:hover { color: var(--ink); border-color: var(--ink); }
-.adbtn .flip { transform: scaleX(-1); }
-.adcount { font-size: 9px; letter-spacing: 0.12em; color: var(--grey); }
 
 /* ---- the one sheet ------------------------------------------------- */
 .sheetscrim {
   position: fixed; inset: 0; z-index: 64; display: flex; align-items: center; justify-content: center;
-  padding: calc(var(--head-h) + 8px) 0 var(--cc-space); box-sizing: border-box; /* clear of the Masthead (26 Oct 2026) */
+  padding: 0; box-sizing: border-box; /* the card in the middle of the screen; its height keeps it clear of both fixtures (--pop-h) */
   background: var(--scrim);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-/* THE SEARCH (the owner's image 2, 25 Oct 2026): the centre control deck
-   morphs — the search popup rises out of it, its foot meeting the deck's
-   head in one housing; every other popup floats in the middle */
-.sheetscrim:has(> .sheet.deckrise) { align-items: flex-end; padding-bottom: calc(var(--cc-row-h) + var(--cc-bottom)); }
-.sheet.deckrise { border-radius: max(var(--sheet-radius), 19px) max(var(--sheet-radius), 19px) 0 0; border-bottom: 0; }
-/* THE POPUP (owner, 25 Oct 2026, evening): a large rounded square floating
-   in the middle of the screen, the page clouded behind it */
-.sheet {
-  width: min(var(--cc-w), calc(100vw - 20px)); height: 60vh; max-height: calc(100vh - var(--head-h) - 20px - var(--cc-space));
-  margin-bottom: 0; display: flex; flex-direction: column; min-height: 0;
-  background: var(--bg); border: 1px solid var(--line); border-radius: max(var(--sheet-radius), 19px);
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
-  animation: sheetin 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+/* THE POPUP IS A LARGE CARD (owner, 29 Oct 2026: "all the pop up tabs have to look like cards four rounded corners
+   and it being centered in the screen, lowkey every pop up tab should be the size of a large card"). Every view, the
+   search too (it rose out of the deck, 25 Oct, its foot square — retired), is one card: a large card's width
+   (a phone's Feed width; from 560px half the screen less a gap, as the twelve-column Feed's large card is, at most
+   460px) and its height (the Feed's --ed-feed-large, 80% of the screen), in the middle of the screen, the four
+   corners a card's. Its height gives way only to keep it clear of the Masthead and the deck (--pop-clear, the
+   larger of the two, both ends, so it stays centred). The page is clouded behind it. */
+:root { --pop-w: calc(100vw - 16px); }
+@media (min-width: 560px) { :root { --pop-w: min(calc(50vw - 28px), 460px); } }
+.sheetscrim {
+  --pop-clear: max(calc(var(--head-h) + 8px), calc(var(--cc-row-h) + var(--cc-bottom) + 8px));
+  --pop-h: min(var(--ed-feed-large, 80svh), calc(100svh - 2 * var(--pop-clear)));
 }
-.sheet.tall { height: calc(100vh - var(--head-h) - 20px - var(--cc-space)); }
+/* the deck's height as it stands: its ticker folded (a popup over a folded deck is not cut short for a ticker
+   that is not there); the risen search's rules below win */
+body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
+.sheet {
+  margin: 0; display: flex; flex-direction: column; min-height: 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-card);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--shade) 22%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
+  animation: sheetin var(--dur-3) var(--ease-out);
+}
+/* the popup's size, the large card's: on the popup only, never on an overlay's sheet (below) */
+.sheetscrim > .sheet { width: var(--pop-w); height: var(--pop-h); max-height: none; }
+/* a field in focus: the card rises under the Masthead, the same size, clear of a phone's keyboard */
+.sheet.typing { align-self: flex-start; margin-top: calc(var(--head-h) + 8px); }
+/* an overlay's sheet (the sign-up, the password reset, the first visit's connect) is not a popup and is not a large
+   card: it keeps its own height, never past the screen, and scrolls (bug run, 29 Oct 2026: the large card's size,
+   on every .sheet, left a tall sign-up growing off a short phone with its close key out of reach) */
+.overlay > .sheet { display: block; max-height: calc(100svh - 40px); overflow-y: auto; }
 @keyframes sheetin { from { transform: translateY(12px) scale(0.97); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -3551,7 +3773,16 @@ body { font-size: 14px; }
 .sheetbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 7px; background: none; color: var(--sig); cursor: pointer;
   font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; text-shadow: none; }
 .sheetbtn:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.sheetbody { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 28px; }
+.sheetbody { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+/* THE TABS KEPT ALIVE (owner, 27 Oct 2026; SheetHost.jsx): each view of each
+   tab is its own scroller; out of sight it stays laid out — hidden, inert —
+   so its scroll and state are as they were left. A dismissed popup stays
+   laid out too, unseen and untouchable (data-kept), and opens again with its
+   own entrance. */
+.sheetpane { position: absolute; inset: 0; overflow-y: auto; padding: 14px 18px 28px; }
+.sheetpane:not([data-live]) { visibility: hidden; pointer-events: none; }
+.sheetscrim[data-kept] { visibility: hidden; pointer-events: none; }
+.sheetscrim[data-kept] .sheet { animation: none; }
 .sheetnote .fine, .likesfine, .fine { font-size: 12px; line-height: 1.5; color: var(--grey); letter-spacing: 0.02em; }
 .sheetbody .deck { font-style: normal; font-family: var(--helv); font-size: 15px; color: var(--ink); }
 /* likes and result lists */
@@ -3604,7 +3835,7 @@ body { font-size: 14px; }
 .maptool {
   display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 76px; padding: 10px 6px; border-radius: 11px;
   border: 1px solid var(--line); background: var(--paper); color: var(--grey); cursor: pointer; text-align: center;
-  font-family: var(--mich); font-size: 9px; letter-spacing: 0.14em; transition: background 0.18s, color 0.18s, border-color 0.18s;
+  font-family: var(--mich); font-size: 9px; letter-spacing: 0.14em; transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
 }
 .maptool small { font-family: var(--helv); font-size: 9px; letter-spacing: 0.08em; text-transform: lowercase; color: var(--grey); }
 .maptool:hover { color: var(--ink); border-color: var(--ink); }
@@ -3615,9 +3846,6 @@ body { font-size: 14px; }
   .maplayout { grid-template-columns: 1fr; }
   .maptools { position: static; flex-direction: row; order: -1; }
   .maptool { flex: 1; min-height: 64px; }
-  .sheet { width: 100vw; border-radius: var(--sheet-radius) var(--sheet-radius) 0 0; margin-bottom: 0; max-height: calc(100vh - var(--head-h) - 8px - var(--cc-space)); } /* between the Masthead and the deck */
-  .sheetscrim { align-items: flex-end; }
-  .sheetbody { padding-bottom: calc(var(--cc-space) + 12px); }
   .sheetbody .srchgrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 360px) {
@@ -3740,21 +3968,23 @@ body { font-size: 14px; }
   height: var(--head-h); padding: env(safe-area-inset-top, 0px) var(--dk-edge) 0;
   border-radius: 0;
 }
-.mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88); }
+/* the Masthead's own shadow, faint and close: it gives off light more than it blocks it (owner, 28 Oct 2026) */
+.masthead.fixture { box-shadow: 0 5px 14px -9px color-mix(in srgb, var(--shade) 22%, transparent), var(--glass-lip); }
+.mhkeys { display: flex; align-items: stretch; flex: none; height: calc(var(--u) * 88 * var(--mk, 1)); }
 .infodock { display: flex; align-items: stretch; }
 .passportbtn {
-  position: relative; display: inline-flex; flex: none; width: calc(var(--u) * 97); align-items: center; justify-content: center;
+  position: relative; display: inline-flex; flex: none; width: calc(var(--u) * 97 * var(--mk, 1)); align-items: center; justify-content: center;
   border-radius: calc(var(--u) * 7);
-  color: var(--ink); text-decoration: none; transition: color 0.18s, transform 0.12s;
+  color: var(--ink); text-decoration: none; transition: color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
-.passportbtn .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.passportbtn .ic { width: calc(var(--u) * 50 * var(--mk, 1)); height: calc(var(--u) * 50 * var(--mk, 1)); min-width: calc(19px * var(--mk, 1)); min-height: calc(19px * var(--mk, 1)); }
 .passportbtn.cur { color: var(--red); }
 .idkey {
   position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none;
-  width: calc(var(--u) * 97); height: 100%; border: 0; border-radius: calc(var(--u) * 7); background: none; color: var(--ink); cursor: pointer;
-  transition: background 0.18s, color 0.18s, transform 0.12s;
+  width: calc(var(--u) * 97 * var(--mk, 1)); height: 100%; border: 0; border-radius: calc(var(--u) * 7); background: none; color: var(--ink); cursor: pointer;
+  transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
-.idkey .ic { width: calc(var(--u) * 50); height: calc(var(--u) * 50); min-width: 19px; min-height: 19px; }
+.idkey .ic { width: calc(var(--u) * 50 * var(--mk, 1)); height: calc(var(--u) * 50 * var(--mk, 1)); min-width: calc(19px * var(--mk, 1)); min-height: calc(19px * var(--mk, 1)); }
 .idkey.cur { color: var(--red); }
 .idcount {
   position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
@@ -3792,12 +4022,11 @@ body { font-size: 14px; }
   border: 1.5px solid color-mix(in srgb, var(--ink) 88%, transparent); color: var(--ink);
   background: radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--paper) 22%, transparent), transparent 70%);
   box-shadow: inset 0 1px 2px color-mix(in srgb, var(--paper) 45%, transparent), inset 0 -2px 4px color-mix(in srgb, var(--shade) 16%, transparent), 0 2px 8px color-mix(in srgb, var(--shade) 14%, transparent);
-  transition: transform 0.12s, color 0.18s, border-color 0.18s;
+  transition: transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out);
 }
 .ccenter .tabl.ccpost .ccdisc .ic { width: 54%; height: 54%; min-width: 0; min-height: 0; } /* the plus a little smaller (owner, 26 Oct 2026: "shrink it slightly"; was 62%) */
 .ccenter .tabl.ccpost:active .ccdisc { transform: scale(0.95); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--red); border-color: var(--red); }
-.ccenter .tabl.ccfallback { border: 0; background: none; cursor: pointer; }
 /* a key is a key whether it is an <a> or a <button> */
 .ccenter button.tabl { border: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
 .ccenter .cctabs .tabl { font-family: var(--mich); }
@@ -3805,46 +4034,54 @@ body { font-size: 14px; }
 /* the deck's keys and the sheet buttons press like compact buttons (blueprint
    "compact buttons feel tactile"): a tiny depression, a spring back */
 .ccenter .tabl:not(.hkey):active, .sheetbtn:active, .cctog:active { transform: scale(0.96); }
-.ccenter .tabl, .sheetbtn, .cctog { transition: background 0.18s, color 0.18s, transform 0.12s; }
+.ccenter .tabl, .sheetbtn, .cctog { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), transform var(--dur-1) var(--ease-out); }
 
-/* THE WORDMARK (owner, 19 Oct 2026: "the *ASILUM logo becomes a fixture
-   that permanently sits in the left hand corner"; 26 Oct 2026: "so the logo
-   can sit on it"): on the Masthead at the left, its left edge in line with
-   the deck's; the word's foot sits the stamp gap above the stamped line (the
-   artwork's ink ends at row 140 of its 200); it dims with the bar */
+/* THE WORDMARK'S PLACE (owner, 19 Oct 2026: "the *ASILUM logo becomes a
+   fixture that permanently sits in the left hand corner"; 28 Oct 2026, the
+   new logo: "the same placement as the old logo", then "more in the corner"
+   and "the line should sit under the thick logo line"): on the Masthead at
+   the left, its left edge in line with the deck's, the capitals as tall as
+   the old logo's. THE LINE INTEGRATED (owner, 29 Oct 2026: "new logo with the masthead line intergated"): the
+   brick's foot is the line's foot, the brick's shoulder slants down into the line, and the line runs on to the
+   keys, one white; it dims with the bar */
 .brandfix {
-  position: relative; flex: none; align-self: flex-start;
-  margin-top: calc(var(--mh-line-top) - var(--mh-gap) - var(--wm-w) * 140 / 900);
-  display: inline-flex; flex-direction: column; justify-content: flex-start; align-items: stretch;
-  text-decoration: none;
+  position: relative; z-index: 2; flex: none; align-self: flex-start;
+  margin-top: calc(var(--mh-line-top) + var(--mh-line-h) - var(--wm-u) * 153.753); /* the line's foot less the box's height (lib/wordmark.js brickBox) */
 }
-/* THE STAMPED LINE (owner, 26 Oct 2026, Ref 2, then "thinner to larger"):
-   imprints pressed into the Masthead's glass from the left edge of the A
-   (column 19 of the artwork's 900) to the Passport's globe, graduated —
-   three small and a large, each group a size up (Masthead.jsx STAMP; the
-   columns are fractions, so it fills the span exactly at every width) —
-   the last large block centred under the globe. Just below the keys'
-   glyphs, the word the stamp gap above it. A stamp, flat (owner, the
-   same day: "it should feel like a stamp", then "no shadow at all"): square
-   edges and a tone in the glass (--stamp-recess), nothing else — no
-   shadow, no hairline, no filter; no colour of their own but the block
-   under the globe, blue, flat the same way. */
+/* THE LINE (owner, 28 Oct 2026; Masthead.jsx, lib/mastline.js): thin, white,
+   in the logo's white glow, just under the keys' glyphs and under the logo's
+   bar, from the logo's left edge to the Passport's hit box; broken
+   (--mh-break) where two keys' hit boxes meet and where the first begins;
+   between two keys a faint cut, the deck's hairline (.cccut), centred on the
+   keys' row. The keys are 10% bigger (--mk, the same day: "the info dock and
+   passport buttons should be about 10% bigger"). */
 .masthead {
-  --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* .wmimg's width */
-  --mh-line-top: calc(33px + max(var(--u) * 25, 9.5px) + 2.5px); /* the row's middle, half a glyph, a breath */
-  --mh-line-h: max(1.5px, calc(var(--wm-w) * 12 / 900)); /* thin (owner, 26 Oct 2026, twice): 2px on a desktop, 1.5 on a phone; the artwork's bar was 45 of its 900 */
-  --mh-gap: calc(var(--wm-w) * 18 / 900);    /* the artwork's gap was 4 */
+  --wm-w: clamp(107.25px, 28.875vw, 151.25px); /* the old logo's width: the measure the logo keeps */
+  --wm-u: calc(var(--wm-w) * 129 / 900 / 120.75); /* one unit of the logo's 161: the old capitals' height over the new capitals' 120.75 */
+  --mk: 1.1; /* the keys' size */
+  --mh-line-top: calc(33px + max(var(--u) * 25 * var(--mk), 9.5px * var(--mk)) + 2.5px); /* the row's middle, half a glyph, a breath */
+  --mh-line-h: calc(var(--wm-u) * 16); /* the brick's line (lib/wordmark.js LINE; "make the masthead line thinner", 29 Oct 2026): 2px on a phone, 2.9 on a desktop */
+  --mh-break: calc(var(--u) * 14);
 }
-.mhstamp {
-  position: absolute; z-index: 1; pointer-events: none; display: grid; align-items: stretch;
-  left: calc(var(--dk-edge) + var(--wm-w) * 19 / 900);
-  right: calc(var(--dk-edge) + var(--u) * 97 / 2);
+.mhline {
+  position: absolute; z-index: 1; left: 0; right: 0; pointer-events: none;
   top: calc(env(safe-area-inset-top, 0px) + var(--mh-line-top)); height: var(--mh-line-h);
+  filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-3) var(--ease-out);
 }
-.mhstamp i {
-  display: block; grid-row: 1; border-radius: 0; background: var(--stamp-recess);
+.mhline.on { opacity: 1; }
+.mhline i {
+  position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
+  left: calc(var(--a) + var(--gl) * var(--mh-break) / 2);
+  width: calc(var(--b) - var(--a) - (var(--gl) + var(--gr)) * var(--mh-break) / 2);
 }
-.mhstamp i.lit { width: 200%; background: var(--stamp-blue); }
+.mhcuts { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+/* the break, measured (Masthead.jsx): where the logo's tail ends, half a break short of the first key */
+.mhbrk { position: absolute; left: 0; top: 0; width: var(--mh-break); height: 0; visibility: hidden; pointer-events: none; }
+.mhcuts i {
+  position: absolute; left: var(--x); top: calc(env(safe-area-inset-top, 0px) + 33px - var(--u) * 65 / 2); height: calc(var(--u) * 65);
+  width: 1px; transform: translateX(-50%); border-radius: 1px;
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
+}
 
 /* notices (the bell's sheet) */
 .notices { display: grid; gap: 8px; }
@@ -3857,18 +4094,15 @@ body { font-size: 14px; }
 /* ---- V.2 slice 2: the popup grammar, the Disc, the session hub ------- */
 /* while a popup is up the fixtures go translucent (blueprint 1.12); the
    Masthead spans the page, so it fades and does not shrink */
-[data-popup] .fixture { opacity: 0.55; transition: opacity 0.22s; }
+[data-popup] .fixture { opacity: 0.55; transition: opacity var(--dur-2) var(--ease-out); }
 [data-popup] .fixture:hover { opacity: 0.9; }
-.fixture { transition: opacity 0.22s; }
+.fixture { transition: opacity var(--dur-2) var(--ease-out); }
 /* a phone's header has no room for BACK, the title, the counter and two
    labelled buttons: with BACK up the action buttons keep their glyphs only */
 /* (18 Oct) on a phone the header's keys keep their glyphs only — with the
    labels the title, the session count and EXPAND overlapped at 375px; the
    aria-label still names each key */
 @media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
-.sheetcount { display: inline-block; margin-left: 10px; padding: 1px 6px; border-radius: 8px; border: 1px solid var(--line); font: 9px/14px var(--mich); letter-spacing: 0.1em; color: var(--grey); vertical-align: middle; }
-.sheet.roomy { height: min(74vh, 660px); }
-.sheet.hubsheet .sheetbody { display: flex; flex-direction: column; padding: 10px 14px 18px; }
 
 /* the Post disc's second life: the session indicator (1.25) */
 .ccpostwrap { position: relative; display: flex; }
@@ -3876,68 +4110,102 @@ body { font-size: 14px; }
 /* THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166). While a
    Feed carousel is centred, or the POST cards are up (ControlCenter.jsx),
    the deck carries data-wheel: the plus rides up out of the deck on a pill
-   tray, a dark disc shows in its slot, and the wheel grows out of the
-   plus's ring round the tray, its centre between the two, about 2.25 deck
-   heights across. The plus and the dark disc keep the look they have ("don't
-   change the look of the upload or the disc"); the wheel and the tray are
-   the fixtures' own liquid glass ("the disc scroll wheel has to be made of
-   the same liquid glass as the fixtures. no added colors"): the same tint,
-   the same bend, the shadow and the lip, no ink ring, no coloured mark —
+   tray, its slot left an empty space, and the wheel grows out of the
+   plus's ring, CENTRED ON THE PLUS — the plus is its hub and turning point
+   and never turns itself (owner, 27 Oct: "the upload button should be its
+   middle and its turning point") — 2.25 deck heights across, then 15% more
+   (28 Oct). The plus is lifted to the deck's top edge exactly (--eject), so
+   its stroke, the wheel's centre and its 3 and 9 o'clock marks lie on that
+   edge, flush (28 Oct); the wheel's lower half sits behind the deck. The plus keeps its look. The wheel and the tray are the
+   fixtures' liquid glass (the tint, the shadow and the lip, no ink ring, no
+   coloured mark), and the wheel's pane alone bends with the V.1 rainbow
+   (27 Oct, .ccwglass below) —
    the four marks at 12 / 3 / 6 / 9 are pressed into the glass in its own
-   tone, like the Masthead's stamped line. One continuous transformation,
+   tone, like the Masthead's old stamped line. One continuous transformation,
    reversed on close: opening, the tray first and then the wheel; closing,
    the wheel first and then the tray. Reduced motion: no travel. */
 .ccpostwrap {
   --disc: max(34px, calc(var(--u) * 88));       /* the POST disc's size */
   --cy: calc(50% + var(--u) * 3);               /* the disc's centre in its key */
-  --eject: calc(var(--dk-h) * 0.62);            /* how far the tray carries the plus: just above the deck */
-  --wheel-d: calc(var(--dk-h) * 2.25);          /* the wheel, across */
-  --tray-ease: cubic-bezier(0.3, 0.75, 0.25, 1);
+  /* the plus carried up to the deck's TOP EDGE (owner, 28 Oct 2026: "the two
+     ticks on the left and right and the horizontal line in of the upload
+     button should lie directly on the top edge of the center fixture"): the
+     key is the row's height (--dk-h) and its disc sits at --cy, half of it
+     plus 3 units down, so a lift of exactly that puts the plus's centre —
+     its horizontal stroke, the wheel's centre and its 3 and 9 o'clock
+     marks — on the deck's top edge, flush */
+  --eject: calc(var(--dk-h) / 2 + var(--u) * 3);
+  --wheel-d: calc(var(--dk-h) * 2.25 * 1.15);   /* the wheel, across: 15% bigger (28 Oct 2026) */
+  --tray-ease: var(--ease-out);
 }
-.ccenter .ccpostwrap .tabl.ccpost { z-index: 4; transition: transform 0.42s 0.12s var(--tray-ease); }
-.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost { transform: translateY(calc(-1 * var(--eject))); transition: transform 0.42s var(--tray-ease); pointer-events: none; }
+.ccenter .ccpostwrap .tabl.ccpost { z-index: 4; transition: transform var(--dur-3) 60ms var(--ease-in-out); }
+.ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost { transform: translateY(calc(-1 * var(--eject))); transition: transform var(--dur-4) var(--ease-out); pointer-events: none; }
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost .ccdisc { pointer-events: auto; }
 /* the ejected key's focus ring hugs its disc, not the travelled key box */
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible { outline: none; }
 .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost:focus-visible .ccdisc { outline: 2px solid var(--sig); outline-offset: 3px; }
-/* the tray and the wheel: the fixtures' glass */
-.cctray, .ccwheel {
+/* the tray and the wheel's pane: the fixtures' glass. The wheel's pane is
+   a layer on <body> (.ccwglass, ScrollWheel.jsx), one level under the deck:
+   inside the deck, a Backdrop Root, its bend could never reach the Feed */
+.cctray, .ccwglass {
   background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   isolation: isolate;
 }
-.ccwheel[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+/* THE V.1 RAINBOW, THE WHEEL'S ALONE (owner, 27 Oct 2026: "i want the images
+   behind the disc to cause liquid glass distortion and refraction to cause a
+   rainbow effect"): #lg-wheel is the magazine's 9 Sep filter, red / green /
+   blue pulled 80 / 86 / 92 (RainbowGlass.jsx) */
+.ccwglass[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%); }
+.ccwglass {
+  position: fixed; z-index: 65; left: 0; top: 0; width: 0; height: 0; border-radius: 50%;
+  pointer-events: none; opacity: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
+}
+.ccwspokes { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; } /* a shape the map reads, drawing nothing */
+.ccwglass::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
+/* the tray: laid out at its full reach always, and revealed by a clip — it
+   grows from the slot to the plus with nothing re-laid out (28 Oct 2026) */
 .cctray {
-  position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--disc) / 2 - 3px);
-  width: calc(var(--disc) + 6px); height: calc(var(--disc) + 6px); transform: translateX(-50%);
+  position: absolute; z-index: 2; left: 50%; top: calc(var(--cy) - var(--eject) - var(--disc) / 2 - 3px);
+  width: calc(var(--disc) + 6px); height: calc(var(--disc) + var(--eject) + 6px); transform: translateX(-50%);
   border-radius: 999px; pointer-events: none; opacity: 0; box-shadow: var(--glass-lip);
-  transition: top 0.42s 0.12s var(--tray-ease), height 0.42s 0.12s var(--tray-ease), opacity 0.2s 0.3s;
+  clip-path: inset(var(--eject) 0 0 0 round 999px);
+  transition: clip-path var(--dur-3) 60ms var(--ease-in-out), opacity var(--dur-2) 120ms var(--ease-in);
 }
 .ccenter[data-wheel="open"] .cctray {
-  top: calc(var(--cy) - var(--eject) - var(--disc) / 2 - 3px); height: calc(var(--disc) + var(--eject) + 6px); opacity: 1;
-  transition: top 0.42s var(--tray-ease), height 0.42s var(--tray-ease), opacity 0.16s;
+  opacity: 1; clip-path: inset(0 0 0 0 round 999px);
+  transition: clip-path var(--dur-4) var(--ease-out), opacity var(--dur-1) var(--ease-out);
 }
 .ccspindle {
   position: absolute; z-index: 3; left: 50%; top: var(--cy); width: calc(var(--disc) * 0.9); height: calc(var(--disc) * 0.9);
-  padding: 0; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ink) 58%, var(--bg));
+  padding: 0; border: 0; border-radius: 50%; background: transparent; /* the slot left empty (owner, 27 Oct: "simply meant to look like an empty space") */
   transform: translate(-50%, -50%) scale(0.3); opacity: 0; pointer-events: none;
-  transition: transform 0.3s var(--tray-ease), opacity 0.2s;
+  transition: transform var(--dur-2) var(--ease-in), opacity var(--dur-2) var(--ease-in);
 }
 .ccenter[data-wheel="open"] .ccspindle {
   transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: pointer;
-  transition: transform 0.36s 0.12s var(--tray-ease), opacity 0.2s 0.12s;
+  transition: transform var(--dur-3) 60ms var(--ease-out), opacity var(--dur-2) 60ms var(--ease-out);
 }
+/* the wheel in the deck: the hand, the keys and the turning marks; its pane
+   is .ccwglass, which makes the same move with the same timing. It moves by
+   transform alone: its box always sits at rest, centred on the lifted plus
+   (the plus is the hub, 27 Oct), and closed it is carried down to the slot
+   (translateY --eject) and folded small. Opening: the plus lifts and the
+   tray grows, the wheel blooms 60ms behind them; closing: the wheel folds
+   first, the plus and the tray follow 60ms later. */
 .ccwheel {
-  position: absolute; z-index: 1; left: 50%; top: var(--cy); width: var(--wheel-d); height: var(--wheel-d);
-  border-radius: calc(var(--wheel-d) / 2); border: 0; box-shadow: var(--glass-shadow), var(--glass-lip);
-  transform: translate(-50%, -50%) scale(0.2); opacity: 0; pointer-events: none; touch-action: none;
-  transition: top 0.32s var(--tray-ease), transform 0.32s var(--tray-ease), opacity 0.22s;
+  position: absolute; z-index: 1; left: 50%; top: calc(var(--cy) - var(--eject)); width: var(--wheel-d); height: var(--wheel-d);
+  border-radius: calc(var(--wheel-d) / 2); border: 0; background: none;
+  transform: translate(-50%, -50%) translateY(var(--eject)) scale(0.2); opacity: 0; pointer-events: none; touch-action: none;
+  transition: transform var(--dur-3) var(--ease-in-out), opacity var(--dur-2) var(--ease-in);
 }
 .ccenter[data-wheel="open"] .ccwheel {
-  top: calc(var(--cy) - var(--eject) / 2); transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
-  transition: top 0.46s 0.1s var(--tray-ease), transform 0.46s 0.1s var(--tray-ease), opacity 0.3s 0.1s;
+  transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; cursor: grab;
+  transition: transform var(--dur-4) 60ms var(--ease-out), opacity var(--dur-3) 60ms var(--ease-out);
 }
-.ccwheel::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; background: var(--fx-sheen-half); }
+.ccwglass { transform: translateY(var(--ej, 0px)) scale(0.2); transition: transform var(--dur-3) var(--ease-in-out), opacity var(--dur-2) var(--ease-in); }
+.ccwglass[data-open] { transform: none; opacity: 1; transition: transform var(--dur-4) 60ms var(--ease-out), opacity var(--dur-3) 60ms var(--ease-out); }
+.ccwprobe { position: absolute; left: 0; top: 0; width: 0; height: var(--eject); visibility: hidden; pointer-events: none; }
 .ccwheel:active { cursor: grabbing; }
 .ccwheel:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; }
 .ccwring { position: absolute; inset: 0; border-radius: inherit; }
@@ -3958,17 +4226,17 @@ body { font-size: 14px; }
 .pcring {
   --card-w: clamp(84px, 24vw, 108px); --card-h: calc(var(--card-w) * 1.5); --ring-r: calc(var(--card-w) * 1.15);
   position: absolute; z-index: 5; left: 50%; width: calc(var(--card-w) * 3.2); height: var(--card-h);
-  bottom: calc(100% - var(--cy) + var(--eject) / 2 + var(--wheel-d) / 2 + 12px);
+  bottom: calc(100% - var(--cy) + var(--eject) + var(--wheel-d) / 2 + 12px);
   transform: translateX(-50%) translateY(16px) scale(0.6); transform-origin: 50% 100%; opacity: 0; pointer-events: none;
-  perspective: 900px; transition: transform 0.36s var(--tray-ease), opacity 0.22s;
+  perspective: 900px; transition: transform var(--dur-3) var(--ease-in-out), opacity var(--dur-2) var(--ease-in);
 }
 .ccenter[data-cards="open"] .pcring {
   transform: translateX(-50%); opacity: 1; pointer-events: auto;
-  transition: transform 0.44s 0.16s var(--tray-ease), opacity 0.3s 0.16s;
+  transition: transform var(--dur-4) 120ms var(--ease-out), opacity var(--dur-3) 120ms var(--ease-out);
 }
 .pcring3d {
   position: absolute; inset: 0; transform-style: preserve-3d;
-  transform: translateZ(calc(-1 * var(--ring-r))) rotateY(var(--spin)); transition: transform 0.42s var(--tray-ease);
+  transform: translateZ(calc(-1 * var(--ring-r))) rotateY(var(--spin)); transition: transform var(--dur-4) var(--ease-out);
 }
 .pccard {
   position: absolute; left: calc(50% - var(--card-w) / 2); top: 0; width: var(--card-w); height: var(--card-h);
@@ -3979,7 +4247,7 @@ body { font-size: 14px; }
   box-shadow: var(--glass-shadow), var(--glass-lip);
   backface-visibility: hidden; -webkit-backface-visibility: hidden;
   transform: rotateY(var(--a)) translateZ(var(--ring-r));
-  transition: transform 0.26s var(--tray-ease), opacity 0.26s;
+  transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out);
   font-family: var(--mich);
 }
 .pccard b { font-weight: 400; font-size: 10px; letter-spacing: 0.12em; }
@@ -3992,20 +4260,9 @@ body { font-size: 14px; }
 .pccard.grow { transform: rotateY(var(--a)) translateZ(var(--ring-r)) translateY(-40%) scale(2.6); opacity: 0; }
 .pcsoon { position: absolute; left: 50%; top: calc(100% + 6px); width: max-content; max-width: min(82vw, 320px); transform: translateX(-50%); text-align: center; }
 @media (prefers-reduced-motion: reduce) {
-  .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel, .pcring, .pcring3d, .pccard,
+  .ccenter .ccpostwrap .tabl.ccpost, .cctray, .ccspindle, .ccwheel, .ccwglass, .ccwglass[data-open], .pcring, .pcring3d, .pccard,
   .ccenter[data-wheel="open"] .ccpostwrap .tabl.ccpost, .ccenter[data-wheel="open"] .cctray, .ccenter[data-wheel="open"] .ccspindle, .ccenter[data-wheel="open"] .ccwheel, .ccenter[data-cards="open"] .pcring { transition: none; }
 }
-.cccount { position: absolute; right: -8px; top: -4px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
-.ccenter .tabl.ccsessions .ccdisc { border-style: dashed; }
-.ccmenu, .hubmenu {
-  position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 70; min-width: 180px;
-  display: grid; gap: 2px; padding: 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg);
-  box-shadow: 0 18px 44px color-mix(in srgb, var(--shade) 22%, transparent);
-  animation: sheetin 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.ccmenu button, .hubmenu button { display: block; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 10px/1.2 var(--mich); letter-spacing: 0.14em; }
-.ccmenu button:hover, .hubmenu button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); }
-.ccmenu button:disabled, .hubmenu button:disabled { color: var(--grey); cursor: not-allowed; }
 
 /* THE DISC (chapter 2) */
 .discwrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -4021,7 +4278,7 @@ body { font-size: 14px; }
 .discface::before { content: ""; position: absolute; inset: 14%; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent); pointer-events: none; }
 .discring { position: absolute; inset: 0; will-change: transform; }
 .discslot { position: absolute; left: 50%; top: 50%; width: 0; height: 0; display: flex; align-items: center; justify-content: center; transform-origin: 0 0; }
-.discslotlbl { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; color: var(--grey); white-space: nowrap; transition: color 0.18s; }
+.discslotlbl { display: inline-flex; flex-direction: column; align-items: center; gap: 3px; color: var(--grey); white-space: nowrap; transition: color var(--dur-2) var(--ease-out); }
 .discslotlbl i { font: 8px/1 var(--mich); font-style: normal; letter-spacing: 0.12em; }
 .discslot.sel .discslotlbl { color: var(--red); }
 .discmark { position: absolute; top: 4px; left: 50%; width: 2px; height: 10px; margin-left: -1px; border-radius: 1px; background: var(--red); }
@@ -4030,12 +4287,12 @@ body { font-size: 14px; }
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--ink);
   background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 96%, transparent), color-mix(in srgb, var(--bg2) 96%, transparent));
   box-shadow: 0 8px 22px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 80%, transparent);
-  touch-action: none; transition: transform 0.12s;
+  touch-action: none; transition: transform var(--dur-1) var(--ease-out);
 }
 .disccenter:active { transform: scale(0.94); }
 .disccenterlbl { font: 8px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
 .discprog { position: absolute; inset: -2px; width: calc(100% + 4px); height: calc(100% + 4px); color: var(--red); transform: rotate(-90deg); pointer-events: none; }
-.discbadge { position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 8px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
+.discbadge { position: absolute; top: -4px; right: -6px; padding: 0 5px; border-radius: 999px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; }
 .disctoggle { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 7px; background: none; color: var(--grey); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
 .disctoggle:hover { color: var(--sig); border-color: var(--sig); }
 /* the disc turned off (2.7–2.10): a slim slider */
@@ -4044,43 +4301,13 @@ body { font-size: 14px; }
 .discarrow { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .discarrow .flip { transform: scaleX(-1); }
 .discgo { min-height: 36px; padding: 0 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--ink); color: var(--paper); cursor: pointer; font: 9px/1 var(--mich); letter-spacing: 0.14em; }
-@media (prefers-reduced-motion: reduce) { .discring, .ccmenu, .hubmenu { animation: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .discring { animation: none; transition: none; } }
 
 /* POST SELECTION */
 .postsel { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
 .postsel .deck { margin: 0; text-align: center; }
 .postsoon { max-width: 320px; text-align: center; margin: 0; }
 
-/* THE SESSION HUB (chapter 1) */
-.hub { position: relative; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
-.hubnote, .hubundo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 7px; font-size: 12px; color: var(--ink); }
-.hubundo { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: var(--bg); border-color: var(--red); box-shadow: 0 12px 30px color-mix(in srgb, var(--shade) 18%, transparent); }
-.hubnote .txtbtn, .hubundo .txtbtn { font: 10px/1 var(--mich); letter-spacing: 0.14em; color: var(--sig); }
-.hubempty { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 0; color: var(--grey); }
-.hubstage { position: relative; height: 176px; flex: none; }
-.hubpanels { position: absolute; inset: 0; perspective: 900px; }
-.sesspanel {
-  position: absolute; left: 50%; top: 50%; width: 164px; height: 150px; margin: -75px 0 0 -82px; padding: 12px; border-radius: 9px; border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 72%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  box-shadow: 0 14px 36px color-mix(in srgb, var(--shade) 16%, transparent), inset 0 1px 0 color-mix(in srgb, var(--paper) 70%, transparent);
-  display: flex; flex-direction: column; gap: 6px; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none;
-  transform: translateX(calc(var(--k) * 96px)) translateZ(calc(var(--ak) * -120px)) rotateY(calc(var(--k) * -18deg));
-  opacity: calc(1 - var(--ak) * 0.22); z-index: calc(10 - var(--ak));
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.28s;
-}
-.sesspanel.sel { border-color: var(--red); }
-.sesspanel.hidden .sessthumb { filter: blur(6px); }
-.sessthumb { position: relative; display: flex; align-items: center; justify-content: center; height: 64px; border-radius: 7px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
-.sessveil { position: absolute; inset: auto 0 6px; text-align: center; font: 8px/1 var(--mich); letter-spacing: 0.16em; color: var(--grey); filter: none; }
-.sesstitle b { display: block; font: 10px/1.3 var(--mich); letter-spacing: 0.1em; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sesstitle input { width: 100%; min-height: 28px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: 10px/1.3 var(--mich); letter-spacing: 0.1em; }
-.sessmeta { font: 8px/1.3 var(--mich); letter-spacing: 0.12em; color: var(--grey); }
-.sessx { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg); color: var(--grey); cursor: pointer; font: 16px/1 var(--helv); display: inline-flex; align-items: center; justify-content: center; }
-.sessx:hover { color: var(--red); border-color: var(--red); }
-.hubcounter { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); padding: 4px 8px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); font: 10px/1 var(--mich); letter-spacing: 0.12em; color: var(--ink); }
-.hubdial { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.hubhint { margin: 0; text-align: center; }
-@media (prefers-reduced-motion: reduce) { .sesspanel { transition: none; } }
 
 /* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
 /* the vertical wheel with slight overlap (blueprint "Two scrolling systems"):
@@ -4144,11 +4371,11 @@ body { font-size: 14px; }
 .tag { display: inline-block; max-width: 100%; box-sizing: border-box; padding: 3px 8px 3px calc(8px + 1.2em); text-indent: -1.2em;
   border: 1px solid var(--line); border-radius: 12px; background: var(--glass-pill); /* half a one-line tag's 24px: a pill, kept when the corners softened */ box-shadow: inset 0 0 0 1px transparent;
   font: 10px/1.6 var(--mich); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink);
-  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: color 0.2s, border-color 0.2s; }
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; transition: color var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out); }
 .tagrow.popup .tag { font-size: 12px; }
 .tag .tl, .tag .tr { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; white-space: nowrap; text-indent: 0; }
 .tag .tl:hover, .tag .tr:hover, .tag .tl:focus-visible, .tag .tr:focus-visible { color: var(--red); outline: none; }
-.tag.state .tr { animation: tagfade 0.2s ease; }
+.tag.state .tr { animation: tagfade var(--dur-2) var(--ease-out); }
 .tag.state.urgent { color: var(--red); border-color: color-mix(in srgb, var(--red) 60%, var(--line)); }
 .tag.pinned { border-color: var(--red); }
 .tag.pinned .tx { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-indent: 0; }
@@ -4195,7 +4422,7 @@ body { font-size: 14px; }
 .mfarrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.4); background: rgba(0, 0, 0, 0.35); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .mfarrow.prev { left: 8px; } .mfarrow.next { right: 8px; } .mfarrow .flip { transform: scaleX(-1); }
 .mfcount { position: absolute; top: 10px; right: 10px; font: 9px/1 var(--mich); letter-spacing: 0.1em; color: #fff; background: rgba(0, 0, 0, 0.4); padding: 4px 6px; border-radius: 8px; }
-.mfcaption { position: absolute; left: 0; right: 0; bottom: 0; display: block; width: 100%; max-height: 38%; padding: 40px 14px 12px; border: 0; text-align: left; cursor: pointer; overflow: hidden; transition: max-height 0.22s;
+.mfcaption { position: absolute; left: 0; right: 0; bottom: 0; display: block; width: 100%; max-height: 38%; padding: 40px 14px 12px; border: 0; text-align: left; cursor: pointer; overflow: hidden; transition: max-height var(--dur-2) var(--ease-out);
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.55)); color: #fff; }
 .mfcaption.up { max-height: 85%; overflow-y: auto; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75) 30%); }
 .ink-black .mfcaption { color: #000; background: linear-gradient(transparent, rgba(255, 255, 255, 0.72)); }
@@ -4278,7 +4505,7 @@ body { font-size: 14px; }
 .sfproduct { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
 .sfproductlink { display: grid; height: 100%; color: var(--ink); text-decoration: none; }
 .sfproductimage { aspect-ratio: 4 / 5; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--glass-deep); }
-.sfproductimage img { width: 100%; height: 100%; object-fit: cover; transition: transform 180ms ease; }
+.sfproductimage img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--dur-2) var(--ease-out); }
 .sfproductlink:hover .sfproductimage img { transform: scale(1.025); }
 .sfproductbody { display: grid; align-content: start; gap: 6px; padding: 12px; }
 .sfproductbody h3 { overflow-wrap: anywhere; }
@@ -4397,7 +4624,7 @@ body { font-size: 14px; }
 .mohanded { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; background: rgba(0,0,0,0.55); color: #fff; font: 10px/1.6 var(--mich); letter-spacing: 0.12em; }
 .mohanded .txtbtn { color: #fff; }
 .mobig { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; border: 0; background: rgba(0,0,0,0.35); color: #fff; cursor: pointer; font: 10px/1 var(--mich); letter-spacing: 0.12em; }
-.mocontrols { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px 10px; background: linear-gradient(transparent, rgba(0,0,0,0.78)); color: #fff; transition: opacity 0.18s, transform 0.18s; }
+.mocontrols { position: absolute; left: 0; right: 0; bottom: 0; padding: 8px 10px 10px; background: linear-gradient(transparent, rgba(0,0,0,0.78)); color: #fff; transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
 .mocontrols.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
 .moscrub { display: flex; align-items: center; gap: 10px; }
 .moscrub input[type="range"] { flex: 1; height: 24px; accent-color: var(--red); background: transparent; cursor: pointer; }
@@ -4492,6 +4719,12 @@ body { font-size: 14px; }
 /* ---- |A|: a box with the letter A in it (A6, 18 Oct 2026) ---- */
 .amark { display: inline-grid; place-items: center; width: 1.25em; height: 1.25em; border: 1px solid currentColor; border-radius: 3px; font: 400 0.78em/1 var(--mich); letter-spacing: 0; vertical-align: -0.2em; box-sizing: border-box; }
 .amark.on { color: var(--red); border-color: var(--red); }
+/* the search fields' ASTERISK toggle (AMark solid): a solid red square, the A cut through it; off, dimmed */
+.amark.solid { width: 1.3em; height: 1.3em; border: 0; border-radius: 0; color: var(--warn); opacity: 0.42; transition: opacity var(--dur-2) var(--ease-out); }
+.amark.solid.on { color: var(--warn); opacity: 1; }
+.amark.solid svg { display: block; width: 100%; height: 100%; }
+.ccamark .amark.solid, .srchamark .amark.solid { font-size: 16px; } /* ~21px: the cut-out A reads at a glance in the 28px bar */
+.amarkcut { font: 400 12px/1 var(--mich); fill: black; } /* black in a mask: cut away */
 .mfaqr { width: 160px; height: 160px; border: 1px solid var(--line); border-radius: 10px; background: #fff; padding: 6px; box-sizing: border-box; }
 .rkctl.stform { display: grid; grid-template-columns: 1fr; gap: 8px; max-width: 360px; }
 
@@ -4532,6 +4765,23 @@ body { font-size: 14px; }
 .srchqmeta { font: 11px/1.3 var(--mono); letter-spacing: 0.1em; color: var(--grey); }
 .srchqgo { font: 18px/1 var(--helv); color: var(--sig); }
 .srchall { justify-self: start; font: 11px/1.4 var(--mich); letter-spacing: 0.16em; color: var(--sig); text-decoration: none; padding-top: 6px; }
+.srchdisc { border: 0; background: none; cursor: pointer; text-align: left; }
+/* THE DISCOVER POPUP (DiscoverSheet.jsx): the craving's fields stacked to the popup's width, then the rails */
+.discsheet { display: grid; gap: 16px; }
+.discsheet .deck { margin: 0; }
+.discsec { display: grid; gap: 8px; margin: 0; }
+.discsheet .cravinggrid { grid-template-columns: 1fr 1fr; }
+.discsheet .cravinggrid input, .discsheet .cravinggrid .btn { grid-column: 1 / -1; }
+.discsheet .cravinggrid select:last-of-type { grid-column: 1 / -1; }
+/* the rails at a popup's width: the head wraps — the title its own line, the note and the two actions under it — and
+   a card is narrower so the next one shows at the edge (it was cramped to a column, COLLAPSE and HIDE cut off) */
+.discsheet .rails { margin: 0; }
+.discsheet .railhead { flex-wrap: wrap; row-gap: 4px; }
+.discsheet .railmeta { flex: 1 1 100%; order: 2; }
+.discsheet .railact { order: 3; margin-left: 0; }
+.discsheet .railact + .railact { margin-left: 12px; }
+.discsheet .railcard { flex-basis: min(240px, 72%); }
+@media (max-width: 340px) { .ccdisclbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .ccdiscover { padding: 0 8px; } }
 /* the overview card inside search: the reference's soft icy card, the lettering behind the portrait's shoulder */
 .srchref .ovp { border-radius: 11px; padding: 18px 18px 14px 14px; background: color-mix(in srgb, var(--sig) 7%, var(--paper)); border-color: color-mix(in srgb, var(--sig) 18%, var(--line)); }
 .srchref .ovpname { font-size: clamp(26px, 6vw, 34px); }
@@ -4607,7 +4857,7 @@ body { font-size: 14px; }
 .wpcover .wpccap { margin: 0; max-width: none; font: 13px/1.4 var(--mono); letter-spacing: 0.01em; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .wpcover .wpccap a { color: inherit; }
 .wpcacts { position: relative; display: flex; align-items: center; gap: 14px; margin-top: 8px; }
-.wpcact { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; transition: transform 0.12s, color 0.18s; }
+.wpcact { display: inline-flex; align-items: center; justify-content: center; gap: 5px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; transition: transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out); }
 .wpcact b { font: 400 10px/1 var(--mich); }
 .wpcact:active { transform: scale(0.94); }
 .wpcact.on { color: var(--red); }
@@ -4636,7 +4886,7 @@ body { font-size: 14px; }
 .brdcst .brdcstwhen { flex: 0 1 auto; min-width: 0; font: 400 clamp(9px, 2.6vw, 12px)/1.3 var(--mich); letter-spacing: 0.02em; color: var(--ink); text-align: right; }
 .brdcstname { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 2px 0 0 8px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 clamp(17px, 5vw, 26px)/1.2 var(--mich); letter-spacing: 0; }
 .brdcstname > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.brdcstname .ic { flex: none; transition: transform 0.18s; }
+.brdcstname .ic { flex: none; transition: transform var(--dur-2) var(--ease-out); }
 .brdcstname .ic.up { transform: rotate(180deg); }
 .brdcstast { font-style: normal; color: var(--red); margin-right: 1px; }
 .brdcstlist { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 2px; }
@@ -4677,15 +4927,13 @@ body { font-size: 14px; }
 .card.piece .fitline.demoflag { padding: 2px 12px 0; }
 .card.piece .tagrow { margin: 4px 0 0; padding: 0 12px 10px; }
 .card.piece:hover .imgwrap::before { content: none; }
-/* the deck's ad slot wears its name in red, as drawn */
-.adslot { flex: none; font: 400 11px/1 var(--mich); letter-spacing: 0.04em; color: var(--red); }
 /* the listing popup to 5.jpg: the ledger's word on the photograph, ♡ OFFER bag, the lines in Michroma */
 .lstbadge { position: absolute; top: 10px; left: 12px; z-index: 2; }
 .lstbadge.unverified .vbadgemark { background: none; border: 0; padding: 0; color: var(--ink); }
 .lstbadge.unverified .vbadgemark span[aria-hidden] { display: none; }
 .lstbadge.unverified .vbadgemark small { font: 400 15px/1.2 var(--mich); letter-spacing: 0; text-transform: lowercase; color: var(--ink); text-shadow: 0 0 6px var(--paper), 0 0 2px var(--paper); }
 .lstacts { display: flex; align-items: center; gap: 22px; margin: 10px 0 12px; border: 0; padding: 0; }
-.lstacts .lstact { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform 0.12s, color 0.18s; }
+.lstacts .lstact { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out); }
 .lstacts .lstact:active { transform: scale(0.94); }
 /* the shared button rule's :is() list carries four classes of specificity; the glyphs are ink, as drawn */
 [data-theme] .listing .lstacts .lstact.lstact { color: var(--ink); background: none; border: 0; box-shadow: none; text-shadow: none; }
@@ -4742,7 +4990,7 @@ body { font-size: 14px; }
 [data-theme="light"] .sheet { background: linear-gradient(180deg, #f2f9fc 0%, #e2eff6 55%, #cfe3ee 100%); border-color: color-mix(in srgb, var(--sig) 32%, transparent); }
 /* the page under a popup: lowered by the scrim's colour, softened by its own filter */
 .sheetscrim { -webkit-backdrop-filter: none; backdrop-filter: none; }
-[data-popup] .main { filter: blur(14px) saturate(0.8); transition: filter 0.22s; }
+[data-popup] .main { filter: blur(14px) saturate(0.8); transition: filter var(--dur-2) var(--ease-out); }
 .glass-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { [data-popup] .main { transition: none; } }
 @media (prefers-reduced-transparency: reduce) {
@@ -4772,7 +5020,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .sheethead .sheettitle { padding: 0 6px; }
 .sheethead .sheetacts { gap: 4px; }
 /* a phone: the grip and the title's tracking give the title and its session count the room the keys took */
-@media (max-width: 480px) { .sheethead { gap: 4px; padding: 10px 6px; } .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } .sheethead .sheetcount { margin-left: 6px; } }
+@media (max-width: 480px) { .sheethead { gap: 4px; padding: 10px 6px; } .sheethead .sheetgrip { width: 24px; margin-left: 4px; } .sheethead .sheettitle { padding: 0; letter-spacing: 0.12em; } }
 
 /* =====================================================================
    THE RAINBOW, LOUDER (owner, 18 Oct 2026, second word: "rainbow
@@ -4820,12 +5068,12 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 }
 
 /* ---- the dark headline wears the OG title card: chrome letters washing to
-   mint with the phosphor halo (the owner's title-card reference) ---- */
-:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(70, 255, 150, 0.34)) drop-shadow(0 0 2px rgba(120, 255, 180, 0.5)); }
+   white with a white halo (the owner's title-card reference; mint and the
+   phosphor halo until 29 Oct 2026, "glowing white nomore green") ---- */
+:root:not([data-theme="light"]) .headline { background: linear-gradient(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.34)) drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); }
 :root:not([data-theme="light"]) .headline .red { -webkit-text-fill-color: var(--red); }
-:root:not([data-theme="light"]) .wordmark .wmcaps { filter: drop-shadow(0 0 10px rgba(110, 240, 160, 0.32)) drop-shadow(0 0 2px rgba(180, 255, 210, 0.5)); }
 /* the dark accents glow: the active key, the popup's title, the footer's word, the asterisks */
-:root:not([data-theme="light"]) :is(.ccenter .tabl.cur, .sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice, .adslot, .idkey.cur) { text-shadow: var(--glow-r); }
+:root:not([data-theme="light"]) :is(.sheettitle, .brdcstword, .brdcstast, .friendmark, .srchtab.cur, .placedist, .lstprice) { text-shadow: var(--glow-r); }
 
 /* =====================================================================
    THE DEVICE'S OWN LANGUAGE, A LITTLE OF IT (owner, 18 Oct 2026; the 404
@@ -4833,9 +5081,9 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    warning lights that blink and go dark like a CD tray's eject light, and
    MRZ lines run out in chevrons with a blinking block cursor. --warn is the
    lights' and the chevrons' red in BOTH palettes (in dark the accent token
-   is phosphor green; a warning light is red on any device).
+   is glowing white since 29 Oct 2026; a warning light is red on any device).
    ===================================================================== */
-:root { --warn: #ff4136; --cursor: #6dffa8; }
+:root { --warn: #ff4136; --cursor: #f4f9fc; }
 [data-theme="light"] { --warn: #d22f22; --cursor: #1d7a4c; }
 /* THE BLOCKS (owner's reference, 25 Oct 2026; lib/feed/blocks.js): text
    stands in as blocks — a run of even blocks while it loads in (Ref 1), and
@@ -4855,16 +5103,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .lstact .lamp { position: absolute; top: 7px; right: 7px; margin: 0; width: 6px; height: 6px; }
 .lstacts .lstact { position: relative; }
 .lamp[data-blink="eject"] { animation: ejectlight 1.8s steps(1, end) forwards; }
-.lamp[data-blink="once"] { animation: ejectonce 1.2s ease forwards; }
+.lamp[data-blink="once"] { animation: ejectonce 1.2s var(--ease-out) forwards; }
 @keyframes ejectlight {
   0%, 20%, 40%, 60% { background: var(--warn); box-shadow: inset 0 0 0 1px var(--warn); }
   10%, 30%, 50%, 70%, 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 40%, transparent); }
 }
 @keyframes ejectonce { 0% { background: var(--warn); } 100% { background: color-mix(in srgb, var(--warn) 22%, transparent); } }
 /* the deck's two status lights, at the end of the ad strip */
-.devlights { display: inline-flex; gap: 4px; margin-left: auto; flex: none; }
-.devlights .lamp { width: 8px; height: 8px; margin: 0; }
-.devlights .lamp + .lamp[data-blink="eject"] { animation-delay: 0.1s; }
 /* an MRZ line: words in the ink, chevrons in red, a block cursor blinking at the end */
 .mrzline { font: 13px/1.5 var(--mono); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; display: block; text-overflow: clip; }
 .mrzline b { font-weight: 400; color: var(--ink); }
@@ -4872,7 +5117,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .mrzcursor { display: inline-block; width: 0.6em; height: 1em; margin-left: 2px; vertical-align: -0.12em; background: var(--cursor); animation: mrzblink 1.06s steps(1, end) infinite; }
 @keyframes mrzblink { 50% { opacity: 0; } }
 :root:not([data-theme="light"]) .mrzline b { color: var(--cursor); text-shadow: var(--glow); }
-@media (prefers-reduced-motion: reduce) { .mrzcursor { animation: none; } .lamp[data-blink] { animation: ejectonce 1.2s ease forwards; } }
+@media (prefers-reduced-motion: reduce) { .mrzcursor { animation: none; } .lamp[data-blink] { animation: ejectonce 1.2s var(--ease-out) forwards; } }
 /* the post card's caption is a button now: a tap expands it */
 .wpccapbtn { display: block; width: 100%; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; font: inherit; }
 .wpcover .wpccap.full { display: block; -webkit-line-clamp: unset; max-height: 46vh; overflow-y: auto; font: 13px/1.45 var(--mono); }
@@ -4884,19 +5129,19 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    piece hangs over it as a card of the glass that turns with the
    phone or the cursor (useTilt). The photograph float wears the same fog.
    ===================================================================== */
-:root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(12, 30, 22, 0.22), rgba(2, 6, 4, 0.55)); }
+:root { --fog: radial-gradient(80% 60% at 50% 46%, rgba(22, 25, 27, 0.22), rgba(4, 5, 6, 0.55)); } /* neutral, no green (29 Oct 2026) */
 [data-theme="light"] { --fog: radial-gradient(80% 60% at 50% 46%, rgba(255, 255, 255, 0.22), rgba(214, 232, 246, 0.5)); }
-.pfloat { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; perspective: 1200px; animation: floatfade 0.3s ease; }
+.pfloat { position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center; perspective: 1200px; animation: floatfade var(--dur-3) var(--ease-out); }
 .pfloatfog { position: absolute; inset: 0; border: 0; padding: 0; cursor: zoom-out; background: var(--fog); -webkit-backdrop-filter: blur(9px) saturate(120%); backdrop-filter: blur(9px) saturate(120%); }
 .pfloatclose { color: var(--ink); }
 .pfloatcard {
   position: relative; width: min(84vw, 380px); max-height: 86vh; overflow: hidden auto; padding: 14px 14px 16px;
-  border-radius: var(--radius-card); isolation: isolate; will-change: transform;
+  border-radius: var(--radius-card); isolation: isolate; outline: 1px solid transparent; /* no will-change: crisp when it tilts (28 Oct 2026) */
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
   transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
   box-shadow: var(--sx, 0px) var(--sy, 40px) 90px color-mix(in srgb, var(--shade) 45%, transparent); /* no rainbow glow (owner, 26 Oct 2026: "take away the rainbow") */
-  animation: floatin 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: floatin var(--dur-4) var(--ease-out);
 }
 .pfloatcard[data-refract="1"] { -webkit-backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); backdrop-filter: var(--lg-filter) blur(14px) saturate(160%); }
 /* (26 Oct 2026, "take away the rainbow") the floating piece wears no rainbow rim */
@@ -4926,7 +5171,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    name without "magazine".
    ===================================================================== */
 [data-theme="light"] .ppdoc { --sig: #0b7584; }
-:root:not([data-theme="light"]) .ppdoc { --sig: #46ff96; }
+:root:not([data-theme="light"]) .ppdoc { --sig: #f4f9fc; }
 .pv-s { stroke: var(--sig); opacity: 0.55; }
 .pv-p { stroke: var(--p2); opacity: 0.5; }
 .pv-r { stroke: var(--red); opacity: 0.75; }
@@ -4967,8 +5212,21 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   background: linear-gradient(var(--fx-tint), var(--fx-tint)), var(--fx-glass);
   -webkit-backdrop-filter: saturate(160%); backdrop-filter: saturate(160%);
   box-shadow: var(--glass-shadow), var(--glass-lip);
-  transition: transform 0.22s, opacity 0.22s, height 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out), height var(--dur-3) var(--ease-deck), scale var(--dur-3) var(--ease-out), translate var(--dur-3) var(--ease-deck);
 }
+/* THE DECK SHRINKS AS THE FEED GOES BY (owner, 29 Oct 2026; ControlCenter.jsx, lib/scrollmotion.js): 15% smaller while
+   the reader scrolls down, by `scale` (no layout moves), about the plus's own centre — the row's middle and 3 units
+   down (.ccpostwrap --cy) — and the plus's place scaled back by as much about the same point, so the disc, the wheel
+   and the POST cards keep their size and their place (the wheel's pane on <body> never has to follow) */
+.ccenter { transform-origin: 50% calc(var(--dk-h) / 2 + var(--u) * 3); }
+/* (the ads wink, 29 Oct 2026) the deck is anchored at its foot but shrinks about a point measured from its top, so
+   while shrunk a change of its height — the ticker opening or folding — slid its foot by 15% of the change (3.8px
+   at 375, the whole fixture moving under the wink). Lowered by 15% of the ticker's height, in step with the height
+   (the same duration and curve), the foot holds still; with the ticker folded nothing changes. */
+.ccenter[data-shrunk] { scale: 0.85; translate: 0 calc(var(--ad-h) * 0.15); }
+.ccpostwrap { transform-origin: 50% var(--cy); transition: scale var(--dur-3) var(--ease-out); }
+.ccenter[data-shrunk] .ccpostwrap { scale: calc(1 / 0.85); }
+@media (prefers-reduced-motion: reduce) { .ccpostwrap { transition: none; } }
 .fixture[data-refract="1"], .ccenter[data-refract="1"] {
   -webkit-backdrop-filter: var(--lg-filter) saturate(160%); backdrop-filter: var(--lg-filter) saturate(160%);
 }
@@ -4998,11 +5256,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
     radial-gradient(24px 9px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp-core) calc(var(--cs) * 50%), transparent), transparent 70%),
     radial-gradient(77px 29px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 100%), transparent), transparent 70%),
     radial-gradient(165px 66px at var(--cx) var(--cy), color-mix(in srgb, var(--lamp) calc(var(--cs) * 12%), transparent), transparent 70%);
-  transition: --cx 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cy 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), --cs 0.6s ease, opacity 0.22s;
+  transition: --cx 0.7s var(--ease-out), --cy 0.7s var(--ease-out), --cs 0.6s var(--ease-out), opacity var(--dur-2) var(--ease-out);
 }
 @media (prefers-reduced-motion: reduce) {
   .fixture, .ccenter { transition: none; }
-  .glass-light { transition: --cs 0.3s ease; }
+  .glass-light { transition: --cs var(--dur-3) var(--ease-out); }
 }
 @media (prefers-reduced-transparency: reduce) {
   .fixture, .ccenter, .fixture[data-refract="1"], .ccenter[data-refract="1"] { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--bg3); }
@@ -5044,7 +5302,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .hkey {
   transform-origin: 50% 0;
   transform: perspective(220px) rotateX(0deg);
-  transition: transform 0.42s cubic-bezier(0.34, 1.7, 0.5, 1), background 0.18s, color 0.18s;
+  transition: transform var(--dur-4) var(--ease-hinge), background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
   -webkit-tap-highlight-color: transparent; will-change: transform;
 }
 .hkey::after {
@@ -5052,16 +5310,16 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   /* a whisper of shade where the flap sinks (owner, 19 Oct: "reduce the shadows on clicks a lot") */
   background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--shade) 4%, transparent) 80%, color-mix(in srgb, var(--shade) 7%, transparent));
   box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--shade) 10%, transparent);
-  opacity: 0; transition: opacity 0.3s ease;
+  opacity: 0; transition: opacity var(--dur-3) var(--ease-out);
 }
 .hkey[data-pressed] {
   transform: perspective(220px) rotateX(-17deg) translateY(0.5px);
-  transition: transform 0.06s cubic-bezier(0.2, 0.9, 0.3, 1), background 0.18s, color 0.18s;
+  transition: transform var(--dur-0) var(--ease-out), background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out);
 }
-.hkey[data-pressed]::after { opacity: 1; transition: opacity 0.05s; }
+.hkey[data-pressed]::after { opacity: 1; transition: opacity var(--dur-0) var(--ease-out); }
 /* the glyph sinks with the flap and loses a little light */
-.hkey .ic { transition: transform 0.42s cubic-bezier(0.34, 1.7, 0.5, 1), opacity 0.3s; }
-.hkey[data-pressed] .ic { transform: translateY(0.6px) scale(0.97); opacity: 0.94; transition: transform 0.06s, opacity 0.06s; }
+.hkey .ic { transition: transform var(--dur-4) var(--ease-hinge), opacity var(--dur-3) var(--ease-out); }
+.hkey[data-pressed] .ic { transform: translateY(0.6px) scale(0.97); opacity: 0.94; transition: transform var(--dur-0) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
 /* the globe is a key inside its own pane */
 .pbkey { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: inherit; }
 @media (prefers-reduced-motion: reduce) {
@@ -5083,13 +5341,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
 }
+/* the wheel's disc wears the same rim (owner, 29 Oct 2026: "add a thin white bezel line along the edge of the
+   disc like how the center fixture and the masthead has bezel lines"); only its upper half shows above the
+   deck, so the light catches its top and fades down both sides, never to nothing */
+.ccwglass .fxrim { background: linear-gradient(180deg, var(--fx-rim-hi) 0%, var(--fx-rim-lo) 50%, var(--fx-rim-lo) 100%); }
 :root { --fx-rim-hi: rgba(255, 255, 255, 0.5); --fx-rim-lo: rgba(255, 255, 255, 0.12); }
 [data-theme="light"] { --fx-rim-hi: rgba(255, 255, 255, 0.95); --fx-rim-lo: rgba(255, 255, 255, 0.4); }
 
-/* the fixtures keep the V.2 accent (owner, 19 Oct 2026: the original phosphor
-   green is for the site "besides on the fixtures") */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; } }
-:root[data-theme="dark"] :is(.fixture, .ccenter, .brandfix) { --red: #8cf0a6; }
 
 /* the post's action row, as the sketch draws it: four large outline glyphs
    spread across the media's foot, the author's circle at the far right */
@@ -5109,18 +5367,20 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .fgrid {
   --fgap: 6px; /* tightened (owner, 25 Oct 2026: "tighten the spaces in between media to make them all a little bigger") */
   display: grid; grid-template-columns: repeat(var(--fcols, 5), minmax(0, 1fr));
-  grid-auto-rows: calc(((100cqw - (var(--fcols, 5) - 1) * var(--fgap)) / var(--fcols, 5) - var(--fgap)) / 2);
+  /* THE ROW (owner, 28 Oct 2026, the four sizes; lib/feed/tetris.js SIZE): six rows and their five gaps are a
+     large card, LARGE_SHARE (80%: owner, "a large is now 80%") of the screen's height — so a medium is half of it, a small a third */
+  grid-auto-rows: calc((var(--ed-feed-large, 80svh) - 5 * var(--fgap)) / 6);
   gap: var(--fgap); margin: 0 0 var(--ed-card-gap, 26px);
 }
 @media (min-width: 760px) { .fgrid { --fgap: 8px; } }
 .fcell { position: relative; display: flex; min-width: 0; min-height: 0; container-type: inline-size; } /* a card's type scales with the card (cqw = its own width) */
 .fcell > .card { flex: 1; min-width: 0; min-height: 0; height: 100%; margin: 0; overflow: hidden; }
+/* a card off the screen is not restyled, laid out or painted (28 Oct 2026, "tighten up all animations"): a theme
+   turn restyled all ~5,800 elements of a full Feed (measured 30–40ms a turn at 375px; with this, 18–20). On the card,
+   not the cell: the containment clips to the box, and the cell's cast shadows lie outside it; the card already
+   clips its own content. Figure 20 is left out — its stacks and its floating head and foot reach past its box. */
+.fcell > .card:not(.f20post) { content-visibility: auto; }
 
-/* PASS: an × on its bar at a card's corner */
-.cardpass { position: absolute; top: 8px; right: 8px; z-index: 4; display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
-  background: color-mix(in srgb, var(--paper) 60%, transparent); color: var(--ink); cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: transform 0.12s; }
-.cardpass:active { transform: scale(0.94); }
-.cardpass .ic { width: 20px; height: 20px; }
 
 /* THE PIECE — hero: head (mode word, handle, PASS), photograph, name, size · price, actions */
 .fcell .card.piece { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
@@ -5152,25 +5412,22 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .card.piece.v-hero .pcfoot .pctitle, .card.piece.v-hero .pcfoot .pcrow { color: var(--on-media); margin: 0; }
 .card.piece.v-hero .pcfoot .demoflag { color: var(--on-media); opacity: 0.85; }
 /* the actions float on the photograph too (owner, evening: "every media card should just be comprised of the images with everything floating on it") */
-.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.78; background: none; }
+.card.piece.v-hero .pcacts { --pc-slack: calc((38px - 20px) / 2); margin: calc(var(--pc-slack) * -1); padding: 0; color: var(--on-media); opacity: 0.92; background: none; }
 .card.piece.v-hero .pcacts .pcact { color: var(--on-media); }
 .card.piece.v-hero .pcact .ic { width: 20px; height: 20px; }
 /* the hairline between the size and price and the actions (owner, 25 Oct
    2026): the deck's cut, in the card's own ink so it reads on any tile */
-.card.piece.v-hero .pcrule { display: block; flex: none; height: 1px; border-radius: 1px; }
-.card.piece.v-hero .pcrule::after { background: color-mix(in srgb, var(--on-media) 45%, transparent); }
 .pchead { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 30px; }
 /* "SELL:handle" — one line, the sketch's Fig. 12 */
 .pcmode { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(9px, 5.6cqw, 17px)/1.2 var(--mich); letter-spacing: 0; color: var(--ink); }
 .pchandle { font: inherit; color: inherit; }
-.pchead .cardpass { position: static; flex: none; margin-left: auto; width: 30px; height: 30px; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 .pctitle { display: block; width: 100%; margin: 8px 0 0; padding: 0; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer;
   font: 400 clamp(10px, 6.4cqw, 18px)/1.25 var(--mich); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pcrow { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 0 0; font: 400 clamp(11px, 7.6cqw, 22px)/1.1 var(--mich); color: var(--ink); }
 .pcrow .price { font: inherit; color: inherit; }
 .card.piece.v-hero .demoflag { margin: 4px 0 0; font-size: 9px; }
 .pcacts { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 0; }
-.pcact { display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform 0.12s; }
+.pcact { display: inline-grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--ink); cursor: pointer; transition: transform var(--dur-1) var(--ease-out); }
 .pcact .ic { width: 24px; height: 24px; }
 .pcact:active { transform: scale(0.94); }
 .pcact.on { color: var(--red); }
@@ -5217,6 +5474,10 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .songtitle { position: absolute; left: 6cqw; right: 6cqw; bottom: 6cqw; padding: 3cqw 5cqw; border-radius: 4cqw; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.4cqw/1.2 var(--mich); }
 .songtitle small { display: block; font-size: 0.75em; color: var(--grey); }
+/* a sample record says so, top left, opposite its three dots (owner, 28 Oct 2026) */
+.songcard .modeltag { position: absolute; top: 5cqw; left: 5cqw; z-index: 2; margin: 0; padding: 0.6cqw 3cqw; font-size: max(8px, 4.6cqw); background: color-mix(in srgb, var(--paper) 70%, transparent); }
+/* with no art behind them the dots are ink, not the over-media white (they vanished on a light card) */
+.card.songcard:has(.songart.blank) .carddots { color: var(--ink); }
 
 /* POSTS fill their cell: the media takes what the words and the footer leave */
 .fcell .card.wpostcard { display: flex; flex-direction: column; }
@@ -5241,9 +5502,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .bsbody { position: relative; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .bsname { font: 400 clamp(18px, 9cqw, 56px)/1 var(--mich); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bswhen { font: 400 clamp(8px, 3.4cqw, 15px)/1.25 var(--mich); letter-spacing: 0.04em; color: inherit; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.bspass { position: absolute; top: 2cqw; right: 2.4cqw; z-index: 4; display: inline-grid; place-items: center; width: clamp(28px, 7cqw, 44px); height: clamp(28px, 7cqw, 44px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; }
-.card.bstrip.withphoto .bspass { color: var(--on-media); }
-.bspass .ic { width: 80%; height: 80%; }
 /* THE BRDCST POPUP (BrdcstSheet.jsx): the photograph clear */
 .bsheet { display: grid; gap: 12px; }
 .bsheetimg { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 7px; border: 1px solid var(--line); }
@@ -5278,11 +5536,17 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .f20stage { position: relative; flex: 1; min-width: 0; overflow: hidden; perspective: 1100px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
 .f20stage:active { cursor: grabbing; }
 .f20stage:focus-visible { outline: 2px solid var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
-.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(4px, 4.7%, 12px); overflow: hidden; background: var(--bg3); will-change: transform; }
+/* the cards drawn crisp (owner, 28 Oct 2026: "the cards … look rly pixley"):
+   no will-change — it froze each card's raster at its flat size and the
+   turn stretched that bitmap, so the edge swinging toward the viewer went
+   blocky; the browser now re-rasters a turned card at the size it shows.
+   A transparent outline gives a turned card's edges the smoothing the
+   compositor otherwise skips, and the far side is never drawn. */
+.f20card { position: absolute; left: 0; top: 0; border: 1px solid var(--line); border-radius: clamp(4px, 4.7%, 12px); overflow: hidden; background: var(--bg3);
+  outline: 1px solid transparent; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
 .f20card img { -webkit-user-drag: none; pointer-events: none; }
 .f20card .wpcmedia { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: pointer; }
 .f20card img, .f20card video { display: block; width: 100%; height: 100%; object-fit: cover; }
-@media (prefers-reduced-motion: reduce) { .f20card { will-change: auto; } }
 /* the motion row's 9:16 cards; the one in the middle plays */
 .mrtile { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: var(--bg3); cursor: pointer; }
 .mrname { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 3px 6px; border-radius: 8px; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.5px/1.2 var(--mich); text-align: left; }
@@ -5328,8 +5592,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .p2user { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(14px, 7.2cqw, 40px)/1.1 var(--mich); letter-spacing: 0; color: var(--ink); }
 .p2user a { color: inherit; text-decoration: none; }
 .p2head > .modeltag { flex: none; }
-.p2head .cardpass { position: static; flex: none; width: clamp(28px, 8cqw, 44px); height: clamp(28px, 8cqw, 44px); background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
-.p2head .cardpass .ic { width: 80%; height: 80%; }
 /* the rule under the head starts under the name, past the circle */
 /* the rule is the fixtures' own cut (owner, 25 Oct 2026, evening: "the red
    line should be replaced by the same type of lines in between the icons on
@@ -5353,22 +5615,22 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 /* two lines of blocks, one per word, cut where the line ends — the caption waits inside */
 .p2fold .blkline { max-height: 3em; font: 400 clamp(10px, 3.6cqw, 20px)/1.5 var(--mich); }
 .p2text { flex: 1; min-width: 0; max-height: 9.5em; margin: 0; overflow-y: auto; font: 400 clamp(10px, 3.4cqw, 17px)/1.45 var(--mich); color: var(--ink); }
-.p2more { flex: none; display: inline-grid; place-items: center; width: clamp(22px, 6cqw, 34px); height: clamp(22px, 6cqw, 34px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; transition: transform 0.18s; }
+.p2more { flex: none; display: inline-grid; place-items: center; width: clamp(22px, 6cqw, 34px); height: clamp(22px, 6cqw, 34px); padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; transition: transform var(--dur-2) var(--ease-out); }
 .p2more .ic { width: 82%; height: 82%; }
 .p2more.up { transform: rotate(180deg); }
 .p2ring { flex: none; width: clamp(18px, 4.4cqw, 28px); height: clamp(18px, 4.4cqw, 28px); margin: 0 1cqw 0.8cqw auto; padding: 0; border: 1.5px solid var(--ink); border-radius: 50%; background: none; cursor: pointer; }
 .p2ring.on { background: var(--ink); }
 /* the four actions, blue, counted — four equal columns, one glyph span, so
    the row reads even (owner, 25 Oct 2026) */
-.p2acts { position: relative; flex: none; display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; align-items: start; padding: 1cqw 10cqw 0; color: var(--sig); opacity: 0.78; }
+.p2acts { position: relative; flex: none; display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; align-items: start; padding: 1cqw 10cqw 0; color: var(--sig); opacity: 0.92; }
 .p2act { display: flex; flex-direction: column; align-items: center; gap: 0.6cqw; min-width: 0; }
 .fcell .p2acts .wpcact, .p2acts .wpcact { width: clamp(26px, 8cqw, 40px); height: clamp(26px, 8cqw, 40px); color: var(--sig); }
 .fcell .p2acts .wpcact .ic, .p2acts .wpcact .ic { width: 72%; height: 72%; }
 .p2acts .wpcact.on { color: var(--red); }
 /* the shared .soon rule paints a word red; the bubble here is a quiet blue glyph that says it is not built */
-[data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.45; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
+[data-theme] .p2acts .wpcact.wpcact.soon, .p2acts .wpcact.quiet { opacity: 0.6; cursor: default; color: var(--sig); background: none; border: 0; box-shadow: none; text-shadow: none; }
 .p2n { font: 400 clamp(9px, 3.6cqw, 18px)/1 var(--mich); letter-spacing: 0.08em; color: var(--sig); }
-.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.55; }
+.p2acts .wpcact.quiet ~ .p2n, .p2acts .wpcact.soon ~ .p2n { opacity: 0.7; }
 .p2acts .wpcshared { left: 11cqw; bottom: 100%; color: var(--ink); }
 /* what hangs beneath: the tagged pieces, the link, the BRDCST */
 .card.wpostcard.p2 .wpcpieces, .card.wpostcard.p2 .wpclink { margin: 2cqw 0 0; }
@@ -5409,17 +5671,292 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 .card.wpostcard.p2:not(.withmedia) .p2foot { margin: 0 calc(-1 * var(--cardpadx, 3.6cqw)) calc(-0.8 * var(--cardpad, 3cqw)); padding: 2cqw var(--cardpadx, 3.6cqw) calc(0.8 * var(--cardpad, 3cqw));
   background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--shade) 10%, transparent) 100%); }
 
-/* THE HOLD MENU (PostCard.jsx HoldMenu): a veil over the card, a small menu in
-   the middle, the compact menu's own face (.ccmenu) */
-.holdveil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border-radius: inherit; background: color-mix(in srgb, var(--paper) 55%, transparent); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: sheetin 0.16s cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* THE CARD MENU (HoldMenu.jsx): a veil over the card, a small menu in the middle, opened by the
+   THREE DOTS in the card's top-right corner (owner, 28 Oct 2026: "for every card lets add three dot
+   buttons to the right corner to replace that touch and hold feature") — on every card of the Feed,
+   in the corner the retired × held; the card's own head line stops short of them */
+.carddots { position: absolute; top: 2cqw; right: 2.4cqw; z-index: 5; display: inline-grid; place-items: center; width: clamp(28px, 7cqw, 40px); height: clamp(28px, 7cqw, 40px); padding: 0; border: 0; border-radius: 50%; background: none; color: var(--on-card, var(--ink)); cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out); }
+.carddots .ic { width: 72%; height: 72%; }
+.carddots:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+.carddots:active { transform: scale(0.94); }
+.carddots:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.withmedia .carddots, .card.bstrip.withphoto .carddots, .card.placecard.withphoto .carddots, .card.songcard .carddots { color: var(--on-media); }
+.card .p2user, .card .pchead { padding-right: clamp(28px, 7cqw, 40px); }
+.holdveil { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; border-radius: inherit; background: color-mix(in srgb, var(--paper) 55%, transparent); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: sheetin var(--dur-1) var(--ease-out); }
 .holdveilx { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: none; cursor: default; }
 .holdveilx:focus-visible { outline: 2px solid var(--sig); outline-offset: -4px; }
 .holdmenu { position: relative; transform: none; min-width: min(220px, 82%); display: grid; gap: 2px; padding: 6px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); box-shadow: 0 18px 44px color-mix(in srgb, var(--shade) 22%, transparent); }
 .holdmenu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); text-align: left; cursor: pointer; font: 400 10px/1.2 var(--mich); letter-spacing: 0.14em; }
 .holdmenu button:hover, .holdmenu button:focus-visible { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--sig); outline: none; }
 .holdmenu button .ic { flex: none; width: 18px; height: 18px; }
-.holdopt:focus-visible { position: absolute; top: 6px; right: 6px; width: auto; height: auto; margin: 0; padding: 4px 8px; clip: auto; clip-path: none; overflow: visible; border-radius: 8px; background: var(--bg); color: var(--ink); font: 400 9px/1.2 var(--mich); letter-spacing: 0.1em; z-index: 5; outline: 2px solid var(--sig); }
-.card.wpostcard.p2, .card.bstrip { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
-.p2text, .p2words { user-select: text; -webkit-user-select: text; }
 @media (prefers-reduced-motion: reduce) { .holdveil { animation: none; } }
 .card.wpostcard.p2 .brdcst .brdcstwhen { overflow-wrap: anywhere; }
+
+/* THE DM TAB AND THE MESSAGE BANNER (owner, 27 Oct 2026: "the direct
+   message button should up the direct message tab … a pop up message at
+   the top like a regualr ios message"; DmLive.jsx, MessagesPage.jsx). The
+   MESSAGES key wears how many conversations wait; the mail desk sits in the
+   DM tab as its page (.embedded: no panel of its own); the banner drops from
+   the top in the fixtures' glass, folds its reply field away until a tap
+   opens it (the field is there all along, so the tap can focus it and a
+   phone raises its keyboard). Reduced motion: it appears without the drop. */
+.ccenter .tabl.ccdm { position: relative; }
+/* the count sits over the envelope's top-left corner (owner, 28 Oct 2026:
+   "the notification bubble on the direct message button should sit overtop
+   of the button on its left corner") */
+.dmcount {
+  position: absolute; z-index: 2; top: calc(50% - var(--u) * 34); right: calc(50% + var(--u) * 14); min-width: 15px; height: 15px; padding: 0 4px;
+  border-radius: 999px; background: var(--red); color: var(--paper); font: 8px/15px var(--mich); letter-spacing: 0.04em; text-align: center;
+}
+.mailpanel.embedded { position: static; z-index: auto; width: auto; max-height: none; padding: 0; border: 0; box-shadow: none; background: none; }
+.dmbanner {
+  position: fixed; z-index: 200; top: max(8px, env(safe-area-inset-top)); left: 50%; width: min(420px, calc(100vw - 16px));
+  transform: translateX(-50%); display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 4px; padding: 10px 10px 10px 12px;
+  border-radius: var(--sheet-radius); color: var(--ink);
+  /* frosted, as a phone's banner is: the fixtures' glass over a veil of the
+     page's own ground, so the words read over any card */
+  background: linear-gradient(var(--fx-tint), var(--fx-tint)), linear-gradient(color-mix(in srgb, var(--bg) 58%, transparent), color-mix(in srgb, var(--bg) 58%, transparent)), var(--fx-glass);
+  -webkit-backdrop-filter: saturate(160%) blur(26px); backdrop-filter: saturate(160%) blur(26px);
+  box-shadow: var(--glass-shadow), var(--glass-lip);
+  animation: dmdrop var(--dur-4) var(--ease-spring); touch-action: pan-x;
+}
+@keyframes dmdrop { from { transform: translate(-50%, calc(-100% - 20px)); opacity: 0.4; } }
+.dmbtap { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
+.dmbface { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 12%, transparent); font: 13px/1 var(--mich); color: var(--ink); }
+.dmbtext { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dmbwho { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.dmbwho b { font: 11px/1.2 var(--mich); letter-spacing: 0.08em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmbwho small { font: 8px/1 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
+.dmbwords { font-family: var(--helv); font-size: 13px; line-height: 1.3; color: var(--ink); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.dmbx { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--grey); cursor: pointer; }
+.dmbreply { grid-column: 1 / -1; display: flex; gap: 8px; max-height: 0; opacity: 0; overflow: hidden; transition: max-height var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out), margin var(--dur-3) var(--ease-out); }
+.dmbreply[data-open] { max-height: 48px; opacity: 1; margin-top: 6px; }
+.dmbreply input { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, transparent); color: var(--ink); font-family: var(--helv); font-size: 16px; }
+.dmbsend { flex: none; height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 9px/1 var(--mich); letter-spacing: 0.14em; cursor: pointer; }
+.dmbsend:disabled { opacity: 0.4; cursor: default; }
+.dmbnote { grid-column: 1 / -1; margin: 4px 2px 0; font-size: 11px; color: var(--grey); }
+@media (prefers-reduced-motion: reduce) { .dmbanner { animation: none; } .dmbreply { transition: none; } }
+
+/* THE MESSAGES PAGE (owner, 28 Oct 2026, the messages sketch; MessagesPage.jsx, MailDesk.jsx page): ":ECHOS"
+   over the echo rail; the head — the search field, the NEW MESSAGE circle, the ASTERISK square; then a row
+   per conversation: the person's circle, *handle (a cursor after it), how long ago ">>" at the top right,
+   ":" and the last message under the name, a hairline beneath from the name's column to the edge */
+.dmpage { padding-top: 6px; }
+.dmlabel { margin: 4px 0 10px; font: 400 clamp(18px, 4.6vw, 24px)/1 var(--mich); letter-spacing: 0.04em; color: var(--ink); }
+.dmlabel i, .dmprev i { font-style: normal; opacity: 0.7; margin-right: 0.06em; }
+.dmechos .echorail { gap: clamp(8px, 2.4vw, 16px); margin: 0 0 6px; }
+.dmnone { margin: 0 0 8px; font: 400 10px/1.5 var(--mich); letter-spacing: 0.08em; color: var(--grey); }
+.dmgate { margin-top: 16px; }
+.dmhead { display: flex; align-items: center; gap: 14px; margin: 10px 0 6px; }
+.dmsearch { flex: 0 1 300px; min-width: 0; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); border-radius: var(--radius-field); color: var(--grey); background: color-mix(in srgb, var(--shade) 6%, transparent); }
+.dmsearch:focus-within { border-color: var(--sig); }
+/* the field's own ring is the label's border (above); the input inside keeps a transparent outline, which forced colours still draws */
+.dmsearch input:focus-visible { outline: 2px solid transparent; outline-offset: 0; }
+.dmsearch input { flex: 1; min-width: 0; border: 0; background: none; font: 13px var(--mono); letter-spacing: 0.04em; color: var(--ink); }
+.dmsearch input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.dmnew { flex: none; width: 26px; height: 26px; padding: 0; border: 1.5px solid color-mix(in srgb, var(--ink) 70%, transparent); border-radius: 50%; background: none; cursor: pointer; transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out); }
+.dmnew:hover { border-color: var(--ink); }
+.dmnew.on { border-color: var(--warn); background: radial-gradient(circle, var(--warn) 0 38%, transparent 42%); }
+.dmnew:focus-visible { outline: 2px solid var(--sig); outline-offset: 2px; }
+.dmast { flex: none; display: inline-grid; place-items: center; font-size: 16px; cursor: not-allowed; }
+.dmfind { margin: 0 0 6px; max-width: 360px; }
+.dmfolders { display: flex; gap: 14px; margin: 4px 0 2px; }
+.dmfolders button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; border: 0; background: none; color: var(--grey); font: 400 9px/1 var(--mich); letter-spacing: 0.16em; cursor: pointer; }
+.dmfolders button.cur { color: var(--ink); }
+.dmlist { list-style: none; margin: 4px 0 0; padding: 0; }
+.dmrow { position: relative; }
+.dmrow::after { content: ""; position: absolute; left: clamp(34px, 9vw, 52px); right: 0; bottom: 0; height: 1px; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+.dmrow > button { display: grid; grid-template-columns: clamp(46px, 12vw, 64px) minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 10px; row-gap: 4px; align-items: center; width: 100%; padding: 14px 0 16px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+.dmface { grid-row: 1 / span 2; display: inline-flex; }
+.dmface .uavatar { width: clamp(42px, 11vw, 58px); height: clamp(42px, 11vw, 58px); font-size: 15px; }
+.dmwho { grid-column: 2; grid-row: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(15px, 4vw, 20px)/1.15 var(--mich); letter-spacing: 0.02em; }
+.dmcur { font-style: normal; opacity: 0.55; }
+.dmwhen { grid-column: 3; grid-row: 1; align-self: start; font: 400 8.5px/1 var(--mich); letter-spacing: 0.08em; color: var(--grey); white-space: nowrap; }
+.dmprev { grid-column: 2 / span 2; grid-row: 2; min-width: 0; padding-left: clamp(16px, 5vw, 44px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 clamp(13px, 3.4vw, 17px)/1.3 var(--mich); color: color-mix(in srgb, var(--ink) 86%, transparent); }
+/* the offer row (the sketch's ":SENT AN OFFER OF $25.50" and its boxed arrow): the price in the signal ink */
+.dmprev.dmoffer { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.4em; row-gap: 3px; color: var(--sig); }
+/* nothing in an offer is cut: where the line is too narrow the price goes to a second line, and only
+   "AN OFFER OF" gives way (an unread row at 375px has ~150px for it) — who sent it, the price, its state
+   and the arrow never do */
+.dmofferhead { display: flex; align-items: baseline; gap: 0.3em; min-width: 0; max-width: 100%; }
+.dmofferhead > i { flex: none; margin-right: -0.3em; }
+.dmofferside { flex: none; font-weight: 400; }
+.dmofferlead { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dmofferprice { flex: none; display: inline-flex; align-items: baseline; gap: 0.4em; white-space: nowrap; }
+.dmofferamt { font-weight: 400; }
+.dmofferstate { color: var(--grey); }
+.dmofferic { flex: none; align-self: center; }
+.dmrow.unread .dmwho { color: var(--red); }
+/* an unread row: its count stands at the right of the preview line, the preview gives way to it */
+.dmrow.unread .dmprev { grid-column: 2; }
+.dmunread { grid-column: 3; grid-row: 2; justify-self: end; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--red); color: var(--paper); font: 9px/18px var(--mich); text-align: center; }
+.dmrow > button:hover .dmwho { color: var(--sig); }
+.dmrow > button:focus-visible { outline: 2px solid var(--sig); outline-offset: -2px; }
+
+/* THE VERTICAL STACK (owner, 28 Oct 2026, the stacking sketch: "Messages at the top are carouselled and
+   overlapped same as the bottom however messages in the middle are layer flat"; "the scrolling verticle
+   carousel stacking example should be applied to everything that scrolled verticley even the feed").
+   Every item of a vertical list rides a drum as it scrolls: flat through the middle of its scroller; near
+   the top and bottom edges it turns away (the edge side receding), shrinks a little and laps over its
+   neighbour toward the edge, the flatter one in front. Scroll-driven animations on the item's own
+   scroller (view(): the nearest scroll container), so nothing runs in script; the turn is transform only.
+   The bend is measured from the scroller's edges, the same --stk-zone for every item whatever its
+   height: at the bottom from where its top edge has come in (vstackin), at the top from where its bottom
+   edge is about to go (vstackout); the two add, and outside its zone each is the identity, so a flat item
+   draws exactly as it lays out (its transform is still a containing block: nothing fixed lives in a card). On the page the
+   drum's edges are the Masthead's foot and the deck's top, not the screen's; in a popup, a thread or any
+   inner scroller, its own edges. Reduced motion, or a browser without scroll timelines: every item flat. */
+:root { --stk-tilt: 56deg; --stk-lap: 48%; --stk-s: 0.84; --stk-persp: 760px; --stk-zone: min(30vh, 260px); --stk-top: 0px; --stk-bot: 0px; }
+.main { --stk-top: var(--head-h); --stk-bot: calc(var(--cc-row-h) + var(--cc-bottom)); }
+.sheetpane, .mailthread, .maillist { --stk-top: 0px; --stk-bot: 0px; --stk-zone: min(22vh, 150px); }
+/* the Feed's cards are big (a large one is 80% of the screen), so the drum is gentle there (owner, 28 Oct 2026:
+   "the carousel stacking looks too extreme on the feed lets somehow make it less extreme") */
+.fgrid { --stk-tilt: 16deg; --stk-lap: 5%; --stk-s: 0.96; --stk-persp: 1400px; --stk-zone: min(24vh, 220px); }
+/* a large card does not lap: standing in front of its neighbours (its overcast, below), a lap of its own height
+   carried it a medium's corner over the cards above (owner, 28 Oct 2026: "a large card on the bottom seems to be
+   clipping over a little too much"); it turns and shrinks inside its own place */
+.fcell.large { --stk-lap: 0%; }
+
+/* SHADOWS (owner, 28 Oct 2026: "the masthead gives off a slight shadow but it should hardly be noticeable
+   because it generates light however i want the stacked cards to have a slight shadow coming from the mast
+   head, a large card should have overcast shadows coming from its top and bottom on the cards that are above
+   and below it and all other cards should behave this way only if a card is stacked beneath it").
+   - The Masthead's own shadow: faint and close (.masthead.fixture, with the fixtures' rules).
+   - THE MASTHEAD'S SHADE: a Feed card turning up under the Masthead darkens from its top edge, the deeper
+     the nearer the edge (::before, the top bend's zone; not on Figure 20, which has no card to shade).
+   - THE OVERCAST: soft shadows cast past a card's top and bottom edges onto its neighbours (::after). A
+     large card casts them always, and stands in front of its neighbours to cast them; any other card only
+     in the stack's zones, where it laps over the card beneath it. The band on the far side of a card in a
+     zone lies under the flatter card in front, so only the shadow onto the card behind shows.
+   Each layer is opacity only, on the cell's own view timeline (--cell). */
+.fgrid { --cast: color-mix(in srgb, var(--shade) 32%, transparent); --cast-h: 22px; }
+.fcell::after {
+  content: ""; position: absolute; left: 4%; right: 4%; top: calc(-1 * var(--cast-h)); bottom: calc(-1 * var(--cast-h));
+  pointer-events: none; opacity: 0;
+  background:
+    radial-gradient(farthest-side at 50% 100%, var(--cast), transparent) top / 100% var(--cast-h) no-repeat,
+    radial-gradient(farthest-side at 50% 0%, var(--cast), transparent) bottom / 100% var(--cast-h) no-repeat;
+}
+.fcell.large::after { --cast-h: 40px; left: 0; right: 0; opacity: 1; }
+.fcell::before {
+  content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: 0; border-radius: var(--radius-card);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--shade) 24%, transparent), transparent 58%);
+}
+.fcell:has(.f20post)::before { content: none; }
+@keyframes vcastin { from { opacity: 1; } to { opacity: 0; } }
+@keyframes vcastout { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vstackin {
+  from { transform: perspective(var(--stk-persp)) translateY(calc(-1 * var(--stk-lap))) rotateX(calc(-1 * var(--stk-tilt))) scale(var(--stk-s)); }
+  to { transform: none; }
+}
+@keyframes vstackout {
+  from { transform: none; }
+  to { transform: perspective(var(--stk-persp)) translateY(var(--stk-lap)) rotateX(var(--stk-tilt)) scale(var(--stk-s)); }
+}
+@keyframes vstackz { 0%, 100% { z-index: 1; } 50% { z-index: 24; } }
+@keyframes vstackzl { 0%, 100% { z-index: 30; } 50% { z-index: 54; } }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :is(.fcell, .dmrow, .likerow, .bagrow, .noticerow, .srchgrid > li, .mailthread > li, .maillist > li, .brdcstlist > li) {
+      position: relative;
+      animation: vstackin linear both, vstackout linear both, vstackz linear both;
+      animation-composition: replace, add, replace;
+      animation-timeline: view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot)), view(block var(--stk-top) var(--stk-bot));
+      animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%, cover 0% cover 100%;
+    }
+    .fcell { view-timeline: --cell block; view-timeline-inset: var(--stk-top) var(--stk-bot); }
+    /* a large card stands in front of its neighbours, so its overcast falls on them */
+    .fcell.large { animation-name: vstackin, vstackout, vstackzl; }
+    .fcell:not(.large)::after {
+      animation: vcastin linear both, vcastout linear both; animation-composition: replace, add; animation-timeline: --cell, --cell;
+      animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%;
+    }
+    .fcell::before { animation: vcastout linear both; animation-timeline: --cell; animation-range: cover calc(100% - var(--stk-zone)) cover 100%; }
+  }
+}
+
+/* THE REACTIVE INK (owner, 28 Oct 2026: "for all the text and symbols they must be reactive to go from dark to
+   light depending on the background to strengthen ledibility"; lib/ink.js, InkWatch.jsx). A block over a Feed
+   card wears data-ink by what is really under it; the ink follows, and a scrim under dark ink turns pale. */
+:root { --ink-on-bright: rgba(20, 40, 58, 0.9); --ink-on-dark: rgba(232, 241, 249, 0.92); }
+/* the flip eases (28 Oct 2026, "tighten up all animations"): a block's ink turns over --dur-2 instead of snapping
+   when it is read after a scroll. --on-media is registered as a colour so it can move; every consumer reads it
+   plain, without a fallback, so registering it changes nothing else. The dots read --on-card, which keeps its
+   fallback (registering it would lose that), so they ease their own colour. */
+@property --on-media { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+/* (29 Oct 2026, "the reactive fonts on the cards is slow and weird") a block's FIRST reading lands as it is — read a
+   screen ahead, it lands off the screen — and only a later one eases (InkWatch.jsx sets data-ink-ease the frame
+   after the first): a block coming on screen faded from the card's guess into its ink half a second late */
+[data-ink][data-ink-ease] { transition: --on-media var(--dur-2) var(--ease-out); }
+.fcell .carddots[data-ink][data-ink-ease] { transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out), color var(--dur-2) var(--ease-out), --on-media var(--dur-2) var(--ease-out); } /* its own press transitions kept */
+[data-ink="dark"] { --on-media: var(--ink-on-bright); --on-card: var(--ink-on-bright); }
+[data-ink="light"] { --on-media: var(--ink-on-dark); --on-card: var(--ink-on-dark); }
+.card.piece.v-hero .pchead[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2head[data-ink="dark"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 34%, transparent) 0%, transparent 100%); }
+.card.piece.v-hero .pcfoot[data-ink="dark"], .card.wpostcard.p2.withmedia:not(.f20post) .p2foot[data-ink="dark"] {
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--paper) 46%, transparent) 100%); }
+/* THE GROUND'S INK (owner, 29 Oct 2026: "all text should be reactive, glow when background is dark, solid black or
+   grey when background is light, so THE FEED should glow in light mode because its on a dark background";
+   lib/ink.js GROUND_TEXT, GroundInk.jsx). The words on the page's own ground carry --gl, worked out each scroll
+   frame from where they sit on the ground's gradient: 0 on a dark ground, 1 on a bright one. Their colour is a mix
+   of the glowing white and the solid ink by --gl, and their glow fades with it — a blend, never a jump; no colour
+   transition on them, which would trail the scroll. (Dark's ground is dark throughout: they glow white there.) */
+:root { --g-ink-on-light: #18232e; --g-ink-on-dark: #f4f9fc; }
+[data-ground] {
+  --g-ink: color-mix(in srgb, var(--g-ink-on-light) calc(var(--gl, 0) * 100%), var(--g-ink-on-dark));
+  --g-glow: 0 0 1px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 100%), transparent), 0 0 9px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 55%), transparent), 0 0 22px color-mix(in srgb, var(--g-ink-on-dark) calc((1 - var(--gl, 0)) * 18%), transparent);
+}
+[data-theme="light"] .headline[data-ground] { color: var(--g-ink); text-shadow: var(--g-glow); }
+[data-theme] .seg > .fmode[data-ground]:not(.cur), [data-theme] .seg > .fmode[data-ground]:not(.cur):hover,
+.fmodes .txtbtn[data-ground], .filters .toggle[data-ground] {
+  color: var(--g-ink); text-shadow: var(--g-glow); transition: background var(--dur-2) var(--ease-out); }
+.f20post .p2head[data-ground], .f20post .p2foot[data-ground] { --on-media: var(--g-ink); text-shadow: var(--g-glow); }
+/* the rule under a post's name takes its head's ink */
+.p2head[data-ink="dark"] + .p2rule { --on-media: var(--ink-on-bright); }
+.p2head[data-ink="light"] + .p2rule { --on-media: var(--ink-on-dark); }
+/* THE ACCENT LINES OFF THE CARDS GLOW (owner, 28 Oct 2026: "all the accent lines that arent directly on a card
+   must glow so on the carousels the accent line underneath the username must glow"): Figure 20's head floats
+   on the page, so its rule is the Masthead's line — the stark white bar in the same glow */
+.card.wpostcard.p2.withmedia.f20post .p2rule::after { background: var(--wm-bar); }
+.card.wpostcard.p2.withmedia.f20post .p2rule { filter: var(--wm-glow); }
+
+/* THE SELECTED KEY ON A FIXTURE GLOWS LIKE THE ASTERISK (owner, 28 Oct 2026: "the red glow from a button being
+   selected on the fixtures should glow red like the asterisk"): the deck's keys, the Info Dock's and the
+   Passport Button, when current, are the asterisk's red in its glow, in both themes — softened (the owner, the
+   same day: "the glow is to intense lets lower it for the buttons"): the asterisk's three layers, each smaller and
+   fainter (--key-glow-r); the asterisk keeps its own */
+:root { --key-glow-r: drop-shadow(0 0 0.5px color-mix(in srgb, var(--warn) 80%, transparent)) drop-shadow(0 0 2.5px color-mix(in srgb, var(--warn) 45%, transparent)) drop-shadow(0 0 6px color-mix(in srgb, var(--warn) 18%, transparent)); }
+:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) { color: var(--warn); }
+:is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--key-glow-r); }
+.ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }
+
+/* THE SIDE BUTTONS (SideButtons.jsx; owner, 28 Oct 2026: "make like a phyical comic button in the middle right
+   on the page so i can open and close the ad ticker", then "also add a button in the same spot to switch from light
+   to dark"): a comic push-button — inked outline, halftone face, a hard
+   offset shadow it sinks into when pressed — tilted a touch, at the middle of the right edge, over the page and
+   under the popups. Red while the ticker is folded (press to open), the deck's green-white while it is open. */
+:root { --comic-ink: #101214; --comic-hi: #ffffff; --comic-on: #e8f3ec; } /* the comic's ink, its highlight, its lit face */
+.sidebtns { position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY(-50%); display: grid; gap: 16px; justify-items: end; }
+.tickbtn { transform: rotate(-6deg); padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* the theme's button, tilted the other way: the dark face offers DARK on the light page, the pale face LIGHT on the dark */
+.themebtn { transform: rotate(5deg); }
+.themebtn .tickbtnface { background-color: var(--comic-ink); color: var(--comic-on); -webkit-text-stroke: 0; }
+.themebtn.dark .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); }
+.tickbtnface {
+  display: grid; place-items: center; min-width: 54px; height: 40px; padding: 0 10px; border: 2.5px solid var(--comic-ink); border-radius: 12px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--comic-ink) 22%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px, var(--warn);
+  color: var(--comic-hi); font: 400 13px/1 var(--mich); letter-spacing: 0.06em;
+  -webkit-text-stroke: 1px var(--comic-ink); paint-order: stroke fill;
+  box-shadow: 0 6px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 45%, transparent);
+  transform: translateY(0); transition: transform var(--dur-0) var(--ease-out), box-shadow var(--dur-0) var(--ease-out), background-color var(--dur-2) var(--ease-out);
+}
+.tickbtn.on .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); -webkit-text-stroke: 0; }
+.tickbtn:active .tickbtnface { transform: translateY(5px); box-shadow: 0 1px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 30%, transparent); }
+.tickbtn:focus-visible { outline: none; }
+.tickbtn:focus-visible .tickbtnface { outline: 2px solid var(--sig); outline-offset: 3px; }
+[data-popup] .sidebtns { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .tickbtnface { transition: none; } }
+
+/* THE THEME'S TURN (lib/theme.js applyTheme, 28 Oct 2026): the old page fades into the new, on the motion ladder */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-2); animation-timing-function: var(--ease-out); }

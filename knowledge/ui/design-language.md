@@ -19,12 +19,34 @@
   right edge; and the Central Control Deck (bottom: FEED · SEARCH · POST
   disc · MESSAGES · ACCOUNT) parted by cuts in the glass, with the foot
   grill under the disc. Both are clear liquid glass that bends every
-  colour alike (no colour split, no rainbow rim, 26 Oct). Of the V.1
+  colour alike (no colour split, no rainbow rim, 26 Oct) — save the
+  scroll wheel, whose pane carries the V.1 magazine's rainbow glass, red /
+  green / blue pulled 80 / 86 / 92 (27 Oct, `RainbowGlass.jsx`): the one
+  glass that parts the colours, as refraction, never paint. Of the V.1
   masthead only the strip came back: no ticker, no nav row. The ad strip
   (the house lines) rides on the deck.
 - **The Feed is one Tetris grid** (25 Oct, lib/feed/tetris.js): mixed card
   sizes, even gaps, no holes; carousels and the motion row are Figure 20
-  (Fig20.jsx), the ends turned and stacked.
+  (Fig20.jsx), the ends turned and stacked. THE FOUR SIZES ARE A HARD RULE
+  (owner, 28 Oct 2026): a LARGE card (still, motion, carousel, the motion
+  row) is 80% of the screen's height (90% the same day, then "a large is
+  now 80%"); a MEDIUM (a piece; a words-only post)
+  is half of it each way, four to a large's place; a SMALL (song, place) is
+  half its width and a third of its height, six to a large's place; a WIDE
+  SMALL (a BRDCST) is two smalls side by side. The feed is packed in TILES,
+  a large card's place each, holding a large card or an exact fill of the
+  others, so no gap opens; the kinds spread evenly and never leave two
+  bands (1.6 screens) in a row without a large card or without another.
+- **The ink reacts to its ground** (owner, 28 Oct 2026: "for all the text
+  and symbols they must be reactive to go from dark to light depending on the
+  background"): every block of words or marks over a Feed card (lib/ink.js
+  INK_ZONES) wears data-ink by what is really under it — the picture's own
+  pixels, or the page — read by app/components/InkWatch.jsx once the scroll
+  rests; a scrim under dark ink turns pale. A picture another site will not
+  share keeps the ink its card's ground gave it. The accent lines that float
+  on the page and not on a card (Figure 20's rule under the name) are the
+  Masthead's line: the white bar in its glow, light theme too (the owner's
+  exception to "light never glows", as the Masthead's own line is).
 - **Nothing is italic** (19 Oct): no rule slants text, em/i/cite stand
   upright, and the browser never synthesizes an oblique.
 - **Palette.** Light: white paper, `#1d5fd6` blue ink, teal `--sig` for
@@ -863,24 +885,460 @@ checked what a reader is actually served, which is the claim that matters.
   icons sit on the text's edge (each button's slack pulled out by a negative
   margin). Nothing is pinned over the foot. The Feed's piece cards draw
   `thumbFor(it, { bare: true })`: no initials, no tag word under the words.
-  A hairline (`<Cut className="pcrule" />`, `--on-media` at 45%) sits
+  (28 Oct 2026: the hairline that sat here, a refracting `<Cut className="pcrule" />`, warped the
+  card, the owner said, and is gone) Formerly a hairline sat
   between `.pcrow` and `.pcacts`.
-- SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid (feedColsFor):
-  LISTING 3x8 | 4x8 (eighteen only) hero — never small, so the small piece
-  card (`.v-small`, `.pieceline`) is deleted; SONG and PLACE 2x4 | 2x8 |
-  3x4 square, 3x8 medium; BRDCST 6x4 strip; posts 6x16, with a BRDCST
-  6x20, words 6x12; CAROUSEL and RAIL 6x16; AD 6x4 | 3x8. LOOKAHEAD 9.
-  `preferredSpan` draws a card's size from its id; any other size costs
-  PREF (twenty rows); every card covers the lowest column (BOTTOM FIRST).
-  The size battery in tests/feed-tetris.test.js holds the variety, the
-  bottom-first rule and the hole bounds.
+- SIZE and SPANS (lib/feed/tetris.js) on a 6 / 12 / 18-column grid
+  (feedColsFor), rows sized from the screen (`.fgrid` grid-auto-rows: six
+  rows and five gaps are `--ed-feed-large`, 80svh): LARGE 6x6 (posts, with
+  or without a BRDCST, CAROUSEL, RAIL), MEDIUM 3x3 (LISTING hero, TRANSM
+  note), SMALL 3x2 (SONG, PLACE square), WIDE 6x2 (BRDCST strip); AD 6x2
+  adwide | 3x3 ad. One size a kind. tetrisPack lays TILES (TILE = 6): a
+  large card, or a fill — 2 mediums beside 3 smalls, 4 mediums, 6 smalls,
+  3 wides, 2 wides and 2 smalls, 1 wide and 4 smalls — the fill whose cards
+  stand earliest in the queue; the kinds spread by error diffusion,
+  checkered on even widths; the end is laid on lanes, wides first. The
+  braid (lib/feed/types.js) gives each post a tile's worth. The battery in
+  tests/feed-tetris.test.js: zero holes and every two-screen band mixed.
 - `.card.placecard.withphoto .placeopen > .placeglobe` keeps the globe
   absolute at the bottom right (a plain `.placeglobe` lost to the rule that
-  lifts the photo card's children); the name and type pad right to clear it. AD 5x4 adwide | 3x8 ad, laid only by
-  `fillAds` into level gaps at the feed's end, never lower than the feed;
+  lifts the photo card's children); the name and type pad right to clear it. AD 6x2 adwide | 3x3 ad, standing
+  in for a missing medium or wide in a fill, or laid by `fillAds` into level
+  gaps at the feed's end, never lower than the feed;
   `AdSpace.jsx` draws `.card.adspace`, a dashed open placement.
 - `tileFor(key)` (stills.js) draws the ten-tag palette; `inkFor(hex)` picks
   `INK_LIGHT`/`INK_DARK` (85%); cards set `--on-card`, and `.fcell .card`
   maps `--on-media` to it. A piece uses `thumbFor` + `thumbBase`.
 - `.wmimg` is `clamp(78px, 21vw, 110px)` wide.
 
+
+## 28 Oct 2026 — the new logo, and the Masthead's solid glowing line
+
+(SUPERSEDED the same day by THE TRON MARK, at the end of this file: the layers
+and inks below are the logo's history. What still stands: the artwork's type,
+geometry and glows.)
+
+The owner's artwork (Procreate; `docs/brand/asilum-logo-2026-10-28.jpg`):
+"the asterisk should be in helvetica regular size font size 131 and
+"ASILUM" is in michroma regular size in font size 161 and tracking 5% with
+-15 kerning. the thick solid oblong white line should glow a stark white
+however the solid black text should not, the asterisk and the solid white
+line should have the same glow".
+- `Wordmark.jsx` sets it as TYPE in an SVG (sharp at every size), no
+  picture: two layers on one box, `.wmlit` (the Helvetica asterisk and the
+  bar) under `.wmtype` (the Michroma word, whose S laps the bar as drawn).
+  Geometry is `WM`, in the units of the word's 161, measured off the
+  artwork: every letter's origin (Procreate's tracking and kerning come out
+  at −15.5, −0.096em, between every pair), the asterisk's top on the
+  capitals' line and its left on the A's, the bar flush under the baseline,
+  82.6 deep, from 3.3 to 976.9 across — past the M. Measured against the
+  artwork at the same scale: the word IoU 0.917, the asterisk 0.851 in
+  Helvetica (0.598 in Helvetica Neue, so `--helvetica` puts Helvetica first).
+- ONE GLOW, white (`--wm-glow`): the asterisk, the bar and the Masthead's
+  line wear it and nothing else does; the word never glows. This glow is
+  the owner's and shows in both themes — the exception to "light never
+  glows". Colours: `--wm-ink` the artwork's near-black #001512 in light, a
+  flat phosphor mint #c4f2d6 in dark; `--wm-star` the house red (`--warn`);
+  `--wm-bar` white.
+- Placement is the old logo's: the left edge on the deck's, the capitals as
+  tall as the old ones (`--wm-u` = the old 129/900 of `--wm-w` over 120.75),
+  the baseline where the old word's foot sat.
+- THE LINE (`.mhline`) replaced the stamped line of graduated blocks: one
+  solid thin white line (`--mh-line-h`, 2px desktop / 1.5 phone) in the same
+  glow, from the bar's end (tucked a pixel under it) to the globe's centre,
+  its top on the word's baseline — the bar's top — so the two read as one
+  edge. `.mhstamp`, `STAMP*`, `--stamp-blue` and the logo masks are gone;
+  `--stamp-recess` stays for the wheel's marks.
+- Then, the same day: "the asterisk must glow red" — `--wm-glow-r` is
+  `--wm-glow` radius for radius and strength for strength in `--warn`, on
+  the asterisk's own layer (`.wmlitstar`); the bar (`.wmlitbar`) and the
+  line keep the white. The logo keeps its size but lifts "more in the
+  corner": its bar's foot now sits the stamp gap above the line ("the line
+  should sit under the thick logo line"). The line runs from the logo's
+  left edge to the END of the Passport's hit box, just under the keys'
+  glyphs, BROKEN (`--mh-break`, 14 units) where two keys' hit boxes meet
+  and where the first key begins; a faint cut (`.mhcuts i`, the deck's
+  `.cccut` hairline, 65 units) stands between keys. The keys are measured
+  (`lib/mastline.js` lays the stretches; the music circle and the exploring
+  key come and go) and the line fades in once laid. The Info Dock and
+  Passport keys are 10% bigger (`--mk: 1.1` on `.masthead`).
+
+## 28 Oct 2026 — the ad ticker round the deck
+
+The owner, with the MAD-S player's wrap-round display as the reference
+(`ticker-proof/owner-reference-*.jpg` in the session notes): "stretch all
+the across the center fixture, so if the center fixture was a 3d object the
+add ticker should stretch all around it".
+- `AdStrip.jsx` is a heavily clouded track (`--ad-cloud`: smoked glass with
+  clouds in it, dark in BOTH themes so the white reads) whose face begins 34
+  units in, where the pill began 40 — "ever so slightly lengthened" — and
+  whose ends CURL away round the deck's sides: each `.adcurl` turns
+  `--ad-curl` (lib/adcrawl.js `CURL_DEG`, 50°) about its hinge in its own
+  `perspective()` (a vantage at the track's middle put the far curls
+  edge-on).
+- The entries no longer swap on a timer: they run as ONE line that crawls
+  right to left (lib/adcrawl.js: one sequence a loop, so no seam, at
+  `CRAWL_PX_S`), out of the right curl, along the face, fading under the
+  label. The band in the right curl is laid in the track's own coordinates,
+  so the words run on across the hinge, squeezed as they turn. It holds on
+  hover, focus and typing and stops under reduced motion. Measured: 181
+  frames in 3 s, the worst 19 ms, no long task.
+- Type: Share Tech Mono, regular, `letter-spacing: -0.0875em` (the owner's
+  "-8.5 to -9 kerning", Procreate's per-cent of the em — the same unit that
+  made the logo's "-15" with "5% tracking" come out at -0.096em), white
+  (`--ad-glyph`) with a glow (`--ad-glow`).
+- The label is the two status lights and ADs as a NEGATIVE IMPRINT: a solid
+  glowing white chip (`--ad-chip`, `--ad-chip-glow`) with the word cut to
+  the track's dark (`--ad-chip-ink`) — no longer red.
+- What it prints (`lib/placements.js`, `ticker` beside the labelled `line`):
+  a BRDCST and a listed event by their title alone; an ad as "AD: " and the
+  advertiser's own words (`adLine`; no ad source exists yet, so none runs);
+  a device's own promotion draft as an ad marked "(DRAFT)". Each entry still
+  speaks its label to assistive technology (a BRDCST is read as sponsored).
+- Then, the same day: "i said clouded no black, i just wanted it more
+  clouded than the fixture and i wanted the bar to stretch the entirety of
+  the fixture … wrap around the whole thing 360 degrees not just stuck on
+  the middle, also get rid of those two red squares". The band is frosted
+  grey CLOUD (`--ad-cloud`, one for the dark glass and a shade deeper for
+  the light, never black, never opaque), and it runs the deck's WHOLE width
+  (`.ccad` has no side padding). Each side is a quarter cylinder of radius
+  `--ad-r` drawn as `WRAP_SLICES` (6) flat slices (lib/adcrawl.js
+  `wrapSlices`: each the band's arc laid flat and squeezed from its left
+  edge by its shown width over its arc, dimmed by `--ad-turn` as it turns),
+  so the words narrow to nothing at the deck's silhouette and run on round
+  the back; the band is continuous through every slice. The perspective
+  curls and `CURL_DEG` are gone. ADs sits at the face's left, the words
+  passing under it. The two red status lights are gone, and so is the
+  `asilum:lamp` event that only they answered. Measured: 181 frames in 3 s,
+  the worst 18 ms, no long task, with all twelve slices crawling.
+- Then: "why is it frosted dark make it like light grey or something". The
+  band is a LIGHT GREY cloud — one `--ad-cloud` for both themes, a haze of
+  rgb 196/202/208 to 178/185/192 at 0.62–0.66 under white puffs — and the
+  white words keep their glow with a hairline of shade at their edge
+  (`--ad-glow`) so they hold on the light grey.
+- Then: "we gotta find a way to make the ad text glow or something to make
+  it more legible". The words GLOW in a smoke bloom (`--ad-glow`): a white
+  core lit by a tight white halo, over a deep slate bloom (three layers,
+  dense at the letter, wider and fainter outward) that darkens the cloud
+  only round each letter — the band stays light grey and every letter
+  reads, in both themes. Chosen from four tried live on the band (trial
+  crops in the session notes, ticker-proof/round-4-legibility).
+- Then: "obviously with dark mode since everything is dark the clouding can
+  be dark because the glow will make it ledgible. i think for light mode we
+  can make it black like the logo. also the add square should be red and
+  smaller". The band is themed: in DARK a dark grey cloud
+  (`--ad-cloud-dark`, never black) with the words white and glowing white;
+  in LIGHT the light grey cloud (`--ad-cloud-light`) with the words the
+  logo's black (#001512, then `--wm-ink`, now `--wm-hole`), unlit as the logo's word is. ADs is
+  knocked out of a small (0.78em) solid red chip (`--warn`) glowing red as
+  the logo's asterisk does, its word cut to the band's own tone.
+- Then: "fix the corners of the ad bar the rendering of the 3d wrap is kind
+  of choppy". Magnified 5x, each corner showed six vertical stripes: every
+  slice carried its own cloud and its own stepped shade, and the squeeze
+  kinked between slices. Now each side (`.adside`) is ONE smooth piece of
+  cloud, matched to the face where they meet, under ONE smooth shade
+  (`--ad-turn-c`, eased as 1 − cos of the turn toward the silhouette); only
+  the words are sliced, in 16 slices a side (`WRAP_SLICES`), and they fade
+  out (`.adsidewords` mask) before the silhouette so no squeezed glyph is
+  left as a smear. The crawl still holds 60 fps (worst frame 18 ms).
+- Then, the ticker's RULES (owner, 28 Oct 2026): "if there is no ads or
+  brdcsts the ticker should collapse and turn into a glowing white line
+  that acts like the one on the mast head, broken between the button gaps.
+  and the center fixture is allowed to shorten … if the user has no service
+  … [it] should open immediatly after regaining service, when a user first
+  opens the app the first animation should be the ticker opening".
+  `tickerOpen` (lib/placements.js): open only ONLINE and with an ad, a
+  BRDCST or the device's own ad draft to carry — a listed event or the
+  house lines alone never hold it open. Folded (`.ccenter[data-ad="line"]`)
+  the deck is the row alone (`--ad-h: 0`), and one glowing white line in
+  the Masthead's glow runs under the keys, a stretch per key, broken at
+  every cut between them (ControlCenter.jsx `AD_LINE`). The page loads
+  folded, so the unfolding is the first move; "offline" folds it, "online"
+  reads the placements again and it opens at once. The bubble's height
+  moves in step with the deck's; every open/fold move is ≤ `--dur-3`.
+- The bezel (`--ad-rim`, the top and bottom lines) now runs round both
+  sides, not the face alone.
+- "flowing extremely smooth like a rolex no actual ticking … typed in and
+  typed out as its circling": the band glides linear on the compositor;
+  only the TYPING steps. The text is on Share Tech Mono's cell grid
+  (`monoText`; the dot between entries is the characters `SEP`, not a
+  margin); one loop is exactly n cells; a hard-edged mask on every band
+  (`--t-out` … `--t-in`, on cell boundaries round each side at `TYPE_DEG`,
+  60°) steps right one cell per cell of glide (`adtype`, `steps(n)`), so on
+  screen each letter is typed in whole as it comes round the right side and
+  typed out whole as it goes round the left. The side-fade mask is gone.
+- Then: "the transitions isnt clean … the ticker should wink into the glow
+  white line and the bezels of the ticker should slightly glow so as its
+  winking it looks clean". THE WINK: the band now stands on the bubble's
+  foot (absolute, 26 units up), so its centre line is a fixed 52 units
+  above the deck's foot, open or folded, and the folded line (now inside
+  the bubble) lies exactly there. Folding, the band is CLIPPED shut onto
+  that line (clip-path, never a scale), and its two bezels (`.adrim`,
+  hairlines the band's whole length glowing slightly, `--ad-rim-c` /
+  `--ad-rim-glow`) travel half the band each and meet on it — one glowing
+  line — as the broken line comes up under them; they fade after. The band
+  closes (`--dur-2`) faster than the deck shortens (`--dur-3`, the same
+  curve), so the keys settle onto the line and never cross it. Opening is
+  the reverse. The wink starts two frames after the decision, so the
+  band's words are laid first. Measured at 375px: the bezels land on the
+  line (777.2) by 160 ms; the keys stop 5 px above it; fold and open hold
+  60 fps (worst frame 17–19 ms).
+
+## 28 Oct 2026 — the faded squares, tried and rolled back
+
+The owner asked to try the Feed's cards as squares whose edges fade into
+the page instead of bezels ("lets experiment with the cards"); it shipped
+as e71f0d1 and was rolled back the same day ("yeah lets go back to
+[rounded] cards no fade"): the Feed's cards are rounded (`--radius-card`)
+with their 1px `--line` bezel again, and the Design Console's card-fade
+knob is gone with it.
+
+- The logo, 28 Oct 2026, later: "that gap between the logo thick white
+  line and the accent mast head white line lets add a gap of that thickness
+  between the ASILUM word and the thick whiteline". The bar stands off the
+  word's baseline by exactly the Masthead's gap (since superseded: the word now sits half over the bar, and
+  `WM.gap` and `--mh-gap` are gone) (`WM.gap`, 18 × 120.75 / 129
+  = 16.85 of the logo's units = `--mh-gap`); the bar-to-line gap is
+  unchanged, so the word lifts by it. Measured: word→bar 2.17 px against
+  bar→line 2.18 px at 375, 3.02 against 3.04 at 800.
+
+
+## 28 Oct 2026, last — THE TRON MARK (superseded 29 Oct by THE LINE INTEGRATED, below)
+
+Through the evening the owner moved the word onto the brick ("half of the
+asilum text … sticking half way over the brick", the brick "ontop of the mast
+head line"), set it a touch smaller and to the right (`WM.set`: 0.96, +40),
+then asked for a Tron logo ("negative space in the brick where the font would
+be … an outline as thick as the font … the asterisk line … connected with the
+outline"), in both themes ("for lightmode the text should be black"), with a
+rise up the Masthead ("from the left and the end of the tip of the A … fill
+it in") and the brick starting at the A ("not past it").
+- `Wordmark.jsx`: ONE white shape in the bar's glow (`.wmtron`, `--wm-glow`):
+  the bar (its top on the capitals' middle, its foot on the Masthead's line,
+  its left end at the A's outline, `WM.bar.x` 31.36), the word stroked to an
+  outline `WM.tron.t` = 14 wide (Michroma's own stroke: I 15, L's bar 13 at
+  161), the stem under the asterisk into the A's outline, the tip closing the
+  notch at the A's flat top, and the rise from the bar's left end to the A
+  tip's far end, up past the Masthead's top. The six letters are cut out
+  (mask) and laid back unlit (`.wmtronink`): `--wm-hole`, the ground's dark in
+  dark and the artwork's black #001512 in light. The red asterisk sits on the
+  stem in `--wm-glow-r`. `WM.art` keeps the artwork's bar for the artwork check.
+- The Masthead's line starts at the brick's left end (the box is the bar's
+  width) and runs under it to the keys.
+- Tests: tests/v2-fixtures-sketch.test.js (the geometry, the shape, the holes,
+  both themes).
+
+
+## 29 Oct 2026 — THE LINE INTEGRATED (the logo as it is now)
+
+The owner's reference (docs/brand/asilum-logo-2026-10-29.jpg): "new logo with
+the masthead line intergated".
+- `lib/wordmark.js` holds the reference measured in its own pixels (`REF`:
+  the word's ink, the brick 779–945, the line's top 914, the slant's corners
+  fitted at 996 and 1192, 34.6°) and lays it round the word as set (`WORD`;
+  `brickGeometry`, `brickPath`, `brickBox`). tests/v2-logo-line.test.js
+  re-measures the image against `REF`.
+- `Wordmark.jsx`: three layers — the brick (`.wmbrick`, one path in
+  `--wm-glow`: it runs off the screen's left edge, holds the word wholly,
+  and at its right end its top slants down, the bends rounded, into the
+  line); the word unlit in `--wm-ink` (the artwork's black, both themes);
+  the asterisk in `--wm-glow-r`. The word keeps its set (`WM.set`).
+- The Masthead's line takes the drawn thickness (`--mh-line-h`, 28.3 of the
+  logo's units: 3.6px on a phone, 5 on a desktop) and the brick's foot sits
+  on the line's foot (`.brandfix`), so the slant flows into the line, which
+  carries on to the keys, broken at their meetings as before.
+
+The same evening, two rounds more (owner: "lets make the masthead line thinner and the lines under the buttons …
+make the font a little bolder and make the [text] negative, and keep the asterisk full and red"; then, circling
+the toe, "i still want the button breaks, make the circled area flush the curve kind of looks jagged and the glow
+doesnt look consistent throughout the whole thing … also can you add a thin white bezel line along the edge of the
+disc"):
+- The line is `LINE` (16 units: 2px on a phone, 2.9 on a desktop), the brick's line and the Masthead's alike; the
+  slant keeps the reference's angle, so the toe moves along. The breaks at the keys stay.
+- The bends are `BEND` (36 units), a curve, not the drawn 15's kink. The brick ENDS where the toe's curve lands
+  on the line; the Masthead's line starts there, a pixel under it (it ran on under the whole brick, its glow
+  stacked on the brick's).
+- The glow comes off the brick's RIM (`rimPath`, LINE deep all round, the line itself along the foot), not the
+  whole slab: measured at 800px, one pixel out the brick and the line both read 196 above, 199 and 188 below,
+  falling off alike. It is clipped away from a window round the word (`glowWindow`) so no haze fills the letters.
+- The word is CUT OUT of the brick (a mask), a `BOLD` stroke (5 units) thicker; the glass shows through. The
+  asterisk stays whole and red. `--wm-ink` is gone.
+- THE TINT ("tint the letters but i want the transition as smooth as possible, seamless, fast and reactive"):
+  over a white card in light the holes vanished. Under the cut lies the word again (`.wmtint`, `TINT_BLEED` fuller
+  than the hole) in `--wm-cut-tint`, half a deep navy, TRANSLUCENT: the glass shows through it, so white behind
+  turns a cool grey, the blue glass a deeper blue, a dark card stays dark — per pixel, every frame, by plain
+  compositing, with nothing measured and nothing to wait for (InkWatch reads at scroll rest; this does not).
+  Dark's tint is clear; a theme turn eases it over `--dur-2`. A multiply was tried first and measured flat in the
+  page (the same 121,126,135 over the glass and over a white card): inside the Masthead's glass a blend sees only
+  the glass's own layer, never the page beneath.
+- The wheel's disc wears the fixtures' shine rim (`.fxrim`), lit from the top since only its upper half shows.
+
+Later that evening (owner: "ok so i still wanted the negative logo to be see through however i wanted it to be
+seemlessly reactive to tint once passing over a really bright card, also lets make all the colors on darkmode
+glowing white nomore green, also the center fixture select buttons have a green glow it should be red"):
+- THE TINT FOLLOWS BRIGHT CARDS. The letters are see-through again; the tint (`.wmtint`) is hidden until read and
+  then clipped to the bright cards behind the word, their own boxes (`lib/ink.js` `tintPoints`, `tintClip`,
+  `TINT_BRIGHT` 0.85), re-read on every scroll frame (the page's and a carousel's), a resize, a load, a settle and
+  a theme turn (`Wordmark.jsx` `useCutTint`). "Bright" is a plain ground at 0.85 or more on a card, or a block
+  InkWatch has already read as sitting on a bright ground (`data-ink="dark"`, a light photograph's foot); pictures
+  and gradients are not (`InkWatch.jsx` `brightSurfaceAt`). Eight hit tests a frame and no pixel reads: a 300-frame
+  scroll at 375px dropped 1 frame with the tint and 1 without. The tint's edge rides the card's edge.
+- DARK IS WHITE, NOT GREEN. `--red` in dark is `#f4f9fc`, glowing white through `--glow`; the fixtures' paler
+  green override is gone; the dark headline is chrome washed to white in a white halo; the dark ground and the fog
+  are neutral greys to black; the caret, the passport's dark pattern and its link colour are white. The rainbows
+  (`--holo`, `--iris-*`, the passport strip's sweep) keep their green stop, as a rainbow does.
+- THE SELECTED KEY'S LAMP IS RED (`--lamp`, `--lamp-hot`, `--lamp-core`), in both themes; it was green in dark and
+  cyan in light. The selected keys themselves were already the asterisk's red.
+
+## 29 Oct 2026 — THE CARD INK, READ AHEAD
+
+Owner: "the reactive fonts on the cards is slow and weird". Measured before: every block of words over a card came
+on screen without its reading and took its ink a median 0.5s later (0.8s at worst), then faded into it — the watcher
+waited for the scroll to rest and for idle time, because it found the picture under a block by hit-testing the
+screen. Now (`InkWatch.jsx`): a block is read a screen before it comes on (`AHEAD`), the picture under it found by
+geometry among its own cell's pictures — the highest-stacked (Figure 20's cards carry their z-index), then the most
+centred — with no hit test, so it works off the screen and nothing waits for the scroll; readings run in idle slices
+(`SLICE_MS`). The first reading lands as it is; only a later one (a settle, a theme turn, a late picture) eases
+(`[data-ink-ease]`). Measured after, 375px light: 31 of 31 blocks inked before they came on; no ink changed while
+on screen; 1 dropped frame in a 300-frame scroll, as before; the geometry chose the hit test's picture at 234 of 234
+points over seven screens.
+
+## 29 Oct 2026 — THE GROUND'S INK, AND THE FEED'S EQ
+
+Owner: "all text should be reactive, glow when background is dark, solid black or grey when background is light, so
+THE FEED should glow in light mode because its on a dark background. also underneath the feed with the FOR YOU page
+select right next to it lets have a collapsed filter button that looks like its from a music player that allows users
+to change what types of cards show on their feed and at the bottom it has a remember toggle so it remebers its feed
+choices".
+
+THE GROUND'S INK (`lib/ink.js` GROUND_TEXT, GROUND, groundLuma, groundMix; `GroundInk.jsx`). Words on the page's own
+ground — every page's headline, the Feed's modes and filters, Figure 20's head and foot — carry `--gl`, worked out on
+every scroll frame from where they sit on the ground's fixed gradient (the light page's dark blue at the screen's top
+and foot, the ice between; dark's near-black). The CSS mixes their colour from glowing white to a solid near-black by
+`--gl`, and their glow fades with it: a blend across GROUND_BAND either side of GROUND_TURN (0.76), never a jump.
+Arithmetic on boxes, no hit test; re-read when the layout settles and the theme turns; on iOS WebKit (which scrolls a
+fixed background) by the page's height, told by `-webkit-touch-callout`. The card ink (InkWatch) leaves Figure 20's
+head and foot to it. Measured at 375px light: THE FEED glows at the top; every ground word matched its model within
+0.02; the largest change in a frame at 6px of travel 0.24; 1 dropped frame in 300, as before.
+
+THE FEED'S EQ (`lib/feed/choice.js`, `FeedEq.jsx`). First in the row of modes, before FOR YOU: a player's key with an
+equaliser's three faders and a light, lit red while the mix is not the whole Feed. Open (under the row, which scrolls
+sideways and clipped it; over the cards, under the fixtures), an equaliser: STILLS · MOTION · PIECES · WORDS · BRDCST ·
+PLACES · MUSIC, a fader up when it plays, its light lit; the last channel playing will not mute; at the foot a hold
+switch, REMEMBER, which keeps the mix on this device (`asilum-feed-choice`) and, turned off, forgets it. The stream is
+filtered before it is packed; an ad space and an echo are on no channel. Escape and a click away close it.
+
+## 29 Oct 2026 — NOTES, THE UPLOAD SYMBOLS, THE ROW, THE CRAVING IN SEARCH, DISCOVER
+
+Owner: "rename it to notes and add that to the upload selection, also make custom upload symbols for the selection. the
+collaspable togge thing should replace current craving and following and the toggle should be on the left. and current
+cravings should live in search tab. we have to device a way for a quick button to take users to a discover page that
+makes sense because of how our search toggle works".
+- NOTES: words alone are NOTES — the EQ's channel (a mix kept as WORDS keeps its choice) and the upload card (the
+  composer's kind is still `transm`). Every upload type wears its own symbol (`Icons.jsx` up-notes, up-still,
+  up-motion, up-brdcst, up-listing, up-echo): a sheet, a camera, a frame of film, a mast, a tag, a story's rings.
+- THE ROW: the EQ key at the left, then what plays — FOR YOU or FOLLOWING, chosen in the EQ's SOURCE switch. FOLLOWING
+  and CURRENT CRAVING left the row; while a craving steers the Feed the row shows CRAVING ON · CLEAR.
+- THE CRAVING lives in the search tab now (`lib/craving.js`): kept for the visit (sessionStorage), told to the open
+  pages, followed by the Feed (its request carries it as before).
+- DISCOVER: the search popup waits for typing, so the deck's search bar carries a DISCOVER key (a compass; folded to
+  it once something is typed) and the empty search popup a line, both opening the DISCOVER popup (`DiscoverSheet.jsx`,
+  a view of the one popup): the current craving, the rails (a reading tapped is searched in the search tab; none, it
+  says so) and THE WHOLE INVENTORY → /discover.
+
+## 29 Oct 2026 — EVERY POPUP IS A LARGE CARD
+
+Owner: "all the pop up tabs have to look like cards four rounded corners and it being centered in the screen, lowkey
+every pop up tab should be the size of a large card". The one popup (`SheetHost.jsx`) is one card for every view: a
+large card's width (`--pop-w`: a phone's Feed width, the screen less 16px; from 560px half the screen less 28px, the
+twelve-column Feed's large card, at most 460px) and its height (`--pop-h`: the Feed's own `--ed-feed-large`, 80% of the
+screen), centred in the screen, a card's corners (`--radius-card`). Its height gives way only to stay clear of the
+Masthead and the deck — the larger clearance at both ends, so it stays centred (`--pop-clear`; the deck read as it
+stands, its ticker folded or risen for the search). Retired: the views' roomy and tall heights, the EXPAND / SHRINK
+key, the search popup rising flat out of the deck (25 Oct), the phone's bottom sheet. A field in focus lifts the card
+under the Masthead, the same size. Measured: 375×812 — 359 × 628 (the large card 359 × 650; trimmed to clear the
+deck), 92px above and below; with the search's deck risen 359 × 538, 136.8 above and below; 800×900 — 372 × 681 (the
+large card 372 × 720), 214 / 214 across and 109.5 / 109.5 down; 12px corners; neither fixture overlapped.
+
+## 29 Oct 2026 — THE KEY BESIDE THE FEED, THE DECK THAT SHRINKS
+
+Owner: "fuck the for you take that shit out and just leave the feed, let the toggle button be in liquid glass and have
+its little symbol glow and make the symbol match the rest of the symbols and put it in the right corner of the screen
+inline with the fee[d]. also i would still want reactive shrinking on the center fixture …"; then "make the EQ reactive
+like the text and make it into a curved square".
+- The row of modes is gone from the Feed: THE FEED and, at its right, the EQ key (`FeedEq.jsx`) — a curved square
+  (`--radius-card`) of the fixtures' liquid glass, its symbol the house's (`Icons.jsx` eq, the fixtures' 1.5px stroke),
+  a ground word (`lib/ink.js` GROUND_TEXT): the words' blend of ink and their glow; floating over a bright card, the
+  solid ink and no glow (the logo's own test). The source (FOR YOU or FOLLOWING), the mix and the craving all live in
+  it; its light is lit while the mix is not the whole or a craving steers.
+- THE KEY COMES BACK (`lib/scrollmotion.js` quickReturn / quickOffset): away with the page as the reader scrolls down,
+  down into view under the Masthead by exactly the distance scrolled up, held there, away again at the page's pace.
+  Measured at 375px: 80 at rest; −52 after 600 down; −22 after 30 up; 74 after 150 more; 54 after 20 down.
+- THE DECK SHRINKS (`shrinkStep`, `ControlCenter.jsx` data-shrunk): 0.85 once the reader has run 12px down, whole once
+  as far up, near the top, at a press, never while searching; by `scale` about the plus's own centre, the plus's place
+  scaled back as much, so the disc, the wheel and the POST cards keep their size and place. Measured: 0.85 of the
+  width; the plus unchanged in size, moved (0.1, 0.48) px. 1 dropped frame in 300 at 6px a frame, as before.
+
+## 29 Oct 2026 — THE TRACKING, CLEANED (one frame for everything the scroll moves)
+
+Owner: "checking the tracking of everything, animations, reactions, effects, timing so everything is much cleaner".
+Measured first at 375px, a 300-frame scroll: five reactions each kept their own frame loop (the logo's tint, the ground's
+ink, the EQ key's return, the deck's shrink, the motion row's play), reading and writing in turn; the frame's script time
+a median 2.3ms, a 95th percentile 8.2ms; the logo's tint alone 2.9ms a frame — eight hit tests across the Feed's stacked
+cards, and a computed style read every frame to learn the theme.
+- `lib/frame.js`: one frame for all of them — every reader reads, then every writer writes; one frame asked for however
+  many ask; a subscriber's failure stays its own; `globalThis.__frameProfile` measures each one.
+- The logo's tint keeps the cards behind its word with an IntersectionObserver (its band reaching 100px past the word, so
+  a card is known before it arrives) and reads only their boxes (`InkWatch.jsx` brightBoxes; a card's own ground read
+  once and kept; a picture over the band counts as the picture); the theme off the page's attribute. It agreed with the
+  hit test it replaced in 392 of 400 frames, its edges within 2px in all 73 where both tinted. (Taking only pictures'
+  boxes out of a card was tried and measured worse: 253 of 400.)
+- The motion row plays or pauses only on a change, once a frame.
+- After: the frame's script time a median 0.2–0.3ms, a 95th percentile 0.4ms; the tint 0.05ms; 1 dropped frame in 300,
+  as before; the EQ key's return unchanged to the pixel.
+- TIMING: the POST card's grow is `--dur-3` (320ms) and the popup now waits that long (it waited 260 and opened over a
+  card still growing). Every transition was already on the ladder; the animations off it are loops (blinks, pulses,
+  drifts) and two deliberate settles (the stamp's 620ms "arrives a beat late", the map's 1.1s), left as they are.
+
+### The bug run (29 Oct 2026, "do another run through for bugs")
+Every route loaded clean at 375 and 800, light and dark (no console errors beyond the map's geolocation policy and the
+expected 404s). Found and fixed, each with a check that fails with the bug back in (`tests/v2-bug-run.test.js`,
+`tests/feed-tetris.test.js`, `tests/v2-popup-card.test.js`):
+- THE PACKER: a strip of smalls at the very top held its open slot as row 0, which read as no slot — a Feed of songs
+  alone (MUSIC as the only channel) put the first song by itself, a hole beside it, and two songs on one place.
+- ONE COPY OF A VIEW: DISCOVER pressed again, a rail tapped in DISCOVER, a character typed with DISCOVER on top each
+  stacked another live step (three DISCOVERs, two SEARCHes each fetching per keystroke). `goSheet` goes back to the
+  step the popup holds, or adds one.
+- THE CRAVING: DISCOVER now hears a craving cleared from the EQ (it showed the old one ON, and POINT brought it back);
+  a held craving loads the Feed once, not twice; CLEAR leaves a reader on FOLLOWING where they are.
+- THE OVERLAYS: the large card's size is the popup's alone; the sign-up, reset and connect sheets keep their own
+  height within the screen and scroll (a tall sign-up grew off a short phone, its × out of reach).
+- THE INK: the watchers keep their own set of what they watch (a mark on the element outlived the observer, and a
+  second mount — React's strict mode in dev — watched nothing).
+- THE EQ: `aria-controls` only while the panel is there; Escape and CLEAR keep the focus in the EQ; a moved key asks
+  one more frame so its ink reads where it stopped. THE MOTION ROW asks a refused centre video again.
+
+### The ads wink, cleaner (29 Oct 2026, "the ads wink isnt clean enough")
+Filmed frame by frame at 375px (every transition paused and stepped 10ms), three things made it read as dirty:
+- THE DECK SLID UNDER IT. A shrunk deck (the scroll's 15%) is anchored at its foot but scaled about a point measured
+  from its top, so the ticker changing the deck's height slid the foot 3.8px. `.ccenter[data-shrunk]` is now lowered
+  by 15% of `--ad-h`, on the height's own duration and curve: the foot holds still (0px). The price: with the ticker
+  open, the plus shrinks about a point 3.8px lower (folded, nothing changes) — a rigid scale cannot keep both.
+- A SNAP, A STALL, THEN LIGHT. On ease-out the band shut 80% in 60ms, crept 3px for 100ms, and the line came after.
+  The band and its bezels now close as one lid on `--ease-in-out` (80% → shut in 60ms); folding, the deck shortens on
+  the same curve (`--ease-deck`, the deck's own curve token), longer, so the keys stay ≥ 8.5px clear of the closing band. (Leaving search with the
+  ticker folded now lowers the deck on that curve too.)
+- THE BEZELS WERE NOT THE LINE. They met as two whole hairlines, then the ends vanished and the breaks opened as the
+  line took over. Each bezel is now clipped to the line's stretches as one comb polygon (`lib/adcrawl.js rimClip`,
+  `--rim-open` / `--rim-shut`): whole while open, the line's own shape shut; the shape is taken first (`--dur-1`) and
+  the meeting second (`--dur-2`), so they touch as the line (0.26px off) and the hand-over is light alone (≥ 0.995).
+  Opening, the bezels are lit over the line in the time it takes to go (`--dur-0`, out on ease-in), ≥ 0.96 throughout
+  (it dipped to about half). Under reduced motion the ticker opens and folds at once (it winked regardless, before).
+
+### The logo's toe, one piece (29 Oct 2026, "whats circled isnt clean it still looks jagged")
+Magnified 8x, the toe was a seam: the bar (SVG, anti-aliased) handed to the Masthead's line (a box on the pixel
+grid, tucked a pixel under) a quarter pixel apart, each with its own glow fading at its own end — the haze stopped
+dead where the line's halo began. Now there is no join to hide: the line's first stretch, from the toe to the first
+key, is the bar's own foot (`lib/wordmark.js brickPath` `tail`, measured by `Masthead.jsx` in the logo's units) — one
+path, one rim glow, one mask — and the Masthead's line begins at the first break, half a break short of the first
+key like every other break.

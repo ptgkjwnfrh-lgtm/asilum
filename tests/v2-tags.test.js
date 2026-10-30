@@ -27,13 +27,16 @@ test("one renderer: the chip draws LEFT: RIGHT with the colon as its only punctu
   assert.ok(!/href=/.test(chip), "no link leaves the popup grammar");
 });
 
-test("long-press pins the tag as a filter chip on the current Search; the pins ride the request and clear with the search", () => {
+test("long-press pins the tag as a filter chip on the current Search; the pins ride the request and stay with the half-typed search", () => {
   assert.match(chip, /import \{ LONG_PRESS_MS \} from "\.\.\/\.\.\/lib\/disc\.js"/, "one long-press clock");
   assert.match(chip, /haptic\("confirm"\); pinTag\(tag\);/);
   assert.match(chip, /if \(h && h\.fired\) \{ e\.preventDefault\(\); return; \}/, "the tap after a long-press does not also search");
   assert.match(dock, /export function pinTag\(tag\)/);
   assert.match(dock, /state\.pins\.length >= 6\) return;/, "six at most");
-  assert.match(dock, /state\.typing = false; state\.pins = \[\];/, "closing the search clears the pins");
+  // (27 Oct 2026, the owner: a half-typed search "must remain") leaving the search keeps its words and pins for
+  // the next time SEARCH is pressed; they filter only while the deck is searching, each scope its own
+  assert.match(dock, /state\.mode = "base"; state\.typing = false;\n\s*state\.active = null;/, "leaving the search keeps the pins");
+  assert.match(dock, /state\.words = \{ \.\.\.state\.words, \[state\.scope\]: \{ q: state\.q, pins: \[\.\.\.state\.pins\] \} \};/, "each scope keeps its own");
   assert.match(search, /qs\.set\("pins", pins\.map\(\(p\) => p\.text\)\.join\("\|"\)\)/);
   assert.match(search, /<TagChip tag=\{\{ \.\.\.p, family: "pin" \}\} pinned onUnpin=\{unpinTag\} \/>/);
 });

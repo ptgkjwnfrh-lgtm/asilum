@@ -39,10 +39,29 @@ const GLYPHS = {
   link: <g {...P}><rect x="3.2" y="8.4" width="10" height="7.2" rx="3.6" /><rect x="10.8" y="8.4" width="10" height="7.2" rx="3.6" /></g>,
   glasses: <g {...P}><rect x="3.2" y="9.6" width="7.2" height="6.4" rx="2.6" /><rect x="13.6" y="9.6" width="7.2" height="6.4" rx="2.6" /><path d="M10.4 12.4h3.2M4 9.6l2-4.4h2M20 9.6l-2-4.4h-2" /></g>,
   list: <g {...P}><path d="M3.6 6.6h16.8M3.6 12h16.8M3.6 17.4h11.2" /></g>,
+  // THE UPLOAD SYMBOLS (owner, 29 Oct 2026: "make custom upload symbols for the selection"), one a type of post,
+  // in the same hand: NOTES a sheet with its corner turned and three lines; STILL a camera, its lens and its
+  // finder; MOTION a frame of film, its sprockets and the play mark; BRDCST a mast sending two rings out either
+  // side; LISTING a tag with its eyelet; ECHO a story fading out, its rings opening as they go
+  "up-notes": <g {...P}><path d="M6.4 3.2h7.8l4.6 4.6v11.6a1.4 1.4 0 0 1-1.4 1.4H6.4A1.4 1.4 0 0 1 5 19.4V4.6a1.4 1.4 0 0 1 1.4-1.4z" /><path d="M14.2 3.2v4.6h4.6" /><path d="M8.2 11.6h7.6M8.2 14.8h7.6M8.2 18h4.4" /></g>,
+  "up-still": <g {...P}><rect x="3.2" y="7" width="17.6" height="12.4" rx="2.4" /><path d="M8.6 7l1.4-2.4h4L15.4 7" /><circle cx="12" cy="13.2" r="3.4" /><path d="M17.2 9.8h.6" /></g>,
+  "up-motion": <g {...P}><rect x="3.2" y="5" width="17.6" height="14" rx="2.4" /><path d="M3.2 8.6h2.4M3.2 12h2.4M3.2 15.4h2.4M18.4 8.6h2.4M18.4 12h2.4M18.4 15.4h2.4" /><path d="M10.4 9.4v5.2l4.2-2.6z" /></g>,
+  "up-brdcst": <g {...P}><circle cx="12" cy="9.6" r="1.6" /><path d="M12 11.2v9.2M9 20.4h6" /><path d="M8.8 6.4a4.5 4.5 0 0 0 0 6.4M15.2 6.4a4.5 4.5 0 0 1 0 6.4M6 3.6a8.4 8.4 0 0 0 0 12M18 3.6a8.4 8.4 0 0 1 0 12" /></g>,
+  "up-listing": <g {...P}><path d="M12.8 3.4h6.4a1.4 1.4 0 0 1 1.4 1.4v6.4l-9.2 9.2a1.4 1.4 0 0 1-2 0l-5.8-5.8a1.4 1.4 0 0 1 0-2z" /><circle cx="16.2" cy="7.8" r="1.4" /></g>,
+  "up-echo": <g {...P}><circle cx="12" cy="12" r="3" /><path d="M12 5.8A6.2 6.2 0 1 1 6.63 8.9" /><path d="M12 2.6A9.4 9.4 0 1 1 3.86 16.7" /></g>,
+  // THE FEED'S EQ (29 Oct 2026, "make the symbol match the rest of the symbols"): three faders in the house hand,
+  // their knobs at three heights, each track broken where its knob sits
+  eq: <g {...P}><path d="M6 3.6v9.2M6 16.4v4M12 3.6v2.4M12 9.6v10.8M18 3.6v6.6M18 13.8v6.6" /><rect x="3.6" y="12.8" width="4.8" height="3.6" rx="1.2" /><rect x="9.6" y="6" width="4.8" height="3.6" rx="1.2" /><rect x="15.6" y="10.2" width="4.8" height="3.6" rx="1.2" /></g>,
+  // DISCOVER (the deck's search bar, 29 Oct 2026): a compass, its needle a diamond
+  compass: <g {...P}><circle cx="12" cy="12" r="8.6" /><path d="M14.8 9.2l-1.6 4-4 1.6 1.6-4z" /></g>,
   plus: <g {...P}><path d="M12 4.6v14.8M4.6 12h14.8" /></g>,
   // PASS (owner's feed sketch, 25 Oct 2026): an × standing on a bar — set aside, not deleted
   // STAMP (owner's post sketch, 25 Oct 2026, Fig. 3): a rubber stamp — the handle tapering to its neck, the plate
   stamp: <g {...P}><path d="M8.4 3.4h7.2a1.4 1.4 0 0 1 1.4 1.6l-1.2 7.8H8.2L7 5a1.4 1.4 0 0 1 1.4-1.6z" /><rect x="3.2" y="12.8" width="17.6" height="4.6" rx="1.6" /><path d="M5.6 20.6h12.8" /></g>,
+  // three dots, the cards' menu key (28 Oct 2026): three small rings on one line
+  dots: <g {...P}><circle cx="5.4" cy="12" r="1.15" /><circle cx="12" cy="12" r="1.15" /><circle cx="18.6" cy="12" r="1.15" /></g>,
+  // THE OFFER (owner's messages sketch, 28 Oct 2026): an arrow pointing up and left, in its box
+  offer: <g {...P}><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="2.4" /><path d="M16 16L8.4 8.4M8.4 13.6V8.4h5.2" /></g>,
   pass: <g {...P}><path d="M5.6 3.4l12.8 11.2M18.4 3.4L5.6 14.6" /><rect x="3.6" y="18.2" width="16.8" height="2.6" rx="1.3" /></g>,
   minus: <g {...P}><path d="M4.6 12h14.8" /></g>,
   locate: <g {...P}><rect x="8" y="8" width="8" height="8" rx="2.6" /><path d="M12 3.2v3M12 17.8v3M3.2 12h3M17.8 12h3" /></g>,

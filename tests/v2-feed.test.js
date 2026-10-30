@@ -28,7 +28,7 @@ test("there is no Wire: the selector, the lanes, the in-page composer and the ho
 });
 
 test("the stream is one Tetris grid (owner's feed sketch, 25 Oct 2026): the packer places, the page draws", () => {
-  assert.match(page, /tetrisPack\(feedList\(list\)/);
+  assert.match(page, /filterFeed\(feedList\(list\)[^\n]*\n\s*const \{ cells, rows \} = fillAds\(tetrisPack\(shown,/, "the braided stream, the reader's mix, then the packer");
   assert.match(page, /className="fgrid" style=\{\{ "--fcols": feedCols, "--frows": rows \}\}/);
   assert.ok(!/feedwheel|feedfull|feedstrip|feedduo/.test(page + css), "the segments, the strip wrapper and the duo are gone");
 });
@@ -40,8 +40,9 @@ test("every card wears its type; media enlarges over the Feed; a piece opens the
   assert.match(card, /openSheet\("listing", \{ id: pc\.id, title: "LISTING" \}\)/, "a tagged piece opens its listing");
   assert.match(page, /openSheet\("listing", \{ item, title: "LISTING" \}\)/);
   assert.match(host, /listing: \{ title: "LISTING", render: \(p\) => <ListingSheet/);
-  assert.match(host, /media: \{ title: "STILL", render: \(p\) => <MediaFloat.*tall: true/);
-  assert.match(host, /echo: \{ title: "ECHO", render: \(p\) => <EchoViewer.*tall: true/);
+  // (29 Oct 2026) every popup is a large card: the media and the echo no longer ask for a taller one
+  assert.match(host, /media: \{ title: "STILL", render: \(p\) => <MediaFloat \{\.\.\.p\} \/> \},/);
+  assert.match(host, /echo: \{ title: "ECHO", render: \(p\) => <EchoViewer \{\.\.\.p\} \/> \},/);
 });
 
 test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three tags and BEHIND THE PRODUCT", () => {
@@ -51,7 +52,7 @@ test("the LISTING popup: carousel, LIKE, OFFER (soon), bag, sizes, price, three 
   assert.match(listing, /const offerable = offerMode\(item\);/, "the popup asks the one law what OFFER does");
   assert.match(listing, /<span className="lstofferword quiet" title=\{offerable\.reason\}/, "a quiet OFFER is a label with its reason");
   assert.ok(!/OFFER<\/button>[^\n]*disabled|disabled[^\n]*>OFFER</.test(listing), "never a disabled OFFER button");
-  assert.match(listing, /openSheet\("messages", \{ title: "MESSAGES" \}\)/, "a Wardrobe OFFER starts with a message (13.4)");
+  assert.match(listing, /setNotice\("an offer starts with a message to the owner — the desk opens"\); openDesk\(\);/, "a Wardrobe OFFER starts with a message, on the messages page (13.4)");
   assert.match(listing, /postJSON\("\/api\/storefront\/offers"/, "a native OFFER is sent");
   assert.match(listing, /BEHIND THE PRODUCT/);
   assert.match(listing, /<AsteriskWhy item=\{item\} onNotice=\{setNotice\} \/>/, "the depth moved with the modal");
@@ -124,7 +125,8 @@ test("the piece card and the listing popup to the references: rounded photograph
   assert.match(listing, /priceLine\(item\)/);
   assert.match(listing, /"SIZE: " \+ item\.size\.label/);
   assert.match(css, /\.lstbadge\.unverified \.vbadgemark small \{[^}]*var\(--mich\)/);
-  assert.match(css, /\.adslot \{[^}]*color: var\(--red\)/, "the ADs slot is red");
+  // (28 Oct 2026: "the glowing red "ADs" should be a negative imprint in a solid glowing white mini rectangle")
+  assert.match(css, /\.adslot \{[^}]*background: var\(--ad-chip\); color: var\(--ad-chip-ink\); box-shadow: var\(--ad-chip-glow\);/, "ADs knocked out of a glowing white chip");
   // (19 Oct) the strip left the deck for the head of the Feed (the owner's fixture sketch)
   assert.match(strip(read("app/components/AdStrip.jsx")), /<span className="adslot" aria-hidden="true">ADs<\/span>/, "no asterisk (owner, 25 Oct, last: overused)");
 });
@@ -147,7 +149,9 @@ test("the piece card's words never sit on each other: one foot column, a bare ti
   // one stacked column (the actions inside .pcfoot, not pinned over it), no
   // rule positions .pcacts absolutely, and the Feed's piece cards draw the
   // tile without its initials and tag word, which printed under the name
-  assert.match(page, /className="pcrow">[\s\S]*?<\/div>\s*(\{\}\s*)?<Cut className="pcrule" \/>\s*<div className="pcacts"/, "the actions open inside the foot, a hairline between them and the size and price");
+  // (owner, 28 Oct 2026: the hairline over the actions "is causing a weird warp, take that out")
+  assert.match(page, /className="pcrow">[\s\S]*?<\/div>\s*(\{\}\s*|\{\/\*[\s\S]*?\*\/\}\s*)?<div className="pcacts"/, "the actions open inside the foot, right under the size and price");
+  assert.ok(!/pcrule/.test(page) && !/\.pcrule/.test(css), "no hairline over the actions, and no rule left for it");
   assert.ok(!/\.pcacts \{[^}]*position: absolute/.test(css), "nothing pins the actions over the foot");
   assert.match(css, /\.card\.piece\.v-hero \.pcfoot \{[^}]*flex-direction: column; gap: 2\.5cqw;/, "one even step between the rows");
   assert.equal((page.match(/thumbFor\(it, \{ bare: true \}\)/g) || []).length, 1, "the Feed's piece card draws a bare tile");

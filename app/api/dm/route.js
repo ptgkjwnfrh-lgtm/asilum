@@ -41,6 +41,7 @@ import {
   // STAGE C (v59)
   clearHistory, editMessage, readProfileSharing, searchMessages, sendProfileCard,
 } from "../../../lib/db/dm.js";
+import { latestOffersForConversations } from "../../../lib/db/production/money.js";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,8 @@ async function caller(req, claimed) {
  *
  *   summary   unread badge count. Polled on a 45s timer by every signed-in
  *             reader, so it is the highest-volume op in the subsystem.
- *   inbox     keyset page of conversations, with unread counts and previews.
+ *   inbox     keyset page of conversations, with unread counts, previews and
+ *             each thread's newest Wardrobe offer (amount, side, state).
  *   thread    one conversation's messages, with reactions and the palette.
  *   find      start-a-thread search over PUBLISHED profile rooms only.
  *   activity  typing and presence. Polled every 3s while a thread is open.
@@ -169,10 +171,26 @@ export async function GET(req) {
       // reader's own `folder`, which is per-side and says only where the
       // thread sits for them.
       const handles = await handlesFor(page.items.map((i) => i.otherId));
+      // THE OFFER ROW (owner's messages sketch, 28 Oct 2026): each thread's
+      // newest Wardrobe offer, as amount, side and state — never the parties'
+      // ids. None in REQUESTS, for the reason the preview is nulled there: an
+      // unaccepted stranger's price is a billboard too. A failed read leaves
+      // the rows their words and says so (`offersRead: false`) rather than
+      // failing the inbox or claiming there are no offers.
+      let offers = {}, offersRead = true;
+      if (folder !== "requests" && page.items.length) {
+        try {
+          offers = await latestOffersForConversations({ viewerId: "sb-" + me, conversationIds: page.items.map((i) => i.id) });
+        } catch (error) {
+          console.error("[dm inbox] offer read failed", error?.message || error);
+          offersRead = false;
+        }
+      }
       return NextResponse.json({
         ...page,
+        offersRead,
         items: page.items.map(({ otherId, state, ...rest }) => ({
-          ...rest, handle: handles[otherId] || null,
+          ...rest, handle: handles[otherId] || null, offer: offers[rest.id] || null,
         })),
       });
     }

@@ -37,7 +37,9 @@ export default function LikesSheet() {
   const tab = dock.likesTab;
   const [saves, setSaves] = useState([]);
   const [tick, setTick] = useState(0);
-  const q = String(dock.q || "").trim().toLowerCase();
+  // the scoped search filters Likes only while the deck is searching: the
+  // words stay in the dock after it leaves (the half-typed search is kept)
+  const q = dock.mode === "search" ? String(dock.q || "").trim().toLowerCase() : "";
 
   // the LISTING STATUS of every saved piece (V.2 brief §5): read from the
   // server by id — a saved piece's status is the listing's, checked by the

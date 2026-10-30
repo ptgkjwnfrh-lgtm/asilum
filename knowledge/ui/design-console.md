@@ -48,3 +48,15 @@ malformed values are dropped and counted, never applied.
 - `--mq-h` (header bar height) and `--status-h` read `var(--ed-…, shipped)` —
   edit the `--ed-` side, never reintroduce a literal on the legacy name.
   (`--side-w` died with the sidebar, Aug 12.)
+
+## The ticker test (28 Oct 2026)
+The owner: "create a button so i can test the animation". The console's
+TICKER — TEST THE ANIMATION section drives the deck's ad ticker on this
+device for this page view only (an `asilum:ticker-test` event; nothing
+stored): REPLAY OPENING ▶ folds it and opens it again after
+`TICKER_REPLAY_MS` (420 ms, past the fold) — the opening as it plays on
+load; OPEN; FOLD; BACK TO LIVE (the rule in lib/placements.js decides
+again). With nothing live to carry, OPEN runs `TICKER_SAMPLE`: two entries
+labelled SAMPLE that say so on the band and link nowhere — never an
+invented ad. The console now stops above the deck (desktop and phone), so
+what it drives stays in view.

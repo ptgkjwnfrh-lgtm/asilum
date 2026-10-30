@@ -86,7 +86,8 @@ export function useFocusTrap(surfaceRef, active = true, { companion = null } = {
     // top of the document and they lose their place entirely.
     const origin = document.activeElement;
     const inside = () =>
-      [...surface.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null);
+      // nothing laid out of sight, nothing inert (a popup's kept tabs, SheetHost.jsx)
+      [...surface.querySelectorAll(FOCUSABLE)].filter((el) => el.offsetParent !== null && !el.closest("[inert]"));
 
     const withCompanion = () => !!(companion && document.activeElement && document.activeElement.closest && document.activeElement.closest(companion));
     if (!withCompanion()) (inside()[0] || surface).focus();

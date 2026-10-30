@@ -12,8 +12,8 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
 import { useOverlayDismiss } from "./components/dismiss.js";
-import { useHold, HoldMenu, HoldKey } from "./components/HoldMenu.jsx";
-import { Cut, CutDefs } from "./components/Cut.jsx";
+import { HoldMenu, CardDots } from "./components/HoldMenu.jsx";
+import { CutDefs } from "./components/Cut.jsx";
 import AdSpace from "./components/AdSpace.jsx";
 import { demoImageFor } from "../lib/model/pieces.js";
 import { inkFor } from "../lib/model/stills.js";
@@ -27,7 +27,7 @@ import {
 import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
-import { tetrisPack, fillAds, feedColsFor, motionRail } from "../lib/feed/tetris.js";
+import { tetrisPack, fillAds, feedColsFor, motionRail, isLarge } from "../lib/feed/tetris.js";
 import { readHidden, HIDDEN_EVENT } from "../lib/feed/hidden.js";
 import MotionRail from "./components/MotionRail.jsx";
 import SongCard from "./components/SongCard.jsx";
@@ -46,6 +46,9 @@ import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { SAMPLE_SONGS } from "../lib/model/songs.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
+import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed/choice.js";
+import { EMPTY_CRAVING, CRAVING_EVENT, readCraving, normalCraving, cravingActive, pointCraving } from "../lib/craving.js";
+import FeedEq from "./components/FeedEq.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -68,6 +71,8 @@ const RECHUNK_FOLD_MARGIN = () => (typeof window === "undefined" ? 900 : window.
 const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "knitwear", "footwear", "accessories",
   ...STOREFRONT_CATEGORIES.map((c) => c.id).filter((c) => c !== "clothing")];
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
+// the notice a craving applied puts up; a Feed loaded without one takes it down (and no other notice)
+const CRAVING_NOTE = "current craving applied — your long-term taste was not rewritten";
 
 
 
@@ -80,6 +85,12 @@ const PLATFORMS = ["ebay", "pinterest", "shopify"];
 
 export default function Home() {
   const [epsilon, setEpsilon] = useState(false);
+  // THE FEED'S MIX (owner, 29 Oct 2026; lib/feed/choice.js, FeedEq.jsx): the kinds of card that play. The whole Feed
+  // until this device's remembered mix is read after mount (the server renders the whole Feed); kept here only
+  // while REMEMBER is on.
+  const [mix, setMix] = useState(DEFAULT_CHOICE);
+  useEffect(() => { try { setMix(readChoice(window.localStorage)); } catch { /* no storage: the whole Feed */ } }, []);
+  const changeMix = (next) => { let kept = next; try { kept = writeChoice(window.localStorage, next); } catch { /* the mix holds for this visit */ } setMix(kept); };
   const [epsilonAuto, setEpsilonAuto] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -87,14 +98,25 @@ export default function Home() {
   const fit = useFitProfile();
   const [notice, setNotice] = useState("");
   const [filters, setFilters] = useState({ category: "", maxPrice: "", fitsMe: false });
-  const [cravingDraft, setCravingDraft] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
-  const [craving, setCraving] = useState({ text: "", occasion: "", mood: "", novelty: "discovery" });
+  // THE CURRENT CRAVING lives in the search tab's DISCOVER popup since 29 Oct 2026 ("current cravings should live in
+  // search tab"; lib/craving.js, DiscoverSheet.jsx): the Feed follows the one this visit holds, and hears a new one
+  const [craving, setCraving] = useState(EMPTY_CRAVING);
+  // a craving this visit already holds: the boot does not load the Feed without it, since setting it reloads the Feed
+  // anyway (bug run, 29 Oct 2026: two /api/feed requests on every load, the first discarded but recorded as served)
+  const cravingHeldRef = useRef(false);
+  useEffect(() => {
+    try { const held = readCraving(window.sessionStorage); if (cravingActive(held)) { cravingHeldRef.current = true; setCraving(held); } } catch { /* none held */ }
+    // a craving pointed steers FOR YOU, so the Feed turns to it; one cleared leaves the reader where they are (the EQ's
+    // CLEAR used to throw a reader on FOLLOWING back to FOR YOU)
+    const heard = (e) => { const c = normalCraving(e && e.detail); if (cravingActive(c)) setTab("curated"); setCraving(c); };
+    window.addEventListener(CRAVING_EVENT, heard);
+    return () => window.removeEventListener(CRAVING_EVENT, heard);
+  }, []);
   const [connectOpen, setConnectOpen] = useState(false);
   const [connectNote, setConnectNote] = useState("");
   const [connecting, setConnecting] = useState("");
   const [tab, setTab] = useState("curated");       // catalog mode: curated | following | new
   const [tabItems, setTabItems] = useState(null);  // following / what's-new items
-  const [cravingOpen, setCravingOpen] = useState(false);
   const [stamp, setStamp] = useState("");
   const promptRef = useRef("");
   const boardParamRef = useRef("");
@@ -460,7 +482,10 @@ export default function Home() {
       // V.2 14.9 (slice 10c): the Info Dock shows |A| while exploration is active
       try { window.dispatchEvent(new CustomEvent("asilum:exploration", { detail: data.exploration || { active: !!data.epsilonActive, auto: !!data.epsilonAuto, off: false } })); } catch {}
       if (data.boardSeeded) setNotice("feed seeded from a moodboard you follow or opened");
-      else if (data.craving) setNotice("current craving applied — your long-term taste was not rewritten");
+      else if (data.craving) setNotice(CRAVING_NOTE);
+      // a Feed without a craving takes the craving's notice down, and only that one (bug run, 29 Oct 2026: cleared from
+      // the EQ, the craving still said it was applied)
+      else setNotice((n) => (n === CRAVING_NOTE ? "" : n));
       dwellRef.current = { vis: new Map(), sent: new Set() };
       // (r19) a new serve: report examined slots against THIS id, once.
       servesRef.current = [];
@@ -473,17 +498,8 @@ export default function Home() {
     }
   }, [feedQS]);
 
-  function applyCraving() {
-    setTab("curated");
-    setCravingOpen(false);
-    setCraving({ ...cravingDraft, text: cravingDraft.text.trim().slice(0, 240) });
-  }
-
-  function clearCraving() {
-    const empty = { text: "", occasion: "", mood: "", novelty: "discovery" };
-    setCravingDraft(empty);
-    setCraving(empty);
-  }
+  // clearing it here clears it everywhere (the DISCOVER popup reads the same visit's craving)
+  function clearCraving() { pointCraving(EMPTY_CRAVING); }
 
   const loadMore = useCallback(async () => {
     const user = uidRef.current;
@@ -640,7 +656,7 @@ export default function Home() {
         promptRef.current = q;
         setNotice(`The Asterisk system is routing this feed toward “${q}” without rewriting your Passport`);
       }
-      await loadFeed(user);
+      if (!cravingHeldRef.current) await loadFeed(user); // else the reload on the craving loads it, once
       if (sharedItem) {
         fetch("/api/related?item=" + encodeURIComponent(sharedItem) + "&limit=6")
           .then((r) => r.json())
@@ -848,14 +864,18 @@ export default function Home() {
     // THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026; lib/feed/tetris.js):
     // every card at its grid place, in one size its kind allows, the gaps even
     // the gaps the packing leaves at the feed's ragged end take ad space (fillAds)
-    const { cells, rows } = fillAds(tetrisPack(feedList(list).filter((it) => !hidden.has(String(it.id))), { cols: feedCols, ads: true }), { cols: feedCols });
+    const shown = filterFeed(feedList(list).filter((it) => !hidden.has(String(it.id))), mix);
+    const { cells, rows } = fillAds(tetrisPack(shown, { cols: feedCols, ads: true }), { cols: feedCols });
     return (
       <>
+      {list && list.length > 0 && shown.length === 0 ? (
+        <div className="empty">none of the kinds you have playing are in this part of the feed — open the mix (the faders at the right of THE FEED) and bring another up.</div>
+      ) : null}
       <CutDefs />
       <div className="fgridwrap">
         <div className="fgrid" style={{ "--fcols": feedCols, "--frows": rows }}>
           {cells.map((c) => (
-            <div key={c.card.id} className={"fcell k-" + c.kind.toLowerCase().replace("+", "-") + " v-" + c.v} style={{ gridColumn: `${c.x + 1} / span ${c.w}`, gridRow: `${c.y + 1} / span ${c.h}` }}>
+            <div key={c.card.id} className={"fcell k-" + c.kind.toLowerCase().replace("+", "-") + " v-" + c.v + (isLarge(c.card) ? " large" : "")} style={{ gridColumn: `${c.x + 1} / span ${c.w}`, gridRow: `${c.y + 1} / span ${c.h}` }}>
               {renderCard(c.card, c.v)}
             </div>
           ))}
@@ -865,8 +885,7 @@ export default function Home() {
     );
   }
 
-  const cravingActive =
-    craving.text || craving.occasion || craving.mood || craving.novelty !== "discovery";
+  const cravingOn = cravingActive(craving);
 
   // Real zone composition of the loaded pass — printed as gutter
   // marginalia (magazine treatment, owner order Aug 13; every value is
@@ -883,11 +902,12 @@ export default function Home() {
 
   return (
     <div className="wrap ctr">
-      {/* THE HEAD (owner, 25 Oct 2026, last): THE FEED, then FOR YOU · FOLLOWING
-          and the sort bubble — no sub-line, no stamp, no catalog note; the ad
-          ticker lives on the deck now (ControlCenter.jsx) */}
+      {/* THE HEAD (owner, 29 Oct 2026: "fuck the for you take that shit out and just leave the feed … put it in the right
+          corner of the screen inline with the fee[d]"): THE FEED, and at the right the EQ key — the source, the mix and
+          the craving all live in it; the row of modes under the head is gone */}
       <header className="cthead">
         <PageMast word="THE FEED" plain />
+        <FeedEq choice={mix} onChange={changeMix} source={tab === "following" ? "following" : "curated"} onSource={switchTab} craving={cravingOn} onClearCraving={clearCraving} />
       </header>
       <p className="demoline idlabel" role="note">
         <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
@@ -907,57 +927,10 @@ export default function Home() {
             ASTERISK — {guideOn ? "GUIDING" : "PAUSED"}
           </span>
           <EchoRail groups={rail} />
-          <div className="fmodes seg">
-            {[["curated", "FOR YOU"], ["following", "FOLLOWING"]].map(([k, label]) => (
-              <button key={k} className={"fmode" + (tab === k ? " cur" : "")} onClick={() => switchTab(k)}>
-                {label}
-              </button>
-            ))}
-            <button className="fmode cravtoggle" onClick={() => setCravingOpen((o) => !o)}>
-              CURRENT CRAVING {cravingActive ? "· ON" : ""} {cravingOpen ? "−" : "+"}
-            </button>
-            {cravingActive && (
-              <button className="txtbtn" onClick={clearCraving}>CLEAR CRAVING</button>
-            )}
-          </div>
           {pinned && (
             <section className="wfocus" aria-label="pinned transmission">
               <div className="cclbl">PINNED TRANSMISSION · <a className="txtbtn" href="/">BACK TO THE STREAM</a></div>
               <PostCard post={pinned} engagement={engagement} onEngage={engage} />
-            </section>
-          )}
-
-          {cravingOpen && (
-            <section className="cravingline" aria-label="current craving">
-              <p className="cravnote">tell the tollbooth what this moment needs. it steers this feed without changing your permanent taste.</p>
-              <div className="cravinggrid">
-                <input aria-label="what you are looking for"
-                  type="text"
-                  maxLength={240}
-                  placeholder="dark dinner look, clean but strange, airport armor…"
-                  value={cravingDraft.text}
-                  onChange={(e) => setCravingDraft((c) => ({ ...c, text: e.target.value }))}
-                  onKeyDown={(e) => e.key === "Enter" && applyCraving()}
-                />
-                <select aria-label="occasion" value={cravingDraft.occasion} onChange={(e) => setCravingDraft((c) => ({ ...c, occasion: e.target.value }))}>
-                  <option value="">any occasion</option>
-                  <option value="everyday">everyday</option><option value="work">work</option>
-                  <option value="date">date</option><option value="night">night</option>
-                  <option value="event">event</option><option value="travel">travel</option>
-                  <option value="outdoors">outdoors</option>
-                </select>
-                <select aria-label="mood" value={cravingDraft.mood} onChange={(e) => setCravingDraft((c) => ({ ...c, mood: e.target.value }))}>
-                  <option value="">any mood</option>
-                  <option value="quiet">quiet</option><option value="sharp">sharp</option>
-                  <option value="romantic">romantic</option><option value="experimental">experimental</option>
-                  <option value="nostalgic">nostalgic</option><option value="practical">practical</option>
-                </select>
-                <select aria-label="novelty" value={cravingDraft.novelty} onChange={(e) => setCravingDraft((c) => ({ ...c, novelty: e.target.value }))}>
-                  <option value="safe">safe bet</option><option value="discovery">discovery</option>
-                  <option value="wildcard">wildcard</option>
-                </select>
-                <button className="btn" onClick={applyCraving}>POINT THE WAY</button>
-              </div>
             </section>
           )}
 
@@ -1113,10 +1086,9 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const tap = useRef({ at: 0, timer: 0 });
   const [liked, setLiked] = useState(false);
   const [shared, setShared] = useState("");
-  // PASS lives in the hold menu (HoldMenu.jsx; owner, 25 Oct 2026: no × on a card's face)
+  // PASS lives in the card menu, behind the three dots (HoldMenu.jsx; owner, 25 Oct 2026: no × on a card's face)
   const [menu, setMenu] = useState(false);
   const closeMenu = useCallback(() => setMenu(false), []);
-  const hold = useHold(() => setMenu(true));
   useEffect(() => () => clearTimeout(tap.current.timer), []);
   // one tap opens the listing a beat later; a second tap inside the window
   // cancels that and floats the piece instead
@@ -1161,7 +1133,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   const size = it.size && (it.size.label || it.size.fitsLikeUS) ? it.size.label || it.size.fitsLikeUS : (typeof it.size === "string" ? it.size : "");
   const price = it.price != null && it.price !== "" ? `${it.price}${it.currency || "USD"}` : "";
   const what = "the piece " + (it.title || "");
-  const menuEl = <><HoldKey what={what} open={menu} onOpen={() => setMenu(true)} /><HoldMenu id={"piece:" + it.id} what={what} open={menu} onClose={closeMenu} onPass={onPass || null} /></>;
+  const menuEl = <><CardDots what={what} open={menu} onOpen={() => setMenu(true)} /><HoldMenu id={"piece:" + it.id} what={what} open={menu} onClose={closeMenu} onPass={onPass || null} /></>;
   const ink = { "--on-card": inkFor(thumbBase(it)) }; // the ink that reads on this card's ground
   // THE WORDS OVER THE PHOTOGRAPH (owner, 25 Oct 2026: "I want text to
   // overlap images"): the photograph fills the card; the head rides its top,
@@ -1169,7 +1141,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
   // (owner, 25 Oct 2026, late) a listing is never a small card — the small
   // sizes are the songs' and the places' — so there is one piece card
   return (
-    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink} {...hold}>
+    <div className={"card piece v-hero" + (it._zone === "reach" ? " reach" : "")} data-id={it.id} style={ink}>
       {menuEl}
       <div className="pcphoto">
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
@@ -1184,10 +1156,9 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
             <span className="pcsize">{size}</span>
             {price ? <span className="price">{price}</span> : null}
           </div>
-          {/* a hairline under the size and the price, over the actions (owner,
-              25 Oct 2026), then the actions close the same column, so the
-              rows stack and never sit on each other */}
-          <Cut className="pcrule" />
+          {/* the actions close the same column, so the rows stack and never sit on each other; no hairline over
+              them (owner, 28 Oct 2026: "the accent line … above the like stamp and share buttons is causing a
+              weird warp, take that out") */}
           <div className="pcacts" role="group" aria-label="piece actions">
         <button type="button" className={"pcact" + (liked ? " on" : "")} aria-pressed={liked} aria-label="like" title="LIKE" onClick={async () => { haptic("press"); setLiked(true); const r = await favorite(it); if (!r || !r.ok) setLiked(false); }}><Icon name="heart" size={22} /></button>
         <SaveButton className="pcact" icon="stamp" kind="piece" id={it.id} item={it} title={pieceName(it)} image={it.img || ""} href={"/piece/" + encodeURIComponent(it.id)} labels={["STAMP", "STAMPED ✓"]} />

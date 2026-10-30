@@ -47,15 +47,15 @@ test("expanding a compacted description loads it in behind blocks: the caption, 
   assert.ok(!/>>>>/.test(read("app/components/Blocks.jsx")) && !/>>>>/.test(read("app/components/PostCard.jsx")), "no chevrons stand in for text any more");
 });
 
-test("the warning lights: square, dark at rest, blinking like an eject light on a purchase, a bag or an offer, then dark; the deck's pair answers", () => {
+test("the warning lights: square, dark at rest, blinking like an eject light on a purchase, a bag or an offer, then dark; the deck's pair is gone", () => {
   const listing = strip(read("app/components/ListingSheet.jsx"));
   for (const where of [/onClick=\{\(e\) => \{ blinkLamp\(e\); toBag\(\); \}\}[^\n]*<Lamp \/>/, /<button type="submit" className="buy" onClick=\{blinkLamp\}><Lamp \/>send ✓/, /onClick=\{async \(e\) => \{ blinkLamp\(e\); setBuying\(true\);/, /blinkLamp\(e\); setTimeout\(\(\) => setTicket\(true\), 420\);[^\n]*<Lamp \/>request purchase/]) {
     assert.match(listing, where);
   }
-  // (19 Oct) the pair rides with the ad strip at the head of the Feed (AdStrip.jsx)
+  // (28 Oct 2026: "get rid of those two red squares") the ticker's pair is gone, and nothing calls to it
   const deck = strip(read("app/components/AdStrip.jsx"));
-  assert.match(deck, /<span className="devlights" ref=\{lightsRef\} aria-hidden="true"><Lamp \/><Lamp \/><\/span>/);
-  assert.match(deck, /window\.addEventListener\("asilum:bag", on\)/, "a piece in the bag blinks the strip's lights");
+  assert.ok(!/devlights|<Lamp|blinkLamp/.test(deck), "no lights on the ticker");
+  assert.ok(!/devlights/.test(rules) && !/asilum:lamp/.test(read("app/components/Blocks.jsx")), "no rule and no event left for them");
   assert.match(rules, /\.lamp \{[^}]*width: 7px; height: 7px;[^}]*background: color-mix\(in srgb, var\(--warn\) 22%, transparent\)/s, "square, dark at rest");
   assert.match(rules, /\.lamp\[data-blink="eject"\] \{ animation: ejectlight 1\.8s steps\(1, end\) forwards; \}/, "it blinks and stays dark at the end");
   assert.match(rules, /@keyframes ejectlight \{[^}]*0%, 20%, 40%, 60% \{[^}]*\}\s*10%, 30%, 50%, 70%, 100% \{/s);
@@ -97,12 +97,12 @@ test("the original ground and the dark phosphor glow: blue to white, green to bl
   // (25 Oct, evening: "too white") the ice blue the whole way down, never to white
   assert.match(block('[data-theme="light"] {'), /linear-gradient\(180deg, #27465e 0%, #d7e8f4 24%, #e9f2f8 50%, #d7e8f4 76%, #27465e 100%\)/, "a dark blue from the top and the bottom, the ice blue between (owner, late)");
   // (19 Oct 2026, "make the background more black") a breath of green at the top, black almost at once
-  assert.match(block(":root {"), /linear-gradient\(180deg, #06120c 0%, #030907 30%, #010302 62%, #000000 100%\)/, "green to black, blacker");
+  assert.match(block(":root {"), /linear-gradient\(180deg, #0b0d0e 0%, #060708 30%, #020303 62%, #000000 100%\)/, "grey to black (no green since 29 Oct), blacker");
   assert.match(block(":root {"), /--glow: 0 0 1px currentColor, 0 0 9px color-mix\(in srgb, currentColor 55%, transparent\)/);
   assert.match(block(":root {"), /--glow-ink: none;/, "body text never glows");
   assert.match(block('[data-theme="light"] {'), /--glow: none;/, "light never glows");
-  // (19 Oct 2026) the dark headline is the original phosphor, no longer chrome washed to mint
-  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #b8ffd6 0%, #7dffb5 42%, #46ff96 100%\);/, "the original phosphor green");
+  // (29 Oct 2026, "glowing white nomore green") the dark headline is chrome washed to white, in a white halo
+  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%\);[^}]*drop-shadow\(0 0 10px rgba\(255, 255, 255, 0\.34\)\)/, "white, glowing white");
 });
 
 test("the original passport (iteration 5, 7db2b89): plus registration band, the 01, the print lines, its own teal and phosphor, the machine zone at the foot", () => {
@@ -114,7 +114,7 @@ test("the original passport (iteration 5, 7db2b89): plus registration band, the 
   assert.ok(board.indexOf("<PassportSecurity") < board.indexOf('<div className="ppmrz">'), "the MRZ sits at the foot, under the hologram window");
   assert.match(board, /<div className="ppnation">ASILUM <b>\*<\/b> FASHION PASSPORT<\/div>/, "no magazine");
   assert.match(rules, /\[data-theme="light"\] \.ppdoc \{ --sig: #0b7584; \}/, "the document's own teal");
-  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.ppdoc \{ --sig: #46ff96; \}/, "phosphor in dark");
+  assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.ppdoc \{ --sig: #f4f9fc; \}/, "white in dark (no green since 29 Oct)");
   assert.match(rules, /\.pv-r \{ stroke: var\(--red\); opacity: 0\.75; \}/, "the pluses have their tones again");
   assert.match(rules, /\.ppphoto::after \{ background:[^}]*repeating-linear-gradient\(0deg, transparent 0 2px,/s, "the photo slot's print lines");
   assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*border-top: 1px dashed var\(--line\);[^}]*font-family: var\(--mono\);/s);

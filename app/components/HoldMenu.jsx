@@ -1,41 +1,22 @@
 "use client";
 
-// app/components/HoldMenu.jsx — THE HOLD MENU (owner, 25 Oct 2026: "hide
-// the × buttons … into a hidden pop-up that requires a tap and hold on the
-// post — a classic social media option"; then: "there's still visible ×s"
-// — so every card in the Feed keeps its × here: a post, a BRDCST, a piece,
-// a song). A press held LONG_PRESS_MS anywhere on the card, a right-click or
-// the keyboard's context key opens a small menu over the card: PASS (on a
-// piece the brain's own signal, `onPass`; on anything else set aside on
-// this device, lib/feed/hidden.js — never a claim that anyone was told)
-// and, on a real post, the link. Escape, a tap on the veil or the CLOSE key
-// puts it away; a visually hidden OPTIONS key opens it for a keyboard.
+// app/components/HoldMenu.jsx — THE CARD MENU. It was the HOLD menu (owner,
+// 25 Oct 2026: "hide the × buttons … into a hidden pop-up that requires a tap
+// and hold on the post"); since 28 Oct 2026 it opens from THREE DOTS in the
+// card's top-right corner instead ("for every card lets add three dot buttons
+// to the right corner to replace that touch and hold feature") — on every
+// card of the Feed: a post, a BRDCST, a piece, a song, a place. The menu is
+// unchanged: PASS (on a piece the brain's own signal, `onPass`; on anything
+// else set aside on this device, lib/feed/hidden.js — never a claim that
+// anyone was told) and, on a real post, the link. Escape, a tap on the veil or
+// the CLOSE key puts it away. The dots are a real key, so a keyboard reaches
+// the menu the same way a finger does.
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Icon from "./Icons.jsx";
 import { hideCard } from "../../lib/feed/hidden.js";
 import { haptic } from "../../lib/haptics.js";
-import { LONG_PRESS_MS } from "../../lib/disc.js"; // the one long-press clock (the deck, the Disc, a tag, a card)
 import { useEscape } from "./dismiss.js";
-
-export function useHold(onHold) {
-  const st = useRef({ t: 0, x: 0, y: 0, fired: false, upAt: 0 });
-  const clear = () => { const s = st.current; if (s.t) { clearTimeout(s.t); s.t = 0; } };
-  const down = (e) => {
-    if (e.button || e.target.closest(".holdmenu")) return; // a drag (Figure 20's) moves past 8px and cancels the hold below
-    const s = st.current;
-    s.x = e.clientX; s.y = e.clientY; s.fired = false;
-    clear();
-    s.t = setTimeout(() => { s.t = 0; s.fired = true; haptic("confirm"); onHold(); }, LONG_PRESS_MS);
-  };
-  const move = (e) => { const s = st.current; if (s.t && Math.hypot(e.clientX - s.x, e.clientY - s.y) > 8) clear(); };
-  const up = () => { clear(); st.current.upAt = performance.now(); };
-  // the click that ends a hold is the hold's, not the card's — only the one
-  // that comes at once; a tap a moment later is the reader's (on the veil, say)
-  const click = (e) => { const s = st.current; if (s.fired) { s.fired = false; if (performance.now() - s.upAt < 350) { e.preventDefault(); e.stopPropagation(); } } };
-  const context = (e) => { e.preventDefault(); haptic("press"); onHold(); };
-  return { onPointerDown: down, onPointerMove: move, onPointerUp: up, onPointerCancel: up, onClickCapture: click, onContextMenu: context };
-}
 
 export function HoldMenu({ id, what, href = null, open, onClose, onPass = null }) {
   const [copied, setCopied] = useState("");
@@ -58,7 +39,12 @@ export function HoldMenu({ id, what, href = null, open, onClose, onPass = null }
   );
 }
 
-/** The keyboard's way in: a visually hidden OPTIONS key. */
-export function HoldKey({ what, open, onOpen }) {
-  return <button type="button" className="idlabel holdopt" aria-haspopup="menu" aria-expanded={open} onClick={onOpen}>options for {what}</button>;
+/** THE THREE DOTS: the card's top-right key that opens its menu. */
+export function CardDots({ what, open, onOpen }) {
+  return (
+    <button type="button" className="carddots" aria-haspopup="menu" aria-expanded={open} aria-label={"options for " + what} title="options"
+      onClick={(e) => { e.stopPropagation(); haptic("press"); onOpen(); }}>
+      <Icon name="dots" size={20} />
+    </button>
+  );
 }

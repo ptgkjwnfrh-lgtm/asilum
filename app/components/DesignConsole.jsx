@@ -20,6 +20,9 @@ import {
 } from "../../lib/uilab.js";
 import { useEscape } from "./dismiss.js";
 
+/** How long the replay leaves the ticker folded before opening it again: past the fold (--dur-2). */
+export const TICKER_REPLAY_MS = 420;
+
 export default function DesignConsole() {
   const [open, setOpen] = useState(false);
   const [overrides, setOverrides] = useState({});
@@ -32,6 +35,16 @@ export default function DesignConsole() {
   const [importText, setImportText] = useState("");
   const [message, setMessage] = useState("");
   const [resetArmed, setResetArmed] = useState(false);
+  // THE TICKER TEST (owner, 28 Oct 2026: "create a button so i can test the animation"): open, fold or
+  // replay the deck's ad ticker on this device, for this page view only (AdStrip.jsx listens)
+  const [tickerTest, setTickerTest] = useState(null);
+  const replayTimer = useRef(null);
+  // the test may come from elsewhere too (the side button, SideButtons.jsx): the console shows what was sent last
+  useEffect(() => {
+    const heard = (e) => setTickerTest(e && e.detail && e.detail.mode ? e.detail.mode : null);
+    window.addEventListener("asilum:ticker-test", heard);
+    return () => window.removeEventListener("asilum:ticker-test", heard);
+  }, []);
   const rowRefs = useRef({});
   const hlRef = useRef(null);
   const flashTimer = useRef(null);
@@ -81,6 +94,16 @@ export default function DesignConsole() {
   function toggleControl(control) {
     if (overrides[control.key] !== undefined) clearControl(control);
     else commit({ ...overrides, [control.key]: control.off });
+  }
+
+  function testTicker(mode) {
+    clearTimeout(replayTimer.current);
+    const send = (m) => { setTickerTest(m); window.dispatchEvent(new CustomEvent("asilum:ticker-test", { detail: { mode: m } })); };
+    if (mode === "replay") {
+      // fold it, let the fold finish, then open it again: the opening, as it plays when the app loads
+      send("fold");
+      replayTimer.current = setTimeout(() => send("open"), TICKER_REPLAY_MS);
+    } else send(mode);
   }
 
   function resetAll() {
@@ -195,7 +218,7 @@ export default function DesignConsole() {
     };
   }, [inspecting]);
 
-  useEffect(() => () => { if (flashTimer.current) clearTimeout(flashTimer.current); }, []);
+  useEffect(() => () => { if (flashTimer.current) clearTimeout(flashTimer.current); clearTimeout(replayTimer.current); }, []);
 
   // Overrides changed in another tab: re-read and re-apply.
   useEffect(() => {
@@ -263,6 +286,20 @@ export default function DesignConsole() {
             );
           })}
         </div>
+
+        <section className="dcgroup open dcticker" aria-label="ticker test">
+          <div className="dcgrouphead" role="heading" aria-level={2}>
+            TICKER — TEST THE ANIMATION
+            {tickerTest && <span className="dccount">{tickerTest === "open" ? "OPEN" : "FOLDED"}</span>}
+          </div>
+          <div className="dcfootrow">
+            <button className="fitbtn" onClick={() => testTicker("replay")}>REPLAY OPENING ▶</button>
+            <button className="fitbtn" onClick={() => testTicker("open")}>OPEN</button>
+            <button className="fitbtn" onClick={() => testTicker("fold")}>FOLD</button>
+            <button className="fitbtn" onClick={() => testTicker(null)} disabled={!tickerTest}>BACK TO LIVE</button>
+          </div>
+          <div className="dcnote">this device, this page view only; with nothing live to carry it runs two entries labelled SAMPLE</div>
+        </section>
 
         <div className="dcfoot">
           <div className="dcstatus">
