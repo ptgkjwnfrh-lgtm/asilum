@@ -30,7 +30,7 @@ export function usePlacements() {
       const uid = getUid(); if (uid) qs.set("user", uid);
       const c = discoveryCenter(); if (c) { qs.set("lat", String(c.lat)); qs.set("lng", String(c.lng)); }
       Promise.all([
-        fetch("/api/places?dated=1").then((r) => (r.ok ? r.json() : { places: [] })).catch(() => ({ places: [] })),
+        fetch("/api/places?dated=1&live=0").then((r) => (r.ok ? r.json() : { places: [] })).catch(() => ({ places: [] })),
         fetch("/api/brdcst?" + qs.toString()).then((r) => (r.ok ? r.json() : { placements: [] })).catch(() => ({ placements: [] })),
       ]).then(([d, b]) => { if (live) setItems(tickerItems({ placements: b.placements || [], drafts: readDrafts(), places: d.places || [], today })); });
     };

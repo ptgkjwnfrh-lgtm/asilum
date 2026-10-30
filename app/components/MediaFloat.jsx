@@ -20,6 +20,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchPost, fetchEngagement, toggleEngagement } from "../../lib/social.js";
 import { SAMPLE_POSTS } from "../../lib/model/media.js";
+import { licensedById } from "../../lib/model/licensed.js";
 import { captionInk } from "../../lib/feed/caption.js";
 import MotionHousing from "./MotionHousing.jsx";
 import { postType } from "../../lib/feed/types.js";
@@ -58,7 +59,8 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
 
   useEffect(() => {
     if (given) return;
-    if (sample) { setPost(SAMPLE_POSTS.find((s) => s.id === id) || null); return; }
+    // a sample is the model's own or a licensed motion this device read (lib/model/licensed.js)
+    if (sample) { setPost(SAMPLE_POSTS.find((s) => s.id === id) || licensedById(id) || null); return; }
     let live = true;
     fetchPost(id).then((p) => { if (live) setPost(p); });
     return () => { live = false; };
@@ -129,6 +131,7 @@ export default function MediaFloat({ id, sample = false, post: given = null }) {
           {up ? <BlockText as="p" className="mftext" text={post.text} /> : <TransmissionText text={post.text} className="mftext" />}
           {cur && cur.credit ? <small className="mfcredit">{cur.credit}</small> : null}
           {video && video.generated ? <small className="mfcredit">SAMPLE MOTION · GENERATED TEST PATTERN · {video.width}×{video.height} · {video.codec} · a generated test tone</small> : null}
+          {video && post.licensed ? <small className="mfcredit">video by <a href={post.licensed.byUrl || post.licensed.url} target="_blank" rel="noopener noreferrer">{post.licensed.by}</a> · <a href={post.licensed.url} target="_blank" rel="noopener noreferrer">{post.licensed.source} ↗</a> · {post.licensed.license}</small> : null}
         </button>
       </div>
       <div className="mfacts" role="group" aria-label="actions">

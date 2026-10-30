@@ -47,7 +47,8 @@ export default function PlaceCard({ place: p }) {
     <article className={"card placecard" + (p.image ? " withphoto" : "")} data-id={"place:" + p.id} data-type="PLACE" aria-label={"place: " + p.name}>
       <CardDots what={what} open={menu} onOpen={() => setMenu(true)} />
       <HoldMenu id={"place:" + p.id} what={what} open={menu} onClose={closeMenu} />
-      <button type="button" className="placeopen" onClick={() => { haptic("press"); openSheet("map", { pin: p.id, title: "MAP" }); }} aria-label={"open the map for " + p.name}>
+      {/* a live row (lib/places/ticketmaster.js) is not in the register, so the card hands the popup the record it drew */}
+      <button type="button" className="placeopen" onClick={() => { haptic("press"); openSheet("map", { pin: p.id, place: p.live ? p : undefined, title: "MAP" }); }} aria-label={"open the map for " + p.name}>
         {/* a record that carries a free-use photograph (lib/places/registry.js
             `image`, credited in public/model/credits.json) wears it; else the mark */}
         {p.image

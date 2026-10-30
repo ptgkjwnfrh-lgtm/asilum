@@ -397,6 +397,8 @@ export default function PostCard({ post: p, engagement, onEngage }) {
       </div>
       <div className="p2foot">
       {image && image.credit ? <span className="wpccredit"><a href={image.url} target="_blank" rel="noreferrer">{image.credit}</a></span> : null}
+      {/* a licensed motion (lib/media/pexels.js) is credited where a sample photograph is: the videographer and the library */}
+      {p.licensed ? <span className="wpccredit"><a href={p.licensed.url} target="_blank" rel="noopener noreferrer">video by {p.licensed.by} · {p.licensed.source} ↗ · {p.licensed.license}</a></span> : null}
       <Caption text={caption} motion={motion} videoRef={videoRef} />
       <Acts p={p} eng={eng} onEngage={onEngage} sample={sample} href={href} name={name} image={image} />
       </div>
