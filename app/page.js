@@ -50,6 +50,7 @@ import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed
 import { EMPTY_CRAVING, CRAVING_EVENT, readCraving, normalCraving, cravingActive, pointCraving } from "../lib/craving.js";
 import FeedEq from "./components/FeedEq.jsx";
 import FeedNear from "./components/FeedNear.jsx";
+import { cardImage } from "../lib/images/cardsize.js";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -1150,7 +1151,7 @@ function FragmentCard({ it, onOpen, onPass, onFloat, variant = "hero" }) {
       {menuEl}
       <div className="pcphoto">
         <div className="imgwrap" onClick={onPhoto} aria-hidden="true" title="double-tap to float it">
-          <img src={it.img || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" />
+          <img src={cardImage(it.img) || demoImageFor(it) || thumbFor(it, { bare: true })} alt="" loading="lazy" decoding="async" />
         </div>
         <div className="pchead">
           <b className="pcmode">{mode}{who ? <span className="pchandle">{mode ? ":" : ""}{who}</span> : null}</b>
