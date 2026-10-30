@@ -41,7 +41,7 @@ import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import Masthead from "./components/Masthead.jsx";
 import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
-export default function Shell({ children }) {
+export default function Shell({ children, testControls = true }) {
   const pathname = usePathname();
   const router = useRouter();
   const pendingAdoptionRef = useRef(null);
@@ -307,7 +307,7 @@ export default function Shell({ children }) {
       <DmLive />
       <InkWatch />
       <GroundInk />
-      <SideButtons />
+      {testControls ? <SideButtons /> : null /* test controls: never on the live site (app/layout.js) */}
 
       <AccountSignup />
       <SavePrompt />

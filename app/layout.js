@@ -69,12 +69,17 @@ export const metadata = {
 // Key/value grammar mirrors lib/uilab.js validValue — keep them in sync.
 const PREPAINT = `try{var r=document.documentElement;var t=localStorage.getItem("asilum-theme");if(t!=="dark"&&t!=="light")t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";r.dataset.theme=t;var o=JSON.parse(localStorage.getItem("asilum-uilab")||"{}");for(var k in o){if(/^--ed-[a-z-]+$/.test(k)&&/^(none|-?\\d+(\\.\\d+)?(px|em|s|%|svh)?)$/.test(o[k]))r.style.setProperty(k,o[k]);}}catch(e){}`;
 
+// THE TEST CONTROLS (the side buttons: the ticker's and the theme's) stay off the live site (owner, 29 Oct 2026, going
+// live: "hide them live"); previews and local builds keep them. Vercel names the production deploy in VERCEL_ENV, read
+// here on the server; unset (local), they show.
+const TEST_CONTROLS = process.env.VERCEL_ENV !== "production";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: PREPAINT }} />
-        <Shell>{children}</Shell>
+        <Shell testControls={TEST_CONTROLS}>{children}</Shell>
       </body>
     </html>
   );

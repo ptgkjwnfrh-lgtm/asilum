@@ -23,6 +23,12 @@ const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
 test("mounted once, at the middle of the right edge, over the page and under popups", () => {
   assert.equal((read("app/shell.js").match(/<SideButtons \/>/g) || []).length, 1);
+  // (going live, 29 Oct 2026: "hide them live") the test controls are never on the production deploy; previews and
+  // local builds keep them
+  assert.match(read("app/shell.js"), /\{testControls \? <SideButtons \/> : null/, "mounted only with the test controls");
+  assert.match(read("app/shell.js"), /export default function Shell\(\{ children, testControls = true \}\)/);
+  assert.match(read("app/layout.js"), /const TEST_CONTROLS = process\.env\.VERCEL_ENV !== "production";/, "off where Vercel names the deploy production");
+  assert.match(read("app/layout.js"), /<Shell testControls=\{TEST_CONTROLS\}>\{children\}<\/Shell>/);
   assert.match(css, /\.sidebtns \{ position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY\(-50%\);/);
   assert.match(btn, /<div className="sidebtns">\s*<TickerButton \/>\s*<ThemeButton \/>\s*<\/div>/, "the ticker's and the theme's, stacked");
   assert.match(css, /\[data-popup\] \.sidebtns \{ opacity: 0; pointer-events: none; \}/, "out of the way of a popup");
