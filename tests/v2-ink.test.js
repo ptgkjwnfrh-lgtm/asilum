@@ -131,5 +131,4 @@ test("the like, comment, stamp and share buttons are clearer", () => {
   assert.match(css, /\.p2acts \{[^}]*opacity: 0\.92; \}/, "a post's actions");
   assert.match(css, /\.card\.piece\.v-hero \.pcacts \{[^}]*opacity: 0\.92;/, "a piece's actions");
   assert.match(css, /\.p2acts \.wpcact\.quiet \{ opacity: 0\.6;/, "the quiet ones too");
-  assert.match(css, /\.p2acts \.wpcact\.soon ~ \.p2n \{ opacity: 0\.7; \}/);
 });

@@ -61,10 +61,8 @@ export async function GET(req) {
   return NextResponse.json({ challengeResponse: challengeResponseFor(code, token, deletionEndpoint()) }, { status: 200 });
 }
 
-let acknowledged = 0;
 export async function POST() {
   if (!verificationToken()) return idle();
-  acknowledged += 1;
   // no eBay user data is held, so the acknowledgement IS the deletion
   return NextResponse.json({ acknowledged: true }, { status: 200 });
 }

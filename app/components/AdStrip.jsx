@@ -6,7 +6,7 @@
 // drafts (to their author), then LISTED dated events from the places record
 // — lib/placements.js is the law. With no ad and no BRDCST it carries nothing
 // and folds to its line (28 Oct 2026; the house lines it used to fall back
-// on, lib/dock.js HOUSE_LINES, can no longer show), never an invented offer.
+// on are gone), never an invented offer.
 //
 // HOW IT LOOKS (owner, 28 Oct 2026, the MAD-S player's wrap-round display as
 // the reference): "lets have it stretch all the across the center fixture,

@@ -11,7 +11,6 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Notice from "./components/Notice.jsx";
-import { useOverlayDismiss } from "./components/dismiss.js";
 import { HoldMenu, CardDots } from "./components/HoldMenu.jsx";
 import { CutDefs } from "./components/Cut.jsx";
 import AdSpace from "./components/AdSpace.jsx";
@@ -24,7 +23,7 @@ import {
 import {
   observationOn, followedBrands, isDemoItem,
 } from "../lib/social.js";
-import { OriginSticker, useFitProfile } from "./components/ProductSignals.jsx";
+import { useFitProfile } from "./components/ProductSignals.jsx";
 import { openSheet } from "../lib/dockstate.js";
 import { braid, echoRail, pieceName } from "../lib/feed/types.js";
 import { tetrisPack, fillAds, feedColsFor, motionRail, isLarge } from "../lib/feed/tetris.js";
@@ -44,6 +43,7 @@ import { createPortal } from "react-dom";
 import { STOREFRONT_CATEGORIES } from "../lib/storefront/contracts.js";
 import { SAMPLE_POSTS } from "../lib/model/media.js";
 import { SAMPLE_SONGS } from "../lib/model/songs.js";
+import { rememberLicensed } from "../lib/model/licensed.js";
 import { saveView, readView, restoreAnchor, newAbove, currentAnchor, settleAnchor } from "../lib/viewstate.js";
 import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib/social.js";
 import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed/choice.js";
@@ -75,8 +75,6 @@ const CATEGORIES = ["tops", "bottoms", "outerwear", "tailoring", "dresses", "kni
 const PLATFORMS = ["ebay", "pinterest", "shopify"];
 // the notice a craving applied puts up; a Feed loaded without one takes it down (and no other notice)
 const CRAVING_NOTE = "current craving applied — your long-term taste was not rewritten";
-
-
 
 // (Removed Aug 12 at the owner's word — "get rid of a lot of the excess
 // header stuff": the FollowMorse strip, THE SLIDE, LIVE OBSERVATION, and
@@ -129,7 +127,6 @@ export default function Home() {
   const loadingMoreRef = useRef(false);
   const feedGenRef = useRef(0);
   const sentinelRef = useRef(null);
-
 
   // The folio's edition date — set on mount like the cover's masthead.
   useEffect(() => {
@@ -219,6 +216,24 @@ export default function Home() {
     fetch("/api/places").then((r) => (r.ok ? r.json() : null))
       .then((d) => setPlaces(d && Array.isArray(d.places) ? d.places.slice(0, 12) : [])).catch(() => setPlaces([]));
   }, []);
+  // THE SONGS (30 Oct 2026): the model's songs, each the catalog's real
+  // record — sleeve, store link, a 30-second preview — where the iTunes
+  // Search API holds one (lib/music/itunes.js), else the SAMPLE it was. The
+  // samples paint first so the Feed never waits on a catalog.
+  const [songs, setSongs] = useState(SAMPLE_SONGS);
+  useEffect(() => {
+    fetch("/api/music?model=1").then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && Array.isArray(d.songs) && d.songs.length) setSongs(d.songs); }).catch(() => {});
+  }, []);
+  // THE LICENSED MOTIONS (30 Oct 2026): vertical video from the Pexels API
+  // (lib/media/pexels.js) rides the stream and the VIDEOS YOU MAY LIKE row
+  // as licensed, credited posts — never a passenger's, never a fixture.
+  // Unkeyed, the route answers none and the generated test pattern stays.
+  const [licensed, setLicensed] = useState([]);
+  useEffect(() => {
+    fetch("/api/motion").then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && Array.isArray(d.posts) && d.posts.length) { rememberLicensed(d.posts); setLicensed(d.posts); } }).catch(() => {});
+  }, []);
 
   // FEED PARKING (V.2 brief §2, lib/viewstate.js). The surface's key is the
   // viewer, the route and the mode. Leaving —
@@ -278,18 +293,19 @@ export default function Home() {
     const on = !(kind === "like" ? now?.youLike : now?.youSave);
     toggleEngagement(p.serverId, kind, on).then((r) => { if (r.ok) setEngagement((prev) => ({ ...prev, [String(p.serverId)]: r.counts })); }).catch(() => {});
   }
-  const streamPosts = (posts || []).length >= 3 ? (posts || []) : [...(posts || []), ...SAMPLE_POSTS];
+  // the stream: the passengers' posts, the licensed motions, and the samples only while the stream is thin
+  const streamPosts = [...(posts || []), ...licensed, ...((posts || []).length >= 3 ? [] : SAMPLE_POSTS)];
   const rail = echoRail(posts || []);
   const braidCache = useRef(new WeakMap());
   function feedList(list) {
     if (!list) return list;
     const hit = braidCache.current.get(list);
-    if (hit && hit.posts === posts && hit.places === places) return hit.out;
+    if (hit && hit.posts === posts && hit.places === places && hit.songs === songs && hit.licensed === licensed) return hit.out;
     // the motion row: up to twenty of the stream's motions in Figure 20, after the sixth card
     const { rail, rest } = motionRail(streamPosts);
-    const out = braid(list, rest, places, SAMPLE_SONGS);
+    const out = braid(list, rest, places, songs);
     if (rail) out.splice(Math.min(6, out.length), 0, rail);
-    braidCache.current.set(list, { posts, places, out });
+    braidCache.current.set(list, { posts, places, songs, licensed, out });
     return out;
   }
   // Which tab is on screen, for handlers that resolve after a switch.
@@ -1083,7 +1099,6 @@ function useFeedCols() {
   }, []);
   return cols;
 }
-
 
 // the window inside which a second tap makes a double tap — a mouse's
 // dblclick and a finger's double tap alike (iOS does not fire dblclick)

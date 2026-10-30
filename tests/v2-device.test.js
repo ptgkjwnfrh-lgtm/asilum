@@ -59,7 +59,7 @@ test("the warning lights: square, dark at rest, blinking like an eject light on 
   assert.match(rules, /\.lamp \{[^}]*width: 7px; height: 7px;[^}]*background: color-mix\(in srgb, var\(--warn\) 22%, transparent\)/s, "square, dark at rest");
   assert.match(rules, /\.lamp\[data-blink="eject"\] \{ animation: ejectlight 1\.8s steps\(1, end\) forwards; \}/, "it blinks and stays dark at the end");
   assert.match(rules, /@keyframes ejectlight \{[^}]*0%, 20%, 40%, 60% \{[^}]*\}\s*10%, 30%, 50%, 70%, 100% \{/s);
-  assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.mrzcursor \{ animation: none; \} \.lamp\[data-blink\] \{ animation: ejectonce/, "reduced motion: one soft light, no blinking");
+  assert.match(rules, /prefers-reduced-motion: reduce\) \{ \.lamp\[data-blink\] \{ animation: ejectonce/, "reduced motion: one soft light, no blinking");
   assert.match(block(":root {"), /--shade/);
   assert.match(rules, /:root \{ --warn: #ff4136;/, "the lights are red in dark too");
 });
@@ -87,9 +87,9 @@ test("the popup's film; the fixtures are the September glass (19 Oct): one pull 
   for (const f of ["app/components/SheetHost.jsx", "app/components/PieceFloat.jsx", "app/components/InfoDock.jsx", "app/components/PassportButton.jsx", "app/components/ControlCenter.jsx"]) {
     assert.ok(!/prism/.test(read(f)), f + " passes no prism");
   }
-  assert.match(rules, /@keyframes irisdrift \{ to \{ --iris-drift: 360deg; \} \}/);
-  assert.ok(!/\.fixture, \.ccenter \{ animation: irisdrift/.test(rules), "the fixtures carry no drifting film");
-  assert.match(rules, /conic-gradient\(from calc\(var\(--iris-a, 200deg\) \* -1 \+ var\(--iris-drift, 0deg\)\)/, "the popup's film turns against the rim");
+  // (30 Oct 2026) the drift's keyframes and property went with the junk sweep: nothing animated them
+  assert.ok(!/irisdrift|--iris-drift/.test(rules), "the fixtures carry no drifting film");
+  assert.match(rules, /conic-gradient\(from calc\(var\(--iris-a, 200deg\) \* -1\)/, "the popup's film turns against the rim");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{\n  \.fixture, \.ccenter \{ transition: none; \}/, "reduced motion: the fixtures' lamps stop gliding");
 });
 
@@ -99,7 +99,7 @@ test("the original ground and the dark phosphor glow: blue to white, green to bl
   // (19 Oct 2026, "make the background more black") a breath of green at the top, black almost at once
   assert.match(block(":root {"), /linear-gradient\(180deg, #0b0d0e 0%, #060708 30%, #020303 62%, #000000 100%\)/, "grey to black (no green since 29 Oct), blacker");
   assert.match(block(":root {"), /--glow: 0 0 1px currentColor, 0 0 9px color-mix\(in srgb, currentColor 55%, transparent\)/);
-  assert.match(block(":root {"), /--glow-ink: none;/, "body text never glows");
+  assert.ok(!/--glow-ink/.test(rules), "body text never glows: there is no ink glow to reach for");
   assert.match(block('[data-theme="light"] {'), /--glow: none;/, "light never glows");
   // (29 Oct 2026, "glowing white nomore green") the dark headline is chrome washed to white, in a white halo
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%\);[^}]*drop-shadow\(0 0 10px rgba\(255, 255, 255, 0\.34\)\)/, "white, glowing white");

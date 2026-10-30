@@ -26,8 +26,9 @@ import { distanceMi } from "../../lib/brdcst/index.js";
 import { postJSON, getUid } from "../../lib/client.js";
 import { haptic } from "../../lib/haptics.js";
 
-export default function MapSheet({ pin = null }) {
-  const place = pin ? listPlaces().find((p) => p.id === pin) || null : null;
+export default function MapSheet({ pin = null, place: given = null }) {
+  // the register's row for the pin, or the live row the card handed over (a Ticketmaster event is not in the register)
+  const place = (given && given.id === pin ? given : null) || (pin ? listPlaces().find((p) => p.id === pin) || null : null);
   const [sel, setSel] = useState(pin);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);

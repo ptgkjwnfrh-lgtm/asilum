@@ -41,38 +41,10 @@ import {
   READING_ROOM, fetchPosts, fetchPost, addPost, editPost, deletePost, timeAgo, getProfileInfo,
   fetchEngagement, toggleEngagement,
 } from "../../lib/social.js";
-import { Avatar, WhoToFollowList } from "../components/UserBits.jsx";
-import TransmissionText from "../components/TransmissionText.jsx";
+import { WhoToFollowList } from "../components/UserBits.jsx";
 import PageMast from "../components/PageMast.jsx";
 import GlassPane from "../components/GlassPane.jsx";
-import SaveButton from "../components/SaveButton.jsx";
-import ModelTag from "../components/ModelTag.jsx";
-import { thumbFor } from "../../lib/client.js";
-import { SAMPLE_POSTS, WIRE_CATEGORIES, WIRE_INTENTS, readPostRefs } from "../../lib/model/media.js";
-
-// The identity chain (owner order, Aug 13): every byline is a link —
-// your own to /profile, anyone else's to their /u/[handle] page — and a
-// server post's timestamp is its permalink (?post=<id> pins it here).
-// Device-only copies (just posted, or held) have no server id yet, so
-// their timestamps stay plain — a permalink that only works for its
-// author would be a lie.
-function PostByline({ p }) {
-  return (
-    <span className="fposthandle">
-      {p.mine
-        ? <a className="whandle" href="/profile">{p.handle}</a>
-        : <a className="whandle" href={"/u/" + encodeURIComponent(p.handle)}>{p.handle}</a>}
-      {p.mine ? <i className="cmine">you</i> : null}
-      {" · "}
-      {p.serverId != null
-        ? <a className="wperma" href={"/?post=" + encodeURIComponent(p.serverId)}>{timeAgo(p.at)}</a>
-        : timeAgo(p.at)}
-      {/* the edited stamp is server truth — a touched transmission says
-          so; an untouched one carries no label (honesty, Aug 14) */}
-      {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
-    </span>
-  );
-}
+import { SAMPLE_POSTS, readPostRefs } from "../../lib/model/media.js";
 
 // The wire's hairline field (magazine treatment, Aug 13): pinned to the
 // page's first stretch, hand-placed and deterministic.

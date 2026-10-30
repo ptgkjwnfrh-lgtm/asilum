@@ -17,16 +17,15 @@ slice-*.md` says what landed. Non-negotiables when touching UI:
    no marquee, no destination row (`tests/v2-shell.test.js` pins this).
 2. ONE POPUP, ONE HUB. Every secondary surface is a popup over the root
    (`app/components/SheetHost.jsx`), opened at ~60% height, from a view in
-   its VIEWS table — never a page of its own, never a second modal. The
-   popup is DERIVED from the universal session hub (`lib/sessions.js`,
-   `lib/dockstate.js`): `openSheet` extends the active session,
-   `pushSheet` adds a step, Back / swipe right restores, swipe down from
-   the header or Escape dismisses, a tap outside dismisses only a
-   lightweight view (never `heavy`: checkout, an edit in progress).
-   Dismissing keeps the session; ten sessions, most-recent first, the
-   manager at the eleventh, close with Undo. The deck's POST disc is the
-   session indicator (`01/10`) while a popup is up; a long hold opens the
-   compact menu. Posting is unavailable inside a popup.
+   its VIEWS table — never a page of its own, never a second modal. Every
+   popup belongs to a TAB (`lib/dockstate.js`): `openSheet` resumes or
+   starts that tab, `pushSheet` adds a step, Back / swipe right restores,
+   swipe down from the header or Escape dismisses, a tap outside dismisses
+   only a lightweight view (never `heavy`: checkout, an edit in progress).
+   Dismissing keeps the tab exactly as it was left, and opening it again
+   resumes it. The ten-session hub's face (the carousel, the `01/10`
+   counter, New Session) is gone since 27 Oct 2026; its laws are these.
+   Posting is unavailable inside a popup.
 3. THE DISC is one component (`app/components/Disc.jsx`, physics in
    `lib/disc.js`): Post Selection, the session dial, later Wardrobe and
    Followers. Drag, flick, momentum, magnetic snap, tick while slow, tap
@@ -42,7 +41,7 @@ slice-*.md` says what landed. Non-negotiables when touching UI:
    The DARK palette glows (A6 third addendum): a word glows in its own
    colour through --glow / --glow-r; body text never; light never. The
    device language (`app/components/Blocks.jsx`: BlockText, BlockLine, Lamp,
-   blinkLamp, MrzLine) is used sparingly, never as decoration everywhere.
+   blinkLamp) is used sparingly, never as decoration everywhere.
 6. Michroma for labels and headings (`--mich`), Share Tech Mono (`--mono`)
    for decks, tabs, meta and the search field — the description face of the
    owner's 18 Oct reference — Inter for reading (`--helv`). Compact buttons

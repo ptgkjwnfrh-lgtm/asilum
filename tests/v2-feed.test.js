@@ -90,7 +90,8 @@ test("ECHO: 24 hours, stored on the row, filtered when expired, viewed sequentia
 });
 
 test("PLACE: the reference's card (venue mark, distance, name, globe) opens the map popup; a rating only from a real source", () => {
-  assert.match(place, /openSheet\("map", \{ pin: p\.id, title: "MAP" \}\)/, "the card opens the map popup, never a page");
+  // a live row (a Ticketmaster event, 30 Oct 2026) travels with the pin because the register does not hold it
+  assert.match(place, /openSheet\("map", \{ pin: p\.id, place: p\.live \? p : undefined, title: "MAP" \}\)/, "the card opens the map popup, never a page");
   assert.match(place, /<Icon name="venue"/); assert.match(place, /<Icon name="globe"/);
   assert.match(place, /discoveryCenter\(\)/, "the distance only from this device's own centre");
   assert.ok(!/rating|stars/.test(place), "the card draws no rating");

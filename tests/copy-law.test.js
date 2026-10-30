@@ -94,24 +94,15 @@ test("the engine is called The Asterisk system in prose", () => {
   assert.match(read("app/page.js"), /The Asterisk system routed this feed/); // (25 Oct) "it's the feed", not an edit
 });
 
-test("the house lines are the owner's copy, kept verbatim; the ticker folds instead of carrying them", () => {
-  // (V.2, 17 Oct) the marquee left with the header; the ad ticker carries
-  // the house lines as its fallback (lib/dock.js HOUSE_LINES). (19 Oct) The
-  // ticker runs at the head of the Feed now, off the deck (AdStrip.jsx).
-  const dock = read("lib/dock.js");
+test("the ticker folds instead of carrying the retired house lines", () => {
+  // (V.2, 17 Oct) the marquee left with the header; the ad ticker carried
+  // the house lines as its fallback. (19 Oct) The ticker runs at the head of
+  // the Feed now, off the deck (AdStrip.jsx).
   const cc = read("app/components/AdStrip.jsx");
   assert.match(read("app/components/ControlCenter.jsx"), /<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} line=\{AD_LINE\} \/>/, "the deck carries the strip, in its bubble (owner, 25 Oct 2026, last)");
-  // Verbatim, including the owner's spacing in "A S I L U M".
-  for (const line of [
-    "ARE YOU SEEKING A S I L U M",
-    "DISCOVERY - COMMERCE - COMMUNITY",
-    "DISCOVER FROM ARCHIVES ACROSS THE WORLD",
-  ]) {
-    assert.ok(dock.includes(`"${line}"`), `the ticker must carry: ${line}`);
-  }
   // (28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse and turn into a glowing white
   // line") they are no longer the ticker's fallback: with no ad and no BRDCST it folds to its line and prints
-  // nothing (tests/v2-ticker.test.js). The lines stay in lib/dock.js, the owner's copy, unused.
-  assert.ok(!/HOUSE_LINES/.test(cc.replace(/\/\/[^\n]*/g, "")), "the ticker no longer falls back on them");
+  // nothing (tests/v2-ticker.test.js). The unused lines left lib/dock.js on 30 Oct 2026 (git history keeps them).
+  assert.ok(!/HOUSE_LINES|SEEKING A S I L U M/.test(cc.replace(/\/\/[^\n]*/g, "")), "the ticker no longer falls back on them");
   assert.match(cc, /const words = \(items \|\| \[\]\)\.map\(/, "folded, nothing to print");
 });

@@ -14,7 +14,7 @@
 
 import { NextResponse } from "next/server";
 import { getItems } from "../../../../lib/db/index.js";
-import { latestVerifications, recordVerification } from "../../../../lib/db/production/verification.js";
+import { latestVerifications } from "../../../../lib/db/production/verification.js";
 import { badgeFor, evidenceVersionOf } from "../../../../lib/verification/ledger.js";
 import { runChecks } from "../../../../lib/verification/run.js";
 import { bearerToken, secureTokenEqual } from "../../../../lib/security/request.js";

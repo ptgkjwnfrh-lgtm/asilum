@@ -84,6 +84,7 @@ export default function MusicCircle() {
             <button type="button" className="chip clickable" onClick={() => { haptic("press"); toggleAudio(); }} aria-pressed={panel.playing}>{panel.playing ? "PAUSE" : "PLAY"}</button>
             <button type="button" className="chip" disabled title={panel.skipNote || ""}>SKIP</button>
             {panel.back ? <button type="button" className="chip clickable" onClick={() => { setOpen(false); openSheet(panel.back.view, panel.back.props); }}>BACK TO THE MEDIA</button> : null}
+            {panel.link ? <a className="chip clickable" href={panel.link.href} target="_blank" rel="noopener noreferrer">{panel.link.label}</a> : null}
             <button type="button" className="chip clickable" onClick={() => { haptic("press"); stopAudio(); }}>STOP</button>
           </div>
           {panel.skipNote ? <span className="fine">{panel.skipNote}</span> : null}
