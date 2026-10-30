@@ -81,7 +81,7 @@ test("what the ticker prints: a BRDCST its title, an ad \"AD: \" and the adverti
   assert.equal(by["sponsored:b1"].line, "OASIS – LIVE FOREVER : RUNWAY NOV 14", "the placements block's labelled line is untouched");
   assert.equal(by["listed:pfw"].ticker, "PARIS FASHION WEEK", "a listed event by its title");
   assert.equal(by["draft:p1"].ticker, "AD: MY POP-UP : POP UP NOV 5 (DRAFT)", "a device's own request reads as an ad, and as a draft");
-  assert.deepEqual(items.map((i) => i.kind), ["ad", "ad", "sponsored", "draft", "listed"], "ads, then BRDCST, then drafts, then listed events");
+  assert.deepEqual(items.map((i) => i.kind), ["house", "ad", "ad", "sponsored", "draft", "listed"], "the house line, then ads, then BRDCST, then drafts, then listed events");
   assert.equal(adLine(""), "");
   assert.equal(titleLine({ name: " x " }), "X");
   // no ad source exists: the hook passes none, so no ad ever runs
@@ -226,7 +226,16 @@ test("ADs: a negative imprint in a small solid red chip glowing red", () => {
 test("the ticker's rule: open only online with an ad or a BRDCST to carry; folded, a broken glowing line and a shorter deck", async () => {
   const { tickerOpen, OPENS_TICKER } = await import("../lib/placements.js");
   const it = (kind) => ({ kind });
-  assert.deepEqual([...OPENS_TICKER].sort(), ["ad", "draft", "sponsored"]);
+  assert.deepEqual([...OPENS_TICKER].sort(), ["ad", "draft", "house", "sponsored"]);
+  // (owner, 30 Oct 2026: "the ad ticker isnt loading in, let it say *ASILUM-MEDIA dot COMMERCE dot CONNECTION") the
+  // house line is always carried, first, from the first frame: online, the ticker is open whatever else is live
+  const { tickerItems, HOUSE_TICKER, HOUSE_ITEM } = await import("../lib/placements.js");
+  assert.equal(HOUSE_TICKER, "*ASILUM-MEDIA \u00b7 COMMERCE \u00b7 CONNECTION");
+  assert.deepEqual(tickerItems({})[0], HOUSE_ITEM, "nothing live: the house line alone");
+  assert.equal(tickerOpen(tickerItems({})), true, "so the ticker is open");
+  assert.equal(tickerOpen(tickerItems({}), false), false, "and without service it still folds");
+  assert.equal(HOUSE_ITEM.kind, "house", "never labelled an ad");
+  assert.match(read("app/components/Placements.jsx"), /const \[items, setItems\] = useState\(\(\) => tickerItems\(\{\}\)\);/, "from the first frame, before anything is read");
   assert.equal(tickerOpen([it("sponsored")]), true, "a BRDCST opens it");
   assert.equal(tickerOpen([it("ad")]), true, "an ad opens it");
   assert.equal(tickerOpen([it("draft")]), true, "the device's own ad request opens it, for its author");

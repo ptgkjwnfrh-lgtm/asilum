@@ -84,15 +84,17 @@ test("the ad strip carries SPONSORED only for a paid placement; drafts and liste
     { id: "p1", kind: "promotion", draftId: "d1", startsAt: "2026-11-05" },
     { id: "p2", kind: "promotion", draftId: "missing" },
   ];
-  const items = tickerItems({ placements: [], drafts, places, today });
+  const all = tickerItems({ placements: [], drafts, places, today });
+  assert.equal(all[0].kind, "house", "the house line first, always (owner, 30 Oct 2026)");
+  const items = all.slice(1);
   assert.deepEqual(items.map((i) => i.kind), ["draft", "listed"], "ended, sample, permanent and unsourced rows never run; no SPONSORED without a placement");
   assert.equal(items[0].label, PLACEMENT_LABELS.draft);
   assert.equal(items[0].line, "MY POP-UP : POP UP NOV 5");
   assert.equal(items[1].line, "STREET COMMERCE : POP UP OCT 31");
   assert.equal(items[1].href, "/map?pin=pop");
   const paid = tickerItems({ placements: [{ id: "x", name: "Paid", kind: "shop", href: "/u/paid" }], places: [], drafts: [], today });
-  assert.equal(paid[0].label, "SPONSORED");
-  assert.deepEqual(tickerItems({ today }), [], "nothing to carry carries nothing");
+  assert.equal(paid[1].label, "SPONSORED", "after the house line");
+  assert.deepEqual(tickerItems({ today }).map((i) => i.kind), ["house"], "nothing live: the house line alone (owner, 30 Oct 2026)");
   assert.equal(shortDate("2026-10-31"), "OCT 31");
   assert.equal(placementLine({ name: "x", kind: "consignment" }), "X : CONSIGNMENT");
 });

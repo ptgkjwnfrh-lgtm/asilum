@@ -18,7 +18,8 @@ import { getUid } from "../../lib/client.js";
 import { discoveryCenter } from "../../lib/location.js";
 
 export function usePlacements() {
-  const [items, setItems] = useState(null);
+  // the house line from the first frame (lib/placements.js HOUSE_ITEM); what is live joins it once it is read
+  const [items, setItems] = useState(() => tickerItems({}));
   useEffect(() => {
     let live = true;
     const load = () => {
