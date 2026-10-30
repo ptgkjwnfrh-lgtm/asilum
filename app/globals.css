@@ -5873,6 +5873,9 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
       animation-range: cover 0px cover var(--stk-zone), cover calc(100% - var(--stk-zone)) cover 100%;
     }
     .fcell::before { animation: vcastout linear both; animation-timeline: --cell; animation-range: cover calc(100% - var(--stk-zone)) cover 100%; }
+    /* only a cell within a screen of the view rides the drum (FeedNear.jsx marks it): held on its first keyframe,
+       every far cell was a standing 3D layer, and on a phone the Feed's hundred of them crashed the page (30 Oct) */
+    .fcell:not([data-near]), .fcell:not([data-near])::before, .fcell:not([data-near])::after { animation: none; }
   }
 }
 

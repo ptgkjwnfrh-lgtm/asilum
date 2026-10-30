@@ -49,6 +49,7 @@ import { fetchPosts, fetchEngagement, toggleEngagement, fetchPost } from "../lib
 import { DEFAULT_CHOICE, filterFeed, readChoice, writeChoice } from "../lib/feed/choice.js";
 import { EMPTY_CRAVING, CRAVING_EVENT, readCraving, normalCraving, cravingActive, pointCraving } from "../lib/craving.js";
 import FeedEq from "./components/FeedEq.jsx";
+import FeedNear from "./components/FeedNear.jsx";
 
 const DWELL_FLUSH_MS = 5000;
 const DWELL_MIN_MS = 2000;
@@ -909,6 +910,7 @@ export default function Home() {
         <PageMast word="THE FEED" plain />
         <FeedEq choice={mix} onChange={changeMix} source={tab === "following" ? "following" : "curated"} onSource={switchTab} craving={cravingOn} onClearCraving={clearCraving} />
       </header>
+      <FeedNear />
       <p className="demoline idlabel" role="note">
         <b>DEMO CATALOG</b> — the pieces are synthetic sample records with placeholder imagery; nothing here is real inventory or for sale. taste learning is genuine; the clothes are not. sample editorial is credited.
         {" "}{guideOn ? "The Asterisk system routed this feed through your Passport." : "The Asterisk system is paused — a general feed."}
