@@ -80,3 +80,21 @@ test("6. the motion row asks a refused centre video again", () => {
   const mr = read("app/components/MotionRail.jsx");
   assert.match(mr, /if \(now === was\) \{[\s\S]*?if \(v && v\.paused\) \{ const p = v\.play\(\);[\s\S]*?return;\s*\}/, "a paused centre video in view is played again");
 });
+
+// THE OWNER'S IPHONE RECORDING (30 Oct 2026, "its so fucking buggy"), frame by frame. Declared before fixing:
+//   - "Nothing matches" stood over the first cards on every visit (the Feed was unread, not empty): the line shows only
+//     once a load has answered empty, and "thinking…" only while nothing is shown;
+//   - the Feed showed through the strip between the status bar and the Masthead: the page covers the whole screen
+//     (viewport-fit=cover), so the Masthead's safe-area padding — already in its height — covers the strip;
+//   - Feed cards turning in the drum were left black (not painted in time) on iPhone Safari: there, the Feed's cards
+//     ride no drum.
+test("the iPhone recording: no empty line before the Feed answers, the Masthead covers the strip, no drum on iPhone", () => {
+  const page = read("app/page.js"), layout = read("app/layout.js"), css = read("app/globals.css");
+  assert.match(page, /const \[loaded, setLoaded\] = useState\(false\);/);
+  assert.match(page, /if \(isCurrent\(\)\) \{ setLoading\(false\); setLoaded\(true\);/, "a load answered");
+  assert.match(page, /\{loaded && !loading && items\.length === 0 && \(\s*<div className="empty">Nothing matches/, "empty only once it has answered empty");
+  assert.match(page, /\{loading && items\.length === 0 && <div className="empty">thinking…<\/div>\}/, "thinking only while nothing is shown");
+  assert.match(layout, /export const viewport = \{ width: "device-width", initialScale: 1, viewportFit: "cover" \};/, "the whole screen");
+  assert.match(css, /--head-h: calc\(66px \+ env\(safe-area-inset-top, 0px\)\);/, "the Masthead's height counts the status bar");
+  assert.match(css, /@supports \(-webkit-touch-callout: none\) \{\s*\.fcell, \.fcell::before, \.fcell::after \{ animation: none; \}\s*\}/, "no drum on the Feed on iPhone Safari");
+});
