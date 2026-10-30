@@ -5876,6 +5876,13 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
     /* only a cell within a screen of the view rides the drum (FeedNear.jsx marks it): held on its first keyframe,
        every far cell was a standing 3D layer, and on a phone the Feed's hundred of them crashed the page (30 Oct) */
     .fcell:not([data-near]), .fcell:not([data-near])::before, .fcell:not([data-near])::after { animation: none; }
+    /* iPhone Safari (the only engine with the touch callout): the Feed's cards ride no drum. In the owner's recording
+       (30 Oct 2026) a Feed card turning in 3D was not painted in time — black where the card should be, at the
+       screen's edges where the drum turns them and after every jump — on top of the memory it cost. Flat there; the
+       smaller lists (messages, likes, the bag) keep it. */
+    @supports (-webkit-touch-callout: none) {
+      .fcell, .fcell::before, .fcell::after { animation: none; }
+    }
   }
 }
 

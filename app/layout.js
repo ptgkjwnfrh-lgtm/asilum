@@ -16,6 +16,12 @@ import { SITE_ORIGIN, siteUrl } from "../lib/site.js";
 // Product JSON-LD is deliberately absent (the catalog is synthetic). og:image
 // is NOT absent any more — app/opengraph-image.js generates it. See
 // docs/seo-notes.md.
+// THE WHOLE SCREEN (30 Oct 2026, the owner's iPhone recording: the Feed showed through the strip between the status
+// bar and the Masthead). The shell was built for it — the Masthead's height and padding and its line add
+// env(safe-area-inset-top), the deck's foot env(safe-area-inset-bottom) — but without viewport-fit=cover those
+// insets were 0 and Safari left the strip to the page.
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
+
 export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {

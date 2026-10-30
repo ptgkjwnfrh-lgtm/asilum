@@ -95,6 +95,9 @@ export default function Home() {
   const [epsilonAuto, setEpsilonAuto] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  // whether a load has answered yet: before it, the Feed is not empty, only unread (30 Oct 2026, the owner's iPhone
+  // recording: "Nothing matches" stood over the first cards for a second on every visit)
+  const [loaded, setLoaded] = useState(false);
   const [guideOn, setGuideOn] = useState(true);
   const fit = useFitProfile();
   const [notice, setNotice] = useState("");
@@ -495,7 +498,7 @@ export default function Home() {
     } catch (e) {
       console.error(e);
     } finally {
-      if (isCurrent()) { setLoading(false); reloadingRef.current = false; }
+      if (isCurrent()) { setLoading(false); setLoaded(true); reloadingRef.current = false; }
     }
   }, [feedQS]);
 
@@ -976,8 +979,8 @@ export default function Home() {
           <div className="streamlayout withrail"><div className="streamfeed">
           {tab === "curated" && (
             <>
-              {loading && <div className="empty">thinking…</div>}
-              {!loading && items.length === 0 && (
+              {loading && items.length === 0 && <div className="empty">thinking…</div>}
+              {loaded && !loading && items.length === 0 && (
                 <div className="empty">Nothing matches — loosen the filters or search a mood.</div>
               )}
               {newAboveCount > 0 && (
