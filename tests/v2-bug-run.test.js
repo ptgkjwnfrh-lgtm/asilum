@@ -98,3 +98,26 @@ test("the iPhone recording: no empty line before the Feed answers, the Masthead 
   assert.match(css, /--head-h: calc\(66px \+ env\(safe-area-inset-top, 0px\)\);/, "the Masthead's height counts the status bar");
   assert.match(css, /@supports \(-webkit-touch-callout: none\) \{\s*\.fcell, \.fcell::before, \.fcell::after \{ animation: none; \}\s*\}/, "no drum on the Feed on iPhone Safari");
 });
+
+// "ITS JUST REALLY SLOW AND LAGGY" (the owner, on an iPhone, 30 Oct 2026). Declared: on a phone's WebKit nothing runs a
+// per-scroll-frame SVG filter over the page (the liquid glass's page-side bend: every pane hit-tested its edges and ran
+// a three-pass displacement over each card under them, every frame), and the ticker repaints nothing on a timer (its
+// typing stepped the mask on ~33 band copies about seven times a second): the frosted panes and the ticker's glide stay.
+test("iPhone: no page-side bend, no stepped ticker mask; the glass and the glide stay", () => {
+  const lg = read("app/components/LiquidGlass.jsx"), css = read("app/globals.css");
+  assert.match(lg, /export function phoneWebKit\(\) \{\s*return typeof CSS !== "undefined" && typeof CSS\.supports === "function" && CSS\.supports\("-webkit-touch-callout", "none"\);/);
+  assert.match(lg, /const pageBend = !refract && bend && !phoneWebKit\(\) \? createPageBend\(/, "no page bend on a phone's WebKit");
+  assert.match(css, /@supports \(-webkit-touch-callout: none\) \{\s*\.adstrip\.run \.adband \{ animation: adcrawl var\(--crawl-s\) linear infinite; -webkit-mask-image: none; mask-image: none; \}/, "the glide alone");
+});
+
+// a card's photo at a card's size: eBay's 1600px originals (2.56 MP) drawn at ~260 CSS px; s-l800 is the same photo,
+// a quarter of the pixels (measured: 82 KB against 295 KB)
+test("Feed cards ask eBay for an 800px photo, never the 1600px original; anything else passes as it came", async () => {
+  const { cardImage, CARD_PX } = await import("../lib/images/cardsize.js");
+  assert.equal(CARD_PX, 800);
+  assert.equal(cardImage("https://i.ebayimg.com/images/g/eU8AAeSw4VlqMx6Y/s-l1600.jpg"), "https://i.ebayimg.com/images/g/eU8AAeSw4VlqMx6Y/s-l800.jpg");
+  assert.equal(cardImage("https://i.ebayimg.com/images/g/abc/s-l500.jpg"), "https://i.ebayimg.com/images/g/abc/s-l500.jpg", "already small");
+  assert.equal(cardImage("https://example.com/s-l1600.jpg"), "https://example.com/s-l1600.jpg", "not eBay's");
+  assert.equal(cardImage(null), null);
+  assert.match(read("app/page.js"), /<img src=\{cardImage\(it\.img\) \|\| demoImageFor\(it\) \|\| thumbFor\(it, \{ bare: true \}\)\} alt="" loading="lazy" decoding="async" \/>/, "the listing card uses it, decoded off the main thread");
+});
