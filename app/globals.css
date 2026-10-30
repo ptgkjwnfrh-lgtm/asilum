@@ -3718,6 +3718,12 @@ a.adword:hover { color: var(--ad-chip); }
 @keyframes adcrawl { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--crawl-l))); } }
 @keyframes adtype { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--crawl-l) 0; mask-position: var(--crawl-l) 0; } }
 @media (prefers-reduced-motion: reduce) { .adstrip.run .adband { animation: none; } }
+/* iPhone Safari (30 Oct 2026, the owner: "its just really slow and laggy"): the glide stays, the typing goes. Each of
+   the band's ~33 copies (the face and the slices round both sides) is masked, and the typing steps the mask about
+   seven times a second for as long as the page is open — every step a repaint of every copy, thousands of px wide. */
+@supports (-webkit-touch-callout: none) {
+  .adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; -webkit-mask-image: none; mask-image: none; }
+}
 /* the wink, still: under reduced motion the ticker is open or folded at once (it winked regardless, before) */
 @media (prefers-reduced-motion: reduce) { .adtrack, .adrim, .ccadline, .ccenter[data-ad="line"] .ccadline { transition: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }

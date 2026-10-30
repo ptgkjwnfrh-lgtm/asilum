@@ -559,6 +559,11 @@ export function lensFeatures(el) {
 // `shine` false: the pane does not answer the pointer (the fixtures, 19 Oct 2026)
 // `dispersion` swaps in a pane's own filter and Safari chain: only the wheel
 // passes one, the V.1 rainbow (RainbowGlass.jsx, 27 Oct 2026)
+/** iPhone and iPad Safari (and every iOS browser, all WebKit): the only engines with the touch callout. */
+export function phoneWebKit() {
+  return typeof CSS !== "undefined" && typeof CSS.supports === "function" && CSS.supports("-webkit-touch-callout", "none");
+}
+
 export function useLiquidGlass(elRef, { id, active = true, open = null, strength = 1, bend = null, bezel = null, shine = true, dispersion = null } = {}) {
   const mapRef = useRef(null);
   const weightRef = useRef(null);
@@ -569,7 +574,10 @@ export function useLiquidGlass(elRef, { id, active = true, open = null, strength
     if (!active || !el) return undefined;
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const refract = canRefract();
-    const pageBend = !refract && bend ? createPageBend({ id, el, selector: bend, strength, mapRef, open, ownChain: dispersion ? dispersion.chain(strength) : null }) : null;
+    // (30 Oct 2026, the owner on an iPhone: "its just really slow and laggy") no page-side bend on a phone's WebKit:
+    // every scroll frame each pane hit-tested its edges and ran a three-pass displacement over every card under them
+    // (a large Feed card is most of the screen), which iPhone Safari cannot keep up with — the frosted pane stays
+    const pageBend = !refract && bend && !phoneWebKit() ? createPageBend({ id, el, selector: bend, strength, mapRef, open, ownChain: dispersion ? dispersion.chain(strength) : null }) : null;
     let raf = 0, gen = 0;
     // the bend is PLACED cheaply wherever the pane is (a scroll moves only
     // that); the map is DRAWN only when the pane's size or shape changes
