@@ -18,7 +18,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { angleOf, deltaDeg, stepsFor, magnetStep, restAngle, flickSpeed, keyStep, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
+import { angleOf, deltaDeg, stepsFor, magnetStep, restAngle, flickSpeed, keyStep, isTap, STOP_DEG_PER_S, STEP_DEG } from "../../lib/scrollwheel.js";
 import { useLiquidGlass } from "./LiquidGlass.jsx";
 import { V1_RAINBOW } from "./RainbowGlass.jsx";
 import { haptic } from "../../lib/haptics.js";
@@ -110,11 +110,22 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
+  // the deck's key under a point, looking through the wheel and its glass (never the plus: it is the wheel's hub)
+  function keyBeneath(x, y) {
+    const wheel = ref.current, glass = glassRef.current;
+    for (const el of document.elementsFromPoint(x, y)) {
+      if ((wheel && wheel.contains(el)) || (glass && glass.contains(el))) continue;
+      const k = el.closest && el.closest(".ccenter .tabl");
+      return k && !k.classList.contains("ccpost") ? k : null;
+    }
+    return null;
+  }
+
   function down(e) {
     if (!open || e.button) return;
     stopCoast();
     const c = centre();
-    state.current.drag = { id: e.pointerId, a: angleOf(e.clientX - c.x, e.clientY - c.y), t: performance.now(), v: 0 };
+    state.current.drag = { id: e.pointerId, a: angleOf(e.clientX - c.x, e.clientY - c.y), t: performance.now(), v: 0, x0: e.clientX, y0: e.clientY, t0: performance.now() };
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* an old engine */ }
   }
 
@@ -135,6 +146,12 @@ export default function ScrollWheel({ open, label, onStep, onEnd }) {
     const d = s.drag;
     if (!d || d.id !== e.pointerId) return;
     s.drag = null;
+    // a tap on the ring is a press on the deck's key beneath it (lib/scrollwheel.js isTap): the ring lies over SEARCH
+    // and MESSAGES while it is out, and swallowed them
+    if (e.type === "pointerup" && isTap(e.clientX - d.x0, e.clientY - d.y0, performance.now() - d.t0)) {
+      const under = keyBeneath(e.clientX, e.clientY);
+      if (under) { settle(0, true); under.click(); return; }
+    }
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // a fresh flick coasts first; any release ends on a detent
     const flick = !still && Math.abs(d.v) >= STOP_DEG_PER_S && performance.now() - d.t <= 80;

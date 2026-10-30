@@ -195,3 +195,21 @@ test("the material and the look: the fixtures' glass, no painted colour, the plu
   assert.ok(!/\.ccspindle(::before|::after|\[)/.test(rules) && !/cdlens|ClearDisc/.test(rules + read("app/components/ControlCenter.jsx")), "nothing drawn on it, no CD");
   assert.match(rules, /prefers-reduced-motion: reduce\) \{\n\s*\.ccenter \.ccpostwrap \.tabl\.ccpost, \.cctray, \.ccspindle, \.ccwheel, \.ccwglass, \.ccwglass\[data-open\], \.pcring, \.pcring3d, \.pccard,/, "reduced motion: no travel, the wheel's glass with it");
 });
+
+// A TAP ON THE RING IS A PRESS ON THE KEY BENEATH (going live, 30 Oct 2026: "the sites not working"). Found on the
+// live site at 1470px: with a carousel centred the wheel is out, its ring 227px across over the deck, and
+// elementFromPoint at the SEARCH and MESSAGES keys' centres returned the ring — those two keys did nothing on most of
+// the Feed. Declared: a press that ends within TAP_PX and TAP_MS of its start is a tap and goes to the deck key under
+// the pointer (never the plus, the wheel's own hub); a longer or farther press is a turn, as before.
+test("a tap on the wheel's ring presses the deck key beneath it; a drag still turns the wheel", async () => {
+  const { isTap, TAP_PX, TAP_MS } = await import("../lib/scrollwheel.js");
+  assert.ok(isTap(0, 0, 80) && isTap(3, -4, 200), "still, quick: a tap");
+  assert.ok(!isTap(TAP_PX + 1, 0, 80), "moved past TAP_PX: a turn");
+  assert.ok(!isTap(2, 2, TAP_MS + 1), "held past TAP_MS: a turn");
+  assert.ok(!isTap(NaN, 0, 10) && !isTap(0, 0, undefined), "nothing measured: no tap");
+  const sw = readFileSync(new URL("../app/components/ScrollWheel.jsx", import.meta.url), "utf8");
+  assert.match(sw, /x0: e\.clientX, y0: e\.clientY, t0: performance\.now\(\)/, "where and when the press began");
+  assert.match(sw, /if \(e\.type === "pointerup" && isTap\(e\.clientX - d\.x0, e\.clientY - d\.y0, performance\.now\(\) - d\.t0\)\) \{\s*const under = keyBeneath\(e\.clientX, e\.clientY\);\s*if \(under\) \{ settle\(0, true\); under\.click\(\); return; \}/, "a tap clicks the key beneath, a cancel never does");
+  assert.match(sw, /const k = el\.closest && el\.closest\("\.ccenter \.tabl"\);\s*return k && !k\.classList\.contains\("ccpost"\) \? k : null;/, "a deck key, never the plus");
+  assert.match(sw, /if \(\(wheel && wheel\.contains\(el\)\) \|\| \(glass && glass\.contains\(el\)\)\) continue;/, "looking through the wheel and its glass");
+});
