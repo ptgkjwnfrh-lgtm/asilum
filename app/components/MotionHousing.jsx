@@ -221,7 +221,7 @@ export default function MotionHousing({ video, postId, sample = false, title = "
         poster={video.poster || undefined}
         playsInline
         preload="metadata"
-        crossOrigin={sameOrigin(video.url) ? undefined : "anonymous"}
+        crossOrigin={sameOrigin(video.url) || video.cors === false ? undefined : "anonymous"}
         aria-label={title || "motion"}
         tabIndex={0}
         onClick={stageTap}

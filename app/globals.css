@@ -5480,6 +5480,16 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .songart.blank { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .songtitle { position: absolute; left: 6cqw; right: 6cqw; bottom: 6cqw; padding: 3cqw 5cqw; border-radius: 4cqw; background: color-mix(in srgb, var(--paper) 70%, transparent); color: var(--ink); font: 400 8.4cqw/1.2 var(--mich); }
 .songtitle small { display: block; font-size: 0.75em; color: var(--grey); }
+/* a catalog record's preview (lib/music/itunes.js): the art is the play key, the
+   title stays on top of it so the store link is still a link; a held card's
+   title takes the accent, as every active thing does */
+.songplay { position: absolute; inset: 0; z-index: 1; padding: 0; border: 0; background: none; cursor: pointer; }
+.songtitle { z-index: 2; pointer-events: none; }
+.songtitle .songlink, .songtitle .songstate { pointer-events: auto; }
+.songtitle .songstate { color: var(--grey); }
+.card.songcard.held .songtitle .songstate { color: var(--red); }
+.songtitle .songlink { display: inline-block; margin-top: 1.2cqw; font-size: 0.6em; letter-spacing: 0.1em; color: var(--sig); text-decoration: none; }
+.songplay:focus-visible { outline: 2px solid var(--red); outline-offset: -2px; border-radius: var(--radius-card); }
 /* a sample record says so, top left, opposite its three dots (owner, 28 Oct 2026) */
 .songcard .modeltag { position: absolute; top: 5cqw; left: 5cqw; z-index: 2; margin: 0; padding: 0.6cqw 3cqw; font-size: max(8px, 4.6cqw); background: color-mix(in srgb, var(--paper) 70%, transparent); }
 /* with no art behind them the dots are ink, not the over-media white (they vanished on a light card) */

@@ -469,7 +469,8 @@ function LinkPicker({ onPick }) {
 
 function EventPicker({ onPick }) {
   const [rows, setRows] = useState(null);
-  useEffect(() => { fetch("/api/places?dated=1").then((r) => r.json()).then((d) => setRows(d.places || [])).catch(() => setRows([])); }, []);
+  // the register's events only (live=0): a BRDCST attaches a row the server can resolve from the register, never a live listing
+  useEffect(() => { fetch("/api/places?dated=1&live=0").then((r) => r.json()).then((d) => setRows(d.places || [])).catch(() => setRows([])); }, []);
   return (
     <div className="wcpicker">
       <ul>
