@@ -79,8 +79,7 @@ curl -X POST https://<host>/api/ingest \
 
 Wire that to a cron on the deploy platform for fresh inventory. The seed
 catalog (915 items in `lib/ingest/catalog.json`) is used whenever the items
-table is empty. `node scripts/fill-met-images.mjs` re-runs the Met open-access
-enrichment (public-domain images + object links).
+table is empty.
 
 ## Pages
 

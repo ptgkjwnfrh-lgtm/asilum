@@ -4026,7 +4026,7 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
    aria-label still names each key */
 @media (max-width: 480px) { .sheethead .sheetbtn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sheethead .sheetbtn { min-width: 44px; justify-content: center; padding: 6px; } }
 
-/* the Post disc's second life: the session indicator (1.25) */
+/* the POST disc's wrapper on the deck */
 .ccpostwrap { position: relative; display: flex; }
 
 /* THE WHEEL (owner, 26 Oct 2026, the sketches 6.jpg and IMG_1166). While a

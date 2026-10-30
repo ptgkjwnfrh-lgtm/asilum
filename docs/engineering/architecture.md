@@ -12,11 +12,11 @@ without explicit owner sign-off. This machine has NO system Node — use
 `~/.local/node-v20.18.1-darwin-arm64/bin` on PATH for every npm/node call.
 
 ## Hard boundaries
-- Client-safe modules (lib/client.js, lib/social.js, lib/memory.js,
+- Client-safe modules (lib/client.js, lib/social.js, lib/brain/memory.js,
   lib/vision/palette.js) must NEVER import lib/brain/index.js or lib/db —
   that drags the catalog/pg into the client bundle.
 - All persistence goes through lib/db; all product ingestion through
-  lib/ingest/normalize.js (THE normalizer — never fabricate missing
+  lib/ingest/adapters/normalize.js (THE normalizer — never fabricate missing
   fields; absent is absent).
 - /api/interaction actions are exactly: bag|share|save|favorite|dwell|
   skip|hide. Events persist BEFORE derived mutations and fail loud.
