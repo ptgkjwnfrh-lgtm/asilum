@@ -2,7 +2,10 @@
 
 // app/components/FashionMap.jsx — the local and global fashion map, drawn
 // (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the
-// repo has no map library and the rights register keeps it that way. Local
+// repo has no map library and the rights register keeps it that way. (31
+// Oct 2026: a deploy holding a MapKit key draws Apple's map instead through
+// PlaceMap.jsx; this schematic is the keyless default and the public
+// Passport's privacy draw, and both stay exactly this.) Local
 // mode is a radar: the base city (or the current area) at the centre,
 // distance rings, every place a pin at its true bearing and distance. World
 // mode is an equirectangular plate with the graticule. It is honest about
