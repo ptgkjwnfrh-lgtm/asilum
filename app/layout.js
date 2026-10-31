@@ -21,8 +21,8 @@ import { GROUND } from "../lib/grounds.js";
 // bar and the Masthead). The shell was built for it — the Masthead's height and padding and its line add
 // env(safe-area-inset-top), the deck's foot env(safe-area-inset-bottom) — but without viewport-fit=cover those
 // insets were 0 and Safari left the strip to the page.
-// THE BROWSER'S OWN CHROME IN THE GROUND'S COLOUR (the store shell, 30 Oct 2026): Safari's bars and Android's
-// task switcher take theme-color, one per scheme, from the same hex as the manifest and the native shell
+// THE BROWSER'S OWN CHROME IN THE GROUND'S COLOUR (the store shell, 30 Oct 2026): Safari's bars (and any
+// browser's task switcher) take theme-color, one per scheme, from the same hex as the manifest and the native shell
 // (lib/grounds.js). The theme follows the device unless pinned in Settings; a pinned theme keeps the device's bar.
 export const viewport = {
   width: "device-width", initialScale: 1, viewportFit: "cover",
@@ -43,7 +43,7 @@ export const metadata = {
   alternates: { canonical: "/" },
   // THE HOME SCREEN (the store shell, 30 Oct 2026): the icons scripts/store-assets.mjs draws from the wordmark,
   // the home-screen name, and a standalone page under the status bar for "Add to Home Screen" (app/manifest.js
-  // is the manifest, linked by Next). The native shell in ios/ and android/ carries its own copies.
+  // is the manifest, linked by Next). The native shell in ios/ carries its own copies.
   applicationName: "*ASILUM",
   icons: {
     icon: [

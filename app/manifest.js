@@ -1,6 +1,6 @@
 // app/manifest.js — THE WEB APP MANIFEST, served at /manifest.webmanifest and linked from every page by Next
-// (the store shell, 30 Oct 2026). It is what "Add to Home Screen" reads on a phone, and what the Play Store's
-// and Lighthouse's installability checks look for: the name, the icons (scripts/store-assets.mjs draws them from
+// (the store shell, 30 Oct 2026). It is what "Add to Home Screen" reads on a phone, and what Lighthouse's
+// installability check looks for: the name, the icons (scripts/store-assets.mjs draws them from
 // the wordmark), the ground's colour behind the splash and the standalone display. The native shell does not
 // read it — Capacitor loads the live site in its own WebView — but a passenger without the app gets the same
 // icon on the home screen.

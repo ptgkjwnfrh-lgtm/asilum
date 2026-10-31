@@ -1,8 +1,9 @@
-// tests/store-readiness.test.js — THE STORE SHELL'S LAWS (docs/STORE-READINESS.md, 30 Oct 2026). The native
-// projects in ios/ and android/ are generated files a reviewer never reads end to end, so the facts that make
-// them the same app as the site are pinned here: one id, one origin and no other, the grounds taken from the
-// tokens and not retyped, the privacy manifest actually in the build, the icons the manifest and the layout name
-// present and the right shape, and the two well-known documents silent until the owner's own facts arrive.
+// tests/store-readiness.test.js — THE STORE SHELL'S LAWS (docs/STORE-READINESS.md, 30 Oct 2026; Apple only at the
+// owner's word, 31 Oct 2026). The Xcode project in ios/ is generated files a reviewer never reads end to end, so the
+// facts that make it the same app as the site are pinned here: one id, one origin and no other, the grounds taken
+// from the tokens and not retyped, the privacy manifest actually in the build, the icons the manifest and the
+// layout name present and the right shape, the well-known document silent until the owner's own fact arrives, and
+// no Android left behind.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -10,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { SITE_HOST, REDIRECT_HOSTS } from "../lib/site.js";
 import { GROUND, WARN } from "../lib/grounds.js";
-import { APP_ID, appleAppSiteAssociation, androidAssetLinks } from "../lib/store.js";
+import { APP_ID, appleAppSiteAssociation } from "../lib/store.js";
 import manifest from "../app/manifest.js";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -32,6 +33,8 @@ test("the shell loads the live site and may navigate only on the site's own host
   }
   assert.ok(existsSync(ROOT + cap.webDir + "/" + cap.server.errorPath), "the offline page named by errorPath exists in webDir");
   assert.equal(cap.backgroundColor, GROUND.dark, "the WebView's ground is the dark ground");
+  assert.equal(cap.android, undefined, "no Android block: Android was dropped at the owner's word (31 Oct 2026)");
+  // the copy `npx cap sync ios` writes into ios/App/App/ is gitignored by the template, so it cannot be pinned here
 });
 
 test("the grounds are the tokens: lib/grounds.js equals app/globals.css, nothing retyped", () => {
@@ -47,9 +50,6 @@ test("the grounds are the tokens: lib/grounds.js equals app/globals.css, nothing
   assert.equal(GROUND.light, token('[data-theme="light"] {', "--bg"));
   assert.equal(WARN, token(":root { --warn", "--warn"));
   for (const v of [GROUND.dark, GROUND.light, WARN]) assert.match(v, HEX);
-  // the Android copies cannot import it; they are checked against it
-  assert.match(read("android/app/src/main/res/values/ic_launcher_background.xml"), new RegExp(`<color name="ic_launcher_background">${GROUND.dark}</color>`, "i"));
-  assert.match(read("android/app/src/main/res/values/styles.xml"), new RegExp(`windowSplashScreenBackground">${GROUND.dark}<`, "i"));
 });
 
 test("the layout and the manifest name icons that exist and are the size they claim, in the ground's colour", async () => {
@@ -65,7 +65,7 @@ test("the layout and the manifest name icons that exist and are the size they cl
   assert.equal(m.theme_color, GROUND.dark);
   assert.equal(m.background_color, GROUND.dark);
   assert.equal(m.display, "standalone");
-  assert.ok(m.icons.some((i) => i.purpose === "maskable"), "a maskable icon for Android's launcher");
+  assert.ok(m.icons.some((i) => i.purpose === "maskable"), "a maskable icon for a home screen that masks it");
   const named = [...m.icons.map((i) => [i.src, i.sizes]), ...[...layout.matchAll(/url: "(\/icons\/[^"]+)", sizes: "([^"]+)"/g)].map((x) => [x[1], x[2]])];
   assert.ok(named.length >= 6);
   for (const [src, sizes] of named) {
@@ -100,45 +100,28 @@ test("iOS: the privacy manifest and the entitlements are in the build, the name 
   assert.match(read("ios/App/App/SceneDelegate.swift"), /shouldAllowNavigation\(to: host\)/, "a universal link opens only on the site's hosts");
 });
 
-test("Android: one id, the brand's name, app links on the site's host, the adaptive icon at every density", () => {
-  const gradle = read("android/app/build.gradle");
-  assert.match(gradle, new RegExp(`applicationId "${APP_ID.replace(/\./g, "\\.")}"`));
-  assert.match(gradle, new RegExp(`namespace = "${APP_ID.replace(/\./g, "\\.")}"`));
-  assert.match(read("android/app/src/main/res/values/strings.xml"), /<string name="app_name">\*ASILUM<\/string>/);
-  const manifestXml = read("android/app/src/main/AndroidManifest.xml");
-  assert.match(manifestXml, /<intent-filter android:autoVerify="true">/);
-  assert.match(manifestXml, new RegExp(`<data android:scheme="https" android:host="${SITE_HOST}" />`));
-  assert.doesNotMatch(manifestXml, /usesCleartextTraffic="true"/);
-  const activity = `android/app/src/main/java/${APP_ID.replace(/\./g, "/")}/MainActivity.java`;
-  assert.ok(existsSync(ROOT + activity), activity);
-  assert.match(read(activity), /equalsIgnoreCase\(url\.getHost\(\)\)/, "an app link opens only on the site's host");
-  for (const d of ["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"]) {
-    for (const f of ["ic_launcher.png", "ic_launcher_round.png", "ic_launcher_foreground.png"]) {
-      assert.ok(existsSync(ROOT + `android/app/src/main/res/mipmap-${d}/${f}`), `mipmap-${d}/${f}`);
-    }
-  }
-  assert.match(read("android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"), /@color\/ic_launcher_background/);
+test("no Android: the platform was dropped at the owner's word (31 Oct 2026), and nothing still points at it", () => {
+  const pkg = JSON.parse(read("package.json"));
+  assert.equal(pkg.dependencies["@capacitor/android"], undefined, "@capacitor/android is not a dependency");
+  assert.equal(pkg.dependencies["@capacitor/ios"], "8.6.0");
+  assert.equal(pkg.devDependencies["@capacitor/cli"], "8.6.0");
+  assert.ok(!existsSync(ROOT + "android"), "no android/ project");
+  assert.ok(!existsSync(ROOT + "app/.well-known/assetlinks.json"), "no assetlinks.json route");
+  assert.doesNotMatch(read(".env.example"), /ANDROID_SIGNING_SHA256/, "no Play signing fact in the env catalog");
+  assert.doesNotMatch(read("scripts/store-assets.mjs"), /android\//, "the asset script draws nothing into android/");
 });
 
-test("the well-known documents are silent until the owner's facts arrive, then name this app and no other", () => {
+test("the well-known document is silent until the owner's fact arrives, then names this app and no other", () => {
   assert.equal(appleAppSiteAssociation({}), null);
   assert.equal(appleAppSiteAssociation({ APPLE_TEAM_ID: "abc" }), null, "a malformed team id publishes nothing");
   const aasa = appleAppSiteAssociation({ APPLE_TEAM_ID: "abcde12345" });
   assert.deepEqual(aasa.applinks.details[0].appIDs, [`ABCDE12345.${APP_ID}`]);
   assert.deepEqual(aasa.webcredentials.apps, [`ABCDE12345.${APP_ID}`]);
-  assert.equal(androidAssetLinks({}), null);
-  assert.equal(androidAssetLinks({ ANDROID_SIGNING_SHA256: "deadbeef" }), null, "a malformed fingerprint publishes nothing");
-  const print = Array.from({ length: 32 }, (_, i) => (i * 7 % 256).toString(16).padStart(2, "0")).join(":");
-  const links = androidAssetLinks({ ANDROID_SIGNING_SHA256: print });
-  assert.equal(links[0].target.package_name, APP_ID);
-  assert.deepEqual(links[0].target.sha256_cert_fingerprints, [print.toUpperCase()]);
-  assert.deepEqual(links[0].relation, ["delegate_permission/common.handle_all_urls"]);
-  for (const r of ["app/.well-known/apple-app-site-association/route.js", "app/.well-known/assetlinks.json/route.js"]) {
-    assert.match(read(r), /export const dynamic = "force-dynamic"/, `${r} reads the env at request time`);
-    assert.match(read(r), /status: 404/, `${r} is a 404 until configured`);
-  }
+  assert.equal(aasa.applinks.details[0].components[0]["/"], "*", "every page of the site opens in the app");
+  const r = "app/.well-known/apple-app-site-association/route.js";
+  assert.match(read(r), /export const dynamic = "force-dynamic"/, `${r} reads the env at request time`);
+  assert.match(read(r), /status: 404/, `${r} is a 404 until configured`);
   assert.match(read(".env.example"), /^APPLE_TEAM_ID=$/m);
-  assert.match(read(".env.example"), /^ANDROID_SIGNING_SHA256=$/m);
 });
 
 test("the offline page is the shell's own: plain, honest, and a way back to the live site", () => {

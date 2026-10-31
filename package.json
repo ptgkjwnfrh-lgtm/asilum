@@ -41,7 +41,6 @@
     "v2:check": "npm run -s v2:gates && npm run -s search:latency && npm run -s feed:chunks"
   },
   "dependencies": {
-    "@capacitor/android": "8.6.0",
     "@capacitor/core": "8.6.0",
     "@capacitor/ios": "8.6.0",
     "@supabase/supabase-js": "2.110.5",
