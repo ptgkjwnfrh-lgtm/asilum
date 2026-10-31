@@ -13,6 +13,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import FashionMap from "./FashionMap.jsx";
+import PlaceMap, { useMapkitGate } from "./PlaceMap.jsx";
 import StreetMap from "./StreetMap.jsx";
 import { useRoads } from "./ParisMap.jsx";
 import SaveButton from "./SaveButton.jsx";
@@ -65,6 +66,7 @@ export default function PlacesPanel({ compact = false, showControls = true, quer
   // passport draws; the radar stands in only while they load or when they
   // cannot be read
   const roads = useRoads(center);
+  const mapGate = useMapkitGate(); // "apple" when this deploy holds a MapKit key (31 Oct 2026)
 
   useEffect(() => {
     const qs = new URLSearchParams();
@@ -143,7 +145,9 @@ export default function PlacesPanel({ compact = false, showControls = true, quer
 
       {view === "map" && (
         <div className="plmapwrap">
-          {center && mode === "local" && (roads.own || roads.loading)
+          {mapGate === "apple"
+            ? <PlaceMap mode={center ? mode : "world"} center={center} km={mode === "local" ? 40 : 80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />
+            : center && mode === "local" && (roads.own || roads.loading)
             ? <StreetMap map={roads.own ? roads.map : null} centre={center} places={places} selectedId={sel} onSelect={setSel} height={compact ? 320 : 460} />
             : <FashionMap mode={center ? mode : "world"} center={center} km={mode === "local" ? 40 : 80} places={places} selectedId={sel} onSelect={setSel} label={center ? center.label : ""} />}
           {!center && mode === "local" && <p className="deck">confirm a base city above to centre the local map.</p>}
