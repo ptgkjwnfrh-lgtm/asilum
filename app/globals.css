@@ -3162,6 +3162,8 @@ body { font-size: 14px; }
 @media (max-width: 900px) { .tnetgrid { grid-template-columns: 1fr; } }
 /* the schematic map */
 .fmap { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 9px; display: block; }
+/* Apple's map (PlaceMap.jsx), the schematic's frame: the same width, the same corners */
+.amap { width: 100%; aspect-ratio: 800 / 520; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg2); display: block; }
 .fmapbg { fill: var(--bg2); }
 .fmapring, .fmapaxis, .fmapgrid { fill: none; stroke: var(--line); stroke-width: 1; }
 .fmapaxis { stroke-dasharray: 2 6; }
