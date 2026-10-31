@@ -17,7 +17,7 @@
 // place's own coordinates.
 
 import { useEffect, useState } from "react";
-import FashionMap from "./FashionMap.jsx";
+import PlaceMap from "./PlaceMap.jsx";
 import Icon from "./Icons.jsx";
 import { BlockText } from "./Blocks.jsx";
 import { listPlaces, mapsUrl, placeRating, milesLabel } from "../../lib/places/registry.js";
@@ -84,7 +84,7 @@ export default function MapSheet({ pin = null, place: given = null }) {
         <span className="fine">{[place.city, place.startsAt ? place.startsAt + (place.endsAt && place.endsAt !== place.startsAt ? " → " + place.endsAt : "") : null, place.admission ? "admission · " + place.admission : null].filter(Boolean).join(" · ")}</span>
         {place.address ? <span className="fine">{place.address}</span> : null}
       </div>
-      <FashionMap mode="local" center={center} km={30} places={places} selectedId={sel} onSelect={setSel} label={place.city || place.name} />
+      <PlaceMap mode="local" center={center} km={30} places={places} selectedId={sel} onSelect={setSel} label={place.city || place.name} />
       <div className="mapsheetacts">
         <a className="txtbtn" href={"/map?pin=" + encodeURIComponent(place.id)}>THE FULL MAP →</a>
         {place.sourceUrl ? <a className="txtbtn" href={place.sourceUrl} target="_blank" rel="noopener noreferrer">THE ORGANIZER ↗</a> : <span className="fine">no public listing to link</span>}
