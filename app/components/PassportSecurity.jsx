@@ -19,6 +19,11 @@
 // state: the bearer's strongest conviction annotates the map.
 
 import ParisMap, { useParisRoads } from "./ParisMap.jsx";
+import { MrzLine } from "./Blocks.jsx";
+
+// the microprint band, set as a machine-readable line (31 Oct 2026): the
+// authority's name and the terminal's, the chevrons between them the filler
+export const MICROPRINT = "ASILUM<PERSONALIZED<FASHION<TERMINAL<<<<";
 
 // Registration crosses over the header area: [x, y, size, tone]
 const CROSSES = [
@@ -74,9 +79,9 @@ export default function PassportSecurity({ topTag, topWeight, roads = true, map:
         <span className="pposm">{map ? (map.centre ? "YOUR STREETS · MAP DATA © OPENSTREETMAP" : "MAP DATA © OPENSTREETMAP") : "READING YOUR STREETS…"}</span>
       </div>
 
-      {/* microprint band above the machine zone, like security print */}
+      {/* microprint band above the machine zone, like security print — a machine-readable line run long */}
       <div className="ppmicro" aria-hidden="true">
-        {("*ASILUM · PERSONALIZED FASHION TERMINAL · ").repeat(24)}
+        <MrzLine text={MICROPRINT.repeat(16)} width={0} />
       </div>
     </>
   );

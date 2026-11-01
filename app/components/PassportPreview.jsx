@@ -17,13 +17,7 @@ import { vizState } from "../../lib/brain/memory.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
 import { convictionsOf, mrzLines, sinceDisplay } from "../../lib/passport/document.js";
 import ParisMap, { useParisRoads } from "./ParisMap.jsx";
-
-// UV tinting of a machine-zone line: data runs glow green, chevron filler
-// reads as the red thread. Shared with the document on /board.
-export function MrzTint({ line }) {
-  return line.split(/(<+)/).map((seg, i) =>
-    seg.startsWith("<") ? <i key={i}>{seg}</i> : seg && <b key={i}>{seg}</b>);
-}
+import { MrzLine } from "./Blocks.jsx";
 
 export default function PassportPreview() {
   const map = useParisRoads();
@@ -88,7 +82,7 @@ export default function PassportPreview() {
           <div><dt>CONVICTIONS</dt><dd>{conv.length} ACTIVE</dd></div>
         </dl>
       </div>
-      <div className="ppmrz ppminimrz"><MrzTint line={mrz.top} /><br /><MrzTint line={mrz.bottom} /></div>
+      <div className="ppmrz ppminimrz"><MrzLine text={mrz.top} /><MrzLine text={mrz.bottom} /></div>
       <span className="ppminiopen">OPEN THE PASSPORT →</span>
     </a>
   );

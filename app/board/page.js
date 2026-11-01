@@ -27,8 +27,9 @@ import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads, useRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { convictionsOf, mrzLines, sinceDisplay as formatSince } from "../../lib/passport/document.js";
-import { MrzTint } from "../components/PassportPreview.jsx";
+import { convictionsOf, mrzZone, sinceDisplay as formatSince } from "../../lib/passport/document.js";
+import { Lamp, MrzLine, blinkLamp } from "../components/Blocks.jsx";
+import PassportPlate from "../components/PassportPlate.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
@@ -317,9 +318,15 @@ export default function BoardPage() {
 
   const sinceDisplay = formatSince(pinfo.since);
   const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
-  const { top: mrzTop, bottom: mrzBot } = mrzLines({ uid, name: pinfo.name, since: pinfo.since, pinCount, ticketCount, areaCode: pinfo.area || 0 });
-  const mrzTint = (line) => <MrzTint line={line} />;
   const counts = saveCounts();
+  const basedIn = loc ? basedInLine(loc, "me") : null;
+  // the data page's fields, once, for the page and the machine zone alike
+  const klass = uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT";
+  const baseCity = loc && loc.baseCity ? loc.baseCity.name : "";
+  const taste = tasteClass(convictions());
+  const savedCount = pinCount + (counts.total - counts.piece);
+  const mrz = mrzZone({ uid, name: pinfo.name, handle: pinfo.handle, since: pinfo.since, klass, basedIn: baseCity, origin: pinfo.origin,
+    taste, pinCount, ticketCount, areaCode: pinfo.area || 0, savedCount, convictionCount: convictions().length });
   const otherSaves = saves.filter((s) => s.kind !== "piece" && (saveFilter === "all" || s.kind === saveFilter));
   const showPieces = saveFilter === "all" || saveFilter === "piece";
   const stamps = [
@@ -327,7 +334,6 @@ export default function BoardPage() {
     { id: "taste", label: "TASTE DEFINED", earned: convictions().length >= 3, glyph: "◇" },
     { id: "transmission", label: "FIRST TRANSMISSION", earned: hasTransmission, glyph: "↗" },
   ];
-  const basedIn = loc ? basedInLine(loc, "me") : null;
 
   return (
     <div className="wrap ppage">
@@ -339,8 +345,14 @@ export default function BoardPage() {
       {!shared && (
         <div className="ppdoc lg" ref={ppRef} aria-label="passport document">
           {ppGlass}
-          <div className="ppsec"><span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span></div>
-          <div className="ppnation">ASILUM <b>*</b> FASHION PASSPORT</div>
+          {/* THE TRON PASSPORT (owner, 31 Oct 2026: "mimic the new style of the app … a sleek tron type of vibe …
+              more [MRZ] … and chevrons"). Kept as the owner circled them: the serial at the top right and the
+              four-language title block. The band carries the serial as a machine-readable line too. */}
+          <div className="ppsec">
+            <MrzLine className="ppserial" words={["AS", String(boards.length).padStart(2, "0"), String(convictions().length).padStart(2, "0")]} width={16} />
+            <span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span>
+          </div>
+          <PassportPlate />
           <div className="ppbody">
             <div className="ppphotocol">
               <span className="ppquad"><b>PASSPORT</b><span>パスポート</span><span>REISEPASS</span><span>PASSEPORT</span></span>
@@ -354,13 +366,13 @@ export default function BoardPage() {
               <div><dt>CODE<em>/ Code</em></dt><dd>ASM</dd></div>
               <div><dt>ACCOUNT NO<em>/ № de compte</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
               <div className="sp3"><dt>USERNAME<em>/ Nom</em></dt><dd>{(pinfo.name || "UNNAMED READER").toUpperCase()} <span className="ppmono">{pinfo.handle}</span></dd></div>
-              <div className="sp3"><dt>CLASS<em>/ Classe</em></dt><dd>{uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT"}</dd></div>
+              <div className="sp3"><dt>CLASS<em>/ Classe</em></dt><dd>{klass}</dd></div>
               <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
-              <div><dt>BASED IN<em>/ Basé à</em></dt><dd>{loc && loc.baseCity ? loc.baseCity.name : "—"}{loc && loc.baseCity && !basedIn ? <span className="ppmono"> PRIVATE</span> : null}</dd></div>
+              <div><dt>BASED IN<em>/ Basé à</em></dt><dd>{baseCity || "—"}{baseCity && !basedIn ? <span className="ppmono"> PRIVATE</span> : null}</dd></div>
               <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
-              <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="red">*</span> {tasteClass(convictions())}</dd></div>
-              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="red">*</span>ASTERISK — PERSONALIZED FASHION TERMINAL</dd></div>
-              <div><dt>SAVED</dt><dd>{pinCount + (counts.total - counts.piece)}</dd></div>
+              <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="ppstar">*</span> {taste}</dd></div>
+              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="ppstar">*</span>ASTERISK — PERSONALIZED FASHION TERMINAL</dd></div>
+              <div><dt>SAVED</dt><dd>{savedCount}</dd></div>
               <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
             </dl>
           </div>
@@ -369,10 +381,14 @@ export default function BoardPage() {
               data page, then the hologram window, the microprint, and the
               machine zone at the FOOT of the document */}
           <PassportSecurity topTag={convictions()[0]?.[0]} topWeight={convictions()[0]?.[1] || 0} map={docMap} />
-          <div className="ppmrz">{mrzTint(mrzTop)}<br />{mrzTint(mrzBot)}</div>
+          {/* the machine zone at the foot: four lines, every one a field the data page prints (lib/passport/document.js
+              mrzZone), the chevrons the filler, the device's cursor at the end */}
+          <div className="ppmrz">
+            {mrz.map((line, i) => <MrzLine key={i} text={line} cursor={i === mrz.length - 1} />)}
+          </div>
           <div className="ppdocacts">
-            <button className="ppbtn" onClick={() => switchTab("places")}>OPEN MAP</button>
-            <button className="ppbtn primary" onClick={warpToUpload}>STAMP PASSPORT</button>
+            <button className="ppbtn" onClick={(e) => { blinkLamp(e, { quiet: true }); switchTab("places"); }}><Lamp />OPEN MAP</button>
+            <button className="ppbtn primary" onClick={(e) => { blinkLamp(e); warpToUpload(); }}><Lamp />STAMP PASSPORT</button>
           </div>
         </div>
       )}

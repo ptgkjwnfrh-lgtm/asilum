@@ -20,6 +20,14 @@
 //   blinkLamp(eventOrEl)      blinks the lamp inside the pressed control
 //                             like a CD tray's eject light — on, off, on,
 //                             off — then it goes dark.
+//   <MrzLine text="…" />      a machine-readable line, as at the foot of a
+//                             passport (owner, 31 Oct 2026, the Passport:
+//                             "more [MRZ] … and chevrons"): the data in the
+//                             document's colour, the "<" filler the red
+//                             thread, a block cursor blinking at the end
+//                             when asked. The 25 Oct word retired chevrons
+//                             as TEXT PLACEHOLDERS; here they are what a
+//                             real machine zone fills with.
 //
 // prefers-reduced-motion: the text is simply there, the lamp lights once and
 // goes dark without blinking, the cursor holds still.
@@ -27,6 +35,7 @@
 import { useEffect, useRef } from "react";
 import { haptic } from "../../lib/haptics.js";
 import { blockFrame, blockWords, BLOCK_RUN as RUN } from "../../lib/feed/blocks.js";
+import { mrzWord, MRZ_WIDTH } from "../../lib/passport/document.js";
 
 export { blockFrame };
 
@@ -97,3 +106,18 @@ export function blinkLamp(target, { quiet = false } = {}) {
   if (!quiet) haptic("press");
 }
 
+/** A machine-readable line: `text` as lib/passport/document.js encodes it (every character a letter, a digit or
+ *  the "<" filler), or `words` joined by "<<" — run out in "<" to `width` (the document's 52). Data is drawn in
+ *  <b>, the filler in <i>; `cursor` puts the device's block cursor at the end. aria-hidden: the data page carries
+ *  the words, the zone only repeats them for the machine. */
+export function MrzLine({ text, words, width = MRZ_WIDTH, cursor = false, className = "" }) {
+  let line = text != null ? String(text) : (words || []).map(mrzWord).filter(Boolean).join("<<");
+  if (line.length < width) line += "<".repeat(width - line.length);
+  const parts = line.split(/(<+)/).filter(Boolean);
+  return (
+    <span className={"mrzline" + (className ? " " + className : "")} aria-hidden="true">
+      {parts.map((p, i) => (p[0] === "<" ? <i key={i}>{p}</i> : <b key={i}>{p}</b>))}
+      {cursor ? <span className="mrzcursor" /> : null}
+    </span>
+  );
+}
