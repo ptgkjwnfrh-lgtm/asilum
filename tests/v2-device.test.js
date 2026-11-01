@@ -1,7 +1,8 @@
 // tests/v2-device.test.js — THE DEVICE (owner, 18 Oct 2026, evening;
 // CONSTITUTION A6 third addendum): the louder rainbow glass, the original
 // gradients and the dark phosphor glow, the ">>>>>>" load-in, the warning
-// lights, the piece floating over the fogged Feed, the original passport.
+// lights, the piece floating over the fogged Feed, the passport (the original
+// of 18 Oct, in the Tron language since 31 Oct 2026).
 // Pure where it can be; source reads where the markup is the law.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -105,17 +106,48 @@ test("the original ground and the dark phosphor glow: blue to white, green to bl
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%\);[^}]*drop-shadow\(0 0 10px rgba\(255, 255, 255, 0\.34\)\)/, "white, glowing white");
 });
 
-test("the original passport (iteration 5, 7db2b89): plus registration band, the 01, the print lines, its own teal and phosphor, the machine zone at the foot", () => {
+test("the passport in the Tron language (owner, 31 Oct 2026): the original's pluses, 01 and print lines kept; the name cut out of the logo's plate; a four-line machine zone at the foot; no hairline on the document", () => {
   const sec = strip(read("app/components/PassportSecurity.jsx"));
   assert.match(sec, /function Plus\(\{ x, y, s = 5, tone = "s" \}\)/);
   assert.match(sec, /<Plus key=\{i\}/);
   assert.match(sec, /<span className="ppvpage">01<\/span>/);
+  assert.match(sec, /<MrzLine text=\{MICROPRINT\.repeat\(16\)\} width=\{0\} \/>/, "the microprint is a machine-readable line");
   const board = strip(read("app/board/page.js"));
   assert.ok(board.indexOf("<PassportSecurity") < board.indexOf('<div className="ppmrz">'), "the MRZ sits at the foot, under the hologram window");
-  assert.match(board, /<div className="ppnation">ASILUM <b>\*<\/b> FASHION PASSPORT<\/div>/, "no magazine");
+  assert.match(board, /<PassportPlate \/>/, "the name is the plate (PassportPlate.jsx), not a line of type");
+  assert.ok(!/<div className="ppnation">/.test(board), "no nation line of type left on the document");
+  assert.match(board, /\{mrz\.map\(\(line, i\) => <MrzLine key=\{i\} text=\{line\} cursor=\{i === mrz\.length - 1\} \/>\)\}/, "every line of the zone through MrzLine, the cursor on the last");
+  const plate = strip(read("app/components/PassportPlate.jsx"));
+  assert.match(plate, /<mask id=\{cut\}/);
+  assert.match(plate, /<rect className="ppplatebar" width=\{W\} height=\{H\} rx="9" mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask: the letters are holes");
+  assert.match(plate, /ASILUM <tspan className=\{star\}>\*<\/tspan> FASHION PASSPORT/, "no magazine");
+  assert.match(rules, /\.ppplate text \{ font-family: var\(--mich\); font-weight: 400; text-shadow: none; \}/, "no glow painted inside the holes");
+  assert.match(rules, /\.ppcut \{ fill: #000; \}/, "the letters cut");
+  assert.match(rules, /\.ppcutstar \{ fill: #fff; \}/, "the asterisk not cut");
+  assert.match(rules, /\.ppplatestar \{ fill: var\(--wm-star\); \}/, "the logo's asterisk");
+  assert.match(rules, /\.ppplatebar \{ fill: var\(--wm-bar\); filter: var\(--wm-glow\); \}/, "the logo's glow, on the plate itself (filter before mask: the letters stay holes)");
+  assert.match(plate, /<mask id=\{cut\} maskUnits="userSpaceOnUse" x=\{-SPREAD\} y=\{-SPREAD\} width=\{W \+ 2 \* SPREAD\} height=\{H \+ 2 \* SPREAD\}>/, "the mask's plane reaches past the plate for the glow");
   assert.match(rules, /\[data-theme="light"\] \.ppdoc \{ --sig: #0b7584; \}/, "the document's own teal");
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.ppdoc \{ --sig: #f4f9fc; \}/, "white in dark (no green since 29 Oct)");
-  assert.match(rules, /\.pv-r \{ stroke: var\(--red\); opacity: 0\.75; \}/, "the pluses have their tones again");
+  assert.match(rules, /\.pv-r \{ stroke: var\(--red\); opacity: 0\.75; \}/, "the pluses keep their tones");
   assert.match(rules, /\.ppphoto::after \{ background:[^}]*repeating-linear-gradient\(0deg, transparent 0 2px,/s, "the photo slot's print lines");
-  assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*border-top: 1px dashed var\(--line\);[^}]*font-family: var\(--mono\);/s);
+  // no hairline anywhere on the document (the UI law's "no lines"): no border on the frame, the bands, the photo,
+  // the microprint or the machine zone, and no dashed rule over the zone
+  for (const sel of [".ppdoc", ".ppsec", ".ppnation", ".ppphoto", ".ppmicro", ".ppmrz", ".ppdoc .ppmrz"]) {
+    const rule = rules.match(new RegExp("\\n" + sel.replace(/[.]/g, "\\.") + " \\{([^}]*)\\}"));
+    assert.ok(rule, sel + " is styled");
+    assert.ok(!/border(-top|-bottom)?:\s*1px/.test(rule[1]), sel + " carries no hairline: " + rule[1].trim().slice(0, 80));
+  }
+  assert.ok(!/dashed var\(--line\);[^}]*font-family: var\(--mono\)/.test(rules), "the dashed rule over the machine zone is gone");
+  assert.ok(!/\.ppsec::after/.test(rules) && !/\.ppsec \{[^}]*background-image/.test(rules), "the strip's iridescent sweep and tiled pluses are gone");
+  // the device's line: mono, one line, the data in the document's colour glowing, the filler unlit, the cursor
+  // still under reduced motion
+  assert.match(rules, /\.mrzline \{ display: block; white-space: nowrap; overflow: hidden; font-family: var\(--mono\); \}/);
+  assert.match(rules, /\.mrzline b \{ font-weight: 400; color: var\(--sig\); text-shadow: var\(--glow\); \}/);
+  assert.match(rules, /\.mrzline i \{ font-style: normal; color: var\(--red\); opacity: 0\.6; \}/);
+  assert.match(rules, /@media \(prefers-reduced-motion: reduce\) \{ \.mrzcursor \{ animation: none; \} \}/);
+  assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*container-type: inline-size;/s, "the zone measures itself");
+  assert.match(rules, /\.ppdoc \.ppmrz \.mrzline \{ font-size: min\(14px, calc\(100cqw \/ 52 \/ var\(--mrz-em\)\)\); \}/, "52 characters always fit the zone");
+  assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*--mrz-em: 0\.76;/s, "a character's measure at the desktop spacing");
+  assert.match(rules, /\.ppdoc \.ppmrz \{ letter-spacing: 0\.05em; --mrz-em: 0\.69; \}/, "closer on a phone");
 });

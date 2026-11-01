@@ -1746,12 +1746,11 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppbody { display: flex; gap: 26px; padding: 16px 22px; align-items: center;
   background: color-mix(in srgb, var(--bg3) 42%, transparent); }
 .ppbody .ppid { padding: 0; }
-.ppphoto { width: 148px; height: 186px; flex: none; border: 1px solid var(--line); border-radius: 8px;
+.ppphoto { width: 148px; height: 186px; flex: none; border: 0; border-radius: var(--radius-field);
   background: var(--bg3); cursor: pointer; position: relative; overflow: hidden; padding: 0; }
 .ppphoto img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.7) contrast(1.05); }
 .ppphotoempty { display: grid; place-items: center; gap: 6px; height: 100%; color: var(--sig); text-shadow: var(--glow); font-size: 26px; }
 .ppphotoempty em { font-style: normal; font-size: 7.5px; letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
-.ppphoto:hover { border-color: var(--sig); }
 
 /* ---- Profile: banner/avatar uploads ---- */
 .pbannerctl { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
@@ -1762,13 +1761,17 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .pavimg { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .pavatar { overflow: hidden; }
 
-/* ---- Phase 2: PASSPORT dossier ---- */
-.ppdoc { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
-.ppsec { height: 30px; position: relative; border-bottom: 1px solid var(--line);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23e8eff1' stroke-width='1' opacity='0.25'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
-[data-theme="light"] .ppsec { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='30'%3E%3Cg stroke='%23177a8a' stroke-width='1' opacity='0.3'%3E%3Cpath d='M18 5v9M13.5 9.5h9'/%3E%3Cpath d='M4 21v6M1 24h6' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E"); }
-.ppsec::after { content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(150, 90, 255, 0.14) 30%, rgba(60, 220, 140, 0.12) 55%, rgba(70, 150, 255, 0.12) 75%, transparent); }
+/* ---- Phase 2: PASSPORT dossier — THE TRON PASSPORT since 31 Oct 2026 (owner: "mimic the new style of the app …
+   a sleek tron type of vibe … more [MRZ] … and chevrons"): no hairline anywhere on the document — no border, no
+   rule under a band, no dashed line over the machine zone; the bands part by tone, the name is cut out of the
+   logo's white plate (PassportPlate.jsx), the machine zone is four lines of the real fields (lib/passport/
+   document.js mrzZone) and the chevrons are its filler. The security strip's iridescent sweep and its tiled
+   pluses are gone; the registration pluses of the original document (PassportSecurity.jsx) stay. Kept exactly,
+   as the owner circled them: the serial (.ppnum) and the four-language title block (.ppquad). ---- */
+.ppdoc { border: 0; border-radius: var(--radius-card); overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
+.ppsec { height: 30px; position: relative; display: flex; align-items: center; padding: 0 12px; }
+/* the serial again, for the machine, at the band's left */
+.ppsec .ppserial { position: relative; z-index: 2; font-size: 10px; letter-spacing: 0.14em; opacity: 0.85; }
 .ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--helv); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
 .ppid { display: grid; grid-template-columns: 0.9fr 0.9fr 1.6fr; gap: 9px 20px;
   margin: 0; padding: 12px 16px; flex: 1; align-content: center; }
@@ -1782,10 +1785,20 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    tail of the MRZ — which encodes the real account number — was being CLIPPED
    by the overflow:hidden below. Sized down until it fits with room, measured
    rather than eyeballed. Lose characters here and the document is lying. */
-.ppmrz { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); padding: 8px 16px; font-family: var(--helv);
+.ppmrz { padding: 8px 16px; font-family: var(--mono);
   font-size: 17px; letter-spacing: 0.46em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
   scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
+/* THE DEVICE'S MACHINE-READABLE LINE (Blocks.jsx MrzLine): one line, never wrapped; the data in the document's
+   colour, glowing in dark as a word does; the "<" filler the red thread, unlit (filler is not a word); the block
+   cursor blinks at the end — and holds still under reduced motion */
+.mrzline { display: block; white-space: nowrap; overflow: hidden; font-family: var(--mono); }
+.mrzline b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
+.mrzline i { font-style: normal; color: var(--red); opacity: 0.6; }
+.mrzcursor { display: inline-block; width: 0.6em; height: 0.95em; margin-left: 0.1em; vertical-align: -0.12em; background: var(--sig); box-shadow: var(--glow);
+  animation: mrzblink 1.1s steps(2, jump-none) infinite; }
+@keyframes mrzblink { 0% { opacity: 1; } 100% { opacity: 0.12; } }
+@media (prefers-reduced-motion: reduce) { .mrzcursor { animation: none; } }
 
 /* ---- Phase 2: DISCOVER console hints ---- */
 .dhints { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
@@ -1889,9 +1902,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    Registration crosses, plus-pattern ridge, topographic contours, microprint,
    and the constellation whose connected lines trace three asterisks (red =
    ASTERISK identity). Decoration only; every label is real state. ---- */
-/* the document keeps U.S. passport data-page proportions (125 × 88 mm) */
+/* the document keeps U.S. passport data-page proportions (125 × 88 mm) as a floor: a box held to the ratio with its
+   overflow hidden kept the ratio and CLIPPED the machine zone (31 Oct 2026: four lines where there were two), so
+   the ratio is a minimum height now and the hologram window (.ppterrain, flex: 1) takes the room */
 .ppdoc { position: relative; max-width: 980px; margin: 0 auto 18px; display: flex; flex-direction: column; }
-@media (min-width: 900px) { .ppdoc { aspect-ratio: 125 / 88; } }
+@media (min-width: 900px) { .ppdoc { min-height: calc(980px * 88 / 125); } }
 .ppdoc .ppbody, .ppdoc .ppmrz { position: relative; z-index: 2; }
 .ppuv { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
 .ppuvcross { position: absolute; top: 4px; left: 0; width: 100%; height: 60px; }
@@ -1921,9 +1936,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pvstars text { fill: var(--red); font-family: var(--helv); font-size: 15px; }
 .pvstars-hot { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 13px var(--red)); }
 .pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
-.ppmicro { border-top: 1px solid var(--line); padding: 2px 0 1px; overflow: hidden;
+.ppmicro { padding: 2px 0 1px; overflow: hidden;
   white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
-  opacity: 0.75; text-shadow: var(--glow-p); font-weight: 700; position: relative; z-index: 2; }
+  opacity: 0.75; position: relative; z-index: 2; }
+.ppmicro .mrzline { overflow: visible; }
+.ppmicro .mrzline b { color: var(--p2); text-shadow: var(--glow-p); }
 /* open window — the hologram burns through at full strength here; the div
    only frames it and holds the summit annotation + the ODbL map credit */
 .ppterrain { position: relative; flex: 1; min-height: 210px; z-index: 2; }
@@ -1931,13 +1948,27 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   letter-spacing: 0.18em; color: var(--faint); }
 .ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--helv);
   font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
-/* nation line — where a passport names its country */
-.ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px;
-  border-bottom: 1px solid var(--line); font-family: var(--mich);
-  font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink);
-  background: color-mix(in srgb, var(--bg3) 68%, transparent);
-  text-shadow: var(--glow), var(--glow); }
+/* nation line — where a passport names its country. On the document it is THE NAME PLATE (PassportPlate.jsx,
+   31 Oct 2026): the name cut out of the logo's white plate (--wm-bar), the glass through the letters, the plate in
+   the logo's white glow, the asterisk the house red in the logo's red glow; the holes tinted where the ground is
+   bright (--wm-cut-tint: clear in dark, half a navy in light). The preview on /profile keeps the line as type. */
+.ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px; font-family: var(--mich);
+  font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink); text-shadow: var(--glow), var(--glow); }
 .ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r), var(--glow-r); }
+.ppdoc .ppnation { display: flex; justify-content: center; padding: 4px 12px 8px; }
+.ppplate { display: block; width: min(100%, 520px); height: auto; overflow: visible; }
+.ppplate text { font-family: var(--mich); font-weight: 400; text-shadow: none; } /* the line's glow would be painted inside the holes (a shadow is drawn for a glyph whatever its fill) */
+.ppplane { fill: #fff; }      /* the mask's plane (luminance, not a colour): white keeps the plate */
+.ppcut { fill: #000; }        /* the letters cut out of it */
+.ppcutstar { fill: #fff; }    /* the asterisk is not cut: it is painted over the plate */
+.pptint { fill: var(--wm-cut-tint); }
+.pptintstar { fill: none; }
+.ppplatebar { fill: var(--wm-bar); filter: var(--wm-glow); } /* the glow on the plate itself: computed before the mask cuts the letters */
+.ppover { fill: none; }
+.ppplatestar { fill: var(--wm-star); }
+.ppstarglow { filter: var(--wm-glow-r); }
+/* the asterisk on the data page: the house red, glowing red (the logo's rule), never the white accent */
+.ppstar { color: var(--warn); text-shadow: var(--glow-r); }
 /* four document-type languages stacked above the photo (EN/JA/DE/FR) */
 .ppphotocol { display: grid; gap: 8px; justify-items: center; align-self: center; }
 .ppquad { display: grid; gap: 2px; justify-items: center; font-size: 8px;
@@ -1951,9 +1982,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)); }
-/* machine zone tinting: data glows, chevron filler reads as the red thread */
-.ppmrz b { font-weight: 400; color: var(--sig); text-shadow: var(--glow); }
-.ppmrz i { font-style: normal; color: var(--red); opacity: 0.75; text-shadow: var(--glow-r); }
 @media (max-width: 760px) {
   .ppterrain { min-height: 170px; }
   .ppmrz { font-size: 13px; letter-spacing: 0.1em; }
@@ -2722,7 +2750,7 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
     var(--glass-sheen); }
 .ppdoc.lg .ppsec { background-color: color-mix(in srgb, var(--bg) 35%, transparent); }
 .ppdoc.lg .ppnation { background: transparent; }
-.ppdoc.lg .ppphoto { background: var(--paper); }
+.ppdoc.lg .ppphoto { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 @media (prefers-reduced-motion: reduce) { .ppdoc.lg::before { background: var(--glass-sheen); } }
 
 /* ==== THE UPLOAD STATION IN LIQUID GLASS (owner order, 9 Sep: "more
@@ -3327,7 +3355,7 @@ body { font-size: 14px; }
 /* fewer accent lines, thicker (owner: "less accent lines and the lines we do have make them thicker") */
 /* the document's two buttons */
 .ppdocacts { display: flex; gap: 10px; justify-content: flex-end; padding: 10px 14px 14px; position: relative; z-index: 3; }
-.ppbtn { font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; padding: 11px 18px; border-radius: 7px; cursor: pointer;
+.ppbtn { display: inline-flex; align-items: center; justify-content: center; font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; padding: 11px 18px; border-radius: var(--radius-key); cursor: pointer;
   border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); background: color-mix(in srgb, var(--bg) 78%, transparent); color: var(--ink);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform var(--dur-1) var(--ease-out), background var(--dur-2) var(--ease-out); }
 .ppbtn:hover { background: var(--bg); }
@@ -5067,8 +5095,21 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .ppphoto::after { background:
     linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
     repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--ink) 14%, transparent) 2px 3px); }
-.ppdoc .ppmrz { order: 99; border-top: 1px dashed var(--line); border-bottom: 0; padding: 8px 16px 10px; font-family: var(--mono); font-size: 14px; letter-spacing: 0.12em; color: var(--grey); line-height: 1.4; }
+/* the machine zone at the foot, under no rule: a darker well in the glass; the measure (lib/passport/document.js
+   MRZ_WIDTH, 52) must always fit — the lines encode the real account number and a clipped tail is a lie — so the
+   size follows the zone's own width (container units) down to a phone's */
+.ppdoc .ppmrz { order: 99; container-type: inline-size; padding: 9px 16px 11px; font-family: var(--mono); letter-spacing: 0.12em; color: var(--grey);
+  line-height: 1.45; background: color-mix(in srgb, var(--paper) 42%, transparent);
+  --mrz-em: 0.76; /* one character's advance in the mono face plus the letter-spacing, measured (0.746 at 0.12em) */ }
+.ppdoc .ppmrz .mrzline { font-size: min(14px, calc(100cqw / 52 / var(--mrz-em))); }
+@media (max-width: 760px) {
+  .ppdoc .ppmrz { letter-spacing: 0.05em; --mrz-em: 0.69; } /* the letters set closer on a phone, so the measure reads larger */
+  .ppdoc .ppnation { padding-right: 56px; } /* room for the 01 at the band's right */
+}
 .ppdoc .ppdocacts { margin-top: 0; }
+/* the document's keys: the lamp in each blinks when pressed (Blocks.jsx blinkLamp); the primary one, white on
+   the dark glass, carries the logo's white glow in dark */
+:root:not([data-theme="light"]) .ppbtn.primary { filter: var(--wm-glow); }
 
 /* =====================================================================
    THE SEPTEMBER GLASS ON THE FIXTURES (owner, 19 Oct 2026: "do this" —

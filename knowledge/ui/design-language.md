@@ -58,6 +58,22 @@
   (`--helv`) for reading. Share Tech Mono is retired.
 - **Rainbow Liquid Glass, restrained.** A one-pixel conic rim on the
   fixtures (`--iris`); reduced-transparency drops the blur.
+- **The Passport document in the Tron language** (owner, 31 Oct 2026:
+  "redesign the passport to mimic the new style of the app … a sleek tron
+  type of vibe … more [MRZ] … and chevrons"; CONSTITUTION A6 fifth
+  addendum; `docs/v2/slice-17-passport-tron-2026-10-31.md`): no hairline
+  on the document, the bands parted by tone; its name cut out of the
+  logo's white plate (`PassportPlate.jsx`, the wordmark's own mask, glow
+  and red asterisk); the machine zone at the foot four lines of the real
+  fields (`lib/passport/document.js` `mrzZone`) through `Blocks.jsx`
+  `MrzLine` — the data in the document's colour, the chevron filler
+  unlit, the block cursor at the end — the serial and the microprint set
+  the same way; the keys carry the device's lamps. Kept exactly, circled
+  by the owner: the serial `№ AS·00·08` and the four-language title block;
+  of the original, the registration pluses, the `01`, the photo's print
+  lines and the hologram window (`tests/passport-document.test.js`,
+  `tests/v2-device.test.js`). The section "Passport UV page" below is the
+  July record of the document this one grew from.
 - **Popups, sessions, the Disc, haptics:** `knowledge/ui/interaction.md`.
 - **What is gone** (and must stay gone — `tests/v2-shell.test.js`): the
   top header and its ticker, the destination row, the ORB HUB / MODULE

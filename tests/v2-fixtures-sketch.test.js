@@ -464,7 +464,11 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  // (31 Oct 2026, the Tron passport) the Passport's name plate is the logo's recipe — the plate white, its
+  // asterisk red — and its STAMP key glows white in dark as the fixtures' keys do
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)",
+    ".ppplatebar var(--wm-glow)", ".ppstarglow var(--wm-glow-r)", ':root:not([data-theme="light"]) .ppbtn.primary var(--wm-glow)'].sort(),
+  "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white; the Passport's plate white and its asterisk red, its STAMP key white in dark; nothing else");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter
