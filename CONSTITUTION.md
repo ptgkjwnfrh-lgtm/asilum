@@ -596,6 +596,32 @@ comment, stamp, share) float over it with no box, ground or scrim. The
 recommended motions likewise, VIDEOS YOU MAY LIKE in the head and the
 caption of whichever video sits in the centre, changing as it moves.
 
+**A6 fifth addendum — THE TRON PASSPORT (Oct 31, 2026).** The owner, after
+the Masthead, the logo and the deck took the sleek look of 28–30 Oct: "we
+have to redesign the passport to mimic the new style of the app, yk we're
+going for a sleek tron type of vibe now; i want more [MRZ] or whatever the
+little text on passports are, and chevrons." Rulings: (1) the PASSPORT
+document (/board, app/board/page.js) is redrawn in the app's own language —
+no hairline anywhere on it, the bands parted by tone, its name cut out of
+the logo's white plate (app/components/PassportPlate.jsx, as the wordmark
+is cut out of its brick), the asterisk the house red, the data page's
+keys with the device's lamps; (2) KEPT EXACTLY, the owner having circled
+them: the serial at the top right ("№ AS·00·08") and the four-language
+title block (PASSPORT / パスポート / REISEPASS / PASSEPORT); of the
+original document the registration pluses, the "01", the photo slot's
+print lines and the hologram window stay; (3) MORE MRZ: the machine zone
+at the foot is four lines (lib/passport/document.js mrzZone), every one a
+field the data page prints — type P, code ASM, the username, the account
+number, member-since, the class, BASED IN, the country of origin, the
+handle, the taste class and the counts — and the chevrons are its filler,
+as a real machine zone's are; the serial and the microprint are set as
+machine-readable lines too (app/components/Blocks.jsx MrzLine). The
+25 Oct word stands: chevrons never stand in for text (blocks do); here they
+are what a machine zone is filled with. This narrows the third addendum's
+(4) — "the og passport design should transfer over 90% accurately" — to
+the elements named in (2). The public Passport is untouched: what it
+reveals (the hidden-city ring, ADR-006) is not the page's chrome.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

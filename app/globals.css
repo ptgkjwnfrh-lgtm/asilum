@@ -1771,7 +1771,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppdoc { border: 0; border-radius: var(--radius-card); overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
 .ppsec { height: 30px; position: relative; display: flex; align-items: center; padding: 0 12px; }
 /* the serial again, for the machine, at the band's left */
-.ppsec .ppserial { position: relative; z-index: 2; font-size: 9px; letter-spacing: 0.14em; opacity: 0.8; }
+.ppsec .ppserial { position: relative; z-index: 2; font-size: 10px; letter-spacing: 0.14em; opacity: 0.85; }
 .ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--helv); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
 .ppid { display: grid; grid-template-columns: 0.9fr 0.9fr 1.6fr; gap: 9px 20px;
   margin: 0; padding: 12px 16px; flex: 1; align-content: center; }
@@ -1902,9 +1902,11 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    Registration crosses, plus-pattern ridge, topographic contours, microprint,
    and the constellation whose connected lines trace three asterisks (red =
    ASTERISK identity). Decoration only; every label is real state. ---- */
-/* the document keeps U.S. passport data-page proportions (125 × 88 mm) */
+/* the document keeps U.S. passport data-page proportions (125 × 88 mm) as a floor: a box held to the ratio with its
+   overflow hidden kept the ratio and CLIPPED the machine zone (31 Oct 2026: four lines where there were two), so
+   the ratio is a minimum height now and the hologram window (.ppterrain, flex: 1) takes the room */
 .ppdoc { position: relative; max-width: 980px; margin: 0 auto 18px; display: flex; flex-direction: column; }
-@media (min-width: 900px) { .ppdoc { aspect-ratio: 125 / 88; } }
+@media (min-width: 900px) { .ppdoc { min-height: calc(980px * 88 / 125); } }
 .ppdoc .ppbody, .ppdoc .ppmrz { position: relative; z-index: 2; }
 .ppuv { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
 .ppuvcross { position: absolute; top: 4px; left: 0; width: 100%; height: 60px; }
@@ -1955,14 +1957,13 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r), var(--glow-r); }
 .ppdoc .ppnation { display: flex; justify-content: center; padding: 4px 12px 8px; }
 .ppplate { display: block; width: min(100%, 520px); height: auto; overflow: visible; }
-.ppplate text { font-family: var(--mich); font-weight: 400; }
+.ppplate text { font-family: var(--mich); font-weight: 400; text-shadow: none; } /* the line's glow would be painted inside the holes (a shadow is drawn for a glyph whatever its fill) */
 .ppplane { fill: #fff; }      /* the mask's plane (luminance, not a colour): white keeps the plate */
 .ppcut { fill: #000; }        /* the letters cut out of it */
 .ppcutstar { fill: #fff; }    /* the asterisk is not cut: it is painted over the plate */
 .pptint { fill: var(--wm-cut-tint); }
 .pptintstar { fill: none; }
-.ppplatebar { fill: var(--wm-bar); }
-.ppplateglow { filter: var(--wm-glow); }
+.ppplatebar { fill: var(--wm-bar); filter: var(--wm-glow); } /* the glow on the plate itself: computed before the mask cuts the letters */
 .ppover { fill: none; }
 .ppplatestar { fill: var(--wm-star); }
 .ppstarglow { filter: var(--wm-glow-r); }
@@ -5098,8 +5099,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    MRZ_WIDTH, 52) must always fit — the lines encode the real account number and a clipped tail is a lie — so the
    size follows the zone's own width (container units) down to a phone's */
 .ppdoc .ppmrz { order: 99; container-type: inline-size; padding: 9px 16px 11px; font-family: var(--mono); letter-spacing: 0.12em; color: var(--grey);
-  line-height: 1.45; background: color-mix(in srgb, var(--paper) 42%, transparent); }
-.ppdoc .ppmrz .mrzline { font-size: min(14px, calc((100cqw - 32px) / 52 / 0.72)); }
+  line-height: 1.45; background: color-mix(in srgb, var(--paper) 42%, transparent);
+  --mrz-em: 0.76; /* one character's advance in the mono face plus the letter-spacing, measured (0.746 at 0.12em) */ }
+.ppdoc .ppmrz .mrzline { font-size: min(14px, calc(100cqw / 52 / var(--mrz-em))); }
+@media (max-width: 760px) {
+  .ppdoc .ppmrz { letter-spacing: 0.05em; --mrz-em: 0.69; } /* the letters set closer on a phone, so the measure reads larger */
+  .ppdoc .ppnation { padding-right: 56px; } /* room for the 01 at the band's right */
+}
 .ppdoc .ppdocacts { margin-top: 0; }
 /* the document's keys: the lamp in each blinks when pressed (Blocks.jsx blinkLamp); the primary one, white on
    the dark glass, carries the logo's white glow in dark */

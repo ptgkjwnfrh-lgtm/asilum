@@ -121,11 +121,12 @@ test("the passport in the Tron language (owner, 31 Oct 2026): the original's plu
   assert.match(plate, /<mask id=\{cut\}/);
   assert.match(plate, /<rect className="ppplatebar" width=\{W\} height=\{H\} rx="9" mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask: the letters are holes");
   assert.match(plate, /ASILUM <tspan className=\{star\}>\*<\/tspan> FASHION PASSPORT/, "no magazine");
+  assert.match(rules, /\.ppplate text \{ font-family: var\(--mich\); font-weight: 400; text-shadow: none; \}/, "no glow painted inside the holes");
   assert.match(rules, /\.ppcut \{ fill: #000; \}/, "the letters cut");
   assert.match(rules, /\.ppcutstar \{ fill: #fff; \}/, "the asterisk not cut");
-  assert.match(rules, /\.ppplatebar \{ fill: var\(--wm-bar\); \}/, "the logo's plate");
   assert.match(rules, /\.ppplatestar \{ fill: var\(--wm-star\); \}/, "the logo's asterisk");
-  assert.match(rules, /\.ppplateglow \{ filter: var\(--wm-glow\); \}/, "the logo's glow");
+  assert.match(rules, /\.ppplatebar \{ fill: var\(--wm-bar\); filter: var\(--wm-glow\); \}/, "the logo's glow, on the plate itself (filter before mask: the letters stay holes)");
+  assert.match(plate, /<mask id=\{cut\} maskUnits="userSpaceOnUse" x=\{-SPREAD\} y=\{-SPREAD\} width=\{W \+ 2 \* SPREAD\} height=\{H \+ 2 \* SPREAD\}>/, "the mask's plane reaches past the plate for the glow");
   assert.match(rules, /\[data-theme="light"\] \.ppdoc \{ --sig: #0b7584; \}/, "the document's own teal");
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.ppdoc \{ --sig: #f4f9fc; \}/, "white in dark (no green since 29 Oct)");
   assert.match(rules, /\.pv-r \{ stroke: var\(--red\); opacity: 0\.75; \}/, "the pluses keep their tones");
@@ -146,5 +147,7 @@ test("the passport in the Tron language (owner, 31 Oct 2026): the original's plu
   assert.match(rules, /\.mrzline i \{ font-style: normal; color: var\(--red\); opacity: 0\.6; \}/);
   assert.match(rules, /@media \(prefers-reduced-motion: reduce\) \{ \.mrzcursor \{ animation: none; \} \}/);
   assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*container-type: inline-size;/s, "the zone measures itself");
-  assert.match(rules, /\.ppdoc \.ppmrz \.mrzline \{ font-size: min\(14px, calc\(\(100cqw - 32px\) \/ 52 \/ 0\.72\)\); \}/, "52 characters always fit the zone");
+  assert.match(rules, /\.ppdoc \.ppmrz \.mrzline \{ font-size: min\(14px, calc\(100cqw \/ 52 \/ var\(--mrz-em\)\)\); \}/, "52 characters always fit the zone");
+  assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*--mrz-em: 0\.76;/s, "a character's measure at the desktop spacing");
+  assert.match(rules, /\.ppdoc \.ppmrz \{ letter-spacing: 0\.05em; --mrz-em: 0\.69; \}/, "closer on a phone");
 });
