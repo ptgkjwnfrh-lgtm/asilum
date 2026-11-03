@@ -30,6 +30,7 @@ import { tasteClass } from "../../lib/brain/taste-class.js";
 import { convictionsOf, mrzZone, passportLanguage } from "../../lib/passport/document.js";
 import { Lamp, blinkLamp } from "../components/Blocks.jsx";
 import PassportDocument from "../components/PassportDocument.jsx";
+import PassportSpin from "../components/PassportSpin.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
@@ -73,6 +74,19 @@ export default function BoardPage() {
   const warpRef = useRef(null);
   const ppRef = useRef(null);
   const ppGlass = useLiquidGlass(ppRef, { id: "lg-passport", strength: 0.5, bend: ".ppwash-under" });
+  // THE PASSPORT, LIFTED AND SPUN (owner, 3 Nov 2026: "click on their passport and have it isolate it in space and
+  // spin it"): a tap on the page itself — not on a key, a field, the photo slot or the signature pad — lifts it
+  const [spin, setSpin] = useState(false);
+  function liftPassport(e) {
+    if (e.target.closest("button, input, label, a, textarea, .ppsigpad")) return;
+    setSpin(true);
+  }
+  // the page is focusable too, so the keyboard lifts it with Enter or Space ON THE PAGE ITSELF (a key pressed in a
+  // field inside it is the field's); the LIFT & SPIN key below says so in words
+  function liftByKey(e) {
+    if (e.target !== e.currentTarget) return;
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSpin(true); }
+  }
   const parisMap = useParisRoads();
   // THE READER'S OWN STREETS (V.2 round two): the document's map is the
   // area around the confirmed base city — first suggested from the
@@ -346,7 +360,7 @@ export default function BoardPage() {
 
       {!shared && (
         <>
-          <div className="ppdoc lg" ref={ppRef} aria-label="passport document" lang="en">
+          <div className="ppdoc lg" ref={ppRef} aria-label="passport document — Enter lifts it to spin" lang="en" tabIndex={0} onClick={liftPassport} onKeyDown={liftByKey}>
             {ppGlass}
             {/* THE TASTE PASSPORT (the owner's mock-up, 2 Nov 2026, traced: PassportDocument.jsx) over the map
                 (PassportSecurity.jsx), in the Liquid Glass pane */}
@@ -357,11 +371,13 @@ export default function BoardPage() {
           <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
           {/* the document's keys, under the page (the mock-up's page carries none) */}
           <div className="ppdocacts">
+            <button className="txtbtn ppspinkey" onClick={() => setSpin(true)}>LIFT &amp; SPIN →</button>
             <button className="ppbtn" onClick={(e) => { blinkLamp(e, { quiet: true }); switchTab("places"); }}><Lamp />OPEN MAP</button>
             <button className="ppbtn primary" onClick={(e) => { blinkLamp(e); warpToUpload(); }}><Lamp />STAMP PASSPORT</button>
           </div>
         </>
       )}
+      {spin && !shared && <PassportSpin uid={uid} info={pinfo} taste={taste} lang={lang} mrz={mrz} photo={ppPhoto} map={docMap} onClose={() => setSpin(false)} />}
       {geoNote && !shared && <p className="ppgeonote">{geoNote} <button className="txtbtn" onClick={() => { setGeoNote(""); switchTab("places"); }}>CHANGE →</button></p>}
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}

@@ -86,8 +86,16 @@
   are the mock-up's — OCR A Extended (`--ocr`, the Os zeros) for the serial,
   the number, the four words under the photo and the zone, a serif numero
   (`--numero`), Michroma for the rest (`tests/passport-document.test.js`,
-  `tests/v2-device.test.js`). The section "Passport UV page" below is the
-  July record of the document this one grew from.
+  `tests/v2-device.test.js`). A tap on the page LIFTS it (3 Nov 2026,
+  `PassportSpin.jsx`, `lib/passport/turn.js`): the page behind the floating
+  piece's fog, the passport a card in 3D in the middle — the page read-only
+  in front, on the back the small outlined asterisk in the logo's white over
+  ASILUM TASTE PASSPORT, black in dark, the feed's ground in light — turning
+  once on its own (hold, slow, one fast turn, settle, three red blinks and a
+  held glow, return) and then under the hand; still under reduced motion;
+  Escape, the fog, × put it back (`tests/passport-spin.test.js`). The
+  section "Passport UV page" below is the July record of the document this
+  one grew from.
 - **Popups, sessions, the Disc, haptics:** `knowledge/ui/interaction.md`.
 - **What is gone** (and must stay gone — `tests/v2-shell.test.js`): the
   top header and its ticker, the destination row, the ORB HUB / MODULE

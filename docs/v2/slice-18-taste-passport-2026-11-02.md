@@ -108,6 +108,26 @@ masthead" — the name's baseline sits on the masthead's deep foot (φ²),
 measured off Michroma's box (0.93 of the size), where it was centred in the
 notch.
 
+Then the turntable. The owner asked for a film of the passport as a model —
+held, spun slowly, whipped round once, settled on its back, blinked, turned
+back, and again into light mode — and, seeing it: "put that feature into
+main, I want a user to click on their passport and have it isolate it in
+space and spin it." THE PASSPORT, LIFTED AND SPUN (`PassportSpin.jsx`,
+`lib/passport/turn.js`): a tap on the page on /board (never on a key, a
+field, the photo slot or the signature pad; a quiet LIFT & SPIN key for the
+keyboard) lifts it over the floating piece's fog as a card with two faces —
+the page the board prints, read-only, in front; on the back the small
+outlined asterisk in the logo's white over ASILUM TASTE PASSPORT, black in
+dark ("the back of the dark mode has to be black"), the feed's own ground in
+light. The turn is the film's: the front held, a slow spin winding into one
+fast full turn, settling onto the back, where the asterisk blinks red three
+times (inside one second, never more) and holds one glow, then round to the
+front; after that a gentle sway, and the hand turns it with a little
+inertia. Escape, the fog, × put it back; focus is kept inside and given
+back. Reduced motion lifts the card and holds it still. The film's other
+asks — the owner's own number 000001, IDNTY, taste, photo treatments — were
+the film's, not the page's.
+
 ## What landed
 
 | Need | Where | Status |
@@ -122,6 +142,7 @@ notch.
 | The bar code is THE LOGO'S BRICK MIRRORED: its line running in from the left, rising at the logo's slant (the shoulder's run and bends, `brickGeometry`/`brickPath`) into the block, 8 hundredths deep; the plate the masthead band's own, its 22% white in its glow (3 Nov, "match the masthead"; `--pp-cloud`, `--pp-glow`), the bars CUT OUT of it as the word is cut out of the logo (one mask) and through the slits the Liquid Glass alone — no tint, no ink; the bars read off the passport number — not a symbology, nothing reads it | `lib/passport/barcode.js`, `app/components/PassportBarcode.jsx`, `app/globals.css` (`.ppbarcode`, `.ppbarplate`, `.ppbarhole`) | shipped |
 | The machine zone: TWO lines of the 52 measure, EVEN — every character a flex item spread over the zone's width, so both lines end on one edge whatever they say — IDNTY, the taste type, the date of issue, the passport number; the nationality, the surname and the given name, the account number's first nine, the date of birth; OCR A, one colour (the filler dimmer), unclouded | `lib/passport/document.js` (`mrzZone`, `mrzDate`), `app/components/Blocks.jsx` (`MrzLine` wraps each character), `app/globals.css` (`.ppmrz`) | shipped |
 | The map under everything, one layer at 9% opacity, unlit — nothing else of the old artwork: the registration pluses, the page number, the hot window, the summit marker, the microprint band and the credit line are gone (the site credits OpenStreetMap on the map page and the street map, where the data is read in full) | `app/components/PassportSecurity.jsx`, `app/globals.css` (`.ppholo-a`) | shipped |
+| THE PASSPORT, LIFTED AND SPUN: a tap on the page lifts it over the fog as a card in 3D — the page read-only in front, the back black (dark) or the feed's ground (light) with the small outlined asterisk over the one line; the turn (hold, slow, one fast turn, settle, three red blinks and a held glow, return), then a sway and the hand; Escape, the fog, × put it back; still under reduced motion | `app/components/PassportSpin.jsx`, `lib/passport/turn.js`, `app/board/page.js` (`liftPassport`, `.ppspinkey`), `app/globals.css` (`.ppspin*`) | shipped |
 | The preview on /profile IS the page (`PassportDocument.jsx`, read-only) at the rail's width | `app/components/PassportPreview.jsx`, `app/globals.css` (`.ppmini`) | shipped |
 | Pinned: the serial and the number, the language draw, the name split, the zone's two even lines and its real fields, the signature's contract, the bar code's geometry, the cloud's rules, the name's set, no literal colour | `tests/passport-document.test.js`, `tests/v2-device.test.js`, `tests/v2-fixtures-sketch.test.js` | pinned |
 | Gone: the name plate and its red asterisk, the `№ AS·00·08` serial of boards and convictions, the four-line zone and the TD3 pair, the hologram window, the microprint, the registration pluses and the `01`, the old band and body (`.ppsec`, `.ppnation`, `.ppplate*`, `.ppterrain`, `.ppsummit`, `.ppholo-b`, `.ppmicro`, `.ppuv*`, `.pvplus`, `.ppbody`, `.pplower`), the ticket count the zone no longer encodes, the cloud over the zone, the mono face on the document | — | deleted |

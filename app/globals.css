@@ -1899,6 +1899,35 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppmrz .mrzline { display: flex; justify-content: space-between; font-family: var(--ocr); font-size: var(--pmz); line-height: calc(var(--pmz) * 1.272); letter-spacing: 0; }
 .ppmrz .mrzline :is(b, i) { display: contents; }
 .ppmrz .mrzline i { color: var(--sig); opacity: 0.5; } /* the zone one colour, as the mock-up prints it, the filler dimmer */
+/* ---- THE PASSPORT, LIFTED AND SPUN (PassportSpin.jsx; owner, 3 Nov 2026: "click on their passport and have it
+   isolate it in space and spin it"). The page behind the fog of the floating piece; the card in the middle, two
+   faces on one box: the data page in front, the back black in dark (owner: "the back of the dark mode has to be
+   black") and the feed's own ground in light, carrying the small outlined asterisk in the logo's white over
+   ASILUM TASTE PASSPORT, glowing; the asterisk red on the blink. Sized to the screen's shorter way. ---- */
+.ppdoc.lg { cursor: zoom-in; }                                  /* the page itself lifts on a tap */
+.ppdoc.lg :is(button, input, label, a, .ppsigpad) { cursor: pointer; }
+.ppspinkey { margin-right: auto; font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); align-self: center; }
+.ppspin { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: floatfade var(--dur-3) var(--ease-out); }
+.ppspinfog { position: absolute; inset: 0; border: 0; padding: 0; cursor: zoom-out; background: var(--fog); -webkit-backdrop-filter: blur(9px) saturate(120%); backdrop-filter: blur(9px) saturate(120%); }
+.ppspinclose { color: var(--ink); }
+.ppspinstage { position: relative; perspective: 2600px; perspective-origin: 50% 46%; animation: floatin var(--dur-4) var(--ease-out); }
+.ppspincard { position: relative; width: min(84vw, 420px, calc(76vh / 1.482)); aspect-ratio: 100 / 148.2; transform-style: preserve-3d; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ppspincard:active { cursor: grabbing; }
+.ppspinface { position: absolute; inset: 0; border-radius: var(--pg-1); overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: 0 40px 90px color-mix(in srgb, var(--shade) 45%, transparent); }
+.ppspinfront { transform: translateZ(2px); }
+.ppspindoc { margin: 0; max-width: none; background: var(--bg); }  /* the page the board prints, on its own ground, opaque */
+.ppspindoc .ppwrite { pointer-events: none; }
+.ppspinback { transform: rotateY(180deg) translateZ(2px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4cqw;
+  background: var(--bg); color: var(--wm-bar); container-type: inline-size; }
+[data-theme="light"] .ppspinback { background: linear-gradient(180deg, color-mix(in srgb, var(--ink) 18%, var(--bg)), color-mix(in srgb, var(--ink) 6%, var(--bg)) 52%, color-mix(in srgb, var(--ink) 13%, var(--bg))); } /* the feed's grey-blue in light: the ink into the ground (not the page tint — the passport page's is the house red; and the page's own --bg-grad is cut for a whole screen and bands in a card) */
+.ppspinast { font-family: var(--helv); font-weight: 700; font-size: 36cqw; line-height: 0.72; height: 18cqw; color: transparent; -webkit-text-stroke: 0.6cqw var(--wm-bar);
+  filter: drop-shadow(0 0 0.5cqw var(--wm-bar)) drop-shadow(0 0 calc(1.7cqw * (1 + var(--swell, 0) * 1.6)) var(--wm-bar)) drop-shadow(0 0 calc(4.4cqw * (1 + var(--swell, 0) * 1.6)) color-mix(in srgb, var(--wm-bar) 70%, transparent)); }
+.ppspinast.red { -webkit-text-stroke-color: var(--warn); filter: drop-shadow(0 0 0.5cqw var(--warn)) drop-shadow(0 0 1.7cqw var(--warn)) drop-shadow(0 0 4.4cqw color-mix(in srgb, var(--warn) 70%, transparent)); }
+.ppspinword { font-family: var(--mich); font-size: 4.9cqw; letter-spacing: -0.06em; -webkit-text-stroke: 0.02em currentColor; white-space: nowrap;
+  text-shadow: 0 0 1px var(--ink), 0 0 0.5cqw var(--wm-bar), 0 0 1.7cqw var(--wm-bar), 0 0 4cqw color-mix(in srgb, var(--wm-bar) 80%, transparent); }
+.ppspinhint { position: relative; margin: 22px 0 0; font-family: var(--mich); font-size: 10px; letter-spacing: 0.16em; color: var(--grey); text-align: center; }
+@media (prefers-reduced-motion: reduce) { .ppspin, .ppspinstage { animation: none; } }
 /* THE DEVICE'S MACHINE-READABLE LINE (Blocks.jsx MrzLine): one line, never wrapped; the data in the document's
    colour, glowing in dark as a word does; the "<" filler the red thread, unlit (filler is not a word); the block
    cursor blinks at the end — and holds still under reduced motion */
