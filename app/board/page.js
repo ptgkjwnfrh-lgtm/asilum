@@ -25,11 +25,12 @@ import { vizState } from "../../lib/brain/memory.js";
 import PassportSecurity from "../components/PassportSecurity.jsx";
 import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads, useRoads } from "../components/ParisMap.jsx";
-import { getProfileInfo } from "../../lib/social.js";
+import { getProfileInfo, saveProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { convictionsOf, mrzZone, sinceDisplay as formatSince } from "../../lib/passport/document.js";
+import { convictionsOf, mrzZone, nameParts, passportLanguage, passportNumberDisplay, serialLine, sinceDisplay as formatSince, SERIAL_WIDTH } from "../../lib/passport/document.js";
 import { Lamp, MrzLine, blinkLamp } from "../components/Blocks.jsx";
-import PassportPlate from "../components/PassportPlate.jsx";
+import PassportSignature from "../components/PassportSignature.jsx";
+import PassportBarcode from "../components/PassportBarcode.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
@@ -39,7 +40,7 @@ import Studio from "../components/Studio.jsx";
 import ModelTag from "../components/ModelTag.jsx";
 import { listSaves, unsave, saveCounts } from "../../lib/save.js";
 import AddStamp from "../components/AddStamp.jsx";
-import { getLocation, basedInLine, setLocation } from "../../lib/location.js";
+import { getLocation, setLocation } from "../../lib/location.js";
 
 const TABS = [
   { id: "collection", label: "COLLECTION" },
@@ -63,8 +64,7 @@ export default function BoardPage() {
   const fileRef = useRef(null);
   const photoRef = useRef(null);
   const [ppPhoto, setPpPhoto] = useState(null);
-  const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "" });
-  const [ticketCount, setTicketCount] = useState(0);
+  const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "", idnty: "", dob: "" });
   const [tab, setTab] = useState("collection");
   const [saves, setSaves] = useState([]);
   const [saveFilter, setSaveFilter] = useState("all");
@@ -143,7 +143,7 @@ export default function BoardPage() {
       }
       const locale = navigator.language || "";
       const region = (locale.split("-")[1] || "").toUpperCase();
-      setPinfo({ name: info.name, handle: info.handle, since, origin: region || "—", area: new Date().getTimezoneOffset() });
+      setPinfo({ name: info.name, handle: info.handle, since, origin: region || "—", area: new Date().getTimezoneOffset(), idnty: info.idnty || "", dob: info.dob || "" });
     } catch {}
     try {
       const t = new URLSearchParams(window.location.search).get("tab");
@@ -154,10 +154,6 @@ export default function BoardPage() {
     syncSaves(); syncLoc();
     window.addEventListener("asilum:save", syncSaves);
     window.addEventListener("asilum:location", syncLoc);
-    authorizedFetch("/api/tickets?user=" + encodeURIComponent(getUid() || ""))
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d) setTicketCount(Array.isArray(d.tickets) ? d.tickets.length : 0); })
-      .catch(() => {});
     authorizedFetch("/api/editorial?mine=1&limit=1&user=" + encodeURIComponent(getUid() || ""))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { if (d && Array.isArray(d.posts)) setHasTransmission(d.posts.length > 0); })
@@ -316,17 +312,26 @@ export default function BoardPage() {
     e.target.value = "";
   }
 
+  // THE PASSENGER'S OWN WORDS ON THE DOCUMENT: IDNTY (owner, 2 Nov 2026:
+  // "replace SEX/ with IDNTY/ so people can feel free to type in whatever
+  // they want") and DATE OF BIRTH are typed on the page and kept with the
+  // display name (lib/social.js, a preference on this device) — the birth
+  // date an account asserted at signup is never served to the shell
+  // (app/api/account/age/route.js), so the document prints only what the
+  // passenger writes on it.
+  function writeField(k, v) {
+    setPinfo((p) => ({ ...p, [k]: v }));
+    try { saveProfileInfo({ ...getProfileInfo(), [k]: v }); } catch {}
+  }
+
   const sinceDisplay = formatSince(pinfo.since);
   const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
   const counts = saveCounts();
-  const basedIn = loc ? basedInLine(loc, "me") : null;
   // the data page's fields, once, for the page and the machine zone alike
-  const klass = uid && uid.startsWith("sb-") ? "AUTHENTICATED ACCOUNT" : "DEVICE IDENT";
-  const baseCity = loc && loc.baseCity ? loc.baseCity.name : "";
   const taste = tasteClass(convictions());
-  const savedCount = pinCount + (counts.total - counts.piece);
-  const mrz = mrzZone({ uid, name: pinfo.name, handle: pinfo.handle, since: pinfo.since, klass, basedIn: baseCity, origin: pinfo.origin,
-    taste, pinCount, ticketCount, areaCode: pinfo.area || 0, savedCount, convictionCount: convictions().length });
+  const { surname, given } = nameParts(pinfo.name);
+  const lang = passportLanguage(uid);
+  const mrz = mrzZone({ uid, name: pinfo.name, dob: pinfo.dob, nationality: pinfo.origin, idnty: pinfo.idnty, taste, since: pinfo.since });
   const otherSaves = saves.filter((s) => s.kind !== "piece" && (saveFilter === "all" || s.kind === saveFilter));
   const showPieces = saveFilter === "all" || saveFilter === "piece";
   const stamps = [
@@ -343,48 +348,56 @@ export default function BoardPage() {
       </header>
 
       {!shared && (
-        <div className="ppdoc lg" ref={ppRef} aria-label="passport document">
+        <div className="ppdoc lg" ref={ppRef} aria-label="passport document" lang="en">
           {ppGlass}
-          {/* THE TRON PASSPORT (owner, 31 Oct 2026: "mimic the new style of the app … a sleek tron type of vibe …
-              more [MRZ] … and chevrons"). Kept as the owner circled them: the serial at the top right and the
-              four-language title block. The band carries the serial as a machine-readable line too. */}
-          <div className="ppsec">
-            <MrzLine className="ppserial" words={["AS", String(boards.length).padStart(2, "0"), String(convictions().length).padStart(2, "0")]} width={16} />
-            <span className="ppnum">№ AS·{String(boards.length).padStart(2, "0")}·{String(convictions().length).padStart(2, "0")}</span>
-          </div>
-          <PassportPlate />
+          {/* THE TASTE PASSPORT (the owner's mock-up, 2 Nov 2026): the clouded masthead — the serial at the left
+              (the month and day the account was created, as a machine line) and the passport number at the
+              right, both in the document's colour, lower in opacity, glowing a little UNDER the cloud; the name
+              in the logo's set, big and bold; the data page; the signature and the account number beside the
+              ghost of the photo; the bar code cut out of the glass; the machine zone, clouded the same way. */}
+          <PassportSecurity map={docMap} />
+          <header className="ppmast">
+            <MrzLine className="ppserial" text={serialLine(pinfo.since)} width={SERIAL_WIDTH} />
+            <span className="ppnum">№ {passportNumberDisplay(uid)}</span>
+            <span className="ppcloud" aria-hidden="true" />
+          </header>
+          <h2 className="pptitle">ASILUM TASTE PASSPORT</h2>
           <div className="ppbody">
             <div className="ppphotocol">
-              <span className="ppquad"><b>PASSPORT</b><span>パスポート</span><span>REISEPASS</span><span>PASSEPORT</span></span>
               <button className="ppphoto" title="add a bearer photo (stays on this device)" onClick={() => photoRef.current && photoRef.current.click()}>
                 {ppPhoto ? <img src={ppPhoto} alt="bearer" /> : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
               </button>
+              {/* the document's word for itself, in English and in the passport's drawn language */}
+              <span className="ppquad" lang={lang.code}><b lang="en">PASSPORT</b><span dir={lang.dir}>{lang.passport}</span></span>
             </div>
             <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
-            <dl className="ppid">
-              <div><dt>TYPE<em>/ Type</em></dt><dd>P</dd></div>
-              <div><dt>CODE<em>/ Code</em></dt><dd>ASM</dd></div>
-              <div><dt>ACCOUNT NO<em>/ № de compte</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
-              <div className="sp3"><dt>USERNAME<em>/ Nom</em></dt><dd>{(pinfo.name || "UNNAMED READER").toUpperCase()} <span className="ppmono">{pinfo.handle}</span></dd></div>
-              <div className="sp3"><dt>CLASS<em>/ Classe</em></dt><dd>{klass}</dd></div>
-              <div><dt>MEMBER SINCE<em>/ Membre depuis</em></dt><dd>{sinceDisplay}</dd></div>
-              <div><dt>BASED IN<em>/ Basé à</em></dt><dd>{baseCity || "—"}{baseCity && !basedIn ? <span className="ppmono"> PRIVATE</span> : null}</dd></div>
-              <div><dt>COUNTRY OF ORIGIN<em>/ Pays</em></dt><dd>{pinfo.origin}</dd></div>
-              <div><dt>TASTE CLASS<em>/ Classe de goût</em></dt><dd><span className="ppstar">*</span> {taste}</dd></div>
-              <div className="sp2"><dt>AUTHORITY<em>/ Autorité</em></dt><dd><span className="ppstar">*</span>ASTERISK — PERSONALIZED FASHION TERMINAL</dd></div>
-              <div><dt>SAVED</dt><dd>{savedCount}</dd></div>
-              <div className="sp2"><dt>CONVICTIONS</dt><dd>{convictions().length} ACTIVE</dd></div>
+            <dl className="ppid" data-lang={lang.code}>
+              <div><dt>SURNAME /<em lang={lang.code} dir={lang.dir}>{lang.surname}</em></dt><dd>{surname.toUpperCase() || "—"}</dd></div>
+              <div><dt>GIVEN NAME /<em lang={lang.code} dir={lang.dir}>{lang.given}</em></dt><dd>{given.toUpperCase() || "—"}</dd></div>
+              <div><dt><label htmlFor="ppdob">DATE OF BIRTH /<em lang={lang.code} dir={lang.dir}>{lang.dob}</em></label></dt>
+                <dd><input id="ppdob" className="ppwrite" type="date" value={pinfo.dob || ""} onChange={(e) => writeField("dob", e.target.value)} aria-label="date of birth, as you write it here (stays on this device)" /></dd></div>
+              <div><dt>NATIONALITY /<em lang={lang.code} dir={lang.dir}>{lang.nationality}</em></dt><dd>{pinfo.origin}</dd></div>
+              <div><dt><label htmlFor="ppidnty">IDNTY /<em lang={lang.code} dir={lang.dir}>{lang.idnty}</em></label></dt>
+                <dd><input id="ppidnty" className="ppwrite" type="text" maxLength={32} placeholder="—" value={pinfo.idnty || ""} onChange={(e) => writeField("idnty", e.target.value)} aria-label="IDNTY — whatever you want it to say (stays on this device)" /></dd></div>
+              <div><dt>TASTE TYPE /<em lang={lang.code} dir={lang.dir}>{lang.taste}</em></dt><dd><span className="ppstar">*</span> {taste}</dd></div>
+              <div><dt>DATE OF ISSUE /<em lang={lang.code} dir={lang.dir}>{lang.issue}</em></dt><dd>{sinceDisplay}</dd></div>
             </dl>
           </div>
-          {/* THE OG DOCUMENT (owner, 18 Oct 2026: "the og passport design should
-              transfer over 90% accurately" — iteration 5, 25 Jul, 7db2b89): the
-              data page, then the hologram window, the microprint, and the
-              machine zone at the FOOT of the document */}
-          <PassportSecurity topTag={convictions()[0]?.[0]} topWeight={convictions()[0]?.[1] || 0} map={docMap} />
-          {/* the machine zone at the foot: four lines, every one a field the data page prints (lib/passport/document.js
-              mrzZone), the chevrons the filler, the device's cursor at the end */}
+          <div className="pplower">
+            <dl className="ppsigblock">
+              <PassportSignature name={pinfo.name} label="PASSENGER SIGNATURE" translation={lang.signature} dir={lang.dir} />
+              <div className="ppacct"><dt>ACCOUNT NO /<em lang={lang.code} dir={lang.dir}>{lang.account}</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
+            </dl>
+            {/* the ghost: the photo again, small, as a negative — a driver's licence's second portrait */}
+            <span className="ppghost" aria-hidden="true">{ppPhoto ? <img src={ppPhoto} alt="" /> : null}</span>
+          </div>
+          <PassportBarcode uid={uid} />
+          {/* the machine zone at the foot: two lines of the measure, every one a field the data page prints
+              (lib/passport/document.js mrzZone), the chevrons the filler, the device's cursor at the end; clouded
+              as the masthead is */}
           <div className="ppmrz">
             {mrz.map((line, i) => <MrzLine key={i} text={line} cursor={i === mrz.length - 1} />)}
+            <span className="ppcloud" aria-hidden="true" />
           </div>
           <div className="ppdocacts">
             <button className="ppbtn" onClick={(e) => { blinkLamp(e, { quiet: true }); switchTab("places"); }}><Lamp />OPEN MAP</button>

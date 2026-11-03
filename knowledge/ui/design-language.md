@@ -58,22 +58,30 @@
   (`--helv`) for reading. Share Tech Mono is retired.
 - **Rainbow Liquid Glass, restrained.** A one-pixel conic rim on the
   fixtures (`--iris`); reduced-transparency drops the blur.
-- **The Passport document in the Tron language** (owner, 31 Oct 2026:
-  "redesign the passport to mimic the new style of the app … a sleek tron
-  type of vibe … more [MRZ] … and chevrons"; CONSTITUTION A6 fifth
-  addendum; `docs/v2/slice-17-passport-tron-2026-10-31.md`): no hairline
-  on the document, the bands parted by tone; its name cut out of the
-  logo's white plate (`PassportPlate.jsx`, the wordmark's own mask, glow
-  and red asterisk); the machine zone at the foot four lines of the real
-  fields (`lib/passport/document.js` `mrzZone`) through `Blocks.jsx`
-  `MrzLine` — the data in the document's colour, the chevron filler
-  unlit, the block cursor at the end — the serial and the microprint set
-  the same way; the keys carry the device's lamps. Kept exactly, circled
-  by the owner: the serial `№ AS·00·08` and the four-language title block;
-  of the original, the registration pluses, the `01`, the photo's print
-  lines and the hologram window (`tests/passport-document.test.js`,
-  `tests/v2-device.test.js`). The section "Passport UV page" below is the
-  July record of the document this one grew from.
+- **The Passport document — the Taste Passport** (the owner's mock-up,
+  2 Nov 2026, `docs/v2/mocks/2026-11-02-taste-passport/`; CONSTITUTION A6
+  sixth addendum; `docs/v2/slice-18-taste-passport-2026-11-02.md`; before it
+  the Tron passport of 31 Oct, `slice-17`): a portrait document, no hairline
+  on it; the CLOUDED MASTHEAD (`.ppmast`, `.ppcloud` — the fixtures' frost
+  over the band's words) with the serial `AS<<<MM<<DD` (the account's month
+  and day) at the left and the passport number `№ OASM·000·000` (six digits
+  read off the account number) at the right, both the document's colour at
+  a lower opacity, glowing a little, under the cloud; the name
+  `ASILUM TASTE PASSPORT` as type in the logo's set (−0.096em, a stroke for
+  the bold, the ink unlit) in the band's notch; the data page — SURNAME,
+  GIVEN NAME, DATE OF BIRTH, NATIONALITY, IDNTY (free text), TASTE TYPE,
+  DATE OF ISSUE — every label `ENGLISH /` then the passport's ONE drawn
+  language (French, German, Spanish, Japanese or Arabic,
+  `lib/passport/document.js` `passportLanguage`); PASSENGER SIGNATURE the
+  username or the passenger's own stroke (`PassportSignature.jsx`); the
+  photo's ghost, a negative; the bar code cut in the document's ink
+  (`PassportBarcode.jsx`, the logo's white glow in dark); the machine zone
+  two even lines of the real fields (`mrzZone`) through `Blocks.jsx`
+  `MrzLine`, clouded the same way; the map under everything at 9%. Kept of
+  the original: the registration pluses, the `01`, the photo's print lines
+  (`tests/passport-document.test.js`, `tests/v2-device.test.js`). The
+  section "Passport UV page" below is the July record of the document this
+  one grew from.
 - **Popups, sessions, the Disc, haptics:** `knowledge/ui/interaction.md`.
 - **What is gone** (and must stay gone — `tests/v2-shell.test.js`): the
   top header and its ticker, the destination row, the ORB HUB / MODULE

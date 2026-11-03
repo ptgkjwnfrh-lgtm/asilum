@@ -1743,11 +1743,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   font-size: 8.5px; letter-spacing: 0.2em; color: var(--red); text-shadow: var(--glow-r); }
 
 /* ---- Passport: bearer photo + analysis bus + conviction glow ---- */
-.ppbody { display: flex; gap: 26px; padding: 16px 22px; align-items: center;
-  background: color-mix(in srgb, var(--bg3) 42%, transparent); }
-.ppbody .ppid { padding: 0; }
-.ppphoto { width: 148px; height: 186px; flex: none; border: 0; border-radius: var(--radius-field);
-  background: var(--bg3); cursor: pointer; position: relative; overflow: hidden; padding: 0; }
+.ppbody { display: grid; grid-template-columns: minmax(150px, 46%) 1fr; gap: 20px; padding: 14px 18px 8px; align-items: start; }
+.ppphoto { width: 100%; aspect-ratio: 3 / 4; flex: none; border: 0; border-radius: var(--radius-field);
+  background: var(--bg3); cursor: pointer; position: relative; overflow: hidden; padding: 0; display: block; }
 .ppphoto img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.7) contrast(1.05); }
 .ppphotoempty { display: grid; place-items: center; gap: 6px; height: 100%; color: var(--sig); text-shadow: var(--glow); font-size: 26px; }
 .ppphotoempty em { font-style: normal; font-size: 7.5px; letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
@@ -1761,33 +1759,69 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .pavimg { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .pavatar { overflow: hidden; }
 
-/* ---- Phase 2: PASSPORT dossier — THE TRON PASSPORT since 31 Oct 2026 (owner: "mimic the new style of the app …
-   a sleek tron type of vibe … more [MRZ] … and chevrons"): no hairline anywhere on the document — no border, no
-   rule under a band, no dashed line over the machine zone; the bands part by tone, the name is cut out of the
-   logo's white plate (PassportPlate.jsx), the machine zone is four lines of the real fields (lib/passport/
-   document.js mrzZone) and the chevrons are its filler. The security strip's iridescent sweep and its tiled
-   pluses are gone; the registration pluses of the original document (PassportSecurity.jsx) stay. Kept exactly,
-   as the owner circled them: the serial (.ppnum) and the four-language title block (.ppquad). ---- */
-.ppdoc { border: 0; border-radius: var(--radius-card); overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
-.ppsec { height: 30px; position: relative; display: flex; align-items: center; padding: 0 12px; }
-/* the serial again, for the machine, at the band's left */
-.ppsec .ppserial { position: relative; z-index: 2; font-size: 10px; letter-spacing: 0.14em; opacity: 0.85; }
-.ppnum { position: absolute; right: 12px; top: 5px; font-family: var(--helv); font-size: 15px; color: var(--sig); text-shadow: var(--glow); z-index: 2; }
-.ppid { display: grid; grid-template-columns: 0.9fr 0.9fr 1.6fr; gap: 9px 20px;
-  margin: 0; padding: 12px 16px; flex: 1; align-content: center; }
-.ppid .sp2 { grid-column: span 2; }
+/* ---- Phase 2: PASSPORT dossier — THE TASTE PASSPORT since 2 Nov 2026 (the owner's mock-up; before it the
+   Tron passport of 31 Oct: "mimic the new style of the app … a sleek tron type of vibe … more [MRZ] … and
+   chevrons"). No hairline anywhere on the document — no border, no rule under a band, no dashed line over the
+   machine zone; the bands part by tone. A portrait document, as the mock-up is: the CLOUDED MASTHEAD — a band
+   of the fixtures' cloud, its foot swept down at the right, the serial (AS<<<MM<<DD, the account's month and
+   day) at its left and the passport number (№ OASM·000·000) at its right, both the document's colour at a lower
+   opacity, glowing a little, UNDER the cloud; the name in the logo's own set, big and bold, in the band's notch;
+   the data page — SURNAME, GIVEN NAME, DATE OF BIRTH, NATIONALITY, IDNTY, TASTE TYPE, DATE OF ISSUE — beside the
+   photo, every label translated once into the passport's drawn language (lib/passport/document.js LANGUAGES);
+   the signature and the account number beside the photo's ghost; the bar code cut out of the glass; the machine
+   zone, two even lines, clouded as the masthead is. The map lies under all of it, very faint. ---- */
+.ppdoc { border: 0; border-radius: var(--radius-card); overflow: hidden; background: var(--bg2); margin: 0 0 18px;
+  --pp-cloud: color-mix(in srgb, var(--ink) 13%, var(--paper) 30%);   /* the cloud's body: a grey of the page's own ink and paper, thinned — a light grey haze in dark, a cool grey in light (the ticker's rule: a grey cloud, never black) */
+  --pp-wisp: color-mix(in srgb, var(--ink) 9%, transparent);          /* the brighter wisps across it */
+  --pp-under: 0.62; /* what shows of a word under the cloud */ }
+/* THE CLOUD (owner: "center fixture level clouded … blue text has lower opacity and only slightly glows
+   underneath cloud"): a pane laid OVER the band's words — the fixtures' frost (a touch of blur, the deck's
+   saturation) with the ticker's wisps drawn lighter — so the serial, the number and the machine zone read as
+   print seen through cloud. The words beneath it keep their glow, at --pp-under. */
+.ppcloud { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(18% 160% at 8% 30%, var(--pp-wisp), transparent 70%),
+    radial-gradient(22% 140% at 30% 85%, var(--pp-wisp), transparent 70%),
+    radial-gradient(18% 160% at 52% 20%, var(--pp-wisp), transparent 70%),
+    radial-gradient(22% 140% at 74% 80%, var(--pp-wisp), transparent 70%),
+    radial-gradient(18% 150% at 94% 30%, var(--pp-wisp), transparent 70%),
+    var(--pp-cloud);
+  -webkit-backdrop-filter: blur(2.2px) saturate(160%); backdrop-filter: blur(2.2px) saturate(160%); }
+@media (prefers-reduced-transparency: reduce) { .ppcloud { -webkit-backdrop-filter: none; backdrop-filter: none; } }
+/* THE MASTHEAD: the band's foot runs level under the serial, then sweeps down (a cosine) to the number's deeper
+   right — the mock-up's curve — so the name can sit in the notch at the left */
+.ppmast { position: relative; z-index: 2; height: 74px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 12px 16px 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 70% 100%, 68.4% 99.6%, 66.8% 98.5%, 65.2% 96.5%, 63.6% 93.7%, 62% 90.1%, 60.4% 85.9%, 58.8% 81.1%, 57.2% 76.9%, 55.6% 73.3%, 54% 70.5%, 52.4% 68.5%, 50.8% 67.4%, 49.2% 67%, 0 67%); }
+.ppmast .ppserial, .ppmast .ppnum { position: relative; z-index: 1; opacity: var(--pp-under); }
+.ppmast .ppserial { font-size: 11px; letter-spacing: 0.14em; line-height: 1; margin-top: 2px; }
+.ppnum { font-family: var(--mono); font-size: 17px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); line-height: 1; white-space: nowrap; }
+/* THE NAME (owner: "close the kerning on the ASILUM TASTE PASSPORT to match the ASILUM logo and up the size and
+   boldness so it looks more important"): Michroma in the logo's set — the wordmark's −0.096em between every
+   pair (lib/wordmark.js, Procreate's −15 kerning on 161) — and bolder the way the logo is, a stroke round each
+   letter (the face has one weight); the document's ink, unlit, as the logo's word is */
+.pptitle { position: relative; z-index: 3; margin: -22px 0 4px 16px; font-family: var(--mich); font-weight: 400; line-height: 1.08; white-space: nowrap;
+  font-size: calc(100cqw * 0.0375); /* one line in the notch: 21 letters at the logo's set measure 17.9em, 68% of the page (21px at the full width) */
+  letter-spacing: -0.096em; -webkit-text-stroke: 0.04em currentColor; color: var(--ink); text-shadow: none; }
+/* THE DATA PAGE: the photo and its word at the left, the fields in one column at the right; every label
+   "ENGLISH /" then the drawn language, fainter */
+.ppid { display: grid; grid-template-columns: 1fr; gap: 10px 0; margin: 0; padding: 4px 0 0; flex: 1; align-content: start; min-width: 0; }
 .ppid .sp3 { grid-column: 1 / -1; }
-.ppid dt { font-size: 9px; letter-spacing: 0.16em; color: var(--grey); }
-.ppid dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); }
-.ppid .ppmono { font-size: 11px; color: var(--ink); word-break: break-all; max-width: 360px; }
+.ppid dt, .ppsig dt, .ppacct dt { font-size: 9.5px; letter-spacing: 0.12em; color: var(--sig); text-shadow: var(--glow); line-height: 1.3; }
+.ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; color: var(--grey); text-shadow: none; letter-spacing: 0.06em; margin-left: 6px; text-transform: none; }
+.ppid dd, .ppacct dd { margin: 3px 0 0; font-size: 13px; letter-spacing: 0.05em; color: var(--ink); min-height: 1.2em; }
+.ppid .ppmono, .ppacct .ppmono { font-family: var(--mono); font-size: 11px; color: var(--ink); word-break: break-all; }
+/* the passenger writes two fields on the page (IDNTY, DATE OF BIRTH): the same face as the printed ones, no
+   field drawn round them — the document is the field */
+.ppwrite { display: block; width: 100%; max-width: 240px; border: 0; background: transparent; padding: 0; margin: 0; font: inherit; color: inherit; letter-spacing: inherit; }
+.ppwrite::placeholder { color: var(--ink); opacity: 1; }
+.ppwrite:focus { outline: 0; box-shadow: 0 2px 0 var(--sig); } /* the document's colour underlines the field being written */
+.ppwrite::-webkit-calendar-picker-indicator { opacity: 0.5; }
 /* The machine zone was 18px/0.54em when it was set in the LCD face. STM is a
    wider mono, so the same string measured 1043px inside a 978px box and the
    tail of the MRZ — which encodes the real account number — was being CLIPPED
    by the overflow:hidden below. Sized down until it fits with room, measured
    rather than eyeballed. Lose characters here and the document is lying. */
-.ppmrz { padding: 8px 16px; font-family: var(--mono);
-  font-size: 17px; letter-spacing: 0.46em; color: var(--grey); line-height: 1.35; overflow-x: hidden; white-space: nowrap;
-  scrollbar-width: none; }
+.ppmrz { padding: 8px 16px; font-family: var(--mono); color: var(--grey); overflow-x: hidden; white-space: nowrap; scrollbar-width: none; }
 .ppmrz::-webkit-scrollbar { display: none; }
 /* THE DEVICE'S MACHINE-READABLE LINE (Blocks.jsx MrzLine): one line, never wrapped; the data in the document's
    colour, glowing in dark as a word does; the "<" filler the red thread, unlit (filler is not a word); the block
@@ -1902,31 +1936,19 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    Registration crosses, plus-pattern ridge, topographic contours, microprint,
    and the constellation whose connected lines trace three asterisks (red =
    ASTERISK identity). Decoration only; every label is real state. ---- */
-/* the document keeps U.S. passport data-page proportions (125 × 88 mm) as a floor: a box held to the ratio with its
-   overflow hidden kept the ratio and CLIPPED the machine zone (31 Oct 2026: four lines where there were two), so
-   the ratio is a minimum height now and the hologram window (.ppterrain, flex: 1) takes the room */
-.ppdoc { position: relative; max-width: 980px; margin: 0 auto 18px; display: flex; flex-direction: column; }
-@media (min-width: 900px) { .ppdoc { min-height: calc(980px * 88 / 125); } }
-.ppdoc .ppbody, .ppdoc .ppmrz { position: relative; z-index: 2; }
+/* a portrait document (the owner's mock-up of 2 Nov 2026 is a page, not a card): the width of a phone's screen
+   and a little, centred on a desktop */
+.ppdoc { position: relative; max-width: 560px; margin: 0 auto 18px; display: flex; flex-direction: column; container-type: inline-size; }
+.ppdoc .ppbody, .ppdoc .ppmrz, .ppdoc .pplower { position: relative; z-index: 2; }
 .ppuv { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
 .ppuvcross { position: absolute; top: 4px; left: 0; width: 100%; height: 60px; }
-/* the hologram spans the whole document — two stacked copies of the map:
-   A = everywhere, dimmed toward the data page, slight glow;
-   B = masked to the lower window, full opacity, heavy glow */
+/* the map under the whole document (owner, 2 Nov 2026: "very very very lower opacity to look less extreme"):
+   one layer, unlit, faint everywhere — no hot window any more */
 .ppholo { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .ppholo > div { position: absolute; inset: 0; }
 .ppholo svg { width: 100%; height: 100%; display: block; }
 .ppholo polyline { fill: none; }
-/* dim layer: NO glow, heavily faded over the data page */
-.ppholo-a {
-  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.14) 44%, #000 68%);
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, rgba(0, 0, 0, 0.14) 44%, #000 68%);
-}
-/* hot layer: full opacity + heavy glow in the lower window */
-.ppholo-b {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 74%);
-  mask-image: linear-gradient(180deg, transparent 0%, transparent 52%, #000 74%);
-}
+.ppholo-a { opacity: 0.09; }
 .ppholo path { fill: none; }
 .pvbld { stroke: var(--grey); stroke-width: 0.35; opacity: 0.5; } /* never glows */
 .pvrd-minor { stroke: var(--sig); stroke-width: 0.55; opacity: 0.6; }
@@ -1936,58 +1958,47 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .pvstars text { fill: var(--red); font-family: var(--helv); font-size: 15px; }
 .pvstars-hot { filter: drop-shadow(0 0 5px var(--red)) drop-shadow(0 0 13px var(--red)); }
 .pvplus { fill: none; stroke-width: 1.6; stroke-linecap: square; }
-.ppmicro { padding: 2px 0 1px; overflow: hidden;
-  white-space: nowrap; font-size: 6.5px; letter-spacing: 0.34em; color: var(--p2);
-  opacity: 0.75; position: relative; z-index: 2; }
-.ppmicro .mrzline { overflow: visible; }
-.ppmicro .mrzline b { color: var(--p2); text-shadow: var(--glow-p); }
-/* open window — the hologram burns through at full strength here; the div
-   only frames it and holds the summit annotation + the ODbL map credit */
-.ppterrain { position: relative; flex: 1; min-height: 210px; z-index: 2; }
-.pposm { position: absolute; right: 14px; bottom: 8px; font-size: 6.5px;
+.pposm { position: absolute; right: 14px; bottom: 6px; font-size: 6.5px;
   letter-spacing: 0.18em; color: var(--faint); }
-.ppsummit { position: absolute; right: 16px; top: 14px; font-family: var(--helv);
-  font-size: 15px; color: var(--red); text-shadow: var(--glow-r); letter-spacing: 0.1em; }
-/* nation line — where a passport names its country. On the document it is THE NAME PLATE (PassportPlate.jsx,
-   31 Oct 2026): the name cut out of the logo's white plate (--wm-bar), the glass through the letters, the plate in
-   the logo's white glow, the asterisk the house red in the logo's red glow; the holes tinted where the ground is
-   bright (--wm-cut-tint: clear in dark, half a navy in light). The preview on /profile keeps the line as type. */
-.ppnation { position: relative; z-index: 2; text-align: center; padding: 9px 12px 7px; font-family: var(--mich);
-  font-size: 13.5px; letter-spacing: 0.34em; color: var(--ink); text-shadow: var(--glow), var(--glow); }
-.ppnation b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r), var(--glow-r); }
-.ppdoc .ppnation { display: flex; justify-content: center; padding: 4px 12px 8px; }
-.ppplate { display: block; width: min(100%, 520px); height: auto; overflow: visible; }
-.ppplate text { font-family: var(--mich); font-weight: 400; text-shadow: none; } /* the line's glow would be painted inside the holes (a shadow is drawn for a glyph whatever its fill) */
-.ppplane { fill: #fff; }      /* the mask's plane (luminance, not a colour): white keeps the plate */
-.ppcut { fill: #000; }        /* the letters cut out of it */
-.ppcutstar { fill: #fff; }    /* the asterisk is not cut: it is painted over the plate */
-.pptint { fill: var(--wm-cut-tint); }
-.pptintstar { fill: none; }
-.ppplatebar { fill: var(--wm-bar); filter: var(--wm-glow); } /* the glow on the plate itself: computed before the mask cuts the letters */
-.ppover { fill: none; }
-.ppplatestar { fill: var(--wm-star); }
-.ppstarglow { filter: var(--wm-glow-r); }
 /* the asterisk on the data page: the house red, glowing red (the logo's rule), never the white accent */
 .ppstar { color: var(--warn); text-shadow: var(--glow-r); }
-/* four document-type languages stacked above the photo (EN/JA/DE/FR) */
-.ppphotocol { display: grid; gap: 8px; justify-items: center; align-self: center; }
-.ppquad { display: grid; gap: 2px; justify-items: center; font-size: 8px;
-  letter-spacing: 0.22em; color: var(--grey); line-height: 1.35; }
-.ppquad b { font-weight: 400; font-size: 10px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.3em; }
-/* data grid laid out like a U.S. data page: three columns, spans for the
-   wide fields, photo centred on the left edge */
-.ppid dt em { font-style: normal; color: var(--faint); letter-spacing: 0.04em; margin-left: 4px; text-transform: none; }
+/* the photo's column: the photo, then the document's word for itself in English and the drawn language */
+.ppphotocol { display: grid; gap: 10px; justify-items: center; align-content: start; min-width: 0; }
+.ppquad { display: grid; gap: 2px; justify-items: center; font-size: 9px; letter-spacing: 0.22em; color: var(--sig); text-shadow: var(--glow); line-height: 1.35; }
+.ppquad b { font-weight: 400; font-size: 10px; letter-spacing: 0.3em; }
+/* THE LOWER PAGE: the signature and the account number at the left, the photo's ghost at the right */
+.pplower { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; padding: 10px 18px 4px; }
+.ppsigblock { margin: 0; display: grid; gap: 14px; min-width: 0; }
+.ppsig dd { margin: 4px 0 0; min-height: 44px; display: flex; align-items: center; }
+.ppsigname { font-family: var(--mich); font-size: 15px; letter-spacing: 0.04em; color: var(--ink); }
+.ppsigpad { display: block; width: 100%; max-width: 280px; height: 64px; color: var(--ink); touch-action: none; cursor: crosshair; border-radius: var(--radius-field);
+  background: color-mix(in srgb, var(--ink) 6%, transparent); }
+/* the kept signature is a mask, so it takes the ink of either theme */
+.ppsignink { display: block; width: 100%; max-width: 280px; height: 64px; background: currentColor; color: var(--ink);
+  -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: left center; mask-position: left center; }
+.ppsigkeys { display: flex; gap: 14px; margin-top: 4px; }
+.ppsigkeys .txtbtn { font-family: var(--mich); font-size: 8.5px; letter-spacing: 0.18em; color: var(--sig); }
+.ppsigkeys .txtbtn:disabled { opacity: 0.4; cursor: default; }
+/* THE GHOST (owner: "the tiny photo box … will be a photo line negative of the primary photo like how driver
+   licenses have"): the photo again, small, inverted, drained of colour, faint */
+.ppghost { width: 96px; aspect-ratio: 3 / 4; border-radius: var(--radius-field); overflow: hidden; background: color-mix(in srgb, var(--ink) 9%, transparent); flex: none; }
+.ppghost img { width: 100%; height: 100%; object-fit: cover; display: block; filter: invert(1) grayscale(1) contrast(1.15); opacity: 0.55; }
+/* THE BAR CODE (PassportBarcode.jsx): the cut painted in the document's ink — in dark the logo's white, in its
+   glow (a negative of the glass, as the wordmark's brick is) */
+.ppbarcode { display: block; width: 100%; height: 84px; position: relative; z-index: 2; margin-top: 4px; }
+.ppcut { fill: var(--ink); }
+:root:not([data-theme="light"]) .ppbarcode { filter: var(--wm-glow); }
 /* photo under UV: duotone tint + halftone scan */
 .ppphoto img { filter: saturate(0.55) contrast(1.12) brightness(0.96); }
 .ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)); }
 @media (max-width: 760px) {
-  .ppterrain { min-height: 170px; }
-  .ppmrz { font-size: 13px; letter-spacing: 0.1em; }
-  .ppbody { flex-direction: column; align-items: center; }
-  .ppid { grid-template-columns: 1fr 1fr; }
-  .ppid .sp3, .ppid .sp2, .ppid > div:nth-child(3) { grid-column: 1 / -1; }
+  .ppbody { gap: 14px; padding: 10px 14px 6px; grid-template-columns: minmax(120px, 42%) 1fr; }
+  .pplower { padding: 8px 14px 2px; }
+  /* on a phone the band's foot runs level and the name takes the whole measure under it, larger */
+  .ppmast { height: 54px; clip-path: none; }
+  .pptitle { margin: 8px 0 2px 14px; font-size: calc(100cqw * 0.05); }
 }
 .ppwarp { display: none; position: fixed; inset: 0; z-index: 400; pointer-events: none; }
 /* the veil drops fast so the still frame reads as the passport's own map
@@ -2748,8 +2759,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
       color-mix(in srgb, var(--glass-spot) calc(var(--gs, 0) * 25%), transparent) 40%, transparent 72%),
     radial-gradient(460px 220px at var(--gx, 50%) var(--gy, 40%), color-mix(in srgb, var(--glass-spot-wide) calc(var(--gs, 0) * 100%), transparent), transparent 70%),
     var(--glass-sheen); }
-.ppdoc.lg .ppsec { background-color: color-mix(in srgb, var(--bg) 35%, transparent); }
-.ppdoc.lg .ppnation { background: transparent; }
 .ppdoc.lg .ppphoto { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 @media (prefers-reduced-motion: reduce) { .ppdoc.lg::before { background: var(--glass-sheen); } }
 
@@ -2946,21 +2955,22 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); background: color-mix(in srgb, var(--bg2) 70%, transparent);
   text-decoration: none; color: inherit; aspect-ratio: 125 / 88; isolation: isolate; }
 .ppmini:hover { border-color: var(--sig); }
-.ppmini .ppsec { height: 16px; }
-.ppmini .ppnum { font-size: 8px; top: 3px; right: 8px; }
-.ppmini .ppnation { font-size: 7px; letter-spacing: 0.26em; padding: 5px 8px 4px; }
+.ppmini .ppmast { height: 30px; padding: 5px 8px 0; }
+.ppmini .ppmast .ppserial { font-size: 6px; letter-spacing: 0.1em; }
+.ppmini .ppnum { font-size: 8px; }
+.ppmini .pptitle { margin: -8px 0 2px 8px; font-size: 9px; -webkit-text-stroke: 0.03em currentColor; }
 .ppminibody { position: relative; z-index: 2; display: flex; gap: 8px; align-items: center; padding: 8px 8px 4px; flex: 1; min-height: 0; }
 .ppminiphoto { width: 58px; height: 74px; flex: none; display: grid; place-items: center; position: relative; overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); background: var(--paper); border-radius: 2px; }
 .ppminiphoto img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ppminiphoto .ppphotoempty { font-size: 16px; color: var(--grey); }
-.ppminiid { grid-template-columns: 1fr 1fr; gap: 4px 8px; padding: 0; margin: 0; flex: 1; min-width: 0; }
+.ppminiid { grid-template-columns: 1fr 1fr; gap: 4px 8px; padding: 0; margin: 0; flex: 1; min-width: 0; align-content: center; }
 .ppminiid dt { font-size: 5.5px; letter-spacing: 0.14em; }
 .ppminiid dd { font-size: 8px; margin-top: 1px; letter-spacing: 0.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ppminiid .ppmono { font-size: 6.5px; max-width: none; }
-.ppminimrz { font-size: 6.5px; letter-spacing: 0.1em; padding: 4px 8px; line-height: 1.4; }
+.ppminimrz { font-size: 6.5px; letter-spacing: 0.1em; padding: 4px 8px; line-height: 1.4; position: relative; }
+.ppminimrz .mrzline { position: relative; z-index: 1; opacity: 0.62; }
 .ppminiopen { position: relative; z-index: 2; display: block; text-align: right; padding: 5px 8px 6px; font-family: var(--mich); font-size: 7.5px; letter-spacing: 0.2em; color: var(--sig); text-shadow: var(--word-smear); }
-.ppmini .ppholo-b { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 40%, #000 70%); mask-image: linear-gradient(180deg, transparent 0%, transparent 40%, #000 70%); }
 .pf2 .tabs { border: 0; margin: 0 0 16px; gap: 22px; flex-wrap: wrap; padding: 0 4px; }
 .pf2 .tab { border: 0; padding: 6px 0; font-family: var(--mich); font-weight: 400; font-size: 10.5px; letter-spacing: 0.2em; }
 .pfsheet { min-height: 320px; }
@@ -5090,8 +5100,8 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 .pv-s { stroke: var(--sig); opacity: 0.55; }
 .pv-p { stroke: var(--p2); opacity: 0.5; }
 .pv-r { stroke: var(--red); opacity: 0.75; }
-.ppvpage { position: absolute; top: 38px; right: 16px; font-family: var(--mono); font-size: 26px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; }
-.ppnum, .ppsummit, .pvstars text { font-family: var(--mono); }
+.ppvpage { position: absolute; top: 44px; right: 16px; font-family: var(--mono); font-size: 18px; color: var(--sig); text-shadow: var(--glow); letter-spacing: 0.08em; opacity: var(--pp-under); }
+.pvstars text { font-family: var(--mono); }
 .ppphoto::after { background:
     linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
     repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--ink) 14%, transparent) 2px 3px); }
@@ -5099,14 +5109,13 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    MRZ_WIDTH, 52) must always fit — the lines encode the real account number and a clipped tail is a lie — so the
    size follows the zone's own width (container units) down to a phone's */
 .ppdoc .ppmrz { order: 99; container-type: inline-size; padding: 9px 16px 11px; font-family: var(--mono); letter-spacing: 0.12em; color: var(--grey);
-  line-height: 1.45; background: color-mix(in srgb, var(--paper) 42%, transparent);
+  line-height: 1.5; position: relative;
   --mrz-em: 0.76; /* one character's advance in the mono face plus the letter-spacing, measured (0.746 at 0.12em) */ }
-.ppdoc .ppmrz .mrzline { font-size: min(14px, calc(100cqw / 52 / var(--mrz-em))); }
+.ppdoc .ppmrz .mrzline { font-size: min(14px, calc(100cqw / 52 / var(--mrz-em))); position: relative; z-index: 1; opacity: var(--pp-under); }
 @media (max-width: 760px) {
   .ppdoc .ppmrz { letter-spacing: 0.05em; --mrz-em: 0.69; } /* the letters set closer on a phone, so the measure reads larger */
-  .ppdoc .ppnation { padding-right: 56px; } /* room for the 01 at the band's right */
 }
-.ppdoc .ppdocacts { margin-top: 0; }
+.ppdoc .ppdocacts { margin-top: 0; order: 100; } /* the keys at the very foot, under the zone: the bar code runs into the zone as the mock-up draws it */
 /* the document's keys: the lamp in each blinks when pressed (Blocks.jsx blinkLamp); the primary one, white on
    the dark glass, carries the logo's white glow in dark */
 :root:not([data-theme="light"]) .ppbtn.primary { filter: var(--wm-glow); }

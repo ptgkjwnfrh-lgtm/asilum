@@ -622,6 +622,34 @@ are what a machine zone is filled with. This narrows the third addendum's
 the elements named in (2). The public Passport is untouched: what it
 reveals (the hidden-city ring, ADR-006) is not the page's chrome.
 
+**A6 sixth addendum — THE TASTE PASSPORT (Nov 2, 2026).** The owner's
+mock-up (docs/v2/mocks/2026-11-02-taste-passport/) and the word with it:
+the MRZ "a little more even" with "the same underneath clouded low opacity
+effect as the passport clouded masthead"; every translation "either French,
+German, Spanish, Japanese or Arabic, random selection"; "close the kerning
+on the ASILUM TASTE PASSPORT to match the ASILUM logo and up the size and
+boldness"; "replace SEX/ with IDNTY/ so people can feel free to type in
+whatever they want"; the Paris map kept "very very very lower opacity"; the
+tiny photo box "a photo line negative of the primary photo"; the signature
+"the passenger's user name but they have the option to actually sign it".
+Rulings: (1) the document (/board) is the mock-up's portrait page — the
+clouded masthead carrying the serial (the account's month and day, a
+machine line) and the passport number (six digits read off the account
+number) under the cloud, the name as type in the logo's set, the data page
+(SURNAME, GIVEN NAME, DATE OF BIRTH, NATIONALITY, IDNTY, TASTE TYPE, DATE
+OF ISSUE), the signature, the account number, the photo's negative, the
+bar code cut in the ink, a two-line machine zone clouded the same way; this
+supersedes the fifth addendum's (2) — the name plate, the four-language
+block and the boards-and-convictions serial are gone; of the original the
+registration pluses, the "01" and the photo's print lines stay; (2) ONE
+language per passport, drawn off the account number so the same passport
+reads the same every time; (3) IDNTY and DATE OF BIRTH are what the
+passenger writes on the page, kept on the device — the signup birth date is
+never served to the shell; (4) the signature is the username until the
+passenger signs on the page, the stroke kept on the device; (5) the map is
+one faint layer — no hot window, no microprint. The public Passport is
+untouched. Record: docs/v2/slice-18-taste-passport-2026-11-02.md.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

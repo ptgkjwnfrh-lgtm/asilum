@@ -1,5 +1,11 @@
 # V.2 slice 17 — the Tron Passport (31 October 2026)
 
+> Superseded on 2 Nov 2026 by the owner's mock-up — slice 18,
+> `slice-18-taste-passport-2026-11-02.md`. The name plate, the four-language
+> block, the boards-and-convictions serial, the four-line zone, the hologram
+> window and the microprint described below are gone; the machine-readable
+> line, the lamps on the keys and the no-hairline rule stay. Kept for history.
+
 The owner's word (31 Oct 2026), after the Masthead, the logo and the deck
 took the sleek look of 28–30 Oct: "we have to redesign the passport to
 mimic the new style of the app, yk we're going for a sleek tron type of

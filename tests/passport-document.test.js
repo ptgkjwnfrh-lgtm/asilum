@@ -1,72 +1,120 @@
-// tests/passport-document.test.js — THE PASSPORT DOCUMENT (owner, 31 Oct
-// 2026: "redesign the passport to mimic the new style of the app … a sleek
-// tron type of vibe … more [MRZ] … and chevrons"). Held here:
-//   * the two elements the owner circled stay exactly: the serial at the top
-//     right ("№ AS·00·08") and the four-language title block;
-//   * the machine zone encodes the REAL fields of the data page — type P,
-//     code ASM, the username, the account number, member-since, the class,
-//     BASED IN, the country of origin, the handle, the taste class and the
-//     counts — and nothing else; the chevrons are its filler, every line the
-//     measure, every character one a machine reads;
-//   * the page hands the zone the same values it prints;
-//   * the device's line and the plate carry no colour but the tokens'.
+// tests/passport-document.test.js — THE TASTE PASSPORT (the owner's mock-up
+// of 2 Nov 2026, docs/v2/mocks/2026-11-02-taste-passport/; before it the
+// Tron passport of 31 Oct: "a sleek tron type of vibe … more [MRZ] … and
+// chevrons"). Held here:
+//   * the masthead carries the serial — the month and day the account was
+//     created, as a machine line — and the passport number, six digits read
+//     off the account number, both the same on every opening;
+//   * every label is translated once, into ONE language drawn for the
+//     passport from French, German, Spanish, Japanese or Arabic — the same
+//     one each time the same passport opens;
+//   * the machine zone is TWO lines of the same measure, every field one
+//     the data page prints — IDNTY, the taste type, the date of issue, the
+//     passport number; the nationality, the surname and the given name, the
+//     account number and the date of birth — the chevrons the filler, every
+//     character one a machine reads;
+//   * SEX is IDNTY, free text the passenger writes; the signature is the
+//     username unless the passenger signs;
+//   * the page and the preview hand the zone the same values they print;
+//   * the device's line and the document's parts carry no colour but the
+//     tokens'.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { mrzLines, mrzWord, mrzZone, MRZ_WIDTH } from "../lib/passport/document.js";
+import {
+  LANGUAGES, LANGUAGE_CODES, MRZ_WIDTH, SERIAL_WIDTH, mrzDate, mrzWord, mrzZone, nameParts, passportLanguage, passportNumber, passportNumberDisplay, serialLine,
+} from "../lib/passport/document.js";
+import { bars, rampPath, BARCODE_W, BARCODE_H } from "../lib/passport/barcode.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const strip = (s) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1");
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 const board = strip(read("app/board/page.js"));
+const preview = strip(read("app/components/PassportPreview.jsx"));
 
 const bearer = {
-  uid: "u-8086654e-24c2-46e7-8d18-c772a0905f54", name: "Unnamed Reader", handle: "@reader", since: "2026-10-31",
-  klass: "DEVICE IDENT", basedIn: "Bowie, MD", origin: "US", taste: "Professional",
-  pinCount: 3, ticketCount: 1, areaCode: 240, savedCount: 7, convictionCount: 8,
+  uid: "u-8086654e-24c2-46e7-8d18-c772a0905f54", name: "Unnamed Reader", since: "2026-10-31", dob: "2001-07-04",
+  nationality: "US", idnty: "whatever i want", taste: "Professional",
 };
 
-test("the serial and the title block stay exactly as the owner circled them", () => {
-  assert.match(board, /<span className="ppnum">№ AS·\{String\(boards\.length\)\.padStart\(2, "0"\)\}·\{String\(convictions\(\)\.length\)\.padStart\(2, "0"\)\}<\/span>/, "№ AS·00·08: boards and convictions, two digits each");
-  assert.match(css, /\n\.ppnum \{ position: absolute; right: 12px; top: 5px; font-family: var\(--helv\); font-size: 15px; color: var\(--sig\); text-shadow: var\(--glow\); z-index: 2; \}/, "the serial's place and face");
-  assert.match(board, /<span className="ppquad"><b>PASSPORT<\/b><span>パスポート<\/span><span>REISEPASS<\/span><span>PASSEPORT<\/span><\/span>/, "PASSPORT / パスポート / REISEPASS / PASSEPORT");
-  assert.match(css, /\n\.ppquad \{ display: grid; gap: 2px; justify-items: center; font-size: 8px;\n  letter-spacing: 0\.22em; color: var\(--grey\); line-height: 1\.35; \}/, "the block's face");
-  assert.match(css, /\n\.ppquad b \{ font-weight: 400; font-size: 10px; color: var\(--sig\); text-shadow: var\(--glow\); letter-spacing: 0\.3em; \}/);
-  assert.ok(board.indexOf('className="ppquad"') < board.indexOf('className="ppphoto"'), "the title block above the photo, as before");
+test("the serial: the month and day the account was created, as a machine line of 16", () => {
+  assert.equal(SERIAL_WIDTH, 16);
+  assert.equal(serialLine("2026-10-31"), "AS<<<10<<31<<<<<");
+  assert.equal(serialLine("2026-01-05"), "AS<<<01<<05<<<<<", "two digits each");
+  assert.equal(serialLine(""), "AS<<<00<<00<<<<<", "no account: zeros, never a word the page does not print");
+  for (const s of [serialLine("2026-10-31"), serialLine("")]) { assert.equal(s.length, SERIAL_WIDTH); assert.match(s, /^[A-Z0-9<]+$/); }
+  assert.match(board, /<MrzLine className="ppserial" text=\{serialLine\(pinfo\.since\)\} width=\{SERIAL_WIDTH\} \/>/, "the document's serial");
+  assert.match(preview, /<MrzLine className="ppserial" text=\{serialLine\(since\)\} width=\{SERIAL_WIDTH\} \/>/, "the preview's, from the same line");
 });
 
-test("the machine zone: four lines of the measure, every character one a machine reads, the chevrons the filler", () => {
+test("the passport number: six digits read off the account number, the same every time, OASM·000·000 on the page", () => {
+  const n = passportNumber(bearer.uid);
+  assert.match(n, /^\d{6}$/);
+  assert.equal(passportNumber(bearer.uid), n, "stable");
+  assert.notEqual(passportNumber("u-00000000-0000-0000-0000-000000000001"), n, "another account, another number");
+  assert.equal(passportNumber(null), "000000", "unissued: zeros");
+  assert.equal(passportNumberDisplay(bearer.uid), `OASM·${n.slice(0, 3)}·${n.slice(3)}`);
+  assert.equal(passportNumberDisplay(null), "OASM·000·000");
+  assert.match(board, /<span className="ppnum">№ \{passportNumberDisplay\(uid\)\}<\/span>/);
+  assert.match(preview, /<span className="ppnum">№ \{passportNumberDisplay\(uid\)\}<\/span>/);
+});
+
+test("one language per passport, drawn from the five, the same on every opening; every label has a word in it", () => {
+  assert.deepEqual(LANGUAGE_CODES, ["fr", "de", "es", "ja", "ar"]);
+  const keys = ["name", "dir", "passport", "surname", "given", "dob", "nationality", "idnty", "taste", "issue", "signature", "account"];
+  for (const code of LANGUAGE_CODES) for (const k of keys) assert.ok(LANGUAGES[code][k], `${code}.${k}`);
+  assert.equal(LANGUAGES.ar.dir, "rtl", "Arabic runs right to left");
+  assert.equal(LANGUAGES.de.passport, "REISEPASS"); assert.equal(LANGUAGES.fr.passport, "PASSEPORT"); assert.equal(LANGUAGES.ja.passport, "パスポート");
+  const drawn = new Set();
+  for (let i = 0; i < 200; i++) drawn.add(passportLanguage(`u-${i}-24c2-46e7-8d18-c772a0905f54`).code);
+  assert.equal(drawn.size, 5, "across passports every language is drawn");
+  const one = passportLanguage(bearer.uid);
+  assert.equal(passportLanguage(bearer.uid).code, one.code, "the same passport, the same language");
+  assert.ok(LANGUAGE_CODES.includes(passportLanguage(null).code), "an unissued document is drawn too");
+  // the page prints "ENGLISH /" then the drawn word, with its language and direction, on every field
+  for (const [label, key] of [["SURNAME", "surname"], ["GIVEN NAME", "given"], ["DATE OF BIRTH", "dob"], ["NATIONALITY", "nationality"], ["IDNTY", "idnty"], ["TASTE TYPE", "taste"], ["DATE OF ISSUE", "issue"], ["ACCOUNT NO", "account"]]) {
+    assert.match(board, new RegExp(label.replace(/ /g, " ") + " \\/<em lang=\\{lang\\.code\\} dir=\\{lang\\.dir\\}>\\{lang\\." + key + "\\}<\\/em>"), label);
+  }
+  assert.match(board, /<PassportSignature name=\{pinfo\.name\} label="PASSENGER SIGNATURE" translation=\{lang\.signature\} dir=\{lang\.dir\} \/>/);
+  assert.match(board, /<span className="ppquad" lang=\{lang\.code\}><b lang="en">PASSPORT<\/b><span dir=\{lang\.dir\}>\{lang\.passport\}<\/span><\/span>/, "the document's word for itself, English and the drawn language");
+  assert.ok(!/SEX/.test(board.slice(board.indexOf('className="ppdoc'), board.indexOf("ppdocacts"))), "SEX is IDNTY now");
+  assert.match(board, /id="ppidnty" className="ppwrite" type="text" maxLength=\{32\} placeholder="—" value=\{pinfo\.idnty \|\| ""\} onChange=\{\(e\) => writeField\("idnty", e\.target\.value\)\}/, "IDNTY is free text the passenger writes");
+});
+
+test("the surname and the given name come off the username: the last word the surname", () => {
+  assert.deepEqual(nameParts("Unnamed Reader"), { surname: "Reader", given: "Unnamed" });
+  assert.deepEqual(nameParts("Jean Michel Basquiat"), { surname: "Basquiat", given: "Jean Michel" });
+  assert.deepEqual(nameParts("Cher"), { surname: "Cher", given: "" }, "one word: a surname alone, nothing invented");
+  assert.deepEqual(nameParts(""), { surname: "", given: "" });
+  assert.deepEqual(nameParts(null), { surname: "", given: "" });
+});
+
+test("the machine zone: two lines of the measure, every character one a machine reads, the chevrons the filler", () => {
   const zone = mrzZone(bearer);
-  assert.equal(zone.length, 4);
+  assert.equal(zone.length, 2);
   assert.equal(MRZ_WIDTH, 52);
   for (const line of zone) {
     assert.equal(line.length, MRZ_WIDTH, line);
     assert.match(line, /^[A-Z0-9<]+$/, "nothing a machine cannot read: " + line);
     assert.match(line, /<$/, "every line runs out in chevrons: " + line);
   }
-  const { top, bottom } = mrzLines(bearer);
-  assert.equal(zone[0], top, "line 1 is the TD3 pair's, unchanged");
-  assert.equal(zone[1], bottom, "line 2 is the TD3 pair's, unchanged");
+  assert.equal(zone[0].length, zone[1].length, "even");
 });
 
 test("the zone encodes the real fields and nothing else", () => {
-  const [l1, l2, l3, l4] = mrzZone(bearer);
-  assert.match(l1, /^P<ASMUNNAMED<READER<<FASHION<MEMBER<+$/, "type P, code ASM, the username");
-  assert.match(l2, /^U8086654E0ASM2610310X<P003B001A240<<24C246E78D18<+$/, "the account number (the uid's first nine and the next twelve), member-since as YYMMDD, pins, purchases, the area code");
-  assert.equal(l3, "DEVICE<IDENT<<BOWIE<MD<<US".padEnd(52, "<"), "the class, BASED IN, the country of origin");
-  assert.equal(l4, "READER<<PROFESSIONAL<<S007C08".padEnd(52, "<"), "the handle, the taste class, SAVED and CONVICTIONS");
+  const [l1, l2] = mrzZone(bearer);
+  const n = passportNumber(bearer.uid);
+  assert.equal(l1, `WHATEVER<I<WANT<<PROFESSIONAL<<261031<<OASM${n}`.padEnd(52, "<"), "IDNTY, the taste type, the date of issue, the passport number");
+  assert.equal(l2, "A<US<<READER<UNNAMED<<U8086654E<010704".padEnd(52, "<"), "the nationality, the surname and the given name, the account number's first nine, the date of birth");
   // an empty field encodes to nothing — never a dash, never a word the page does not print
-  const bare = mrzZone({ uid: null, name: "", handle: "", since: "", klass: "DEVICE IDENT", basedIn: "", origin: "—", taste: "UNCHARTED" });
-  assert.equal(bare[0], "P<ASMUNNAMED<READER<<FASHION<MEMBER".padEnd(52, "<"));
-  assert.equal(bare[2], "DEVICE<IDENT<<<<".padEnd(52, "<"), "no city, no country: the fields stand empty between their separators");
-  assert.equal(bare[3], "<<UNCHARTED<<S000C00".padEnd(52, "<"));
-  assert.equal(bare[1].slice(0, 9), "UNISSUED<", "no account: UNISSUED, as the pair already says");
-  // the counts are clamped to their digits, never spilling into the next field
-  assert.match(mrzZone({ ...bearer, savedCount: 12345, convictionCount: 999 })[3], /<<S999C99<+$/);
+  const bare = mrzZone({ uid: null, name: "", dob: "", nationality: "—", idnty: "", taste: "UNCHARTED", since: "" });
+  assert.equal(bare[0], "<<UNCHARTED<<000000<<OASM000000".padEnd(52, "<"));
+  assert.equal(bare[1], "A<<<<<<UNISSUED<000000".padEnd(52, "<"), "no account: UNISSUED; no name, no nationality: the fields stand empty between their separators");
+  assert.equal(mrzDate("2001-07-04"), "010704"); assert.equal(mrzDate(""), "000000"); assert.equal(mrzDate("nonsense"), "000000");
   // a long line is cut to the measure, never wrapped
-  const long = mrzZone({ ...bearer, klass: "AUTHENTICATED ACCOUNT", basedIn: "Saint-Germain-des-Prés, Île-de-France", origin: "France" });
-  assert.equal(long[2].length, 52);
-  assert.match(long[2], /^AUTHENTICATED<ACCOUNT<<SAINT<GERMAIN<DES<PR/, "accents are not machine characters: they become the filler");
+  const long = mrzZone({ ...bearer, idnty: "a very long word the passenger wrote on the document", taste: "Professional" });
+  assert.equal(long[0].length, 52);
+  assert.match(long[0], /^A<VERY<LONG<WORD<THE<PASSENGER<WROTE<ON<THE<DOCUMENT/);
 });
 
 test("mrzWord: upper case, every run of anything else one chevron, none at the ends", () => {
@@ -77,38 +125,72 @@ test("mrzWord: upper case, every run of anything else one chevron, none at the e
   assert.equal(mrzWord("  a  b  "), "A<B");
 });
 
-test("the page hands the zone the values it prints: one variable per field, on the page and in the zone alike", () => {
-  assert.match(board, /const mrz = mrzZone\(\{ uid, name: pinfo\.name, handle: pinfo\.handle, since: pinfo\.since, klass, basedIn: baseCity, origin: pinfo\.origin,\s*taste, pinCount, ticketCount, areaCode: pinfo\.area \|\| 0, savedCount, convictionCount: convictions\(\)\.length \}\);/);
-  assert.match(board, /<dt>CLASS<em>\/ Classe<\/em><\/dt><dd>\{klass\}<\/dd>/);
-  assert.match(board, /<dt>BASED IN<em>\/ Basé à<\/em><\/dt><dd>\{baseCity \|\| "—"\}/);
-  assert.match(board, /<dt>COUNTRY OF ORIGIN<em>\/ Pays<\/em><\/dt><dd>\{pinfo\.origin\}<\/dd>/);
-  assert.match(board, /<dt>TASTE CLASS<em>\/ Classe de goût<\/em><\/dt><dd><span className="ppstar">\*<\/span> \{taste\}<\/dd>/);
-  assert.match(board, /<dt>SAVED<\/dt><dd>\{savedCount\}<\/dd>/);
-  // the serial again at the band's left, for the machine, from the same two counts
-  assert.match(board, /<MrzLine className="ppserial" words=\{\["AS", String\(boards\.length\)\.padStart\(2, "0"\), String\(convictions\(\)\.length\)\.padStart\(2, "0"\)\]\} width=\{16\} \/>/);
+test("the page and the preview hand the zone the values they print: one variable per field", () => {
+  assert.match(board, /const \{ surname, given \} = nameParts\(pinfo\.name\);/);
+  assert.match(board, /const mrz = mrzZone\(\{ uid, name: pinfo\.name, dob: pinfo\.dob, nationality: pinfo\.origin, idnty: pinfo\.idnty, taste, since: pinfo\.since \}\);/);
+  assert.match(board, /<dd>\{surname\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
+  assert.match(board, /<dd>\{given\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
+  assert.match(board, /<dd>\{pinfo\.origin\}<\/dd>/);
+  assert.match(board, /<dd><span className="ppstar">\*<\/span> \{taste\}<\/dd>/);
+  assert.match(board, /<dd>\{sinceDisplay\}<\/dd>/);
+  assert.match(board, /<dd className="ppmono">\{uid \|\| "—"\}<\/dd>/);
+  assert.match(preview, /const mrz = mrzZone\(\{ uid, name: info\.name, dob: info\.dob, nationality: origin, idnty: info\.idnty, taste, since \}\);/);
+  assert.match(preview, /\{mrz\.map\(\(line, i\) => <MrzLine key=\{i\} text=\{line\} \/>\)\}/);
+  // the two written fields are kept with the display name on this device, never sent anywhere
+  assert.match(board, /function writeField\(k, v\) \{\s*setPinfo\(\(p\) => \(\{ \.\.\.p, \[k\]: v \}\)\);\s*try \{ saveProfileInfo\(\{ \.\.\.getProfileInfo\(\), \[k\]: v \}\); \} catch \{\}\s*\}/);
+  assert.ok(!/fetch\([^)]*(idnty|dob)/.test(board), "no request carries them");
 });
 
-test("the device's line (Blocks.jsx MrzLine): the data in <b>, the filler in <i>, run out to the measure, hidden from assistive technology", () => {
-  const blocks = strip(read("app/components/Blocks.jsx"));
-  assert.match(blocks, /export function MrzLine\(\{ text, words, width = MRZ_WIDTH, cursor = false, className = "" \}\)/);
-  assert.match(blocks, /if \(line\.length < width\) line \+= "<"\.repeat\(width - line\.length\);/, "run out in chevrons to the measure, never cut here (the encoder cuts)");
-  assert.match(blocks, /const parts = line\.split\(\/\(<\+\)\/\)\.filter\(Boolean\);/);
-  assert.match(blocks, /p\[0\] === "<" \? <i key=\{i\}>\{p\}<\/i> : <b key=\{i\}>\{p\}<\/b>/);
-  assert.match(blocks, /<span className=\{"mrzline" \+ \(className \? " " \+ className : ""\)\} aria-hidden="true">/);
-  assert.match(blocks, /\{cursor \? <span className="mrzcursor" \/> : null\}/);
-  // the preview on /profile reads the same encoder through the same line
-  const preview = strip(read("app/components/PassportPreview.jsx"));
-  assert.match(preview, /<MrzLine text=\{mrz\.top\} \/><MrzLine text=\{mrz\.bottom\} \/>/);
-  assert.ok(!/MrzTint/.test(preview + board), "the old tinting helper is gone");
+test("the signature: the username until the passenger signs; the pad in the slot, kept on this device as a mask", () => {
+  const sig = strip(read("app/components/PassportSignature.jsx"));
+  assert.match(sig, /export const SIGNATURE_KEY = "asilum-pp-sign";/);
+  assert.match(sig, /<span className="ppsigname">\{printed \|\| "—"\}<\/span>/, "the username");
+  assert.match(sig, /<canvas ref=\{padRef\} className="ppsigpad" aria-label="sign here" onPointerDown=\{down\} onPointerMove=\{move\} onPointerUp=\{up\} onPointerCancel=\{up\} \/>/, "the pad, pointer events");
+  assert.match(sig, /ctx\.strokeStyle = getComputedStyle\(c\)\.color;/, "drawn in the document's ink, no literal colour");
+  assert.match(sig, /WebkitMaskImage: `url\(\$\{signature\}\)`, maskImage: `url\(\$\{signature\}\)`/, "kept as a mask: the ink of either theme");
+  assert.match(sig, /window\.localStorage\.setItem\(SIGNATURE_KEY, data\)/);
+  assert.match(sig, /window\.localStorage\.removeItem\(SIGNATURE_KEY\)/, "CLEAR returns the slot to the username");
+  assert.match(css, /\.ppsigpad \{[^}]*touch-action: none;/, "the page does not scroll under the stroke");
+  assert.match(css, /\.ppsignink \{[^}]*background: currentColor;/);
+});
+
+test("the bar code: a cosine ramp into bars read off the passport number, the same every time; cut in the document's ink", () => {
+  assert.equal(BARCODE_W, 600); assert.equal(BARCODE_H, 96);
+  assert.match(rampPath(), /^M 0 96 L 0\.0 92\.0 L .* L 300\.0 0\.0 L 300 96 Z$/, "from the foot at the left up to the full height at the middle");
+  const a = bars(bearer.uid), b = bars(bearer.uid), c = bars("u-00000000-0000-0000-0000-000000000001");
+  assert.deepEqual(a, b, "stable");
+  assert.notDeepEqual(a, c, "another account, another code");
+  for (const [x, w] of a) { assert.ok(x >= 300 && x + w <= 600, `bar at ${x} wide ${w} inside the right half`); assert.ok(w >= 3 && w <= 12); }
+  assert.match(board, /<PassportBarcode uid=\{uid\} \/>/);
+  assert.match(css, /\n\.ppcut \{ fill: var\(--ink\); \}/);
+  assert.match(css, /:root:not\(\[data-theme="light"\]\) \.ppbarcode \{ filter: var\(--wm-glow\); \}/, "the logo's white glow in dark");
+});
+
+test("the cloud: the serial, the number and the zone under the fixtures' frost at a lower opacity, their glow kept; the map very faint", () => {
+  assert.match(css, /\n\.ppcloud \{ position: absolute; inset: 0; z-index: 2; pointer-events: none;/);
+  assert.match(css, /\.ppcloud \{[^}]*backdrop-filter: blur\(2\.2px\) saturate\(160%\);/s);
+  assert.match(css, /@media \(prefers-reduced-transparency: reduce\) \{ \.ppcloud \{ -webkit-backdrop-filter: none; backdrop-filter: none; \} \}/);
+  assert.match(css, /\.ppmast \.ppserial, \.ppmast \.ppnum \{ position: relative; z-index: 1; opacity: var\(--pp-under\); \}/);
+  assert.match(css, /\.ppdoc \.ppmrz \.mrzline \{[^}]*opacity: var\(--pp-under\); \}/);
+  assert.match(css, /\.ppnum \{[^}]*color: var\(--sig\); text-shadow: var\(--glow\);/, "the number glows under the cloud");
+  for (const where of [board, preview]) {
+    assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/(header|div)>/.test(where.slice(where.indexOf("ppmast"))), "the cloud over the masthead");
+    assert.equal((where.match(/className="ppcloud"/g) || []).length, 2, "and over the zone");
+  }
+  assert.match(css, /\n\.ppholo-a \{ opacity: 0\.09; \}/, "the map very, very faint");
+  assert.ok(!/ppholo-b|ppterrain|ppsummit|ppmicro|ppplate|ppnation|ppsec\b/.test(css), "the hot window, the microprint, the plate and the old band are gone");
+});
+
+test("the name: the logo's set, bigger and bolder, one line", () => {
+  assert.match(board, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/);
+  assert.match(css, /\.pptitle \{[^}]*letter-spacing: -0\.096em; -webkit-text-stroke: 0\.04em currentColor; color: var\(--ink\); text-shadow: none; \}/s, "the wordmark's −0.096em, a stroke for the bold, the ink unlit");
+  assert.match(css, /\.pptitle \{[^}]*white-space: nowrap;/s);
 });
 
 test("colour only through the tokens: no literal colour in the passport's components", () => {
-  for (const f of ["app/components/PassportPlate.jsx", "app/components/PassportSecurity.jsx", "app/components/PassportPreview.jsx", "app/components/Blocks.jsx"]) {
+  for (const f of ["app/components/PassportSignature.jsx", "app/components/PassportBarcode.jsx", "app/components/PassportSecurity.jsx", "app/components/PassportPreview.jsx", "app/components/Blocks.jsx"]) {
     const src = strip(read(f));
     assert.ok(!/#[0-9a-f]{3,8}\b|rgba?\(/i.test(src), f + " carries a literal colour");
   }
-  // the plate's own parts are the logo's tokens; the mask's #fff / #000 are luminance, not colour, as the logo's
-  assert.match(css, /\.pptint \{ fill: var\(--wm-cut-tint\); \}/);
   assert.match(css, /\.ppstar \{ color: var\(--warn\); text-shadow: var\(--glow-r\); \}/, "the data page's asterisk is the house red, glowing red");
-  assert.ok(!/<span className="red">\*<\/span>/.test(board.slice(board.indexOf('className="ppdoc'), board.indexOf("ppdocacts"))), "no white-accent asterisk left on the document");
 });
