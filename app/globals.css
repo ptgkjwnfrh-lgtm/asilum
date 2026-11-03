@@ -1818,8 +1818,10 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 /* THE FIELDS, one column at the right, a row every 10.5: "ENGLISH /" then the drawn language, fainter; the
    value under */
 .ppid { position: absolute; z-index: 2; left: 61.2cqw; top: 17.6cqw; width: 36.6cqw; margin: 0; padding: 0; display: grid; grid-auto-rows: 10.5cqw; align-content: start; }
-.ppid dt, .ppsig dt, .ppacct dt { font-size: 2cqw; letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; } /* a long translation (German's) folds to a second line; the value follows */
-.ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; color: var(--grey); text-shadow: none; letter-spacing: 0.04em; margin-left: 0.8cqw; }
+/* one line each (owner, 2 Nov 2026: "small enough so the translation text isn't stacked underneath"): sized so
+   the longest set, German's STAATSANGEHÖRIGKEIT and UNTERSCHRIFT DES PASSAGIERS, still fits its column */
+.ppid dt, .ppsig dt, .ppacct dt { font-size: 1.45cqw; letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; white-space: nowrap; }
+.ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; font-size: 1.1cqw; color: var(--grey); text-shadow: none; letter-spacing: 0.02em; margin-left: 0.6cqw; }
 .ppid dd { margin: 1cqw 0 0; font-size: 2.5cqw; letter-spacing: 0.04em; line-height: 1.2; min-height: 1.2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the passenger writes two fields on the page (IDNTY, DATE OF BIRTH): the same face as the printed ones, no
    field drawn round them — the document is the field */
@@ -1835,9 +1837,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   font-family: var(--ocr); font-size: 2.7cqw; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); line-height: 1.1; white-space: nowrap; }
 /* THE SIGNATURE and THE ACCOUNT NUMBER at the left of the lower page; the pad and the kept stroke are the
    signature's own box; the kept signature is a mask, so it takes the ink of either theme */
-.ppsig { position: absolute; z-index: 2; left: 6cqw; top: 109cqw; width: 62cqw; }
-.ppsig dt, .ppacct dt { font-size: 2.6cqw; }
-.ppsig dt em, .ppacct dt em { font-size: 2cqw; }
+.ppsig { position: absolute; z-index: 2; left: 6cqw; top: 109cqw; width: 65cqw; }
+.ppsig dt, .ppacct dt { font-size: 1.75cqw; }
+.ppsig dt em, .ppacct dt em { font-size: 1.25cqw; }
 .ppsig dd { margin: 1.2cqw 0 0; height: 6cqw; display: flex; align-items: center; }
 .ppsigname { font-size: 3.4cqw; letter-spacing: 0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ppsigpad, .ppsignink { display: block; width: 60cqw; height: 6cqw; color: var(--ink); }
@@ -1846,7 +1848,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppsigkeys { display: flex; gap: 2.6cqw; margin-top: 0.8cqw; }
 .ppsigkeys .txtbtn { font-family: var(--mich); font-size: 1.8cqw; letter-spacing: 0.18em; color: var(--sig); }
 .ppsigkeys .txtbtn:disabled { opacity: 0.4; cursor: default; }
-.ppacct { position: absolute; z-index: 2; left: 6cqw; top: 125.4cqw; width: 64cqw; margin: 0; }
+.ppacct { position: absolute; z-index: 2; left: 6cqw; top: 125.4cqw; width: 65cqw; margin: 0; }
 .ppacct dd { margin: 1.2cqw 0 0; font-size: 1.8cqw; letter-spacing: 0.04em; line-height: 1.3; word-break: break-all; color: var(--ink); }
 /* THE GHOST (owner: "the tiny photo box … a photo line negative of the primary photo like how driver licenses
    have"): the photo again, small, inverted, drained of colour, faint, at the lower right */

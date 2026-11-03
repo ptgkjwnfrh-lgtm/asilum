@@ -94,7 +94,8 @@ test("one language per passport, drawn from the five, the same on every opening;
   assert.ok(!/SEX/.test(page), "SEX is IDNTY now");
   assert.match(page, /id="ppidnty" className="ppwrite" type="text" maxLength=\{32\} placeholder="—" value=\{info\.idnty \|\| ""\} onChange=\{\(e\) => onWrite\("idnty", e\.target\.value\)\}/, "IDNTY is free text the passenger writes");
   assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*\}/, "the labels' face");
-  assert.ok(!/\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*(nowrap|ellipsis)/.test(css), "a long translation folds, never clipped");
+  assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*font-size: 1\.45cqw;[^}]*white-space: nowrap; \}/, "one line each, small enough for the translation beside the English (owner, 2 Nov 2026)");
+  assert.match(css, /\.ppid dt em, \.ppsig dt em, \.ppacct dt em \{[^}]*font-size: 1\.1cqw;/, "the translation a step smaller");
 });
 
 test("the surname and the given name come off the username: the last word the surname", () => {
