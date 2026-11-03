@@ -94,8 +94,12 @@ test("one language per passport, drawn from the five, the same on every opening;
   assert.ok(!/SEX/.test(page), "SEX is IDNTY now");
   assert.match(page, /id="ppidnty" className="ppwrite" type="text" maxLength=\{32\} placeholder="—" value=\{info\.idnty \|\| ""\} onChange=\{\(e\) => onWrite\("idnty", e\.target\.value\)\}/, "IDNTY is free text the passenger writes");
   assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*\}/, "the labels' face");
-  assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*font-size: 1\.45cqw;[^}]*white-space: nowrap; \}/, "one line each, small enough for the translation beside the English (owner, 2 Nov 2026)");
-  assert.match(css, /\.ppid dt em, \.ppsig dt em, \.ppacct dt em \{[^}]*font-size: 1\.1cqw;/, "the translation a step smaller");
+  assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*font-size: var\(--pt-1\);/, "the labels on the legible scale; the translation beside the English where it fits");
+  assert.ok(!/\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*(nowrap|ellipsis)/.test(css), "a long Latin translation folds, never clipped (legibility first, owner, 2 Nov 2026)");
+  assert.match(css, /\.ppid dt em, \.ppsig dt em, \.ppacct dt em \{[^}]*font-size: var\(--pt-2\);/, "the translation a step smaller");
+  assert.match(css, /--pt-2: 1\.8cqw; --pt-1: 2\.03cqw; --pt0: 2\.6cqw; --pt1: 3\.64cqw; --pm: 2\.03cqw; --pmz: 2\.6cqw;/, "the type scale: half-steps of φ from 1.6, legible as an ID's (owner, 2 Nov 2026)");
+  assert.match(css, /--pp-cloud: color-mix\(in srgb, var\(--wm-bar\) 22%, transparent\);/, "the band a low-opacity solid white");
+  assert.match(css, /\n\.ppcloud \{ position: absolute; inset: 0; z-index: 2; pointer-events: none; background: var\(--pp-cloud\);/, "solid: no wisps");
 });
 
 test("the surname and the given name come off the username: the last word the surname", () => {
@@ -193,7 +197,13 @@ test("the bar code is the logo's brick mirrored: the logo's line, slant and bend
   assert.match(page, /<PassportBarcode uid=\{uid\} \/>/);
   assert.match(css, /\n\.ppbarplate \{ fill: var\(--wm-bar\); \}/, "the logo's white, unlit: no halo to read as a line");
   assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "nothing in the slits but the glass: no tint, no ink");
-  assert.match(css, /\.ppbarcode \{[^}]*height: 8cqw;/, "8 hundredths of the page deep");
+  assert.match(css, /\.ppbarcode \{[^}]*height: var\(--pg1\);/, "φ¹ (8.09 hundredths of the page) deep");
+  assert.match(css, /--pg-3: 1\.18cqw; --pg-2: 1\.91cqw; --pg-1: 3\.09cqw; --pg0: 5cqw; --pg1: 8\.09cqw; --pg2: 13\.09cqw; --pg3: 21\.18cqw; --pg4: 34\.27cqw; --pg5: 55\.45cqw;/, "the golden grid from the margin's unit");
+  assert.match(css, /\.ppmast \{[^}]*height: var\(--pg2\);/, "the masthead φ² deep");
+  assert.match(css, /\.ppid \{[^}]*width: var\(--pg4\);[^}]*grid-auto-rows: var\(--pg2\);/, "the fields φ⁴ wide at a φ² pitch");
+  assert.match(css, /\.ppphoto \{[^}]*width: 52\.64cqw; height: calc\(52\.64cqw \* 1\.618\);/, "the photo the rest of the content, a golden rectangle");
+  assert.match(css, /\.ppghost \{[^}]*width: var\(--pg3\); height: var\(--pg4\);/, "the ghost a golden rectangle, φ³ by φ⁴");
+  assert.ok(BARCODE_W / BARCODE_H > 11.1 && BARCODE_W / BARCODE_H < 11.15, "the brick's box 90 by 8.09");
 });
 
 test("the cloud over the masthead only, its foot on the logo's slant; the zone unclouded and even; the map very faint; nothing else of the old artwork", () => {
@@ -203,14 +213,15 @@ test("the cloud over the masthead only, its foot on the logo's slant; the zone u
   assert.match(css, /\.ppmast \.ppserial, \.ppmast \.ppnum \{ position: absolute; z-index: 1; opacity: var\(--pp-under\); color: var\(--sig\); text-shadow: var\(--glow\);/, "under the cloud, lower, glowing a little");
   assert.equal((page.match(/className="ppcloud"/g) || []).length, 1, "one cloud, on the masthead");
   assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/header>/.test(page), "over the masthead");
-  // the masthead's foot: level at 67.18% of its depth (8.8 of 13.1), then the logo's run down to the full depth
-  assert.match(css, /\.ppmast \{[^}]*filter: drop-shadow\(0 0 0\.5cqw color-mix\(in srgb, var\(--wm-bar\) 55%, transparent\)\)/s, "the masthead glows white a little, the logo's white");
+  // the masthead's foot: level at φ¹ of its φ² depth (8.09 of 13.09: 61.8%), then one unit down the logo's run to
+  // the full depth
+  assert.match(css, /\.ppmast \{[^}]*filter: drop-shadow\(0 0 0\.5cqw color-mix\(in srgb, var\(--wm-bar\) 70%, transparent\)\)/s, "the masthead glows white, the logo's white");
   const poly = css.match(/\.ppmast \.ppcloud \{ clip-path: polygon\(([^)]*)\)/s)[1].split(",").map((p) => p.trim().split(" ").map(parseFloat));
   const level = poly[poly.length - 1], toeEnd = poly[3];
-  assert.deepEqual(level, [0, 67.18]); assert.deepEqual(toeEnd, [73.57, 100]);
+  assert.deepEqual(level, [0, 61.8]); assert.deepEqual(toeEnd, [80.31, 100]);
   const logo = brickGeometry(), run = (logo.toe - logo.shoulder) / (logo.line - logo.top);
-  const [sx, sy] = poly[10], [tx, ty] = poly[9]; // the slant's straight part, two points on it (in % of 100 by 13.1)
-  const slope = ((tx - sx)) / ((ty - sy) * 13.1 / 100);
+  const [sx, sy] = poly[10], [tx, ty] = poly[9]; // the slant's straight part, two points on it (in % of 100 by 13.09)
+  const slope = ((tx - sx)) / ((ty - sy) * 13.09 / 100);
   assert.ok(Math.abs(slope - run) < 0.05, "the logo's slant: " + slope + " vs " + run);
   // the zone: two lines spread over the measure, Michroma, unclouded
   assert.match(css, /\.ppmrz \.mrzline \{ display: flex; justify-content: space-between;/, "every character a flex item: both lines end on one edge");
@@ -224,6 +235,8 @@ test("the cloud over the masthead only, its foot on the logo's slant; the zone u
   assert.ok(!/Plus|ppvpage|CROSSES|MICROPRINT|ppterrain|ppholo-b|pposm|OPENSTREETMAP/.test(sec), "no pluses, no page number, no window, no microprint, no credit line: the map alone");
   assert.ok(/OpenStreetMap/.test(read("app/map/page.js")), "the site still credits OpenStreetMap where the map is read in full");
   assert.match(page, /<span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC PHOTO<\/span>/, "the caption under the negative");
+  assert.match(page, /<div className="pplow">\s*<PassportSignature[^>]*\/>\s*<dl className="ppacct">/, "the signature and the account in one flow, so a folded label moves the account down");
+  assert.match(css, /\n\.pplow \{[^}]*display: grid; gap: var\(--pg-1\);/);
   assert.ok(!/ppholo-b|ppterrain|ppsummit|ppmicro|ppplate|ppnation|ppsec\b|ppvpage|pvplus|\.pv-[spr]/.test(css), "their rules gone");
   assert.ok(board.indexOf('<div className="ppdocacts">') > board.indexOf("</div>", board.indexOf('className="ppdoc lg"')), "the keys under the page, not on it");
 });

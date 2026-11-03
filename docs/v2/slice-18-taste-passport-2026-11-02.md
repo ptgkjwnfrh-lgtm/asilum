@@ -34,11 +34,37 @@ the masthead glow white a little, underneath the negative photo add
 PASSENGER BIOMETRIC PHOTO, take the bezel off the barcode, take the map
 watermark out, the numero sign must match the mock."
 
+Then: "the formatting isn't matching up, it looks unaesthetically spaced …
+GRID THE WHOLE THING AND APPLY THE GOLDEN RATIO." THE GRID: one unit, the
+page's margin (5 hundredths of its width), and every length on the page a
+power of φ from it — 1.18 · 1.91 · 3.09 · **5** · 8.09 · 13.09 · 21.18 ·
+34.27 · 55.45 (`--pg-3` … `--pg5` in `app/globals.css`). The masthead is φ²
+deep, its foot level at φ¹ and stepping one unit down the logo's slant; the
+content between the margins splits φ:1 — the fields column φ⁴, the photo the
+rest (52.64, a golden rectangle), a φ⁻¹ gutter between; the fields keep a φ²
+pitch; the ghost is φ³ by φ⁴; the bar code is φ¹ deep; blocks part by one
+unit, lines within a block by φ⁻³. The type on its own φ scale from the
+value's 2.25: the name and the signature 3.64, values 2.25, labels 1.39, the
+translation 1.0 (one line beside the English, German's longest included),
+the machine type 1.91 and 2.25.
+
+Then: "the passport masthead is dark, i want it to be a low opacity solid
+white with a glow. and all the text has to be legible as if it were an
+actual ID." The band is a 22% solid of the logo's white in the logo's white
+glow; the type moved up to a legible scale (half-steps of φ from 1.6: the
+translation 1.8, labels 2.03, values 2.6, the zone 2.6 — on a phone 6 / 7 /
+9 / 9 px). At these sizes a long Latin translation (German's
+STAATSANGEHÖRIGKEIT, French's DATE DE NAISSANCE) cannot sit beside its
+English inside the φ⁴ column on a phone, so the translation folds under
+only where it does not fit — Japanese's and Arabic's stay beside — and
+the lower-left block (signature, account) runs in flow so a folded label
+moves the account down. Legibility outranks the earlier "not stacked".
+
 ## What landed
 
 | Need | Where | Status |
 | --- | --- | --- |
-| THE PAGE TRACED: a document of the mock-up's proportions (650 × 1120), every piece placed and sized in hundredths of its width (`cqw`), so a phone, a desktop and the /profile preview show the same page; the clouded masthead (the fixtures' frost over the band's words), glowing white a little in the logo's white (the cut on the cloud, the glow on the band, so the foot's slant is not clipped), its foot level under the serial then down THE LOGO'S OWN SLANT (`lib/wordmark.js`: the brick's shoulder, run 1.496, its bends) to the number's deeper right, the name in the notch; the keys OPEN MAP and STAMP PASSPORT under the page (the mock-up carries none) | `app/components/PassportDocument.jsx` (one page for /board and /profile), `app/globals.css` (`.ppdoc`, `.ppmast`, `.ppcloud`) | shipped |
+| THE PAGE ON THE GOLDEN GRID (100 × 178.2): every piece placed and sized in hundredths of its width (`cqw`) at a power of φ from the margin's unit, so a phone, a desktop and the /profile preview show the same page; the clouded masthead (the fixtures' frost over the band's words), glowing white a little in the logo's white (the cut on the cloud, the glow on the band, so the foot's slant is not clipped), its foot level under the serial then down THE LOGO'S OWN SLANT (`lib/wordmark.js`: the brick's shoulder, run 1.496, its bends) to the number's deeper right, the name in the notch; the keys OPEN MAP and STAMP PASSPORT under the page (the mock-up carries none) | `app/components/PassportDocument.jsx` (one page for /board and /profile), `app/globals.css` (`.ppdoc`, `.ppmast`, `.ppcloud`) | shipped |
 | The serial `AS<<<MM<<DD` — the month and day the account was created, a machine line of 16 — and the passport number `№ 0ASM·000·000`, six digits read off the account number (FNV-1a), both in OCR A Extended with the Os as zeros (`ocr`), the № drawn as the mock-up draws it — a bold serif N and a small raised o, underlined (`--numero`) — both the document's colour at a lower opacity, glowing a little, UNDER the cloud | `lib/passport/document.js` (`serialLine`, `SERIAL_WIDTH`, `passportNumber`, `passportNumberDisplay`, `ocr`), `public/fonts/ocr-a-extended.ttf` (the owner's own copy, shipped at the owner's word), `app/globals.css` (`--ocr`, `--numero`) | shipped |
 | The name as type in the logo's set — Michroma at −0.06em (the wordmark's −0.096em opened a little), bolder by a 0.02em stroke round each letter (half the first setting), the document's ink unlit — one line, sized to the notch | `app/globals.css` (`.pptitle`); `PassportPlate.jsx` deleted with its rules | shipped |
 | The data page: SURNAME and GIVEN NAME off the username (the last word the surname), DATE OF BIRTH and IDNTY written on the page by the passenger and kept with the display name on the device, NATIONALITY, TASTE TYPE, DATE OF ISSUE; every label `ENGLISH /` then the drawn language's word beside it on ONE line (owner, later: "small enough so the translation isn't stacked underneath" — sized so German's longest still fits), with its `lang` and direction | `lib/passport/document.js` (`nameParts`), `app/board/page.js` (`writeField`, `.ppwrite`), `lib/social.js` profile info | shipped |

@@ -59,8 +59,12 @@ export default function PassportDocument({ uid, info, taste, lang, mrz, photo, e
           <span key={i} dir="ltr">{pair.map((w, j) => [j ? <span key={"s" + j}>/</span> : null, <span key={j} lang={w.code} dir={w.dir}>{ocr(w.word)}</span>])}</span>
         ))}
       </span>
-      <PassportSignature name={info.name} label="PASSENGER SIGNATURE" translation={lang.signature} dir={lang.dir} editable={editable} />
-      <dl className="ppacct"><div><dt>ACCOUNT NO /{T("account")}</dt><dd>{uid || "—"}</dd></div></dl>
+      {/* the lower page's left column: the signature, then the account number, in flow (a folded label moves the
+          account down with it) */}
+      <div className="pplow">
+        <PassportSignature name={info.name} label="PASSENGER SIGNATURE" translation={lang.signature} dir={lang.dir} editable={editable} />
+        <dl className="ppacct"><div><dt>ACCOUNT NO /{T("account")}</dt><dd>{uid || "—"}</dd></div></dl>
+      </div>
       {/* the ghost: the photo again, small, as a negative — a driver's licence's second portrait */}
       <span className="ppghost" aria-hidden="true">{photo ? <img src={photo} alt="" /> : null}</span>
       <span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC PHOTO</span>

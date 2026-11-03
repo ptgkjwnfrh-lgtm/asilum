@@ -668,7 +668,12 @@ credit line (the map page carries OpenStreetMap's). Later that day: the
 name's kerning opened a little and its bold eased; the masthead glowing
 white a little; PASSENGER BIOMETRIC PHOTO under the negative; the bar
 code's glow off (its halo read as a bezel); the numero drawn as the mock-up
-draws it.
+draws it; every label on one line; then "GRID THE WHOLE THING AND APPLY THE
+GOLDEN RATIO" — the page laid on a φ scale from its margin (slice 18's
+record has the scale); then the masthead "a low opacity solid white with a
+glow" and "all the text has to be legible as if it were an actual ID" —
+the type raised to a legible scale, a long Latin translation folding under
+its label where it no longer fits beside it.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
