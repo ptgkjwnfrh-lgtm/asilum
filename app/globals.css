@@ -1815,8 +1815,10 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppnum .ppno u { font-size: 0.5em; vertical-align: 0.55em; text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 0.09em; margin-left: 0.04em; }
 /* THE NAME (owner: "close the kerning … to match the ASILUM logo and up the size and boldness", then "open up the
    kerning a little bit and reduce boldness"): Michroma at −0.06em, a 0.02em stroke for the bold (the face has
-   one weight), the ink unlit as the logo's word is; on the margin, centred in the notch under the level foot */
-.pptitle { position: absolute; z-index: 3; left: var(--pg0); top: calc(var(--pg1) + (var(--pg0) - var(--pt1) * 0.72) / 2 - var(--pt1) * 0.14); margin: 0; font-family: var(--mich); font-weight: 400; font-size: var(--pt1); line-height: 1;
+   one weight), the ink unlit as the logo's word is; on the margin, in the notch, its baseline ON the masthead's
+   deep foot (owner, 3 Nov 2026: "move the ASILUM TASTE PASSPORT down to the blue line … bottom of the masthead";
+   it was centred in the notch) — Michroma's baseline sits 0.93 of the size down a line-height-1 box, measured */
+.pptitle { position: absolute; z-index: 3; left: var(--pg0); top: calc(var(--pg2) - var(--pt1) * 0.93); margin: 0; font-family: var(--mich); font-weight: 400; font-size: var(--pt1); line-height: 1;
   white-space: nowrap; letter-spacing: -0.06em; -webkit-text-stroke: 0.02em currentColor; color: var(--ink); text-shadow: none; }
 /* THE PHOTO: the left column (90 less the fields' φ⁵ less the φ⁻¹ gutter: 31.46), a golden rectangle, one unit
    under the masthead; its print lines (the original's) */
@@ -1878,13 +1880,16 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    across the content, its line running in from the left and rising at the logo's slant into the block; the
    plate THE BAND'S OWN (owner, 3 Nov 2026: "make the barcode match the masthead" — the same 22% of the logo's
    white, --pp-cloud, in the same glow, --pp-glow; it was the full white unlit, then 30%), the bars holes in it
-   (the mask's #fff / #000 are luminance, not colour, as the logo's); through the holes the Liquid Glass alone.
-   The glow sits on the plate itself, before the mask (PassportBarcode.jsx), so the slits stay clean */
+   (the mask's #fff / #000 are luminance, not colour, as the logo's); the slits laid with the page's ground
+   (owner, 3 Nov 2026: "match the base color of the passport so it looks seamless" — the glass and the map showed
+   through them before). The glow sits on the plate itself, before the mask (PassportBarcode.jsx), so none of
+   it falls in the slits */
 .ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 2.4 + var(--pg0)); } /* under the ghost and its caption's two lines (the taller side) */
 .ppbarcode { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-foot); width: calc(100cqw - 2 * var(--pg0)); height: var(--pg1); display: block; overflow: visible; }
 .ppbarplane { fill: #fff; }   /* the mask's plane: keeps the plate */
 .ppbarhole { fill: #000; }    /* the bars, cut out of it */
 .ppbarplate { fill: var(--pp-cloud); filter: var(--pp-glow); } /* the band's white and the band's glow (owner, 3 Nov 2026: "match the masthead"; the 2 Nov halo that read as a line was the full white's) */
+.ppbarslit { fill: var(--bg); }   /* the slits: the page's ground, seamless */
 /* THE MACHINE ZONE φ⁻³ under the bar code: two lines of the 52 measure in OCR A, spread over the content's width
    (the lines encode the real account number: a clipped tail is a lie — nothing is clipped, the characters only
    draw closer) */

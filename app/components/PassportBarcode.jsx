@@ -6,10 +6,11 @@
 // own — its low-opacity white in its glow (owner, 3 Nov 2026: "make the
 // barcode match the masthead") — the bars CUT OUT of it by a mask — the filter and
 // the mask on the one element, so the glow is computed from the whole
-// plate and THEN the holes are cut. Through the holes lies the Liquid
-// Glass itself and nothing else (owner, 2 Nov 2026: "its a cut out of the
-// liquid glass" — no tint, no ink in the slits). Decoration drawn from real
-// state, hidden from assistive technology.
+// plate and THEN the holes are cut. The slits are then laid with the page's
+// own ground (owner, 3 Nov 2026: "the spaces inside the barcode, let's make
+// it match the base color of the passport so it looks seamless" — before
+// that the Liquid Glass and the map showed through them). Decoration drawn
+// from real state, hidden from assistive technology.
 
 import { useId } from "react";
 import { BARCODE_H, BARCODE_W, barcodePath, bars } from "../../lib/passport/barcode.js";
@@ -31,6 +32,8 @@ export default function PassportBarcode({ uid }) {
           </mask>
         </defs>
         <path className="ppbarplate" d={barcodePath()} mask={`url(#${cut})`} />
+        {/* the slits, in the page's ground: seamless with the paper round the plate */}
+        {holes.map(([x, w], i) => <rect key={"s" + i} className="ppbarslit" x={x} y={0} width={w} height={BARCODE_H} />)}
       </g>
     </svg>
   );

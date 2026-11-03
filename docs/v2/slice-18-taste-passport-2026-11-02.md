@@ -99,6 +99,15 @@ the same 22% of the logo's white (`--pp-cloud`) in the same glow
 (`--pp-glow`, one token for both) — the bars still cut out of it; the 2 Nov
 halo that read as a line was the full white's.
 
+Then, on a zoomed shot of the bar code and a line drawn under the name: "the
+spaces inside the barcode, let's make it match the base color of the
+passport so it looks seamless" — the slits are laid with the page's ground
+(`--bg`, `.ppbarslit`), where the glass and the map showed through before;
+"move the ASILUM TASTE PASSPORT down to the blue line … bottom of the
+masthead" — the name's baseline sits on the masthead's deep foot (φ²),
+measured off Michroma's box (0.93 of the size), where it was centred in the
+notch.
+
 ## What landed
 
 | Need | Where | Status |

@@ -195,11 +195,13 @@ test("the bar code is the logo's brick mirrored: the logo's line, slant and bend
   assert.match(svg, /<g transform=\{`matrix\(-1 0 0 1 \$\{BARCODE_W\} 0\)`\}>/, "mirrored: the line in from the left, the block at the right");
   assert.match(svg, /<mask id=\{cut\} maskUnits="userSpaceOnUse"/);
   assert.match(svg, /<rect key=\{i\} className="ppbarhole" x=\{x\} y=\{0\} width=\{w\} height=\{BARCODE_H\} \/>/, "every bar a hole");
+  assert.match(svg, /<path className="ppbarplate"[^>]*\/>\s*\{holes\.map\(\(\[x, w\], i\) => <rect key=\{"s" \+ i\} className="ppbarslit" x=\{x\} y=\{0\} width=\{w\} height=\{BARCODE_H\} \/>\)\}/, "every slit laid with the page's ground, over the cut plate (owner, 3 Nov 2026: seamless)");
+  assert.match(css, /\n\.ppbarslit \{ fill: var\(--bg\); \}/, "the slits the ground's colour, through a token");
   assert.match(svg, /<path className="ppbarplate" d=\{barcodePath\(\)\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask");
   assert.match(page, /<PassportBarcode uid=\{uid\} \/>/);
   assert.match(css, /\n\.ppbarplate \{ fill: var\(--pp-cloud\); filter: var\(--pp-glow\); \}/, "the plate the band's own white in the band's glow (owner, 3 Nov 2026: 'match the masthead')");
   assert.ok(!/--pp-bar:/.test(css), "no plate colour of its own");
-  assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "nothing in the slits but the glass: no tint, no ink");
+  assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "no tint on the plate (the slits are the page's ground since 3 Nov 2026)");
   assert.match(css, /\.ppbarcode \{[^}]*height: var\(--pg1\);/, "φ¹ (8.09 hundredths of the page) deep");
   assert.match(css, /--pg-3: 1\.18cqw; --pg-2: 1\.91cqw; --pg-1: 3\.09cqw; --pg0: 5cqw; --pg1: 8\.09cqw; --pg2: 13\.09cqw; --pg3: 21\.18cqw; --pg4: 34\.27cqw; --pg5: 55\.45cqw;/, "the golden grid from the margin's unit");
   assert.match(css, /\.ppmast \{[^}]*height: var\(--pg2\);/, "the masthead φ² deep");
@@ -266,6 +268,7 @@ test("the faces are the mock-up's: OCR A for the serial, the number and the four
 
 test("the name: the logo's set, bigger and bolder, one line", () => {
   assert.match(page, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/);
+  assert.match(css, /\.pptitle \{[^}]*top: calc\(var\(--pg2\) - var\(--pt1\) \* 0\.93\);/, "the name's baseline on the masthead's deep foot (owner, 3 Nov 2026)");
   assert.match(css, /\.pptitle \{[^}]*letter-spacing: -0\.06em; -webkit-text-stroke: 0\.02em currentColor; color: var\(--ink\); text-shadow: none; \}/s, "the logo's set opened a little, half the stroke, the ink unlit");
   assert.match(css, /\.pptitle \{[^}]*white-space: nowrap;/s);
 });
