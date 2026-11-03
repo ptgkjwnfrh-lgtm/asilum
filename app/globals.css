@@ -1788,7 +1788,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
      quarter-step under the label step (2.03 → 1.8), the translation back on its own step (1.6), at 0.86 */
   --pt-lbl: 1.8cqw; --pt-tr: 1.6cqw; --pp-lbl: 0.86;
   --pp-cloud: color-mix(in srgb, var(--wm-bar) 22%, transparent);     /* the band: a low-opacity solid white (owner: "a low opacity solid white with a glow") */
-  --pp-bar: color-mix(in srgb, var(--wm-bar) 30%, transparent);       /* the bar code's plate: the same white, "only slightly higher opacity than the passport masthead" (owner, 3 Nov 2026) */
+  --pp-glow: drop-shadow(0 0 0.5cqw color-mix(in srgb, var(--wm-bar) 70%, transparent)) drop-shadow(0 0 1.8cqw color-mix(in srgb, var(--wm-bar) 40%, transparent)); /* the logo's white glow, the band's and the bar code's alike */
   --pp-under: 0.8; /* what shows of a word under the band */ }
 /* THE BAND (owner: "center fixture level clouded … blue text has lower opacity and only slightly glows
    underneath cloud", then "a low opacity solid white with a glow"): a pane of low-opacity solid white laid OVER
@@ -1802,7 +1802,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    at the number's side — the polygon is that geometry, computed once for this box (the cut on the cloud, the
    glow on the band, so the glow is not clipped at the foot) */
 .ppmast { position: absolute; left: 0; top: 0; width: 100%; height: var(--pg2); z-index: 2;
-  filter: drop-shadow(0 0 0.5cqw color-mix(in srgb, var(--wm-bar) 70%, transparent)) drop-shadow(0 0 1.8cqw color-mix(in srgb, var(--wm-bar) 40%, transparent)); /* the logo's white glow */ }
+  filter: var(--pp-glow); /* the logo's white glow */ }
 .ppmast .ppcloud { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 80.31% 100%, 79.87% 99.84%, 79.45% 99.37%, 79.04% 98.59%, 78.64% 97.49%, 78.25% 96.08%, 77.88% 94.36%, 72.6% 67.44%, 72.23% 65.72%, 71.84% 64.31%, 71.44% 63.21%, 71.03% 62.43%, 70.61% 61.96%, 70.17% 61.8%, 0% 61.8%); }
 .ppmast .ppserial, .ppmast .ppnum { position: absolute; z-index: 1; opacity: var(--pp-under); color: var(--sig); text-shadow: var(--glow); white-space: nowrap; line-height: 1; font-size: var(--pm); }
 /* the serial centred in the level part (φ¹ deep) on the margin; the number on the same line (owner, 3 Nov 2026:
@@ -1876,13 +1876,15 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppghostcap { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg3)); top: calc(var(--pp-low) + var(--pg4) + var(--pg-3)); width: var(--pg3); text-align: center; font-size: var(--pt-2); letter-spacing: 0.04em; line-height: 1.2; color: var(--sig); text-shadow: var(--glow); }
 /* THE BAR CODE (PassportBarcode.jsx), one unit under the ghost's caption (--pp-foot): the logo's brick, φ¹ deep
    across the content, its line running in from the left and rising at the logo's slant into the block; the
-   plate the logo's white at a low opacity, a touch over the band's, unlit, the bars holes in it (the mask's
-   #fff / #000 are luminance, not colour, as the logo's); through the holes the Liquid Glass alone */
+   plate THE BAND'S OWN (owner, 3 Nov 2026: "make the barcode match the masthead" — the same 22% of the logo's
+   white, --pp-cloud, in the same glow, --pp-glow; it was the full white unlit, then 30%), the bars holes in it
+   (the mask's #fff / #000 are luminance, not colour, as the logo's); through the holes the Liquid Glass alone.
+   The glow sits on the plate itself, before the mask (PassportBarcode.jsx), so the slits stay clean */
 .ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 2.4 + var(--pg0)); } /* under the ghost and its caption's two lines (the taller side) */
 .ppbarcode { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-foot); width: calc(100cqw - 2 * var(--pg0)); height: var(--pg1); display: block; overflow: visible; }
 .ppbarplane { fill: #fff; }   /* the mask's plane: keeps the plate */
 .ppbarhole { fill: #000; }    /* the bars, cut out of it */
-.ppbarplate { fill: var(--pp-bar); } /* the logo's white at 30%, a touch over the band's 22 (owner, 3 Nov 2026); no glow (owner, 2 Nov 2026: its halo read as a line along the top and bottom "ruining the negative cutout look") */
+.ppbarplate { fill: var(--pp-cloud); filter: var(--pp-glow); } /* the band's white and the band's glow (owner, 3 Nov 2026: "match the masthead"; the 2 Nov halo that read as a line was the full white's) */
 /* THE MACHINE ZONE φ⁻³ under the bar code: two lines of the 52 measure in OCR A, spread over the content's width
    (the lines encode the real account number: a clipped tail is a lie — nothing is clipped, the characters only
    draw closer) */

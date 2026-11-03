@@ -197,8 +197,8 @@ test("the bar code is the logo's brick mirrored: the logo's line, slant and bend
   assert.match(svg, /<rect key=\{i\} className="ppbarhole" x=\{x\} y=\{0\} width=\{w\} height=\{BARCODE_H\} \/>/, "every bar a hole");
   assert.match(svg, /<path className="ppbarplate" d=\{barcodePath\(\)\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask");
   assert.match(page, /<PassportBarcode uid=\{uid\} \/>/);
-  assert.match(css, /\n\.ppbarplate \{ fill: var\(--pp-bar\); \}/, "the logo's white at a low opacity, unlit: no halo to read as a line");
-  assert.match(css, /--pp-bar: color-mix\(in srgb, var\(--wm-bar\) 30%, transparent\);/, "only slightly more solid than the band's 22% (owner, 3 Nov 2026)");
+  assert.match(css, /\n\.ppbarplate \{ fill: var\(--pp-cloud\); filter: var\(--pp-glow\); \}/, "the plate the band's own white in the band's glow (owner, 3 Nov 2026: 'match the masthead')");
+  assert.ok(!/--pp-bar:/.test(css), "no plate colour of its own");
   assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "nothing in the slits but the glass: no tint, no ink");
   assert.match(css, /\.ppbarcode \{[^}]*height: var\(--pg1\);/, "φ¹ (8.09 hundredths of the page) deep");
   assert.match(css, /--pg-3: 1\.18cqw; --pg-2: 1\.91cqw; --pg-1: 3\.09cqw; --pg0: 5cqw; --pg1: 8\.09cqw; --pg2: 13\.09cqw; --pg3: 21\.18cqw; --pg4: 34\.27cqw; --pg5: 55\.45cqw;/, "the golden grid from the margin's unit");
@@ -221,7 +221,8 @@ test("the cloud over the masthead only, its foot on the logo's slant; the zone u
   assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/header>/.test(page), "over the masthead");
   // the masthead's foot: level at φ¹ of its φ² depth (8.09 of 13.09: 61.8%), then one unit down the logo's run to
   // the full depth
-  assert.match(css, /\.ppmast \{[^}]*filter: drop-shadow\(0 0 0\.5cqw color-mix\(in srgb, var\(--wm-bar\) 70%, transparent\)\)/s, "the masthead glows white, the logo's white");
+  assert.match(css, /--pp-glow: drop-shadow\(0 0 0\.5cqw color-mix\(in srgb, var\(--wm-bar\) 70%, transparent\)\) drop-shadow\(0 0 1\.8cqw color-mix\(in srgb, var\(--wm-bar\) 40%, transparent\)\);/, "one glow for the band and the bar code");
+  assert.match(css, /\.ppmast \{[^}]*filter: var\(--pp-glow\);/s, "the masthead glows white, the logo's white");
   const poly = css.match(/\.ppmast \.ppcloud \{ clip-path: polygon\(([^)]*)\)/s)[1].split(",").map((p) => p.trim().split(" ").map(parseFloat));
   const level = poly[poly.length - 1], toeEnd = poly[3];
   assert.deepEqual(level, [0, 61.8]); assert.deepEqual(toeEnd, [80.31, 100]);

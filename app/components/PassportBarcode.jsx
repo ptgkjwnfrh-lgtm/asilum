@@ -2,8 +2,9 @@
 
 // app/components/PassportBarcode.jsx — THE BAR CODE, the logo's brick
 // mirrored (lib/passport/barcode.js), drawn the way the wordmark is drawn
-// (Wordmark.jsx, PassportPlate before it): the plate in the logo's white
-// and the logo's glow, the bars CUT OUT of it by a mask — the filter and
+// (Wordmark.jsx, PassportPlate before it): the plate the masthead band's
+// own — its low-opacity white in its glow (owner, 3 Nov 2026: "make the
+// barcode match the masthead") — the bars CUT OUT of it by a mask — the filter and
 // the mask on the one element, so the glow is computed from the whole
 // plate and THEN the holes are cut. Through the holes lies the Liquid
 // Glass itself and nothing else (owner, 2 Nov 2026: "its a cut out of the
