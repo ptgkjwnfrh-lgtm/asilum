@@ -1779,10 +1779,12 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   --pg-3: 1.18cqw; --pg-2: 1.91cqw; --pg-1: 3.09cqw; --pg0: 5cqw; --pg1: 8.09cqw; --pg2: 13.09cqw; --pg3: 21.18cqw; --pg4: 34.27cqw; --pg5: 55.45cqw;
   /* THE TYPE, legible as an ID's (owner, 2 Nov 2026: "all the text has to be legible as if it were an actual
      ID"): half-steps of φ from 1.6 — the translation 1.6, labels 2.03, values 2.6, the name and the signature
-     3.64 (the owner's own setting); the machine type 2.03 for the serial and the number, 2.6 for the zone and the
-     four words. On a phone (347 wide) that is 5.9 / 7 / 9 / 12.6 px. */
-  --pt-2: 1.7cqw; --pt-1: 2.03cqw; --pt0: 2.6cqw; --pt1: 3.64cqw; --pm: 2.03cqw; --pmz: 2.6cqw; /* the translation a touch above its step (1.6), for the phone's sake */
+     3.64 (the owner's own setting); the machine type 2.6 for the serial, the number, the zone and the four words
+     (the serial and the number were 2.03; owner, 3 Nov 2026: the number and the date "a little bigger" — one
+     half-step up). On a phone (347 wide) that is 5.9 / 7 / 9 / 12.6 px. */
+  --pt-2: 1.7cqw; --pt-1: 2.03cqw; --pt0: 2.6cqw; --pt1: 3.64cqw; --pm: 2.6cqw; --pmz: 2.6cqw; /* the translation a touch above its step (1.6), for the phone's sake */
   --pp-cloud: color-mix(in srgb, var(--wm-bar) 22%, transparent);     /* the band: a low-opacity solid white (owner: "a low opacity solid white with a glow") */
+  --pp-bar: color-mix(in srgb, var(--wm-bar) 30%, transparent);       /* the bar code's plate: the same white, "only slightly higher opacity than the passport masthead" (owner, 3 Nov 2026) */
   --pp-under: 0.8; /* what shows of a word under the band */ }
 /* THE BAND (owner: "center fixture level clouded … blue text has lower opacity and only slightly glows
    underneath cloud", then "a low opacity solid white with a glow"): a pane of low-opacity solid white laid OVER
@@ -1840,11 +1842,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    PASSP0RT/REISEPASS over パスポート/PASSEP0RT — in OCR A, the Os as zeros (lib/passport/document.js passportWords) */
 .ppquad { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0) + var(--pp-photo) * 1.618 + var(--pg-1)); width: var(--pp-photo); display: grid; gap: var(--pg-3); justify-items: center; text-align: center;
   font-family: var(--ocr); font-size: var(--pt0); letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); line-height: 1; white-space: nowrap; }
-/* THE LOWER PAGE, one unit under the fields (--pp-low; the four words under the photo end just above): THE
+/* THE LOWER PAGE, one unit and φ⁻² under the fields (--pp-low; the four words under the photo end just above;
+   the φ⁻² is the owner's "tad", 3 Nov 2026: the ghost's caption gave up a line, so the signature and the ghost
+   move down by about that line and the bar code and the zone keep their place at the foot): THE
    SIGNATURE and THE ACCOUNT NUMBER at the left, in flow (a Latin signature label may fold here; the account
    follows it down), the photo's GHOST at the right; the pad and the kept stroke are the signature's own box; the
    kept signature is a mask, so it takes the ink of either theme */
-.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 7 * var(--pg1) + var(--pg0)); }
+.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 7 * var(--pg1) + var(--pg0) + var(--pg-2)); }
 .pplow { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-low); width: calc(100cqw - 2 * var(--pg0) - var(--pg3) - var(--pg-1)); display: grid; gap: var(--pg-1); align-content: start; }
 .pplow .ppsig dt { white-space: normal; }
 .ppsig dd { margin: var(--pg-3) 0 0; height: calc(var(--pt1) * 1.618); display: flex; align-items: center; }
@@ -1860,19 +1864,19 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppacct dd { margin: var(--pg-3) 0 0; font-size: var(--pt-2); letter-spacing: 0.02em; line-height: 1.3; white-space: nowrap; color: var(--ink); } /* the account number, 38 characters, on one line beside the ghost */
 /* THE GHOST (owner: "the tiny photo box … a photo line negative of the primary photo like how driver licenses
    have"): the photo again, small, inverted, drained of colour, faint; φ³ by φ⁴ on the right margin beside the
-   signature, captioned PASSENGER BIOMETRIC PHOTO */
+   signature, captioned PASSENGER BIOMETRIC (two lines; owner, 3 Nov 2026: "take out photo") */
 .ppghost { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg3)); top: var(--pp-low); width: var(--pg3); height: var(--pg4); border-radius: var(--pg-2); overflow: hidden; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .ppghost img { width: 100%; height: 100%; object-fit: cover; display: block; filter: invert(1) grayscale(1) contrast(1.15); opacity: 0.55; }
 .ppghostcap { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg3)); top: calc(var(--pp-low) + var(--pg4) + var(--pg-3)); width: var(--pg3); text-align: center; font-size: var(--pt-2); letter-spacing: 0.04em; line-height: 1.2; color: var(--sig); text-shadow: var(--glow); }
 /* THE BAR CODE (PassportBarcode.jsx), one unit under the ghost's caption (--pp-foot): the logo's brick, φ¹ deep
    across the content, its line running in from the left and rising at the logo's slant into the block; the
-   plate the logo's white, unlit, the bars holes in it (the mask's #fff / #000 are luminance, not colour, as the
-   logo's); through the holes the Liquid Glass alone */
-.ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 3.6 + var(--pg0)); } /* under the ghost and its caption's three lines (the taller side) */
+   plate the logo's white at a low opacity, a touch over the band's, unlit, the bars holes in it (the mask's
+   #fff / #000 are luminance, not colour, as the logo's); through the holes the Liquid Glass alone */
+.ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 2.4 + var(--pg0)); } /* under the ghost and its caption's two lines (the taller side) */
 .ppbarcode { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-foot); width: calc(100cqw - 2 * var(--pg0)); height: var(--pg1); display: block; overflow: visible; }
 .ppbarplane { fill: #fff; }   /* the mask's plane: keeps the plate */
 .ppbarhole { fill: #000; }    /* the bars, cut out of it */
-.ppbarplate { fill: var(--wm-bar); } /* no glow (owner, 2 Nov 2026: its halo read as a line along the top and bottom "ruining the negative cutout look") */
+.ppbarplate { fill: var(--pp-bar); } /* the logo's white at 30%, a touch over the band's 22 (owner, 3 Nov 2026); no glow (owner, 2 Nov 2026: its halo read as a line along the top and bottom "ruining the negative cutout look") */
 /* THE MACHINE ZONE φ⁻³ under the bar code: two lines of the 52 measure in OCR A, spread over the content's width
    (the lines encode the real account number: a clipped tail is a lie — nothing is clipped, the characters only
    draw closer) */

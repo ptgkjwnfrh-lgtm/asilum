@@ -67,7 +67,7 @@ export default function PassportDocument({ uid, info, taste, lang, mrz, photo, e
       </div>
       {/* the ghost: the photo again, small, as a negative — a driver's licence's second portrait */}
       <span className="ppghost" aria-hidden="true">{photo ? <img src={photo} alt="" /> : null}</span>
-      <span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC PHOTO</span>
+      <span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC</span>
       <PassportBarcode uid={uid} />
       {/* the machine zone at the foot: two lines of the measure, every one a field the data page prints
           (lib/passport/document.js mrzZone), the chevrons the filler, the device's cursor at the end */}
