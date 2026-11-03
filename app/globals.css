@@ -1762,24 +1762,26 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    margin, 5 hundredths of its width (cqw); every length on the page a power of φ (1.618) from it —
      φ⁻³ 1.18 · φ⁻² 1.91 · φ⁻¹ 3.09 · φ⁰ 5 · φ¹ 8.09 · φ² 13.09 · φ³ 21.18 · φ⁴ 34.27 · φ⁵ 55.45
    (--pg-3 … --pg5). The masthead is φ² deep, its foot level at φ¹ and stepping one unit down the logo's slant
-   (lib/wordmark.js) to the full depth; the content between the margins (90) splits φ:1 — the fields column φ⁴,
-   the photo the rest, a φ⁻¹ gutter between; the photo is a golden rectangle; the fields keep a φ² pitch; the
-   ghost is φ³ by φ⁴, a golden rectangle too; the bar code is φ¹ deep; blocks part by one unit, lines within a
-   block by φ⁻³, labels from values by φ⁻³. THE TYPE on its own φ scale from the value's 2.25: the name and the
+   (lib/wordmark.js) to the full depth; the content between the margins (90) splits 1:φ — the photo narrow
+   (owner, 2 Nov 2026: "narrow the photo", so every translation holds one line beside its English), the fields
+   column φ⁵, a φ⁻¹ gutter between; the photo is a golden rectangle; the fields keep a φ¹ pitch and end level
+   with the four words under the photo; the signature and the account at the left of the lower page, the ghost
+   at its right, φ³ by φ⁴, a golden rectangle too; the bar code is φ¹ deep; blocks part by one unit, lines within a block by φ⁻³, labels
+   from values by φ⁻³. THE TYPE on its own φ scale from the value's 2.25: the name and the
    signature 3.64, values 2.25, labels 1.39, their translations 1.0 (sized to hold one line beside the English,
    German's longest included), the machine type (OCR A) 1.91 for the serial, the number and the zone, 2.25 for
    the four words. No hairline anywhere; every face Michroma but the machine type. The clouded masthead carries
    the serial and the number under the fixtures' frost; the name sits in the notch; the bar code is the logo's
    brick mirrored (lib/passport/barcode.js), the bars cut out of it; the zone two even lines; the map under all of
    it, faint; nothing else of the old document. ---- */
-.ppdoc { position: relative; container-type: inline-size; aspect-ratio: 100 / 181; max-width: 560px; margin: 0 auto 10px; border: 0; border-radius: var(--pg-1);
+.ppdoc { position: relative; container-type: inline-size; aspect-ratio: 100 / 145.3; max-width: 560px; margin: 0 auto 10px; border: 0; border-radius: var(--pg-1);
   overflow: hidden; background: var(--bg2); font-family: var(--mich); color: var(--ink); line-height: 1.2;
   --pg-3: 1.18cqw; --pg-2: 1.91cqw; --pg-1: 3.09cqw; --pg0: 5cqw; --pg1: 8.09cqw; --pg2: 13.09cqw; --pg3: 21.18cqw; --pg4: 34.27cqw; --pg5: 55.45cqw;
   /* THE TYPE, legible as an ID's (owner, 2 Nov 2026: "all the text has to be legible as if it were an actual
      ID"): half-steps of φ from 1.6 — the translation 1.6, labels 2.03, values 2.6, the name and the signature
      3.64 (the owner's own setting); the machine type 2.03 for the serial and the number, 2.6 for the zone and the
-     four words. On a phone (347 wide) that is 6.2 / 7 / 9 / 12.6 px. */
-  --pt-2: 1.8cqw; --pt-1: 2.03cqw; --pt0: 2.6cqw; --pt1: 3.64cqw; --pm: 2.03cqw; --pmz: 2.6cqw; /* the translation a touch above its step (1.6), for the phone's sake */
+     four words. On a phone (347 wide) that is 5.9 / 7 / 9 / 12.6 px. */
+  --pt-2: 1.7cqw; --pt-1: 2.03cqw; --pt0: 2.6cqw; --pt1: 3.64cqw; --pm: 2.03cqw; --pmz: 2.6cqw; /* the translation a touch above its step (1.6), for the phone's sake */
   --pp-cloud: color-mix(in srgb, var(--wm-bar) 22%, transparent);     /* the band: a low-opacity solid white (owner: "a low opacity solid white with a glow") */
   --pp-under: 0.8; /* what shows of a word under the band */ }
 /* THE BAND (owner: "center fixture level clouded … blue text has lower opacity and only slightly glows
@@ -1808,20 +1810,22 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    one weight), the ink unlit as the logo's word is; on the margin, centred in the notch under the level foot */
 .pptitle { position: absolute; z-index: 3; left: var(--pg0); top: calc(var(--pg1) + (var(--pg0) - var(--pt1) * 0.72) / 2 - var(--pt1) * 0.14); margin: 0; font-family: var(--mich); font-weight: 400; font-size: var(--pt1); line-height: 1;
   white-space: nowrap; letter-spacing: -0.06em; -webkit-text-stroke: 0.02em currentColor; color: var(--ink); text-shadow: none; }
-/* THE PHOTO: the left column (90 less the fields' φ⁴ less the φ⁻¹ gutter: 52.64), a golden rectangle, one unit
+/* THE PHOTO: the left column (90 less the fields' φ⁵ less the φ⁻¹ gutter: 31.46), a golden rectangle, one unit
    under the masthead; its print lines (the original's) */
-.ppphoto { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0)); width: 52.64cqw; height: calc(52.64cqw * 1.618); border: 0; border-radius: var(--pg-1); overflow: hidden; padding: 0; margin: 0;
+.ppdoc { --pp-photo: calc(100cqw - 2 * var(--pg0) - var(--pg5) - var(--pg-1)); }
+.ppphoto { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0)); width: var(--pp-photo); height: calc(var(--pp-photo) * 1.618); border: 0; border-radius: var(--pg-1); overflow: hidden; padding: 0; margin: 0;
   display: block; cursor: pointer; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .ppphoto img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(0.55) contrast(1.12) brightness(0.96); }
 .ppphoto::after { content: ""; position: absolute; inset: 0; pointer-events: none; background:
     linear-gradient(180deg, color-mix(in srgb, var(--p2) 22%, transparent), color-mix(in srgb, var(--sig) 16%, transparent)),
     repeating-linear-gradient(0deg, transparent 0 2px, color-mix(in srgb, var(--ink) 14%, transparent) 2px 3px); }
 .ppphotoempty { display: grid; place-items: center; gap: var(--pg-3); height: 100%; color: var(--sig); text-shadow: var(--glow); font-size: var(--pg0); }
-.ppphotoempty em { font-style: normal; font-size: var(--pt-1); letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
-/* THE FIELDS: the right column (φ⁴ wide, on the right margin), a row every φ²; "ENGLISH /" then the drawn
-   language, fainter, beside it where it fits; the value φ⁻³ under */
-.ppid { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg4)); top: calc(var(--pg2) + var(--pg0)); width: var(--pg4); margin: 0; padding: 0; display: grid; grid-auto-rows: var(--pg2); align-content: start; }
-.ppid dt, .ppsig dt, .ppacct dt { font-size: var(--pt-1); letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; } /* the translation on the label's line wherever it fits; a long Latin one (German's, French's) folds under at these sizes — legibility first */
+.ppphotoempty em { font-style: normal; font-size: var(--pt-2); letter-spacing: 0.12em; color: var(--grey); text-shadow: none; white-space: nowrap; }
+/* THE FIELDS: the right column (φ⁵ wide, on the right margin), a row every φ¹; "ENGLISH /" then the drawn
+   language, fainter, on ONE line (owner: "small enough so the translation text isn't stacked underneath", then
+   "narrow the photo" to make the room); the value φ⁻³ under */
+.ppid { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg5)); top: calc(var(--pg2) + var(--pg0)); width: var(--pg5); margin: 0; padding: 0; display: grid; grid-auto-rows: var(--pg1); align-content: start; }
+.ppid dt, .ppsig dt, .ppacct dt { font-size: var(--pt-1); letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; white-space: nowrap; }
 .ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; font-size: var(--pt-2); color: var(--grey); text-shadow: none; letter-spacing: 0.02em; margin-left: 0.6cqw; }
 .ppid dd { margin: var(--pg-3) 0 0; font-size: var(--pt0); letter-spacing: 0.04em; line-height: 1.2; min-height: 1.2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the passenger writes two fields on the page (IDNTY, DATE OF BIRTH): the same face as the printed ones, no
@@ -1834,13 +1838,15 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppstar { color: var(--warn); text-shadow: var(--glow-r); }
 /* THE DOCUMENT'S WORD FOR ITSELF, φ⁻¹ under the photo, centred on it: the mock-up's four words on two lines —
    PASSP0RT/REISEPASS over パスポート/PASSEP0RT — in OCR A, the Os as zeros (lib/passport/document.js passportWords) */
-.ppquad { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0) + 52.64cqw * 1.618 + var(--pg-1)); width: 52.64cqw; display: grid; gap: var(--pg-3); justify-items: center; text-align: center;
+.ppquad { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0) + var(--pp-photo) * 1.618 + var(--pg-1)); width: var(--pp-photo); display: grid; gap: var(--pg-3); justify-items: center; text-align: center;
   font-family: var(--ocr); font-size: var(--pt0); letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); line-height: 1; white-space: nowrap; }
-/* THE LOWER PAGE, one unit under the four words (--pp-low): THE SIGNATURE and THE ACCOUNT NUMBER at the left, the
-   photo's GHOST at the right; the pad and the kept stroke are the signature's own box; the kept signature is a
-   mask, so it takes the ink of either theme */
-.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 52.64cqw * 1.618 + var(--pg-1) + var(--pt0) * 2 + var(--pg-3) + var(--pg0)); }
+/* THE LOWER PAGE, one unit under the fields (--pp-low; the four words under the photo end just above): THE
+   SIGNATURE and THE ACCOUNT NUMBER at the left, in flow (a Latin signature label may fold here; the account
+   follows it down), the photo's GHOST at the right; the pad and the kept stroke are the signature's own box; the
+   kept signature is a mask, so it takes the ink of either theme */
+.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 7 * var(--pg1) + var(--pg0)); }
 .pplow { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-low); width: calc(100cqw - 2 * var(--pg0) - var(--pg3) - var(--pg-1)); display: grid; gap: var(--pg-1); align-content: start; }
+.pplow .ppsig dt { white-space: normal; }
 .ppsig dd { margin: var(--pg-3) 0 0; height: calc(var(--pt1) * 1.618); display: flex; align-items: center; }
 .ppsigname { font-size: var(--pt1); letter-spacing: 0.02em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ppsigpad, .ppsignink { display: block; width: 100%; height: calc(var(--pt1) * 1.618); color: var(--ink); }
@@ -1851,10 +1857,10 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppsigkeys .txtbtn:disabled { opacity: 0.4; cursor: default; }
 /* the account number φ⁻¹ under the signature's keys, in the same flow */
 .ppacct { margin: 0; }
-.ppacct dd { margin: var(--pg-3) 0 0; font-size: var(--pt-1); letter-spacing: 0.02em; line-height: 1.3; word-break: break-all; color: var(--ink); }
+.ppacct dd { margin: var(--pg-3) 0 0; font-size: var(--pt-2); letter-spacing: 0.02em; line-height: 1.3; white-space: nowrap; color: var(--ink); } /* the account number, 38 characters, on one line beside the ghost */
 /* THE GHOST (owner: "the tiny photo box … a photo line negative of the primary photo like how driver licenses
-   have"): the photo again, small, inverted, drained of colour, faint; φ³ by φ⁴ on the right margin, captioned
-   PASSENGER BIOMETRIC PHOTO */
+   have"): the photo again, small, inverted, drained of colour, faint; φ³ by φ⁴ on the right margin beside the
+   signature, captioned PASSENGER BIOMETRIC PHOTO */
 .ppghost { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg3)); top: var(--pp-low); width: var(--pg3); height: var(--pg4); border-radius: var(--pg-2); overflow: hidden; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .ppghost img { width: 100%; height: 100%; object-fit: cover; display: block; filter: invert(1) grayscale(1) contrast(1.15); opacity: 0.55; }
 .ppghostcap { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg3)); top: calc(var(--pp-low) + var(--pg4) + var(--pg-3)); width: var(--pg3); text-align: center; font-size: var(--pt-2); letter-spacing: 0.04em; line-height: 1.2; color: var(--sig); text-shadow: var(--glow); }
@@ -1862,7 +1868,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    across the content, its line running in from the left and rising at the logo's slant into the block; the
    plate the logo's white, unlit, the bars holes in it (the mask's #fff / #000 are luminance, not colour, as the
    logo's); through the holes the Liquid Glass alone */
-.ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 3.6 + var(--pg0)); } /* the caption's three lines */
+.ppdoc { --pp-foot: calc(var(--pp-low) + var(--pg4) + var(--pg-3) + var(--pt-2) * 3.6 + var(--pg0)); } /* under the ghost and its caption's three lines (the taller side) */
 .ppbarcode { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-foot); width: calc(100cqw - 2 * var(--pg0)); height: var(--pg1); display: block; overflow: visible; }
 .ppbarplane { fill: #fff; }   /* the mask's plane: keeps the plate */
 .ppbarhole { fill: #000; }    /* the bars, cut out of it */
