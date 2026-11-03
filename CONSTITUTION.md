@@ -663,7 +663,12 @@ Extended (the Os zeros) for the serial, the number, the mock-up's four
 words under the photo (PASSP0RT/REISEPASS, パスポート/PASSEP0RT) and the
 machine zone, a serif numero, Michroma for everything else; the zone
 unclouded; through the bar code's slits the Liquid Glass alone, no tint;
-(9) of the old artwork the map alone stays — no pluses, no page number.
+(9) of the old artwork the map alone stays — no pluses, no page number, no
+credit line (the map page carries OpenStreetMap's). Later that day: the
+name's kerning opened a little and its bold eased; the masthead glowing
+white a little; PASSENGER BIOMETRIC PHOTO under the negative; the bar
+code's glow off (its halo read as a bezel); the numero drawn as the mock-up
+draws it.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is

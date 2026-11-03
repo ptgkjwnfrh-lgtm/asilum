@@ -1790,18 +1790,22 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    unit down, the bends 0.266 of the drop) down to the full depth at the number's side — the polygon is that
    geometry, computed once for this box */
 .ppmast { position: absolute; left: 0; top: 0; width: 100%; height: 13.1cqw; z-index: 2;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 73.57% 100%, 73.2% 99.87%, 72.83% 99.46%, 72.48% 98.79%, 72.14% 97.85%, 71.8% 96.63%, 71.48% 95.15%, 66.95% 72.02%, 66.63% 70.54%, 66.3% 69.33%, 65.95% 68.39%, 65.6% 67.71%, 65.23% 67.31%, 64.86% 67.18%, 0% 67.18%); }
+  filter: drop-shadow(0 0 0.5cqw color-mix(in srgb, var(--wm-bar) 55%, transparent)) drop-shadow(0 0 1.6cqw color-mix(in srgb, var(--wm-bar) 30%, transparent)); /* glowing white a little (owner, 2 Nov 2026), the logo's white */ }
+.ppmast .ppcloud { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 73.57% 100%, 73.2% 99.87%, 72.83% 99.46%, 72.48% 98.79%, 72.14% 97.85%, 71.8% 96.63%, 71.48% 95.15%, 66.95% 72.02%, 66.63% 70.54%, 66.3% 69.33%, 65.95% 68.39%, 65.6% 67.71%, 65.23% 67.31%, 64.86% 67.18%, 0% 67.18%); }
 .ppmast .ppserial, .ppmast .ppnum { position: absolute; z-index: 1; opacity: var(--pp-under); color: var(--sig); text-shadow: var(--glow); white-space: nowrap; line-height: 1; }
+/* the serial and the number are inside the band's filter, so their glow is the band's: no second halo on them in light */
 .ppmast .ppserial { left: 3.8cqw; top: 4.2cqw; font-size: 2.2cqw; letter-spacing: 0.02em; }
 .ppmast .ppserial, .ppmast .ppserial b, .ppmast .ppserial i { font-family: var(--ocr); } /* OCR A, as the mock-up sets it */
 .ppnum { right: 1.6cqw; top: 6.2cqw; font-size: 2.8cqw; letter-spacing: 0.02em; font-family: var(--ocr); }
-.ppnum .ppno { font-style: normal; font-family: var(--numero); font-size: 1.15em; margin-right: 0.3em; } /* the № a serif numero */
+.ppnum .ppno { font-style: normal; font-family: var(--numero); font-weight: 700; font-size: 1.3em; margin-right: 0.25em; letter-spacing: 0; } /* the № as the mock-up draws it: a bold serif N and a small raised o, underlined */
+.ppnum .ppno u { font-size: 0.5em; vertical-align: 0.55em; text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 0.09em; margin-left: 0.04em; }
 /* THE NAME (owner: "close the kerning … to match the ASILUM logo and up the size and boldness"): Michroma in the
-   logo's set — the wordmark's −0.096em between every pair (lib/wordmark.js, Procreate's −15 kerning on 161) —
-   and bolder the way the logo is, a stroke round each letter (the face has one weight); the ink, unlit, as the
-   logo's word is; in the notch under the masthead's level foot */
+   logo's set — the wordmark's −0.096em, then opened a little (owner, later that day: "open up the kerning a
+   little bit and reduce boldness") — and bolder the way the logo is, a stroke round each letter (the face has
+   one weight), half as heavy as first set; the ink, unlit, as the logo's word is; in the notch under the
+   masthead's level foot */
 .pptitle { position: absolute; z-index: 3; left: 1.5cqw; top: 9.3cqw; margin: 0; font-family: var(--mich); font-weight: 400; font-size: 3.6cqw; line-height: 1;
-  white-space: nowrap; letter-spacing: -0.096em; -webkit-text-stroke: 0.04em currentColor; color: var(--ink); text-shadow: none; }
+  white-space: nowrap; letter-spacing: -0.06em; -webkit-text-stroke: 0.02em currentColor; color: var(--ink); text-shadow: none; }
 /* THE PHOTO, 53 wide by 74.6 at the left; its print lines (the original's) */
 .ppphoto { position: absolute; z-index: 2; left: 5cqw; top: 15.4cqw; width: 53cqw; height: 74.6cqw; border: 0; border-radius: 3.4cqw; overflow: hidden; padding: 0; margin: 0;
   display: block; cursor: pointer; background: color-mix(in srgb, var(--ink) 8%, transparent); }
@@ -1848,13 +1852,14 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    have"): the photo again, small, inverted, drained of colour, faint, at the lower right */
 .ppghost { position: absolute; z-index: 2; left: 72.3cqw; top: 111.2cqw; width: 25cqw; height: 33.4cqw; border-radius: 2.5cqw; overflow: hidden; background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .ppghost img { width: 100%; height: 100%; object-fit: cover; display: block; filter: invert(1) grayscale(1) contrast(1.15); opacity: 0.55; }
+.ppghostcap { position: absolute; z-index: 2; left: 72.3cqw; top: 146cqw; width: 25cqw; text-align: center; font-size: 1.4cqw; letter-spacing: 0.06em; line-height: 1.3; color: var(--sig); text-shadow: var(--glow); } /* PASSENGER BIOMETRIC PHOTO (owner, 2 Nov 2026) */
 /* THE BAR CODE (PassportBarcode.jsx): the logo's brick, 8 deep, its line running in from the left and rising at
-   the logo's slant into the block; the plate the logo's white in the logo's glow, the bars holes in it (the mask's
-   #fff / #000 are luminance, not colour, as the logo's); through the holes the Liquid Glass alone */
+   the logo's slant into the block; the plate the logo's white, unlit, the bars holes in it (the mask's #fff / #000
+   are luminance, not colour, as the logo's); through the holes the Liquid Glass alone */
 .ppbarcode { position: absolute; z-index: 2; left: 5cqw; top: 156.6cqw; width: 92.7cqw; height: 8cqw; display: block; overflow: visible; }
 .ppbarplane { fill: #fff; }   /* the mask's plane: keeps the plate */
 .ppbarhole { fill: #000; }    /* the bars, cut out of it */
-.ppbarplate { fill: var(--wm-bar); filter: var(--wm-glow); } /* the glow on the plate itself: computed before the mask cuts the bars */
+.ppbarplate { fill: var(--wm-bar); } /* no glow (owner, 2 Nov 2026: its halo read as a line along the top and bottom "ruining the negative cutout look") */
 /* THE MACHINE ZONE at the foot: two lines of the 52 measure in OCR A, spread over the zone's width (the lines
    encode the real account number: a clipped tail is a lie — nothing is clipped, the characters only draw closer) */
 .ppmrz { position: absolute; z-index: 2; left: 5.4cqw; top: 165.6cqw; width: 92.3cqw; margin: 0; padding: 0; overflow: hidden; white-space: nowrap; color: var(--grey); }
@@ -1864,8 +1869,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppmrz .mrzline { display: flex; justify-content: space-between; font-family: var(--ocr); font-size: 2.1cqw; line-height: 2.4cqw; letter-spacing: 0; } /* OCR A, as a machine zone is (owner, 2 Nov 2026: "the MRZ must be in OCR") */
 .ppmrz .mrzline :is(b, i) { display: contents; }
 .ppmrz .mrzline i { color: var(--sig); opacity: 0.5; } /* the zone one colour, as the mock-up prints it, the filler dimmer */
-/* the map's credit (the licence asks for it), tiny, in the clear under the fields */
-.pposm { position: absolute; z-index: 2; left: 61.2cqw; top: 101.5cqw; font-size: 1.1cqw; letter-spacing: 0.14em; color: var(--faint); white-space: nowrap; }
 /* THE DEVICE'S MACHINE-READABLE LINE (Blocks.jsx MrzLine): one line, never wrapped; the data in the document's
    colour, glowing in dark as a word does; the "<" filler the red thread, unlit (filler is not a word); the block
    cursor blinks at the end — and holds still under reduced motion */

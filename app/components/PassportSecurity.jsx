@@ -14,8 +14,9 @@
 // very very very lower opacity"): ONE faint layer of the map across the
 // whole document, unlit, and nothing else of the old artwork — the
 // registration pluses, the page number, the hologram window and the
-// microprint are gone. The map's credit stays (the licence asks for it),
-// tiny, at the foot.
+// microprint are gone, and so is the map's credit line (owner, later that
+// day) — the site credits OpenStreetMap on the map page and the street map
+// (app/map/page.js, StreetMap.jsx), where the data is read in full.
 
 import ParisMap, { useParisRoads } from "./ParisMap.jsx";
 
@@ -35,7 +36,6 @@ export default function PassportSecurity({ roads = true, map: given }) {
           <div className="ppholo-a"><ParisMap map={map} /></div>
         </div>
       )}
-      <span className="pposm" aria-hidden="true">{map ? (map.centre ? "YOUR STREETS · MAP DATA © OPENSTREETMAP" : "MAP DATA © OPENSTREETMAP") : "READING YOUR STREETS…"}</span>
     </>
   );
 }

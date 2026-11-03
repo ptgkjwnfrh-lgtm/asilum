@@ -26,7 +26,7 @@ export default function PassportDocument({ uid, info, taste, lang, mrz, photo, e
     <>
       <header className="ppmast">
         <MrzLine className="ppserial" text={serialLine(info.since)} width={SERIAL_WIDTH} />
-        <span className="ppnum"><i className="ppno">№</i>{ocr(passportNumberDisplay(uid))}</span>
+        <span className="ppnum"><i className="ppno" aria-label="number">N<u>o</u></i>{ocr(passportNumberDisplay(uid))}</span>
         <span className="ppcloud" aria-hidden="true" />
       </header>
       <h2 className="pptitle">ASILUM TASTE PASSPORT</h2>
@@ -63,6 +63,7 @@ export default function PassportDocument({ uid, info, taste, lang, mrz, photo, e
       <dl className="ppacct"><div><dt>ACCOUNT NO /{T("account")}</dt><dd>{uid || "—"}</dd></div></dl>
       {/* the ghost: the photo again, small, as a negative — a driver's licence's second portrait */}
       <span className="ppghost" aria-hidden="true">{photo ? <img src={photo} alt="" /> : null}</span>
+      <span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC PHOTO</span>
       <PassportBarcode uid={uid} />
       {/* the machine zone at the foot: two lines of the measure, every one a field the data page prints
           (lib/passport/document.js mrzZone), the chevrons the filler, the device's cursor at the end */}

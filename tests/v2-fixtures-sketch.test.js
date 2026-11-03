@@ -468,9 +468,10 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // logo's glow, the bars cut out of it — and its STAMP key glows white in dark as the fixtures' keys do (the name
   // plate of 31 Oct and its red asterisk went with the owner's mock-up: the name is type now, unlit, as the logo's
   // word is)
+  // (later that day) the bar code's glow came off: its halo read as a line along the plate's top and bottom
   assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)",
-    ".ppbarplate var(--wm-glow)", ':root:not([data-theme="light"]) .ppbtn.primary var(--wm-glow)'].sort(),
-  "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white; the Passport's bar code plate white and its STAMP key white in dark; nothing else");
+    ':root:not([data-theme="light"]) .ppbtn.primary var(--wm-glow)'].sort(),
+  "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white; the Passport's STAMP key white in dark; nothing else");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter

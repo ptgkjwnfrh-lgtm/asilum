@@ -60,7 +60,9 @@ test("the passport number: six digits read off the account number, the same ever
   assert.equal(passportNumber(null), "000000", "unissued: zeros");
   assert.equal(passportNumberDisplay(bearer.uid), `OASM·${n.slice(0, 3)}·${n.slice(3)}`);
   assert.equal(passportNumberDisplay(null), "OASM·000·000");
-  assert.match(page, /<span className="ppnum"><i className="ppno">№<\/i>\{ocr\(passportNumberDisplay\(uid\)\)\}<\/span>/, "a serif numero, then the number in OCR A with its O a zero");
+  assert.match(page, /<span className="ppnum"><i className="ppno" aria-label="number">N<u>o<\/u><\/i>\{ocr\(passportNumberDisplay\(uid\)\)\}<\/span>/, "the numero as the mock-up draws it — a bold serif N, a small raised o underlined — then the number in OCR A with its O a zero");
+  assert.match(css, /\.ppnum \.ppno \{[^}]*font-family: var\(--numero\); font-weight: 700;/);
+  assert.match(css, /\.ppnum \.ppno u \{[^}]*vertical-align: 0\.55em; text-decoration: underline;/);
   assert.equal(ocr("OASM·000·000"), "0ASM·000·000"); assert.equal(ocr("PASSPORT"), "PASSP0RT"); assert.equal(ocr("パスポート"), "パスポート", "other scripts carry no O");
 });
 
@@ -188,7 +190,7 @@ test("the bar code is the logo's brick mirrored: the logo's line, slant and bend
   assert.match(svg, /<rect key=\{i\} className="ppbarhole" x=\{x\} y=\{0\} width=\{w\} height=\{BARCODE_H\} \/>/, "every bar a hole");
   assert.match(svg, /<path className="ppbarplate" d=\{barcodePath\(\)\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask");
   assert.match(page, /<PassportBarcode uid=\{uid\} \/>/);
-  assert.match(css, /\n\.ppbarplate \{ fill: var\(--wm-bar\); filter: var\(--wm-glow\); \}/, "the logo's white, the logo's glow, computed before the cut");
+  assert.match(css, /\n\.ppbarplate \{ fill: var\(--wm-bar\); \}/, "the logo's white, unlit: no halo to read as a line");
   assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "nothing in the slits but the glass: no tint, no ink");
   assert.match(css, /\.ppbarcode \{[^}]*height: 8cqw;/, "8 hundredths of the page deep");
 });
@@ -201,7 +203,8 @@ test("the cloud over the masthead only, its foot on the logo's slant; the zone u
   assert.equal((page.match(/className="ppcloud"/g) || []).length, 1, "one cloud, on the masthead");
   assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/header>/.test(page), "over the masthead");
   // the masthead's foot: level at 67.18% of its depth (8.8 of 13.1), then the logo's run down to the full depth
-  const poly = css.match(/\.ppmast \{[^}]*clip-path: polygon\(([^)]*)\)/s)[1].split(",").map((p) => p.trim().split(" ").map(parseFloat));
+  assert.match(css, /\.ppmast \{[^}]*filter: drop-shadow\(0 0 0\.5cqw color-mix\(in srgb, var\(--wm-bar\) 55%, transparent\)\)/s, "the masthead glows white a little, the logo's white");
+  const poly = css.match(/\.ppmast \.ppcloud \{ clip-path: polygon\(([^)]*)\)/s)[1].split(",").map((p) => p.trim().split(" ").map(parseFloat));
   const level = poly[poly.length - 1], toeEnd = poly[3];
   assert.deepEqual(level, [0, 67.18]); assert.deepEqual(toeEnd, [73.57, 100]);
   const logo = brickGeometry(), run = (logo.toe - logo.shoulder) / (logo.line - logo.top);
@@ -217,7 +220,9 @@ test("the cloud over the masthead only, its foot on the logo's slant; the zone u
   assert.ok(!/var\(--mono\)/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))), "no mono face on the document");
   assert.match(css, /\n\.ppholo-a \{ opacity: 0\.09; \}/, "the map very, very faint");
   const sec = strip(read("app/components/PassportSecurity.jsx"));
-  assert.ok(!/Plus|ppvpage|CROSSES|MICROPRINT|ppterrain|ppholo-b/.test(sec), "no pluses, no page number, no window, no microprint: the map alone");
+  assert.ok(!/Plus|ppvpage|CROSSES|MICROPRINT|ppterrain|ppholo-b|pposm|OPENSTREETMAP/.test(sec), "no pluses, no page number, no window, no microprint, no credit line: the map alone");
+  assert.ok(/OpenStreetMap/.test(read("app/map/page.js")), "the site still credits OpenStreetMap where the map is read in full");
+  assert.match(page, /<span className="ppghostcap" aria-hidden="true">PASSENGER BIOMETRIC PHOTO<\/span>/, "the caption under the negative");
   assert.ok(!/ppholo-b|ppterrain|ppsummit|ppmicro|ppplate|ppnation|ppsec\b|ppvpage|pvplus|\.pv-[spr]/.test(css), "their rules gone");
   assert.ok(board.indexOf('<div className="ppdocacts">') > board.indexOf("</div>", board.indexOf('className="ppdoc lg"')), "the keys under the page, not on it");
 });
@@ -237,7 +242,7 @@ test("the faces are the mock-up's: OCR A for the serial, the number and the four
 
 test("the name: the logo's set, bigger and bolder, one line", () => {
   assert.match(page, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/);
-  assert.match(css, /\.pptitle \{[^}]*letter-spacing: -0\.096em; -webkit-text-stroke: 0\.04em currentColor; color: var\(--ink\); text-shadow: none; \}/s, "the wordmark's −0.096em, a stroke for the bold, the ink unlit");
+  assert.match(css, /\.pptitle \{[^}]*letter-spacing: -0\.06em; -webkit-text-stroke: 0\.02em currentColor; color: var\(--ink\); text-shadow: none; \}/s, "the logo's set opened a little, half the stroke, the ink unlit");
   assert.match(css, /\.pptitle \{[^}]*white-space: nowrap;/s);
 });
 
