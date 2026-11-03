@@ -77,11 +77,17 @@
   photo's ghost, a negative; the bar code cut in the document's ink
   (`PassportBarcode.jsx`, the logo's white glow in dark); the machine zone
   two even lines of the real fields (`mrzZone`) through `Blocks.jsx`
-  `MrzLine`, clouded the same way; the map under everything at 9%. Kept of
-  the original: the registration pluses, the `01`, the photo's print lines
-  (`tests/passport-document.test.js`, `tests/v2-device.test.js`). The
-  section "Passport UV page" below is the July record of the document this
-  one grew from.
+  `MrzLine`, unclouded, even (every character spread over the measure);
+  the map under everything at 9%, alone of the old artwork (the photo's
+  print lines kept). The page is the mock-up traced: `PassportDocument.jsx`
+  places every piece in hundredths of the page's width; the masthead's foot
+  and the bar code's ramp take the logo's slant (`lib/wordmark.js`), the
+  bar code being the logo's brick mirrored with the bars cut out; the faces
+  are the mock-up's — OCR A Extended (`--ocr`, the Os zeros) for the serial,
+  the number, the four words under the photo and the zone, a serif numero
+  (`--numero`), Michroma for the rest (`tests/passport-document.test.js`,
+  `tests/v2-device.test.js`). The section "Passport UV page" below is the
+  July record of the document this one grew from.
 - **Popups, sessions, the Disc, haptics:** `knowledge/ui/interaction.md`.
 - **What is gone** (and must stay gone — `tests/v2-shell.test.js`): the
   top header and its ticker, the destination row, the ORB HUB / MODULE

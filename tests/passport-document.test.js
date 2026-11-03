@@ -1,7 +1,6 @@
 // tests/passport-document.test.js — THE TASTE PASSPORT (the owner's mock-up
-// of 2 Nov 2026, docs/v2/mocks/2026-11-02-taste-passport/; before it the
-// Tron passport of 31 Oct: "a sleek tron type of vibe … more [MRZ] … and
-// chevrons"). Held here:
+// of 2 Nov 2026, docs/v2/mocks/2026-11-02-taste-passport/, traced — "just
+// trace the picture"; before it the Tron passport of 31 Oct). Held here:
 //   * the masthead carries the serial — the month and day the account was
 //     created, as a machine line — and the passport number, six digits read
 //     off the account number, both the same on every opening;
@@ -16,20 +15,26 @@
 //   * SEX is IDNTY, free text the passenger writes; the signature is the
 //     username unless the passenger signs;
 //   * the page and the preview hand the zone the same values they print;
+//   * the bar code is the logo's brick mirrored, the bars cut out of it as
+//     the word is cut out of the logo, at the logo's slant; the masthead's
+//     foot takes the same slant; the zone is unclouded, every face Michroma,
+//     nothing of the old artwork but the map;
 //   * the device's line and the document's parts carry no colour but the
 //     tokens'.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  LANGUAGES, LANGUAGE_CODES, MRZ_WIDTH, SERIAL_WIDTH, mrzDate, mrzWord, mrzZone, nameParts, passportLanguage, passportNumber, passportNumberDisplay, serialLine,
+  LANGUAGES, LANGUAGE_CODES, MRZ_WIDTH, SERIAL_WIDTH, mrzDate, mrzWord, mrzZone, nameParts, ocr, passportLanguage, passportNumber, passportNumberDisplay, passportWords, serialLine,
 } from "../lib/passport/document.js";
-import { bars, rampPath, BARCODE_W, BARCODE_H } from "../lib/passport/barcode.js";
+import { bars, barcodeGeometry, barcodePath, BARCODE_W, BARCODE_H } from "../lib/passport/barcode.js";
+import { brickGeometry } from "../lib/wordmark.js";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 const strip = (s) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'`])\/\/[^\n]*/g, "$1");
 const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 const board = strip(read("app/board/page.js"));
+const page = strip(read("app/components/PassportDocument.jsx"));
 const preview = strip(read("app/components/PassportPreview.jsx"));
 
 const bearer = {
@@ -43,8 +48,8 @@ test("the serial: the month and day the account was created, as a machine line o
   assert.equal(serialLine("2026-01-05"), "AS<<<01<<05<<<<<", "two digits each");
   assert.equal(serialLine(""), "AS<<<00<<00<<<<<", "no account: zeros, never a word the page does not print");
   for (const s of [serialLine("2026-10-31"), serialLine("")]) { assert.equal(s.length, SERIAL_WIDTH); assert.match(s, /^[A-Z0-9<]+$/); }
-  assert.match(board, /<MrzLine className="ppserial" text=\{serialLine\(pinfo\.since\)\} width=\{SERIAL_WIDTH\} \/>/, "the document's serial");
-  assert.match(preview, /<MrzLine className="ppserial" text=\{serialLine\(since\)\} width=\{SERIAL_WIDTH\} \/>/, "the preview's, from the same line");
+  assert.match(page, /<MrzLine className="ppserial" text=\{serialLine\(info\.since\)\} width=\{SERIAL_WIDTH\} \/>/, "the page's serial");
+  for (const where of [board, preview]) assert.match(where, /<PassportDocument uid=\{uid\} info=\{/, "the document and the preview are the one page (PassportDocument.jsx)");
 });
 
 test("the passport number: six digits read off the account number, the same every time, OASM·000·000 on the page", () => {
@@ -55,8 +60,8 @@ test("the passport number: six digits read off the account number, the same ever
   assert.equal(passportNumber(null), "000000", "unissued: zeros");
   assert.equal(passportNumberDisplay(bearer.uid), `OASM·${n.slice(0, 3)}·${n.slice(3)}`);
   assert.equal(passportNumberDisplay(null), "OASM·000·000");
-  assert.match(board, /<span className="ppnum">№ \{passportNumberDisplay\(uid\)\}<\/span>/);
-  assert.match(preview, /<span className="ppnum">№ \{passportNumberDisplay\(uid\)\}<\/span>/);
+  assert.match(page, /<span className="ppnum"><i className="ppno">№<\/i>\{ocr\(passportNumberDisplay\(uid\)\)\}<\/span>/, "a serif numero, then the number in OCR A with its O a zero");
+  assert.equal(ocr("OASM·000·000"), "0ASM·000·000"); assert.equal(ocr("PASSPORT"), "PASSP0RT"); assert.equal(ocr("パスポート"), "パスポート", "other scripts carry no O");
 });
 
 test("one language per passport, drawn from the five, the same on every opening; every label has a word in it", () => {
@@ -72,13 +77,22 @@ test("one language per passport, drawn from the five, the same on every opening;
   assert.equal(passportLanguage(bearer.uid).code, one.code, "the same passport, the same language");
   assert.ok(LANGUAGE_CODES.includes(passportLanguage(null).code), "an unissued document is drawn too");
   // the page prints "ENGLISH /" then the drawn word, with its language and direction, on every field
+  assert.match(page, /const T = \(key\) => <em lang=\{lang\.code\} dir=\{lang\.dir\}>\{lang\[key\]\}<\/em>;/, "every translation with its language and direction");
   for (const [label, key] of [["SURNAME", "surname"], ["GIVEN NAME", "given"], ["DATE OF BIRTH", "dob"], ["NATIONALITY", "nationality"], ["IDNTY", "idnty"], ["TASTE TYPE", "taste"], ["DATE OF ISSUE", "issue"], ["ACCOUNT NO", "account"]]) {
-    assert.match(board, new RegExp(label.replace(/ /g, " ") + " \\/<em lang=\\{lang\\.code\\} dir=\\{lang\\.dir\\}>\\{lang\\." + key + "\\}<\\/em>"), label);
+    assert.match(page, new RegExp(label + ' \\/\\{T\\("' + key + '"\\)\\}'), label);
   }
-  assert.match(board, /<PassportSignature name=\{pinfo\.name\} label="PASSENGER SIGNATURE" translation=\{lang\.signature\} dir=\{lang\.dir\} \/>/);
-  assert.match(board, /<span className="ppquad" lang=\{lang\.code\}><b lang="en">PASSPORT<\/b><span dir=\{lang\.dir\}>\{lang\.passport\}<\/span><\/span>/, "the document's word for itself, English and the drawn language");
-  assert.ok(!/SEX/.test(board.slice(board.indexOf('className="ppdoc'), board.indexOf("ppdocacts"))), "SEX is IDNTY now");
-  assert.match(board, /id="ppidnty" className="ppwrite" type="text" maxLength=\{32\} placeholder="—" value=\{pinfo\.idnty \|\| ""\} onChange=\{\(e\) => writeField\("idnty", e\.target\.value\)\}/, "IDNTY is free text the passenger writes");
+  assert.match(page, /<PassportSignature name=\{info\.name\} label="PASSENGER SIGNATURE" translation=\{lang\.signature\} dir=\{lang\.dir\} editable=\{editable\} \/>/);
+  // four words under the photo, two lines, the mock-up's exactly: PASSP0RT/REISEPASS over パスポート/PASSEP0RT
+  const lines = passportWords();
+  assert.deepEqual(lines.map((p) => p.map((w) => ocr(w.word)).join("/")), ["PASSP0RT/REISEPASS", "パスポート/PASSEP0RT"]);
+  assert.deepEqual(lines.flat().map((w) => w.code), ["en", "de", "ja", "fr"]);
+  assert.equal(passportWords(), passportWords("u-1"), "the same four on every passport, whatever the labels drew");
+  assert.match(page, /\{passportWords\(\)\.map\(\(pair, i\) => \(/, "the page prints the four");
+  assert.match(page, /<span key=\{i\} dir="ltr">\{pair\.map\(\(w, j\) => \[j \? <span key=\{"s" \+ j\}>\/<\/span> : null, <span key=\{j\} lang=\{w\.code\} dir=\{w\.dir\}>\{ocr\(w\.word\)\}<\/span>\]\)\}<\/span>/, "A/B, the slash its own run (Arabic keeps its direction), the Os zeros");
+  assert.ok(!/SEX/.test(page), "SEX is IDNTY now");
+  assert.match(page, /id="ppidnty" className="ppwrite" type="text" maxLength=\{32\} placeholder="—" value=\{info\.idnty \|\| ""\} onChange=\{\(e\) => onWrite\("idnty", e\.target\.value\)\}/, "IDNTY is free text the passenger writes");
+  assert.match(css, /\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*\}/, "the labels' face");
+  assert.ok(!/\.ppid dt, \.ppsig dt, \.ppacct dt \{[^}]*(nowrap|ellipsis)/.test(css), "a long translation folds, never clipped");
 });
 
 test("the surname and the given name come off the username: the last word the surname", () => {
@@ -126,16 +140,16 @@ test("mrzWord: upper case, every run of anything else one chevron, none at the e
 });
 
 test("the page and the preview hand the zone the values they print: one variable per field", () => {
-  assert.match(board, /const \{ surname, given \} = nameParts\(pinfo\.name\);/);
+  assert.match(page, /const \{ surname, given \} = nameParts\(info\.name\);/);
   assert.match(board, /const mrz = mrzZone\(\{ uid, name: pinfo\.name, dob: pinfo\.dob, nationality: pinfo\.origin, idnty: pinfo\.idnty, taste, since: pinfo\.since \}\);/);
-  assert.match(board, /<dd>\{surname\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
-  assert.match(board, /<dd>\{given\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
-  assert.match(board, /<dd>\{pinfo\.origin\}<\/dd>/);
-  assert.match(board, /<dd><span className="ppstar">\*<\/span> \{taste\}<\/dd>/);
-  assert.match(board, /<dd>\{sinceDisplay\}<\/dd>/);
-  assert.match(board, /<dd className="ppmono">\{uid \|\| "—"\}<\/dd>/);
-  assert.match(preview, /const mrz = mrzZone\(\{ uid, name: info\.name, dob: info\.dob, nationality: origin, idnty: info\.idnty, taste, since \}\);/);
-  assert.match(preview, /\{mrz\.map\(\(line, i\) => <MrzLine key=\{i\} text=\{line\} \/>\)\}/);
+  assert.match(preview, /const mrz = mrzZone\(\{ uid, name: info\.name, dob: info\.dob, nationality: info\.origin, idnty: info\.idnty, taste, since: info\.since \}\);/);
+  assert.match(page, /<dd>\{surname\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
+  assert.match(page, /<dd>\{given\.toUpperCase\(\) \|\| "—"\}<\/dd>/);
+  assert.match(page, /<dd>\{info\.origin \|\| "—"\}<\/dd>/);
+  assert.match(page, /<dd><span className="ppstar">\*<\/span> \{taste\}<\/dd>/);
+  assert.match(page, /<dd>\{sinceDisplay\(info\.since\)\}<\/dd>/);
+  assert.match(page, /<dd>\{uid \|\| "—"\}<\/dd>/);
+  assert.match(page, /\{mrz\.map\(\(line, i\) => <MrzLine key=\{i\} text=\{line\} cursor=\{editable && i === mrz\.length - 1\} \/>\)\}/);
   // the two written fields are kept with the display name on this device, never sent anywhere
   assert.match(board, /function writeField\(k, v\) \{\s*setPinfo\(\(p\) => \(\{ \.\.\.p, \[k\]: v \}\)\);\s*try \{ saveProfileInfo\(\{ \.\.\.getProfileInfo\(\), \[k\]: v \}\); \} catch \{\}\s*\}/);
   assert.ok(!/fetch\([^)]*(idnty|dob)/.test(board), "no request carries them");
@@ -150,45 +164,85 @@ test("the signature: the username until the passenger signs; the pad in the slot
   assert.match(sig, /WebkitMaskImage: `url\(\$\{signature\}\)`, maskImage: `url\(\$\{signature\}\)`/, "kept as a mask: the ink of either theme");
   assert.match(sig, /window\.localStorage\.setItem\(SIGNATURE_KEY, data\)/);
   assert.match(sig, /window\.localStorage\.removeItem\(SIGNATURE_KEY\)/, "CLEAR returns the slot to the username");
+  assert.match(sig, /\{editable && <div className="ppsigkeys">/, "the keys only where the passenger can sign (the preview prints)");
   assert.match(css, /\.ppsigpad \{[^}]*touch-action: none;/, "the page does not scroll under the stroke");
   assert.match(css, /\.ppsignink \{[^}]*background: currentColor;/);
 });
 
-test("the bar code: a cosine ramp into bars read off the passport number, the same every time; cut in the document's ink", () => {
-  assert.equal(BARCODE_W, 600); assert.equal(BARCODE_H, 96);
-  assert.match(rampPath(), /^M 0 96 L 0\.0 92\.0 L .* L 300\.0 0\.0 L 300 96 Z$/, "from the foot at the left up to the full height at the middle");
+test("the bar code is the logo's brick mirrored: the logo's line, slant and bends, the bars cut out of it; thin", () => {
+  const logo = brickGeometry(), g = barcodeGeometry();
+  assert.equal(BARCODE_H, +(logo.foot - logo.top).toFixed(3), "the brick's own depth");
+  assert.equal(g.thick, logo.thick, "the logo's line"); assert.equal(g.bend, logo.bend, "the logo's bends");
+  const run = (g.toe - g.shoulder) / (g.line - g.top), logoRun = (logo.toe - logo.shoulder) / (logo.line - logo.top);
+  assert.ok(Math.abs(run - logoRun) < 1e-3, "the logo's slant: " + run + " vs " + logoRun);
+  assert.equal(g.toe + g.bend + g.tail, BARCODE_W, "the line runs to the box's far edge");
+  assert.ok(BARCODE_W / BARCODE_H > 11, "thin: the box over eleven times wider than deep");
+  assert.match(barcodePath(), /^M0 0 H/, "the brick's path (lib/wordmark.js brickPath), from the block's edge");
   const a = bars(bearer.uid), b = bars(bearer.uid), c = bars("u-00000000-0000-0000-0000-000000000001");
   assert.deepEqual(a, b, "stable");
   assert.notDeepEqual(a, c, "another account, another code");
-  for (const [x, w] of a) { assert.ok(x >= 300 && x + w <= 600, `bar at ${x} wide ${w} inside the right half`); assert.ok(w >= 3 && w <= 12); }
-  assert.match(board, /<PassportBarcode uid=\{uid\} \/>/);
-  assert.match(css, /\n\.ppcut \{ fill: var\(--ink\); \}/);
-  assert.match(css, /:root:not\(\[data-theme="light"\]\) \.ppbarcode \{ filter: var\(--wm-glow\); \}/, "the logo's white glow in dark");
+  for (const [x, w] of a) { assert.ok(x >= 24 && x + w <= g.shoulder - 24, `bar at ${x} wide ${w} inside the block`); assert.ok(w >= 10 && w <= 34); }
+  const svg = strip(read("app/components/PassportBarcode.jsx"));
+  assert.match(svg, /<g transform=\{`matrix\(-1 0 0 1 \$\{BARCODE_W\} 0\)`\}>/, "mirrored: the line in from the left, the block at the right");
+  assert.match(svg, /<mask id=\{cut\} maskUnits="userSpaceOnUse"/);
+  assert.match(svg, /<rect key=\{i\} className="ppbarhole" x=\{x\} y=\{0\} width=\{w\} height=\{BARCODE_H\} \/>/, "every bar a hole");
+  assert.match(svg, /<path className="ppbarplate" d=\{barcodePath\(\)\} mask=\{`url\(#\$\{cut\}\)`\} \/>/, "the plate drawn through the mask");
+  assert.match(page, /<PassportBarcode uid=\{uid\} \/>/);
+  assert.match(css, /\n\.ppbarplate \{ fill: var\(--wm-bar\); filter: var\(--wm-glow\); \}/, "the logo's white, the logo's glow, computed before the cut");
+  assert.ok(!/ppbartint|wm-cut-tint/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))) && !/ppbartint/.test(svg), "nothing in the slits but the glass: no tint, no ink");
+  assert.match(css, /\.ppbarcode \{[^}]*height: 8cqw;/, "8 hundredths of the page deep");
 });
 
-test("the cloud: the serial, the number and the zone under the fixtures' frost at a lower opacity, their glow kept; the map very faint", () => {
+test("the cloud over the masthead only, its foot on the logo's slant; the zone unclouded and even; the map very faint; nothing else of the old artwork", () => {
   assert.match(css, /\n\.ppcloud \{ position: absolute; inset: 0; z-index: 2; pointer-events: none;/);
   assert.match(css, /\.ppcloud \{[^}]*backdrop-filter: blur\(2\.2px\) saturate\(160%\);/s);
   assert.match(css, /@media \(prefers-reduced-transparency: reduce\) \{ \.ppcloud \{ -webkit-backdrop-filter: none; backdrop-filter: none; \} \}/);
-  assert.match(css, /\.ppmast \.ppserial, \.ppmast \.ppnum \{ position: relative; z-index: 1; opacity: var\(--pp-under\); \}/);
-  assert.match(css, /\.ppdoc \.ppmrz \.mrzline \{[^}]*opacity: var\(--pp-under\); \}/);
-  assert.match(css, /\.ppnum \{[^}]*color: var\(--sig\); text-shadow: var\(--glow\);/, "the number glows under the cloud");
-  for (const where of [board, preview]) {
-    assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/(header|div)>/.test(where.slice(where.indexOf("ppmast"))), "the cloud over the masthead");
-    assert.equal((where.match(/className="ppcloud"/g) || []).length, 2, "and over the zone");
-  }
+  assert.match(css, /\.ppmast \.ppserial, \.ppmast \.ppnum \{ position: absolute; z-index: 1; opacity: var\(--pp-under\); color: var\(--sig\); text-shadow: var\(--glow\);/, "under the cloud, lower, glowing a little");
+  assert.equal((page.match(/className="ppcloud"/g) || []).length, 1, "one cloud, on the masthead");
+  assert.ok(/<span className="ppcloud" aria-hidden="true" \/>\s*<\/header>/.test(page), "over the masthead");
+  // the masthead's foot: level at 67.18% of its depth (8.8 of 13.1), then the logo's run down to the full depth
+  const poly = css.match(/\.ppmast \{[^}]*clip-path: polygon\(([^)]*)\)/s)[1].split(",").map((p) => p.trim().split(" ").map(parseFloat));
+  const level = poly[poly.length - 1], toeEnd = poly[3];
+  assert.deepEqual(level, [0, 67.18]); assert.deepEqual(toeEnd, [73.57, 100]);
+  const logo = brickGeometry(), run = (logo.toe - logo.shoulder) / (logo.line - logo.top);
+  const [sx, sy] = poly[10], [tx, ty] = poly[9]; // the slant's straight part, two points on it (in % of 100 by 13.1)
+  const slope = ((tx - sx)) / ((ty - sy) * 13.1 / 100);
+  assert.ok(Math.abs(slope - run) < 0.05, "the logo's slant: " + slope + " vs " + run);
+  // the zone: two lines spread over the measure, Michroma, unclouded
+  assert.match(css, /\.ppmrz \.mrzline \{ display: flex; justify-content: space-between;/, "every character a flex item: both lines end on one edge");
+  assert.match(css, /\.ppmrz \.mrzline :is\(b, i\) \{ display: contents; \}/);
+  assert.match(strip(read("app/components/Blocks.jsx")), /const chars = \(run\) => \[\.\.\.run\]\.map\(\(ch, j\) => <span key=\{j\}>\{ch\}<\/span>\);/);
+  assert.match(css, /\n\.mrzline \{ display: block; white-space: nowrap; overflow: hidden; font-family: var\(--mich\); \}/, "the device's line Michroma by default; the Passport's zone sets OCR A");
+  assert.ok(!/\.ppmrz[^{]*\{[^}]*--pp-under/.test(css) && !/ppminimrz/.test(css), "the zone is not clouded");
+  assert.ok(!/var\(--mono\)/.test(css.slice(css.indexOf("THE TASTE PASSPORT"), css.indexOf("THE DEVICE'S MACHINE-READABLE LINE"))), "no mono face on the document");
   assert.match(css, /\n\.ppholo-a \{ opacity: 0\.09; \}/, "the map very, very faint");
-  assert.ok(!/ppholo-b|ppterrain|ppsummit|ppmicro|ppplate|ppnation|ppsec\b/.test(css), "the hot window, the microprint, the plate and the old band are gone");
+  const sec = strip(read("app/components/PassportSecurity.jsx"));
+  assert.ok(!/Plus|ppvpage|CROSSES|MICROPRINT|ppterrain|ppholo-b/.test(sec), "no pluses, no page number, no window, no microprint: the map alone");
+  assert.ok(!/ppholo-b|ppterrain|ppsummit|ppmicro|ppplate|ppnation|ppsec\b|ppvpage|pvplus|\.pv-[spr]/.test(css), "their rules gone");
+  assert.ok(board.indexOf('<div className="ppdocacts">') > board.indexOf("</div>", board.indexOf('className="ppdoc lg"')), "the keys under the page, not on it");
+});
+
+test("the faces are the mock-up's: OCR A for the serial, the number and the four words; a serif numero; Michroma for the rest", () => {
+  assert.match(css, /@font-face \{ font-family: "OCR A Extended"; src: url\("\/fonts\/ocr-a-extended\.ttf"\) format\("truetype"\); font-display: swap; \}/);
+  assert.ok(readFileSync(new URL("../public/fonts/ocr-a-extended.ttf", import.meta.url)).length > 10000, "the face ships");
+  assert.match(css, /--ocr: "OCR A Extended", "OCR A Std", var\(--mono\);/);
+  assert.match(css, /--numero: "Times New Roman", Times, Georgia, serif;/);
+  assert.match(css, /\.ppmast \.ppserial, \.ppmast \.ppserial b, \.ppmast \.ppserial i \{ font-family: var\(--ocr\); \}/);
+  assert.match(css, /\.ppnum \{[^}]*font-family: var\(--ocr\); \}/);
+  assert.match(css, /\.ppnum \.ppno \{[^}]*font-family: var\(--numero\);/);
+  assert.match(css, /\.ppquad \{[^}]*font-family: var\(--ocr\);/);
+  assert.match(css, /\.ppdoc \{[^}]*font-family: var\(--mich\);/s, "the page's face Michroma: the name, the labels, the values");
+  assert.match(css, /\.ppmrz \.mrzline \{[^}]*font-family: var\(--ocr\);/, "the zone in OCR A");
 });
 
 test("the name: the logo's set, bigger and bolder, one line", () => {
-  assert.match(board, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/);
+  assert.match(page, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/);
   assert.match(css, /\.pptitle \{[^}]*letter-spacing: -0\.096em; -webkit-text-stroke: 0\.04em currentColor; color: var\(--ink\); text-shadow: none; \}/s, "the wordmark's −0.096em, a stroke for the bold, the ink unlit");
   assert.match(css, /\.pptitle \{[^}]*white-space: nowrap;/s);
 });
 
 test("colour only through the tokens: no literal colour in the passport's components", () => {
-  for (const f of ["app/components/PassportSignature.jsx", "app/components/PassportBarcode.jsx", "app/components/PassportSecurity.jsx", "app/components/PassportPreview.jsx", "app/components/Blocks.jsx"]) {
+  for (const f of ["app/components/PassportDocument.jsx", "app/components/PassportSignature.jsx", "app/components/PassportBarcode.jsx", "app/components/PassportSecurity.jsx", "app/components/PassportPreview.jsx", "app/components/Blocks.jsx"]) {
     const src = strip(read(f));
     assert.ok(!/#[0-9a-f]{3,8}\b|rgba?\(/i.test(src), f + " carries a literal colour");
   }

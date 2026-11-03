@@ -27,10 +27,9 @@ import buildRoads, { primeRoads } from "../components/roadBuilder.js";
 import { useParisRoads, useRoads } from "../components/ParisMap.jsx";
 import { getProfileInfo, saveProfileInfo } from "../../lib/social.js";
 import { tasteClass } from "../../lib/brain/taste-class.js";
-import { convictionsOf, mrzZone, nameParts, passportLanguage, passportNumberDisplay, serialLine, sinceDisplay as formatSince, SERIAL_WIDTH } from "../../lib/passport/document.js";
-import { Lamp, MrzLine, blinkLamp } from "../components/Blocks.jsx";
-import PassportSignature from "../components/PassportSignature.jsx";
-import PassportBarcode from "../components/PassportBarcode.jsx";
+import { convictionsOf, mrzZone, passportLanguage } from "../../lib/passport/document.js";
+import { Lamp, blinkLamp } from "../components/Blocks.jsx";
+import PassportDocument from "../components/PassportDocument.jsx";
 import { ColorEvidenceLine, OriginLine, OriginSticker, ProductFitLine, useFitBrain } from "../components/ProductSignals.jsx";
 import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
@@ -324,12 +323,10 @@ export default function BoardPage() {
     try { saveProfileInfo({ ...getProfileInfo(), [k]: v }); } catch {}
   }
 
-  const sinceDisplay = formatSince(pinfo.since);
   const pinCount = boards.reduce((s, b) => s + ((b.items && b.items.length) || 0), 0);
   const counts = saveCounts();
   // the data page's fields, once, for the page and the machine zone alike
   const taste = tasteClass(convictions());
-  const { surname, given } = nameParts(pinfo.name);
   const lang = passportLanguage(uid);
   const mrz = mrzZone({ uid, name: pinfo.name, dob: pinfo.dob, nationality: pinfo.origin, idnty: pinfo.idnty, taste, since: pinfo.since });
   const otherSaves = saves.filter((s) => s.kind !== "piece" && (saveFilter === "all" || s.kind === saveFilter));
@@ -348,62 +345,22 @@ export default function BoardPage() {
       </header>
 
       {!shared && (
-        <div className="ppdoc lg" ref={ppRef} aria-label="passport document" lang="en">
-          {ppGlass}
-          {/* THE TASTE PASSPORT (the owner's mock-up, 2 Nov 2026): the clouded masthead — the serial at the left
-              (the month and day the account was created, as a machine line) and the passport number at the
-              right, both in the document's colour, lower in opacity, glowing a little UNDER the cloud; the name
-              in the logo's set, big and bold; the data page; the signature and the account number beside the
-              ghost of the photo; the bar code cut out of the glass; the machine zone, clouded the same way. */}
-          <PassportSecurity map={docMap} />
-          <header className="ppmast">
-            <MrzLine className="ppserial" text={serialLine(pinfo.since)} width={SERIAL_WIDTH} />
-            <span className="ppnum">№ {passportNumberDisplay(uid)}</span>
-            <span className="ppcloud" aria-hidden="true" />
-          </header>
-          <h2 className="pptitle">ASILUM TASTE PASSPORT</h2>
-          <div className="ppbody">
-            <div className="ppphotocol">
-              <button className="ppphoto" title="add a bearer photo (stays on this device)" onClick={() => photoRef.current && photoRef.current.click()}>
-                {ppPhoto ? <img src={ppPhoto} alt="bearer" /> : <span className="ppphotoempty">◉<em>⇪ ADD PHOTO</em></span>}
-              </button>
-              {/* the document's word for itself, in English and in the passport's drawn language */}
-              <span className="ppquad" lang={lang.code}><b lang="en">PASSPORT</b><span dir={lang.dir}>{lang.passport}</span></span>
-            </div>
-            <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
-            <dl className="ppid" data-lang={lang.code}>
-              <div><dt>SURNAME /<em lang={lang.code} dir={lang.dir}>{lang.surname}</em></dt><dd>{surname.toUpperCase() || "—"}</dd></div>
-              <div><dt>GIVEN NAME /<em lang={lang.code} dir={lang.dir}>{lang.given}</em></dt><dd>{given.toUpperCase() || "—"}</dd></div>
-              <div><dt><label htmlFor="ppdob">DATE OF BIRTH /<em lang={lang.code} dir={lang.dir}>{lang.dob}</em></label></dt>
-                <dd><input id="ppdob" className="ppwrite" type="date" value={pinfo.dob || ""} onChange={(e) => writeField("dob", e.target.value)} aria-label="date of birth, as you write it here (stays on this device)" /></dd></div>
-              <div><dt>NATIONALITY /<em lang={lang.code} dir={lang.dir}>{lang.nationality}</em></dt><dd>{pinfo.origin}</dd></div>
-              <div><dt><label htmlFor="ppidnty">IDNTY /<em lang={lang.code} dir={lang.dir}>{lang.idnty}</em></label></dt>
-                <dd><input id="ppidnty" className="ppwrite" type="text" maxLength={32} placeholder="—" value={pinfo.idnty || ""} onChange={(e) => writeField("idnty", e.target.value)} aria-label="IDNTY — whatever you want it to say (stays on this device)" /></dd></div>
-              <div><dt>TASTE TYPE /<em lang={lang.code} dir={lang.dir}>{lang.taste}</em></dt><dd><span className="ppstar">*</span> {taste}</dd></div>
-              <div><dt>DATE OF ISSUE /<em lang={lang.code} dir={lang.dir}>{lang.issue}</em></dt><dd>{sinceDisplay}</dd></div>
-            </dl>
+        <>
+          <div className="ppdoc lg" ref={ppRef} aria-label="passport document" lang="en">
+            {ppGlass}
+            {/* THE TASTE PASSPORT (the owner's mock-up, 2 Nov 2026, traced: PassportDocument.jsx) over the map
+                (PassportSecurity.jsx), in the Liquid Glass pane */}
+            <PassportSecurity map={docMap} />
+            <PassportDocument uid={uid} info={pinfo} taste={taste} lang={lang} mrz={mrz} photo={ppPhoto} editable
+              onPhoto={() => photoRef.current && photoRef.current.click()} onWrite={writeField} />
           </div>
-          <div className="pplower">
-            <dl className="ppsigblock">
-              <PassportSignature name={pinfo.name} label="PASSENGER SIGNATURE" translation={lang.signature} dir={lang.dir} />
-              <div className="ppacct"><dt>ACCOUNT NO /<em lang={lang.code} dir={lang.dir}>{lang.account}</em></dt><dd className="ppmono">{uid || "—"}</dd></div>
-            </dl>
-            {/* the ghost: the photo again, small, as a negative — a driver's licence's second portrait */}
-            <span className="ppghost" aria-hidden="true">{ppPhoto ? <img src={ppPhoto} alt="" /> : null}</span>
-          </div>
-          <PassportBarcode uid={uid} />
-          {/* the machine zone at the foot: two lines of the measure, every one a field the data page prints
-              (lib/passport/document.js mrzZone), the chevrons the filler, the device's cursor at the end; clouded
-              as the masthead is */}
-          <div className="ppmrz">
-            {mrz.map((line, i) => <MrzLine key={i} text={line} cursor={i === mrz.length - 1} />)}
-            <span className="ppcloud" aria-hidden="true" />
-          </div>
+          <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
+          {/* the document's keys, under the page (the mock-up's page carries none) */}
           <div className="ppdocacts">
             <button className="ppbtn" onClick={(e) => { blinkLamp(e, { quiet: true }); switchTab("places"); }}><Lamp />OPEN MAP</button>
             <button className="ppbtn primary" onClick={(e) => { blinkLamp(e); warpToUpload(); }}><Lamp />STAMP PASSPORT</button>
           </div>
-        </div>
+        </>
       )}
       {geoNote && !shared && <p className="ppgeonote">{geoNote} <button className="txtbtn" onClick={() => { setGeoNote(""); switchTab("places"); }}>CHANGE →</button></p>}
 

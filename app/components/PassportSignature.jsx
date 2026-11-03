@@ -21,7 +21,7 @@ export function readSignature() {
   try { return window.localStorage.getItem(SIGNATURE_KEY) || null; } catch { return null; }
 }
 
-export default function PassportSignature({ name, label, translation, dir = "ltr" }) {
+export default function PassportSignature({ name, label, translation, dir = "ltr", editable = false }) {
   const [signature, setSignature] = useState(null);
   const [signing, setSigning] = useState(false);
   const [inked, setInked] = useState(false);
@@ -88,7 +88,7 @@ export default function PassportSignature({ name, label, translation, dir = "ltr
   const printed = (name || "").trim();
   return (
     <div className="ppsig">
-      <dt>{label} /<em lang={translation ? undefined : "en"} dir={dir}>{translation}</em></dt>
+      <dt>{label} /<em dir={dir}>{translation}</em></dt>
       <dd>
         {signing ? (
           <canvas ref={padRef} className="ppsigpad" aria-label="sign here" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} />
@@ -98,7 +98,7 @@ export default function PassportSignature({ name, label, translation, dir = "ltr
           <span className="ppsigname">{printed || "—"}</span>
         )}
       </dd>
-      <div className="ppsigkeys">
+      {editable && <div className="ppsigkeys">
         {signing ? (
           <>
             <button type="button" className="txtbtn" onClick={keep} disabled={!inked}>DONE ✓</button>
@@ -110,7 +110,7 @@ export default function PassportSignature({ name, label, translation, dir = "ltr
             {signature ? <button type="button" className="txtbtn" onClick={clear}>CLEAR</button> : null}
           </>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

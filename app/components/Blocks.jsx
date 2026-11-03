@@ -110,13 +110,15 @@ export function blinkLamp(target, { quiet = false } = {}) {
  *  the "<" filler), or `words` joined by "<<" — run out in "<" to `width` (the document's 52). Data is drawn in
  *  <b>, the filler in <i>; `cursor` puts the device's block cursor at the end. aria-hidden: the data page carries
  *  the words, the zone only repeats them for the machine. */
+// every character its own span, so a zone can spread a line over its measure (the Passport's even lines)
+const chars = (run) => [...run].map((ch, j) => <span key={j}>{ch}</span>);
 export function MrzLine({ text, words, width = MRZ_WIDTH, cursor = false, className = "" }) {
   let line = text != null ? String(text) : (words || []).map(mrzWord).filter(Boolean).join("<<");
   if (line.length < width) line += "<".repeat(width - line.length);
   const parts = line.split(/(<+)/).filter(Boolean);
   return (
     <span className={"mrzline" + (className ? " " + className : "")} aria-hidden="true">
-      {parts.map((p, i) => (p[0] === "<" ? <i key={i}>{p}</i> : <b key={i}>{p}</b>))}
+      {parts.map((p, i) => (p[0] === "<" ? <i key={i}>{chars(p)}</i> : <b key={i}>{chars(p)}</b>))}
       {cursor ? <span className="mrzcursor" /> : null}
     </span>
   );

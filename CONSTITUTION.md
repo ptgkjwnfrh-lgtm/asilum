@@ -649,6 +649,21 @@ never served to the shell; (4) the signature is the username until the
 passenger signs on the page, the stroke kept on the device; (5) the map is
 one faint layer — no hot window, no microprint. The public Passport is
 untouched. Record: docs/v2/slice-18-taste-passport-2026-11-02.md.
+The same day, on the first build ("the formatting is so so off and i only
+wanted the map to stay … just trace the picture … a negative cut out like
+the logo … the barcode slope should match the logo slope the header slope
+should match the logo slope … thin out the barcode"; then "some of the text
+is OCR A Extended and i replaced the Os with 0s … there must be 4
+translations underneath the photo"): (6) the document IS the mock-up,
+traced — every piece placed in hundredths of the page's width, the keys
+under it; (7) the masthead's foot and the bar code's ramp take the logo's
+own slant (lib/wordmark.js), and the bar code is the logo's brick mirrored
+with the bars cut out of it; (8) the faces are the mock-up's — OCR A
+Extended (the Os zeros) for the serial, the number, the mock-up's four
+words under the photo (PASSP0RT/REISEPASS, パスポート/PASSEP0RT) and the
+machine zone, a serif numero, Michroma for everything else; the zone
+unclouded; through the bar code's slits the Liquid Glass alone, no tint;
+(9) of the old artwork the map alone stays — no pluses, no page number.
 
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is

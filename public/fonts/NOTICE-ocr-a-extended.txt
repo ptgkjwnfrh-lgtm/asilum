@@ -1,0 +1,9 @@
+OCR A Extended (ocr-a-extended.ttf)
+Digitized data copyright The Monotype Corporation 1991-1995. All rights reserved.
+
+Shipped at the owner's word (2 Nov 2026) from the owner's own font library,
+for the Passport document's machine type (the serial, the passport number,
+the four words under the photo and the machine zone), as the owner's mock-up
+sets them. This face is not under the Open Font License like the other three;
+its licence for use on the site is the owner's to hold. It is used nowhere
+else on the site.
