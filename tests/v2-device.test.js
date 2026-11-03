@@ -133,6 +133,6 @@ test("the passport in the device's language (the owner's mock-up of 2 Nov 2026, 
   assert.match(rules, /\.mrzline b \{ font-weight: 400; color: var\(--sig\); text-shadow: var\(--glow\); \}/);
   assert.match(rules, /\.mrzline i \{ font-style: normal; color: var\(--red\); opacity: 0\.6; \}/);
   assert.match(rules, /@media \(prefers-reduced-motion: reduce\) \{ \.mrzcursor \{ animation: none; \} \}/);
-  assert.match(rules, /\.ppdoc \{[^}]*container-type: inline-size;[^}]*aspect-ratio: 100 \/ 145\.3;/s, "the page measures itself: every size in hundredths of its width, on the golden grid");
+  assert.match(rules, /\.ppdoc \{[^}]*container-type: inline-size;[^}]*aspect-ratio: 100 \/ 148\.2;/s, "the page measures itself: every size in hundredths of its width, on the golden grid (grown 3 Nov 2026 with the lower page)");
   assert.match(rules, /\.ppmrz \.mrzline \{ display: flex; justify-content: space-between;/, "52 characters spread over the zone: always the measure, never clipped");
 });

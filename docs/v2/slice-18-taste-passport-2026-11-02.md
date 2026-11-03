@@ -66,7 +66,7 @@ rectangle), the rows at a φ¹ pitch so the column ends level with the four
 words under the photo; every field label holds one line again (the
 translation 1.7), the signature and the account keep the left of the lower
 page with the ghost beside them (a Latin signature label may fold there,
-the account following it down). The page is 100 × 145.3.
+the account following it down). The page was 100 × 145.3.
 
 The next day (3 Nov 2026), four edits on the committed page: "make the ASM
 number in the right and the AS date of make a little bigger" — the serial
@@ -81,11 +81,24 @@ the ghost) sits one unit and φ⁻² under the fields instead of one unit, the
 φ⁻² being the tad: about the line the caption gave up, so the bar code and
 the zone keep their place at the foot.
 
+The same morning, on the marked-up screenshot, four more: the number
+"shrink … ever so slightly … shift to the right a little bit and … move it
+up so it's in line with the AS number" — 2.4 to the serial's 2.6
+(`--pmn`), φ⁻¹ in from the edge instead of the unit, centred on the
+serial's line in the level part of the band; the labels (every `ENGLISH /
+translation` title) "lower the text size a little and ever so slightly
+lower its opacity" — 1.8 and 1.6 (`--pt-lbl`, `--pt-tr`) at 0.86
+(`--pp-lbl`); everything under the four words — the signature, the
+account, the ghost and its caption — "down a little bit to give the upper
+half a little breathing room" — the lower page two units under the fields,
+the page grown by the same (100 × 148.2) so the zone keeps its φ⁻¹ margin
+at the foot; and PHOTO confirmed gone from the caption.
+
 ## What landed
 
 | Need | Where | Status |
 | --- | --- | --- |
-| THE PAGE ON THE GOLDEN GRID (100 × 145.3): every piece placed and sized in hundredths of its width (`cqw`) at a power of φ from the margin's unit, so a phone, a desktop and the /profile preview show the same page; the clouded masthead (the fixtures' frost over the band's words), glowing white a little in the logo's white (the cut on the cloud, the glow on the band, so the foot's slant is not clipped), its foot level under the serial then down THE LOGO'S OWN SLANT (`lib/wordmark.js`: the brick's shoulder, run 1.496, its bends) to the number's deeper right, the name in the notch; the keys OPEN MAP and STAMP PASSPORT under the page (the mock-up carries none) | `app/components/PassportDocument.jsx` (one page for /board and /profile), `app/globals.css` (`.ppdoc`, `.ppmast`, `.ppcloud`) | shipped |
+| THE PAGE ON THE GOLDEN GRID (100 × 148.2): every piece placed and sized in hundredths of its width (`cqw`) at a power of φ from the margin's unit, so a phone, a desktop and the /profile preview show the same page; the clouded masthead (the fixtures' frost over the band's words), glowing white a little in the logo's white (the cut on the cloud, the glow on the band, so the foot's slant is not clipped), its foot level under the serial then down THE LOGO'S OWN SLANT (`lib/wordmark.js`: the brick's shoulder, run 1.496, its bends) to the number's deeper right, the name in the notch; the keys OPEN MAP and STAMP PASSPORT under the page (the mock-up carries none) | `app/components/PassportDocument.jsx` (one page for /board and /profile), `app/globals.css` (`.ppdoc`, `.ppmast`, `.ppcloud`) | shipped |
 | The serial `AS<<<MM<<DD` — the month and day the account was created, a machine line of 16 — and the passport number `№ 0ASM·000·000`, six digits read off the account number (FNV-1a), both in OCR A Extended with the Os as zeros (`ocr`), the № drawn as the mock-up draws it — a bold serif N and a small raised o, underlined (`--numero`) — both the document's colour at a lower opacity, glowing a little, UNDER the cloud; at the zone's size, 2.6 (3 Nov: "a little bigger") | `lib/passport/document.js` (`serialLine`, `SERIAL_WIDTH`, `passportNumber`, `passportNumberDisplay`, `ocr`), `public/fonts/ocr-a-extended.ttf` (the owner's own copy, shipped at the owner's word), `app/globals.css` (`--ocr`, `--numero`) | shipped |
 | The name as type in the logo's set — Michroma at −0.06em (the wordmark's −0.096em opened a little), bolder by a 0.02em stroke round each letter (half the first setting), the document's ink unlit — one line, sized to the notch | `app/globals.css` (`.pptitle`); `PassportPlate.jsx` deleted with its rules | shipped |
 | The data page: SURNAME and GIVEN NAME off the username (the last word the surname), DATE OF BIRTH and IDNTY written on the page by the passenger and kept with the display name on the device, NATIONALITY, TASTE TYPE, DATE OF ISSUE; every label `ENGLISH /` then the drawn language's word beside it on ONE line (owner, later: "small enough so the translation isn't stacked underneath" — sized so German's longest still fits), with its `lang` and direction | `lib/passport/document.js` (`nameParts`), `app/board/page.js` (`writeField`, `.ppwrite`), `lib/social.js` profile info | shipped |

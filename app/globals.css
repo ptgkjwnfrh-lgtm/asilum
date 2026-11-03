@@ -1774,7 +1774,7 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    the serial and the number under the fixtures' frost; the name sits in the notch; the bar code is the logo's
    brick mirrored (lib/passport/barcode.js), the bars cut out of it; the zone two even lines; the map under all of
    it, faint; nothing else of the old document. ---- */
-.ppdoc { position: relative; container-type: inline-size; aspect-ratio: 100 / 145.3; max-width: 560px; margin: 0 auto 10px; border: 0; border-radius: var(--pg-1);
+.ppdoc { position: relative; container-type: inline-size; aspect-ratio: 100 / 148.2; /* the foot (the zone's last line) plus a φ⁻¹ margin */ max-width: 560px; margin: 0 auto 10px; border: 0; border-radius: var(--pg-1);
   overflow: hidden; background: var(--bg2); font-family: var(--mich); color: var(--ink); line-height: 1.2;
   --pg-3: 1.18cqw; --pg-2: 1.91cqw; --pg-1: 3.09cqw; --pg0: 5cqw; --pg1: 8.09cqw; --pg2: 13.09cqw; --pg3: 21.18cqw; --pg4: 34.27cqw; --pg5: 55.45cqw;
   /* THE TYPE, legible as an ID's (owner, 2 Nov 2026: "all the text has to be legible as if it were an actual
@@ -1783,6 +1783,10 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
      (the serial and the number were 2.03; owner, 3 Nov 2026: the number and the date "a little bigger" — one
      half-step up). On a phone (347 wide) that is 5.9 / 7 / 9 / 12.6 px. */
   --pt-2: 1.7cqw; --pt-1: 2.03cqw; --pt0: 2.6cqw; --pt1: 3.64cqw; --pm: 2.6cqw; --pmz: 2.6cqw; /* the translation a touch above its step (1.6), for the phone's sake */
+  --pmn: 2.4cqw; /* the number alone, "ever so slightly" under the serial's 2.6 (owner, 3 Nov 2026) */
+  /* THE LABELS (owner, 3 Nov 2026: "lower the text size a little and ever so slightly lower its opacity"): a
+     quarter-step under the label step (2.03 → 1.8), the translation back on its own step (1.6), at 0.86 */
+  --pt-lbl: 1.8cqw; --pt-tr: 1.6cqw; --pp-lbl: 0.86;
   --pp-cloud: color-mix(in srgb, var(--wm-bar) 22%, transparent);     /* the band: a low-opacity solid white (owner: "a low opacity solid white with a glow") */
   --pp-bar: color-mix(in srgb, var(--wm-bar) 30%, transparent);       /* the bar code's plate: the same white, "only slightly higher opacity than the passport masthead" (owner, 3 Nov 2026) */
   --pp-under: 0.8; /* what shows of a word under the band */ }
@@ -1801,10 +1805,12 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   filter: drop-shadow(0 0 0.5cqw color-mix(in srgb, var(--wm-bar) 70%, transparent)) drop-shadow(0 0 1.8cqw color-mix(in srgb, var(--wm-bar) 40%, transparent)); /* the logo's white glow */ }
 .ppmast .ppcloud { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 80.31% 100%, 79.87% 99.84%, 79.45% 99.37%, 79.04% 98.59%, 78.64% 97.49%, 78.25% 96.08%, 77.88% 94.36%, 72.6% 67.44%, 72.23% 65.72%, 71.84% 64.31%, 71.44% 63.21%, 71.03% 62.43%, 70.61% 61.96%, 70.17% 61.8%, 0% 61.8%); }
 .ppmast .ppserial, .ppmast .ppnum { position: absolute; z-index: 1; opacity: var(--pp-under); color: var(--sig); text-shadow: var(--glow); white-space: nowrap; line-height: 1; font-size: var(--pm); }
-/* the serial centred in the level part (φ¹ deep), the number centred in the full depth, both on the margin */
+/* the serial centred in the level part (φ¹ deep) on the margin; the number on the same line (owner, 3 Nov 2026:
+   "in line with the AS number" — it was centred in the full depth), a little nearer the edge (φ⁻¹ in, not the
+   unit) and a touch smaller (--pmn) */
 .ppmast .ppserial { left: var(--pg0); top: calc((var(--pg1) - var(--pm)) / 2); letter-spacing: 0.02em; }
 .ppmast .ppserial, .ppmast .ppserial b, .ppmast .ppserial i { font-family: var(--ocr); } /* OCR A, as the mock-up sets it */
-.ppnum { right: var(--pg0); top: calc((var(--pg2) - var(--pm)) / 2); letter-spacing: 0.02em; font-family: var(--ocr); }
+.ppnum { right: var(--pg-1); top: calc((var(--pg1) - var(--pmn)) / 2); letter-spacing: 0.02em; font-size: var(--pmn); font-family: var(--ocr); }
 .ppnum .ppno { font-style: normal; font-family: var(--numero); font-weight: 700; font-size: 1.3em; margin-right: 0.25em; letter-spacing: 0; } /* the № as the mock-up draws it: a bold serif N and a small raised o, underlined */
 .ppnum .ppno u { font-size: 0.5em; vertical-align: 0.55em; text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 0.09em; margin-left: 0.04em; }
 /* THE NAME (owner: "close the kerning … to match the ASILUM logo and up the size and boldness", then "open up the
@@ -1827,8 +1833,8 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    language, fainter, on ONE line (owner: "small enough so the translation text isn't stacked underneath", then
    "narrow the photo" to make the room); the value φ⁻³ under */
 .ppid { position: absolute; z-index: 2; left: calc(100cqw - var(--pg0) - var(--pg5)); top: calc(var(--pg2) + var(--pg0)); width: var(--pg5); margin: 0; padding: 0; display: grid; grid-auto-rows: var(--pg1); align-content: start; }
-.ppid dt, .ppsig dt, .ppacct dt { font-size: var(--pt-1); letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; white-space: nowrap; }
-.ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; font-size: var(--pt-2); color: var(--grey); text-shadow: none; letter-spacing: 0.02em; margin-left: 0.6cqw; }
+.ppid dt, .ppsig dt, .ppacct dt { font-size: var(--pt-lbl); opacity: var(--pp-lbl); letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); line-height: 1.2; white-space: nowrap; }
+.ppid dt em, .ppsig dt em, .ppacct dt em { font-style: normal; font-size: var(--pt-tr); color: var(--grey); text-shadow: none; letter-spacing: 0.02em; margin-left: 0.6cqw; }
 .ppid dd { margin: var(--pg-3) 0 0; font-size: var(--pt0); letter-spacing: 0.04em; line-height: 1.2; min-height: 1.2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* the passenger writes two fields on the page (IDNTY, DATE OF BIRTH): the same face as the printed ones, no
    field drawn round them — the document is the field */
@@ -1842,13 +1848,13 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    PASSP0RT/REISEPASS over パスポート/PASSEP0RT — in OCR A, the Os as zeros (lib/passport/document.js passportWords) */
 .ppquad { position: absolute; z-index: 2; left: var(--pg0); top: calc(var(--pg2) + var(--pg0) + var(--pp-photo) * 1.618 + var(--pg-1)); width: var(--pp-photo); display: grid; gap: var(--pg-3); justify-items: center; text-align: center;
   font-family: var(--ocr); font-size: var(--pt0); letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); line-height: 1; white-space: nowrap; }
-/* THE LOWER PAGE, one unit and φ⁻² under the fields (--pp-low; the four words under the photo end just above;
-   the φ⁻² is the owner's "tad", 3 Nov 2026: the ghost's caption gave up a line, so the signature and the ghost
-   move down by about that line and the bar code and the zone keep their place at the foot): THE
+/* THE LOWER PAGE, TWO units under the fields (--pp-low; the four words under the photo end just above; it was
+   one unit, then one and φ⁻² — owner, 3 Nov 2026: "a tad", then "move them all down a little bit to give the
+   upper half a little breathing room" — the page grown by the same to keep the foot's margin): THE
    SIGNATURE and THE ACCOUNT NUMBER at the left, in flow (a Latin signature label may fold here; the account
    follows it down), the photo's GHOST at the right; the pad and the kept stroke are the signature's own box; the
    kept signature is a mask, so it takes the ink of either theme */
-.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 7 * var(--pg1) + var(--pg0) + var(--pg-2)); }
+.ppdoc { --pp-low: calc(var(--pg2) + var(--pg0) + 7 * var(--pg1) + 2 * var(--pg0)); }
 .pplow { position: absolute; z-index: 2; left: var(--pg0); top: var(--pp-low); width: calc(100cqw - 2 * var(--pg0) - var(--pg3) - var(--pg-1)); display: grid; gap: var(--pg-1); align-content: start; }
 .pplow .ppsig dt { white-space: normal; }
 .ppsig dd { margin: var(--pg-3) 0 0; height: calc(var(--pt1) * 1.618); display: flex; align-items: center; }
