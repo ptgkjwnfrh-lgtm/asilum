@@ -310,7 +310,7 @@ export default function ProfilePage() {
       <div className="pf3cluster" role="group" aria-label="wardrobe, statistics, banking">
         {[["wardrobe", "WARDROBE", "wardrobe"], ["stats", "STATISTICS", "stats"], ["bank", "BANKING", "bank"]].map(([k, label, icon]) => (
           <button type="button" key={k} aria-pressed={panel === k} onClick={() => openPanel(k)} title={label}>
-            <Icon name={icon} size={18} />
+            <Icon name={icon} size={15} />
             <span>{label}</span>
           </button>
         ))}

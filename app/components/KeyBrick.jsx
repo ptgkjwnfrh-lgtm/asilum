@@ -62,7 +62,10 @@ export default function KeyBrick({ banner = null, left = null, right = null, cla
   }, [left, right]);
 
   const phone = !m || m.w < PHONE;
-  const band = phone ? 34 : 48;                       // the banner's room above the cluster
+  // the banner's room above the cluster: a strip, so the brick stays a short slab and the cluster sits on the
+  // same line as the keys beside it (owner, 4 Nov 2026: "shrink the shape so the follow and message buttons are on
+  // the same plane")
+  const band = phone ? 12 : 14;
   const bend = phone ? 6 : 8, line = phone ? 2.5 : 3, breath = bend + 8;
   let g = null;
   if (m) {

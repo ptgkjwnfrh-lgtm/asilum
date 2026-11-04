@@ -2929,23 +2929,23 @@ span.pf3song { cursor: default; }
 :root { --kb-ink: #001512; }
 [data-theme="light"] { --kb-rim: color-mix(in srgb, var(--ink) 24%, transparent); }
 .kbhouse { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: 12px; row-gap: 10px; margin: 16px calc(-1 * var(--kb-pad, 20px)) 0; isolation: isolate; }
-.kbleft { position: relative; z-index: 1; display: flex; flex: 0 0 auto; align-items: flex-end; gap: 6px; padding: 0 0 var(--kb-line, 3px) var(--kb-pad, 20px); }
+.kbleft { position: relative; z-index: 1; display: flex; flex: 0 0 auto; align-items: flex-end; gap: 6px; padding: 0 0 calc(var(--kb-line, 3px) + 5px) var(--kb-pad, 20px); }
 .kbrick { position: relative; flex: 1 1 0; min-width: 0; }
 .kbart { position: absolute; top: 0; z-index: 0; display: block; overflow: visible; pointer-events: none; filter: var(--wm-glow); }
 .kbart.bare { top: auto; bottom: 0; }
 .kbslab { fill: var(--wm-bar); stroke: var(--kb-rim, none); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.kbright { position: relative; z-index: 1; display: flex; justify-content: flex-end; padding: var(--kb-band, 48px) var(--kb-pad, 20px) 10px 0; }
+.kbright { position: relative; z-index: 1; display: flex; justify-content: flex-end; padding: var(--kb-band, 14px) var(--kb-pad, 20px) calc(var(--kb-line, 3px) + 5px) 0; }
 .kbhouse.bare .kbright { padding: 0; }
 .kbcluster { display: inline-flex; }
 .pf3head { --kb-pad: 20px; }
-.pf3key, .pf3keys .followbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 14px; border-radius: 9px; border: 1.15px solid var(--ink);
-  background: transparent; color: var(--ink); font: 400 10px/1 var(--mich); letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none; cursor: pointer; text-shadow: none; box-shadow: none; }
+.pf3key, .pf3keys .followbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 11px; border-radius: 8px; border: 1.15px solid var(--ink);
+  background: transparent; color: var(--ink); font: 400 8.5px/1 var(--mich); letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; cursor: pointer; text-shadow: none; box-shadow: none; }
 .pf3key:hover, .pf3keys .followbtn:hover { background: transparent; color: var(--red); border-color: var(--red); text-shadow: var(--glow-r); }
 .pf3key.on, .pf3keys .followbtn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); text-shadow: none; }
-.pf3cluster { display: inline-flex; align-items: stretch; border: 1.15px solid var(--kb-ink); border-radius: 9px; overflow: hidden; background: rgba(255, 255, 255, 0.7); }
-.pf3cluster button { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 60px; padding: 3px 10px; border: 0; border-left: 1px solid color-mix(in srgb, var(--kb-ink) 28%, transparent); background: none; color: var(--kb-ink); cursor: pointer; }
+.pf3cluster { display: inline-flex; align-items: stretch; min-height: 30px; border: 1.15px solid var(--kb-ink); border-radius: 8px; overflow: hidden; background: rgba(255, 255, 255, 0.7); }
+.pf3cluster button { display: grid; justify-items: center; align-content: center; gap: 2px; min-width: 54px; padding: 2px 8px; border: 0; border-left: 1px solid color-mix(in srgb, var(--kb-ink) 28%, transparent); background: none; color: var(--kb-ink); cursor: pointer; }
 .pf3cluster button:first-child { border-left: 0; }
-.pf3cluster button span { font: 6.5px/1 var(--mich); letter-spacing: 0.14em; }
+.pf3cluster button span { font: 6px/1 var(--mich); letter-spacing: 0.12em; }
 .pf3cluster button:hover { background: color-mix(in srgb, var(--kb-ink) 12%, transparent); }
 .pf3cluster button[aria-pressed="true"] { background: var(--kb-ink); color: #fff; }
 .pf3echoes { display: flex; gap: 16px; overflow-x: auto; padding: 16px 0 2px; scrollbar-width: none; }
@@ -3006,9 +3006,9 @@ a.pf3tile:hover { outline: 1.15px solid var(--ink); outline-offset: -1px; }
   .kbhouse { row-gap: 10px; }
   .kbleft { flex: 1 1 100%; gap: 5px; padding: 0 var(--kb-pad) 0 var(--kb-pad); }
   .kbrick { flex: 1 1 100%; }
-  .pf3key, .pf3keys .followbtn { min-height: 32px; padding: 0 8px; font-size: 8px; letter-spacing: 0.08em; border-radius: 7px; }
-  .pf3cluster { border-radius: 7px; }
-  .pf3cluster button { min-width: 52px; padding: 2px 8px; }
+  .pf3key, .pf3keys .followbtn { min-height: 28px; padding: 0 8px; font-size: 8px; letter-spacing: 0.08em; border-radius: 7px; }
+  .pf3cluster { min-height: 28px; border-radius: 7px; }
+  .pf3cluster button { min-width: 50px; padding: 2px 7px; }
   .pf3grid { gap: 2px; }
   .pf3tile .pf3text { padding: 9px 9px 22px; }
   .pf3tile .fposttext { font-size: 10.5px; -webkit-line-clamp: 5; }

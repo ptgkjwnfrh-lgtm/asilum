@@ -145,5 +145,9 @@ test("the cluster is encased in the brick on the owner's page, the left keys sta
   assert.match(css, /\.kbslab \{ fill: var\(--wm-bar\);/, "the brick is the logo's white");
   assert.match(css, /\.kbart \{[^}]*filter: var\(--wm-glow\)/, "in the logo's glow");
   assert.match(css, /--kb-ink: #001512;/, "the cluster in the logo's black");
-  assert.match(css, /\.kbleft \{[^}]*padding: 0 0 var\(--kb-line, 3px\) var\(--kb-pad, 20px\); \}/, "the left keys stand on the line");
+  // (then: "shrink the left bar buttons and shrink the shape so the follow and message buttons are on the same
+  // plane") the keys beside the brick and the cluster inside it end the same breath above the line
+  assert.match(css, /\.kbleft \{[^}]*padding: 0 0 calc\(var\(--kb-line, 3px\) \+ 5px\) var\(--kb-pad, 20px\); \}/, "the left keys stand a breath above the line");
+  assert.match(css, /\.kbright \{[^}]*padding: var\(--kb-band, 14px\) var\(--kb-pad, 20px\) calc\(var\(--kb-line, 3px\) \+ 5px\) 0; \}/, "and so does the cluster: the same plane");
+  assert.match(brick, /const band = phone \? 12 : 14;/, "the banner's band is a strip, so the brick stays short");
 });
