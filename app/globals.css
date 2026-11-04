@@ -3295,7 +3295,7 @@ body { font-size: 14px; }
 .ppmaplabel.smaplabel.sel { z-index: 2; }
 .ppmaplabel.smaplabel:focus-visible { outline: 1px dashed var(--red); outline-offset: 2px; }
 .pmsheet { display: grid; gap: 12px; font-family: var(--mich); padding-bottom: 8px; }
-.pmsheet.ticketed { padding-bottom: 240px; }
+.pmsheet.ticketed { padding-bottom: 170px; }
 .pmwin { position: relative; border-radius: var(--radius-card); overflow: hidden; isolation: isolate;
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sig) 30%, transparent), 0 0 22px color-mix(in srgb, var(--sig) 12%, transparent); }
@@ -3330,29 +3330,29 @@ body { font-size: 14px; }
 
 /* THE TICKET: rises from the popup's foot — the main part and a stub torn along a perforation (two notches and a
    dotted seam), ADMIT ONE and the date in the machine face, the stub's number and its bars */
-.pmticket { position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) 64px; margin: 0 -2px; color: var(--ink);
+.pmticket { position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) 46px; margin: 0 -2px; color: var(--ink);
   filter: drop-shadow(0 -10px 30px color-mix(in srgb, var(--bg) 70%, transparent)) var(--glow-mark);
   animation: pmticket-in var(--dur-4, 420ms) var(--ease-out) both; }
 @keyframes pmticket-in { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .pmticket { animation: none; } }
 .pmticketmain, .pmticketstub { background: color-mix(in srgb, var(--sig) 12%, var(--bg)); }
-.pmticketmain { display: grid; gap: 5px; padding: 16px 16px 14px 18px; border-radius: var(--radius-card) 0 0 var(--radius-card);
+.pmticketmain { display: grid; gap: 3px; padding: 10px 12px 10px 14px; min-width: 0; border-radius: var(--radius-card) 0 0 var(--radius-card);
   -webkit-mask: radial-gradient(circle at 100% 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 100% 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat;
   mask: radial-gradient(circle at 100% 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 100% 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat; }
-.pmticketstub { display: grid; justify-items: center; align-content: space-between; padding: 16px 0 14px; border-radius: 0 var(--radius-card) var(--radius-card) 0;
+.pmticketstub { display: grid; justify-items: center; align-content: space-between; padding: 10px 0; border-radius: 0 var(--radius-card) var(--radius-card) 0;
   background-image: linear-gradient(to bottom, color-mix(in srgb, var(--sig) 50%, transparent) 50%, transparent 50%); background-size: 1px 8px; background-repeat: repeat-y; background-position: left top;
   -webkit-mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat;
   mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat; }
 .ppinline .pmticketkind { font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
-.pmticketname { font-weight: 400; font-size: 15px; letter-spacing: 0.04em; line-height: 1.3; }
-.pmticketvenue { font-size: 9px; letter-spacing: 0.08em; color: var(--grey); line-height: 1.4; }
-.ppinline .pmticketrow { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 2px; font-family: var(--ocr); font-size: 12px; color: var(--ink); }
+.pmticketname { font-weight: 400; font-size: 12.5px; letter-spacing: 0.04em; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pmticketvenue { font-size: 8.5px; letter-spacing: 0.08em; color: var(--grey); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ppinline .pmticketrow { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1px; font-family: var(--ocr); font-size: 10.5px; color: var(--ink); }
 .pmticketrow i { display: block; font-style: normal; font-family: var(--mich); font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); margin-bottom: 2px; }
-.pmticketnote { font-size: 9px; color: var(--grey); }
-.pmticketkeys { display: flex; gap: 8px; margin-top: 6px; }
-.pmticketkeys .ppbtn { padding: 10px 14px; font-size: 9.5px; text-decoration: none; white-space: nowrap; }
-.ppinline .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 10px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
-.pmticketbars { display: flex; gap: 2px; height: 34px; }
+.pmticketnote { font-size: 8px; color: var(--grey); }
+.pmticketkeys { display: flex; gap: 6px; margin-top: 4px; }
+.pmticketkeys .ppbtn { padding: 7px 12px; font-size: 8.5px; text-decoration: none; white-space: nowrap; }
+.ppinline .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
+.pmticketbars { display: flex; gap: 2px; height: 22px; }
 .pmticketbars i { display: block; height: 100%; background: var(--ink); opacity: 0.7; }
 
 /* VIEW TASTE GLOBE (TasteGlobe.jsx) */
