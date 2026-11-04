@@ -49,14 +49,17 @@ function Ticket({ ev, onClose }) {
           {ev.price && <span><i>FROM</i>{ev.price}</span>}
         </span>
         {ev.sample && <span className="pmticketnote">a sample fixture — no tickets exist for it.</span>}
+        {/* the one key: the event's own tickets (owner, 3 Nov 2026: "replace the close button with ticket master
+            button"); a fixture has none, and says so rather than linking nowhere */}
         <span className="pmticketkeys">
-          {href ? <a className="ppbtn primary" href={href} target="_blank" rel="noopener noreferrer">{ticketmaster ? "TICKETMASTER ↗" : "THE LISTING ↗"}</a> : null}
-          <button className="ppbtn" onClick={onClose}>CLOSE</button>
+          {href ? <a className="ppbtn primary" href={href} target="_blank" rel="noopener noreferrer">{ticketmaster ? "TICKETMASTER ↗" : "THE LISTING ↗"}</a>
+            : <span className="ppbtn soon" aria-disabled="true">NO TICKETS · A SAMPLE</span>}
         </span>
       </div>
-      <div className="pmticketstub" aria-hidden="true">
-        <span className="pmticketno">{ocr("N0 " + serial(ev.id))}</span>
-        <span className="pmticketbars">{serial(ev.id + "b").split("").map((n, i) => <i key={i} style={{ width: `${1 + (+n % 3)}px` }} />)}</span>
+      <div className="pmticketstub">
+        <span className="pmticketno" aria-hidden="true">{ocr("N0 " + serial(ev.id))}</span>
+        {/* the stub's corner closes it ("a small x replacing the weird barcode in the bottom right corner") */}
+        <button type="button" className="pmticketx" onClick={onClose} aria-label="close the ticket">×</button>
       </div>
     </div>
   );

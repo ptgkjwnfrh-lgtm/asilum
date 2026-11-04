@@ -3329,7 +3329,8 @@ body { font-size: 14px; }
 .pmrowbody span { font-size: 8px; letter-spacing: 0.14em; color: var(--grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* THE TICKET: rises from the popup's foot — the main part and a stub torn along a perforation (two notches and a
-   dotted seam), ADMIT ONE and the date in the machine face, the stub's number and its bars */
+   dotted seam), ADMIT ONE and the date in the machine face, the one key to the event's tickets; the stub's number
+   and, in its corner, the × that puts the ticket away */
 .pmticket { position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) 46px; margin: 0 -2px; color: var(--ink);
   filter: drop-shadow(0 -10px 30px color-mix(in srgb, var(--bg) 70%, transparent)) var(--glow-mark);
   animation: pmticket-in var(--dur-4, 420ms) var(--ease-out) both; }
@@ -3352,8 +3353,12 @@ body { font-size: 14px; }
 .pmticketkeys { display: flex; gap: 6px; margin-top: 4px; }
 .pmticketkeys .ppbtn { padding: 7px 12px; font-size: 8.5px; text-decoration: none; white-space: nowrap; }
 .ppinline .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
-.pmticketbars { display: flex; gap: 2px; height: 22px; }
-.pmticketbars i { display: block; height: 100%; background: var(--ink); opacity: 0.7; }
+.pmticketx { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); font-size: 15px; line-height: 1; }
+.pmticketx:hover { color: var(--sig); text-shadow: var(--glow); }
+.pmticketx:active { transform: scale(0.92); }
+.pmticketx:focus-visible { outline: 1px dashed var(--sig); outline-offset: 2px; }
+.pmticketkeys .ppbtn.soon { opacity: 0.55; cursor: default; }
 
 /* VIEW TASTE GLOBE (TasteGlobe.jsx) */
 .tglobe { display: grid; gap: 10px; font-family: var(--mich); }
