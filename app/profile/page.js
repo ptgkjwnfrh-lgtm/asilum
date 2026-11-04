@@ -302,6 +302,11 @@ export default function ProfilePage() {
         {editing ? "DONE" : "EDIT PROFILE"}
       </button>
       <a className="pf3key" href="/messages">MESSAGE</a>
+    </>
+  );
+  // the three keys the logo's brick encases (KeyBrick.jsx)
+  const tools = (
+    <>
       <div className="pf3cluster" role="group" aria-label="wardrobe, statistics, banking">
         {[["wardrobe", "WARDROBE", "wardrobe"], ["stats", "STATISTICS", "stats"], ["bank", "BANKING", "bank"]].map(([k, label, icon]) => (
           <button type="button" key={k} aria-pressed={panel === k} onClick={() => openPanel(k)} title={label}>
@@ -349,6 +354,7 @@ export default function ProfilePage() {
           song={anthem ? { name: anthem.name, label: anthem.label } : null}
           onSong={() => openPanel("room")}
           actions={keys}
+          tools={tools}
           banner={info.bannerImg || null}
           echoes={posts}
           onEchoAdd={() => openSheet("post", { kind: "echo", title: "POST" })}

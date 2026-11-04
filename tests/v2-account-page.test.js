@@ -104,40 +104,46 @@ test("the four tabs, each a glyph over its word, and the panels the three keys o
   assert.match(own, /setPanel\("account"\);\s*if \(failed\) \{/);
 });
 
-test("the key brick is the logo's brick: square at the left, the slant at the drawn angle through the bends onto the line", () => {
-  // (4 Nov 2026: "pay attention to the shape the Asilum logo is in … the housing … to look like that shape")
+test("the key brick is the logo's brick, mirrored: square at the right, the slant at the drawn angle through the bends down to the line on the left", () => {
+  // (4 Nov 2026: "pay attention to the shape the Asilum logo is in … the housing … to look like that shape"; then
+  // "flipped horizontally so that the buttons stay where they are, they just now have the shape encasing it")
   assert.ok(Math.abs(SLANT_RUN - (REF.toe - REF.shoulder) / (REF.lineTop - REF.brickTop)) < 1e-9, "the slant is the reference's");
-  const g = housing(700, 98, { line: 3, bend: 8 });
-  assert.match(g.d, /^M0 0 H/, "square at the left edge, where it runs off the pane");
-  assert.match(g.d, / H700 V98 H0 Z$/, "the line runs on to the right edge and drops to the foot");
+  const g = housing(700, 98, { side: "right", line: 3, bend: 8, lineRun: 280, shoulder: 240 });
+  assert.match(g.d, /^M700 0 H/, "square at the right edge, where it runs off the pane");
+  assert.match(g.d, / H0 V98 H700 Z$/, "the line runs on to the left edge and drops to the foot");
   assert.equal(g.line, 95, "the line is `line` thick, flush with the foot");
-  assert.ok(Math.abs((g.toe - g.shoulder) / g.line - SLANT_RUN) < 1e-3, "on a wide box the slant keeps the drawn angle");
-  assert.ok(g.toe < 700 - 20, "a line past the toe");
-  assert.ok(Math.abs(g.at(0) - g.shoulder) < 0.01 && Math.abs(g.at(g.line) - g.toe) < 0.01, "at(y) walks the slant");
-  assert.equal(g.at(1000), g.toe, "and never past the toe");
-  // a phone's brick, tall with two rows: the slab keeps 58% of the width and the slant steepens, keys kept
-  const p = housing(354, 118, { line: 2.5, bend: 6 });
-  assert.ok(p.shoulder >= 354 * 0.58 - 1e-9, "the shoulder stops at the slab's share");
-  assert.ok((p.toe - p.shoulder) / p.line < SLANT_RUN, "steeper than drawn rather than eating the keys");
-  assert.ok(p.at(34) > p.shoulder && p.at(34) < p.toe);
+  assert.equal(g.shoulder, 240, "the shoulder is where the cluster asked for it");
+  assert.ok(Math.abs((g.toe - g.shoulder) / g.line - SLANT_RUN) < 1e-3, "room enough: the slant keeps the drawn angle");
+  assert.equal(g.shoulderX, 700 - 240); assert.ok(g.toeX > 280 - 1e-9, "the toe stops short of the left keys");
+  assert.ok(Math.abs(g.at(0) - g.shoulderX) < 0.01 && Math.abs(g.at(g.line) - g.toeX) < 0.01, "at(y) walks the slant leftward");
+  assert.equal(g.at(1000), g.at(g.line), "and never past the toe");
+  // too little room for the drawn angle: the toe stops at the line's end and the slant steepens
+  const p = housing(354, 80, { side: "right", line: 2.5, bend: 6, lineRun: 14, shoulder: 300 });
+  assert.ok(p.toe <= 354 - 14 + 1e-9 && (p.toe - p.shoulder) / p.line < SLANT_RUN, "steeper than drawn rather than losing the line");
+  // the logo's own way still stands
+  const l = housing(700, 98, { line: 3, bend: 8 });
+  assert.match(l.d, /^M0 0 H/); assert.ok(Math.abs((l.toe - l.shoulder) / l.line - SLANT_RUN) < 1e-3);
   assert.equal(housing(300, 0).line, 0, "a flat box does not go negative");
 });
 
-test("the keys are housed in the brick on both pages, the banner fades out before the slant, and EDIT PROFILE sets it", () => {
+test("the cluster is encased in the brick on the owner's page, the left keys stand on its line, the banner fades out before the slant, and EDIT PROFILE sets it", () => {
   const brick = read("app/components/KeyBrick.jsx");
-  assert.match(brick, /import \{ housing \} from "\.\.\/\.\.\/lib\/wordmark\.js"/, "the brick is drawn from the logo's own geometry");
-  assert.match(brick, /new ResizeObserver\(read\)/, "drawn to the measured box, so the angle holds at every width");
+  assert.match(brick, /import \{ housing, SLANT_RUN \} from "\.\.\/\.\.\/lib\/wordmark\.js"/, "the brick is drawn from the logo's own geometry");
+  assert.match(brick, /new ResizeObserver\(read\)/, "drawn to the measured row, so the angle holds at every width");
+  assert.match(brick, /housing\(m\.w, m\.h, \{ side: "right", line, bend, lineRun, shoulder: want \}\)/, "the slab on the right, its shoulder from the cluster's edge");
+  assert.match(brick, /const lineRun = Math\.max\(breath, m\.leftRight \+ breath\);/, "the toe stops short of the left keys");
   assert.match(brick, /<path className="kbslab" d=\{g\.d\} \/>/);
-  assert.match(brick, /<stop offset="0\.42" stopColor="#fff" \/>\s*<stop offset="0\.8" stopColor="#000" \/>/, "the banner ends in a gradient");
-  assert.match(brick, /preserveAspectRatio="xMidYMid slice"\s*clipPath=\{`url\(#\$\{id\}c\)`\} mask=\{`url\(#\$\{id\}m\)`\}/, "clipped to the brick, masked by the fade");
-  assert.match(brick, /"--kb-cut": cut \+ "px"/, "the slant's intrusion is kept clear of the keys");
+  assert.match(brick, /<stop offset="0" stopColor="#000" \/>\s*<stop offset="1" stopColor="#fff" \/>/, "the banner ends in a gradient");
+  assert.match(brick, /preserveAspectRatio="xMidYMid slice" clipPath=\{`url\(#\$\{id\}c\)`\} mask=\{`url\(#\$\{id\}m\)`\}/, "clipped to the brick, masked by the fade");
+  assert.match(brick, /const bare = !right && !banner;/, "nothing to encase and no banner: the keys stand on the line alone");
   const head = read("app/components/ProfileHead.jsx");
-  assert.match(head, /<KeyBrick className="pf3keys" banner=\{banner\}>\{actions\}<\/KeyBrick>/);
+  assert.match(head, /<KeyBrick className="pf3keys" banner=\{banner\} left=\{actions\} right=\{tools\} \/>/);
   const own = read("app/profile/page.js");
-  assert.match(own, /banner=\{info\.bannerImg \|\| null\}/);
+  assert.match(own, /tools=\{tools\}/); assert.match(own, /banner=\{info\.bannerImg \|\| null\}/);
   assert.match(own, /onClick=\{\(\) => pickImage\("bannerImg", 1400\)\}>⇪ BANNER<\/button>/);
   const css = read("app/globals.css");
   assert.match(css, /\.kbslab \{ fill: var\(--wm-bar\);/, "the brick is the logo's white");
   assert.match(css, /\.kbart \{[^}]*filter: var\(--wm-glow\)/, "in the logo's glow");
-  assert.match(css, /--kb-ink: #001512;/, "the keys in the logo's black");
+  assert.match(css, /--kb-ink: #001512;/, "the cluster in the logo's black");
+  assert.match(css, /\.kbleft \{[^}]*padding: 0 0 var\(--kb-line, 3px\) var\(--kb-pad, 20px\); \}/, "the left keys stand on the line");
 });

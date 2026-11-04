@@ -9,9 +9,9 @@
 //   ( avatar )  USERNAME ☆☆☆☆☆ 00      the handle, the Passenger Score as stars
 //    ○ Song     00 POSTS · 00 LISTINGS · 00 FOLLOWERS · 00 FOLLOWING
 //               bio >>>>>>>>>>>>>>>>>>
-//   ┌ banner ──────────────────────╲       the keys in the logo's brick
-//   │[ Follow ][ Message ][ ▲ ▲ ▲ ] ╲____  (KeyBrick.jsx), the banner
-//   └───────────────────────────────────── fading out before the slant
+//                          ╱───── banner ────┐  the cluster in the logo's
+//   [ Follow ] [ Message ] ╱  [ ▲ ▲ ▲ ]       │  brick, mirrored (KeyBrick.jsx),
+//   ──────────────────────╱──────────────────┘  the banner fading before the slant
 //   ( ECHO ) ( ECHO ) ( ECHO )          the live echoes, 24 hours each
 //   ─────────────────────────────────
 //   grid · repost · featured · store    the tabs (ProfileTabs, below)
@@ -103,15 +103,16 @@ const hoursLeft = (p) => {
  *   song       { name, label } or null — the room's anthem
  *   onSong     the song key's action (own page: the room editor); or
  *   songHref   a link instead (public page: the catalog search)
- *   actions    the key row: FOLLOW / EDIT, MESSAGE, the cluster — housed in the logo's brick (KeyBrick.jsx)
- *   banner     the banner's src, filling the brick from the left and fading out before the slant; or nothing
+ *   actions    the key row's left keys: FOLLOW / EDIT PROFILE and MESSAGE, standing on the brick's line
+ *   tools      the cluster the logo's brick encases at the row's right end (KeyBrick.jsx): wardrobe · statistics · banking
+ *   banner     the banner's src, filling the brick from the right and fading out before the slant; or nothing
  *   menu       the title bar's right-hand node (the ⋯ menu)
  *   echoes     the person's posts — the live echoes are kept (echoLive)
  *   onEchoAdd  own page: the + ring opens the composer on ECHO
  */
 export default function ProfileHead({
   title, name, handle, avatar = null, bio = "", identity = null, scoreSubject = null,
-  counts = [], song = null, onSong = null, songHref = null, actions = null, banner = null, menu = null,
+  counts = [], song = null, onSong = null, songHref = null, actions = null, tools = null, banner = null, menu = null,
   echoes = [], onEchoAdd = null,
 }) {
   const live = (echoes || []).filter((p) => echoLive(p)).sort((a, b) => (b.at || 0) - (a.at || 0));
@@ -164,7 +165,7 @@ export default function ProfileHead({
           </>
         )}
       </div>
-      {actions ? <KeyBrick className="pf3keys" banner={banner}>{actions}</KeyBrick> : null}
+      {actions || tools ? <KeyBrick className="pf3keys" banner={banner} left={actions} right={tools} /> : null}
       {(live.length > 0 || onEchoAdd) && (
         <div className="pf3echoes" role="list" aria-label="echoes — temporary posts, gone after 24 hours">
           {onEchoAdd ? (
