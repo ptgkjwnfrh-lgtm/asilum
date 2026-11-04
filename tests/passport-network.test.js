@@ -239,7 +239,8 @@ test("ALL STAMPS and PAGES: four sizes up to a fifth taller, notes in the corner
   assert.match(view, /openSheet\("page", \{ id: pg\.id/, "a page opens in the popup");
   assert.match(sheetSrc, /page: \{ title: "PAGE", render: \(p\) => <PageSheet \{\.\.\.p\} \/>, slim: true \}/, "a page is all cards: its head slim");
   assert.match(pageSheet, /\+ ADD STAMPS/, "stamps go on a page from the page");
-  assert.match(css, /\.sbpinart::after, \.sbcover::after \{[^}]*box-shadow: inset 0 0 0 1px var\(--ad-rim-c\);/, "the deck's bezel round every stamp and cover");
+  assert.match(css, /\.sbpinart::after, \.sbcover::after \{[^}]*box-shadow: var\(--pp-rim\); \}/, "a bezel round every stamp and cover");
+  assert.match(css, /--pp-rim: inset 0 0 0 0\.5px color-mix\(in srgb, var\(--ink\) 16%, transparent\)/, "Apple's thin bezel: a half-pixel edge at low opacity, no glow");
   assert.match(css, /\.sbadd \{ list-style: none; margin: 0; padding: 0; columns: 2;/, "the stamps to add stack in columns too");
   assert.match(pageSheet, /note=\{notes\[p\.key\] \|\| ""\}/, "a stamp's note stays on it inside the page");
   assert.match(card, /className=\{"ppnote" \+ \(value \? " has" : ""\)\}/, "the note's rounded square");

@@ -3245,10 +3245,14 @@ body { font-size: 14px; }
 
 /* a stamp */
 .sbpin { display: grid; gap: 3px; }
-.sbpinart { position: relative; display: block; border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--ad-rim-glow); }
+.sbpinart { position: relative; display: block; border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--pp-rim-glow); }
 /* THE BEZEL (owner, 3 Nov 2026: "add a bezel line on the stamps and pages like on the center fixture"): the deck's
    own — a white hairline, glowing slightly (--ad-rim-c, --ad-rim-glow) — round every stamp and every page's cover */
-.sbpinart::after, .sbcover::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px var(--ad-rim-c); }
+.sbpinart::after, .sbcover::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; box-shadow: var(--pp-rim); }
+/* Apple's thin bezel (owner, later: "just give it the same apple type thin bezel it just looks like a thick white
+   line"): a half-pixel edge at low opacity in the ink — an edge you sense rather than a line you see — a touch
+   brighter along the top, as glass catches the light; no glow */
+:root { --pp-rim: inset 0 0 0 0.5px color-mix(in srgb, var(--ink) 16%, transparent), inset 0 0.5px 0 color-mix(in srgb, var(--ink) 22%, transparent); --pp-rim-glow: none; }
 .sbpinlink { position: absolute; inset: 0; display: block; }
 .sbpinlink:focus-visible { outline: 1px dashed var(--sig); outline-offset: -3px; }
 .sbpinttl { font-size: 9.5px; letter-spacing: 0.04em; line-height: 1.35; color: var(--ink); }
@@ -3302,7 +3306,7 @@ body { font-size: 14px; }
 .sbcoverbtn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius-card); }
 .sbcoverbtn:active { transform: scale(0.98); }
 .sbcoverbtn:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
-.sbcover { position: relative; display: grid; gap: 1.5px; width: 100%; box-shadow: var(--ad-rim-glow); aspect-ratio: calc(1.18 / var(--sb-scale, 1)) / 1; border-radius: var(--radius-card); overflow: hidden;
+.sbcover { position: relative; display: grid; gap: 1.5px; width: 100%; box-shadow: var(--pp-rim-glow); aspect-ratio: calc(1.18 / var(--sb-scale, 1)) / 1; border-radius: var(--radius-card); overflow: hidden;
   background: var(--wm-bar); } /* the lines between the pictures are the ground showing through: the logo's white */
 .sbcell { min-width: 0; min-height: 0; display: block; overflow: hidden; }
 .sbcover.l-left { grid-template: "a b" 1fr "a c" 1fr / 2fr 1fr; }
