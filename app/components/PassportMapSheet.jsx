@@ -8,8 +8,9 @@
 //   the window   Apple's map (MapKit JS, PlaceMap.jsx, tone "asilum" — the owner's own setting: standard,
 //                flat, no points of interest, light, the passenger's dot, the scale, each place a black label in
 //                white monospaced type); pan and zoom it by hand. Without a MapKit key (owner: "welp im broke"),
-//                the free street map — real OpenStreetMap roads for the passenger's area (StreetMap.jsx, the
-//                same tone), and the schematic only where no roads can be read. Centred on the passenger's current area or base city (lib/location.js), else the world
+//                the streets in Apple's hand — OpenStreetMap vector tiles in an Apple-light style (VectorMap.jsx,
+//                lib/passport/mapStyle.js; "make open streetmap look like apple maps"), the same marks; the
+//                street tiles (TileMap.jsx) where a device cannot draw it — never the schematic. Centred on the passenger's current area or base city (lib/location.js), else the world
 //                with a city picker under it.
 //   NEAR YOU     the events around that centre (/api/places, dated): Ticketmaster's live listings where this
 //                deploy holds the key, the register's rows, its labelled fixtures said to be fixtures
@@ -17,10 +18,9 @@
 //                and TICKETMASTER ↗ to the event's own Ticketmaster page (a plain link: ASILUM sells nothing
 //                here); a register row links its own source instead, a fixture links nothing and says so.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PlaceMap, { useMapkitGate } from "./PlaceMap.jsx";
-import StreetMap from "./StreetMap.jsx";
-import { useRoads } from "./ParisMap.jsx";
+import VectorMap from "./VectorMap.jsx";
 import { discoveryCenter, confirmBaseCity } from "../../lib/location.js";
 import { CITIES } from "../../lib/places/registry.js";
 import { ocr } from "../../lib/passport/document.js";
@@ -67,6 +67,16 @@ export default function PassportMapSheet() {
   const [data, setData] = useState(null);
   const [sel, setSel] = useState(null);
   const [city, setCity] = useState(Object.keys(CITIES)[0]);
+  // the window is a large card (CSS); the street map draws to the height it is given, so it is measured
+  const winRef = useRef(null);
+  const [winH, setWinH] = useState(480);
+  useEffect(() => {
+    const el = winRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(() => setWinH(Math.round(el.clientHeight) || 480));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const sync = () => setCentre(discoveryCenter());
@@ -81,12 +91,7 @@ export default function PassportMapSheet() {
       .then((d) => setData(d || { places: [] })).catch(() => setData({ places: [], error: true }));
   }, [centre && centre.lat, centre && centre.lng]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const gate = useMapkitGate();          // "apple" when this deploy holds a MapKit key
-  const roads = useRoads(centre);       // the free street map's own roads, when it is not
-  // the roads come from the public Overpass service; when it cannot answer, Paris still has the copy the app
-  // ships (public/paris-roads.json), so a Paris centre keeps its streets
-  const paris = roads.paris && roads.paris.center && centre ? Math.hypot(centre.lat - roads.paris.center[0], (centre.lng - roads.paris.center[1]) * Math.cos((centre.lat * Math.PI) / 180)) < 0.06 : false;
-  const streets = roads.own ? roads.map : paris ? roads.paris : null;
+  const gate = useMapkitGate();          // "apple" when this deploy holds a MapKit key; the streets as tiles when not
   const events = useMemo(() => ((data && data.places) || []).filter((p) => p.dated), [data]);
   const ev = sel ? events.find((p) => p.id === sel) : null;
   const focus = ev && Number.isFinite(ev.lat) ? { lat: ev.lat, lng: ev.lng } : centre;
@@ -94,9 +99,9 @@ export default function PassportMapSheet() {
 
   return (
     <section className={"pmsheet" + (ev ? " ticketed" : "")} aria-label="map">
-      <div className="pmwin">
-        {gate !== "apple" && centre && (streets || roads.loading) ? (
-          <StreetMap map={streets} centre={centre} places={events} selectedId={sel} onSelect={choose} height={360} tone="asilum" />
+      <div className="pmwin" ref={winRef}>
+        {gate !== "apple" ? (
+          <VectorMap centre={centre} places={events} selectedId={sel} onSelect={choose} height={winH} />
         ) : (
           <PlaceMap mode={focus ? "local" : "world"} center={focus} km={ev ? 3 : 40} places={events} selectedId={sel} onSelect={choose}
             label={ev ? ev.name : centre ? centre.label : ""} tone="asilum" />

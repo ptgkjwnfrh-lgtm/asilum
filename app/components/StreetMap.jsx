@@ -11,11 +11,6 @@
 //
 // Canvas for the roads (one path per tier per frame), HTML for the pins so
 // they stay real buttons. Reduced motion: no eased zoom.
-//
-// `tone: "asilum"` is the Passport's map while no MapKit key is held (owner, 3 Nov 2026: "welp im broke" — the
-// free street map in the Apple map's window, set as the owner's SwiftUI view sets Apple's: always light, flat,
-// each place a black label in white monospaced type instead of a pin); a tapped place is FLOWN to — the camera
-// eases onto it and closes in (a jump under reduced motion).
 
 import { clusterPins } from "../../lib/places/cluster.js";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -38,15 +33,14 @@ function parsePolys(d) {
   return out;
 }
 
-function palette(forceLight = false) {
-  const light = forceLight || (typeof document !== "undefined" && document.documentElement.dataset.theme === "light");
+function palette() {
+  const light = typeof document !== "undefined" && document.documentElement.dataset.theme === "light";
   return light
     ? { land: "#eef0ee", minor: "#ffffff", minorCase: "#dcdfdc", second: "#ffffff", secondCase: "#d3d7d3", major: "#fbe9b5", majorCase: "#e6cf8a", ring: "rgba(0,0,0,0.08)", name: "#4a5560" }
     : { land: "#1c1e21", minor: "#2c3035", minorCase: "#1c1e21", second: "#363b41", secondCase: "#1c1e21", major: "#4a4f57", majorCase: "#2a2e33", ring: "rgba(255,255,255,0.08)", name: "#aab3bc" };
 }
 
-export default function StreetMap({ map, centre, places = [], selectedId = null, onSelect, height = 440, tone = "" }) {
-  const asilum = tone === "asilum";
+export default function StreetMap({ map, centre, places = [], selectedId = null, onSelect, height = 440 }) {
   const canvasRef = useRef(null);
   const wrapRef = useRef(null);
   const [view, setView] = useState({ scale: 1, tx: 0, ty: 0 }); // map px → screen px
@@ -70,7 +64,7 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     c.width = size.w * dpr; c.height = size.h * dpr;
     const ctx = c.getContext("2d");
-    const P = palette(asilum);
+    const P = palette();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = P.land; ctx.fillRect(0, 0, size.w, size.h);
     ctx.setTransform(dpr * view.scale, 0, 0, dpr * view.scale, dpr * view.tx, dpr * view.ty);
@@ -111,30 +105,6 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
     }
   }, [polys, view, size, map]);
 
-  // a tapped place is flown to: the camera eases onto it and closes in to twice the fit (asilum tone)
-  const viewRef = useRef(view);
-  viewRef.current = view;
-  const fitRef = useRef(1);
-  useEffect(() => { if (map && wrapRef.current) fitRef.current = Math.max((wrapRef.current.clientWidth || 800) / map.w, height / map.h) * 1.15; }, [map, height]);
-  useEffect(() => {
-    if (!asilum || !map || !centre || !selectedId) return undefined;
-    const p = places.find((x) => x.id === selectedId);
-    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lng)) return undefined;
-    const kx = Math.cos((centre.lat * Math.PI) / 180) * 111320, ky = 110574;
-    const mx = ((p.lng - centre.lng) * kx) / 15.5 + map.w / 2, my = (-(p.lat - centre.lat) * ky) / 15.5 + map.h / 2;
-    const from = viewRef.current, s = Math.min(6, Math.max(from.scale, fitRef.current * 2));
-    const to = { scale: s, tx: size.w / 2 - mx * s, ty: size.h / 2 - my * s };
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setView(to); return undefined; }
-    let raf = 0; const t0 = performance.now(), dur = 620;
-    const step = (t) => {
-      const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
-      setView({ scale: from.scale + (to.scale - from.scale) * e, tx: from.tx + (to.tx - from.tx) * e, ty: from.ty + (to.ty - from.ty) * e });
-      if (k < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [selectedId, asilum, map, centre && centre.lat, centre && centre.lng]); // eslint-disable-line react-hooks/exhaustive-deps
-
   // theme changes repaint
   useEffect(() => {
     const mo = new MutationObserver(() => setView((v) => ({ ...v })));
@@ -168,31 +138,25 @@ export default function StreetMap({ map, centre, places = [], selectedId = null,
   const sel = marks.filter((m) => m.kind === "pin").map((m) => ({ p: m.members[0].p, at: { x: m.x, y: m.y } })).find(({ p }) => p.id === selectedId);
 
   return (
-    <div className={"smap" + (asilum ? " asilum" : "")} ref={wrapRef} style={{ height }} role="group" aria-label={centre ? `street map around ${centre.label || "your base city"}` : "street map"}>
+    <div className="smap" ref={wrapRef} style={{ height }} role="group" aria-label={centre ? `street map around ${centre.label || "your base city"}` : "street map"}>
       <canvas ref={canvasRef} className="smapcanvas" style={{ width: size.w, height: size.h }}
         onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={onWheel} />
       {!map && <div className="smapempty">reading the streets around {centre ? (centre.label || "your city") : "you"}…</div>}
       {centre && map && (() => { const you = project({ lat: centre.lat, lng: centre.lng }); return you ? <span className="smapyou" style={{ left: you.x, top: you.y }} aria-hidden="true" /> : null; })()}
       {marks.map((m) => m.kind === "cluster" ? (
-        <button key={m.id} type="button" className={asilum ? "ppmaplabel smaplabel" : "smappin smapcluster"} style={{ left: m.x, top: m.y }}
+        <button key={m.id} type="button" className="smappin smapcluster" style={{ left: m.x, top: m.y }}
           aria-label={`${m.count} places here — expand`} aria-expanded={false}
           onClick={() => setExpanded((prev) => new Set([...prev, m.id]))}>
-          {asilum ? <>{m.count} HERE +</> : <i>{m.count}</i>}
+          <i>{m.count}</i>
         </button>
-      ) : (() => { const p = m.members[0].p; const at = { x: m.x, y: m.y }; return asilum ? (
-        <button key={p.id} type="button" className={"ppmaplabel smaplabel" + (p.id === selectedId ? " sel" : "")}
-          style={{ left: at.x, top: at.y }} aria-pressed={p.id === selectedId} aria-label={`${p.name} — ${p.kind}${p.sample ? ", sample fixture" : ""}`}
-          onClick={() => onSelect && onSelect(p.id)}>
-          {String(p.name || "").toUpperCase()}
-        </button>
-      ) : (
+      ) : (() => { const p = m.members[0].p; const at = { x: m.x, y: m.y }; return (
         <button key={p.id} type="button" className={"smappin" + (p.sample ? " sample" : "") + (p.id === selectedId ? " sel" : "") + " " + p.kind}
           style={{ left: at.x, top: at.y }} aria-pressed={p.id === selectedId} aria-label={`${p.name} — ${p.kind}${p.sample ? ", sample fixture" : ""}`}
           onClick={() => onSelect && onSelect(p.id === selectedId ? null : p.id)}>
           <i>{GLYPH[p.kind] || "•"}</i>
         </button>
       ); })())}
-      {sel && !asilum && (
+      {sel && (
         <div className="smapcallout" style={{ left: sel.at.x, top: sel.at.y - 30 }} role="status">
           <b>{sel.p.name}</b>
           <span>{sel.p.kind.toUpperCase()}{sel.p.distanceKm != null ? ` · ${sel.p.distanceKm} KM` : ""}{sel.p.sample ? " · SAMPLE" : ""}</span>

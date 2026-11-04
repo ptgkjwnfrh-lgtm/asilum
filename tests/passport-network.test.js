@@ -163,12 +163,14 @@ test("the map: Apple's map as the owner set it, the events near you, an event's 
   assert.match(placeMap, /setRegionAnimated\(region, true\)/, "a new region is flown to");
   assert.match(placeMap, /prefers-reduced-motion: reduce/, "and jumped to under reduced motion");
   assert.doesNotMatch(css, /\.pmtint/, "no tint over Apple's map — its own light standard style");
-  // no MapKit key (owner: "welp im broke"): the free street map in the same window, in the same tone
-  const street = readFileSync(ROOT + "app/components/StreetMap.jsx", "utf8");
-  assert.match(map, /gate !== "apple" && centre && \(streets \|\| roads\.loading\) \? \(\s*<StreetMap map=\{streets\}[^>]*tone="asilum" \/>/s);
-  assert.match(street, /const P = palette\(asilum\);/, "always light in the asilum tone");
-  assert.match(street, /className=\{"ppmaplabel smaplabel"/, "each place a label, not a pin");
-  assert.match(street, /prefers-reduced-motion: reduce\)"\)\.matches\) \{ setView\(to\); return undefined; \}/, "flown to, or jumped to under reduced motion");
+  // no MapKit key (owner: "welp im broke"; then, on the schematic: "wtf is this radar shit"): the streets as
+  // OpenStreetMap tiles in the same window, never the schematic
+  const tiles = readFileSync(ROOT + "app/components/TileMap.jsx", "utf8");
+  assert.match(map, /gate !== "apple" \? \(\s*<VectorMap centre=\{centre\} places=\{events\} selectedId=\{sel\} onSelect=\{choose\} height=\{winH\} \/>/, "Apple's look over OpenStreetMap (owner: 'make open streetmap look like apple maps')");
+  assert.match(tiles, /https:\/\/tile\.openstreetmap\.org\/\$\{z\}\/\$\{x\}\/\$\{y\}\.png/);
+  assert.match(tiles, /© OpenStreetMap ↗/, "the tiles' credit, as OpenStreetMap's tile policy asks");
+  assert.match(tiles, /className=\{"ppmaplabel smaplabel"/, "each place a label, not a pin");
+  assert.match(tiles, /prefers-reduced-motion: reduce\)"\)\.matches\) \{ setCam\(to\); return; \}/, "flown to, or jumped to under reduced motion");
   assert.match(map, /fetch\("\/api\/places\?" \+ qs/, "the events are the places record's, dated");
   assert.match(map, /ev\.live && ev\.sourceUrl/, "TICKETMASTER ↗ only on a live Ticketmaster listing, to its own page");
   assert.match(map, /a sample fixture — no tickets exist for it\./, "a fixture says it is one");
@@ -188,4 +190,20 @@ test("stamp passport: Pinterest boards, one search, ADD STAMP's three rules kept
   assert.equal(stampCode("Berghain"), "BRG"); assert.equal(stampCode("Paris Fashion Week"), "PFW"); assert.equal(stampCode(""), "ASL"); assert.equal(stampCode("Ab"), "ABX");
   const studio = readFileSync(ROOT + "app/components/Studio.jsx", "utf8");
   assert.doesNotMatch(studio.replace(/\/\/.*$/gm, ""), /shopify/i, "no Shopify connection in the Studio");
+});
+
+test("the Apple-style street map: MapLibre over OpenFreeMap, its worker the installed version's own copy", () => {
+  const vm = readFileSync(ROOT + "app/components/VectorMap.jsx", "utf8");
+  const pkg = JSON.parse(readFileSync(ROOT + "package.json", "utf8"));
+  const lib = JSON.parse(readFileSync(ROOT + "node_modules/maplibre-gl/package.json", "utf8"));
+  assert.equal(pkg.dependencies["maplibre-gl"], lib.version, "pinned exactly to what is installed");
+  assert.match(vm, new RegExp(`/vendor/maplibre-gl-worker-${lib.version.replace(/\\./g, "\\.")}\\.mjs`), "the served worker is named for that version");
+  const served = readFileSync(ROOT + `public/vendor/maplibre-gl-worker-${lib.version}.mjs`);
+  const shipped = readFileSync(ROOT + "node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs");
+  assert.ok(served.equals(shipped), "and is byte for byte the installed worker");
+  const style = readFileSync(ROOT + "lib/passport/mapStyle.js", "utf8");
+  assert.match(style, /https:\/\/tiles\.openfreemap\.org\/planet/);
+  assert.doesNotMatch(style, /source-layer": "poi"/, "no points of interest, as the owner set Apple's");
+  assert.match(vm, /dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0/, "flat: no tilt, no turn");
+  assert.match(vm, /<TileMap centre=\{centre\}/, "where a device cannot draw it, the street tiles stand in");
 });

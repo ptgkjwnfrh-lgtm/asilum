@@ -71,6 +71,7 @@ html { font-synthesis-style: none; }
   --glow-r: 0 0 1px currentColor, 0 0 10px color-mix(in srgb, currentColor 60%, transparent), 0 0 26px color-mix(in srgb, currentColor 22%, transparent);
   --glow-p: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 50%, transparent);
   --map-label-bg: #000; --map-label-ink: #fff; /* the Passport map's labels: black, white type — the map is always light */
+  --map-land: #eceeec; --map-you: #2f7cf6; /* the street tiles' ground while they load, and the passenger's dot (Apple's blue) */
   --glow-mark: drop-shadow(0 0 1.5px color-mix(in srgb, currentColor 75%, transparent)) drop-shadow(0 0 7px color-mix(in srgb, currentColor 32%, transparent)); /* the same glow for a drawn mark (an SVG stroke takes no text-shadow) */
   /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
      line ONLY — ASILUM above it is left exactly as it shipped. Purely
@@ -3268,18 +3269,43 @@ body { font-size: 14px; }
   background: var(--map-label-bg); color: var(--map-label-ink); cursor: pointer; }
 .ppmaplabel { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
 .ppmaplabel.sel { box-shadow: 0 0 0 2px var(--red); } /* the chosen one keeps its black, ringed in the house red */
-/* the free street map in the same window (StreetMap.jsx, tone "asilum"): the label stands on its point, a hair
-   of stem under it; the frame's own corners and border give way to the window's */
-.smap.asilum { border: 0; border-radius: 0; }
+/* THE STREETS IN APPLE'S HAND (VectorMap.jsx): MapLibre's canvas fills the window; the marks are MapLibre markers
+   (it positions their wrappers, so the label inside keeps its own box); its credit compact in the corner */
+.vmap { position: relative; width: 100%; overflow: hidden; background: var(--map-land); }
+.vmap .vmapcanvas { position: absolute; inset: 0; width: 100%; height: 100%; } /* MapLibre sets its container relative; the window keeps it full */
+.vmapmark { cursor: pointer; }
+.ppmaplabel.vmaplabel { position: relative; display: block; border: 0; line-height: 1.2; }
+.ppmaplabel.vmaplabel::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 4px; background: var(--map-label-bg); }
+.ppmapyou.vmapyou { margin: 0; } /* MapLibre places the marker; the dot keeps its own centre */
+.vmap .maplibregl-ctrl-attrib { font-size: 9px; }
+
+/* THE STREETS AS TILES (TileMap.jsx): OpenStreetMap's tiles graded light and quiet under the owner's marks —
+   the dot, the black labels, the zoom keys, the credit */
+.ppmaptiles { position: relative; overflow: hidden; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; background: var(--map-land); }
+.ppmaptiles:active { cursor: grabbing; }
+.ppmaptilelayer { position: absolute; left: 0; top: 0; transform-origin: 0 0; filter: grayscale(0.9) contrast(1.06) brightness(1.04); }
+.ppmaptilelayer img { position: absolute; width: 256px; height: 256px; max-width: none; pointer-events: none; }
+.ppmapyou { position: absolute; z-index: 1; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--map-you); border: 3px solid var(--map-label-ink); box-shadow: 0 0 0 6px color-mix(in srgb, var(--map-you) 22%, transparent); pointer-events: none; }
+.ppmapzoom { position: absolute; z-index: 3; right: 10px; top: 10px; display: grid; border-radius: var(--radius-key); overflow: hidden; box-shadow: 0 2px 8px color-mix(in srgb, var(--map-label-bg) 18%, transparent); }
+.ppmapzoom button { width: 34px; height: 34px; border: 0; background: color-mix(in srgb, var(--map-label-ink) 94%, transparent); color: var(--map-label-bg); font-size: 18px; cursor: pointer; }
+.ppmapzoom button + button { border-top: 1px solid color-mix(in srgb, var(--map-label-bg) 12%, transparent); }
+.ppmapcredit { position: absolute; z-index: 3; right: 8px; bottom: 6px; font-size: 9px; letter-spacing: 0.06em; color: var(--map-label-bg); background: color-mix(in srgb, var(--map-label-ink) 75%, transparent); padding: 2px 6px; border-radius: 4px; text-decoration: none; }
 .ppmaplabel.smaplabel { position: absolute; z-index: 1; transform: translate(-50%, calc(-100% - 5px)); border: 0; line-height: 1.2; }
 .ppmaplabel.smaplabel::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 5px; background: var(--map-label-bg); }
 .ppmaplabel.smaplabel.sel { z-index: 2; }
 .ppmaplabel.smaplabel:focus-visible { outline: 1px dashed var(--red); outline-offset: 2px; }
 .pmsheet { display: grid; gap: 12px; font-family: var(--mich); padding-bottom: 8px; }
 .pmsheet.ticketed { padding-bottom: 240px; }
-.pmwin { position: relative; aspect-ratio: 1 / 1; max-height: 360px; border-radius: var(--radius-card); overflow: hidden; isolation: isolate;
+.pmwin { position: relative; border-radius: var(--radius-card); overflow: hidden; isolation: isolate;
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sig) 30%, transparent), 0 0 22px color-mix(in srgb, var(--sig) 12%, transparent); }
+/* THE WINDOW IS A LARGE CARD (owner, 3 Nov 2026: "i want the map to be the size of a large card"): the popup's own
+   measure — a large card's width (--pop-w, bled to the panel's edges), its height the Feed's large share of the
+   screen kept clear of the masthead and the deck, as the popup's is */
+.pmwin { width: min(calc(100% + 28px), var(--pop-w)); margin: 0 auto;
+  --pm-clear: max(calc(var(--head-h) + 8px), calc(var(--cc-row-h) + var(--cc-bottom) + 8px));
+  height: min(var(--ed-feed-large, 80svh), calc(100svh - 2 * var(--pm-clear))); min-height: 320px; }
+.ppinline .pmsheet > .pmwin { margin: -14px 0 0; justify-self: center; } /* bled past the panel's padding on a phone, centred where the card is narrower */
 .pmwin > :not(.pmcorner) { position: absolute; inset: 0; width: 100%; height: 100%; }
 .pmwin .amap { width: 100%; height: 100%; }
 .ppinline .pmcorner { position: absolute; z-index: 2; top: 10px; left: 10px; pointer-events: none; font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow);
