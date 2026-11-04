@@ -232,8 +232,9 @@ export default function ProfilePage() {
     setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
   }
 
-  // Avatar images are device-local (localStorage via profile info),
-  // downscaled in-browser so they fit comfortably in storage.
+  // Avatar and banner images are device-local (localStorage via profile
+  // info), downscaled in-browser so they fit comfortably in storage. The
+  // banner fills the key brick and fades out before its slant (KeyBrick.jsx).
   function pickImage(key, maxW) {
     const input = document.createElement("input");
     input.type = "file";
@@ -289,6 +290,8 @@ export default function ProfilePage() {
       <div className="pf3editkeys">
         <button type="button" className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
         {info.avatarImg ? <button type="button" className="ppupl" onClick={() => save("avatarImg", "")}>REMOVE AVATAR</button> : null}
+        <button type="button" className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
+        {info.bannerImg ? <button type="button" className="ppupl" onClick={() => save("bannerImg", "")}>REMOVE BANNER</button> : null}
       </div>
     </div>
   ) : null;
@@ -346,6 +349,7 @@ export default function ProfilePage() {
           song={anthem ? { name: anthem.name, label: anthem.label } : null}
           onSong={() => openPanel("room")}
           actions={keys}
+          banner={info.bannerImg || null}
           echoes={posts}
           onEchoAdd={() => openSheet("post", { kind: "echo", title: "POST" })}
         />
