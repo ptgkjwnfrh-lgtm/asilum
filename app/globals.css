@@ -3202,65 +3202,155 @@ body { font-size: 14px; }
 
 /* THE CARD'S SMALL KEY: VIEW TASTE GLOBE, under OPEN MAP and STAMP PASSPORT */
 .ppglobekey { display: flex; justify-content: center; max-width: 560px; margin: -6px auto 22px; }
-/* the map and the stamps, open in place under the card */
-.ppinline { max-width: 560px; margin: 0 auto 24px; padding: 14px; border-radius: var(--radius-card); background: var(--bg2); scroll-margin-top: calc(var(--head-h) + 10px);
-  animation: ppinline-in var(--dur-3, 320ms) var(--ease-out) both; }
-@keyframes ppinline-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .ppinline { animation: none; } }
+/* A VIEW (owner, 3 Nov 2026: "take users to a different tab … fill up the whole screen with a back button in the
+   left corner"): the map or the stamps in place of the card, the whole column between the fixtures, ← PASSPORT
+   at its top left */
+.ppview { max-width: 560px; margin: 0 auto 24px; min-height: calc(100svh - var(--head-h) - var(--dk-h) - 40px); animation: ppview-in var(--dur-3, 320ms) var(--ease-out) both; }
+@keyframes ppview-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ppview { animation: none; } }
+.ppviewbar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 28px; margin: 0 0 6px; }
+.ppviewback { position: absolute; left: 0; top: 50%; transform: translateY(-50%); border: 0; background: none; padding: 8px 0; cursor: pointer;
+  font-family: var(--mich); font-size: 10px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--glow); }
+.ppviewback:active { transform: translateY(-50%) scale(0.96); }
+.ppviewback:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
+.ppviewttl { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 11px; letter-spacing: 0.22em; color: var(--ink); }
 .ppbtn.on { box-shadow: inset 0 0 0 1px var(--sig); }
-/* in place, the ticket stops above the deck rather than at the window's foot */
-.ppinline .pmticket { bottom: calc(var(--cc-bottom, 0px) + var(--dk-h) + var(--ad-h, 0px) + 10px); }
+/* in a view, the ticket stops above the deck rather than at the window's foot */
+.ppview .pmticket { bottom: calc(var(--cc-bottom, 0px) + var(--dk-h) + var(--ad-h, 0px) + 10px); }
 
-/* STAMP PASSPORT (StampBoards.jsx): Pinterest's boards in the house's register — one search bar, boards with a
-   three-tile cover, a board's stamps as pins in columns; a stamp without a picture is the house's tile (its
-   port's code in the machine face over the document's colour) */
-.sb { display: grid; gap: 12px; font-family: var(--mich); }
-.sbsearch { width: 100%; font: inherit; font-size: 12px; letter-spacing: 0.04em; padding: 12px 16px; border: 0; border-radius: 999px;
+/* STAMP PASSPORT (StampsView.jsx, PageSheet.jsx, StampCard.jsx): a stamp a pin, a page a board — ALL STAMPS and
+   PAGES under one search bar and its + key; stamps and page covers in two columns, four sizes up to a fifth
+   taller; each with its note, a rounded square in the top-right corner; a page's cover its stamps' pictures in a
+   layout of its own, parted by thin white lines; a stamp without a picture the house's tile */
+.sb { display: grid; gap: 8px; font-family: var(--mich); }
+.sbsubs { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.sbsub { border: 0; border-radius: 999px; padding: 7px 8px; background: none; cursor: pointer; font-family: var(--mich); font-size: 10px; letter-spacing: 0.14em; color: var(--grey); }
+.sbsub.cur { background: color-mix(in srgb, var(--wm-bar) 16%, transparent); color: var(--sig); text-shadow: var(--glow); }
+.ppview .sbsub i { font-style: normal; font-family: var(--ocr); margin-left: 4px; }
+.sbbarrow { display: grid; grid-template-columns: minmax(0, 1fr) 36px; gap: 8px; align-items: center; }
+.sbsearch { width: 100%; font: inherit; font-size: 11.5px; letter-spacing: 0.04em; padding: 9px 14px; border: 0; border-radius: 999px;
   background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
 .sbsearch:focus { outline: 0; box-shadow: 0 0 0 1px color-mix(in srgb, var(--sig) 55%, transparent), 0 0 14px color-mix(in srgb, var(--sig) 18%, transparent); }
+.sbplus { width: 36px; height: 36px; border: 0; border-radius: 50%; cursor: pointer; font-size: 19px; line-height: 1; color: var(--bg); background: var(--ink); }
+.sbplus.on { background: var(--sig); }
+.sbplus:active { transform: scale(0.94); }
+.sbplus:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
 .sbnote { margin: 0; font-size: 10.5px; line-height: 1.6; color: var(--grey); }
 .sbhead { margin: 4px 0 0; font-weight: 400; font-size: 9.5px; letter-spacing: 0.18em; color: var(--sig); text-shadow: var(--glow); }
-.sbboards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
-@media (min-width: 720px) { .sbboards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.sbboard { display: grid; gap: 6px; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; color: var(--ink); font-family: var(--mich); }
-.sbboard:active { transform: scale(0.98); }
-.sbboard:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
-.sbcover { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; aspect-ratio: 1.18 / 1; border-radius: var(--radius-card); overflow: hidden; }
-.sbcovera { grid-row: 1 / 3; }
-.sbcover > span { min-width: 0; min-height: 0; display: block; }
-.sbboardname { font-size: 10px; letter-spacing: 0.08em; line-height: 1.3; }
-.ppinline .sbboardn { font-family: var(--ocr); font-size: 9.5px; color: var(--grey); }
-.sbtileimg { display: block; width: 100%; height: 100%; object-fit: cover; }
-.sbtile { display: grid; place-content: center; justify-items: center; gap: 4px; width: 100%; height: 100%; min-height: 60px;
-  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--sig) 22%, transparent), transparent 70%), color-mix(in srgb, var(--ink) 6%, var(--bg)); }
-.sbtile.empty { background: color-mix(in srgb, var(--ink) 4%, transparent); }
-.ppinline .sbtile b { font-weight: 400; font-family: var(--ocr); font-size: 15px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
-.sbtile i { font-style: normal; font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); }
-.sbcoverb .sbtile b, .sbcoverc .sbtile b { font-size: 11px; }
-.sbcoverb .sbtile i, .sbcoverc .sbtile i { display: none; }
-.sbbar { display: flex; align-items: center; gap: 12px; }
-.sbbar .txtbtn { font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; color: var(--sig); }
-.sbbarttl { flex: 1; font-size: 11px; letter-spacing: 0.12em; color: var(--ink); }
-.sbpins { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 10px; }
-@media (min-width: 720px) { .sbpins { columns: 3; } }
-.sbpin { break-inside: avoid; display: grid; gap: 3px; margin: 0 0 14px; }
-.sbpinart { display: block; border-radius: var(--radius-card); overflow: hidden; }
-.sbpinart .sbtile { min-height: 0; height: 100%; }
-.sbpinart:focus-visible { outline: 1px dashed var(--sig); outline-offset: 2px; }
+
+/* the two columns, like the Feed: every list stacks top to bottom, column by column ("stacking everything vertical stacks") */
+.sbpins, .sbboards { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 10px; }
+.sbpinli, .sbboards > li { position: relative; break-inside: avoid; margin: 0 0 14px; }
+@media (min-width: 720px) { .sbpins, .sbboards { columns: 3; } }
+
+/* a stamp */
+.sbpin { display: grid; gap: 3px; }
+.sbpinart { position: relative; display: block; border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--ad-rim-glow); }
+/* THE BEZEL (owner, 3 Nov 2026: "add a bezel line on the stamps and pages like on the center fixture"): the deck's
+   own — a white hairline, glowing slightly (--ad-rim-c, --ad-rim-glow) — round every stamp and every page's cover */
+.sbpinart::after, .sbcover::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px var(--ad-rim-c); }
+.sbpinlink { position: absolute; inset: 0; display: block; }
+.sbpinlink:focus-visible { outline: 1px dashed var(--sig); outline-offset: -3px; }
 .sbpinttl { font-size: 9.5px; letter-spacing: 0.04em; line-height: 1.35; color: var(--ink); }
 .sbpinmeta { font-size: 8px; letter-spacing: 0.1em; color: var(--grey); }
-.sbpinrm { justify-self: start; font-size: 8px; letter-spacing: 0.16em; color: var(--grey); }
+.sbpinacts { display: flex; gap: 12px; }
+.sbpinacts .txtbtn { font-size: 8px; letter-spacing: 0.16em; color: var(--grey); }
+.sbpinacts .txtbtn:first-child { color: var(--sig); }
+.sbtileimg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sbtile { display: grid; place-content: center; justify-items: center; gap: 4px; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--sig) 22%, transparent), transparent 70%), color-mix(in srgb, var(--ink) 6%, var(--bg)); }
+.sbtile.empty { background: color-mix(in srgb, var(--ink) 4%, var(--bg)); }
+.ppview .sbtile b, .sbpage .sbtile b { font-weight: 400; font-family: var(--ocr); font-size: 15px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
+.sbtile.small b { font-size: 11px; }
+.sbtile i { font-style: normal; font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); }
+
+/* a note: a rounded square in the top-right corner (owner: "note should be on right corner"); open, a little card */
+.ppnote { position: absolute; z-index: 2; top: 7px; right: 7px; width: 22px; height: 22px; display: grid; place-items: center; padding: 0; border: 0;
+  border-radius: 6px; cursor: pointer; font-size: 12px; line-height: 1; color: var(--ink); background: color-mix(in srgb, var(--bg) 62%, transparent);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); opacity: 0.6; transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+.ppnote:hover, .ppnote.has { opacity: 1; }
+.ppnote.has { background: var(--ink); color: var(--bg); }
+.ppnote:active { transform: scale(0.92); }
+.ppnote.open { width: auto; height: auto; left: 7px; display: grid; gap: 6px; padding: 8px; opacity: 1; cursor: default; border-radius: 9px;
+  background: color-mix(in srgb, var(--bg) 92%, transparent); box-shadow: 0 6px 20px color-mix(in srgb, var(--shade, var(--bg)) 30%, transparent);
+  animation: ppnote-open var(--dur-2, 180ms) var(--ease-out) both; }
+@keyframes ppnote-open { from { transform: scale(0.6); transform-origin: 100% 0; opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ppnote.open { animation: none; } }
+.ppnote textarea { width: 100%; min-height: 70px; resize: none; border: 0; border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 11px; line-height: 1.45;
+  color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.ppnote textarea:focus { outline: 0; box-shadow: 0 0 0 1px color-mix(in srgb, var(--sig) 50%, transparent); }
+.ppnotekeys { display: flex; justify-content: space-between; align-items: center; }
+.ppnoten { font-family: var(--ocr); font-size: 9px; color: var(--grey); }
+.ppnotekeys .txtbtn { font-size: 9px; letter-spacing: 0.16em; color: var(--sig); }
+
+/* + PAGE: the pages a stamp is on */
+.sbpicker { position: absolute; z-index: 4; left: 0; right: 0; top: 100%; margin-top: -10px; display: grid; gap: 4px; padding: 10px; border-radius: var(--radius-field);
+  background: color-mix(in srgb, var(--bg) 96%, transparent); box-shadow: 0 10px 30px color-mix(in srgb, var(--shade, var(--bg)) 35%, transparent); }
+.sbpickerhead { font-size: 8px; letter-spacing: 0.2em; color: var(--grey); margin-bottom: 2px; }
+.sbpickrow { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 0; border-radius: var(--radius-key); cursor: pointer; text-align: left;
+  background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); font-family: var(--mich); font-size: 10px; }
+.sbpickrow i { font-style: normal; color: var(--grey); }
+.sbpickrow.on { color: var(--sig); }
+.sbpickrow.on i { color: var(--sig); }
+.sbpicknew { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: center; margin-top: 2px; }
+.sbpicknew input { min-width: 0; font: inherit; font-size: 10px; padding: 7px 9px; border: 0; border-radius: var(--radius-key); background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+.sbpicknew .txtbtn { font-size: 9px; letter-spacing: 0.14em; color: var(--sig); }
+
+/* a page: its cover in one of six layouts, thin white lines between the pictures */
+.sbboard { display: grid; gap: 5px; }
+.sbcoverwrap { position: relative; display: block; }
+.sbcoverbtn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius-card); }
+.sbcoverbtn:active { transform: scale(0.98); }
+.sbcoverbtn:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
+.sbcover { position: relative; display: grid; gap: 1.5px; width: 100%; box-shadow: var(--ad-rim-glow); aspect-ratio: calc(1.18 / var(--sb-scale, 1)) / 1; border-radius: var(--radius-card); overflow: hidden;
+  background: var(--wm-bar); } /* the lines between the pictures are the ground showing through: the logo's white */
+.sbcell { min-width: 0; min-height: 0; display: block; overflow: hidden; }
+.sbcover.l-left { grid-template: "a b" 1fr "a c" 1fr / 2fr 1fr; }
+.sbcover.l-right { grid-template: "b a" 1fr "c a" 1fr / 1fr 2fr; }
+.sbcover.l-top { grid-template: "a a" 2fr "b c" 1fr / 1fr 1fr; }
+.sbcover.l-four { grid-template: "a b" 1fr "c d" 1fr / 1fr 1fr; }
+.sbcover.l-row { grid-template: "a b c" 1fr / 1fr 1fr 1fr; }
+.sbcover.l-one { grid-template: "a" 1fr / 1fr; }
+.sbcell.c0 { grid-area: a; } .sbcell.c1 { grid-area: b; } .sbcell.c2 { grid-area: c; } .sbcell.c3 { grid-area: d; }
+.sbboardname { padding: 0; border: 0; background: none; cursor: pointer; text-align: left; font-family: var(--mich); font-size: 10px; letter-spacing: 0.08em; line-height: 1.3; color: var(--ink); }
+.ppview .sbboardn, .sbpage .sbboardn { font-family: var(--ocr); font-size: 9.5px; color: var(--grey); }
+.sbname { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.sbname input { min-width: 0; font: inherit; font-size: 12px; padding: 11px 14px; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--sig) 10%, transparent); color: var(--ink); }
+.sbname .txtbtn { font-size: 10px; letter-spacing: 0.14em; color: var(--sig); }
+
+/* things to stamp, and what will be stamped */
 .sbfound { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .sbfind { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; width: 100%; padding: 11px 14px; border: 0; border-radius: var(--radius-field); cursor: pointer; text-align: left;
   background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); font-family: var(--mich); font-size: 11px; }
 .sbfind b { font-weight: 400; }
 .sbfind.cur { background: color-mix(in srgb, var(--wm-bar) 16%, transparent); color: var(--sig); text-shadow: var(--glow); }
-.ppinline .sbfindkind { font-family: var(--ocr); font-size: 9px; letter-spacing: 0.06em; color: var(--sig); }
+.ppview .sbfindkind, .sbpage .sbfindkind { font-family: var(--ocr); font-size: 9px; letter-spacing: 0.06em; color: var(--sig); }
 .sbfindmeta { font-size: 9px; color: var(--grey); }
 .sbconfirm { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--radius-field); background: color-mix(in srgb, var(--sig) 9%, transparent); font-size: 12px; }
 .sbconfirm b { font-weight: 400; color: var(--ink); }
-.sbconfirmkeys { display: flex; gap: 16px; align-items: center; margin-top: 4px; }
+.sbconfirmkeys { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; margin-top: 4px; }
 .sbconfirmkeys .ppbtn { padding: 10px 18px; font-size: 10px; }
+
+/* a page, opened (the popup) */
+.sbpagehead { display: grid; grid-template-columns: minmax(0, 1fr) auto 28px 28px; gap: 8px; align-items: center; margin: -6px 0 0; }
+.sbpagenote { position: relative; width: 28px; height: 28px; }
+.sbpagenote .ppnote { top: 4px; right: 4px; }
+.sbpagenote .ppnote.open { width: min(260px, 70vw); left: auto; }
+.sbpagename { min-width: 0; font: inherit; font-size: 12px; letter-spacing: 0.06em; padding: 2px 0; border: 0; background: none; color: var(--ink); }
+.sbpagename:focus { outline: 0; box-shadow: 0 1px 0 var(--sig); }
+.sbadd { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 6px; }
+.sbadd > li { break-inside: avoid; margin: 0 0 6px; }
+.sbaddone { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; padding: 5px 8px 5px 5px; border: 0; border-radius: var(--radius-field);
+  cursor: pointer; text-align: left; background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); font-family: var(--mich); font-size: 9.5px; }
+.sbaddart { width: 34px; height: 34px; border-radius: 7px; overflow: hidden; display: block; }
+.sbaddttl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sbaddone i { font-style: normal; color: var(--grey); }
+.sbaddone.on { color: var(--sig); background: color-mix(in srgb, var(--sig) 10%, transparent); }
+.sbaddone.on i { color: var(--sig); }
+.sbpagefoot { display: flex; justify-content: center; padding: 0; }
+.sbpageadd { width: 28px; height: 28px; font-size: 17px; }
+.sbpagefoot .txtbtn { font-size: 8px; letter-spacing: 0.16em; color: var(--grey); opacity: 0.8; }
+.sbpagefoot .txtbtn.warn { color: var(--red); }
 
 /* OPEN MAP (PassportMapSheet.jsx): the window — Apple's standard map, flat, light, no points of interest, each
    place a black label in white monospaced type (the owner's SwiftUI setting) — the events near you as you
@@ -3302,16 +3392,16 @@ body { font-size: 14px; }
 /* THE WINDOW IS A LARGE CARD (owner, 3 Nov 2026: "i want the map to be the size of a large card"): the popup's own
    measure — a large card's width (--pop-w, bled to the panel's edges), its height the Feed's large share of the
    screen kept clear of the masthead and the deck, as the popup's is */
-.pmwin { width: min(calc(100% + 28px), var(--pop-w)); margin: 0 auto;
+.pmwin { width: min(100%, var(--pop-w)); margin: 0 auto;
   --pm-clear: max(calc(var(--head-h) + 8px), calc(var(--cc-row-h) + var(--cc-bottom) + 8px));
   height: min(var(--ed-feed-large, 80svh), calc(100svh - 2 * var(--pm-clear))); min-height: 320px; }
-.ppinline .pmsheet > .pmwin { margin: -14px 0 0; justify-self: center; } /* bled past the panel's padding on a phone, centred where the card is narrower */
+.ppview .pmsheet > .pmwin { justify-self: center; } /* the large card, centred in the view */
 .pmwin > :not(.pmcorner) { position: absolute; inset: 0; width: 100%; height: 100%; }
 .pmwin .amap { width: 100%; height: 100%; }
-.ppinline .pmcorner { position: absolute; z-index: 2; top: 10px; left: 10px; pointer-events: none; font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow);
+.ppview .pmcorner { position: absolute; z-index: 2; top: 10px; left: 10px; pointer-events: none; font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow);
   padding: 3px 7px; border-radius: var(--radius-key); background: color-mix(in srgb, var(--bg) 70%, transparent); }
 .pmhead { margin: 4px 0 0; font-weight: 400; font-size: 10px; letter-spacing: 0.18em; color: var(--ink); }
-.ppinline .pmhead i { font-style: normal; font-family: var(--ocr); color: var(--sig); text-shadow: var(--glow); margin-left: 6px; }
+.ppview .pmhead i { font-style: normal; font-family: var(--ocr); color: var(--sig); text-shadow: var(--glow); margin-left: 6px; }
 .pmnote { margin: 0; font-size: 10.5px; line-height: 1.6; color: var(--grey); }
 .pmcity { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .pmcity select { font: inherit; font-size: 11px; border-radius: var(--radius-key); }
@@ -3322,7 +3412,7 @@ body { font-size: 14px; }
 .pmrow:active { transform: scale(0.99); }
 .pmrow.cur { background: color-mix(in srgb, var(--wm-bar) 16%, transparent); }
 .pmday { display: grid; justify-items: center; line-height: 1; }
-.ppinline .pmday b { font-weight: 400; font-family: var(--ocr); font-size: 20px; color: var(--sig); text-shadow: var(--glow); }
+.ppview .pmday b { font-weight: 400; font-family: var(--ocr); font-size: 20px; color: var(--sig); text-shadow: var(--glow); }
 .pmday i { font-style: normal; font-size: 7.5px; letter-spacing: 0.18em; color: var(--grey); margin-top: 3px; }
 .pmrowbody { display: grid; gap: 3px; min-width: 0; }
 .pmrowbody b { font-weight: 400; font-size: 11px; letter-spacing: 0.04em; line-height: 1.3; }
@@ -3344,15 +3434,15 @@ body { font-size: 14px; }
   background-image: linear-gradient(to bottom, color-mix(in srgb, var(--sig) 50%, transparent) 50%, transparent 50%); background-size: 1px 8px; background-repeat: repeat-y; background-position: left top;
   -webkit-mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat;
   mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat; }
-.ppinline .pmticketkind { font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
+.ppview .pmticketkind { font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
 .pmticketname { font-weight: 400; font-size: 12.5px; letter-spacing: 0.04em; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pmticketvenue { font-size: 8.5px; letter-spacing: 0.08em; color: var(--grey); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ppinline .pmticketrow { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1px; font-family: var(--ocr); font-size: 10.5px; color: var(--ink); }
+.ppview .pmticketrow { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1px; font-family: var(--ocr); font-size: 10.5px; color: var(--ink); }
 .pmticketrow i { display: block; font-style: normal; font-family: var(--mich); font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); margin-bottom: 2px; }
 .pmticketnote { font-size: 8px; color: var(--grey); }
 .pmticketkeys { display: flex; gap: 6px; margin-top: 4px; }
 .pmticketkeys .ppbtn { padding: 7px 12px; font-size: 8.5px; text-decoration: none; white-space: nowrap; }
-.ppinline .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
+.ppview .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 9px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
 .pmticketx { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
   background: color-mix(in srgb, var(--ink) 10%, transparent); color: var(--ink); font-size: 15px; line-height: 1; }
 .pmticketx:hover { color: var(--sig); text-shadow: var(--glow); }
@@ -4014,6 +4104,10 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 @media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
 .sheethead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .sheethead .sheetacts { display: flex; justify-content: flex-end; gap: 2px; }
+/* a slim head, for a view that is all cards (a Passport page): half the height, the same keys */
+.sheethead.slim { padding: 3px 10px; }
+.sheethead.slim .sheettitle { font-size: 10px; letter-spacing: 0.18em; }
+.sheethead.slim .sheetbtn { min-height: 28px; padding: 2px 8px; }
 .sheetgrip { justify-self: start; width: 36px; height: 4px; border-radius: 2px; background: var(--line); margin-left: 8px; }
 /* `.sheet h2` (the old sheet rule) outranks a bare class; the title is named
    on the element so the deck's sheets keep their 12px Michroma heading */

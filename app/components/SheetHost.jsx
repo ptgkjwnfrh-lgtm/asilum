@@ -45,6 +45,7 @@ import MapSheet from "./MapSheet.jsx";
 import BrdcstSheet from "./BrdcstSheet.jsx";
 import StampSheet from "./StampSheet.jsx";
 import TasteGlobe from "./TasteGlobe.jsx";
+import PageSheet from "./PageSheet.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -72,10 +73,12 @@ const VIEWS = {
   map: { title: "MAP", render: (p) => <MapSheet {...p} /> },
   // the BRDCST popup (owner's drawing, 25 Oct 2026): the strip's photograph clear, the event's record
   brdcst: { title: "BRDCST", render: (p) => <BrdcstSheet {...p} /> },
-  // THE PASSPORT (3 Nov 2026): VIEW TASTE GLOBE's popup (the map and the stamps open in place on the page), and
-  // an achievement's space zone (the Wardrobe's)
+  // THE PASSPORT (3 Nov 2026): VIEW TASTE GLOBE's popup (the map and the stamps are full-screen views of the
+  // page), an achievement's space zone (the Wardrobe's), and a page of stamps opened as a large card
   tasteglobe: { title: "TASTE GLOBE", render: () => <TasteGlobe /> },
   stamp: { title: "ACHIEVEMENT", render: (p) => <StampSheet {...p} /> },
+  // a page is all cards ("the header and footer is wayy too big"): its head slim
+  page: { title: "PAGE", render: (p) => <PageSheet {...p} />, slim: true },
 };
 
 const SWIPE_DOWN = 70;
@@ -199,7 +202,7 @@ export default function SheetHost() {
     <div className="sheetscrim" data-kept={open ? undefined : "1"} onMouseDown={(e) => { if (open && e.target === e.currentTarget && lightweight) dismiss(); }}>
       <section ref={ref} className={"sheet lgrx" + (typing ? " typing" : "")} role="dialog" aria-modal={open ? "true" : undefined} aria-label={title || undefined} aria-hidden={open ? undefined : true} inert={open ? undefined : true}>
         {glass}
-        <header className={"sheethead" + (hasBack ? " hasback" : "")} onPointerDown={headDown} onPointerUp={headUp}>
+        <header className={"sheethead" + (hasBack ? " hasback" : "") + (view && view.slim ? " slim" : "")} onPointerDown={headDown} onPointerUp={headUp}>
           {hasBack ? (
             <button className="sheetbtn" onClick={backSheet} aria-label="back"><Icon name="back" size={20} /><span>BACK</span></button>
           ) : <span className="sheetgrip" aria-hidden="true" />}

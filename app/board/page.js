@@ -5,10 +5,13 @@
 // card. a button to open map and a button to stamp the passport and a small button to VIEW TASTE GLOBE thats
 // it"):
 //   the card          the Taste Passport (PassportDocument.jsx) over the reader's streets (PassportSecurity.jsx)
-//   OPEN MAP          a window of Apple's map, colour-graded to the house, OPEN IN PLACE under the card — the events
-//                     near you under it, an event's ticket from the foot (PassportMapSheet.jsx)
-//   STAMP PASSPORT    Pinterest-style boards of your stamps and one search for yours and for things to stamp,
-//                     in place under the card (StampBoards.jsx)
+//   OPEN MAP          its own full-screen view (owner, 3 Nov 2026: "allow the buttons to take users to a different
+//                     tab … fill up the whole screen with a back button in the left corner"): the map window, the
+//                     events near you, an event's ticket (PassportMapSheet.jsx)
+//   STAMP PASSPORT    its own full-screen view: ALL STAMPS and PAGES — a stamp a pin, a page a board
+//                     (StampsView.jsx; a page opens in the popup, PageSheet.jsx)
+//                     Each view is a step in the history, so ← PASSPORT, the browser's back and a phone's swipe all
+//                     return to the card.
 //   VIEW TASTE GLOBE  the network of everything kept, in depth, in the popup (TasteGlobe.jsx → TasteNetwork.jsx)
 // Every /board?tab= link holds: `places` opens the map, `collection` the stamps, `fullread` the globe, and
 // `studio` shows the Studio under the card (a BRDCST's "pay in the studio" lands there). The achievements are
@@ -33,12 +36,13 @@ import { useLiquidGlass } from "../components/LiquidGlass.jsx";
 import PageMast from "../components/PageMast.jsx";
 import Studio from "../components/Studio.jsx";
 import PassportMapSheet from "../components/PassportMapSheet.jsx";
-import StampBoards from "../components/StampBoards.jsx";
+import StampsView from "../components/StampsView.jsx";
 import { getLocation, setLocation } from "../../lib/location.js";
 
 // what each old /board?tab= link opens now: the map or the stamps under the card (the globe is a popup; the
 // Studio shows under the card)
-const TAB_PANELS = { places: "map", collection: "stamps" };
+const TAB_VIEWS = { places: "map", collection: "stamps" };
+const VIEW_TABS = { map: "places", stamps: "collection" };
 const STUDIO = { id: "studio", label: "STUDIO", word: "studio" };
 
 // A LEAF: one page of the passport under the document — the band's machine line and the page number above,
@@ -72,7 +76,7 @@ export default function BoardPage() {
   const [ppPhoto, setPpPhoto] = useState(null);
   const [pinfo, setPinfo] = useState({ name: "", handle: "", since: "", origin: "", idnty: "", dob: "" });
   const [tab, setTab] = useState(""); // "studio" when the Studio is asked for by link
-  const [panel, setPanel] = useState(null); // "map" | "stamps", open in place under the card
+  const [view, setView] = useState(null); // "map" | "stamps": a full-screen view in place of the card
   const [loc, setLoc] = useState(null);
   const ppRef = useRef(null);
   const ppGlass = useLiquidGlass(ppRef, { id: "lg-passport", strength: 0.5, bend: ".ppwash-under" });
@@ -127,12 +131,27 @@ export default function BoardPage() {
     }).catch(() => {});
   }, []);
 
-  // a key opens its panel (or shuts it, pressed again); `keep` opens it whatever is open now
-  function openPanel(which, keep = false) {
-    const next = !keep && panel === which ? null : which;
-    setPanel(next);
-    if (next) setTimeout(() => { try { document.getElementById("ppinline")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); } catch {} }, 60);
+  // a key opens its view as a step in the history; ← PASSPORT (or the browser's back) steps back to the card
+  function openView(which, replace = false) {
+    setView(which);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", VIEW_TABS[which]);
+      if (replace) window.history.replaceState({ ppview: which }, "", url.toString());
+      else window.history.pushState({ ppview: which }, "", url.toString());
+    } catch {}
+    try { window.scrollTo({ top: 0 }); } catch {}
   }
+  function closeView() {
+    if (window.history.state && window.history.state.ppview) { window.history.back(); return; }
+    setView(null);
+    try { const url = new URL(window.location.href); url.searchParams.delete("tab"); window.history.replaceState(null, "", url.toString()); } catch {}
+  }
+  useEffect(() => {
+    const onPop = () => { const t = new URLSearchParams(window.location.search).get("tab"); setView(TAB_VIEWS[t] || null); };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
   function openStudio(on) {
     setTab(on ? "studio" : "");
     try {
@@ -159,7 +178,7 @@ export default function BoardPage() {
     try {
       const t = new URLSearchParams(window.location.search).get("tab");
       if (t === "studio") setTab("studio");
-      else if (TAB_PANELS[t]) openPanel(TAB_PANELS[t], true);
+      else if (TAB_VIEWS[t]) openView(TAB_VIEWS[t], true);
       else if (t === "fullread") openSheet("tasteglobe", { title: "TASTE GLOBE" });
     } catch {}
     const syncLoc = () => setLoc(getLocation());
@@ -188,7 +207,7 @@ export default function BoardPage() {
     if (id) {
       authorizedFetch("/api/boards?id=" + encodeURIComponent(id) + "&viewer=" + encodeURIComponent(user))
         .then((r) => (r.ok ? r.json() : null))
-        .then((d) => { if (d && d.board && !d.owned) setShared(d.board); else if (d && d.board) openPanel("stamps", true); })
+        .then((d) => { if (d && d.board && !d.owned) setShared(d.board); else if (d && d.board) openView("stamps", true); })
         .catch(() => {});
     }
   }, []);
@@ -281,11 +300,24 @@ export default function BoardPage() {
 
   return (
     <div className="wrap ppage">
+      {/* ===== A VIEW: the map or the stamps, the whole screen, ← PASSPORT in the left corner ===== */}
+      {view && !shared && (
+        <section className={"ppview ppview-" + view} aria-label={view === "map" ? "map" : "stamps"}>
+          <div className="ppviewbar">
+            <button type="button" className="ppviewback" onClick={closeView}>← PASSPORT</button>
+            <h2 className="ppviewttl">{view === "map" ? "MAP" : "STAMPS"}</h2>
+          </div>
+          {view === "map" ? <PassportMapSheet /> : <StampsView />}
+        </section>
+      )}
+
+      {!view && (
       <header className="cthead">
         <PageMast word="PASSPORT" sub={shared ? "SOMEONE'S TASTE" : "YOUR ARCHIVE · YOUR TASTE · YOUR PLANS"} />
       </header>
+      )}
 
-      {!shared && (
+      {!shared && !view && (
         <>
           <div className="ppdoc lg" ref={ppRef} aria-label="passport document — tap or Enter lifts it to spin" lang="en" tabIndex={0} onClick={liftPassport} onKeyDown={liftByKey}>
             {ppGlass}
@@ -298,21 +330,14 @@ export default function BoardPage() {
           <input ref={photoRef} type="file" accept="image/*" hidden aria-label="upload a passport photo" onChange={onPassportPhoto} />
           {/* the card's three keys (the mock-up's page carries none) */}
           <div className="ppdocacts">
-            <button className={"ppbtn" + (panel === "map" ? " on" : "")} aria-expanded={panel === "map"} onClick={(e) => { blinkLamp(e, { quiet: true }); openPanel("map"); }}><Lamp />{panel === "map" ? "CLOSE MAP" : "OPEN MAP"}</button>
-            <button className={"ppbtn primary" + (panel === "stamps" ? " on" : "")} aria-expanded={panel === "stamps"} onClick={(e) => { blinkLamp(e); openPanel("stamps"); }}><Lamp />{panel === "stamps" ? "CLOSE STAMPS" : "STAMP PASSPORT"}</button>
+            <button className="ppbtn" onClick={(e) => { blinkLamp(e, { quiet: true }); openView("map"); }}><Lamp />OPEN MAP</button>
+            <button className="ppbtn primary" onClick={(e) => { blinkLamp(e); openView("stamps"); }}><Lamp />STAMP PASSPORT</button>
           </div>
           <div className="ppglobekey"><button className="txtbtn" onClick={() => openSheet("tasteglobe", { title: "TASTE GLOBE" })}>VIEW TASTE GLOBE →</button></div>
-          {/* the map and the stamps open IN PLACE, under the card (owner, 3 Nov 2026: "map and stamp take users to a
-              new tab … i want the map to open a window of apple maps") */}
-          {panel && (
-            <div className="ppinline" id="ppinline">
-              {panel === "map" ? <PassportMapSheet /> : <StampBoards />}
-            </div>
-          )}
         </>
       )}
       {spin && !shared && <PassportSpin uid={uid} info={pinfo} taste={taste} lang={lang} mrz={mrz} photo={ppPhoto} map={docMap} onClose={() => setSpin(false)} />}
-      {geoNote && !shared && <p className="ppgeonote">{geoNote} <button className="txtbtn" onClick={() => { setGeoNote(""); openPanel("map", true); }}>CHANGE →</button></p>}
+      {geoNote && !shared && !view && <p className="ppgeonote">{geoNote} <button className="txtbtn" onClick={() => { setGeoNote(""); openView("map"); }}>CHANGE →</button></p>}
 
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
 

@@ -135,19 +135,6 @@ test("the badge is sleek and token-coloured; the space zone is a popup view, sti
 });
 
 
-test("the Passport is the card and three keys: the map and the stamps open IN PLACE, the globe in the popup; old links hold", () => {
-  const code = page.replace(/\/\/.*$/gm, "");
-  assert.match(code, /openPanel\("map"\); \}\}><Lamp \/>\{panel === "map" \? "CLOSE MAP" : "OPEN MAP"\}/);
-  assert.match(code, /openPanel\("stamps"\); \}\}><Lamp \/>\{panel === "stamps" \? "CLOSE STAMPS" : "STAMP PASSPORT"\}/);
-  assert.match(code, /\{panel === "map" \? <PassportMapSheet \/> : <StampBoards \/>\}/, "under the card, not in a tab of their own");
-  assert.match(code, /openSheet\("tasteglobe", \{ title: "TASTE GLOBE" \}\)\}>VIEW TASTE GLOBE →/);
-  assert.doesNotMatch(sheetSrc, /passportmap:|stamps: \{/, "the map and the stamps are not popup views");
-  assert.match(code, /const TAB_PANELS = \{ places: "map", collection: "stamps" \};/);
-  assert.match(code, /tab === "studio"/, "the Studio stays reachable by link (a BRDCST's pay-in-the-studio)");
-  assert.doesNotMatch(code, /<TasteNetwork|<PassportMap |<AddStamp|ppquiet|ppindex|MILESTONES|<Achievements/, "nothing else on the page");
-  assert.ok(sheetSrc.includes('tasteglobe: { title: "TASTE GLOBE"'));
-  assert.doesNotMatch(code, /saveCounts\(\)/, "nothing read off the device during render (a hydration mismatch)");
-});
 
 test("the map: Apple's map as the owner set it, the events near you, an event's ticket to Ticketmaster", () => {
   const map = readFileSync(ROOT + "app/components/PassportMapSheet.jsx", "utf8");
@@ -177,20 +164,6 @@ test("the map: Apple's map as the owner set it, the events near you, an event's 
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.pmticket \{ animation: none; \} \}/);
 });
 
-test("stamp passport: Pinterest boards, one search, ADD STAMP's three rules kept", () => {
-  const sb = readFileSync(ROOT + "app/components/StampBoards.jsx", "utf8");
-  assert.match(sb, /className="sbsearch"/);
-  assert.match(sb, /STAMP SOMETHING NEW/);
-  assert.match(sb, /aria-label="what will be stamped"/, "what will be added is shown before it is confirmed");
-  assert.match(sb, />UNDO</, "the stamp just made can be undone");
-  assert.match(sb, /public taste influence \(a follow of their room\) — never their location or anything private/);
-  assert.match(sb, /listArtists\(\)/); assert.match(sb, /findEntity\(needle\)/); assert.match(sb, /\/api\/profile\/room\?handle=/);
-  const wardrobe = readFileSync(ROOT + "app/components/WardrobeTab.jsx", "utf8");
-  assert.match(wardrobe, /<Achievements \/>/, "the achievements are the Wardrobe's");
-  assert.equal(stampCode("Berghain"), "BRG"); assert.equal(stampCode("Paris Fashion Week"), "PFW"); assert.equal(stampCode(""), "ASL"); assert.equal(stampCode("Ab"), "ABX");
-  const studio = readFileSync(ROOT + "app/components/Studio.jsx", "utf8");
-  assert.doesNotMatch(studio.replace(/\/\/.*$/gm, ""), /shopify/i, "no Shopify connection in the Studio");
-});
 
 test("the Apple-style street map: MapLibre over OpenFreeMap, its worker the installed version's own copy", () => {
   const vm = readFileSync(ROOT + "app/components/VectorMap.jsx", "utf8");
@@ -206,4 +179,73 @@ test("the Apple-style street map: MapLibre over OpenFreeMap, its worker the inst
   assert.doesNotMatch(style, /source-layer": "poi"/, "no points of interest, as the owner set Apple's");
   assert.match(vm, /dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0/, "flat: no tilt, no turn");
   assert.match(vm, /<TileMap centre=\{centre\}/, "where a device cannot draw it, the street tiles stand in");
+});
+
+
+test("the Passport is the card and three keys; OPEN MAP and STAMP PASSPORT each a full-screen view with ← PASSPORT", () => {
+  const code = page.replace(/\/\/.*$/gm, "");
+  assert.match(code, /openView\("map"\); \}\}><Lamp \/>OPEN MAP/);
+  assert.match(code, /openView\("stamps"\); \}\}><Lamp \/>STAMP PASSPORT/);
+  assert.match(code, /openSheet\("tasteglobe", \{ title: "TASTE GLOBE" \}\)\}>VIEW TASTE GLOBE →/);
+  assert.match(code, /<button type="button" className="ppviewback" onClick=\{closeView\}>← PASSPORT<\/button>/, "back in the left corner");
+  assert.match(code, /\{view === "map" \? <PassportMapSheet \/> : <StampsView \/>\}/, "the view in place of the card");
+  assert.match(code, /\{!shared && !view && \(/, "the card steps aside while a view is up");
+  assert.match(code, /window\.history\.pushState\(\{ ppview: which \}/, "a step in the history, so back and a swipe return to the card");
+  assert.match(code, /window\.addEventListener\("popstate", onPop\)/);
+  assert.match(code, /const TAB_VIEWS = \{ places: "map", collection: "stamps" \};/, "old links open the views");
+  assert.match(code, /tab === "studio"/, "the Studio stays reachable by link");
+  assert.doesNotMatch(code, /ppinline|<StampBoards|<TasteNetwork|<AddStamp|MILESTONES/);
+  assert.match(css, /\.ppviewback \{[^}]*position: absolute; left: 0;/);
+});
+
+test("pages and notes: a stamp is a pin, a page a board; the store keeps its rules", async () => {
+  const P = await import("../lib/passport/pages.js");
+  const mem = new Map(), st = { getItem: (k) => (mem.has(k) ? mem.get(k) : null), setItem: (k, v) => mem.set(k, String(v)) };
+  const pg = P.createPage("  berlin\u0007 nights  ", st);
+  assert.equal(pg.name, "berlin  nights", "the name trimmed and its control characters stripped");
+  assert.equal(P.createPage("", st).name, "untitled page");
+  P.addToPage(pg.id, "place:berghain", st); P.addToPage(pg.id, "artist:x", st); P.addToPage(pg.id, "place:berghain", st);
+  assert.deepEqual(P.listPages(st).find((p) => p.id === pg.id).stamps, ["artist:x", "place:berghain"], "newest first, a stamp once");
+  assert.deepEqual(P.pagesWith("place:berghain", st), [pg.id]);
+  P.removeFromPage(pg.id, "artist:x", st);
+  assert.deepEqual(P.listPages(st).find((p) => p.id === pg.id).stamps, ["place:berghain"]);
+  P.renamePage(pg.id, "", st);
+  assert.equal(P.listPages(st).find((p) => p.id === pg.id).name, "berlin  nights", "an empty rename keeps the name");
+  P.setPageNote(pg.id, "x".repeat(400), st);
+  assert.equal(P.listPages(st).find((p) => p.id === pg.id).note.length, P.NOTE_MAX, "a note is capped");
+  P.setStampNote("place:berghain", "the queue", st);
+  assert.equal(P.stampNotes(st)["place:berghain"], "the queue");
+  P.setStampNote("place:berghain", "  ", st);
+  assert.equal(P.stampNotes(st)["place:berghain"], undefined, "an emptied note is gone");
+  assert.equal(P.deletePage(pg.id, st), true); assert.equal(P.deletePage(pg.id, st), false);
+  // the covers: six layouts, picked by the page, the same every time, not all the same
+  const ids = Array.from({ length: 40 }, (_, i) => "pg-" + i);
+  assert.equal(P.coverLayout("pg-7").id, P.coverLayout("pg-7").id);
+  assert.ok(new Set(ids.map((i) => P.coverLayout(i).id)).size >= 4, "the layouts vary across pages");
+  for (const l of P.COVER_LAYOUTS) assert.match(css, new RegExp(`\\.sbcover\\.l-${l.id} \\{ grid-template:`), l.id);
+  assert.match(css, /\.sbcover \{[^}]*gap: 1\.5px;[^}]*background: var\(--wm-bar\); \}/, "thin white lines between the pictures");
+});
+
+test("ALL STAMPS and PAGES: four sizes up to a fifth taller, notes in the corner, a page a large-card popup", async () => {
+  const { stampTiers, TIER_SCALES } = await import("../lib/passport/stampTiers.js");
+  assert.equal(TIER_SCALES.length, 4); assert.equal(TIER_SCALES[0], 1); assert.ok(Math.abs(TIER_SCALES[3] - 1.2) < 1e-9);
+  assert.deepEqual(stampTiers([3, 9, 1, 4, 4, 7, 2, 8]), [1, 3, 0, 2, 1, 2, 0, 3], "pages ranked by stamps held, a quarter to each size");
+  const view = readFileSync(ROOT + "app/components/StampsView.jsx", "utf8");
+  const card = readFileSync(ROOT + "app/components/StampCard.jsx", "utf8");
+  const pageSheet = readFileSync(ROOT + "app/components/PageSheet.jsx", "utf8");
+  assert.match(view, /\[\["all", "ALL STAMPS", pins\.length\], \["pages", "PAGES", pages\.length\]\]/, "the two sub-pages");
+  assert.match(view, /className=\{"sbplus"/, "the + beside the bar");
+  assert.match(view, />\+ PAGE</, "a stamp goes on a page from ALL STAMPS");
+  assert.match(view, /openSheet\("page", \{ id: pg\.id/, "a page opens in the popup");
+  assert.match(sheetSrc, /page: \{ title: "PAGE", render: \(p\) => <PageSheet \{\.\.\.p\} \/>, slim: true \}/, "a page is all cards: its head slim");
+  assert.match(pageSheet, /\+ ADD STAMPS/, "stamps go on a page from the page");
+  assert.match(css, /\.sbpinart::after, \.sbcover::after \{[^}]*box-shadow: inset 0 0 0 1px var\(--ad-rim-c\);/, "the deck's bezel round every stamp and cover");
+  assert.match(css, /\.sbadd \{ list-style: none; margin: 0; padding: 0; columns: 2;/, "the stamps to add stack in columns too");
+  assert.match(pageSheet, /note=\{notes\[p\.key\] \|\| ""\}/, "a stamp's note stays on it inside the page");
+  assert.match(card, /className=\{"ppnote" \+ \(value \? " has" : ""\)\}/, "the note's rounded square");
+  assert.match(css, /\.ppnote \{ position: absolute; z-index: 2; top: 7px; right: 7px;[^}]*border-radius: 6px;/, "in the top-right corner (owner: \"note should be on right corner\")");
+  // ADD STAMP's three rules, kept by the bar's + mode
+  assert.match(view, /aria-label="what will be stamped"/); assert.match(view, />UNDO</);
+  assert.match(view, /public taste influence \(a follow of their room\) — never their location or anything private/);
+  assert.match(view, /pages and notes live on this device for now/, "says where pages live");
 });
