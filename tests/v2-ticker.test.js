@@ -56,7 +56,7 @@
 //     squares are gone).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { tickerItems, adLine, titleLine } from "../lib/placements.js";
 import { crawlFor, wrapSlices, CRAWL_PX_S, WRAP_SLICES } from "../lib/adcrawl.js";
 
@@ -202,131 +202,34 @@ test("ADs: a negative imprint in a small solid red chip glowing red", () => {
   assert.ok(!/devlights|<Lamp/.test(strip), "no red squares");
 });
 
-// THE TICKER'S RULES, ITS BEZEL AND ITS TYPING (owner, 28 Oct 2026: "why does the the bezel that is on the
-// top and bottom of the ticker dissapear it should run the entirety, also lets give it some rules, if there
-// is now ads or brdcsts the ticker should collapse and turn into a glowing white line that acts like the one
-// on the mast head, broken between the button gaps. and the center fixture is allowed to shorten … if the
-// user has no service the ticker … should open immediatly after regaining service, when a user first opens
-// the app the first animation should be the ticker opening. all these animations should be quick and
-// smooth … all the adds on the ticker should be flowing extremely smooth like a rolex no actual ticking,
-// and instead of the text always appearing allow it to be typed in and typed out as its "circling" its way
-// around the track"). Declared before measuring:
-//   - the rule: open only online AND with an ad, a BRDCST or the device's own ad draft; a listed event or
-//     the house lines alone never hold it open; offline shuts it; "online" reads the placements again;
-//   - first load: the deck renders with the ticker folded (data-ad="line"), so its opening is the first
-//     thing that moves;
-//   - folded: the deck is the row alone (--ad-h 0), the bubble folds up into a glowing white line in the
-//     Masthead's glow under the keys — a stretch under each key, broken at each cut between them (AD_LINE:
-//     the cuts in pairs); the bubble's height moves in step with the deck's (same duration, same curve);
-//     every open/fold move on the ladder, none longer than --dur-3 (quick);
-//   - the bezel: the top and bottom rim lines on the face AND both sides;
-//   - the glide: linear, never stepped; the typing: only the mask's edges step, n steps a loop, n the
-//     sequence's cells, the loop exactly n cells; the edges on cell boundaries, round each side at
-//     TYPE_DEG; text folded onto the monospaced grid; the dot between entries is characters, not a margin.
-test("the ticker's rule: open only online with an ad or a BRDCST to carry; folded, a broken glowing line and a shorter deck", async () => {
-  const { tickerOpen, OPENS_TICKER } = await import("../lib/placements.js");
-  const it = (kind) => ({ kind });
-  assert.deepEqual([...OPENS_TICKER].sort(), ["ad", "draft", "house", "sponsored"]);
-  // (owner, 30 Oct 2026: "the ad ticker isnt loading in, let it say *ASILUM-MEDIA dot COMMERCE dot CONNECTION") the
-  // house line is always carried, first, from the first frame: online, the ticker is open whatever else is live
-  const { tickerItems, HOUSE_TICKER, HOUSE_ITEM } = await import("../lib/placements.js");
-  assert.equal(HOUSE_TICKER, "*ASILUM-MEDIA \u00b7 COMMERCE \u00b7 CONNECTION");
-  assert.deepEqual(tickerItems({})[0], HOUSE_ITEM, "nothing live: the house line alone");
-  assert.equal(tickerOpen(tickerItems({})), true, "so the ticker is open");
-  assert.equal(tickerOpen(tickerItems({}), false), false, "and without service it still folds");
-  assert.equal(HOUSE_ITEM.kind, "house", "never labelled an ad");
-  assert.match(read("app/components/Placements.jsx"), /const \[items, setItems\] = useState\(\(\) => tickerItems\(\{\}\)\);/, "from the first frame, before anything is read");
-  assert.equal(tickerOpen([it("sponsored")]), true, "a BRDCST opens it");
-  assert.equal(tickerOpen([it("ad")]), true, "an ad opens it");
-  assert.equal(tickerOpen([it("draft")]), true, "the device's own ad request opens it, for its author");
-  assert.equal(tickerOpen([it("listed")]), false, "a listed event alone does not");
-  assert.equal(tickerOpen([]), false, "nothing to carry, folded");
-  assert.equal(tickerOpen(null), false, "still reading, folded");
-  assert.equal(tickerOpen([it("sponsored")], false), false, "no service, folded");
+// ALWAYS ON (owner, 4 Nov 2026: "take out the ad wink feature, allowing it to always be on; if there's no new live
+// BRDCSTs or ads it should just display BRDCSTs and ads that are available"). The rule that folded the ticker to a
+// line (28 Oct 2026), the wink (28–29 Oct), the console's test of it and the side button are gone: the band is open
+// from the first frame, never inert, never clipped shut; the deck has no folded height; and the server fills it —
+// the BRDCSTs in reach, else every live one, else the ones coming up (tests/brdcst.test.js measures that).
+test("the ticker is always on: no rule shuts it, no wink, no folded line, no test of the fold; the server fills it", async () => {
+  const law = await import("../lib/placements.js");
+  for (const gone of ["tickerOpen", "OPENS_TICKER", "TICKER_SAMPLE", "TICKER_TESTS"]) assert.equal(law[gone], undefined, gone + " is gone");
+  const { tickerItems, HOUSE_ITEM } = law;
+  assert.deepEqual(tickerItems({})[0], HOUSE_ITEM, "the house line, first, from the first frame");
+  assert.match(read("app/components/Placements.jsx"), /const \[items, setItems\] = useState\(\(\) => tickerItems\(\{\}\)\);/);
   const strip = read("app/components/AdStrip.jsx");
-  assert.match(strip, /const open = test \? test === "open" : tickerOpen\(items, online\);/, "the rule decides, unless the console is testing it");
-  assert.match(strip, /window\.addEventListener\("online", sync\);\s*window\.addEventListener\("offline", sync\);/, "service lost and found");
-  assert.match(read("app/components/Placements.jsx"), /window\.addEventListener\("online", load\);/, "service back: read again at once");
+  assert.match(strip, /export default function AdStrip\(\{ typing = false \}\) \{/, "no line to fold to, no open/fold to report");
+  assert.match(strip, /className=\{"adstrip open" \+/, "open, always");
+  for (const gone of ["shut", "inert=", "tickerOpen", "ticker-test", "TICKER_SAMPLE", "rimClip", "--rim-open", "setShown", "navigator.onLine"]) assert.ok(!strip.includes(gone), "the strip no longer carries " + gone);
   const cc = read("app/components/ControlCenter.jsx");
-  assert.match(cc, /const \[adOpen, setAdOpen\] = useState\(false\);/, "the first render is folded, so opening is the first move");
-  assert.match(cc, /data-ad=\{adOpen \? "open" : "line"\}/);
-  assert.match(css, /\.ccenter\[data-ad="line"\] \{ --ad-h: 0px; \}/, "folded, the deck is the row alone");
-  // (28 Oct 2026, "tighten up all animations") on the deck, never on :root: flipping a root variable restyled the
-  // whole page (measured 27–31ms on a full Feed, a dropped frame at every fold and open; on the deck alone, nil)
-  assert.ok(!/:root:has\(/.test(css), "no state of the deck restyles the root");
-  assert.match(css, /body:has\(\.ccenter\.ccsearching\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--ad-h\) \+ var\(--dk-rise\)\); \}/, "a risen popup still stands on the risen deck");
-  assert.match(css, /body:has\(\.ccenter\.ccsearching\[data-ad="line"\]\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--dk-rise\)\); \}/, "and on the folded one");
-  assert.match(rule(".ccad"), /transition: height var\(--dur-3\) var\(--ease-deck\);/);
-  assert.match(css, /\.ccenter \{[^}]*transition: height var\(--dur-3\) var\(--ease-deck\);/, "the bubble and the deck move in step, on one curve");
-  // the line: the cuts in pairs, a stretch under each key, broken at each cut, in the Masthead's glow
-  const cuts = JSON.parse(cc.match(/const CUTS = (\[[^\]]*\]);/)[1]);
-  assert.match(cc, /export const AD_LINE = Object\.freeze\(CUTS\.slice\(0, -1\)\.map\(\(a, i\) => Object\.freeze\(\[a, CUTS\[i \+ 1\]\]\)\)\);/);
-  assert.equal(cuts.length - 1, 5, "five stretches, one under each key");
-  const line = rule(".ccadline");
-  assert.match(line, /filter: var\(--wm-glow\);/, "the Masthead's glow");
-  assert.match(rule(".ccadline i"), /background: var\(--wm-bar\);[^}]*left: calc\(var\(--u\) \* var\(--a\) \* var\(--dk-sx\) \+ var\(--ad-brk\) \/ 2\); width: calc\(var\(--u\) \* \(var\(--b\) - var\(--a\)\) \* var\(--dk-sx\) - var\(--ad-brk\)\);/s, "broken by half a break each side of every cut");
-  assert.match(css, /\.ccenter\[data-ad="line"\] \.ccadline \{ opacity: 1;/);
-  // quick: every open and fold move on the ladder, none past --dur-3
-  for (const sel of [".adtrack", ".adstrip.shut .adtrack", ".adrim", ".adstrip.shut .adrim", ".ccadline", '.ccenter[data-ad="line"] .ccadline', ".ccad"]) {
-    const t = (rule(sel).match(/transition: ([^;]*);/) || [])[1] || "";
-    assert.ok(t && !/--dur-4/.test(t), sel + " moves quickly: " + t);
-  }
-  assert.match(rule(".adstrip.shut"), /pointer-events: none;/);
-  assert.match(strip, /inert=\{shown \? undefined : ""/, "and out of reach while folded");
-});
-
-// THE WINK (owner, 28 Oct 2026: "the transitions isnt clean for shit, the ticker should wink into the glow
-// white line and the bezels of the ticker should slightly glow so as its winking it looks clean"). Declared
-// before measuring: the band's centre line and the folded line are one place — a fixed height above the
-// deck's foot, open or folded (the band anchored to the bubble's foot), so nothing jumps; folding, the band
-// is clipped shut onto its centre line (never scaled: a scale would thin its bezels to nothing) while its
-// two bezels — hairlines glowing slightly, the band's whole length — travel exactly half the band each and
-// meet on that line; the broken line comes in as they arrive (after they have travelled most of the way)
-// and they fade after it is up; it goes the instant they part; the band closes faster than the deck
-// shortens on the same kind of curve, so the settling keys never cross it (measured in the browser: the
-// bezels land on the line within 0.1px, the keys stop 5px above it); the wink starts two frames after the
-// decision, so the band's words are laid before anything moves.
-test("the wink: the band clips shut onto its centre line, its glowing bezels meet there and become the line", () => {
-  const strip = read("app/components/AdStrip.jsx");
-  const cc = read("app/components/ControlCenter.jsx");
-  const n = (re, src = css) => Number(src.match(re)[1]);
-  const pad = n(/\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* (\d+)\);/);
-  const foot = n(/bottom: calc\(var\(--u\) \* (\d+)\); height: calc\(var\(--u\) \* 52\);/, rule(".adstrip"));
-  assert.equal(foot, pad, "the band stands on the bubble's padding, anchored to its foot");
-  const lineAt = n(/bottom: calc\(var\(--u\) \* (\d+) - var\(--ad-line-h\) \/ 2\);/, rule(".ccadline"));
-  assert.equal(lineAt, foot + 52 / 2, "the folded line lies on the band's centre line");
-  assert.ok(pad > 22, "and the band clears the grill's top lip (11 + 11)");
-  assert.match(cc, /<div className="ccad">\s*<span className="ccadline" aria-hidden="true">/, "the line lives in the bubble, measured from the same foot");
-  // clipped, never scaled
-  assert.match(css, /\.adstrip\.shut \.adtrack \{ clip-path: inset\(50% 0 50% 0\);/, "shut onto the centre line");
-  assert.ok(!/scaleY/.test(rule(".adstrip.shut") + rule(".adstrip")), "never squashed");
-  // the bezels: the band's whole length, glowing slightly, travelling half the band each
-  assert.match(strip, /<i className="adrim adrimtop" aria-hidden="true" \/>\s*<i className="adrim adrimbot" aria-hidden="true" \/>/);
-  assert.match(rule(".adrim"), /left: 0; right: 0; height: 1px;[^}]*background: var\(--ad-rim-c\); box-shadow: var\(--ad-rim-glow\);/s, "a hairline the band's whole length, glowing");
-  assert.match(css, /--ad-rim-glow: 0 0 [\d.]+px rgba\(255, 255, 255, [\d.]+\)/, "slightly");
-  assert.match(css, /\.adstrip\.shut \.adrimtop \{ transform: translateY\(calc\(var\(--u\) \* 26 - 0\.5px\)\); \}/, "the top one down half the band");
-  assert.match(css, /\.adstrip\.shut \.adrimbot \{ transform: translateY\(calc\(var\(--u\) \* -26 \+ 0\.5px\)\); \}/, "the bottom one up half the band");
-  assert.ok(!/className="adrim [tb]"/.test(strip), "never the global .t chip's class (it padded the top bezel to 6px)");
-  // the hand-over: the line comes in as they arrive, they fade once it is up; it goes the instant they part
-  const ms = (t) => { const m = t.match(/opacity var\(--dur-(\d)\)(?: (\d+)ms)?/); return { dur: [60, 140, 220, 320, 460][Number(m[1])], delay: Number(m[2] || 0) }; };
-  const lineIn = ms(rule('.ccenter[data-ad="line"] .ccadline'));
-  const rimsOut = ms(rule(".adstrip.shut .adrim"));
-  const close = [60, 140, 220, 320, 460][n(/clip-path var\(--dur-(\d)\)/, rule(".adstrip.shut .adtrack"))];
-  assert.ok(lineIn.delay >= close * 0.6 && lineIn.delay < close, "the line comes in as the bezels arrive");
-  assert.ok(rimsOut.delay > lineIn.delay, "the bezels fade once the line is coming up, not before");
-  assert.match(rule(".ccadline"), /transition: opacity var\(--dur-0\) var\(--ease-in\);/, "the line goes as they part, held while they are lit over it");
-  assert.match(rule(".adrim"), /opacity var\(--dur-0\) var\(--ease-out\)/, "opening, the bezels are lit over the line in the time it takes to go (never a dip between)");
-  // the band closes faster than the deck shortens, on the same curve, so the keys never cross it
-  const deck = [60, 140, 220, 320, 460][n(/transition: height var\(--dur-(\d)\) var\(--ease-deck\)/, rule(".ccenter"))];
-  assert.ok(close < deck, "the band shut before the keys have settled");
-  // (the ads wink cleaner, 29 Oct 2026) the band closes on the house's from-one-place-to-another curve, and folding,
-  // the deck shortens on that same curve (--ease-deck), only longer — so the band is always further shut than the keys
-  // have come down (measured: the keys at least 8.5px clear; on ease-out against it they came 0.9px into the band)
-  assert.match(rule(".adstrip.shut .adtrack"), /clip-path var\(--dur-2\) var\(--ease-in-out\)/, "one lid, no snap and stall");
-  assert.match(css, /\.ccenter\[data-ad="line"\] \{ --ease-deck: var\(--ease-in-out\); \}/, "the same curve as the deck, folding");
-  // two frames' grace, so the words are laid before the wink starts
-  assert.match(strip, /a = requestAnimationFrame\(\(\) => \{ b = requestAnimationFrame\(\(\) => setShown\(open\)\); \}\);/);
-  assert.match(strip, /useEffect\(\(\) => \{ if \(onOpen\) onOpen\(shown\); \}, \[shown, onOpen\]\);/, "the deck moves with the wink, not before it");
+  assert.match(cc, /<div className="ccad">\s*<AdStrip typing=\{inSearch\} \/>\s*<\/div>/, "the bubble holds the strip alone");
+  for (const gone of ["data-ad=", "adOpen", "AD_LINE", "ccadline"]) assert.ok(!cc.includes(gone), "the deck no longer carries " + gone);
+  for (const gone of ['[data-ad="line"]', ".adstrip.shut", ".ccadline", "--rim-open", "--rim-shut", "--ad-brk", ".sidebtns", ".tickbtn"]) assert.ok(!css.includes(gone), "the CSS no longer carries " + gone);
+  assert.match(rule(".adtrack"), /clip-path: inset\(0 0 0 0\);/, "never clipped shut");
+  const dc = read("app/components/DesignConsole.jsx");
+  for (const gone of ["ticker-test", "tickerTest", "TICKER_REPLAY_MS", "dcticker"]) assert.ok(!dc.includes(gone), "the console no longer tests the fold: " + gone);
+  assert.ok(!read("app/shell.js").includes("SideButtons") && !read("app/layout.js").includes("TEST_CONTROLS"), "the side buttons are gone, and the flag that showed them");
+  assert.equal(existsSync(new URL("../app/components/SideButtons.jsx", import.meta.url)), false);
+  const db = read("lib/db/production/brdcst.js");
+  assert.match(db, /return rows\.length \? rows : live\.map\(\(c\) => \(\{ \.\.\.tickerRow\(c\), reach: "live" \}\)\);/, "none in reach: every live BRDCST");
+  assert.match(db, /if \(!live\.length\) return \(await upcomingCampaigns\(now\)\)\.map\(\(c\) => \(\{ \.\.\.tickerRow\(c\), reach: "upcoming" \}\)\);/, "none live: the ones coming up");
+  assert.ok(!/adcrawl\.js[\s\S]*rimClip/.test(read("lib/adcrawl.js")), "no bezel clip to ease between");
 });
 
 test("the bezel runs the band's whole length, round both sides", () => {
@@ -359,74 +262,4 @@ test("the glide never steps; the words are typed in and out, a whole character a
   assert.match(rule(".adband"), /mask-image: linear-gradient\(90deg, transparent var\(--t-out\), #000 var\(--t-out\), #000 var\(--t-in\), transparent var\(--t-in\)\);/, "hard edges: whole letters");
   assert.match(rule(".adband"), /white-space: pre;/, "every space a cell");
   assert.ok(!/steps\(/.test((css.match(/@keyframes adcrawl \{[^}]*\}[^}]*\}/) || [""])[0]), "the glide itself never steps");
-});
-
-// THE TICKER TEST (owner, 28 Oct 2026: "create a button so i can test the animation"). Declared before
-// measuring: the Design Console's TICKER section replays the opening (fold, then open once the fold has
-// finished), opens, folds, and goes back to live; it lasts for the page view only (nothing stored); with
-// nothing live to carry, the opened ticker runs entries that say they are samples — labelled SAMPLE,
-// linking nowhere — and live entries always run alongside; back to live, the rule decides again; and the
-// console stops above the deck, so the animation it drives stays in view.
-test("the Design Console can replay, open and fold the ticker — with labelled samples, for the page view only", async () => {
-  const { TICKER_SAMPLE, TICKER_TESTS } = await import("../lib/placements.js");
-  assert.deepEqual([...TICKER_TESTS], ["open", "fold"]);
-  for (const s of TICKER_SAMPLE) {
-    assert.equal(s.label, "SAMPLE", "labelled a sample");
-    assert.equal(s.href, null, "linking nowhere");
-    assert.match(s.ticker, /SAMPLE/, "and saying so on the band");
-  }
-  assert.ok(TICKER_SAMPLE.some((s) => s.kind === "ad") && TICKER_SAMPLE.some((s) => s.kind === "sponsored"), "one of each, so both kinds of line show");
-  const strip = read("app/components/AdStrip.jsx");
-  assert.match(strip, /window\.addEventListener\("asilum:ticker-test", on\);/);
-  assert.match(strip, /const items = test === "open" && !\(live \|\| \[\]\)\.some\(\(it\) => OPENS_TICKER\.includes\(it\.kind\)\) \? \[\.\.\.TICKER_SAMPLE, \.\.\.\(live \|\| \[\]\)\] : live;/, "samples only when nothing live opens it, and never instead of the live entries");
-  assert.match(strip, /const open = test \? test === "open" : tickerOpen\(items, online\);/, "back to live, the rule decides");
-  const dc = read("app/components/DesignConsole.jsx");
-  for (const label of ["REPLAY OPENING ▶", "OPEN", "FOLD", "BACK TO LIVE"]) assert.ok(dc.includes(">" + label + "</button>"), label);
-  assert.match(dc, /window\.dispatchEvent\(new CustomEvent\("asilum:ticker-test", \{ detail: \{ mode: m \} \}\)\)/);
-  assert.match(dc, /send\("fold"\);\s*replayTimer\.current = setTimeout\(\(\) => send\("open"\), TICKER_REPLAY_MS\);/, "replay: fold, then open");
-  const replay = Number(dc.match(/export const TICKER_REPLAY_MS = (\d+);/)[1]);
-  assert.ok(replay > 220 && replay <= 600, "open again once the fold (--dur-2, 220ms) has finished, and no slower");
-  const testFn = dc.slice(dc.indexOf("function testTicker"), dc.indexOf("function resetAll"));
-  assert.ok(!/localStorage|saveOverrides|sessionStorage/.test(testFn), "nothing stored: the page view only");
-  assert.match(rule(".dc"), /bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "the console stops above the deck");
-  assert.match(css, /\.dc \{ top: auto; left: 8px; right: 8px; bottom: calc\(var\(--cc-bottom\) \+ var\(--dk-h\) \+ var\(--ad-h\) \+ 12px\);/, "on a phone too");
-});
-
-// THE WINK, CLEANER (owner, 29 Oct 2026: "the ads wink isnt clean enough"). Declared before measuring, at 375px, shrunk
-// and not, every transition paused and stepped 10ms (the harness is in the session notes, ads-wink/): the deck's foot
-// moves < 0.2px (it slid 3.8px on a shrunk deck); from 80% shut to shut ≤ 70ms (it crept 160ms); where the bezels meet
-// (≤ 0.5px apart) their stretches are the line's within 0.5px (they met whole, then lost their ends and opened their
-// breaks); the line shows no earlier than 2px from the meeting, and from the meeting on the brighter of line and bezels
-// is ≥ 0.9; opening, likewise ≥ 0.9 until the line is gone (it dipped to about half); the keys never cross the band.
-// Measured after: foot 0px; 60ms; 0.26px; 0 early; 0.995; 0.96; the keys ≥ 3.3px clear.
-test("the wink, cleaner: one lid, the bezels take the line's shape as they close, the light never dips, the foot stays", async () => {
-  const { rimClip, RIM_GLOW } = await import("../lib/adcrawl.js");
-  const strip = read("app/components/AdStrip.jsx"), cc = read("app/components/ControlCenter.jsx");
-  const line = [[40, 163], [163, 290], [290, 452]];
-  const open = rimClip(line, false), shut = rimClip(line, true);
-  const pts = (p) => p.slice(p.indexOf("(") + 1, -1).split(/, (?![^(]*\))/);
-  assert.equal(pts(open).length, pts(shut).length, "the same points, so the one eases into the other");
-  assert.equal(pts(shut).length, line.length * 4, "a comb: four corners a stretch");
-  // shut: the line's own stretches, half a break in from every cut and from both ends
-  assert.match(shut, /^polygon\(calc\(var\(--u\) \* 40 \* var\(--dk-sx\) \+ var\(--ad-brk\) \/ 2\) calc\(100% \+ 8px\), /, "it starts where the line starts");
-  assert.ok(shut.includes("calc(var(--u) * 163 * var(--dk-sx) - var(--ad-brk) / 2) -8px, calc(var(--u) * 163 * var(--dk-sx) - var(--ad-brk) / 2) calc(100% + 8px), calc(var(--u) * 163 * var(--dk-sx) + var(--ad-brk) / 2)"), "broken at the cut");
-  assert.ok(shut.endsWith("calc(var(--u) * 452 * var(--dk-sx) - var(--ad-brk) / 2) calc(100% + 8px))"), "it ends where the line ends");
-  // open: whole — past both ends by the glow's room, and no break at any cut
-  assert.match(open, /^polygon\(calc\(0% - 8px\) calc\(100% \+ 8px\), calc\(0% - 8px\) -8px, /, "past the left end");
-  assert.ok(open.endsWith("calc(100% + 8px) -8px, calc(100% + 8px) calc(100% + 8px))"), "past the right end");
-  assert.ok(!/ad-brk/.test(open), "no break while open");
-  assert.equal(RIM_GLOW, 8);
-  assert.equal(rimClip(null, true), "none", "no line given: no clip");
-  // wired: the deck gives the line, the strip sets both shapes, the CSS eases between them
-  assert.match(cc, /<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} line=\{AD_LINE\} \/>/);
-  assert.match(strip, /const rims = \{ open: rimClip\(line, false\), shut: rimClip\(line, true\) \};/);
-  assert.match(strip, /"--rim-open": rims\.open, "--rim-shut": rims\.shut/);
-  assert.match(css, /\.ccad \{ --ad-brk: calc\(var\(--u\) \* 14\); \}/, "the break is the bubble's: the line and the bezels break alike");
-  assert.match(rule(".adrim"), /clip-path: var\(--rim-open, none\);/);
-  // folding: the shape first (--dur-1), the meeting second (--dur-2), one curve; then the light changes hands
-  assert.match(css, /\.adstrip\.shut \.adrim \{ clip-path: var\(--rim-shut, none\); opacity: 0; transition: transform var\(--dur-2\) var\(--ease-in-out\), clip-path var\(--dur-1\) var\(--ease-in-out\), opacity var\(--dur-1\) 220ms var\(--ease-in\); \}/);
-  // the shrunk deck's foot holds through it
-  assert.match(css, /\.ccenter\[data-shrunk\] \{ scale: 0\.85; translate: 0 calc\(var\(--ad-h\) \* 0\.15\); \}/);
-  // and under reduced motion it does not wink at all
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.adtrack, \.adrim, \.ccadline, \.ccenter\[data-ad="line"\] \.ccadline \{ transition: none; \} \}/);
 });

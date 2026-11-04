@@ -86,7 +86,6 @@ const CUTS = [40, 163, 290, 452, 578, 705];
  *  turn into a glowing white line that acts like the one on the mast head, broken between the button
  *  gaps"): with nothing to carry, the ticker folds into one glowing white line under the keys, a stretch
  *  under each key, broken at every cut between them — from the first cut to the last. */
-export const AD_LINE = Object.freeze(CUTS.slice(0, -1).map((a, i) => Object.freeze([a, CUTS[i + 1]])));
 
 export default function ControlCenter({ kind, pathname }) {
   const dock = useDock();
@@ -153,8 +152,6 @@ export default function ControlCenter({ kind, pathname }) {
   const dm = useDmLive();
   // THE WHEEL: out while a Feed carousel is centred, or while the POST cards are up
   const [cards, setCards] = useState(false);
-  // the ticker open, or folded to its line (AdStrip.jsx decides: an ad or a BRDCST to carry, and service)
-  const [adOpen, setAdOpen] = useState(false);
   const [ring, setRing] = useState(0);
   const [centred, setCentred] = useState(null); // the centred carousel's stage
   const [snoozed, setSnoozed] = useState(null); // the carousel the wheel was put away from
@@ -167,8 +164,8 @@ export default function ControlCenter({ kind, pathname }) {
   // should go back seamlessly"; lib/scrollmotion.js shrinkStep): read once a scroll frame, it sets data-shrunk and the
   // CSS scales the deck by 0.85 about the plus's own centre, the plus's place (the disc, the wheel and the POST cards
   // in it) scaled back by as much about the same point — so they keep their size, and with the ticker folded their place
-  // (open, the deck is lowered by 15% of the ticker's height so its foot holds through the ads wink, and the plus with
-  // it: globals.css .ccenter[data-shrunk]). Whole again at a
+  // (the deck is lowered by 15% of the ticker's height so its foot holds, and the plus with it:
+  // globals.css .ccenter[data-shrunk]). Whole again at a
   // press on any of its keys, on the way up, near the top, and while searching.
   const [shrunk, setShrunk] = useState(false);
   const shrinkRef = useRef(null);
@@ -333,7 +330,7 @@ export default function ControlCenter({ kind, pathname }) {
   }
 
   return (
-    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-ad={adOpen ? "open" : "line"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined} data-shrunk={shrunk && !inSearch ? "1" : undefined}>
+    <div ref={glassRef} className={"ccenter" + (inSearch ? " ccsearching" : "")} data-scope={scope.id} data-mode={inSearch ? "search" : "base"} data-wheel={wheel ? "open" : undefined} data-cards={cards && canWheel ? "open" : undefined} data-shrunk={shrunk && !inSearch ? "1" : undefined}>
       {glass}
       <nav className="tabbar" aria-label="control deck" onPointerDownCapture={keyDown} onClickCapture={keyTap}>
         {inSearch && (
@@ -382,11 +379,10 @@ export default function ControlCenter({ kind, pathname }) {
             central control fixture as a bubble … inside the bubble will be the ad
             scroll wheel"; moved the same night: "beneath the buttons and above the
             vent"): the ticker (AdStrip.jsx) in a long pill under the row, over the
-            foot grill; the deck is taller by --ad-h to hold it — and only while the ticker
-            is open: folded to its line, the deck is the row alone (28 Oct 2026) */}
+            foot grill; the deck is taller by --ad-h to hold it. The ticker is always
+            on (owner, 4 Nov 2026); its fold to a line is gone. */}
         <div className="ccad">
-          <span className="ccadline" aria-hidden="true">{AD_LINE.map(([a, b]) => <i key={a} style={{ "--a": a, "--b": b }} />)}</span>
-          <AdStrip typing={inSearch} onOpen={setAdOpen} line={AD_LINE} />
+          <AdStrip typing={inSearch} />
         </div>
       </nav>
       <i className="ccgrill" data-lens-shape="slot" data-lens-band="9" aria-hidden="true" />

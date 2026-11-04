@@ -35,13 +35,12 @@ import SheetHost from "./components/SheetHost.jsx";
 import DmLive from "./components/DmLive.jsx";
 import InkWatch from "./components/InkWatch.jsx";
 import GroundInk from "./components/GroundInk.jsx";
-import SideButtons from "./components/SideButtons.jsx";
 import { MusicHost } from "./components/MusicCircle.jsx";
 import { hydrateMediaPreferences } from "../lib/media/preferences.js";
 import Masthead from "./components/Masthead.jsx";
 import { useGlassReactive } from "./components/LiquidGlass.jsx";
 
-export default function Shell({ children, testControls = true }) {
+export default function Shell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const pendingAdoptionRef = useRef(null);
@@ -307,7 +306,6 @@ export default function Shell({ children, testControls = true }) {
       <DmLive />
       <InkWatch />
       <GroundInk />
-      {testControls ? <SideButtons /> : null /* test controls: never on the live site (app/layout.js) */}
 
       <AccountSignup />
       <SavePrompt />

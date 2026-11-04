@@ -4,9 +4,14 @@
 // (owner, 25 Oct 2026, last: beneath the keys and above the vent). What it
 // carries: live BRDCST campaigns in reach, this device's own promotion
 // drafts (to their author), then LISTED dated events from the places record
-// — lib/placements.js is the law. With no ad and no BRDCST it carries nothing
-// and folds to its line (28 Oct 2026; the house lines it used to fall back
-// on are gone), never an invented offer.
+// — lib/placements.js is the law. ALWAYS ON (owner, 4 Nov 2026: "take out the
+// ad wink feature, allowing it to always be on; if there's no new live
+// BRDCSTs or ads it should just display BRDCSTs and ads that are available"):
+// the house line runs from the first frame, and the server fills the band with
+// what there is — the BRDCSTs in reach, else every live one, else the ones
+// coming up (lib/db/production/brdcst.js tickerFor) — never an invented offer.
+// The fold to a line, its wink, the console's and the side button's tests of
+// it are gone with it.
 //
 // HOW IT LOOKS (owner, 28 Oct 2026, the MAD-S player's wrap-round display as
 // the reference): "lets have it stretch all the across the center fixture,
@@ -32,49 +37,17 @@
 // is not announced (each entry is a link with its label spoken: a BRDCST is
 // read as sponsored though it prints its title alone).
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { crawlFor, wrapSlices, typingFor, monoText, SEP, rimClip } from "../../lib/adcrawl.js";
-import { tickerOpen, OPENS_TICKER, TICKER_SAMPLE, TICKER_TESTS } from "../../lib/placements.js";
+import { useLayoutEffect, useRef, useState } from "react";
+import { crawlFor, wrapSlices, typingFor, monoText, SEP } from "../../lib/adcrawl.js";
 import { usePlacements } from "./Placements.jsx";
 
 // the two quarter cylinders, laid once
 const WRAP = wrapSlices();
 
-export default function AdStrip({ typing = false, onOpen = null, line = null }) {
-  // the bezels' two shapes, whole and as the line (lib/adcrawl.js rimClip; `line` is ControlCenter.jsx AD_LINE)
-  const rims = { open: rimClip(line, false), shut: rimClip(line, true) };
-  const live = usePlacements();
-  // THE TEST (the Design Console's TICKER section): open or fold it by hand, for this page view only; open
-  // with nothing live to carry, it runs the labelled samples (lib/placements.js TICKER_SAMPLE)
-  const [test, setTest] = useState(null);
-  useEffect(() => {
-    const on = (e) => setTest(e.detail && TICKER_TESTS.includes(e.detail.mode) ? e.detail.mode : null);
-    window.addEventListener("asilum:ticker-test", on);
-    return () => window.removeEventListener("asilum:ticker-test", on);
-  }, []);
-  const items = test === "open" && !(live || []).some((it) => OPENS_TICKER.includes(it.kind)) ? [...TICKER_SAMPLE, ...(live || [])] : live;
+export default function AdStrip({ typing = false }) {
+  const items = usePlacements();
   const [held, setHeld] = useState(false);
-  // no service, nothing live: the ticker shuts to its line, and opens again the moment service returns
-  // (the placements hook reads again on "online")
-  const [online, setOnline] = useState(true);
-  useEffect(() => {
-    const sync = () => setOnline(navigator.onLine !== false);
-    sync();
-    window.addEventListener("online", sync);
-    window.addEventListener("offline", sync);
-    return () => { window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
-  }, []);
-  const open = test ? test === "open" : tickerOpen(items, online);
-  // the wink starts two frames after the decision, so the band's words are laid (and measured) first and
-  // the move begins on a clean frame — measured: opening with the render in its first frame dropped one
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    let a = 0, b = 0;
-    a = requestAnimationFrame(() => { b = requestAnimationFrame(() => setShown(open)); });
-    return () => { cancelAnimationFrame(a); cancelAnimationFrame(b); };
-  }, [open]);
-  useEffect(() => { if (onOpen) onOpen(shown); }, [shown, onOpen]);
-  // the entries, as the ticker prints them, on the monospaced grid (folded, there are none to print)
+  // the entries, as the ticker prints them, on the monospaced grid
   const words = (items || []).map((it) => ({ id: it.id, text: monoText(it.ticker || it.line), href: it.href, said: it.label.toLowerCase() + ": " + (it.ticker || it.line) }));
   const key = words.map((w) => w.id + w.text).join("|");
   // the crawl and the typing: one sequence measured on the cell grid, the band long enough to cover its
@@ -129,11 +102,9 @@ export default function AdStrip({ typing = false, onOpen = null, line = null }) 
   const t = crawl.type;
   return (
     <div
-      className={"adstrip" + (crawl.seconds > 0 && t ? " run" : "") + (held || typing ? " held" : "") + (shown ? " open" : " shut")}
+      className={"adstrip open" + (crawl.seconds > 0 && t ? " run" : "") + (held || typing ? " held" : "")}
       aria-label="ads and placements"
-      aria-hidden={shown ? undefined : true}
-      inert={shown ? undefined : "" /* React 18: the attribute present is inert */}
-      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1, "--rim-open": rims.open, "--rim-shut": rims.shut }}
+      style={{ "--crawl-l": `${crawl.len}px`, "--crawl-s": `${crawl.seconds}s`, "--arc": WRAP.arc.toFixed(5), "--t-out": `${t ? t.out : 0}px`, "--t-in": `${t ? t.in : 100000}px`, "--t-n": t ? t.n : 1 }}
       onMouseEnter={() => setHeld(true)} onMouseLeave={() => setHeld(false)} onFocus={() => setHeld(true)} onBlur={() => setHeld(false)}
     >
       <span className="adprobe" ref={probeRef} aria-hidden="true">00000000000000000000</span>
@@ -145,8 +116,7 @@ export default function AdStrip({ typing = false, onOpen = null, line = null }) 
         </span>
         {side("r", WRAP.right)}
       </div>
-      {/* the bezels, glowing slightly: folding, they travel in, take the line's shape, and meet on the centre line as
-          the line itself (the wink) */}
+      {/* the bezels, glowing slightly, the band's whole length round both sides */}
       <i className="adrim adrimtop" aria-hidden="true" />
       <i className="adrim adrimbot" aria-hidden="true" />
     </div>

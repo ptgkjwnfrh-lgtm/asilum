@@ -49,8 +49,6 @@ test("a large card's size, centred, a card's corners", () => {
 
 test("clear of the Masthead and the deck, centred all the same; a field lifts it", () => {
   assert.match(css, /--pop-clear: max\(calc\(var\(--head-h\) \+ 8px\), calc\(var\(--cc-row-h\) \+ var\(--cc-bottom\) \+ 8px\)\);/, "the larger clearance, both ends");
-  assert.match(css, /body:has\(\.ccenter\[data-ad="line"\]\) \.sheetscrim \{ --cc-row-h: var\(--dk-h\); \}/, "the deck as it stands, its ticker folded");
-  assert.match(css, /body:has\(\.ccenter\.ccsearching\[data-ad="line"\]\) \.sheetscrim \{ --cc-row-h: calc\(var\(--dk-h\) \+ var\(--dk-rise\)\); \}/, "and risen for the search");
   assert.match(css, /\.sheet\.typing \{ align-self: flex-start; margin-top: calc\(var\(--head-h\) \+ 8px\); \}/);
   assert.match(host, /if \(e\.target && \/\^\(INPUT\|TEXTAREA\|SELECT\)\$\/\.test\(e\.target\.tagName\)\) setTyping\(true\);/);
 });

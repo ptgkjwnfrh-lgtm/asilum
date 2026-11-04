@@ -1779,7 +1779,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   cursor: pointer; font-family: var(--helv); text-transform: none; }
 .dhint:hover { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 
-
 /* ---- DESIGN CONSOLE (redesign/ui-editor) — the owner's hand on the OS.
    An industrial side instrument: every slider writes one --ed-* token.
    Chrome is token-only and deliberately NOT self-editable. ---- */
@@ -3498,14 +3497,11 @@ body { font-size: 14px; }
    it is folded, so the Feed is never restyled by the deck.
    The ticker folded to its line (owner, 28 Oct 2026: "the center fixture is allowed to shorten because it doesnt
    have to acomidate for the size of the ticker anymore"): the deck is the row alone. */
-.ccenter[data-ad="line"] { --ad-h: 0px; }
 /* folding, the deck shortens on the band's own curve (the house's from-one-place-to-another), only longer, so the band
    is always further shut than the keys have come down and they never cross it (the ads wink, 29 Oct 2026: with the
    band on that curve and the deck still on ease-out, the keys came 0.9px into the closing band); opening, ease-out */
-.ccenter[data-ad="line"] { --ease-deck: var(--ease-in-out); }
 /* a popup risen with the deck (search) stands on its top: the row, the rise, and the ticker when it is open */
 body:has(.ccenter.ccsearching) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--ad-h) + var(--dk-rise)); }
-body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(var(--dk-h) + var(--dk-rise)); }
 .main { padding-bottom: calc(var(--cc-space) + 24px); }
 .saveprompt { bottom: calc(var(--cc-space) + 8px); }
 
@@ -3611,46 +3607,13 @@ body:has(.ccenter.ccsearching[data-ad="line"]) .sheetscrim { --cc-row-h: calc(va
    of a glowing white chip at the face's left. */
 .ccad { position: relative; z-index: 2; flex: none; height: calc(var(--ad-h) + var(--u) * 18); margin-top: calc(var(--u) * -18); padding: 0 0 calc(var(--u) * 26); box-sizing: border-box;
   transition: height var(--dur-3) var(--ease-deck); /* in step with the deck's own height, so the row never leaves the glass */ }
-/* OPEN AND SHUT — THE WINK (owner, 28 Oct 2026: "if there is no ads or brdcsts the ticker should collapse
-   … the first animation should be the ticker opening. all these animations should be quick and smooth";
-   then "the transitions isnt clean … the ticker should wink into the glow white line and the bezels of the
-   ticker should slightly glow so as its winking it looks clean"). The band's centre line sits a fixed
-   52 units above the deck's foot (the bubble's 26 of padding and half its 52), open or folded, so
-   nothing has to jump: folding, the band is clipped shut onto that line from above and below while its
-   two glowing bezels travel in with the clip and meet on it — one glowing line — and the broken line
-   takes over exactly there as they fade; the keys settle down onto it as the deck shortens, more slowly
-   than the band closes, so they never cross it. Opening is the same, reversed.
-   CLEANER (owner, 29 Oct 2026: "the ads wink isnt clean enough"; measured frame by frame at 375px): the band shut
-   80% in its first 60ms and crept the last 3px for 100ms more before the line came (a snap, a stall, then light);
-   the bezels met as two whole hairlines and only then did the ends vanish and the breaks open; opening, the line
-   was gone before the bezels were lit. Now the band and its bezels close as one lid, on the house's from-one-place-
-   to-another curve; the bezels take the line's own shape as they close (AdStrip.jsx --rim-open / --rim-shut, lib/
-   adcrawl.js rimClip), so where they meet they already are the line and the hand-over is light alone — the line
-   comes up under them as they touch, then they go; opening, they are lit over the line before it goes. */
-.adtrack { clip-path: inset(0 0 0 0); transition: clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
-.adstrip.shut .adtrack { clip-path: inset(50% 0 50% 0); opacity: 0; transition: clip-path var(--dur-2) var(--ease-in-out), opacity var(--dur-0) 160ms var(--ease-in); }
-.adstrip.shut { pointer-events: none; }
+/* ALWAYS ON (owner, 4 Nov 2026: "take out the ad wink feature, allowing it to always be on"): the band no longer
+   folds to a line — the wink (28–29 Oct 2026), its broken line under the keys and the bezels' travel are gone. */
+.adtrack { clip-path: inset(0 0 0 0); }
 /* the bezels: a hairline along the band's top and bottom, glowing slightly, the whole length round both sides */
-.adrim { position: absolute; z-index: 3; left: 0; right: 0; height: 1px; pointer-events: none; background: var(--ad-rim-c); box-shadow: var(--ad-rim-glow);
-  clip-path: var(--rim-open, none);
-  transition: transform var(--dur-3) var(--ease-out), clip-path var(--dur-3) var(--ease-out), opacity var(--dur-0) var(--ease-out); }
+.adrim { position: absolute; z-index: 3; left: 0; right: 0; height: 1px; pointer-events: none; background: var(--ad-rim-c); box-shadow: var(--ad-rim-glow); }
 .adrimtop { top: 0; }
 .adrimbot { bottom: 0; }
-/* folding, the shape is taken first (--dur-1) and the meeting second (--dur-2): they touch as the line, never as a
-   hairline still drawing in its ends (measured with both on --dur-2: 0.52px of shape left at the meeting) */
-.adstrip.shut .adrim { clip-path: var(--rim-shut, none); opacity: 0; transition: transform var(--dur-2) var(--ease-in-out), clip-path var(--dur-1) var(--ease-in-out), opacity var(--dur-1) 220ms var(--ease-in); }
-.adstrip.shut .adrimtop { transform: translateY(calc(var(--u) * 26 - 0.5px)); }
-.adstrip.shut .adrimbot { transform: translateY(calc(var(--u) * -26 + 0.5px)); }
-/* THE LINE (ControlCenter.jsx AD_LINE): where the bezels meet — on the band's centre line, a stretch under
-   each key, broken (--ad-brk) at every cut between them, in the Masthead's glow; it comes in as the
-   bezels arrive and goes as they part, once they are lit over it (ease-in: it holds while they come up) */
-.ccadline { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--u) * 52 - var(--ad-line-h) / 2); height: var(--ad-line-h); pointer-events: none;
-  --ad-line-h: max(1.5px, calc(var(--u) * 4)); filter: var(--wm-glow); opacity: 0; transition: opacity var(--dur-0) var(--ease-in); }
-.ccenter[data-ad="line"] .ccadline { opacity: 1; transition: opacity var(--dur-1) 160ms var(--ease-out); }
-/* the break is the bubble's, so the bezels' shut shape breaks where the line does */
-.ccad { --ad-brk: calc(var(--u) * 14); }
-.ccadline i { position: absolute; top: 0; bottom: 0; background: var(--wm-bar);
-  left: calc(var(--u) * var(--a) * var(--dk-sx) + var(--ad-brk) / 2); width: calc(var(--u) * (var(--b) - var(--a)) * var(--dk-sx) - var(--ad-brk)); }
 .adprobe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
 .adstrip {
   --ad-r: calc(var(--u) * 34 * var(--dk-sx)); /* each side's radius: the face keeps the pill's place, a touch longer */
@@ -3709,7 +3672,7 @@ a.adword:hover { color: var(--ad-chip); }
   .adstrip.run .adband { animation: adcrawl var(--crawl-s) linear infinite; -webkit-mask-image: none; mask-image: none; }
 }
 /* the wink, still: under reduced motion the ticker is open or folded at once (it winked regardless, before) */
-@media (prefers-reduced-motion: reduce) { .adtrack, .adrim, .ccadline, .ccenter[data-ad="line"] .ccadline { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .adtrack, .adrim { transition: none; } }
 .adtag { flex: none; font-family: var(--mich); font-size: 8px; letter-spacing: 0.16em; padding: 2px 7px; border: 1px solid var(--line); border-radius: 8px; color: var(--grey); }
 .adtag.sponsored { color: var(--red); border-color: var(--red); }
 .adtag.draft { color: var(--p2); border-color: var(--p2); }
@@ -3735,9 +3698,6 @@ a.adword:hover { color: var(--ad-chip); }
   --pop-clear: max(calc(var(--head-h) + 8px), calc(var(--cc-row-h) + var(--cc-bottom) + 8px));
   --pop-h: min(var(--ed-feed-large, 80svh), calc(100svh - 2 * var(--pop-clear)));
 }
-/* the deck's height as it stands: its ticker folded (a popup over a folded deck is not cut short for a ticker
-   that is not there); the risen search's rules below win */
-body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .sheet {
   margin: 0; display: flex; flex-direction: column; min-height: 0;
   background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-card);
@@ -4288,7 +4248,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .postsel { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
 .postsel .deck { margin: 0; text-align: center; }
 .postsoon { max-width: 320px; text-align: center; margin: 0; }
-
 
 /* ---- V.2 slice 3: THE ONE FEED ---------------------------------------- */
 /* media in a card is a button: tap enlarges (MediaFloat) */
@@ -5291,7 +5250,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
 :root { --fx-rim-hi: rgba(255, 255, 255, 0.5); --fx-rim-lo: rgba(255, 255, 255, 0.12); }
 [data-theme="light"] { --fx-rim-hi: rgba(255, 255, 255, 0.95); --fx-rim-lo: rgba(255, 255, 255, 0.4); }
 
-
 /* the post's action row, as the sketch draws it: four large outline glyphs
    spread across the media's foot, the author's circle at the far right */
 .wpcact { width: 48px; height: 48px; }
@@ -5321,7 +5279,6 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
    not the cell: the containment clips to the box, and the cell's cast shadows lie outside it; the card already
    clips its own content. Figure 20 is left out — its stacks and its floating head and foot reach past its box. */
 .fcell > .card:not(.f20post) { content-visibility: auto; }
-
 
 /* THE PIECE — hero: head (mode word, handle, PASS), photograph, name, size · price, actions */
 .fcell .card.piece { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--paper); }
@@ -5882,33 +5839,6 @@ html[data-cut="1"] .cutband { -webkit-backdrop-filter: url(#cutwarp); backdrop-f
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) { color: var(--warn); }
 :is(.ccenter .tabl.cur, .idkey.cur, .passportbtn.cur) .ic, .ccenter .tabl.ccpost.cur .ccdisc { filter: var(--key-glow-r); }
 .ccenter .tabl.ccpost.cur .ccdisc { color: var(--warn); border-color: var(--warn); }
-
-/* THE SIDE BUTTONS (SideButtons.jsx; owner, 28 Oct 2026: "make like a phyical comic button in the middle right
-   on the page so i can open and close the ad ticker", then "also add a button in the same spot to switch from light
-   to dark"): a comic push-button — inked outline, halftone face, a hard
-   offset shadow it sinks into when pressed — tilted a touch, at the middle of the right edge, over the page and
-   under the popups. Red while the ticker is folded (press to open), the deck's green-white while it is open. */
-:root { --comic-ink: #101214; --comic-hi: #ffffff; --comic-on: #e8f3ec; } /* the comic's ink, its highlight, its lit face */
-.sidebtns { position: fixed; right: 10px; top: 50%; z-index: 64; transform: translateY(-50%); display: grid; gap: 16px; justify-items: end; }
-.tickbtn { transform: rotate(-6deg); padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-/* the theme's button, tilted the other way: the dark face offers DARK on the light page, the pale face LIGHT on the dark */
-.themebtn { transform: rotate(5deg); }
-.themebtn .tickbtnface { background-color: var(--comic-ink); color: var(--comic-on); -webkit-text-stroke: 0; }
-.themebtn.dark .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); }
-.tickbtnface {
-  display: grid; place-items: center; min-width: 54px; height: 40px; padding: 0 10px; border: 2.5px solid var(--comic-ink); border-radius: 12px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--comic-ink) 22%, transparent) 1px, transparent 1.6px) 0 0 / 6px 6px, var(--warn);
-  color: var(--comic-hi); font: 400 13px/1 var(--mich); letter-spacing: 0.06em;
-  -webkit-text-stroke: 1px var(--comic-ink); paint-order: stroke fill;
-  box-shadow: 0 6px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 45%, transparent);
-  transform: translateY(0); transition: transform var(--dur-0) var(--ease-out), box-shadow var(--dur-0) var(--ease-out), background-color var(--dur-2) var(--ease-out);
-}
-.tickbtn.on .tickbtnface { background-color: var(--comic-on); color: var(--comic-ink); -webkit-text-stroke: 0; }
-.tickbtn:active .tickbtnface { transform: translateY(5px); box-shadow: 0 1px 0 var(--comic-ink), inset 0 2px 0 color-mix(in srgb, var(--comic-hi) 30%, transparent); }
-.tickbtn:focus-visible { outline: none; }
-.tickbtn:focus-visible .tickbtnface { outline: 2px solid var(--sig); outline-offset: 3px; }
-[data-popup] .sidebtns { opacity: 0; pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .tickbtnface { transition: none; } }
 
 /* THE THEME'S TURN (lib/theme.js applyTheme, 28 Oct 2026): the old page fades into the new, on the motion ladder */
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-2); animation-timing-function: var(--ease-out); }
