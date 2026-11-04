@@ -26,11 +26,13 @@ const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 const board = strip(read("app/board/page.js"));
 const spin = strip(read("app/components/PassportSpin.jsx"));
 
-test("a tap on the document lifts it; a tap on a control does not; the keyboard has a key", () => {
-  assert.match(board, /<div className="ppdoc lg" ref=\{ppRef\} aria-label="passport document — Enter lifts it to spin" lang="en" tabIndex=\{0\} onClick=\{liftPassport\} onKeyDown=\{liftByKey\}>/, "the page itself is the trigger, by pointer and by key");
+test("a tap on the document lifts it; a tap on a control does not; Enter on the focused page lifts it", () => {
+  assert.match(board, /<div className="ppdoc lg" ref=\{ppRef\} aria-label="passport document — tap or Enter lifts it to spin" lang="en" tabIndex=\{0\} onClick=\{liftPassport\} onKeyDown=\{liftByKey\}>/, "the page itself is the trigger, by pointer and by key");
   assert.match(board, /function liftByKey\(e\) \{\s*if \(e\.target !== e\.currentTarget\) return;\s*if \(e\.key === "Enter" \|\| e\.key === " "\) \{ e\.preventDefault\(\); setSpin\(true\); \}/, "Enter or Space on the page itself; a key in a field is the field's");
   assert.match(board, /function liftPassport\(e\) \{\s*if \(e\.target\.closest\("button, input, label, a, textarea, \.ppsigpad"\)\) return;\s*setSpin\(true\);/, "a key, a field, the photo slot and the signature pad keep their own taps");
-  assert.match(board, /<button className="txtbtn ppspinkey" onClick=\{\(\) => setSpin\(true\)\}>LIFT &amp; SPIN →<\/button>/, "the quiet key, for the keyboard");
+  // the page's own label names the key (owner, later on 3 Nov 2026: the card and three keys, "thats it" — the
+  // quiet LIFT & SPIN key is gone; the focused page lifts on Enter)
+  assert.doesNotMatch(board, /ppspinkey/, "no fourth key under the card");
   assert.match(board, /\{spin && !shared && <PassportSpin uid=\{uid\} info=\{pinfo\} taste=\{taste\} lang=\{lang\} mrz=\{mrz\} photo=\{ppPhoto\} map=\{docMap\} onClose=\{\(\) => setSpin\(false\)\} \/>\}/, "the lifted card is handed the same page the board prints");
   assert.match(css, /\n\.ppdoc\.lg \{ cursor: zoom-in; \}/, "the page says it lifts");
 });

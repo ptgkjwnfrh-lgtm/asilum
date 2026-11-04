@@ -43,6 +43,8 @@ import ScoreSheet from "./ScoreSheet.jsx";
 import Onboarding from "./Onboarding.jsx";
 import MapSheet from "./MapSheet.jsx";
 import BrdcstSheet from "./BrdcstSheet.jsx";
+import StampSheet from "./StampSheet.jsx";
+import TasteGlobe from "./TasteGlobe.jsx";
 
 const VIEWS = {
   likes: { title: "LIKES", render: (p) => <LikesSheet {...p} /> },
@@ -70,6 +72,10 @@ const VIEWS = {
   map: { title: "MAP", render: (p) => <MapSheet {...p} /> },
   // the BRDCST popup (owner's drawing, 25 Oct 2026): the strip's photograph clear, the event's record
   brdcst: { title: "BRDCST", render: (p) => <BrdcstSheet {...p} /> },
+  // THE PASSPORT (3 Nov 2026): VIEW TASTE GLOBE's popup (the map and the stamps open in place on the page), and
+  // an achievement's space zone (the Wardrobe's)
+  tasteglobe: { title: "TASTE GLOBE", render: () => <TasteGlobe /> },
+  stamp: { title: "ACHIEVEMENT", render: (p) => <StampSheet {...p} /> },
 };
 
 const SWIPE_DOWN = 70;

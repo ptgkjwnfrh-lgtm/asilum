@@ -13,6 +13,8 @@ import { PHOTO_MAX_BYTES } from "../../lib/wardrobe/photo-contract.js";
 import { TRANSFER_DISCLAIMER, provenanceLabel } from "../../lib/wardrobe/gifts.js";
 // V.2 §8: the closet — Cover Flow / grid / list with a direct lookup
 import WardrobeFlow from "./WardrobeFlow.jsx";
+// the achievements (owner, 3 Nov 2026: "lets move them to warddobe")
+import Achievements from "./Achievements.jsx";
 
 const CATEGORIES = ["", "outerwear", "tops", "knitwear", "tailoring", "bottoms", "footwear", "accessories", "dresses"];
 
@@ -234,6 +236,7 @@ export function WardrobeTab() {
 
   return (
     <div className="wtab">
+      <Achievements />
       <div className="amemnote">
         Only what you tell us you own lives here — bag and favorites never do.
         Private in this version. Garment photos use private storage and can be

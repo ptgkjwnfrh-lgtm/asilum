@@ -99,7 +99,7 @@ test("one language per passport, drawn from the five, the same on every opening;
   assert.match(css, /--pt-lbl: 1\.8cqw; --pt-tr: 1\.6cqw; --pp-lbl: 0\.86;/, "the labels a quarter-step under 2.03, the translation on its step, at 0.86");
   assert.match(css, /--pt-2: 1\.7cqw; --pt-1: 2\.03cqw; --pt0: 2\.6cqw; --pt1: 3\.64cqw; --pm: 2\.6cqw; --pmz: 2\.6cqw;/, "the type scale: half-steps of φ from 1.6, legible as an ID's (owner, 2 Nov 2026); the serial and the number a half-step up (owner, 3 Nov 2026: 'a little bigger')");
   assert.match(css, /--pmn: 2\.4cqw;/, "the number ever so slightly under the serial (owner, 3 Nov 2026)");
-  assert.match(css, /\n\.ppnum \{ right: var\(--pg-1\); top: calc\(\(var\(--pg1\) - var\(--pmn\)\) \/ 2\); letter-spacing: 0\.02em; font-size: var\(--pmn\); font-family: var\(--ocr\); \}/, "the number a little nearer the edge, on the serial's line (owner, 3 Nov 2026)");
+  assert.match(css, /\n\.ppnum \{ right: var\(--pg-2\); top: calc\(\(var\(--pg1\) - var\(--pmn\)\) \/ 2\); letter-spacing: 0\.02em; font-size: var\(--pmn\); font-family: var\(--ocr\); \}/, "the number on the serial's line (owner, 3 Nov 2026), out to φ⁻² from the edge (the owner's red line, later that day)");
   assert.match(css, /--pp-cloud: color-mix\(in srgb, var\(--wm-bar\) 22%, transparent\);/, "the band a low-opacity solid white");
   assert.match(css, /\n\.ppcloud \{ position: absolute; inset: 0; z-index: 2; pointer-events: none; background: var\(--pp-cloud\);/, "solid: no wisps");
 });

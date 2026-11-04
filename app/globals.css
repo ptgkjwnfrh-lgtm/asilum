@@ -70,6 +70,8 @@ html { font-synthesis-style: none; }
   --glow: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 55%, transparent), 0 0 22px color-mix(in srgb, currentColor 18%, transparent);
   --glow-r: 0 0 1px currentColor, 0 0 10px color-mix(in srgb, currentColor 60%, transparent), 0 0 26px color-mix(in srgb, currentColor 22%, transparent);
   --glow-p: 0 0 1px currentColor, 0 0 9px color-mix(in srgb, currentColor 50%, transparent);
+  --map-label-bg: #000; --map-label-ink: #fff; /* the Passport map's labels: black, white type — the map is always light */
+  --glow-mark: drop-shadow(0 0 1.5px color-mix(in srgb, currentColor 75%, transparent)) drop-shadow(0 0 7px color-mix(in srgb, currentColor 32%, transparent)); /* the same glow for a drawn mark (an SVG stroke takes no text-shadow) */
   /* MAGAZINE's stretched glow (owner order, 17 Aug). Applied to the MAGAZINE
      line ONLY — ASILUM above it is left exactly as it shipped. Purely
      horizontal: the blur radius grows while the vertical offset stays 0, so the
@@ -247,6 +249,7 @@ html { font-synthesis-style: none; }
   --glow: none;
   --glow-r: none;
   --glow-p: none;
+  --glow-mark: none;
   --glow-box-ink: none;
   /* Ice keeps the geometry and drops the luminance — a glow that reads as light
      on phosphor reads as a printing fault on paper. */
@@ -1806,11 +1809,11 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppmast .ppcloud { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 80.31% 100%, 79.87% 99.84%, 79.45% 99.37%, 79.04% 98.59%, 78.64% 97.49%, 78.25% 96.08%, 77.88% 94.36%, 72.6% 67.44%, 72.23% 65.72%, 71.84% 64.31%, 71.44% 63.21%, 71.03% 62.43%, 70.61% 61.96%, 70.17% 61.8%, 0% 61.8%); }
 .ppmast .ppserial, .ppmast .ppnum { position: absolute; z-index: 1; opacity: var(--pp-under); color: var(--sig); text-shadow: var(--glow); white-space: nowrap; line-height: 1; font-size: var(--pm); }
 /* the serial centred in the level part (φ¹ deep) on the margin; the number on the same line (owner, 3 Nov 2026:
-   "in line with the AS number" — it was centred in the full depth), a little nearer the edge (φ⁻¹ in, not the
-   unit) and a touch smaller (--pmn) */
+   "in line with the AS number" — it was centred in the full depth), at φ⁻² from the edge on the owner's
+   red line (it was the unit, then φ⁻¹) and a touch smaller (--pmn) */
 .ppmast .ppserial { left: var(--pg0); top: calc((var(--pg1) - var(--pm)) / 2); letter-spacing: 0.02em; }
 .ppmast .ppserial, .ppmast .ppserial b, .ppmast .ppserial i { font-family: var(--ocr); } /* OCR A, as the mock-up sets it */
-.ppnum { right: var(--pg-1); top: calc((var(--pg1) - var(--pmn)) / 2); letter-spacing: 0.02em; font-size: var(--pmn); font-family: var(--ocr); }
+.ppnum { right: var(--pg-2); top: calc((var(--pg1) - var(--pmn)) / 2); letter-spacing: 0.02em; font-size: var(--pmn); font-family: var(--ocr); }
 .ppnum .ppno { font-style: normal; font-family: var(--numero); font-weight: 700; font-size: 1.3em; margin-right: 0.25em; letter-spacing: 0; } /* the № as the mock-up draws it: a bold serif N and a small raised o, underlined */
 .ppnum .ppno u { font-size: 0.5em; vertical-align: 0.55em; text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 0.09em; margin-left: 0.04em; }
 /* THE NAME (owner: "close the kerning … to match the ASILUM logo and up the size and boldness", then "open up the
@@ -1906,7 +1909,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
    ASILUM TASTE PASSPORT, glowing; the asterisk red on the blink. Sized to the screen's shorter way. ---- */
 .ppdoc.lg { cursor: zoom-in; }                                  /* the page itself lifts on a tap */
 .ppdoc.lg :is(button, input, label, a, .ppsigpad) { cursor: pointer; }
-.ppspinkey { margin-right: auto; font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.16em; color: var(--sig); align-self: center; }
 .ppspin { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: floatfade var(--dur-3) var(--ease-out); }
 .ppspinfog { position: absolute; inset: 0; border: 0; padding: 0; cursor: zoom-out; background: var(--fog); -webkit-backdrop-filter: blur(9px) saturate(120%); backdrop-filter: blur(9px) saturate(120%); }
 .ppspinclose { color: var(--ink); }
@@ -2685,16 +2687,6 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
 .vbadgesheet em { color: var(--grey); font-style: normal; font-size: 10px; }
 .smappin.smapcluster i { font-style: normal; font-size: 10px; font-weight: 600; letter-spacing: 0; }
 /* ADD STAMP (V.2 §11) */
-.addstamp { display: grid; gap: 8px; margin-top: 12px; }
-.stampkinds { display: flex; flex-wrap: wrap; gap: 4px; }
-.addstamp input { font: inherit; font-size: 12px; }
-.stampfound { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.stampfound button { font: inherit; text-align: left; background: none; border: 1px solid var(--line, rgba(127,127,127,.3)); border-radius: 8px; padding: 6px 8px; cursor: pointer; width: 100%; color: inherit; }
-.stampfound button[aria-pressed="true"] { border-color: var(--ink); }
-.stampfound button:disabled { opacity: .55; cursor: default; }
-.stamppreview { display: grid; gap: 4px; padding: 10px 12px; border: 1px dashed var(--line, rgba(127,127,127,.4)); border-radius: 10px; }
-.stamppreview-kind { font-size: 9px; letter-spacing: .14em; color: var(--grey); }
-.stampacts { display: flex; flex-wrap: wrap; gap: 6px; }
 /* CONNECTIONS wheel + list (V.2 §11) */
 .connwheel { display: grid; gap: 8px; margin: 8px 0 14px; }
 .connhead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -3164,56 +3156,283 @@ body { font-size: 14px; }
    overview, discover's row, the passport's tabs and ledger ---- */
 .dtabs { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 2px 0 10px; }
 .dtabs .tab { font-family: var(--mich); font-size: 11.5px; letter-spacing: 0.18em; padding: 6px 0; text-decoration: none; }
-.pptabs { display: flex; flex-wrap: wrap; gap: 2px 22px; margin: 14px 0 10px; border-bottom: 1px solid var(--line); }
-.pptabs .tab { font-family: var(--mich); font-size: 12px; letter-spacing: 0.18em; padding: 8px 0 10px; background: none; border: 0; cursor: pointer; text-decoration: none; }
-.ppworld { display: grid; grid-template-columns: auto 1fr; gap: 10px 34px; align-items: center; margin: 4px 0 6px; }
-.ppledger { display: flex; gap: 22px; }
-.ppledger span { display: flex; flex-direction: column; font-size: 9.5px; letter-spacing: 0.2em; color: var(--grey); text-transform: uppercase; }
-.ppledger b { font-family: var(--mich); font-size: 26px; font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 4px; }
-.ppstamps { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
-.ppstamp { display: inline-flex; align-items: center; gap: 6px; font-size: 9.5px; letter-spacing: 0.18em; color: var(--grey); border: 1px dashed var(--line); border-radius: 999px; padding: 4px 10px; }
-.ppstamp i { font-style: normal; font-size: 12px; }
-.ppstamp.earned { color: var(--sig); border-style: solid; border-color: var(--sig); text-shadow: var(--word-smear); }
-.ppstampnote { font-size: 11px; color: var(--grey); flex-basis: 100%; }
-.ppfilters { margin-top: 6px; }
-.ppsaves { list-style: none; margin: 8px 0 14px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-.ppsave { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: 7px; padding: 10px; background: var(--bg2); }
-.ppsave img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
-.ppsavemono { width: 56px; height: 56px; border-radius: 8px; border: 1px solid var(--line); display: grid; place-items: center; font-family: var(--mich); color: var(--grey); }
-.ppsavebody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.ppsavettl { color: var(--ink); text-decoration: none; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ppsavemeta { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; }
-.ppstation { margin-top: 26px; }
-.ppbenefit { border: 1px solid var(--line); border-radius: 7px; padding: 12px 14px; margin: 14px 0; max-width: 720px; }
+/* THE LEAVES (owner, 3 Nov 2026: "the passport tab needs a little refresh … map, stamp, and like a way to see
+   everything … copy the vibe everything has right now"): every page under the document is a leaf of the same
+   passport — the document's pane and corners, the band's machine line in OCR A over it and the page number
+   opposite, the leaf's name set as the data page sets a label (ENGLISH / the drawn language's word, the word grey),
+   the reader's streets faint under the stamps' page. */
+.ppleaf { position: relative; overflow: hidden; border-radius: var(--radius-card); background: var(--bg2); padding: 16px 18px 20px; margin: 0 0 18px; font-family: var(--mich); }
+.ppleaf > :not(.ppholo) { position: relative; z-index: 1; }
+.ppleafhead { display: flex; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 0 0 9px;
+  font-family: var(--ocr); font-size: 11px; letter-spacing: 0.02em; color: var(--sig); text-shadow: var(--glow); white-space: nowrap; }
+.ppleafmrz { opacity: 0.8; overflow: hidden; text-overflow: clip; }
+.ppleafno { opacity: 0.8; }
+.ppleafttl { margin: 0 0 4px; font-family: var(--mich); font-weight: 400; font-size: 17px; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); line-height: 1.25; }
+.ppleafttl em { font-style: normal; font-size: 10.5px; letter-spacing: 0.04em; color: var(--grey); text-shadow: none; margin-left: 8px; }
+.ppleafsub { font-family: var(--mich); font-size: 10.5px; line-height: 1.6; letter-spacing: 0.02em; color: var(--grey); margin: 0 0 14px; max-width: 62ch; }
+.ppleaf .ppholo-a { opacity: 0.07; }
+
+/* THE STAMPS (owner, 3 Nov 2026: "i just want upload stamps, and map as primary"): every stamp a medal of its
+   own kind on ONE rail that runs sideways, the newest first, each opening its space zone; + ADD STAMP and
+   UPLOAD → under it. The achievements ride the same rail on the profile's Wardrobe (Achievements.jsx). */
+.ppbadges { list-style: none; margin: 0 -18px; padding: 6px 18px 10px; display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+.ppbadges::-webkit-scrollbar { display: none; }
+.ppbadges li { flex: 0 0 auto; scroll-snap-align: start; }
+.ppbadgekey { display: grid; justify-items: center; gap: 5px; width: 86px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--ink); font-family: var(--mich); }
+.ppbadgekey .ppbadge { width: 74px; transition: transform var(--dur-3) var(--ease-out); }
+.ppbadgekey:hover .ppbadge { transform: translateY(-2px) scale(1.04); }
+.ppbadgekey:active .ppbadge { transform: scale(0.96); }
+.ppbadgekey:focus-visible { outline: 1px dashed var(--sig); outline-offset: 4px; border-radius: var(--radius-field); }
+.ppbadgename { font-size: 7px; letter-spacing: 0.1em; line-height: 1.35; text-align: center; min-height: 2.7em; color: var(--ink); }
+.ppbadgekey:not(.earned) .ppbadgename { color: var(--grey); }
+.ppbadgewhen { font-family: var(--ocr); font-size: 8.5px; letter-spacing: 0.04em; color: var(--grey); }
+.ppbadgekey.earned .ppbadgewhen { color: var(--sig); text-shadow: var(--glow); }
+
+.ppback { margin: 0 0 10px; }
+.ppback .txtbtn, .ppglobekey .txtbtn { font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.16em; color: var(--grey); }
+.ppback .txtbtn:hover, .ppglobekey .txtbtn:hover { color: var(--sig); text-shadow: var(--glow); }
+/* THE ACHIEVEMENTS on the Wardrobe (Achievements.jsx) */
+.ppach { margin: 0 0 18px; font-family: var(--mich); min-width: 0; } /* a grid child (the Wardrobe's) shrinks to its track; the rail scrolls inside it */
+.ppachhead { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 4px; }
+.ppachttl { font-size: 10.5px; letter-spacing: 0.16em; color: var(--sig); text-shadow: var(--glow); }
+.ppachn { font-family: var(--ocr); font-size: 11px; color: var(--grey); }
+.ppach .ppbadges { margin: 0 -4px; padding: 6px 4px 10px; }
+
+
+/* THE CARD'S SMALL KEY: VIEW TASTE GLOBE, under OPEN MAP and STAMP PASSPORT */
+.ppglobekey { display: flex; justify-content: center; max-width: 560px; margin: -6px auto 22px; }
+/* the map and the stamps, open in place under the card */
+.ppinline { max-width: 560px; margin: 0 auto 24px; padding: 14px; border-radius: var(--radius-card); background: var(--bg2); scroll-margin-top: calc(var(--head-h) + 10px);
+  animation: ppinline-in var(--dur-3, 320ms) var(--ease-out) both; }
+@keyframes ppinline-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ppinline { animation: none; } }
+.ppbtn.on { box-shadow: inset 0 0 0 1px var(--sig); }
+/* in place, the ticket stops above the deck rather than at the window's foot */
+.ppinline .pmticket { bottom: calc(var(--cc-bottom, 0px) + var(--dk-h) + var(--ad-h, 0px) + 10px); }
+
+/* STAMP PASSPORT (StampBoards.jsx): Pinterest's boards in the house's register — one search bar, boards with a
+   three-tile cover, a board's stamps as pins in columns; a stamp without a picture is the house's tile (its
+   port's code in the machine face over the document's colour) */
+.sb { display: grid; gap: 12px; font-family: var(--mich); }
+.sbsearch { width: 100%; font: inherit; font-size: 12px; letter-spacing: 0.04em; padding: 12px 16px; border: 0; border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); }
+.sbsearch:focus { outline: 0; box-shadow: 0 0 0 1px color-mix(in srgb, var(--sig) 55%, transparent), 0 0 14px color-mix(in srgb, var(--sig) 18%, transparent); }
+.sbnote { margin: 0; font-size: 10.5px; line-height: 1.6; color: var(--grey); }
+.sbhead { margin: 4px 0 0; font-weight: 400; font-size: 9.5px; letter-spacing: 0.18em; color: var(--sig); text-shadow: var(--glow); }
+.sbboards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+@media (min-width: 720px) { .sbboards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.sbboard { display: grid; gap: 6px; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; color: var(--ink); font-family: var(--mich); }
+.sbboard:active { transform: scale(0.98); }
+.sbboard:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; border-radius: var(--radius-card); }
+.sbcover { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; aspect-ratio: 1.18 / 1; border-radius: var(--radius-card); overflow: hidden; }
+.sbcovera { grid-row: 1 / 3; }
+.sbcover > span { min-width: 0; min-height: 0; display: block; }
+.sbboardname { font-size: 10px; letter-spacing: 0.08em; line-height: 1.3; }
+.ppinline .sbboardn { font-family: var(--ocr); font-size: 9.5px; color: var(--grey); }
+.sbtileimg { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sbtile { display: grid; place-content: center; justify-items: center; gap: 4px; width: 100%; height: 100%; min-height: 60px;
+  background: radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--sig) 22%, transparent), transparent 70%), color-mix(in srgb, var(--ink) 6%, var(--bg)); }
+.sbtile.empty { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.ppinline .sbtile b { font-weight: 400; font-family: var(--ocr); font-size: 15px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
+.sbtile i { font-style: normal; font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); }
+.sbcoverb .sbtile b, .sbcoverc .sbtile b { font-size: 11px; }
+.sbcoverb .sbtile i, .sbcoverc .sbtile i { display: none; }
+.sbbar { display: flex; align-items: center; gap: 12px; }
+.sbbar .txtbtn { font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.14em; color: var(--sig); }
+.sbbarttl { flex: 1; font-size: 11px; letter-spacing: 0.12em; color: var(--ink); }
+.sbpins { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 10px; }
+@media (min-width: 720px) { .sbpins { columns: 3; } }
+.sbpin { break-inside: avoid; display: grid; gap: 3px; margin: 0 0 14px; }
+.sbpinart { display: block; border-radius: var(--radius-card); overflow: hidden; }
+.sbpinart .sbtile { min-height: 0; height: 100%; }
+.sbpinart:focus-visible { outline: 1px dashed var(--sig); outline-offset: 2px; }
+.sbpinttl { font-size: 9.5px; letter-spacing: 0.04em; line-height: 1.35; color: var(--ink); }
+.sbpinmeta { font-size: 8px; letter-spacing: 0.1em; color: var(--grey); }
+.sbpinrm { justify-self: start; font-size: 8px; letter-spacing: 0.16em; color: var(--grey); }
+.sbfound { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sbfind { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; width: 100%; padding: 11px 14px; border: 0; border-radius: var(--radius-field); cursor: pointer; text-align: left;
+  background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); font-family: var(--mich); font-size: 11px; }
+.sbfind b { font-weight: 400; }
+.sbfind.cur { background: color-mix(in srgb, var(--wm-bar) 16%, transparent); color: var(--sig); text-shadow: var(--glow); }
+.ppinline .sbfindkind { font-family: var(--ocr); font-size: 9px; letter-spacing: 0.06em; color: var(--sig); }
+.sbfindmeta { font-size: 9px; color: var(--grey); }
+.sbconfirm { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--radius-field); background: color-mix(in srgb, var(--sig) 9%, transparent); font-size: 12px; }
+.sbconfirm b { font-weight: 400; color: var(--ink); }
+.sbconfirmkeys { display: flex; gap: 16px; align-items: center; margin-top: 4px; }
+.sbconfirmkeys .ppbtn { padding: 10px 18px; font-size: 10px; }
+
+/* OPEN MAP (PassportMapSheet.jsx): the window — Apple's standard map, flat, light, no points of interest, each
+   place a black label in white monospaced type (the owner's SwiftUI setting) — the events near you as you
+   scroll, an event's ticket from the foot */
+.ppmaplabel { display: inline-block; padding: 3px 6px; font-family: var(--ocr); font-size: 10px; font-weight: 500; letter-spacing: 0.02em; white-space: nowrap;
+  background: var(--map-label-bg); color: var(--map-label-ink); cursor: pointer; }
+.ppmaplabel { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.ppmaplabel.sel { box-shadow: 0 0 0 2px var(--red); } /* the chosen one keeps its black, ringed in the house red */
+/* the free street map in the same window (StreetMap.jsx, tone "asilum"): the label stands on its point, a hair
+   of stem under it; the frame's own corners and border give way to the window's */
+.smap.asilum { border: 0; border-radius: 0; }
+.ppmaplabel.smaplabel { position: absolute; z-index: 1; transform: translate(-50%, calc(-100% - 5px)); border: 0; line-height: 1.2; }
+.ppmaplabel.smaplabel::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 5px; background: var(--map-label-bg); }
+.ppmaplabel.smaplabel.sel { z-index: 2; }
+.ppmaplabel.smaplabel:focus-visible { outline: 1px dashed var(--red); outline-offset: 2px; }
+.pmsheet { display: grid; gap: 12px; font-family: var(--mich); padding-bottom: 8px; }
+.pmsheet.ticketed { padding-bottom: 240px; }
+.pmwin { position: relative; aspect-ratio: 1 / 1; max-height: 360px; border-radius: var(--radius-card); overflow: hidden; isolation: isolate;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sig) 30%, transparent), 0 0 22px color-mix(in srgb, var(--sig) 12%, transparent); }
+.pmwin > :not(.pmcorner) { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pmwin .amap { width: 100%; height: 100%; }
+.ppinline .pmcorner { position: absolute; z-index: 2; top: 10px; left: 10px; pointer-events: none; font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow);
+  padding: 3px 7px; border-radius: var(--radius-key); background: color-mix(in srgb, var(--bg) 70%, transparent); }
+.pmhead { margin: 4px 0 0; font-weight: 400; font-size: 10px; letter-spacing: 0.18em; color: var(--ink); }
+.ppinline .pmhead i { font-style: normal; font-family: var(--ocr); color: var(--sig); text-shadow: var(--glow); margin-left: 6px; }
+.pmnote { margin: 0; font-size: 10.5px; line-height: 1.6; color: var(--grey); }
+.pmcity { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pmcity select { font: inherit; font-size: 11px; border-radius: var(--radius-key); }
+.pmcity .txtbtn { font-size: 10px; letter-spacing: 0.14em; color: var(--sig); }
+.pmlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.pmrow { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; width: 100%; padding: 10px 12px; border: 0; border-radius: var(--radius-field);
+  background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); cursor: pointer; text-align: left; font-family: var(--mich); }
+.pmrow:active { transform: scale(0.99); }
+.pmrow.cur { background: color-mix(in srgb, var(--wm-bar) 16%, transparent); }
+.pmday { display: grid; justify-items: center; line-height: 1; }
+.ppinline .pmday b { font-weight: 400; font-family: var(--ocr); font-size: 20px; color: var(--sig); text-shadow: var(--glow); }
+.pmday i { font-style: normal; font-size: 7.5px; letter-spacing: 0.18em; color: var(--grey); margin-top: 3px; }
+.pmrowbody { display: grid; gap: 3px; min-width: 0; }
+.pmrowbody b { font-weight: 400; font-size: 11px; letter-spacing: 0.04em; line-height: 1.3; }
+.pmrowbody span { font-size: 8px; letter-spacing: 0.14em; color: var(--grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* THE TICKET: rises from the popup's foot — the main part and a stub torn along a perforation (two notches and a
+   dotted seam), ADMIT ONE and the date in the machine face, the stub's number and its bars */
+.pmticket { position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: minmax(0, 1fr) 64px; margin: 0 -2px; color: var(--ink);
+  filter: drop-shadow(0 -10px 30px color-mix(in srgb, var(--bg) 70%, transparent)) var(--glow-mark);
+  animation: pmticket-in var(--dur-4, 420ms) var(--ease-out) both; }
+@keyframes pmticket-in { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pmticket { animation: none; } }
+.pmticketmain, .pmticketstub { background: color-mix(in srgb, var(--sig) 12%, var(--bg)); }
+.pmticketmain { display: grid; gap: 5px; padding: 16px 16px 14px 18px; border-radius: var(--radius-card) 0 0 var(--radius-card);
+  -webkit-mask: radial-gradient(circle at 100% 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 100% 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle at 100% 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 100% 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat; }
+.pmticketstub { display: grid; justify-items: center; align-content: space-between; padding: 16px 0 14px; border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--sig) 50%, transparent) 50%, transparent 50%); background-size: 1px 8px; background-repeat: repeat-y; background-position: left top;
+  -webkit-mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat;
+  mask: radial-gradient(circle at 0 0, transparent 9px, #000 9.5px) top / 100% 51% no-repeat, radial-gradient(circle at 0 100%, transparent 9px, #000 9.5px) bottom / 100% 51% no-repeat; }
+.ppinline .pmticketkind { font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.06em; color: var(--sig); text-shadow: var(--glow); }
+.pmticketname { font-weight: 400; font-size: 15px; letter-spacing: 0.04em; line-height: 1.3; }
+.pmticketvenue { font-size: 9px; letter-spacing: 0.08em; color: var(--grey); line-height: 1.4; }
+.ppinline .pmticketrow { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 2px; font-family: var(--ocr); font-size: 12px; color: var(--ink); }
+.pmticketrow i { display: block; font-style: normal; font-family: var(--mich); font-size: 6.5px; letter-spacing: 0.2em; color: var(--grey); margin-bottom: 2px; }
+.pmticketnote { font-size: 9px; color: var(--grey); }
+.pmticketkeys { display: flex; gap: 8px; margin-top: 6px; }
+.pmticketkeys .ppbtn { padding: 10px 14px; font-size: 9.5px; text-decoration: none; white-space: nowrap; }
+.ppinline .pmticketno { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--ocr); font-size: 10px; letter-spacing: 0.1em; color: var(--sig); text-shadow: var(--glow); }
+.pmticketbars { display: flex; gap: 2px; height: 34px; }
+.pmticketbars i { display: block; height: 100%; background: var(--ink); opacity: 0.7; }
+
+/* VIEW TASTE GLOBE (TasteGlobe.jsx) */
+.tglobe { display: grid; gap: 10px; font-family: var(--mich); }
+.tglobesub { margin: 0; font-size: 10.5px; line-height: 1.6; color: var(--grey); }
+
+/* THE SPACE ZONE (StampSheet.jsx): the coin in depth over a field of faint stars, its shadow under it, then
+   the reading. The stars are the popup's ground, not data. */
+.ppspace { display: grid; gap: 14px; min-height: 100%; margin: -12px -14px 0; padding: 0 18px 20px; font-family: var(--mich);
+  background:
+    radial-gradient(1px 1px at 12% 18%, color-mix(in srgb, var(--ink) 60%, transparent) 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 12%, color-mix(in srgb, var(--ink) 50%, transparent) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 64% 34%, color-mix(in srgb, var(--sig) 70%, transparent) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 44%, color-mix(in srgb, var(--ink) 40%, transparent) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 52%, color-mix(in srgb, var(--ink) 45%, transparent) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 8% 60%, color-mix(in srgb, var(--sig) 55%, transparent) 50%, transparent 51%),
+    radial-gradient(1px 1px at 44% 8%, color-mix(in srgb, var(--ink) 40%, transparent) 50%, transparent 51%),
+    radial-gradient(ellipse at 50% 30%, color-mix(in srgb, var(--sig) 14%, transparent), transparent 62%); }
+.ppspacestage { position: relative; height: 300px; display: grid; place-items: center; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.ppspacestage:active { cursor: grabbing; }
+.ppcoin { position: relative; width: 190px; height: 190px; transform-style: preserve-3d; will-change: transform; }
+.ppcoin > * { position: absolute; inset: 0; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.ppcoinedge { backface-visibility: visible !important; -webkit-backface-visibility: visible !important; color: var(--sig); }
+.ppcoinedge.ink-ink { color: var(--ink); } .ppcoinedge.ink-red { color: var(--red); } .ppcoinedge.ink-p2 { color: var(--p2); }
+.ppcoinedge.locked { color: var(--grey); }
+.ppcoinedge path { fill: color-mix(in srgb, currentColor 45%, var(--bg)); }
+.ppcoinface.front .ppbadge, .ppcoinface.back .ppbadge { width: 100%; }
+.ppcoinshadow { position: absolute; left: 50%; bottom: 18px; width: 150px; height: 18px; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--sig) 24%, transparent), transparent 70%); pointer-events: none; }
+.ppspaceread { display: grid; gap: 8px; justify-items: center; text-align: center; max-width: 46ch; margin: 0 auto; }
+.ppspacegroup { font-family: var(--ocr); font-size: 10px; letter-spacing: 0.06em; color: var(--grey); }
+.ppspacettl { margin: 0; font-family: var(--mich); font-weight: 400; font-size: 18px; letter-spacing: 0.06em; color: var(--ink); line-height: 1.3; }
+.ppspacettl.earned { color: var(--sig); text-shadow: var(--glow); }
+.ppspacettl.earned.ink-red { color: var(--red); text-shadow: var(--glow-r); }
+.ppspacemeans { margin: 0; font-size: 12px; line-height: 1.6; color: var(--ink); }
+.ppspacestate { display: grid; gap: 4px; padding: 10px 14px; border-radius: var(--radius-field); background: color-mix(in srgb, var(--ink) 6%, transparent); font-size: 11px; line-height: 1.5; color: var(--grey); }
+.ppspacestate b { font-weight: 400; font-family: var(--ocr); font-size: 12px; letter-spacing: 0.08em; color: var(--ink); }
+.ppspacestate.earned b { color: var(--sig); text-shadow: var(--glow); }
+.ppspacehow { margin: 0; font-size: 10px; line-height: 1.6; color: var(--grey); }
+.ppspacekeys { display: flex; gap: 28px; margin-top: 4px; }
+.ppspacekeys .txtbtn { font-family: var(--mich); font-size: 10px; letter-spacing: 0.16em; color: var(--sig); }
+
+/* THE BADGE (PassportBadge.jsx): a medal of the stamp's token — the body's metal the token lit by the logo's
+   white at the top and sunk into the ground at the foot, the face inset darker, a sheen across an earned one,
+   a hairline rim; locked, the grey silhouette with a dark face. */
+.ppbadge { display: block; width: 100%; height: auto; overflow: visible; color: var(--sig); }
+.ppbadge.ink-ink { color: var(--ink); }
+.ppbadge.ink-red { color: var(--red); }
+.ppbadge.ink-p2 { color: var(--p2); }
+.ppbadge.earned { filter: var(--glow-mark); }
+.ppbadge.locked { color: var(--grey); }
+.ppbadge .m0 { stop-color: color-mix(in srgb, currentColor 45%, var(--wm-bar)); }
+.ppbadge .m1 { stop-color: currentColor; }
+.ppbadge .m2 { stop-color: color-mix(in srgb, currentColor 78%, var(--bg)); }
+.ppbadge .m3 { stop-color: color-mix(in srgb, currentColor 40%, var(--bg)); }
+.ppbadge .f0 { stop-color: color-mix(in srgb, currentColor 30%, var(--bg)); }
+.ppbadge .f1 { stop-color: color-mix(in srgb, currentColor 12%, var(--bg)); }
+.ppbadge .s0 { stop-color: var(--wm-bar); stop-opacity: 0; }
+.ppbadge .s1 { stop-color: var(--wm-bar); stop-opacity: 0.32; }
+.ppbadge.locked .m0, .ppbadge.locked .m1 { stop-color: color-mix(in srgb, currentColor 40%, var(--bg)); }
+.ppbadge.locked .m2, .ppbadge.locked .m3 { stop-color: color-mix(in srgb, currentColor 22%, var(--bg)); }
+.ppbadge.locked .f0, .ppbadge.locked .f1 { stop-color: color-mix(in srgb, currentColor 10%, var(--bg)); }
+.ppbadge .ppbadgerim { fill: none; stroke: color-mix(in srgb, var(--wm-bar) 60%, currentColor); stroke-width: 0.8; vector-effect: non-scaling-stroke; opacity: 0.7; }
+.ppbadge.locked .ppbadgerim { stroke: currentColor; opacity: 0.45; }
+.ppbadge .ppbadgeline { fill: none; stroke: currentColor; stroke-width: 0.7; opacity: 0.45; vector-effect: non-scaling-stroke; }
+.ppbadge .ppbadgehole { fill: var(--bg); stroke: currentColor; stroke-width: 0.8; }
+.ppbadge .ppbadgeemblem { font-family: var(--ocr); fill: color-mix(in srgb, currentColor 55%, var(--wm-bar)); letter-spacing: 0.02em; }
+.ppbadge .ppbadgesmall { font-family: var(--mich); font-size: 5.6px; letter-spacing: 0.2em; fill: currentColor; opacity: 0.85; }
+.ppbadge.locked .ppbadgeemblem { fill: currentColor; opacity: 0.55; }
+@media (prefers-reduced-motion: reduce) { .ppbadgekey .ppbadge { transition: none; } }
+@media (max-width: 420px) {
+  .ppleaf { padding: 14px 14px 18px; }
+}
 .stp { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin: 6px 0; }
 .stp.faint, .tnetp.faint, .deck.faint { color: var(--grey); }
 .stfine { font-size: 11px; color: var(--grey); line-height: 1.5; margin: 8px 0 0; }
 /* the taste network */
 .tnetgrid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr); gap: 20px; align-items: start; }
-.tnetsvg { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 9px; background: var(--bg2); }
-.tnetring { fill: none; stroke: var(--line); stroke-width: 1; }
-.tnetring.faint { stroke-dasharray: 2 6; opacity: 0.6; }
-.tnetedge { fill: none; stroke: var(--p2); stroke-width: 1; }
-.tnetedge.hot { stroke: var(--sig); stroke-width: 1.4; }
-.tnetline { stroke: var(--sig); stroke-opacity: 0.7; }
-.tnetline.manual { stroke: var(--red); }
-.tnetline.curated { stroke: var(--p2); }
-.tnetline.neg { stroke: var(--grey); stroke-dasharray: 4 4; }
-.tnetyou { fill: var(--red); stroke: var(--bg); stroke-width: 2; }
-.tnetyoulbl, .tnetlbl, .tnetsaves { font-family: var(--mich); font-size: 9.5px; letter-spacing: 0.12em; fill: var(--ink); }
-.tnetsaves { font-family: var(--helv); font-size: 8.5px; fill: var(--grey); }
-.tnetyoulbl { fill: var(--grey); }
-.tnetnode { cursor: pointer; }
-.tnetnode:focus-visible, .fmappin:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
-.tnetnode .tnetdot { fill: var(--bg3); stroke: var(--grey); stroke-width: 1.2; transition: r var(--dur-2) var(--ease-out), stroke var(--dur-2) var(--ease-out); }
-.tnetnode.inferred .tnetdot { stroke: var(--sig); fill: color-mix(in srgb, var(--sig) 22%, var(--bg3)); }
-.tnetnode.manual .tnetdot { stroke: var(--red); fill: color-mix(in srgb, var(--red) 28%, var(--bg3)); }
-.tnetnode.curated .tnetdot { stroke: var(--p2); stroke-dasharray: 3 3; }
-.tnetnode.sel .tnetdot, .tnetnode:focus-visible .tnetdot { stroke-width: 2.4; stroke: var(--ink); }
-.tnetnode:focus-visible .tnetlbl { fill: var(--sig); }
-.tnetpulse { fill: none; stroke: var(--red); stroke-width: 1; opacity: 0.5; animation: tnetpulse 2.4s ease-out infinite; }
-@keyframes tnetpulse { 0% { transform: scale(0.85); opacity: 0.6; } 100% { transform: scale(1.25); opacity: 0; } }
-.tnetnode.manual .tnetpulse { transform-box: fill-box; transform-origin: center; }
+/* THE NETWORK's stage: the canvas on the leaf's own pane, a red bloom at its heart drawn by the canvas */
+.tnetstage { position: relative; border-radius: var(--radius-field); overflow: hidden; background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--sig) 7%, transparent), transparent 70%), color-mix(in srgb, var(--bg) 55%, transparent); }
+.tnetcanvas { display: block; width: 100%; aspect-ratio: 1 / 1; max-height: 560px; cursor: grab; touch-action: pan-y; font-family: var(--mich); }
+.tnetcanvas:active { cursor: grabbing; }
+.tnetcanvas:focus-visible { outline: 1px dashed var(--sig); outline-offset: -4px; }
+.ppleaf .tnetread, .ppleaf .tnethint { position: absolute; left: 12px; right: 12px; pointer-events: none; font-family: var(--ocr); font-size: 9.5px; letter-spacing: 0.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tnetread { top: 10px; color: var(--sig); text-shadow: var(--glow); }
+.tnetread b { font-weight: 400; color: var(--red); text-shadow: var(--glow-r); }
+.tnethint { bottom: 10px; color: var(--grey); text-align: right; }
+.tnetkey .k.save { border-color: var(--sig); background: var(--sig); width: 6px; height: 6px; margin: 2px; }
+.tnetkey .k.piece { border-color: var(--p2); background: var(--p2); width: 6px; height: 6px; margin: 2px; }
+.tnetkey .k.stamp { border-color: var(--red); }
+/* THE INDEX: every node as a key, grouped — the keyboard's way into the same map */
+.tnetindex { display: grid; gap: 10px; margin: 16px 0 6px; }
+.tnetgroup { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 8px; align-items: start; }
+.tnetgrouplbl { font-family: var(--mich); font-size: 9px; letter-spacing: 0.14em; color: var(--grey); padding-top: 6px; }
+.ppleaf .tnetgrouplbl i { font-style: normal; font-family: var(--ocr); color: var(--sig); margin-left: 4px; }
+.tnetchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.tnetchip { font-family: var(--mich); font-size: 9px; letter-spacing: 0.06em; padding: 5px 9px; border-radius: 999px; border: 0; cursor: pointer;
+  background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tnetchip.tag.none { color: var(--grey); }
+.tnetchip.tag.manual { color: var(--red); }
+.tnetchip.tag.inferred { color: var(--sig); }
+.tnetchip:active { transform: scale(0.96); }
+.tnetchip.cur { background: color-mix(in srgb, var(--wm-bar) 18%, transparent); color: var(--sig); text-shadow: var(--glow); }
+.tnetchip:focus-visible { outline: 1px dashed var(--sig); outline-offset: 2px; }
+@media (max-width: 520px) { .tnetgroup { grid-template-columns: 1fr; gap: 4px; } .tnetgrouplbl { padding-top: 0; } }
+.fmappin:focus-visible { outline: 1px dashed var(--sig); outline-offset: 3px; }
 .tnetpanel { border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px; background: var(--bg2); min-height: 200px; }
 .tnetp { font-size: 13px; line-height: 1.55; margin: 6px 0; }
 .tnetp.warn { color: var(--red); }
@@ -3286,10 +3505,6 @@ body { font-size: 14px; }
 .stgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin: 10px 0 18px; }
 .stcard, .stdesk { border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px; background: var(--bg2); }
 .sthead { font-family: var(--mich); font-weight: 400; font-size: 17px; margin: 4px 0 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.stwalk { margin: 8px 0; padding-left: 18px; font-size: 12.5px; color: var(--grey); }
-.stwalk li { padding: 3px 0; }
-.stwalk li.done { color: var(--sig); text-decoration: line-through; }
-.stwalk li.cur { color: var(--ink); }
 .stacts { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; margin: 8px 0 0; }
 .stform { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
 .stform label { display: flex; flex-direction: column; gap: 3px; font-size: 10px; letter-spacing: 0.18em; color: var(--grey); text-transform: uppercase; }
@@ -3338,7 +3553,7 @@ body { font-size: 14px; }
 .povcorrect textarea { font-family: var(--helv); font-size: 13px; padding: 8px 10px; background: var(--bg3); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; }
 .povcorrectrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
 .povacts { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; margin-top: 6px; }
-@media (max-width: 640px) { .pov { grid-template-columns: 96px 1fr; } .stform { grid-template-columns: 1fr; } .ppworld { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .pov { grid-template-columns: 96px 1fr; } .stform { grid-template-columns: 1fr; } }
 
 /* ---- V.2: the wire's stream, the cover's lead and NEAR YOU, discover's
    binding-constraint list, the demo line ---- */
@@ -3392,9 +3607,8 @@ body { font-size: 14px; }
 .seg .wintentmeans { flex-basis: 100%; padding: 4px 10px 2px; font-size: 11px; }
 .seg > .txtbtn { margin-left: 8px; }
 /* one card */
-.card.ppworld, .stcard, .stdesk, .plcard, .plcontrols, .plconfirm, .pov, .ppsave, .tnetpanel, .ppbenefit, .wcard {
+.stcard, .stdesk, .plcard, .plcontrols, .plconfirm, .pov, .tnetpanel, .wcard {
   border-radius: 9px; border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); background: color-mix(in srgb, var(--ink) 4%, var(--bg)); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
-.ppworld.card { display: grid; grid-template-columns: auto 1fr; gap: 10px 34px; align-items: center; padding: 14px 18px; margin: 4px 0 14px; }
 /* fewer accent lines, thicker (owner: "less accent lines and the lines we do have make them thicker") */
 /* the document's two buttons */
 .ppdocacts { display: flex; gap: 10px; justify-content: flex-end; max-width: 560px; margin: 0 auto 18px; padding: 0; position: relative; z-index: 3; }
@@ -3431,7 +3645,7 @@ body { font-size: 14px; }
 /* pins list like a sheet */
 .pllist { gap: 8px; }
 .plcardhead { padding: 12px 16px; }
-@media (max-width: 760px) { .ppdocacts { justify-content: stretch; } .ppbtn { flex: 1; text-align: center; } .ppworld.card { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .ppdocacts { justify-content: stretch; } .ppbtn { flex: 1; text-align: center; } }
 
 /* =====================================================================
    V.2 ROUND THREE — THE STREAM: the wire and the feed as one masonry at
