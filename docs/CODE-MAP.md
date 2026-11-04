@@ -81,57 +81,66 @@ Nothing here may import from `app/`.
 
 
 ### `lib/`
-*34 files, 6,196 lines*
+*43 files, 7,077 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `orders.js` | 595 | The checkout engine (risk campaign §2, phase L2). SERVER-ONLY. |
-| `client.js` | 553 | Browser-side helpers: per-device identity, JSON POST, and deterministic SVG placeholder thumbnails so the moodboard is visual even for items whose |
+| `client.js` | 563 | Browser-side helpers: per-device identity, JSON POST, and deterministic SVG placeholder thumbnails so the moodboard is visual even for items whose |
 | `social.js` | 520 | Client-safe social + marketplace scaffolding: source labels, mock users and editorial stories, the community post store (local state until a posts |
-| `products.js` | 434 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
+| `products.js` | 444 | Canonical product resolution. Mutation routes accept only an item id and rebuild the snapshot from server-owned inventory before learning or saving. |
 | `globe.js` | 411 | THE PURCHASE GLOBE's renderer (client-safe, no imports). |
-| `dm.js` | 324 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
-| `sessions.js` | 244 | THE UNIVERSAL SESSION HUB, as a pure model (V.2 Blueprint, owner, 17 Oct 2026, chapter 1 "Navigation and popup sessions"). |
+| `dm.js` | 323 | Direct messages — the isomorphic half. No database, no server-only imports, so the shell and the API agree on the vocabulary. |
+| `dm-desk.js` | 298 | The mail desk's decisions, as functions. |
+| `dockstate.js` | 250 | the control deck's live state, shared by the deck, the fixtures, the sheets and the roots without a React context (the |
 | `provenance.js` | 202 | DOES ANYBODY BACK THIS, OR DID A SELLER SAY IT? |
-| `viewstate.js` | 194 | THE VIEW-STATE REGISTRY (V.2 brief, owner, 1 Oct 2026, §2 "State and feed parking"). |
-| `uilab.js` | 193 | DESIGN CONSOLE registry + persistence (client-safe). |
-| `dm-desk.js` | 185 | The mail desk's decisions, as functions. |
+| `uilab.js` | 195 | DESIGN CONSOLE registry + persistence (client-safe). |
+| `viewstate.js` | 187 | THE VIEW-STATE REGISTRY (V.2 brief, owner, 1 Oct 2026, §2 "State and feed parking"). |
 | `identity.js` | 182 | WHO THE CALLER IS. The root of trust for the whole app. |
 | `analytics.js` | 177 | The /stats dashboards (owner directive, 14 Aug 2026, backlog 5). SERVER ONLY — reads the database directly. |
-| `dockstate.js` | 165 | the control deck's live state, shared by the deck, the fixtures, the sheets and the roots without a React context (the |
+| `ink.js` | 158 | THE REACTIVE INK (owner, 28 Oct 2026: "for all the text and symbols they must be reactive to go from dark to light depending on the |
+| `scrollwheel.js` | 158 | THE WHEEL's laws, as pure functions (owner, 26 Oct 2026: "let's make the scroll wheel … the upload button should extend out |
 | `vault.js` | 155 | The buyer vault (owner ruling 20 Aug 2026): name, address, and saved-card REFERENCES — Stripe customer/payment-method ids plus brand/last4 display |
 | `save.js` | 152 | ONE SAVE (Live Launch V.2, owner brief 17 Sep 2026). |
-| `location.js` | 150 | the three location concepts, on the device (V.2). |
-| `dock.js` | 138 | THE CENTRAL CONTROL DECK as DATA (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief §1 where the |
+| `location.js` | 142 | the three location concepts, on the device (V.2). |
 | `accounts.js` | 134 | WHAT KIND OF ACCOUNT THIS IS, and — more importantly — the single table that says what each kind can reach. Isomorphic: no database, no imports with a |
+| `adcrawl.js` | 134 | THE AD TICKER'S CRAWL AND WRAP (owner, 28 Oct 2026, with the MAD-S player's wrap-round display as the reference: "lets have it |
+| `placements.js` | 133 | STREET COMMERCE: what the device's ticker may carry. |
+| `wordmark.js` | 132 | THE BRICK AND ITS LINE, from the owner's reference (29 Oct 2026: "new logo with the masthead |
 | `hotlist.js` | 126 | The hotlist program's laws in one home (P2–P4, owner build order 20 Aug 2026; ruling record docs/history/hotlist-program-spec-2026-08-20.md). SERVER-ONLY. |
 | `disc.js` | 123 | THE DISC's physics, as pure functions (V.2 Blueprint, owner, 17 Oct 2026, chapter 2 "Disc controls, motion and tactile |
+| `dock.js` | 109 | THE CENTRAL CONTROL DECK as DATA (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief §1 where the |
+| `nav.js` | 108 | THE DESTINATIONS, as DATA (V.2 Blueprint, owner, 17 Oct 2026 — Foundations, "Central Control Deck" and "Screen map"). Extracted from the |
 | `url.js` | 104 | Shared URL guard for anything rendered as a link or persisted from a source. ASILUM never needs executable/data URLs, private-network destinations, or |
-| `nav.js` | 102 | THE DESTINATIONS, as DATA (V.2 Blueprint, owner, 17 Oct 2026 — Foundations, "Central Control Deck" and "Screen map"). Extracted from the |
 | `outbox.js` | 92 | OFFLINE-FIRST WRITES (V.2 Blueprint, owner, 17 Oct 2026, chapter 1 "offline-first, queued actions, conflict merge"; slice 10d). |
 | `age.js` | 80 | The age gate. Isomorphic: the signup sheet and the server compute the same answer from the same function, because two implementations of "how old is |
-| `placements.js` | 79 | STREET COMMERCE: what the device's ticker may carry. |
+| `fig20.js` | 79 | FIGURE 20's ring, as pure functions (owner, 28 Oct 2026: "for carousels they should be infinite, however the first and last card |
 | `site.js` | 64 | THE canonical origin, in one place. |
 | `notify.js` | 62 | Operator notification for paid orders (risk campaign F29/F74: an order nobody notices is a customer failed). SERVER-ONLY. |
+| `frame.js` | 61 | ONE FRAME FOR EVERYTHING THE SCROLL MOVES (owner, 29 Oct 2026: "checking the tracking of everything, |
+| `craving.js` | 55 | THE CURRENT CRAVING, one for the app (owner, 29 Oct 2026: "current cravings should live in search |
 | `consent.js` | 54 | D4's law (ruled 20 Aug 2026; spec docs/history/d4-consent-spec-2026-08-20.md): UNANSWERED = UNOBSERVED. The state rides an HttpOnly cookie the server |
 | `haptics.js` | 52 | THE TACTILE VOCABULARY (V.2 Blueprint, owner, 17 Oct 2026, clauses 2.1, 2.20, 2.21 and Foundations "Motion and tactility"). |
 | `purchasable.js` | 51 | THE checkout honesty gate, extracted to a pure, dependency-light module so lib/products.js can stamp the public |
 | `supabase.js` | 42 | Supabase auth client factory. The app must run fully without Supabase (constitution: nothing fake, no crashes on missing keys), so: |
+| `scrollmotion.js` | 41 | WHAT THE SCROLL MOVES (owner, 29 Oct 2026: "i would still want reactive shrinking on the center fixture so when a user scrolls down the fixture should shrink 15 |
+| `mastline.js` | 36 | THE MASTHEAD'S LINE, broken at the keys (owner, 28 Oct 2026: "the line that stretches the mast head should reach to the end of |
+| `theme.js` | 36 | TURNING THE THEME, in one place (28 Oct 2026, "tighten up all animations and loose ends": the |
 | `business.js` | 32 | the business-account law (owner order, Aug 13), client-safe: shared validation for the passport → business upgrade. |
 | `tickets.js` | 25 | Shared purchase-ticket constants (client-safe — no db imports). ASILUM is a third-party purchase ASSISTANT: it never fulfills, ships, |
 
 ### `lib/ai/`
-*11 files, 1,549 lines*
+*11 files, 1,538 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `trendKnowledge.js` | 266 | Dated fashion-context snapshot for the stylist. Trend knowledge is an exploration signal, never a rewrite of a user's taste profile. Every entry |
-| `stylistReasoningEngine.js` | 244 | Stylist intelligence service — separated from the UI entirely. Today: REAL tag-based logic reusing the live outfit engine (lib/brain/ |
+| `stylistReasoningEngine.js` | 241 | Stylist intelligence service — separated from the UI entirely. Today: REAL tag-based logic reusing the live outfit engine (lib/brain/ |
 | `validate.js` | 205 | Model output is UNTRUSTED input — same posture as client payloads. Validators check shape, normalize and dedupe tags, strip anything the |
 | `promptVersions.js` | 172 | Versioned prompt templates for the future mini-GPT. NO model is called today — these exist so the day a provider is wired, prompts are already |
 | `adapter.js` | 158 | THE seam where a real model plugs in. Server-only (logs to the database). |
 | `styleProfile.js` | 146 | User style profile: the distilled taste document that Mood Board Brain, Search, Discover, and the Stylist all read. Rebuilt from REAL signals: |
-| `moodBoardAnalyzer.js` | 128 | Mood Board intelligence service. Server-only. Route: model if enabled (through the adapter) → local rules otherwise. |
+| `moodBoardAnalyzer.js` | 120 | Mood Board intelligence service. Server-only. Route: model if enabled (through the adapter) → local rules otherwise. |
 | `search-adapter.js` | 75 | the AI seam for search. |
 | `localFashionInterpreter.js` | 74 | The REAL rule-based fallback that runs while no model is connected. Interprets a mood-board item from what we can actually read today: |
 | `config.js` | 56 | AI feature gating. DISABLED BY DEFAULT — the app must run fully, and honestly, with none of these set. Server-only values (AI_API_KEY) are read |
@@ -152,14 +161,14 @@ Nothing here may import from `app/`.
 | `outcome.js` | 63 | the typed outcome every V.2 route in the engine lane returns (docs/v2/CONTRACTS.md § Common behavior). |
 
 ### `lib/asterisk/`
-*20 files, 3,133 lines*
+*20 files, 3,114 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `orchestrator.js` | 392 | Asterisk AI — universal interpretation orchestrator (handoff Feature A, Phase 1). Deterministic, layered, and honest: |
-| `governance.js` | 356 | ASTERISK GOVERNANCE, the policy as numbers (V.2 Blueprint, owner, 17 Oct 2026, Part I "ASTERISK governance"; Terms |
+| `orchestrator.js` | 379 | Asterisk AI — universal interpretation orchestrator (handoff Feature A, Phase 1). Deterministic, layered, and honest: |
+| `governance.js` | 351 | ASTERISK GOVERNANCE, the policy as numbers (V.2 Blueprint, owner, 17 Oct 2026, Part I "ASTERISK governance"; Terms |
 | `explain.js` | 296 | Asterisk AI — the explanation system. Every recommendation can answer "why am I seeing this?" with reasons built ONLY from real, named signals: |
-| `research.js` | 207 | Asterisk AI — research-ingestion pipeline (docs/ASTERISK-AI.md §9, P2 v1). The controlled path from web research to culture records — and the only |
+| `research.js` | 206 | Asterisk AI — research-ingestion pipeline (docs/ASTERISK-AI.md §9, P2 v1). The controlled path from web research to culture records — and the only |
 | `houses.js` | 193 | where the houses are from. |
 | `memory.js` | 191 | the Asterisk memory READ FACADE (ADR-001, v2). One versioned contract that Home, Discover, Stylist, Moodboard, Profile, |
 | `tagAudit.js` | 184 | Asterisk AI — the secondary audit of every tagged product. Dual tagging: Base Tags (items fields + product_tags: retailer/seller/admin) |
@@ -224,11 +233,11 @@ Nothing here may import from `app/`.
 | `policy.js` | 17 | the one version string every learning surface carries. |
 
 ### `lib/brands/`
-*3 files, 323 lines*
+*3 files, 322 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `cases.js` | 134 | brand verification & impersonation cases (Feature G groundwork). The Shopify/OAuth half of Feature G is externally gated; this |
+| `cases.js` | 133 | brand verification & impersonation cases (Feature G groundwork). The Shopify/OAuth half of Feature G is externally gated; this |
 | `shopify.js` | 104 | Consented Shopify import for a VERIFIED business (owner directive, 18 Aug): the designer gave us their myshopify domain in their own |
 | `verify.js` | 85 | Domain-control proof for business verification (Feature G's missing evidence collector). SERVER-ONLY. |
 
@@ -240,12 +249,12 @@ Nothing here may import from `app/`.
 | `index.js` | 253 | BRDCST OUTREACH AND BILLING (V.2 Blueprint, owner, 17 Oct 2026, chapter 5 "BRDCST distribution, billing and ASILUM Credit" |
 
 ### `lib/connectors/`
-*3 files, 360 lines*
+*3 files, 359 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `index.js` | 165 | THE CONNECTOR REGISTRY (V.2 brief §11, §13). Client-safe for the capability table; the status reader consults the |
-| `oauth.js` | 113 | THE MUSIC SEAMS (V.2 chapter 4; CONSTITUTION A6 (3), owner 18 Oct 2026: "apply to get Spotify and Apple Music ... save that for |
+| `oauth.js` | 112 | THE MUSIC SEAMS (V.2 chapter 4; CONSTITUTION A6 (3), owner 18 Oct 2026: "apply to get Spotify and Apple Music ... save that for |
 | `tokens.js` | 82 | CONNECTED-ACCOUNT TOKENS (the music seams; the last slice). One row per passenger and provider, the tokens encrypted at |
 
 ### `lib/craving/`
@@ -256,11 +265,11 @@ Nothing here may import from `app/`.
 | `index.js` | 79 | Transient craving context. This is deliberately separate from the durable taste profile: what someone needs tonight should steer this feed without |
 
 ### `lib/db/`
-*9 files, 1,869 lines*
+*9 files, 1,865 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `storefrontCheckout.js` | 877 | Durable native-Storefront checkout records. This module is intentionally Postgres-only: real inventory and money may never fall back to process |
+| `storefrontCheckout.js` | 873 | Durable native-Storefront checkout records. This module is intentionally Postgres-only: real inventory and money may never fall back to process |
 | `orders.js` | 270 | Order persistence: `order_events` is the append-only truth, `orders` the projection (schema-v31). SERVER-ONLY. Both stores enforce the same laws: |
 | `accountKinds.js` | 171 | account_kinds + account_kind_events (schema v37). SERVER-ONLY. |
 | `index.js` | 135 | Persistence layer. Uses Postgres (Neon/Supabase) when DATABASE_URL is set, otherwise falls back to an in-memory store so the app runs locally and in |
@@ -305,21 +314,21 @@ Nothing here may import from `app/`.
 | `mute.js` | 32 | SILENCE THE BADGE, AND NOTHING ELSE. |
 
 ### `lib/db/production/`
-*26 files, 11,327 lines*
+*26 files, 11,356 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `storefronts.js` | 2612 ⚠️ | native Storefront persistence (v62). SERVER-ONLY. Memory mode mirrors the Postgres laws for local development and |
 | `corrections.js` | 1049 | WHEN A READER SAYS WE GOT IT WRONG. |
-| `interpretation.js` | 1027 | HOW ASTERISK READS, and what it remembers about a person. |
+| `interpretation.js` | 1048 | HOW ASTERISK READS, and what it remembers about a person. |
 | `privacy.js` | 679 | WHAT WE HOLD ABOUT YOU, AND HANDING IT BACK. |
 | `commerce.js` | 552 | NATIVE COMMERCE'S ROWS (V.2 Blueprint, chapters 7 and 8; slice 6; schema v64 over the storefront's v62). |
 | `brdcst.js` | 542 | BRDCST CAMPAIGNS AND THE BONUS BANK (V.2 Blueprint chapter 5, 5.10–5.28, 9.13, Terms 15; slice 8; schema v66). |
 | `editorial.js` | 514 | THE WIRE, and what readers put on it. |
 | `ai.js` | 455 | THE MACHINE'S OWN RECORDS. |
 | `booths.js` | 440 | WHO GETS TO SELL HERE. |
-| `catalog.js` | 393 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
-| `money.js` | 390 | MONEY IN MOTION (V.2 10.12–10.13 payouts, 6.7 deductions, 5.32 / 10.5 Credit top-ups, chapter 13 Wardrobe private sales, |
+| `money.js` | 432 | MONEY IN MOTION (V.2 10.12–10.13 payouts, 6.7 deductions, 5.32 / 10.5 Credit top-ups, chapter 13 Wardrobe private sales, |
+| `catalog.js` | 360 | WHAT WE KNOW ABOUT A PIECE, and what people asked for. |
 | `aftersale.js` | 337 | AFTER THE SALE (V.2 Blueprint chapter 6 6.1–6.8, chapter 10; slice 7; schema v65). SERVER-ONLY; memory mode mirrors |
 | `asterisk.js` | 277 | ASTERISK GOVERNANCE'S ROWS (V.2 Blueprint, Part I "ASTERISK governance"; schema v63). SERVER-ONLY; memory mode |
 | `wardrobeTransfers.js` | 262 | THE GIFT'S TRANSACTIONS (V.2 brief §8, schema v60). SERVER-ONLY; memory mode mirrors every law. |
@@ -327,7 +336,7 @@ Nothing here may import from `app/`.
 | `identity.js` | 221 | IDENTITY ROWS (V.2 6.31–6.34, 12.8–12.9, 14.11, Terms 2.2, 10.4; A6 (7); slice 10b; schema v68). SERVER-ONLY; |
 | `score.js` | 219 | THE PASSENGER SCORE'S ROWS (V.2 Blueprint chapter 6; slice 7; schema v65). SERVER-ONLY; memory mode mirrors Postgres. |
 | `listingStatus.js` | 200 | the ListingStatus service's writers and readers (schema v58). SERVER-ONLY; memory mode mirrors every law. |
-| `ebayFeed.js` | 191 | the eBay feed publisher's two writers (schema v56): the STALE-GUARDED item upsert and the per-file CHECKPOINT. |
+| `ebayFeed.js` | 190 | the eBay feed publisher's two writers (schema v56): the STALE-GUARDED item upsert and the per-file CHECKPOINT. |
 | `store.js` | 147 | THE SHARED IN-MEMORY STORE, and nothing else. |
 | `records.js` | 141 | user_records (v53): the four kinds of record Live Launch V.2 kept on the device alone, now persisted per identity. |
 | `media.js` | 132 | MOTION ASSETS (V.2 Blueprint chapter 3, 17.2; slice 9; schema v67). SERVER-ONLY; memory mode mirrors Postgres. |
@@ -376,22 +385,25 @@ Nothing here may import from `app/`.
 | `index.js` | 119 | Canonical user-event vocabulary for the Alpha Learning Brain. Pure module (no I/O) — safe to import from client or server. |
 
 ### `lib/fashion-taxonomy/`
-*1 file, 42 lines*
+*1 file, 41 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 42 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
+| `index.js` | 41 | The shared fashion vocabulary for the Alpha Learning Brain. AESTHETIC_TAGS re-exports the LIVE tag space the Alpha Learning Bridge |
 
 ### `lib/feed/`
-*5 files, 469 lines*
+*8 files, 885 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `types.js` | 234 | THE ONE FEED's card law (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "one surface for discovery, publishing and commerce. |
-| `rechunk.js` | 146 | which cards a re-chunk may replace. Pure; client-safe. |
+| `tetris.js` | 337 | THE FEED AS TETRIS (owner's feed sketch, 25 Oct 2026: "the feed is comprised of multiple different forms of media — stills and |
+| `types.js` | 229 | THE ONE FEED's card law (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "one surface for discovery, publishing and commerce. |
+| `rechunk.js` | 100 | which cards a re-chunk may replace. Pure; client-safe. |
+| `choice.js` | 86 | THE FEED'S MIX, the reader's own (owner, 29 Oct 2026: "underneath the feed with the FOR YOU |
 | `actions.js` | 53 | what a card can do to a piece, from anywhere (V.2 slice 3: the LISTING popup lives in the session hub, outside the feed |
-| `caption.js` | 20 | the on-media caption's ink (V.2 Blueprint, owner, 17 Oct 2026: "caption text flips between black, gray and white to stay |
-| `blocks.js` | 34 | the blocks that stand in for text (owner, 25 Oct 2026; app/components/Blocks.jsx draws them) — the frame of text loading in behind even blocks, and a folded line's words as blocks (was chevrons.js, the ">>>>>>" of 18 Octs it). Pure and isomorphic. |
+| `blocks.js` | 34 | THE BLOCKS (owner, 25 Oct 2026: "fuck the chevrons — use this image to replace the chevrons, I want them used as text place |
+| `hidden.js` | 28 | PASS on a card that is not a piece (owner's feed sketch, 25 Oct 2026: the × on its bar sits on every card). A piece's PASS |
+| `caption.js` | 18 | the on-media caption's ink (V.2 Blueprint, owner, 17 Oct 2026: "caption text flips between black, gray and white to stay |
 
 ### `lib/identity/`
 *2 files, 141 lines*
@@ -402,46 +414,47 @@ Nothing here may import from `app/`.
 | `gate.js` | 46 | THE COMMERCE GATE (V.2 Terms 2.2, 6.34, 10.4; slice 10b). SERVER-ONLY. One helper every route that buys, sells, broadcasts or |
 
 ### `lib/images/`
-*2 files, 122 lines*
+*3 files, 138 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `fingerprint.js` | 62 | Deterministic perceptual image fingerprints (dHash) for stolen-image screening — gap 3 of the anti-impersonation directive (18 Aug). |
 | `dhash.js` | 60 | PERCEPTUAL HASHING, and nothing else. |
+| `cardsize.js` | 16 | A CARD'S PHOTO AT A CARD'S SIZE (30 Oct 2026, the owner on an iPhone: "its just really slow |
 
 ### `lib/ingest/`
-*9 files, 1,249 lines*
+*9 files, 1,326 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `ebayFeedPublish.js` | 329 | THE PUBLISHER: a staged eBay feed file (lib/ingest/ebayFeed.js) → rows in the existing catalog. Owner brief §15, |
+| `ebay.js` | 244 | eBay source adapter — the OFFICIAL Browse API path (never scraping). Server-side only: reads EBAY_CLIENT_ID / EBAY_CLIENT_SECRET / EBAY_ENV from |
 | `ebayFeed.js` | 179 | Approved Feed Beta downloads, staged on disk, never sent into ASTERISK. A complete gzip + manifest is promoted atomically; interrupted downloads |
-| `ebay.js` | 174 | eBay source adapter — the OFFICIAL Browse API path (never scraping). Server-side only: reads EBAY_CLIENT_ID / EBAY_CLIENT_SECRET / EBAY_ENV from |
 | `ebayFeedWorker.js` | 173 | THE WORKER LOOP (owner brief §15 point 4, 1 Oct 2026): the bootstrap, then daily catch-up, then hourly snapshots, |
 | `colorEvidence.js` | 163 | Conservative product-color verification. A color becomes a product tag only when the merchant explicitly states it and the actual listing images |
 | `sources.js` | 93 | Ingestion adapters. IMPORTANT POLICY: this layer only pulls from sources that PERMIT programmatic access. It never scrapes hotlink-protected or |
 | `intake.js` | 71 | Validation for OPERATOR-SUPPLIED real inventory (risk campaign phase L1). The checkout engine's own honesty gate (refusalReason) is the validator — |
-| `catalog.js` | 49 | Asilum seed catalog — 915 listings, stored as JSON (catalog.json) so the server parses data instead of executing a half-megabyte JS literal. |
+| `catalog.js` | 56 | Asilum seed catalog — 915 listings, stored as JSON (catalog.json) so the server parses data instead of executing a half-megabyte JS literal. |
 | `inferTags.js` | 18 | ONE text-to-taste bridge for every ingestion path. |
 
 ### `lib/ingest/adapters/`
-*6 files, 650 lines*
+*6 files, 678 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `normalize.js` | 222 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
+| `normalize.js` | 226 | The single normalizer every adapter funnels through: raw source data in, ASILUM NormalizedProduct out. After this point the app does not care |
 | `woocommerceAdapter.js` | 134 | WooCommerce Store API adapter. The Store API is officially documented and unauthenticated, but ASILUM still requires explicit merchant approval before |
-| `ebayAdapter.js` | 103 | The one adapter with a real implementation today: eBay's OFFICIAL Browse API (lib/ingest/ebay.js). Enabled only when EBAY_CLIENT_ID/SECRET are set. |
+| `ebayAdapter.js` | 125 | The one adapter with a real implementation today: eBay's OFFICIAL Browse API (lib/ingest/ebay.js). Enabled only when EBAY_CLIENT_ID/SECRET are set. |
 | `types.js` | 69 | Source adapter contract (JSDoc — this codebase is plain JS; the entity shapes set the precedent). Every marketplace adapter implements the same interface |
 | `index.js` | 63 | The adapter registry. One import site for every marketplace source. |
-| `sync.js` | 59 | syncProducts(): run every ENABLED adapter, normalize, upsert into the products table (items), write product_images + typed product_tags, and log |
+| `sync.js` | 61 | syncProducts(): run every ENABLED adapter, normalize, upsert into the products table (items), write product_images + typed product_tags, and log |
 
 ### `lib/ingest/japan/`
-*2 files, 380 lines*
+*2 files, 376 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `vocabulary.js` | 226 | READING A JAPANESE LISTING. |
+| `vocabulary.js` | 222 | READING A JAPANESE LISTING. |
 | `read.js` | 154 | a Japanese listing title, read into facets. |
 
 ### `lib/listing-status/`
@@ -452,36 +465,42 @@ Nothing here may import from `app/`.
 | `index.js` | 129 | THE LISTING-STATUS SERVICE (V.2 brief §5 and §13, owner, 1 Oct 2026). SERVER-ONLY. |
 
 ### `lib/media/`
-*4 files, 689 lines*
+*5 files, 812 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `index.js` | 458 | MOTION: THE MEDIA LAW (V.2 Blueprint, owner, 17 Oct 2026, chapter 3 "Video playback and persistent music controls" 3.1–3.12, |
+| `pexels.js` | 124 | LICENSED MOTIONS: the Pexels Video API (owner, 30 Oct 2026: short vertical video on the site for the demo). SERVER-ONLY. |
 | `preferences.js` | 80 | THE MEDIA PREFERENCES, on the device and mirrored (V.2 Blueprint 3.3, 3.6, 3.9–3.10; slice 9). CLIENT-ONLY. |
-| `feedplay.js` | 79 | ADAPTIVE AUTOPLAY IN THE FEED (V.2 Blueprint 3.3, 3.4, 3.5, 3.10; slice 9). CLIENT-ONLY. One IntersectionObserver over every |
+| `feedplay.js` | 78 | ADAPTIVE AUTOPLAY IN THE FEED (V.2 Blueprint 3.3, 3.4, 3.5, 3.10; slice 9). CLIENT-ONLY. One IntersectionObserver over every |
 | `worker.js` | 72 | THE MEDIA WORKER (V.2 Blueprint chapter 3; slice 9). SERVER-ONLY. What it honestly is on this stack is written at the top of |
 
 ### `lib/model/`
-*1 file, 128 lines*
+*5 files, 413 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `media.js` | 128 | SAMPLE MEDIA for the Live Launch V.2 model. |
+| `media.js` | 209 | SAMPLE MEDIA for the Live Launch V.2 model. |
+| `pieces.js` | 105 | THE MODEL'S PIECES (owner, 25 Oct 2026: "this is just a model so pepco can see what the app looks like … white background |
+| `stills.js` | 59 | THE TILES (owner, 25 Oct 2026, last: "bring back the original multi-coloured cards"). Every picture the model shows — a post, |
+| `songs.js` | 22 | THE MODEL'S SONGS (owner, 25 Oct 2026: "cool songs" for the model's reader). Labelled sample records, the way SAMPLE_POSTS and |
+| `licensed.js` | 18 | the licensed motions this device has read (the Pexels rows of /api/motion), kept so the media popup can open one by id |
 
 ### `lib/music/`
-*2 files, 199 lines*
+*3 files, 349 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 127 | THE MUSIC CIRCLE's law (V.2 Blueprint, owner, 17 Oct 2026, chapter 3 3.13–3.24 "persistent music controls", chapter 4 "Music |
-| `player.js` | 72 | THE ONE AUDIO SOURCE (V.2 Blueprint 3.14–3.24; slice 9). CLIENT-ONLY. A single hidden media element (MusicHost.jsx owns |
+| `itunes.js` | 146 | THE SONG PREVIEWS: Apple's iTunes Search API (owner, 30 Oct 2026: "I need websites that have easy APIs so I can have |
+| `index.js` | 132 | THE MUSIC CIRCLE's law (V.2 Blueprint, owner, 17 Oct 2026, chapter 3 3.13–3.24 "persistent music controls", chapter 4 "Music |
+| `player.js` | 71 | THE ONE AUDIO SOURCE (V.2 Blueprint 3.14–3.24; slice 9). CLIENT-ONLY. A single hidden media element (MusicHost.jsx owns |
 
 ### `lib/music-mapping/`
-*1 file, 83 lines*
+*1 file, 43 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 83 | Music-to-Fashion Brain: music taste as an aesthetic signal. The mapping table below is CURATED MOCK DATA (marked as such in every |
+| `index.js` | 43 | Music-to-Fashion Brain: music taste as an aesthetic signal. The mapping table below is CURATED MOCK DATA (marked as such in every |
 
 ### `lib/orders/`
 *1 file, 168 lines*
@@ -491,12 +510,12 @@ Nothing here may import from `app/`.
 | `hub.js` | 168 | THE PURCHASE HUB, a read facade (V.2, 19 Sep 2026; docs/v2/CONTRACTS.md § Purchase hub). |
 
 ### `lib/passport/`
-*4 files, 398 lines*
+*4 files, 396 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `onboarding.js` | 183 | THE PASSPORT'S ONBOARDING AND IDENTITY ANCHORS (V.2 Blueprint, owner, 17 Oct 2026: 14.2–14.3, 14.11; owner |
-| `attendance.js` | 99 | SUBSTANTIATED ATTENDANCE (V.2 Blueprint, owner, 17 Oct 2026: 17.19 — "I was there" is a claim until evidence on record |
+| `attendance.js` | 97 | SUBSTANTIATED ATTENDANCE (V.2 Blueprint, owner, 17 Oct 2026: 17.19 — "I was there" is a claim until evidence on record |
 | `evidence.js` | 64 | UPLOAD EVIDENCE (V.2 Blueprint, owner, 17 Oct 2026, 17.2–17.5; slice 10c). PURE and client-safe. |
 | `document.js` | 52 | the passport data page's derived strings, in one place (client-safe, no imports), so the document on /board and its |
 
@@ -517,11 +536,13 @@ Nothing here may import from `app/`.
 | `overviews.js` | 101 | SOURCED OVERVIEWS of eligible designers and creators (V.2). The compact panel that answers a search for a person the |
 
 ### `lib/places/`
-*2 files, 320 lines*
+*4 files, 747 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `registry.js` | 270 | THE LOCAL AND GLOBAL FASHION MAP's record (V.2). |
+| `registry.js` | 465 | THE LOCAL AND GLOBAL FASHION MAP's record (V.2). |
+| `ticketmaster.js` | 137 | LIVE EVENTS ON THE MAP: the Ticketmaster Discovery API (owner, 30 Oct 2026: "I need a ticket company API"). |
+| `mapkit.js` | 95 | APPLE MAPS: the MapKit JS token (owner, 30 and 31 Oct 2026: "i need apple maps API"). SERVER-ONLY. |
 | `cluster.js` | 50 | CLUSTER OVERLAPPING MARKERS (V.2 brief §11). Pure and client-safe: screen-space pins in, clusters out, the same input giving |
 
 ### `lib/posts/`
@@ -544,11 +565,11 @@ Nothing here may import from `app/`.
 | `handles.js` | 22 | The handle vocabulary — pure constants, no imports, no db, no window. |
 
 ### `lib/records/`
-*1 file, 41 lines*
+*1 file, 38 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `client.js` | 41 | the client half of user_records (v53). |
+| `client.js` | 38 | the client half of user_records (v53). |
 
 ### `lib/roads/`
 *1 file, 190 lines*
@@ -558,11 +579,11 @@ Nothing here may import from `app/`.
 | `overpass.js` | 190 | THE READER'S OWN STREET MAP (V.2, owner: "instead of the Paris street map, their street map is the background for the |
 
 ### `lib/search/`
-*26 files, 5,072 lines*
+*26 files, 5,057 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 1940 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
+| `index.js` | 1932 ⚠️ | ASILUM Search Engine v1 — real, database-backed, tag-expanded, ranked. SERVER-ONLY (imports lib/db). Rule/tag-based logic decides every rack. A |
 | `era.js` | 365 | era comprehension for the search engine (Aug 21). |
 | `size.js` | 227 | the size the reader asked for (Aug 21). |
 | `negation.js` | 218 | the engine stops serving the thing you excluded. |
@@ -573,8 +594,8 @@ Nothing here may import from `app/`.
 | `intent.js` | 152 | WHAT KIND OF QUESTION IS THIS? |
 | `origin.js` | 135 | origin comprehension for the search engine (Aug 21). |
 | `suggest.js` | 135 | Autocomplete + misspelling correction. Basic fuzzy matching on purpose (constitution: don't overcomplicate; no AI here). SERVER-ONLY via the pool. |
-| `pair.js` | 132 | DESIGNER: HOUSE (19 Sep 2026). |
 | `vocabulary.js` | 128 | THE WORDS THE ENGINE KNOWS. |
+| `pair.js` | 125 | DESIGNER: HOUSE (19 Sep 2026). |
 | `constraints.js` | 124 | THE FILTERS NOBODY SET. |
 | `reranker.js` | 122 | THE TASTE RERANKER (V.2 brief §10, step 6). Pure. |
 | `eraAnchors.js` | 100 | era-anchor extraction for cultural reads (Aug 5). |
@@ -590,42 +611,42 @@ Nothing here may import from `app/`.
 | `tokens.js` | 20 | HOW A QUERY BECOMES WORDS. |
 
 ### `lib/security/`
-*5 files, 639 lines*
+*5 files, 644 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
+| `rateLimit.js` | 169 | Fixed-window quotas backed by Postgres, with a bounded in-memory fallback for keyless development. Subjects are hashed so the quota table stores no user id. |
 | `request.js` | 166 | WHO IS ASKING, and how much they may ask for. |
-| `rateLimit.js` | 164 | Fixed-window quotas backed by Postgres, with a bounded in-memory fallback for keyless development. Subjects are hashed so the quota table stores no user id. |
 | `json.js` | 140 | READING A REQUEST BODY FROM A BROWSER, safely. |
 | `http.js` | 97 | READING A RESPONSE FROM SOMEWHERE ELSE, safely. |
 | `multipart.js` | 72 | Bounded multipart reader for upload routes. Request.formData() buffers the entire body, so consume the stream under an explicit cap before parsing. |
 
 ### `lib/steward/`
-*6 files, 1,538 lines*
+*6 files, 1,533 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `checks.js` | 663 | what the Asterisk watches when nobody is looking. |
 | `index.js` | 330 | the Asterisk steward: one pass over the live machine, and — since 3 September 2026 — hands to act on what it finds. |
 | `actions.js` | 229 | the steward's hands. |
-| `decisions.js` | 200 | what the steward may decide on its own. |
+| `decisions.js` | 195 | what the steward may decide on its own. |
 | `instruments.js` | 98 | the eight instruments, run as one movement. |
 | `cronGate.js` | 18 | who may fire the steward from outside. |
 
 ### `lib/storefront/`
-*11 files, 1,954 lines*
+*11 files, 1,945 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `checkout.js` | 690 | Native Storefront payment orchestration. The catalog dispatch is explicit; all money facts come from server-owned Postgres rows and connected Stripe |
-| `commerce.js` | 288 | NATIVE COMMERCE'S LAW (V.2 Blueprint, owner, 17 Oct 2026, chapter 7 "Native commerce, offers and discounts", chapter 8 |
+| `commerce.js` | 284 | NATIVE COMMERCE'S LAW (V.2 Blueprint, owner, 17 Oct 2026, chapter 7 "Native commerce, offers and discounts", chapter 8 |
 | `protection.js` | 211 | PROTECTION, RETURNS, THE WINDOWS AND THE DISPATCH CLOCKS (V.2 Blueprint, owner, 17 Oct 2026, chapter 6 "Protection, |
 | `fees.js` | 200 | canonical native-commerce money policy. |
-| `score.js` | 162 | THE PASSENGER SCORE (V.2 Blueprint, owner, 17 Oct 2026, chapter 6, 6.7–6.33; slice 7). PURE and client-safe. |
+| `score.js` | 159 | THE PASSENGER SCORE (V.2 Blueprint, owner, 17 Oct 2026, chapter 6, 6.7–6.33; slice 7). PURE and client-safe. |
 | `contracts.js` | 113 | client-safe native Storefront contracts. Product facts are explicit; missing facts stay missing. No category borrows |
 | `credit.js` | 90 | ASILUM CREDIT (V.2 Blueprint, owner, 17 Oct 2026, 5.26–5.32, 6.1, Terms 10; slice 7). PURE and client-safe. |
-| `payouts.js` | 66 | SELLER PAYOUTS AND THE PLATFORM'S TOP-UPS (V.2 Blueprint, owner, 17 Oct 2026: 10.12–10.13 item-level payouts after the |
 | `client.js` | 64 | THE ONE WAY A SURFACE OPENS NATIVE CHECKOUT (V.2 slice 6, over the native-storefront branch). Client-safe. |
+| `payouts.js` | 64 | SELLER PAYOUTS AND THE PLATFORM'S TOP-UPS (V.2 Blueprint, owner, 17 Oct 2026: 10.12–10.13 item-level payouts after the |
 | `flags.js` | 54 | rollout and money kill switches. UI/draft work is useful keyless. Every operation that can move money is |
 | `catalog.js` | 16 | the explicit first-party catalog discriminator. A missing external URL is NEVER enough to make a row native. Only the |
 
@@ -644,11 +665,11 @@ Nothing here may import from `app/`.
 | `drafts.js` | 20 | the Studio's DEVICE-LOCAL drafts (events, shops, promotion requests): one key, one reader, one writer, shared by the |
 
 ### `lib/tagging/`
-*3 files, 754 lines*
+*3 files, 750 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `grammar.js` | 372 | THE TAG GRAMMAR: `LEFT: RIGHT` (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar"; slice 4 of the build order in |
+| `grammar.js` | 368 | THE TAG GRAMMAR: `LEFT: RIGHT` (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar"; slice 4 of the build order in |
 | `vocabulary.js` | 206 | ONE VOCABULARY FOR EVERY TAG ON A PIECE. |
 | `dense.js` | 176 | Dense per-piece tagging — 20-30 typed tags per item, every one derived from a REAL product field. Nothing here invents attributes: a material tag exists |
 
@@ -660,25 +681,25 @@ Nothing here may import from `app/`.
 | `network.js` | 70 | THE TASTE NETWORK's reading (V.2), pure. Derives, from the stored profile and the person's own boards, what each of |
 
 ### `lib/taste-graph/`
-*1 file, 145 lines*
+*1 file, 127 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `index.js` | 145 | TikTok-inspired layer: cross-user feed intelligence. Learn not only from one user's actions but from what SIMILAR users save, buy, skip, favorite, |
+| `index.js` | 127 | TikTok-inspired layer: cross-user feed intelligence. Learn not only from one user's actions but from what SIMILAR users save, buy, skip, favorite, |
 
 ### `lib/valuation/`
-*1 file, 94 lines*
+*1 file, 93 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `comparables.js` | 94 | THE VALUATION HIERARCHY (V.2 Blueprint, owner, 17 Oct 2026, chapter 11: comparables first, then era and house rank, with a |
+| `comparables.js` | 93 | THE VALUATION HIERARCHY (V.2 Blueprint, owner, 17 Oct 2026, chapter 11: comparables first, then era and house rank, with a |
 
 ### `lib/verification/`
-*4 files, 403 lines*
+*4 files, 399 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `ledger.js` | 211 | THE VERIFICATION LEDGER'S RULES (V.2 brief §12). SERVER-SIDE (node:crypto for the version hash) and pure: the same |
+| `ledger.js` | 207 | THE VERIFICATION LEDGER'S RULES (V.2 brief §12). SERVER-SIDE (node:crypto for the version hash) and pure: the same |
 | `desk.js` | 93 | THE VERIFICATION DESK's comparer (V.2). |
 | `run.js` | 57 | RUN THE CHECKS on one listing and append the row (V.2 brief §12; slice 5 governance). SERVER-ONLY. The route and the |
 | `replicas.js` | 42 | THE REPLICA LIBRARY'S READER (V.2 Blueprint, "Hard gates against authenticating replicas"; slice 5). Pure. |
@@ -701,14 +722,14 @@ Nothing here may import from `app/`.
 | `index.js` | 173 | WHAT A PERSON IS WAITING FOR, and noticing when it arrives. |
 
 ### `lib/wardrobe/`
-*7 files, 634 lines*
+*7 files, 632 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `photos.js` | 238 | private Storage for wardrobe photos (Phase 3b). SERVER-ONLY. Objects live in the PRIVATE Supabase Storage bucket |
 | `index.js` | 172 | the ownership model (handoff Feature C, Phase 3a). A wardrobe row exists ONLY because the user said so: manual add, a catalog |
 | `offers.js` | 109 | WARDROBE PRIVATE SALES (V.2 Blueprint, owner, 17 Oct 2026, chapter 13 "Wardrobe and private sales" 13.3–13.17; slice 11). |
-| `gifts.js` | 59 | THE GIFT, AS RULES (V.2 brief §8). Client-safe. |
+| `gifts.js` | 57 | THE GIFT, AS RULES (V.2 brief §8). Client-safe. |
 | `flow.js` | 42 | THE CLOSET'S COVER FLOW, AS RULES (V.2 brief §8). Client-safe and pure: which cards sit around the selected one, how a |
 | `photo-contract.js` | 8 | Client/server shared garment-photo limits. Keep this module dependency-free so browser code never pulls the server-only Storage or Postgres layers into |
 | `purchase.js` | 6 | Client-safe ownership rule: an owned anchor participates in styling but is never translated back into purchase intent by a bulk bag action. |
@@ -744,11 +765,11 @@ request becomes trusted arguments.
 | `route.js` | 97 | GET  → this account's kind + the capabilities it opens. POST → choose a kind. Chosen once at signup; changing it afterwards is an |
 
 ### `app/api/admin/`
-*1 file, 883 lines*
+*1 file, 885 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 883 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
+| `route.js` | 885 | Admin/moderation backend — no public UI yet (deliberate: the public design is locked; a full admin page can mount on these functions later). |
 
 ### `app/api/aftersale/`
 *1 file, 107 lines*
@@ -849,11 +870,11 @@ request becomes trusted arguments.
 | `route.js` | 61 | cultural Discover rails (Feature D). GET  ?user=  → every enabled rail from the registry, content resolved live |
 
 ### `app/api/dm/`
-*1 file, 564 lines*
+*1 file, 582 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 564 | The mail desk. One route, op-dispatched. |
+| `route.js` | 582 | The mail desk. One route, op-dispatched. |
 
 ### `app/api/dm/media/`
 *1 file, 85 lines*
@@ -863,18 +884,18 @@ request becomes trusted arguments.
 | `route.js` | 85 | AN IMAGE INTO A THREAD (V.2 brief §3). |
 
 ### `app/api/ebay/`
-*1 file, 61 lines*
+*1 file, 67 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 61 | GET /api/ebay?q=<query>&limit=<n> Live listings from the OFFICIAL eBay Browse API, normalized to the catalog |
+| `route.js` | 67 | GET /api/ebay?q=<query>&limit=<n>&cat=<lane> Live listings from the OFFICIAL eBay Browse API, normalized to the catalog |
 
 ### `app/api/ebay/account-deletion/`
-*1 file, 71 lines*
+*1 file, 69 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 71 | eBay MARKETPLACE ACCOUNT DELETION / CLOSURE notifications — the endpoint every eBay Developers Program keyset must name (or opt out of) before its |
+| `route.js` | 69 | eBay MARKETPLACE ACCOUNT DELETION / CLOSURE notifications — the endpoint every eBay Developers Program keyset must name (or opt out of) before its |
 
 ### `app/api/editorial/`
 *1 file, 333 lines*
@@ -912,18 +933,18 @@ request becomes trusted arguments.
 | `route.js` | 26 | the safe link preview for the composer (V.2 brief §6). GET ?url= → the plain-text snapshot lib/posts/preview.js produces, or { refused } with the reason. A sign |
 
 ### `app/api/feed/`
-*1 file, 370 lines*
+*1 file, 381 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 370 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
+| `route.js` | 381 | GET /api/feed?user=<id>&epsilon=<0\|1>&q=<prompt>&board=<boardId>&limit=<12..60>&cursor=<opaque> |
 
 ### `app/api/follow/`
-*1 file, 99 lines*
+*1 file, 112 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 99 | POST /api/follow { user, boardId, follow: true\|false } Following a moodboard makes its taste a standing influence on your feed — |
+| `route.js` | 112 | POST /api/follow { user, boardId, follow: true\|false } Following a moodboard makes its taste a standing influence on your feed — |
 
 ### `app/api/geo/`
 *1 file, 28 lines*
@@ -974,6 +995,13 @@ request becomes trusted arguments.
 | --- | ---: | --- |
 | `route.js` | 36 | GET ?ids=a,b,c → the public shape of up to 60 listings by id, with their availability status and when it was last |
 
+### `app/api/mapkit/token/`
+*1 file, 34 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 34 | GET → a 30-minute MapKit JS token (lib/places/mapkit.js) for Apple's map script on the map popup, the |
+
 ### `app/api/measurements/`
 *1 file, 75 lines*
 
@@ -987,6 +1015,20 @@ request becomes trusted arguments.
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `route.js` | 295 | The Mood Board as a database feeder. Every training action becomes a real mood_board_uploads record the future vision/AI layer can re-analyze. |
+
+### `app/api/motion/`
+*1 file, 26 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 26 | GET → the licensed MOTIONS (lib/media/pexels.js): vertical video under the Pexels License, credited, in the model's post |
+
+### `app/api/music/`
+*1 file, 52 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `route.js` | 52 | songs for the Feed's SONG cards (lib/music/itunes.js). |
 
 ### `app/api/notifications/`
 *1 file, 41 lines*
@@ -1024,11 +1066,11 @@ request becomes trusted arguments.
 | `route.js` | 112 | THE PASSPORT'S ONBOARDING (V.2 14.2–14.3, 14.11; A6 (7); slice 10c). Five to seven autobiographical |
 
 ### `app/api/places/`
-*1 file, 39 lines*
+*1 file, 49 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `route.js` | 39 | GET /api/places?lat=&lng=&km=&kind=&dated=1\|0&region=&sample=0 The local and global fashion map's record (lib/places/registry.js): two |
+| `route.js` | 49 | GET /api/places?lat=&lng=&km=&kind=&dated=1\|0&region=&sample=0 The local and global fashion map's record (lib/places/registry.js): two |
 
 ### `app/api/privacy/`
 *1 file, 120 lines*
@@ -1277,15 +1319,15 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 
 
 ### `app/`
-*7 files, 1,915 lines*
+*7 files, 1,955 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 1185 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
-| `shell.js` | 303 | The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Three fixtures and nothing else: the INFO DOCK at the top left (likes, bag, |
+| `page.js` | 1195 | CATALOG (home). Straight clothing (owner order, Aug 12; POST folded into THE WIRE at /hotlist by the Aug 13 overhaul — all user posts live there now): |
+| `shell.js` | 322 | The shell around every page (V.2 Blueprint, owner, 17 Oct 2026). Two fixtures and nothing else: the MASTHEAD, a full-width strip of liquid |
 | `opengraph-image.js` | 175 | the social card, GENERATED, not committed. |
 | `not-found.js` | 109 | the 404 plate: a dead record, printed like an editorial page instead of an apology. Owner-directed (21 Aug), references supplied: |
-| `layout.js` | 82 | Root layout: every page renders inside the magazine shell. |
+| `layout.js` | 93 | Root layout: every page renders inside the magazine shell. |
 | `robots.js` | 38 | served at /robots.txt (Next.js metadata route). NOTE on /piece/<id>: deliberately NOT listed below. It ships a meta |
 | `sitemap.js` | 23 | served at /sitemap.xml (Next.js metadata route). Only the public editorial surfaces; personal pages are robots-disallowed |
 
@@ -1336,98 +1378,119 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/components/`
-*81 files, 13,355 lines*
+*102 files, 16,880 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `MailDesk.jsx` | 1290 ⚠️ | EVERY CALL HERE GOES THROUGH authorizedFetch, AND THAT IS NOT STYLE. |
-| `StorefrontTab.jsx` | 905 | ONE STOREFRONT, inside PROFILE. |
-| `PostComposer.jsx` | 508 | THE ONE COMPOSER (V.2 brief §6, owner, 1 Oct 2026). One housing for every post: begin with text, then ADD MEDIA |
+| `MailDesk.jsx` | 1391 ⚠️ | EVERY CALL HERE GOES THROUGH authorizedFetch, AND THAT IS NOT STYLE. |
+| `StorefrontTab.jsx` | 906 | ONE STOREFRONT, inside PROFILE. |
+| `LiquidGlass.jsx` | 792 | LIQUID GLASS, shared: the optics of the header strip (shell.js) and of the item detail (page.js) are one thing — a clear pane whose open edges bend |
+| `PostComposer.jsx` | 509 | THE ONE COMPOSER (V.2 brief §6, owner, 1 Oct 2026). One housing for every post: begin with text, then ADD MEDIA |
 | `AccountSignup.jsx` | 503 | the account hold (mounted in the shell). Real Supabase accounts only (email + password, or a magic link for |
-| `LiquidGlass.jsx` | 475 | LIQUID GLASS, shared: the optics of the header strip (shell.js) and of the item detail (page.js) are one thing — a clear pane whose open edges bend |
 | `WardrobeTab.jsx` | 439 | Profile → WARDROBE tab (Feature C, Phase 3a). Pieces you actually own: manual adds here, catalog pieces marked owned, and "bought" ticket |
+| `PostCard.jsx` | 411 | a post as a card in THE ONE FEED (V.2 Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing |
+| `ControlCenter.jsx` | 397 | THE CENTRAL CONTROL DECK (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief |
+| `DesignConsole.jsx` | 386 | the DESIGN CONSOLE. The owner's hand on the Fashion Intelligence OS: every text size, button |
 | `roadBuilder.js` | 352 | passport → /upload build animation (upload-station r5, owner decree). At click the overlay shows a still |
-| `DesignConsole.jsx` | 349 | the DESIGN CONSOLE. The owner's hand on the Fashion Intelligence OS: every text size, button |
 | `AsteriskDock.jsx` | 308 | ASTERISK's living form (owner decree, redesign/asterisk-hologram): an interactive 3D hologram entity built |
-| `ListingSheet.jsx` | 306 | THE LISTING POPUP (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "LISTING opens as a floating popup over |
-| `ControlCenter.jsx` | 303 | THE CENTRAL CONTROL DECK (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the 1 Oct brief |
+| `ListingSheet.jsx` | 308 | THE LISTING POPUP (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "LISTING opens as a floating popup over |
 | `Studio.jsx` | 286 | STUDIO, inside the Passport (V.2). One account; the business tools appear here, contextually, without a |
-| `PostCard.jsx` | 283 | a post as a card in THE ONE FEED (V.2 Blueprint, owner, 17 Oct 2026: "There is no Wire"; the six publishing |
 | `MotionHousing.jsx` | 282 | THE VIDEO HOUSING (V.2 Blueprint, owner, 17 Oct 2026, chapter 3 3.1–3.12, 3.14; slice 9). The full-screen |
+| `InkWatch.jsx` | 280 | THE REACTIVE INK, measured (owner, 28 Oct 2026: "for all the text and symbols they must be reactive to go from dark |
 | `ProfileRoom.jsx` | 277 | Profile rooms (Feature E). Two faces of the same surface: <RoomEditor />  — the owner's editor on /profile. Accounts only (ADR-002); |
 | `Disc.jsx` | 257 | THE DISC (V.2 Blueprint, owner, 17 Oct 2026, chapter 2). One rotary component, reused for Post Selection, the session |
 | `AsteriskMemory.jsx` | 248 | Asterisk memory surface (contract ADR-001 v2). MemorySections = the shared section renderer /asterisk uses, so the read |
-| `PlacesPanel.jsx` | 243 | AROUND YOU / MY PLACES (V.2). The local and global fashion map with its list, filters and the three |
-| `SearchSheet.jsx` | 219 | THE SEARCH POPUP, cut to the owner's primary reference (18 Oct 2026, the search popup picture; V.2 chapter 16). |
+| `PlacesPanel.jsx` | 247 | AROUND YOU / MY PLACES (V.2). The local and global fashion map with its list, filters and the three |
+| `ProfileHead.jsx` | 236 | THE PROFILE HEADER (owner's sketch, 4 Nov 2026: "re up the account page, pretty much close to Instagram"). One |
+| `ScrollWheel.jsx` | 232 | THE WHEEL (owner, 26 Oct 2026; the sketches 6.jpg and IMG_1166; 27 Oct: "the disc is the actual liquid glass |
+| `SearchSheet.jsx` | 229 | THE SEARCH POPUP, cut to the owner's primary reference (18 Oct 2026, the search popup picture; V.2 chapter 16). |
+| `Fig20.jsx` | 227 | FIGURE 20 (owner's feed sketch, 25 Oct 2026): a post's carousel of stills, and the row of recommended motions. THREE |
+| `DmLive.jsx` | 224 | THE MESSAGE BANNER (owner, 27 Oct 2026: "the direct message button should up the direct message tab, if a user gets a |
+| `SheetHost.jsx` | 224 | THE POPUP (V.2 Blueprint, owner, 17 Oct 2026, chapter 1; the 1 Oct brief decision 2 where the blueprint is |
 | `BusinessAccount.jsx` | 205 | the passport → business panel (owner law, Aug 13), mounted on PROFILE → ACCOUNT. Every state shown |
+| `Wordmark.jsx` | 183 | THE WORDMARK. It left the shell's header when the header left (V.2 Blueprint, owner, 17 Oct 2026) and lived on the |
 | `ProductSignals.jsx` | 180 | the small honest signals on a piece: what colour it VERIFIABLY is, and how it would fit the reader. |
 | `StreetMap.jsx` | 173 | the places map as a STREET MAP in the Apple Maps idiom (V.2 round two, owner: "the map should more similarly copy |
-| `SheetHost.jsx` | 167 | THE POPUP (V.2 Blueprint, owner, 17 Oct 2026, chapter 1; the 1 Oct brief decision 2 where the blueprint is |
-| `SessionCarousel.jsx` | 162 | THE SESSION HUB's face (V.2 Blueprint, owner, 17 Oct 2026, clauses 1.4–1.8, 1.21–1.25, 1.29–1.35). |
+| `FeedEq.jsx` | 160 | THE FEED'S EQ (owner, 29 Oct 2026: "underneath the feed with the FOR YOU page select right next to it lets have a collapsed filter button that looks like its fr |
+| `AdStrip.jsx` | 155 | THE AD TICKER, in its bubble on the deck (owner, 25 Oct 2026, last: beneath the keys and above the vent). What it |
 | `AddStamp.jsx` | 154 | ADD STAMP (V.2 brief §11): the one housing at the bottom of the personal Passport for everything a passenger may |
+| `PlaceMap.jsx` | 154 | THE PLACE MAP, one choice (owner, 31 Oct 2026: "i still need … Apple maps APIs"): Apple's map through MapKit JS |
 | `TasteNetwork.jsx` | 151 | FULL READ as a navigable taste network (V.2). Replaces the rotating asterisk on /stats: the ten tags as nodes on a |
 | `TwoFactor.jsx` | 150 | IDENTITY FOR COMMERCE in Settings (V.2 Terms 2.2, 6.34, 10.4, 14.11; A6 (7); slice 10b). |
-| `MediaFloat.jsx` | 144 | STILL and MOTION, enlarged (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "STILL and MOTION enlarge |
-| `dismiss.js` | 141 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
+| `dismiss.js` | 150 | ONE dismissal contract for transient surfaces (synergy phase 1). Every overlay/sheet/modal closes on Escape; panels that |
+| `MediaFloat.jsx` | 147 | STILL and MOTION, enlarged (V.2 Blueprint, owner, 17 Oct 2026, Foundations: "STILL and MOTION enlarge |
 | `ConsentMoment.jsx` | 138 | D4's first-visit consent moment (ruled 20 Aug 2026; spec docs/history/d4-consent-spec-2026-08-20.md). Shell- |
-| `DiscoverRails.jsx` | 137 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
+| `DiscoverRails.jsx` | 138 | Cultural Discover rails (handoff Feature D). Named, collapsible strips whose content derives live from reviewed sources: the culture catalog |
 | `EntityOverview.jsx` | 136 | the ASILUM OVERVIEW for any entity in the graph (V.2 brief §9): a designer (PersonOverview's card, plus the |
-| `LikesSheet.jsx` | 133 | LIKES (V.2 brief, owner, 1 Oct 2026, §5). Top subtabs: Pieces \| Wire \| Sold. The one save (lib/save.js) is the |
-| `UserBits.jsx` | 125 | Reusable social atoms: monogram avatar, "Who to follow" module, and the user search bar. All follow state is local until real accounts exist. |
+| `LikesSheet.jsx` | 134 | LIKES (V.2 brief, owner, 1 Oct 2026, §5). Top subtabs: Pieces \| Wire \| Sold. The one save (lib/save.js) is the |
+| `UserBits.jsx` | 127 | Reusable social atoms: monogram avatar, "Who to follow" module, and the user search bar. All follow state is local until real accounts exist. |
 | `PersonOverview.jsx` | 121 | the sourced overview panel (V.2). A knowledge-panel's speed in ASILUM's voice: image with its credit, role, |
 | `TicketFlow.jsx` | 120 | the third-party purchase-assistant flow. Buy/Request → ticket created → availability + price shown → REQUIRED |
 | `BagSheet.jsx` | 119 | THE BAG, as a sheet (V.2 Blueprint, owner, 17 Oct 2026: the bag opens from the Info Dock, not from a header panel). |
 | `FloatView.jsx` | 119 | THE FLOAT (owner order, 8 Sep, with a Spotify recording): tap the photograph in the item detail and it floats alone over the fogged page (owner, 18 Oct 2026: "t |
 | `EchoRail.jsx` | 116 | THE ECHO RAIL and THE ECHO VIEWER (V.2 Blueprint, owner, 17 Oct 2026: "ECHO is a story-style temporary viewer |
-| `Blocks.jsx` | 124 | THE DEVICE'S OWN LANGUAGE, a little of it (owner, 18 Oct 2026: "pull from the og design language but only some of it |
+| `Icons.jsx` | 113 | the control center's glyphs. One stroke weight, one grid, no fills: the restraint of the secondary hardware |
 | `ConnectionsWheel.jsx` | 110 | CONNECTIONS (V.2 brief §11): the people and houses this passenger follows, as a CD-inspired wheel beside a |
+| `Masthead.jsx` | 109 | THE MASTHEAD (owner, 26 Oct 2026: "I kind of miss the liquid glass full-length header, let's add it so the logo can sit |
+| `MotionRail.jsx` | 106 | THE MOTION ROW (owner's feed sketch, 25 Oct 2026: "motions that will be recommended — 20 videos in the same |
 | `PurchaseGlobe.jsx` | 101 | THE PURCHASE GLOBE (owner order, 9 Sep: "replace the asterisk figure with a globe that shows all the places users |
+| `Blocks.jsx` | 100 | THE DEVICE'S OWN LANGUAGE, a little of it (owner, 18 Oct 2026: "I want the app to feel like a physical device"; |
+| `MapSheet.jsx` | 97 | THE MAP POPUP (V.2 5.5; slice 12; the owner's reference of 18 Oct 2026, docs/v2/references/2026-10-18-feed/4.jpg): a |
+| `MusicCircle.jsx` | 97 | THE MUSIC CIRCLE and its panel (V.2 Blueprint, owner, 17 Oct 2026, 3.17–3.23, 4.2; slice 9). A contextual |
 | `WardrobeFlow.jsx` | 97 | THE CLOSET (V.2 brief §8): isolated item cards in a closet-like Cover Flow stack — one selected card centred and |
-| `MapSheet.jsx` | 96 | THE MAP POPUP (V.2 5.5; slice 12; the owner's reference of 18 Oct 2026, docs/v2/references/2026-10-18-feed/4.jpg): a |
-| `MusicCircle.jsx` | 96 | THE MUSIC CIRCLE and its panel (V.2 Blueprint, owner, 17 Oct 2026, 3.17–3.23, 4.2; slice 9). A contextual |
 | `PassportPreview.jsx` | 96 | the bearer's passport, in preview (owner, 9 Sep evening: "in the about me there should be a preview of the |
+| `DiscoverSheet.jsx` | 95 | DISCOVER, the search tab's face for browsing without typing (owner, 29 Oct 2026: "current cravings should live in search tab. we have to device a way for a quic |
+| `InfoDock.jsx` | 95 | THE INFO DOCK (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; placed by the owner's fixture sketch of 19 |
 | `ScoreSheet.jsx` | 93 | THE PASSENGER SCORE POPUP (V.2 Blueprint 6.18; slice 7): overall score, verified review count, the star |
 | `Onboarding.jsx` | 92 | THE PASSPORT'S ONBOARDING (V.2 Blueprint, owner, 17 Oct 2026, 14.11; A6 (7); slice 10c). A popup over the Passport |
 | `ParisMap.jsx` | 89 | the real-OSM Paris road hologram, shared (redesign/upload-station). PassportSecurity renders it inside the |
 | `TagChip.jsx` | 89 | a tag on screen (V.2 Blueprint, owner, 17 Oct 2026, Part I "Tag grammar" and its Typesetting; slice 4). The law lives in |
-| `InfoDock.jsx` | 88 | THE INFO DOCK (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map" and the fixtures sketch, Figure 19). The |
 | `PassportSecurity.jsx` | 84 | UV security artwork for the PASSPORT document (redesign/passport-uv), color-matched to the OS tokens. |
+| `SideButtons.jsx` | 84 | THE SIDE BUTTONS: chunky comic push-buttons, inked and hard-shadowed, stacked at the middle of the page's right edge (owner, 28 Oct 2026). |
 | `AsteriskWhy.jsx` | 79 | ASTERISK's "why this" panel (Day 11), moved out of the feed page with V.2 slice 3 so the LISTING popup |
 | `BehindUploads.jsx` | 78 | BEHIND THE UPLOAD (V.2 Blueprint, owner, 17 Oct 2026, 17.2–17.5; slice 10c). Under the Passport's upload |
 | `BrdcstOptions.jsx` | 78 | BRDCST OPTIONS (V.2 Blueprint, owner, 17 Oct 2026, FIG 13 "a BRDCST panel above the disc": 5.13–5.22; slice 8). |
+| `FashionMap.jsx` | 78 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
+| `RainbowGlass.jsx` | 78 | THE V.1 RAINBOW, ON THE WHEEL ALONE (owner, 27 Oct 2026: "for the liquid glass rainbow effect, simply add |
+| `GroundInk.jsx` | 77 | THE GROUND'S INK, measured (owner, 29 Oct 2026: "all text should be reactive, glow when background is dark, solid black or grey when background is light, so THE |
 | `PieceFloat.jsx` | 77 | A PIECE, FLOATING (owner, 18 Oct 2026: "if you double click a product listing it should appear in like a popup |
-| `FashionMap.jsx` | 75 | the local and global fashion map, drawn (V.2). A SCHEMATIC, on purpose: no tile service, no street map — the |
+| `PostCards.jsx` | 77 | THE POST CARDS (owner, 26 Oct 2026, the sketch IMG_1166: "if the upload button is pressed then small cards of the |
+| `MessagesPage.jsx` | 75 | THE MESSAGES PAGE (owner, 28 Oct 2026, the messages sketch: "we have to build a direct message page that the user will be brought to upon clicking the direct me |
 | `ConnectionsRack.jsx` | 74 | EXTERNAL CONNECTIONS, each with its explicit state (V.2 brief §11): Available · Requires approval · |
 | `NoticesSheet.jsx` | 73 | NOTICES, the bell's sheet (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Info Dock"). Reads the |
+| `PlaceCard.jsx` | 71 | THE PLACE CARD (V.2 Blueprint, owner, 17 Oct 2026, Foundations: PLACE at 20% weight; the owner's reference of 18 |
 | `KindGate.jsx` | 69 | the client half of the account-kind split. |
+| `Placements.jsx` | 68 | the ONE reading of placements the dock's strip and the Front Cover's block share (V.2 brief §1, 1 Oct 2026: |
 | `VerificationBadge.jsx` | 66 | THE CARD'S ASTERISK (V.2 brief §12). |
-| `Placements.jsx` | 62 | the ONE reading of placements the dock's strip and the Front Cover's block share (V.2 brief §1, 1 Oct 2026: |
-| `Icons.jsx` | 59 | the control center's glyphs. One stroke weight, one grid, no fills: the restraint of the secondary hardware |
+| `Cut.jsx` | 61 | THE CUT (owner, 25 Oct 2026: "all the red lines should act like cuts in the image, so there's a slight warp around it"). |
+| `PostSelection.jsx` | 60 | POST SELECTION on the disc (V.2 Blueprint, owner, 17 Oct 2026: the six publishing types TRANSM · STILL · |
 | `OverviewPreview.jsx` | 59 | the ASILUM OVERVIEW card in search, cut to the primary reference (IMG_0999, V.2 brief, 1 Oct 2026): the |
-| `PostSelection.jsx` | 56 | POST SELECTION on the disc (V.2 Blueprint, owner, 17 Oct 2026: the six publishing types TRANSM · STILL · |
+| `SongCard.jsx` | 58 | THE SONG CARD (owner's feed sketch, 25 Oct 2026): the record's art filling a square card, the song's title over it. |
+| `hinge.js` | 58 | THE HINGED KEYS (owner, 19 Oct 2026: "I want the buttons to feel like physical music player buttons … the top of each button |
+| `HoldMenu.jsx` | 51 | THE CARD MENU. It was the HOLD menu (owner, 25 Oct 2026: "hide the × buttons … into a hidden pop-up that requires a tap |
 | `SaveButton.jsx` | 49 | the one SAVE word (V.2). A word, per the button law: SAVE in the signal colour, SAVED in red once it |
-| `PlaceCard.jsx` | 48 | THE PLACE CARD (V.2 Blueprint, owner, 17 Oct 2026, Foundations: PLACE at 20% weight; the owner's reference of 18 |
-| `MessagesSheet.jsx` | 46 | MESSAGES as a utility (V.2 brief, owner, 1 Oct 2026, §1 + §3). The live mail desk (MailDesk.jsx — inbox, |
-| `PassportButton.jsx` | 40 | THE PASSPORT BUTTON (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the globe at the top right |
+| `PassportButton.jsx` | 44 | THE PASSPORT BUTTON (V.2 Blueprint, owner, 17 Oct 2026, Foundations "Screen map"; the owner's fixture sketch |
+| `BrdcstSheet.jsx` | 39 | THE BRDCST POPUP (owner's drawing, 25 Oct 2026: the strip's clouded photograph "when tapped opens the brdcst popup |
 | `SavePrompt.jsx` | 37 | the account moment (V.2). The brief: "Let visitors browse. Prompt account creation after a meaningful |
+| `FeedNear.jsx` | 34 | THE DRUM ONLY WHERE IT CAN BE SEEN (going live, 30 Oct 2026: iPhone Safari, "a problem repeatedly occurred on https://www.asilummagazine.com/"). The Feed's drum |
 | `AttendanceBlock.jsx` | 33 | WHERE YOU WENT (V.2 17.19; slice 12): the passenger's attendance records on the Passport, each CLAIMED or |
 | `Notice.jsx` | 33 | ONE notice surface (synergy phase 1). The app had grown nine ad-hoc notice/error treatments; this is the house primitive |
 | `OfflineRow.jsx` | 33 | the offline queue in Settings (V.2 chapter 1 "offline-first, queued actions"; slice 10d): how many writes wait on this |
+| `AMark.jsx` | 32 | \|A\| (owner ruling 18 Oct 2026, CONSTITUTION A6 (4)): "simply a box with the letter A in it". One component draws it |
 | `TransmissionText.jsx` | 32 | One transmission's body, with #hashtags and @mentions as live links (owner directive, 14 Aug 2026, backlog 3). Every surface that |
 | `GlassPane.jsx` | 30 | one pane of the app's liquid glass, for any page (owner, 9 Sep evening: "make sure you utilize liquid glass when |
 | `OverviewSheet.jsx` | 22 | an entity overview opened INSIDE the one sheet (Back returns to the search with its query). The record and |
 | `DiscoverTabs.jsx` | 21 | DISCOVER's inner row (V.2). One destination, three doors: the open index (SEARCH), the map (AROUND YOU), and the |
-| `PageMast.jsx` | 20 | THE MASTHEAD, EVERYWHERE (owner, 9 Sep: "add more large title words overall to the whole website to match the |
-| `Wordmark.jsx` | 20 | THE WORDMARK. It left the shell's header when the header left (V.2 Blueprint, owner, 17 Oct 2026: the top fixtures |
-| `AMark.jsx` | 11 | \|A\| (owner ruling 18 Oct 2026, CONSTITUTION A6 (4)): "simply a box with the letter A in it". One component draws it |
+| `PageMast.jsx` | 21 | THE MASTHEAD, EVERYWHERE (owner, 9 Sep: "add more large title words overall to the whole website to match the |
+| `AdSpace.jsx` | 17 | THE AD SPACE on the Feed (owner, 25 Oct 2026: "there's two types of ad space on the feed, medium and brdcst size … those |
 | `ModelTag.jsx` | 10 | the honest tag (V.2). MODEL: simulated in this build. SAMPLE: fixture content, credited. DEVICE: kept on this device only. CONNECTION REQUIRED: a real service |
 
 ### `app/cover/`
-*3 files, 520 lines*
+*3 files, 511 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 452 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
+| `page.js` | 443 | FRONT COVER. The landing edition (owner amendment, July 25: seventh destination), rebuilt as a true magazine cover (owner refinement round, Aug 12) and |
 | `ledger.js` | 43 | The FRONT COVER's system-ledger folio, as a pure function so it is testable without a browser (same reason /piece/[id]/handoff.js sits beside its page). |
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
@@ -1440,11 +1503,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/hotlist/`
-*2 files, 586 lines*
+*2 files, 558 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 561 | THE WIRE (owner overhaul, Aug 13; formerly EDITORIAL — the destination renamed by owner decree). |
+| `page.js` | 533 | THE WIRE (owner overhaul, Aug 13; formerly EDITORIAL — the destination renamed by owner decree). |
 | `layout.js` | 25 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/map/`
@@ -1453,6 +1516,14 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | File | Lines | What it is |
 | --- | ---: | --- |
 | `page.js` | 70 | MAP (V.2 brief, owner, 1 Oct 2026, §11). A root of its own — the Passport BRANCH's geographic face — distinct from the personal |
+
+### `app/messages/`
+*2 files, 34 lines*
+
+| File | Lines | What it is |
+| --- | ---: | --- |
+| `layout.js` | 24 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
+| `page.js` | 10 | THE MESSAGES PAGE (owner, 28 Oct 2026). The page is MessagesPage.jsx; this file only mounts it, so the route stays a thin door (lib/nav.js MESSAGES_HREF). |
 
 ### `app/orders/`
 *2 files, 312 lines*
@@ -1478,19 +1549,19 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `page.js` | 161 | PRIVACY POLICY. Constitution §7 launch dependency. Every claim below describes what the product ACTUALLY does today (no-faking rule applies to legal pages first |
 
 ### `app/profile/`
-*2 files, 833 lines*
+*2 files, 993 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 814 | PROFILE. Standard social format (owner order, Aug 12: Grailed × Twitter × MySpace, legibility first), rebuilt in liquid glass on 9 Sep (owner: "the |
+| `page.js` | 974 | THE ACCOUNT PAGE. Re-upped on the owner's sketch (4 Nov 2026: "pretty much close to Instagram"): ProfileHead.jsx is the header — the display name as the |
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/settings/`
-*2 files, 541 lines*
+*2 files, 536 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 522 | SETTINGS. The rack (owner order, Aug 12: old music-making software — numbered hardware modules, LEDs, engraved labels; every control a user needs to |
+| `page.js` | 517 | SETTINGS. The rack (owner order, Aug 12: old music-making software — numbered hardware modules, LEDs, engraved labels; every control a user needs to |
 | `layout.js` | 19 | Generated for route metadata only. The page itself is a client component and cannot export `metadata`, so the segment layout carries it. This renders its |
 
 ### `app/stats/`
@@ -1531,11 +1602,11 @@ interactive ones. UI is governed by `CONSTITUTION.md` — read it before redesig
 | `page.js` | 77 | the magazine's title card (owner-directed, 21 Aug; revised same day: "make it appear more like the 404 screen"). The card now |
 
 ### `app/u/[handle]/`
-*1 file, 188 lines*
+*1 file, 237 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
-| `page.js` | 188 | a poster's public page (the identity chain, owner order Aug 13: every wire byline lands somewhere REAL). |
+| `page.js` | 237 | a poster's public page (the identity chain, owner order Aug 13: every wire byline lands somewhere REAL), in the |
 
 ### `app/upload/`
 *2 files, 579 lines*
@@ -1561,7 +1632,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 
 ### `scripts/`
-*69 files, 8,876 lines*
+*70 files, 8,937 lines*
 
 | File | Lines | What it is |
 | --- | ---: | --- |
@@ -1617,6 +1688,7 @@ keep the engine honest; the rest are migration and maintenance commands.
 | `ebay-feed-worker.mjs` | 69 | the eBay feed worker (lib/ingest/ebayFeedWorker.js): bootstrap → daily catch-up → hourly snapshots, from a state file on |
 | `measure-search-latency.mjs` | 62 | p50 / p95 of the search engine, in mem mode, over a fixed corpus (the V.2 backend plan asks for |
 | `configure-database-role.mjs` | 61 | One-time local helper: activate the v11 asilum_app role with a strong secret. The owner URL and new password are read from the environment and never logged. |
+| `sync-demo-sources.mjs` | 61 | THE DEMO SWEEP (owner, 30 Oct 2026). |
 | `build-vector-neighbors.mjs` | 58 | precompute item-item vector neighbors for the feed (r18). Reads the catalog embeddings (text-v1, the space the |
 | `reconcile-storefront-payments.mjs` | 54 | Bounded native-Storefront payment reconciliation for an external cron. This worker intentionally ignores NATIVE_CHECKOUT_ENABLED so disabling new |
 | `seed-mappings.mjs` | 52 | Idempotent: (1) upserts the curated search mappings into search_mappings, (2) backfills the typed product_tags layer + production source fields for |
@@ -1637,4 +1709,4 @@ keep the engine honest; the rest are migration and maintenance commands.
 
 ---
 
-*Generated by `npm run docs:codemap` from main @ 22f6651 — 570 source files, 98,598 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*
+*Generated by `npm run docs:codemap` from main @ a75c413 — 618 source files, 104,888 lines. Do not edit this file by hand; edit `docs/code-map-preamble.md` or the source headers.*

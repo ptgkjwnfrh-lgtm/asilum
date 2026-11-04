@@ -1168,18 +1168,7 @@ button.chip:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; 
 .legal { font-family: var(--serif); font-size: var(--ed-fs-legal, 14.5px); font-weight: 500; line-height: 1.7; color: var(--ink); max-width: 640px; }
 
 /* ---- Profile ---- */
-.pbanner {
-  height: 130px; border: 1px solid var(--line); position: relative; overflow: hidden;
-  background: var(--paper);
-}
-.pbanner span { position: absolute; right: 14px; top: -46px; font-size: 160px; font-weight: 900; color: var(--red); opacity: 0.14; }
-.phead2 { display: flex; gap: 18px; align-items: flex-start; margin: -30px 0 20px; padding: 0 20px; flex-wrap: wrap; position: relative; z-index: 2; }
-.pavatar .uavatar { width: 78px; height: 78px; font-size: 25px; background: var(--paper); border-width: 2px; }
-.pident { flex: 1; min-width: 220px; padding-top: 44px; }
 .pname { font-size: 27px; font-weight: 900; letter-spacing: -0.03em; }
-.pbio { font-family: var(--serif); font-style: normal; font-size: 14px; color: var(--grey); margin: 6px 0 8px; }
-.pcounts { display: flex; gap: 20px; font-size: 10px; letter-spacing: 0.1em; color: var(--grey); }
-.phead2 > .btn, .phead2 > .followbtn { margin-top: 44px; }
 .pedit { display: block; border: 1px solid var(--line); padding: 7px 9px; font-family: var(--helv); font-size: 14px; margin-bottom: 6px; width: 100%; max-width: 380px; }
 .pedit.small { font-size: 12px; }
 /* profile tab sections float on the page ground (owner order, Aug 12:
@@ -1753,14 +1742,9 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
 .ppphotoempty em { font-style: normal; font-size: 7.5px; letter-spacing: 0.2em; color: var(--grey); text-shadow: none; }
 .ppphoto:hover { border-color: var(--sig); }
 
-/* ---- Profile: banner/avatar uploads ---- */
-.pbannerctl { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
-.pbanner { position: relative; }
 .ppupl { border: 1px dashed var(--line); border-radius: 999px; background: var(--bg3); color: var(--grey);
   font-size: 8.5px; letter-spacing: 0.16em; padding: 4px 11px; cursor: pointer; }
 .ppupl:hover { color: var(--sig); border-color: var(--sig); }
-.pavimg { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.pavatar { overflow: hidden; }
 
 /* ---- Phase 2: PASSPORT dossier ---- */
 .ppdoc { border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--bg2); margin: 0 0 18px; }
@@ -1795,14 +1779,6 @@ input, select, textarea { background-color: var(--bg3); color: var(--ink); borde
   cursor: pointer; font-family: var(--helv); text-transform: none; }
 .dhint:hover { color: var(--sig); border-color: var(--sig); text-shadow: var(--glow); }
 
-/* ---- Phase 2: PROFILE public record (de-bubbled Aug 12: the header and
-   counts float, standard social format) ---- */
-.pbanner { border: none;
-  background: linear-gradient(120deg, var(--bg3), color-mix(in srgb, var(--p2) 8%, var(--bg3)) 55%, var(--bg3)); }
-.pbanner span { text-shadow: var(--glow-r); }
-.phead2 { padding: 14px 4px; }
-.pcounts { gap: 26px; }
-.pcounts b { font-family: var(--helv); font-size: 17px; font-weight: 400; color: var(--sig); text-shadow: var(--glow); margin-right: 5px; }
 
 /* ---- DESIGN CONSOLE (redesign/ui-editor) — the owner's hand on the OS.
    An industrial side instrument: every slider writes one --ed-* token.
@@ -2889,72 +2865,133 @@ html.dc-inspecting, html.dc-inspecting * { cursor: crosshair !important; }
    measured). Grailed: the CLOSET as a grid of pieces with brand and price.
    The tab row keeps every record it held (posts, closet, brands, wardrobe,
    room, sizing, account) on one glass sheet. ==== */
-.pf2 .pfhead { padding: 0; overflow: hidden; margin: 0 0 18px; }
-.pf2 .pbanner { height: 190px; border-radius: 12px 12px 0 0; }
-.pf2 .phead2 { margin: -46px 0 0; padding: 0 24px 20px; align-items: flex-end; }
-.pf2 .pavatar .uavatar { width: 96px; height: 96px; font-size: 30px; border: 3px solid color-mix(in srgb, var(--bg) 82%, transparent); box-shadow: var(--glass-shadow); }
-.pf2 .pident { padding-top: 0; }
-.pf2 .pname { font-family: var(--mich); font-size: clamp(22px, 3vw, 34px); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
-.pf2 .pbio { margin: 8px 0 4px; }
-.pf2 .pmeta { display: none; }
-.pf2 .pcounts { gap: 34px; margin-top: 12px; }
-.pf2 .pcounts span { display: grid; gap: 3px; font-size: 8.5px; letter-spacing: 0.22em; }
-.pf2 .pcounts b { font-size: 24px; margin: 0; line-height: 1; }
-.pf2 .phead2 > .btn { margin: 0 0 6px; }
-.pflayout { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 18px; align-items: start; }
-.pfrail { display: grid; gap: 16px; align-content: start; }
-.pfline button.wperma { border: 0; background: none; padding: 0; font: inherit; cursor: pointer; }
-.pfmain { min-width: 0; }
-.pfk { font-family: var(--mich); font-size: 10px; letter-spacing: 0.22em; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
-.pfk i { font-family: var(--helv); font-style: normal; font-size: 22px; line-height: 1; color: color-mix(in srgb, var(--ink) 25%, transparent); text-shadow: none; }
-.pfabout p { font-family: var(--serif); font-style: normal; font-size: 14px; line-height: 1.6; margin: 0 0 10px; }
-.pfline { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 8.5px; letter-spacing: 0.18em; color: var(--grey); padding: 7px 0; border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
-.pfline b { font-family: var(--helv); font-weight: 400; font-size: 12px; color: var(--ink); letter-spacing: 0.06em; text-align: right; }
-/* THE PASSPORT IN PREVIEW (PassportPreview.jsx): the document's own classes
-   at a smaller scale — the strip, the nation line, the photo, the data
-   page's key fields, the machine zone, the hologram beneath — one link to
-   /board. Sized by the rail, never by a transform, so the type stays crisp. */
-.ppmini { display: flex; flex-direction: column; position: relative; overflow: hidden; margin: 6px 0 14px; border-radius: 7px;
-  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent); background: color-mix(in srgb, var(--bg2) 70%, transparent);
-  text-decoration: none; color: inherit; aspect-ratio: 125 / 88; isolation: isolate; }
-.ppmini:hover { border-color: var(--sig); }
-.ppmini .ppsec { height: 16px; }
-.ppmini .ppnum { font-size: 8px; top: 3px; right: 8px; }
-.ppmini .ppnation { font-size: 7px; letter-spacing: 0.26em; padding: 5px 8px 4px; }
-.ppminibody { position: relative; z-index: 2; display: flex; gap: 8px; align-items: center; padding: 8px 8px 4px; flex: 1; min-height: 0; }
-.ppminiphoto { width: 58px; height: 74px; flex: none; display: grid; place-items: center; position: relative; overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); background: var(--paper); border-radius: 2px; }
-.ppminiphoto img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.ppminiphoto .ppphotoempty { font-size: 16px; color: var(--grey); }
-.ppminiid { grid-template-columns: 1fr 1fr; gap: 4px 8px; padding: 0; margin: 0; flex: 1; min-width: 0; }
-.ppminiid dt { font-size: 5.5px; letter-spacing: 0.14em; }
-.ppminiid dd { font-size: 8px; margin-top: 1px; letter-spacing: 0.03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ppminiid .ppmono { font-size: 6.5px; max-width: none; }
-.ppminimrz { font-size: 6.5px; letter-spacing: 0.1em; padding: 4px 8px; line-height: 1.4; }
-.ppminiopen { position: relative; z-index: 2; display: block; text-align: right; padding: 5px 8px 6px; font-family: var(--mich); font-size: 7.5px; letter-spacing: 0.2em; color: var(--sig); text-shadow: var(--word-smear); }
-.ppmini .ppholo-b { -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 40%, #000 70%); mask-image: linear-gradient(180deg, transparent 0%, transparent 40%, #000 70%); }
-.pf2 .tabs { border: 0; margin: 0 0 16px; gap: 22px; flex-wrap: wrap; padding: 0 4px; }
-.pf2 .tab { border: 0; padding: 6px 0; font-family: var(--mich); font-weight: 400; font-size: 10.5px; letter-spacing: 0.2em; }
-.pfsheet { min-height: 320px; }
-.pfgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.pftile { display: grid; align-content: start; gap: 6px; aspect-ratio: 1; padding: 16px; text-decoration: none; color: inherit; overflow: hidden; border-radius: 7px;
-  background: var(--glass-pill); box-shadow: inset 0 0 0 1px var(--glass-pill-rim); }
-a.pftile:hover { box-shadow: inset 0 0 0 1px var(--sig); }
-.pftile .wposthead { font-size: 11.5px; margin: 0; }
-.pftile .fposttext { font-size: 12.5px; line-height: 1.5; max-width: none; margin: 0; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
-.pftile .pftime { margin-top: auto; font-family: var(--helv); font-size: 9.5px; color: var(--grey); letter-spacing: 0.1em; }
+/* ==== THE ACCOUNT PAGE, RE-UPPED (owner's sketch, 4 Nov 2026: "pretty much
+   close to Instagram") — app/components/ProfileHead.jsx, app/profile/page.js,
+   app/u/[handle]/page.js. One narrow column: the header in one glass pane
+   (the title bar, the avatar with the SONG under it, the handle with the
+   Passenger Score as stars, the four counts, the bio, the key row, the
+   echoes), then the four tabs as glyphs over their words, then the sheet —
+   the posts three across with hairline gaps. The owner's panels (WARDROBE,
+   STATISTICS, BANKING, and the ⋯ rooms) take the sheet's place on a second
+   pane. Michroma for the words, Inter for the body, Share Tech Mono for the
+   small print; the numbers in the signal colour with its glow, as on /stats. */
+.pf3 { max-width: 780px; }
+.pf3 .pfhead { padding: 0; margin: 0 0 4px; overflow: visible; }
+.pf3head { padding: 14px 20px 16px; }
+.pf3bar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; min-height: 32px; margin: 0 0 14px; }
+.pf3title { grid-column: 2; margin: 0; font: 700 11px/1.3 var(--mich); letter-spacing: 0.24em; text-transform: uppercase; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60vw; }
+.pf3menu { grid-column: 3; justify-self: end; position: relative; }
+.pf3more { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; color: var(--ink); cursor: pointer; padding: 4px 0 4px 8px; }
+.pf3more span { font: 8px/1 var(--mich); letter-spacing: 0.18em; }
+.pf3more:hover, .pf3more[aria-expanded="true"] { color: var(--red); text-shadow: var(--glow-r); }
+.pf3menulist { position: absolute; right: 0; top: calc(100% + 6px); z-index: 6; display: grid; min-width: 268px; padding: 6px; border-radius: 10px;
+  background: var(--bg3); box-shadow: var(--glass-shadow), var(--glass-lip); }
+.pf3menulist button, .pf3menulist a { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; width: 100%; padding: 9px 10px; border: 0; border-radius: 6px;
+  background: none; color: var(--ink); text-align: left; text-decoration: none; cursor: pointer; font: 9.5px/1.2 var(--mich); letter-spacing: 0.18em; white-space: nowrap; }
+.pf3menulist span { font: 8px/1.2 var(--mono); letter-spacing: 0.08em; color: var(--grey); text-align: right; }
+.pf3menulist button:hover, .pf3menulist a:hover { background: var(--bg2); color: var(--red); }
+.pf3top { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 22px; row-gap: 0; align-items: start; }
+.pf3face { grid-row: 1 / span 3; }
+.pf3ident, .pf3counts, .pf3bio { grid-column: 2; }
+.pf3face { display: grid; justify-items: center; gap: 10px; }
+.pf3avatar .uavatar, .pf3avatar img { width: 96px; height: 96px; border-radius: 50%; border: 1.15px solid var(--ink); background: var(--bg3); }
+.pf3avatar .uavatar { font-size: 30px; font-family: var(--mich); font-weight: 400; }
+.pf3avatar img { display: block; object-fit: cover; }
+.pf3song { display: inline-flex; align-items: center; gap: 7px; max-width: 140px; border: 0; background: none; padding: 0; color: var(--ink); text-decoration: none; cursor: pointer; }
+span.pf3song { cursor: default; }
+.pf3songdisc { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.15px solid var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+.pf3songword { font: 10px/1 var(--mich); letter-spacing: 0.12em; }
+.pf3songname { font: 8.5px/1.3 var(--mono); letter-spacing: 0.04em; color: var(--grey); max-width: 84px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf3song:is(button, a):hover { color: var(--red); }
+.pf3song:is(button, a):hover .pf3songdisc { border-color: var(--red); text-shadow: var(--glow-r); }
+.pf3ident { min-width: 0; }
+.pf3nameline { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pf3name { font: 700 clamp(19px, 4vw, 27px)/1.05 var(--mich); letter-spacing: 0.03em; text-transform: uppercase; overflow-wrap: anywhere; }
+.pf3stars { display: inline-flex; align-items: baseline; gap: 1px; border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink); }
+.pf3star { font-size: 13px; line-height: 1; color: color-mix(in srgb, var(--ink) 32%, transparent); }
+.pf3star.on { color: var(--ink); text-shadow: var(--glow); }
+.pf3stars i { margin-left: 5px; font: 9px/1 var(--mono); font-style: normal; color: var(--grey); }
+.pf3stars:hover .pf3star.on { color: var(--red); text-shadow: var(--glow-r); }
+.pf3counts { display: flex; margin: 14px 0 10px; }
+.pf3counts span { flex: 1 1 0; display: grid; justify-items: center; gap: 4px; font: 8px/1 var(--mich); letter-spacing: 0.16em; color: var(--grey); text-align: center; }
+.pf3counts b { font: 400 22px/1 var(--helv); color: var(--sig); text-shadow: var(--glow); }
+.pf3bio { margin: 0; font: 13.5px/1.55 var(--helv); color: var(--ink); overflow-wrap: anywhere; }
+.pf3bio:empty::before { content: "taste under construction."; color: var(--grey); }
+.pf3edit { display: grid; gap: 2px; }
+.pf3edit .pedit { max-width: none; }
+.pf3editkeys { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.pf3keys { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: stretch; margin: 16px 0 0; }
+.pf3key, .pf3keys .followbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 12px; border-radius: 9px; border: 1.15px solid var(--ink);
+  background: transparent; color: var(--ink); font: 400 10px/1 var(--mich); letter-spacing: 0.16em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+.pf3key:hover, .pf3keys .followbtn:hover { background: transparent; color: var(--red); border-color: var(--red); text-shadow: var(--glow-r); }
+.pf3key.on, .pf3keys .followbtn.on { background: var(--ink); color: var(--paper); border-color: var(--ink); text-shadow: none; }
+.pf3cluster { display: inline-flex; align-items: stretch; border: 1.15px solid var(--ink); border-radius: 9px; overflow: hidden; }
+.pf3cluster button { display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 58px; padding: 3px 10px; border: 0; border-left: 1px solid var(--line); background: none; color: var(--ink); cursor: pointer; }
+.pf3cluster button:first-child { border-left: 0; }
+.pf3cluster button span { font: 6.5px/1 var(--mich); letter-spacing: 0.14em; }
+.pf3cluster button:hover { color: var(--red); text-shadow: var(--glow-r); }
+.pf3cluster button[aria-pressed="true"] { background: var(--ink); color: var(--paper); text-shadow: none; }
+.pf3echoes { display: flex; gap: 16px; overflow-x: auto; padding: 16px 0 2px; scrollbar-width: none; }
+.pf3echo { flex: none; display: grid; justify-items: center; gap: 6px; width: 72px; border: 0; background: none; padding: 0; color: var(--ink); cursor: pointer; }
+.pf3echo .echoringface .uavatar { width: 54px; height: 54px; border: 2px solid var(--bg); font-size: 16px; }
+.pf3echoface { width: 60px; height: 60px; border-radius: 50%; border: 1.15px dashed var(--ink); display: inline-flex; align-items: center; justify-content: center; font: 300 22px/1 var(--helv); }
+.pf3echo .lbl { font: 8.5px/1 var(--mich); letter-spacing: 0.16em; }
+.pf3echo .left { font: 8px/1 var(--mono); color: var(--grey); letter-spacing: 0.08em; }
+.pf3echo:hover { color: var(--red); text-shadow: var(--glow-r); }
+.pf3tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); border-top: 1px solid var(--line); margin: 14px 0 0; }
+.pf3tab { display: grid; justify-items: center; gap: 6px; padding: 13px 4px 10px; margin-top: -1px; border: 0; border-top: 1.15px solid transparent; background: none; color: var(--grey); cursor: pointer; }
+.pf3tab span { font: 7.5px/1 var(--mich); letter-spacing: 0.18em; }
+.pf3tab:hover { color: var(--ink); }
+.pf3tab[aria-selected="true"] { color: var(--ink); border-top-color: var(--ink); text-shadow: var(--glow); }
+.pf3sheet { padding: 14px 0 0; min-height: 280px; }
+.pf3sheet .empty { padding: 40px 12px; }
+.pf3grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; }
+.pf3tile { position: relative; display: grid; aspect-ratio: 1; overflow: hidden; border-radius: 5px; background: var(--bg3); color: inherit; text-decoration: none; }
+.pf3tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pf3tile .pf3text { display: grid; align-content: start; gap: 4px; padding: 12px 12px 26px; overflow: hidden; }
+.pf3tile .wposthead { margin: 0; font-size: 10.5px; }
+.pf3tile .fposttext { margin: 0; max-width: none; font-size: 11.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.pf3time { position: absolute; left: 10px; right: 10px; bottom: 8px; font: 8px/1.3 var(--mono); letter-spacing: 0.08em; color: var(--grey); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf3tile.media .pf3time { right: auto; max-width: calc(100% - 20px); padding: 3px 6px; border-radius: 4px; color: #fff; background: rgba(0, 0, 0, 0.5); }
+.pf3kind { position: absolute; top: 8px; right: 8px; padding: 4px 6px; border-radius: 4px; font: 7.5px/1 var(--mich); letter-spacing: 0.16em; color: #fff; background: rgba(0, 0, 0, 0.5); }
+a.pf3tile:hover { outline: 1.15px solid var(--ink); outline-offset: -1px; }
+.pf3panel { margin-top: 14px; }
+.pf3panelhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
+.pf3panelhead .psub { margin: 0; }
+.pf3back { border: 0; background: none; padding: 0; color: var(--ink); cursor: pointer; font: 9.5px/1 var(--mich); letter-spacing: 0.18em; }
+.pf3back:hover { color: var(--red); text-shadow: var(--glow-r); }
+.pf3panel .ledgercell { background: transparent; border-radius: 8px; }
+.pf3stats .ledgercell h2 { font-family: var(--mich); font-weight: 400; }
+.pf3statlist { list-style: none; margin: 8px 0 0; padding: 0; display: grid; }
+.pf3statlist li { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); font: 8.5px/1.4 var(--mich); letter-spacing: 0.14em; color: var(--grey); }
+.pf3statlist li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pf3statlist li b { flex: none; font: 400 12px/1.2 var(--helv); letter-spacing: 0.04em; color: var(--sig); text-shadow: var(--glow); text-align: right; }
+.pf3 span.soon { display: inline-block; margin-left: 6px; padding: 3px 7px; border: 1px dashed var(--line); border-radius: 999px; font: 7.5px/1 var(--mich); letter-spacing: 0.16em; color: var(--grey); vertical-align: middle; }
+.pf3 .fine { display: block; }
 .pfcloset { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
 .pfpiece { display: grid; gap: 5px; text-decoration: none; color: inherit; align-content: start; }
 .pfpiece img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; border-radius: 7px; background: var(--paper); }
 .pfpiece .hlttl { font-size: 13px; }
 .pfpiece .hlbrand { font-size: 11px; margin: 0; }
 .pfpiece .hlstat { text-align: left; }
-.pfsheet .empty { padding: 40px 0; }
-@media (max-width: 900px) {
-  .pflayout { grid-template-columns: 1fr; }
-  .pfgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pf2 .pbanner { height: 140px; }
-  .pf2 .pcounts { gap: 22px; }
+@media (max-width: 560px) {
+  .pf3head { padding: 12px 12px 14px; }
+  .pf3top { gap: 14px; }
+  .pf3avatar .uavatar, .pf3avatar img { width: 80px; height: 80px; }
+  .pf3avatar .uavatar { font-size: 24px; }
+  .pf3face { grid-row: 1; }
+  .pf3ident { align-self: center; }
+  .pf3counts, .pf3bio { grid-column: 1 / -1; }
+  .pf3counts { margin: 14px 0 8px; }
+  .pf3counts span { font-size: 7.5px; letter-spacing: 0.12em; }
+  .pf3counts b { font-size: 19px; }
+  .pf3keys { grid-template-columns: 1fr 1fr; }
+  .pf3cluster { grid-column: 1 / -1; }
+  .pf3cluster button { flex: 1 1 0; }
+  .pf3grid { gap: 2px; }
+  .pf3tile .pf3text { padding: 9px 9px 22px; }
+  .pf3tile .fposttext { font-size: 10.5px; -webkit-line-clamp: 5; }
+  .pf3menulist { min-width: 210px; }
 }
 
 /* ==== THE WIRE v2 — A FOR-YOU HUB IN TWITTER'S FORMAT, THE HOTLIST IN A
@@ -4363,8 +4400,6 @@ body:has(.ccenter[data-ad="line"]) .sheetscrim { --cc-row-h: var(--dk-h); }
 .sfroute { max-width: 1180px; }
 .sfroute .locline { display: flex; flex-wrap: wrap; gap: 8px 14px; }
 .sfroute .locline a:last-child { margin-left: auto; }
-.pfmain > .tabs { overflow-x: auto; scrollbar-width: thin; }
-.pfmain > .tabs .tab { flex: 0 0 auto; }
 .sfroot { display: grid; gap: 18px; min-width: 0; color: var(--ink); }
 .sfroot *, .sfroot *::before, .sfroot *::after { box-sizing: border-box; }
 .sfroot h1, .sfroot h2, .sfroot h3 { margin: 0; font-family: var(--mich); font-weight: 400; line-height: 1.12; }

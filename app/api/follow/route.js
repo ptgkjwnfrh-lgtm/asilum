@@ -12,9 +12,11 @@
 import { NextResponse } from "next/server";
 import { migrateProfile } from "../../../lib/brain/index.js";
 import { getBoard, mutateProfile } from "../../../lib/db/index.js";
-import { setFollow, MEMORY_FOLLOW_KINDS, friendsOf } from "../../../lib/db/production.js";
+import { setFollow, MEMORY_FOLLOW_KINDS, friendsOf, followerCount } from "../../../lib/db/production.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
+import { requestSubject } from "../../../lib/security/request.js";
+import { HANDLE_RE } from "../../../lib/profile/handles.js";
 import { readJsonRequest } from "../../../lib/security/json.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
 
@@ -23,8 +25,19 @@ export const dynamic = "force-dynamic";
 // GET /api/follow?friends=1&user=  → { handle, friends } — the viewer's own
 // friends (mutual follows), relative to them and shown to nobody else; a
 // block on either side removes the mark (Foundations, the friend asterisk).
+// GET /api/follow?followers=<handle> → { handle, followers } — the public
+// count on a profile's header (owner's sketch, 4 Nov 2026); the count only,
+// never the list (lib/db/production/interpretation.js followerCount).
 async function handleGET(req) {
   const { searchParams } = new URL(req.url);
+  const who = searchParams.get("followers");
+  if (who !== null) {
+    const handle = String(who).trim().toLowerCase().replace(/^[*@]/, "");
+    if (!HANDLE_RE.test(handle)) return NextResponse.json({ error: "a claimed handle is required" }, { status: 400 });
+    const quota = await consumeRateLimit({ scope: "followers-read", subject: requestSubject(req), limit: 120, windowMs: 60_000 });
+    if (!quota.allowed) return NextResponse.json(rateLimitResponse(quota), { status: 429 });
+    return NextResponse.json({ handle, followers: await followerCount(handle) });
+  }
   if (searchParams.get("friends") !== "1") return NextResponse.json({ error: "friends=1" }, { status: 400 });
   const userId = await resolveRequestUser(req, searchParams.get("user") || "");
   if (!userId) return NextResponse.json({ error: "authentication required" }, { status: 401 });

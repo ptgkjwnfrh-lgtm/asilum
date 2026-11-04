@@ -37,6 +37,18 @@ const GLYPHS = {
   fold: <g {...P}><path d="M3.6 5.6h16.8" /><path d="M5.6 9h12.8L12 17.2z" /></g>,
   asterisk: <g {...P}><path d="M12 3.6v16.8M4.8 7.8l14.4 8.4M19.2 7.8L4.8 16.2" /></g>,
   link: <g {...P}><rect x="3.2" y="8.4" width="10" height="7.2" rx="3.6" /><rect x="10.8" y="8.4" width="10" height="7.2" rx="3.6" /></g>,
+  // THE ACCOUNT PAGE (owner's sketch, 4 Nov 2026): the three keys beside
+  // MESSAGE — the wardrobe's hanger, the statistics' line, the bank's
+  // portico — and the four tabs under the echoes: the posts grid, the
+  // repost loop, the featured portrait, the storefront's awning. Same hand:
+  // one stroke, rounded corners, the 17.6 span.
+  wardrobe: <g {...P}><path d="M12 5.2a1.9 1.9 0 1 1 1.9 1.9c-1.1.2-1.9 1-1.9 2v1.1" /><path d="M12 10.2L3.9 15.6a1.3 1.3 0 0 0 .7 2.4h14.8a1.3 1.3 0 0 0 .7-2.4z" /></g>,
+  stats: <g {...P}><path d="M3.2 20.4h17.6" /><path d="M5.2 16.6l4.2-5.4 3.6 2.8 6-8.2" /><path d="M15.6 5.6h3.4V9" /></g>,
+  bank: <g {...P}><path d="M3.2 9.4L12 4.2l8.8 5.2z" /><path d="M6.2 9.4v6.8M10.1 9.4v6.8M13.9 9.4v6.8M17.8 9.4v6.8" /><path d="M4.6 16.2h14.8M3.2 19.8h17.6" /></g>,
+  grid: <g {...P}><rect x="3.2" y="3.2" width="7.4" height="7.4" rx="1.2" /><rect x="13.4" y="3.2" width="7.4" height="7.4" rx="1.2" /><rect x="3.2" y="13.4" width="7.4" height="7.4" rx="1.2" /><rect x="13.4" y="13.4" width="7.4" height="7.4" rx="1.2" /></g>,
+  repost: <g {...P}><path d="M6.2 9.6V7.6a2 2 0 0 1 2-2h9.2" /><path d="M14.8 3.2l2.6 2.4-2.6 2.4" /><path d="M17.8 14.4v2a2 2 0 0 1-2 2H6.6" /><path d="M9.2 20.8l-2.6-2.4 2.6-2.4" /></g>,
+  featured: <g {...P}><rect x="3.6" y="3.2" width="16.8" height="17.6" rx="2" /><circle cx="12" cy="10.2" r="2.5" /><path d="M7.4 17.4a4.6 4.6 0 0 1 9.2 0" /></g>,
+  store: <g {...P}><path d="M4.2 9.4l1.3-4.6h13l1.3 4.6" /><path d="M3.6 9.4a2.8 2.8 0 0 0 5.6 0 2.8 2.8 0 0 0 5.6 0 2.8 2.8 0 0 0 5.6 0" /><path d="M5.4 12.2v8.2h13.2v-8.2" /><path d="M10 20.4v-4.6h4v4.6" /></g>,
   glasses: <g {...P}><rect x="3.2" y="9.6" width="7.2" height="6.4" rx="2.6" /><rect x="13.6" y="9.6" width="7.2" height="6.4" rx="2.6" /><path d="M10.4 12.4h3.2M4 9.6l2-4.4h2M20 9.6l-2-4.4h-2" /></g>,
   list: <g {...P}><path d="M3.6 6.6h16.8M3.6 12h16.8M3.6 17.4h11.2" /></g>,
   // THE UPLOAD SYMBOLS (owner, 29 Oct 2026: "make custom upload symbols for the selection"), one a type of post,
