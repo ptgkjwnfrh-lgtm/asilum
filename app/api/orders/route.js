@@ -12,9 +12,7 @@
 
 import { NextResponse } from "next/server";
 import { getInteractions } from "../../../lib/db/index.js";
-import { CATALOG } from "../../../lib/ingest/catalog.js";
 import { resolveRequestUser } from "../../../lib/identity.js";
-import { getDiscoverablePool } from "../../../lib/products.js";
 import { consumeRateLimit, rateLimitResponse } from "../../../lib/security/rateLimit.js";
 import { withPrivateCache } from "../../../lib/security/json.js";
 import { listOrdersForUser } from "../../../lib/db/orders.js";
@@ -22,19 +20,8 @@ import { listTickets } from "../../../lib/db/production.js";
 import { getItems } from "../../../lib/db/index.js";
 import { aggregatePlaces } from "../../../lib/asterisk/places.js";
 import { buildPurchaseHub } from "../../../lib/orders/hub.js";
+import { boughtPieces, itemIndex } from "../../../lib/orders/bought.js";
 import { envelope } from "../../../lib/api/outcome.js";
-
-const BOUGHT_OUTCOMES = new Set(["bought", "kept", "returned"]);
-
-// The catalog by id: the seed plus whatever the discoverable pool holds.
-async function itemIndex() {
-  const byId = new Map(CATALOG.map((it) => [it.id, it]));
-  try {
-    for (const it of await getDiscoverablePool({ fallback: false })) byId.set(it.id, it);
-  } catch {}
-  return byId;
-}
-const epoch = (v) => { const n = new Date(v).getTime(); return Number.isFinite(n) ? n : null; };
 
 export const dynamic = "force-dynamic";
 
@@ -66,24 +53,10 @@ async function handleGET(req) {
   }
 
   if (searchParams.get("places") === "1") {
-    const [orders, tickets] = await Promise.all([listOrdersForUser(userId, 50), listTickets(userId, 200)]);
-    const paid = orders.filter((o) => o.status === "paid" && (o.kind || "sale") === "sale");
-    const bought = tickets.filter((t) => BOUGHT_OUTCOMES.has(t.userReportedOutcome));
-    const wanted = [
-      ...paid.map((o) => ({ id: o.item_id, at: epoch(o.created_at) })),
-      ...bought.map((t) => ({ id: t.productId, at: t.outcomeReportedAt || t.createdAt || null })),
-    ];
-    const byId = await itemIndex();
-    // a real listing bought after it left the pool still has its row
-    const missing = [...new Set(wanted.map((w) => w.id).filter((id) => id && !byId.has(id)))];
-    if (missing.length) for (const [id, it] of await getItems(missing)) byId.set(id, it);
-    const purchases = wanted.map((w) => {
-      const it = w.id ? byId.get(w.id) : null;
-      return { brand: it && it.brand ? it.brand : "", at: w.at };
-    });
+    const { purchases, sources } = await boughtPieces(userId);
     return NextResponse.json({
-      userId, ...aggregatePlaces(purchases),
-      sources: { orders: paid.length, tickets: bought.length },
+      userId, ...aggregatePlaces(purchases.map((p) => ({ brand: p.item && p.item.brand ? p.item.brand : "", at: p.at }))),
+      sources,
     });
   }
 

@@ -2,23 +2,20 @@
 
 // app/components/Studio.jsx — STUDIO, inside the Passport (V.2).
 // One account; the business tools appear here, contextually, without a
-// second identity. Four instruments:
-//   1. CONNECT SHOPIFY STORE — the real path today is the booth application
-//      (POST /api/business, a human decides) plus the public products.json
-//      import behind THE DESK. Full OAuth needs a partner app the register
-//      lists as BLOCKED, so the connection walkthrough is a labelled MODEL
-//      and never a fake success.
-//   2. ADD AN EVENT / A SHOP — a submission with every provenance field the
+// second identity. Three instruments (the Shopify connection card is gone —
+// owner, 3 Nov 2026: "we are competitors for shopify why tf is there a
+// shopify connection"):
+//   1. ADD AN EVENT / A SHOP — a submission with every provenance field the
 //      map demands, saved as a DRAFT on this device (no directory table
 //      exists yet). Submission is open to anyone; it is not verification.
-//   3. YOUR BRDCSTS (V.2 chapter 5; slice 8) — the campaigns this account
+//   2. YOUR BRDCSTS (V.2 chapter 5; slice 8) — the campaigns this account
 //      created from the composer: unpaid ones wait here in Drafts (5.22);
 //      pay with Credit in the exact amount chosen, banked bonus days or
 //      miles, the remainder by card; cancel for the unused days' refund,
 //      Credit first with the bonus; mute the failed-payment reminders. A
 //      BRDCST is labelled wherever it appears and buys reach only — never
 //      verification, ranking truth, notifications or a partnership label.
-//   4. THE VERIFICATION DESK — /api/verification: source claims beside a
+//   3. THE VERIFICATION DESK — /api/verification: source claims beside a
 //      LOCAL-RULES reading; a human sees material conflicts only; human
 //      labour TBD.
 
@@ -129,7 +126,6 @@ const EMPTY_EVENT = { kind: "pop-up", name: "", organizer: "", address: "", city
 export default function Studio({ uid }) {
   const [drafts, setDrafts] = useState([]);
   const [ev, setEv] = useState(EMPTY_EVENT);
-  const [shopStep, setShopStep] = useState(0);
   const [desk, setDesk] = useState(null);
   const [deskOpen, setDeskOpen] = useState(null);
   const [note, setNote] = useState("");
@@ -159,30 +155,13 @@ export default function Studio({ uid }) {
 
   return (
     <div className="studio">
-      <p className="deck">one account. the same Passport, with tools for what you are building. nothing here creates a second identity, and disconnecting a store never touches your saves.</p>
+      <p className="deck">one account. the same Passport, with tools for what you are building. nothing here creates a second identity.</p>
       {note && <p className="pempty">{note}</p>}
 
       <div className="stgrid">
-        {/* 1 — SHOPIFY */}
-        <section className="stcard" aria-label="connect a store">
-          <div className="cclbl">01 · BRING YOUR SHOP IN</div>
-          <h3 className="sthead">Connect Shopify store <ModelTag kind="connection" /></h3>
-          <p className="stp">Real OAuth needs a Shopify partner app ASILUM does not have yet (the rights register marks it blocked). The real path today: a verified booth application, decided by a person, then a catalog import of only the fields ASILUM needs — product and variant identity, price, availability, authorized media. Checkout, payment, inventory truth, shipping and returns stay with the merchant.</p>
-          <ol className="stwalk">
-            {["store domain — yours, never your password", "scopes: read products and collections only", "choose the collections to show", "catalog fields imported; checkout stays on your store"].map((s, i) => (
-              <li key={s} className={i < shopStep ? "done" : i === shopStep ? "cur" : ""}>{s}</li>
-            ))}
-          </ol>
-          <div className="stacts">
-            <button className="txtbtn" onClick={() => setShopStep((s) => (s + 1) % 5)}>{shopStep === 4 ? "RESET THE WALKTHROUGH" : "PREVIEW THE CONNECTION →"} <ModelTag>MODEL</ModelTag></button>
-            <a className="txtbtn" href="/profile#access">APPLY FOR A VERIFIED BOOTH →</a>
-          </div>
-          <p className="stfine">staff use their own accounts and receive scoped permissions; disconnecting removes the imported catalog and nothing else.</p>
-        </section>
-
         {/* 2 — EVENT / SHOP */}
         <section className="stcard" aria-label="add an event or a shop">
-          <div className="cclbl">02 · GIVE YOUR SCENE A PLACE</div>
+          <div className="cclbl">01 · GIVE YOUR SCENE A PLACE</div>
           <h3 className="sthead">Add an event or a shop <ModelTag kind="device" /></h3>
           <form className="stform" onSubmit={submitEvent}>
             <label>kind
@@ -215,7 +194,7 @@ export default function Studio({ uid }) {
 
         {/* 3 — BRDCST (slice 8) */}
         <section className="stcard stbrdcst" aria-label="your BRDCSTs">
-          <div className="cclbl">03 · REACH THE RIGHT NEIGHBOURHOOD · BRDCST</div>
+          <div className="cclbl">02 · REACH THE RIGHT NEIGHBOURHOOD · BRDCST</div>
           <h3 className="sthead">Your BRDCSTs</h3>
           <Brdcsts onNote={setNote} />
           <p className="stfine">a BRDCST is labelled wherever it appears and buys reach only — taste first, distance second, from a 50-mile base. never verification, ranking truth, push access or a partnership label. billed per day; completely unused days refund, Credit first with a bonus of two days or 45 miles.</p>
@@ -239,7 +218,7 @@ export default function Studio({ uid }) {
 
       {/* 4 — THE DESK */}
       <section className="stdesk" aria-label="the verification desk">
-        <div className="cclbl">04 · THE VERIFICATION DESK · HUMAN LABOUR: TBD</div>
+        <div className="cclbl">03 · THE VERIFICATION DESK · HUMAN LABOUR: TBD</div>
         <p className="stp">every piece: the source's tags beside an independent reading. only a <b>material disagreement</b> — brand, category, material — reaches an archivalist. missing evidence stays pending; agreement means consistency, never authenticity.</p>
         {desk && !desk.error && (
           <>

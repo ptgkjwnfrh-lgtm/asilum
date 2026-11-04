@@ -71,15 +71,15 @@ test("the palette: the owner's reference in light (18 Oct 2026) — an icy groun
   assert.match(dark, /--red:\s*#f4f9fc;/, "the dark accent is white (it glows through --glow)");
   assert.ok(!/--red:\s*#(46ff96|8cf0a6)/i.test(css), "no green accent left, on the site or the fixtures");
   // no green in dark at all: every colour in a rule that applies in dark (not a light-only rule), comments aside, is
-  // checked; the rainbows (--holo, --iris-*, the passport strip's iridescent sweep) keep their green stop, as a
-  // rainbow does
+  // checked; the rainbows (--holo, --iris-*) keep their green stop, as a rainbow does (the passport strip's
+  // iridescent sweep went with the Tron passport, 31 Oct 2026)
   const rulesOnly = css.replace(/\/\*[\s\S]*?\*\//g, "");
   const greens = [];
   for (const m of rulesOnly.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const sel = m[1].trim();
     if (/data-theme="light"\]|prefers-color-scheme: light/.test(sel)) continue;
     for (const decl of m[2].split(";")) {
-      if (/^\s*--(holo|iris-\d)\s*:/.test(decl) || /rgba\(150, 90, 255, 0\.14\)/.test(decl)) continue;
+      if (/^\s*--(holo|iris-\d)\s*:/.test(decl)) continue;
       for (const c of decl.matchAll(/#([0-9a-f]{6})\b|%23([0-9a-f]{6})|rgba?\((\d+),\s*(\d+),\s*(\d+)/gi)) {
         const [r, g, b] = c[1] || c[2] ? [0, 2, 4].map((i) => parseInt((c[1] || c[2]).slice(i, i + 2), 16)) : [c[3], c[4], c[5]].map(Number);
         if (g > r + 50 && g > b + 20) greens.push(sel.slice(-50) + " → " + c[0]);

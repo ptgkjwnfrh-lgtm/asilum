@@ -58,6 +58,44 @@
   (`--helv`) for reading. Share Tech Mono is retired.
 - **Rainbow Liquid Glass, restrained.** A one-pixel conic rim on the
   fixtures (`--iris`); reduced-transparency drops the blur.
+- **The Passport document — the Taste Passport** (the owner's mock-up,
+  2 Nov 2026, `docs/v2/mocks/2026-11-02-taste-passport/`; CONSTITUTION A6
+  sixth addendum; `docs/v2/slice-18-taste-passport-2026-11-02.md`; before it
+  the Tron passport of 31 Oct, `slice-17`): a portrait document, no hairline
+  on it; the CLOUDED MASTHEAD (`.ppmast`, `.ppcloud` — the fixtures' frost
+  over the band's words) with the serial `AS<<<MM<<DD` (the account's month
+  and day) at the left and the passport number `№ OASM·000·000` (six digits
+  read off the account number) at the right, both the document's colour at
+  a lower opacity, glowing a little, under the cloud; the name
+  `ASILUM TASTE PASSPORT` as type in the logo's set (−0.096em, a stroke for
+  the bold, the ink unlit) in the band's notch; the data page — SURNAME,
+  GIVEN NAME, DATE OF BIRTH, NATIONALITY, IDNTY (free text), TASTE TYPE,
+  DATE OF ISSUE — every label `ENGLISH /` then the passport's ONE drawn
+  language (French, German, Spanish, Japanese or Arabic,
+  `lib/passport/document.js` `passportLanguage`); PASSENGER SIGNATURE the
+  username or the passenger's own stroke (`PassportSignature.jsx`); the
+  photo's ghost, a negative; the bar code cut in the document's ink
+  (`PassportBarcode.jsx`, the logo's white glow in dark); the machine zone
+  two even lines of the real fields (`mrzZone`) through `Blocks.jsx`
+  `MrzLine`, unclouded, even (every character spread over the measure);
+  the map under everything at 9%, alone of the old artwork (the photo's
+  print lines kept). The page is the mock-up traced: `PassportDocument.jsx`
+  places every piece in hundredths of the page's width; the masthead's foot
+  and the bar code's ramp take the logo's slant (`lib/wordmark.js`), the
+  bar code being the logo's brick mirrored with the bars cut out; the faces
+  are the mock-up's — OCR A Extended (`--ocr`, the Os zeros) for the serial,
+  the number, the four words under the photo and the zone, a serif numero
+  (`--numero`), Michroma for the rest (`tests/passport-document.test.js`,
+  `tests/v2-device.test.js`). A tap on the page LIFTS it (3 Nov 2026,
+  `PassportSpin.jsx`, `lib/passport/turn.js`): the page behind the floating
+  piece's fog, the passport a card in 3D in the middle — the page read-only
+  in front, on the back the small outlined asterisk in the logo's white over
+  ASILUM TASTE PASSPORT, black in dark, the feed's ground in light — turning
+  once on its own (hold, slow, one fast turn, settle, three red blinks and a
+  held glow, return) and then under the hand; still under reduced motion;
+  Escape, the fog, × put it back (`tests/passport-spin.test.js`). The
+  section "Passport UV page" below is the July record of the document this
+  one grew from.
 - **Popups, sessions, the Disc, haptics:** `knowledge/ui/interaction.md`.
 - **What is gone** (and must stay gone — `tests/v2-shell.test.js`): the
   top header and its ticker, the destination row, the ORB HUB / MODULE

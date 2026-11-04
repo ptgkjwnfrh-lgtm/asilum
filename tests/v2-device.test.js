@@ -1,7 +1,8 @@
 // tests/v2-device.test.js — THE DEVICE (owner, 18 Oct 2026, evening;
 // CONSTITUTION A6 third addendum): the louder rainbow glass, the original
 // gradients and the dark phosphor glow, the ">>>>>>" load-in, the warning
-// lights, the piece floating over the fogged Feed, the original passport.
+// lights, the piece floating over the fogged Feed, the passport (the original
+// of 18 Oct, in the Tron language since 31 Oct 2026).
 // Pure where it can be; source reads where the markup is the law.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -105,17 +106,33 @@ test("the original ground and the dark phosphor glow: blue to white, green to bl
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.headline \{ background: linear-gradient\(180deg, #ffffff 0%, #f1f6f8 42%, #dbe5ea 100%\);[^}]*drop-shadow\(0 0 10px rgba\(255, 255, 255, 0\.34\)\)/, "white, glowing white");
 });
 
-test("the original passport (iteration 5, 7db2b89): plus registration band, the 01, the print lines, its own teal and phosphor, the machine zone at the foot", () => {
+test("the passport in the device's language (the owner's mock-up of 2 Nov 2026, traced): the map alone of the old artwork; the name type in the logo's set; a two-line machine zone at the foot; no hairline on the document", () => {
   const sec = strip(read("app/components/PassportSecurity.jsx"));
-  assert.match(sec, /function Plus\(\{ x, y, s = 5, tone = "s" \}\)/);
-  assert.match(sec, /<Plus key=\{i\}/);
-  assert.match(sec, /<span className="ppvpage">01<\/span>/);
-  const board = strip(read("app/board/page.js"));
-  assert.ok(board.indexOf("<PassportSecurity") < board.indexOf('<div className="ppmrz">'), "the MRZ sits at the foot, under the hologram window");
-  assert.match(board, /<div className="ppnation">ASILUM <b>\*<\/b> FASHION PASSPORT<\/div>/, "no magazine");
+  assert.ok(!/Plus|ppvpage|MICROPRINT|ppterrain|ppholo-b/.test(sec), "the pluses, the page number, the microprint band and the hot window went with the mock-up: one faint map");
+  const board = strip(read("app/board/page.js")), page = strip(read("app/components/PassportDocument.jsx"));
+  assert.ok(board.indexOf("<PassportSecurity") < board.indexOf("<PassportDocument"), "the map under everything");
+  assert.ok(page.indexOf("<PassportBarcode") < page.indexOf('<div className="ppmrz">'), "the bar code over the MRZ at the foot");
+  assert.match(page, /<h2 className="pptitle">ASILUM TASTE PASSPORT<\/h2>/, "the name is type (no plate since 2 Nov 2026)");
+  assert.ok(!/PassportPlate|<div className="ppnation">/.test(board + page), "no plate, no nation line");
+  assert.match(page, /\{mrz\.map\(\(line, i\) => <MrzLine key=\{i\} text=\{line\} cursor=\{editable && i === mrz\.length - 1\} \/>\)\}/, "every line of the zone through MrzLine, the cursor on the last of the document");
   assert.match(rules, /\[data-theme="light"\] \.ppdoc \{ --sig: #0b7584; \}/, "the document's own teal");
   assert.match(rules, /:root:not\(\[data-theme="light"\]\) \.ppdoc \{ --sig: #f4f9fc; \}/, "white in dark (no green since 29 Oct)");
-  assert.match(rules, /\.pv-r \{ stroke: var\(--red\); opacity: 0\.75; \}/, "the pluses have their tones again");
-  assert.match(rules, /\.ppphoto::after \{ background:[^}]*repeating-linear-gradient\(0deg, transparent 0 2px,/s, "the photo slot's print lines");
-  assert.match(rules, /\.ppdoc \.ppmrz \{[^}]*border-top: 1px dashed var\(--line\);[^}]*font-family: var\(--mono\);/s);
+  assert.match(rules, /\.ppphoto::after \{ content: ""; position: absolute; inset: 0; pointer-events: none; background:[^}]*repeating-linear-gradient\(0deg, transparent 0 2px,/s, "the photo slot's print lines");
+  // no hairline anywhere on the document (the UI law's "no lines"): no border on the frame, the bands, the photo,
+  // the written fields, the pad, the ghost or the machine zone
+  for (const sel of [".ppdoc", ".ppmast", ".ppphoto", ".ppwrite", ".ppsigpad", ".ppghost", ".ppmrz"]) {
+    const rule = rules.match(new RegExp("\\n" + sel.replace(/[.]/g, "\\.") + " \\{([^}]*)\\}"));
+    assert.ok(rule, sel + " is styled");
+    assert.ok(!/border(-top|-bottom)?:\s*1px/.test(rule[1]), sel + " carries no hairline: " + rule[1].trim().slice(0, 80));
+  }
+  assert.ok(!/dashed var\(--line\);[^}]*font-family: var\(--mono\)/.test(rules), "the dashed rule over the machine zone is gone");
+  assert.ok(!/\.ppsec\b/.test(rules), "the old band is gone");
+  // the device's line: Michroma, one line, the data in the document's colour glowing, the filler unlit, the cursor
+  // still under reduced motion
+  assert.match(rules, /\.mrzline \{ display: block; white-space: nowrap; overflow: hidden; font-family: var\(--mich\); \}/);
+  assert.match(rules, /\.mrzline b \{ font-weight: 400; color: var\(--sig\); text-shadow: var\(--glow\); \}/);
+  assert.match(rules, /\.mrzline i \{ font-style: normal; color: var\(--red\); opacity: 0\.6; \}/);
+  assert.match(rules, /@media \(prefers-reduced-motion: reduce\) \{ \.mrzcursor \{ animation: none; \} \}/);
+  assert.match(rules, /\.ppdoc \{[^}]*container-type: inline-size;[^}]*aspect-ratio: 100 \/ 148\.2;/s, "the page measures itself: every size in hundredths of its width, on the golden grid (grown 3 Nov 2026 with the lower page)");
+  assert.match(rules, /\.ppmrz \.mrzline \{ display: flex; justify-content: space-between;/, "52 characters spread over the zone: always the measure, never clipped");
 });

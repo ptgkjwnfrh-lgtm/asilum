@@ -27,11 +27,16 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const read = (p) => readFileSync(ROOT + p, "utf8");
 
-test("the type stack is three faces: Michroma, Inter, and the description face Share Tech Mono (owner reference, 18 Oct 2026)", () => {
+test("the type stack is three faces — Michroma, Inter, the description face Share Tech Mono (owner reference, 18 Oct 2026) — and, for the Passport's machine type alone, OCR A Extended (the owner's mock-up, 2 Nov 2026)", () => {
   const css = read("app/globals.css");
   const faces = [...css.matchAll(/@font-face \{ font-family: "([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(faces.sort(), ["Inter", "Michroma", "Share Tech Mono"],
-    "a third @font-face means a face was added without a decision");
+  assert.deepEqual(faces.sort(), ["Inter", "Michroma", "OCR A Extended", "Share Tech Mono"],
+    "a fifth @font-face means a face was added without a decision");
+  // (2 Nov 2026) OCR A reaches the page through one token and only the Passport's rules read it
+  assert.match(css, /--ocr:\s*"OCR A Extended", "OCR A Std", var\(--mono\);/);
+  const rules = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const readers = [...rules.matchAll(/([^{}]+)\{[^{}]*var\(--ocr\)/g)].map((m) => m[1].trim());
+  assert.ok(readers.length > 0 && readers.every((sel) => /^\.pp/.test(sel)), "only the Passport's rules set OCR A: " + readers.join(" | "));
 
   // (25 Oct 2026, late — the owner's mockup, amending 19 Oct's "all the
   // fonts Michroma") three faces, three tokens: Michroma for the words,
@@ -43,6 +48,7 @@ test("the type stack is three faces: Michroma, Inter, and the description face S
   assert.ok(!/"STM"/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")), "the old STM alias stays retired — the face is named in full");
   assert.ok(existsSync(ROOT + "public/fonts/sharetech.ttf") && existsSync(ROOT + "public/fonts/OFL-sharetechmono.txt"), "Share Tech Mono ships with its licence");
   assert.ok(existsSync(ROOT + "public/fonts/inter.woff2") && existsSync(ROOT + "public/fonts/OFL-inter.txt"), "Inter ships with its licence");
+  assert.ok(existsSync(ROOT + "public/fonts/ocr-a-extended.ttf") && existsSync(ROOT + "public/fonts/NOTICE-ocr-a-extended.txt"), "OCR A Extended ships with its notice (the owner's own copy, its licence the owner's)");
 });
 
 test("the digi-cam face is gone, by name and by file", () => {
@@ -97,12 +103,13 @@ test("nothing in app/ or lib/ still asks for it", () => {
   assert.deepEqual(offenders, [], "these still reference the retired face");
 });
 
-test("the font files that ship are the three faces and their licences", () => {
+test("the font files that ship are the four faces and their licences", () => {
   const shipped = readdirSync(ROOT + "public/fonts").sort();
   assert.deepEqual(shipped, [
-    "OFL-inter.txt", "OFL-michroma.txt", "OFL-sharetechmono.txt",
+    "NOTICE-ocr-a-extended.txt", "OFL-inter.txt", "OFL-michroma.txt", "OFL-sharetechmono.txt",
     "inter.ttf", "inter.woff2",
     "michroma.ttf", "michroma.woff2",
+    "ocr-a-extended.ttf",
     "sharetech.ttf",
-  ].sort(), "public/fonts must hold exactly the three faces and their licences");
+  ].sort(), "public/fonts must hold exactly the four faces and their licences");
 });

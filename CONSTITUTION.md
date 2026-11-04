@@ -596,6 +596,85 @@ comment, stamp, share) float over it with no box, ground or scrim. The
 recommended motions likewise, VIDEOS YOU MAY LIKE in the head and the
 caption of whichever video sits in the centre, changing as it moves.
 
+**A6 fifth addendum — THE TRON PASSPORT (Oct 31, 2026).** The owner, after
+the Masthead, the logo and the deck took the sleek look of 28–30 Oct: "we
+have to redesign the passport to mimic the new style of the app, yk we're
+going for a sleek tron type of vibe now; i want more [MRZ] or whatever the
+little text on passports are, and chevrons." Rulings: (1) the PASSPORT
+document (/board, app/board/page.js) is redrawn in the app's own language —
+no hairline anywhere on it, the bands parted by tone, its name cut out of
+the logo's white plate (app/components/PassportPlate.jsx, as the wordmark
+is cut out of its brick), the asterisk the house red, the data page's
+keys with the device's lamps; (2) KEPT EXACTLY, the owner having circled
+them: the serial at the top right ("№ AS·00·08") and the four-language
+title block (PASSPORT / パスポート / REISEPASS / PASSEPORT); of the
+original document the registration pluses, the "01", the photo slot's
+print lines and the hologram window stay; (3) MORE MRZ: the machine zone
+at the foot is four lines (lib/passport/document.js mrzZone), every one a
+field the data page prints — type P, code ASM, the username, the account
+number, member-since, the class, BASED IN, the country of origin, the
+handle, the taste class and the counts — and the chevrons are its filler,
+as a real machine zone's are; the serial and the microprint are set as
+machine-readable lines too (app/components/Blocks.jsx MrzLine). The
+25 Oct word stands: chevrons never stand in for text (blocks do); here they
+are what a machine zone is filled with. This narrows the third addendum's
+(4) — "the og passport design should transfer over 90% accurately" — to
+the elements named in (2). The public Passport is untouched: what it
+reveals (the hidden-city ring, ADR-006) is not the page's chrome.
+
+**A6 sixth addendum — THE TASTE PASSPORT (Nov 2, 2026).** The owner's
+mock-up (docs/v2/mocks/2026-11-02-taste-passport/) and the word with it:
+the MRZ "a little more even" with "the same underneath clouded low opacity
+effect as the passport clouded masthead"; every translation "either French,
+German, Spanish, Japanese or Arabic, random selection"; "close the kerning
+on the ASILUM TASTE PASSPORT to match the ASILUM logo and up the size and
+boldness"; "replace SEX/ with IDNTY/ so people can feel free to type in
+whatever they want"; the Paris map kept "very very very lower opacity"; the
+tiny photo box "a photo line negative of the primary photo"; the signature
+"the passenger's user name but they have the option to actually sign it".
+Rulings: (1) the document (/board) is the mock-up's portrait page — the
+clouded masthead carrying the serial (the account's month and day, a
+machine line) and the passport number (six digits read off the account
+number) under the cloud, the name as type in the logo's set, the data page
+(SURNAME, GIVEN NAME, DATE OF BIRTH, NATIONALITY, IDNTY, TASTE TYPE, DATE
+OF ISSUE), the signature, the account number, the photo's negative, the
+bar code cut in the ink, a two-line machine zone clouded the same way; this
+supersedes the fifth addendum's (2) — the name plate, the four-language
+block and the boards-and-convictions serial are gone; of the original the
+registration pluses, the "01" and the photo's print lines stay; (2) ONE
+language per passport, drawn off the account number so the same passport
+reads the same every time; (3) IDNTY and DATE OF BIRTH are what the
+passenger writes on the page, kept on the device — the signup birth date is
+never served to the shell; (4) the signature is the username until the
+passenger signs on the page, the stroke kept on the device; (5) the map is
+one faint layer — no hot window, no microprint. The public Passport is
+untouched. Record: docs/v2/slice-18-taste-passport-2026-11-02.md.
+The same day, on the first build ("the formatting is so so off and i only
+wanted the map to stay … just trace the picture … a negative cut out like
+the logo … the barcode slope should match the logo slope the header slope
+should match the logo slope … thin out the barcode"; then "some of the text
+is OCR A Extended and i replaced the Os with 0s … there must be 4
+translations underneath the photo"): (6) the document IS the mock-up,
+traced — every piece placed in hundredths of the page's width, the keys
+under it; (7) the masthead's foot and the bar code's ramp take the logo's
+own slant (lib/wordmark.js), and the bar code is the logo's brick mirrored
+with the bars cut out of it; (8) the faces are the mock-up's — OCR A
+Extended (the Os zeros) for the serial, the number, the mock-up's four
+words under the photo (PASSP0RT/REISEPASS, パスポート/PASSEP0RT) and the
+machine zone, a serif numero, Michroma for everything else; the zone
+unclouded; through the bar code's slits the Liquid Glass alone, no tint;
+(9) of the old artwork the map alone stays — no pluses, no page number, no
+credit line (the map page carries OpenStreetMap's). Later that day: the
+name's kerning opened a little and its bold eased; the masthead glowing
+white a little; PASSENGER BIOMETRIC PHOTO under the negative; the bar
+code's glow off (its halo read as a bezel); the numero drawn as the mock-up
+draws it; every label on one line; then "GRID THE WHOLE THING AND APPLY THE
+GOLDEN RATIO" — the page laid on a φ scale from its margin (slice 18's
+record has the scale); then the masthead "a low opacity solid white with a
+glow" and "all the text has to be legible as if it were an actual ID" —
+the type raised to a legible scale; then "narrow the photo" — the split
+flipped to 1:φ so every label holds one line beside its translation.
+
 **Operational note (July 26, 2026), not a rule change.** The device-flow
 ritual is retired at the owner's request; a repo-scoped `gh` token is
 stored durably in `~/.config/gh/hosts.yml` (chmod 600) with

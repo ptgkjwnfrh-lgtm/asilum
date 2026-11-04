@@ -12,7 +12,8 @@ import { readFileSync } from "node:fs";
 
 import { dhashFromGray, hammingHex, DHASH_HAMMING_THRESHOLD } from "../lib/images/dhash.js";
 
-const BOARD = readFileSync("app/board/page.js", "utf8");
+// the upload station (it was the Passport's until its upload folded into /upload, 3 Nov 2026)
+const BOARD = readFileSync("app/upload/page.js", "utf8");
 const ROUTE = readFileSync("app/api/moodboard/route.js", "utf8");
 const READER = readFileSync("lib/vision/stampReading.js", "utf8");
 const CSS = readFileSync("app/globals.css", "utf8");

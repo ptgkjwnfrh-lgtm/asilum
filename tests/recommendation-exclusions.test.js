@@ -183,7 +183,7 @@ const POOL_CALLERS = {
   // rather than to suggest anything.
   "app/api/related/route.js": "no-identity",
   "app/api/discover/route.js": "browse-full-inventory",
-  "app/api/orders/route.js": "id-lookup",
+  "lib/orders/bought.js": "id-lookup", // what was bought, by id (the orders route and the Passport's stamps read it)
   // The career registry counts how many pieces CREDIT a designer at a house
   // (V.2 overview); nothing from the pool is suggested, the count is a fact.
   "app/api/search/route.js": "id-lookup",

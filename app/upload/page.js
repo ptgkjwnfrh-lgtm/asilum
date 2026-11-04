@@ -32,7 +32,8 @@
 // — nothing bought, nothing marked, and the readout says so.
 
 import { useEffect, useRef, useState } from "react";
-import { getUid, postJSON, authorizedFetch } from "../../lib/client.js";
+import { getUid, postJSON, authorizedFetch, thumbFor } from "../../lib/client.js";
+import { readStamps } from "../../lib/vision/stampReading.js";
 import { analyzePalette, mergePalettes } from "../../lib/vision/palette.js";
 import { vizState } from "../../lib/brain/memory.js";
 import { TAGS } from "../../lib/brain/tags.js";
@@ -57,6 +58,9 @@ export default function UploadPage() {
   const [uid, setUid] = useState("");
   const [viz, setViz] = useState(null);
   const [notice, setNotice] = useState("");
+  // RECOGNITION (owner directive, 27 Aug 2026; moved here from the Passport, 3 Nov 2026, when its upload
+  // folded into this station): the archive noticing a photograph it already holds — one line and the pieces
+  const [recognized, setRecognized] = useState([]);
   const [dragOver, setDragOver] = useState(false);
   const [busy, setBusy] = useState(false);
   const [heard, setHeard] = useState([]);
@@ -195,6 +199,8 @@ export default function UploadPage() {
         newTiles.push({ id: (window.crypto?.randomUUID?.() || String(Date.now()) + Math.random()), src: url, name: f.name.slice(0, 80) });
       } catch {}
     }
+    setRecognized([]);
+    const stamps = await readStamps(files.slice(0, 6));
     const merged = mergePalettes(analyses);
     const paletteWords = [...new Set(analyses.flatMap((a) => [...a.words, ...a.moods]))].slice(0, 14);
     const prompt = [words, paletteWords.join(" ")].filter(Boolean).join(" ").trim();
@@ -203,8 +209,12 @@ export default function UploadPage() {
       user: uid, kind: "upload",
       filenames: files.map((f) => f.name.slice(0, 200)),
       palette: merged.palette.map((s) => ({ hex: s.hex, weight: s.weight })),
+      stamps,
       uploadId: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10),
-    }).catch(() => {});
+    })
+      .then((r) => (r && r.ok ? r.json() : null))
+      .then((d) => { if (d && d.recognized?.length) setRecognized(d.recognized); try { window.dispatchEvent(new CustomEvent("asilum:upload")); } catch {} })
+      .catch(() => {});
     saveTiles([...newTiles, ...tiles].slice(0, 40));
     const seen = [...new Set(merged.palette.map((s) => s.name))].slice(0, 3).join(", ");
     hear(`${files.length} image${files.length > 1 ? "s" : ""}${seen ? " — " + seen : ""}`);
@@ -328,6 +338,19 @@ export default function UploadPage() {
         <i className="gxthick" aria-hidden="true" />
       </header>
       {notice && <Notice variant="banner" onDismiss={() => setNotice("")}>{notice}</Notice>}
+      {recognized.length > 0 && (
+        <div className="stampknow">
+          <span className="stampknow-mark" aria-hidden="true">✳</span>
+          <span className="stampknow-say">{recognized.length === 1 ? "the archive holds this one." : `the archive holds ${recognized.length} of these.`}</span>
+          <span className="stampknow-row">
+            {recognized.map((it) => (
+              <a key={it.id} className="stampknow-piece" href={"/?item=" + encodeURIComponent(it.id)} title={[it.brand, it.title].filter(Boolean).join(" — ")}>
+                <img src={it.img || thumbFor(it)} alt={it.title || "piece"} loading="lazy" />
+              </a>
+            ))}
+          </span>
+        </div>
+      )}
 
       <div className="gxlayout">
         <main className="gxmain">

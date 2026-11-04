@@ -87,7 +87,13 @@ export function regionFor(center, km) {
   return { lat: 20, lng: 0, latDelta: 140, lngDelta: 360 };
 }
 
-export function AppleMap({ center = null, km = 30, places = [], selectedId = null, onSelect, label = "" }) {
+// `tone: "asilum"` is the Passport's map, the owner's own setting (3 Nov 2026, a SwiftUI MapKit view:
+// `.mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))`, `.colorScheme(.light)`,
+// `UserAnnotation()`, `MapScaleView()`, each spot a black label in white monospaced type): the standard map,
+// flat, every point of interest off, always light; the passenger's own dot (drawn by Apple's script on the
+// device — ASILUM never receives it); the scale; each place a label, not a pin. A new region after the first
+// is FLOWN to, not jumped to (the Passport's map zips to an event).
+export function AppleMap({ center = null, km = 30, places = [], selectedId = null, onSelect, label = "", tone = "" }) {
   const elRef = useRef(null);
   const mapRef = useRef(null);
   const [failed, setFailed] = useState(false);
@@ -98,9 +104,15 @@ export function AppleMap({ center = null, km = 30, places = [], selectedId = nul
       if (!live || !d.enabled) return null;
       return loadMapkit(d.script, d.token).then((mk) => {
         if (!live || !elRef.current || mapRef.current) return;
+        const asilum = tone === "asilum";
         const map = new mk.Map(elRef.current, {
-          colorScheme: themeNow() === "light" ? mk.Map.ColorSchemes.Light : mk.Map.ColorSchemes.Dark,
+          colorScheme: asilum || themeNow() === "light" ? mk.Map.ColorSchemes.Light : mk.Map.ColorSchemes.Dark,
           showsMapTypeControl: false,
+          ...(asilum ? {
+            ...(mk.PointOfInterestFilter && mk.PointOfInterestFilter.excludingAllCategories ? { pointOfInterestFilter: mk.PointOfInterestFilter.excludingAllCategories } : {}),
+            showsUserLocation: true,
+            showsScale: mk.FeatureVisibility.Visible,
+          } : {}),
           showsPointsOfInterest: false,
           isRotationEnabled: false,
           showsCompass: mk.FeatureVisibility.Hidden,
@@ -108,8 +120,8 @@ export function AppleMap({ center = null, km = 30, places = [], selectedId = nul
         map.addEventListener("select", (e) => { const id = e.annotation && e.annotation.data && e.annotation.data.id; if (id && onSelect) onSelect(id); });
         mapRef.current = map;
         setFailed(false);
-        // the theme follows the device, as every surface does
-        const mo = new MutationObserver(() => { if (mapRef.current) mapRef.current.colorScheme = themeNow() === "light" ? mk.Map.ColorSchemes.Light : mk.Map.ColorSchemes.Dark; });
+        // the theme follows the device, as every surface does — the Passport's map stays light, as set
+        const mo = new MutationObserver(() => { if (mapRef.current && !asilum) mapRef.current.colorScheme = themeNow() === "light" ? mk.Map.ColorSchemes.Light : mk.Map.ColorSchemes.Dark; });
         mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
         map._asilumObserver = mo;
       });
@@ -126,11 +138,24 @@ export function AppleMap({ center = null, km = 30, places = [], selectedId = nul
     const map = mapRef.current, mk = typeof window !== "undefined" ? window.mapkit : null;
     if (!map || !mk) return;
     const r = regionFor(center, km);
-    try { map.region = new mk.CoordinateRegion(new mk.Coordinate(r.lat, r.lng), new mk.CoordinateSpan(r.latDelta, r.lngDelta)); } catch { /* an odd span */ }
+    try {
+      const region = new mk.CoordinateRegion(new mk.Coordinate(r.lat, r.lng), new mk.CoordinateSpan(r.latDelta, r.lngDelta));
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (map._asilumRegioned && !reduced && map.setRegionAnimated) map.setRegionAnimated(region, true); else map.region = region;
+      map._asilumRegioned = true;
+    } catch { /* an odd span */ }
     const red = token("--red") || undefined, ink = token("--grey") || undefined;
-    const pins = places
-      .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng))
-      .map((p) => new mk.MarkerAnnotation(new mk.Coordinate(p.lat, p.lng), {
+    const placed = places.filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng));
+    // the Passport's map: each place its name on a black label, white monospaced type (the selected one red)
+    const label = (p) => () => {
+      const el = document.createElement("span");
+      el.className = "ppmaplabel" + (p.id === selectedId ? " sel" : "");
+      el.textContent = String(p.name || "").toUpperCase();
+      return el;
+    };
+    const pins = tone === "asilum"
+      ? placed.map((p) => new mk.Annotation(new mk.Coordinate(p.lat, p.lng), label(p), { title: p.name || "", data: { id: p.id }, anchorOffset: new DOMPoint(0, -10) }))
+      : placed.map((p) => new mk.MarkerAnnotation(new mk.Coordinate(p.lat, p.lng), {
         title: p.name || "",
         subtitle: [p.kind, p.sample ? "sample fixture" : null].filter(Boolean).join(" · "),
         color: p.id === selectedId ? red : ink,
@@ -146,8 +171,8 @@ export function AppleMap({ center = null, km = 30, places = [], selectedId = nul
 }
 
 /** The one map every place surface draws. */
-export default function PlaceMap({ mode = "local", center = null, km = 30, places = [], selectedId = null, onSelect, label = "" }) {
+export default function PlaceMap({ mode = "local", center = null, km = 30, places = [], selectedId = null, onSelect, label = "", tone = "" }) {
   const gateState = useMapkitGate();
-  if (gateState === "apple") return <AppleMap center={mode === "local" ? center : null} km={km} places={places} selectedId={selectedId} onSelect={onSelect} label={label} />;
+  if (gateState === "apple") return <AppleMap center={mode === "local" ? center : null} km={km} places={places} selectedId={selectedId} onSelect={onSelect} label={label} tone={tone} />;
   return <FashionMap mode={mode} center={center} km={km} places={places} selectedId={selectedId} onSelect={onSelect} label={label} />;
 }
