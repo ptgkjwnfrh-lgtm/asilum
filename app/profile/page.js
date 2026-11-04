@@ -1,20 +1,26 @@
 "use client";
 
-// app/profile/page.js — PROFILE.
-// Standard social format (owner order, Aug 12: Grailed × Twitter ×
-// MySpace, legibility first), rebuilt in liquid glass on 9 Sep (owner: "the
-// account page looks a little empty — instagram mixed with myspace mixed
-// with grailed"): the identity header as one glass pane (banner, the avatar
-// over its edge, name/handle/bio, the counts as big numbers — Instagram), a
-// rail of the person's own page (ABOUT ME with the passport in preview —
-// MySpace), and ONE tab row on a glass sheet holding everything —
-// posts as a square grid, the CLOSET as a grid of pieces with brand and
-// price (Grailed), brands, wardrobe, the room, sizing, and account.
-// Identity is local until real accounts exist; every displayed count is
-// derived from real local/server state, and "—" stands where nothing is
-// measured.
+// app/profile/page.js — THE ACCOUNT PAGE.
+// Re-upped on the owner's sketch (4 Nov 2026: "pretty much close to
+// Instagram"): ProfileHead.jsx is the header — the display name as the
+// title, the avatar with the room's SONG under it, the handle with the
+// Passenger Score as stars, POSTS · LISTINGS · FOLLOWERS · FOLLOWING, the
+// bio — then the key row: EDIT PROFILE, MESSAGE, and beside it the three
+// keys that open the owner's own panels in place of the tabs:
+//   WARDROBE    the pieces they own (WardrobeTab.jsx)
+//   STATISTICS  their BRDCSTs, their follower information, their
+//               storefront's numbers — every figure a read of a record
+//   BANKING     earnings: the fee ledger and the order intake state the
+//               storefront answers with (StorefrontTab.jsx EarningsPanel)
+// Under the keys the live ECHOES as rings, and under those four tabs:
+// POSTS (the grid), REPOSTS, FEATURED (the room's TOP PIECES and BRANDS ON
+// RECORD) and STOREFRONT. The rooms that were tabs — ACCOUNT, ROOM & SONG,
+// SIZING, CLOSET, BRANDS — hang off the ⋯ key in the title bar.
+// Standing rules: identity is local until real accounts exist; every
+// displayed count is derived from real local/server state, and "—" stands
+// where nothing is measured; a password-reset link still opens ACCOUNT.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   EMPTY_FIT, getUid, authorizedFetch, thumbFor, loadFitProfile,
   saveFitProfile, saveServerFitProfile, sendJSON, SIGN_OUT_NOTICE,
@@ -27,32 +33,56 @@ import {
   mapServerPost, matchesLocalPost,
   followedUsers, followedBrands, setFollowBrand, setFollowUser, sourceFor,
 } from "../../lib/social.js";
+import { postType, brdcstWhen } from "../../lib/feed/types.js";
+import { openSheet } from "../../lib/dockstate.js";
 import { authConfigured, getSupabase } from "../../lib/supabase.js";
-import { Avatar, UserSearch } from "../components/UserBits.jsx";
+import { Avatar, UserSearch, useFriends } from "../components/UserBits.jsx";
 import GlassPane from "../components/GlassPane.jsx";
-import PassportPreview from "../components/PassportPreview.jsx";
+import ProfileHead, { ProfileTabs, PostGrid, useFollowers } from "../components/ProfileHead.jsx";
+import Icon from "../components/Icons.jsx";
 import ConnectionsRack from "../components/ConnectionsRack.jsx";
 import ConnectionsWheel from "../components/ConnectionsWheel.jsx";
-import TransmissionText from "../components/TransmissionText.jsx";
 import BusinessAccountPanel from "../components/BusinessAccount.jsx";
 import { WardrobeTab } from "../components/WardrobeTab.jsx";
 import { RoomEditor } from "../components/ProfileRoom.jsx";
 import StorefrontTab from "../components/StorefrontTab.jsx";
-import { ScoreLine } from "../components/ScoreSheet.jsx";
+import { normalizeEnvelope, EarningsPanel, formatMoney } from "../components/StorefrontTab.jsx";
+import Notice from "../components/Notice.jsx";
 import {
   ColorEvidenceLine, OriginLine, ProductFitLine, refreshFitProfile, useFitBrain,
 } from "../components/ProductSignals.jsx";
+
+const TABS = [["posts", "POSTS"], ["reposts", "REPOSTS"], ["featured", "FEATURED"], ["storefront", "STOREFRONT"]];
+// the sketch's four glyphs: the grid, the loop, the portrait, the awning
+const TAB_ICONS = Object.freeze({ posts: "grid", reposts: "repost", featured: "featured", storefront: "store" });
+
+// the ⋯ menu: the rooms that used to be tabs, and the account's other doors
+const ROOMS = [
+  ["account", "ACCOUNT", "SIGN IN · SOURCES · BUSINESS"],
+  ["room", "ROOM & SONG", "HANDLE · SKIN · ANTHEM"],
+  ["sizing", "SIZING", "THE FIT ON FILE"],
+  ["closet", "CLOSET", "THE BAG'S HISTORY"],
+  ["brands", "BRANDS", "FOLLOWED HOUSES"],
+];
+const PANEL_TITLE = { wardrobe: "WARDROBE", stats: "STATISTICS", bank: "BANKING", account: "ACCOUNT", room: "ROOM & SONG", sizing: "SIZING", closet: "CLOSET", brands: "BRANDS" };
 
 export default function ProfilePage() {
   const fit = useFitBrain();
   const [info, setInfo] = useState(null);
   const [editing, setEditing] = useState(false);
   const [tab, setTab] = useState("posts");
+  const [panel, setPanel] = useState(null);   // wardrobe · stats · bank · account · room · sizing · closet · brands
+  const [menu, setMenu] = useState(false);
   const [posts, setPosts] = useState([]);
   const [bagHistory, setBagHistory] = useState([]);
   const [boardFollows, setBoardFollows] = useState(0);
   const [brandFollows, setBrandFollows] = useState(0);
   const [since, setSince] = useState("");
+  // the room (handle, anthem, top pieces): null = the feature is off on this
+  // deploy; { available: false } = accounts only, with the reason
+  const [room, setRoom] = useState(null);
+  // the storefront envelope: { state: "signedout" | "ok" | "error", envelope, error }
+  const [sf, setSf] = useState({ state: "signedout", envelope: null, error: "" });
 
   useEffect(() => {
     setInfo(getProfileInfo());
@@ -97,11 +127,37 @@ export default function ProfilePage() {
       .catch(() => {});
   }, []);
 
-  // BRANDS in the header counts FOLLOWED brands (metric-definition audit,
-  // Aug 17 — it used to count distinct brands in bag history). Held in state
-  // and refreshed on "asilum:follow" so the header agrees with the BRANDS tab
+  // THE ROOM and THE STOREFRONT, read once and again when the identity
+  // changes (sign-in lands a room and a storefront that a device never had).
+  // The header's SONG, LISTINGS and FOLLOWERS, the FEATURED tab, STATISTICS
+  // and BANKING all read these two records; nothing is fetched twice.
+  const loadRecords = useCallback(() => {
+    const uid = getUid() || "";
+    authorizedFetch("/api/profile/room?user=" + encodeURIComponent(uid))
+      .then((r) => (r.status === 503 ? null : r.json()))
+      .then((d) => setRoom(d))
+      .catch(() => setRoom(null));
+    if (!uid.startsWith("sb-")) { setSf({ state: "signedout", envelope: null, error: "" }); return; }
+    authorizedFetch(`/api/storefront?user=${encodeURIComponent(uid)}`, { cache: "no-store" })
+      .then(async (r) => {
+        const body = await r.json().catch(() => ({}));
+        if (r.status === 401 || r.status === 403) { setSf({ state: "signedout", envelope: null, error: "" }); return; }
+        if (!r.ok) { setSf({ state: "error", envelope: null, error: body.error || (r.status === 404 ? "storefront service is not enabled on this deployment" : "the storefront record could not be read") }); return; }
+        setSf({ state: "ok", envelope: normalizeEnvelope(body), error: "" });
+      })
+      .catch(() => setSf({ state: "error", envelope: null, error: "the storefront service could not be reached — no empty record is being assumed" }));
+  }, []);
+  useEffect(() => {
+    loadRecords();
+    window.addEventListener("asilum:identity", loadRecords);
+    return () => window.removeEventListener("asilum:identity", loadRecords);
+  }, [loadRecords]);
+
+  // BRANDS counts FOLLOWED brands (metric-definition audit, Aug 17 — it
+  // used to count distinct brands in bag history). Held in state and
+  // refreshed on "asilum:follow" so STATISTICS agrees with the BRANDS room
   // the moment a chip is toggled there; a render-time read would have gone
-  // stale, because the tab keeps its own local copy.
+  // stale, because the room keeps its own local copy.
   useEffect(() => {
     const read = () => setBrandFollows(followedBrands().length);
     read();
@@ -114,8 +170,8 @@ export default function ProfilePage() {
   // every other fragment keeps the normal POSTS default.
   useEffect(() => {
     const onHash = () => {
-      if (window.location.hash === "#access") setTab("account");
-      if (window.location.hash === "#storefront") setTab("storefront");
+      if (window.location.hash === "#access") setPanel("account");
+      if (window.location.hash === "#storefront") { setPanel(null); setTab("storefront"); }
     };
     onHash();
     window.addEventListener("hashchange", onHash);
@@ -123,9 +179,9 @@ export default function ProfilePage() {
   }, []);
 
   // ---- Landing from a password-reset link (found live, Aug 14) ----
-  // This LIVES HERE, in the page that owns `tab`, and reads nothing but the
+  // This LIVES HERE, in the page that owns `panel`, and reads nothing but the
   // URL. Two things went wrong when it lived in ProfileAccess instead:
-  //   1. ProfileAccess only mounts once the ACCOUNT tab is already open —
+  //   1. ProfileAccess only mounts once ACCOUNT is already open —
   //      the very thing this needs to cause — so it could never run first.
   //   2. `setTab` is not in scope there, so the call threw a ReferenceError
   //      that a bare `catch {}` swallowed, silently killing the notice and
@@ -133,7 +189,7 @@ export default function ProfilePage() {
   //      error handling.
   // Both the set-a-new-password form and the notice live under ACCOUNT
   // while the page opens on POSTS, so arriving from a reset link — working
-  // or expired — must open that tab or the reader sees nothing at all.
+  // or expired — must open that panel or the reader sees nothing at all.
   useEffect(() => {
     let hash;
     try {
@@ -144,14 +200,14 @@ export default function ProfilePage() {
     const cameFromReset = new URLSearchParams(window.location.search).get("reset") === "1";
     if (!cameFromReset && !failed) return;
 
-    setTab("account");
+    setPanel("account");
     if (failed) {
       // Supabase redirects here even when it REFUSES the link, with the
       // reason in the fragment (#error=access_denied&error_code=...).
       // Saying nothing is the worst answer available: the reader cannot
       // tell a dead link from a broken site. The notice rides the same
-      // localStorage + event channel the ACCOUNT tab already reads, so it
-      // is waiting there when that tab mounts.
+      // localStorage + event channel the ACCOUNT panel already reads, so it
+      // is waiting there when that panel mounts.
       const described = (hash.get("error_description") || "").replace(/\+/g, " ");
       const message = code === "otp_expired"
         ? "that reset link has expired or was already used — links last about an hour. ask for a new one below."
@@ -168,12 +224,17 @@ export default function ProfilePage() {
     }
   }, []);
 
+  const ownHandle = room?.room?.handle || null;
+  const followers = useFollowers(ownHandle);
+  const friends = useFriends();
+
   function save(k, v) {
     setInfo((prev) => { const n = { ...prev, [k]: v }; saveProfileInfo(n); return n; });
   }
 
-  // Banner and avatar images are device-local (localStorage via profile
-  // info), downscaled in-browser so they fit comfortably in storage.
+  // Avatar and banner images are device-local (localStorage via profile
+  // info), downscaled in-browser so they fit comfortably in storage. The
+  // banner fills the key brick and fades out before its slant (KeyBrick.jsx).
   function pickImage(key, maxW) {
     const input = document.createElement("input");
     input.type = "file";
@@ -197,199 +258,310 @@ export default function ProfilePage() {
     input.click();
   }
 
+  const openPanel = (k) => { setMenu(false); setPanel((cur) => (cur === k ? null : k)); };
+
   if (!info) return <div className="wrap"><div className="empty">…</div></div>;
 
-  // Brands seen in bag history. These are the BRANDS tab's *candidates* to
-  // follow — they are not brands this reader follows, and the header counter no
-  // longer reports them as such (metric-definition audit, Aug 17): with an
-  // empty bag and five followed brands the header read "0 BRANDS" while the tab
-  // listed five under FOLLOWING, and brand follows were counted in neither
-  // FOLLOWING (readers + boards) nor BRANDS.
+  // Brands seen in bag history. These are the BRANDS room's *candidates* to
+  // follow — they are not brands this reader follows (metric-definition
+  // audit, Aug 17).
   const brands = [...new Set(bagHistory.map((o) => o.brand).filter(Boolean))];
   const followingCount = followedUsers().length + boardFollows;
+  const envelope = sf.envelope;
+  // LISTINGS: the storefront's ACTIVE listings. A signed-in account with no
+  // storefront has zero listings — a measurement; a device identity has no
+  // storefront to count, so a dash.
+  const listings = envelope ? envelope.listings.filter((l) => (l.status || "active") === "active").length : null;
+  const anthem = room?.room?.modules?.find((m) => m.module === "soundtrack")?.content?.entities?.[0] || null;
+  const handleShown = ownHandle ? "*" + ownHandle : info.handle;
+
+  const counts = [
+    { key: "posts", label: "POSTS", value: posts.length },
+    { key: "listings", label: "LISTINGS", value: listings, title: sf.state === "signedout" ? "sign in — a storefront belongs to an account" : sf.error || "the storefront record could not be read" },
+    { key: "followers", label: "FOLLOWERS", value: followers, title: ownHandle ? "the follower count could not be read" : "claim a handle in your room to be followed" },
+    { key: "following", label: "FOLLOWING", value: followingCount },
+  ];
+
+  const identity = editing ? (
+    <div className="pf3edit">
+      <input className="pedit" aria-label="display name" value={info.name} onChange={(e) => save("name", e.target.value)} />
+      <input className="pedit small" aria-label="handle" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
+      <textarea className="pedit small" aria-label="bio" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
+      <div className="pf3editkeys">
+        <button type="button" className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
+        {info.avatarImg ? <button type="button" className="ppupl" onClick={() => save("avatarImg", "")}>REMOVE AVATAR</button> : null}
+        <button type="button" className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
+        {info.bannerImg ? <button type="button" className="ppupl" onClick={() => save("bannerImg", "")}>REMOVE BANNER</button> : null}
+      </div>
+    </div>
+  ) : null;
+
+  const keys = (
+    <>
+      <button type="button" className={"pf3key" + (editing ? " on" : "")} aria-pressed={editing} onClick={() => setEditing((e) => !e)}>
+        {editing ? "DONE" : "EDIT PROFILE"}
+      </button>
+      <a className="pf3key" href="/messages">MESSAGE</a>
+    </>
+  );
+  // the three keys the logo's brick encases (KeyBrick.jsx)
+  const tools = (
+    <>
+      <div className="pf3cluster" role="group" aria-label="wardrobe, statistics, banking">
+        {[["wardrobe", "WARDROBE", "wardrobe"], ["stats", "STATISTICS", "stats"], ["bank", "BANKING", "bank"]].map(([k, label, icon]) => (
+          <button type="button" key={k} aria-pressed={panel === k} onClick={() => openPanel(k)} title={label}>
+            <Icon name={icon} size={15} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+
+  const more = (
+    <div className="pf3menu">
+      <button type="button" className="pf3more" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)} title="more rooms">
+        <Icon name="dots" size={18} /><span>MORE</span>
+      </button>
+      {menu ? (
+        <div className="pf3menulist" role="menu">
+          {ROOMS.map(([k, label, meta]) => (
+            <button type="button" role="menuitem" key={k} onClick={() => openPanel(k)}>{label}<span>{meta}</span></button>
+          ))}
+          <a role="menuitem" href="/orders">ORDERS<span>TICKETS + RECEIPTS</span></a>
+          <a role="menuitem" href="/settings">SETTINGS<span>CONTROL PANEL</span></a>
+        </div>
+      ) : null}
+    </div>
+  );
 
   return (
-    <div className="wrap pf2">
-      {/* PROFILE had no page heading of any kind. The person's name is the
-          honest h1 for their own profile; it falls back to the destination
-          name before the profile has loaded one. */}
-      <h1 className="a11yhead">{info.name ? `${info.name} — Profile` : "Profile"}</h1>
-
-      {/* THE IDENTITY PANE (Instagram's header in the passport's glass, 9 Sep):
-          the banner, the avatar over its edge, name / handle / bio, then the
-          counts as big numbers. Every count is real. FOLLOWERS prints "—",
-          not 0 (metric-definition audit, Aug 17): there is no follower state
-          anywhere in lib/ or app/api, so a literal 0 would be a measurement
-          of a thing nobody measures — the /stats rule applied here. */}
+    <div className="wrap pf3">
+      {/* THE HEADER (ProfileHead.jsx, the owner's sketch): the display name
+          is the page's one heading; the handle, the stars, the four counts
+          and the bio sit beside the avatar and its song. */}
       <GlassPane glass="lg-pf-head" className="pfhead" aria-label="identity">
-        <div
-          className="pbanner"
-          style={info.bannerImg ? { backgroundImage: `url(${info.bannerImg})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-        >
-          <span>*</span>
-          {editing && (
-            <div className="pbannerctl">
-              <button className="ppupl" onClick={() => pickImage("bannerImg", 1400)}>⇪ BANNER</button>
-              <button className="ppupl" onClick={() => pickImage("avatarImg", 240)}>⇪ AVATAR</button>
-            </div>
-          )}
-        </div>
-        <div className="phead2">
-          <div className="pavatar">
-            {info.avatarImg
-              ? <img className="pavimg" src={info.avatarImg} alt={info.name || "avatar"} />
-              : <Avatar name={info.name} />}
-          </div>
-          <div className="pident">
-            {editing ? (
-              <>
-                <input className="pedit" aria-label="display name" value={info.name} onChange={(e) => save("name", e.target.value)} />
-                <input className="pedit small" aria-label="handle" value={info.handle} onChange={(e) => save("handle", e.target.value)} />
-                <textarea className="pedit small" aria-label="bio" rows={2} value={info.bio} onChange={(e) => save("bio", e.target.value)} />
-              </>
-            ) : (
-              <>
-                <div className="pname">{info.name}</div>
-                <div className="uhandle">{info.handle}</div>
-                <p className="pbio">{info.bio}</p>
-              </>
-            )}
-            {since && <div className="pmeta">MEMBER SINCE {since}</div>}
-            <div className="pcounts">
-              <span><b>{posts.length}</b> POSTS</span>
-              <span><b>{followingCount}</b> FOLLOWING</span>
-              <span><b>{brandFollows}</b> BRANDS</span>
-              <span><b title="ASILUM does not track followers yet">—</b> FOLLOWERS</span>
-            </div>
-          </div>
-          <button className="btn ghost" onClick={() => setEditing((e) => !e)}>
-            {editing ? "DONE" : "EDIT PROFILE"}
-          </button>
-        </div>
+        <ProfileHead
+          title={<h1 className="pf3title">{info.name || "Profile"}</h1>}
+          menu={more}
+          name={info.name}
+          handle={handleShown}
+          avatar={info.avatarImg || null}
+          bio={info.bio}
+          identity={identity}
+          scoreSubject={getUid()}
+          counts={counts}
+          song={anthem ? { name: anthem.name, label: anthem.label } : null}
+          onSong={() => openPanel("room")}
+          actions={keys}
+          tools={tools}
+          banner={info.bannerImg || null}
+          echoes={posts}
+          onEchoAdd={() => openSheet("post", { kind: "echo", title: "POST" })}
+        />
       </GlassPane>
 
-      <div className="pflayout">
-        {/* THE RAIL — the MySpace column, a page of the person's own: ABOUT
-            ME, the TOP HOUSES eight-up, the PEOPLE they follow, THE FIT ON
-            FILE. Every line is a real record; an empty one says where the
-            record is made rather than inventing a row. */}
-        <aside className="pfrail" aria-label="about this profile">
-          {/* THE RAIL — ABOUT ME alone (owner, 9 Sep evening: "remove the
-              left side bars and just leave the about me, and in the about
-              me there should be a preview of the user's passport"): the
-              bio, the passport in preview (PassportPreview.jsx — the same
-              real state the document on /board reads), then the record's
-              lines and the room link. */}
-          <GlassPane glass="lg-pf-about" className="pfpane pfabout">
-            <div className="pfk"><i aria-hidden="true">01</i>ABOUT ME</div>
-            <p>{info.bio || "taste under construction."}</p>
-            <PassportPreview />
-            <div className="pfline"><span>HANDLE</span><b>{info.handle || "—"}</b></div>
-            {/* the Passenger Score (slice 7): one five-star score on Account and Passport only */}
-            <div className="pfline"><span>PASSENGER SCORE</span><b><ScoreLine subject={getUid()} name={info.handle || null} /></b></div>
-            <div className="pfline"><span>MEMBER SINCE</span><b>{since || "—"}</b></div>
-            <div className="pfline"><span>PIECES IN THE CLOSET</span><b>{bagHistory.length}</b></div>
-            <div className="pfline"><span>YOUR ROOM</span><b><button type="button" className="wperma" onClick={() => setTab("room")}>OPEN →</button></b></div>
-          </GlassPane>
-        </aside>
-
-        <main className="pfmain">
-          <div className="tabs">
-            {[
-              ["posts", "POSTS"], ["bag", "CLOSET"], ["brands", "BRANDS"],
-              ["wardrobe", "WARDROBE"], ["room", "ROOM"], ["sizing", "SIZING"],
-              ["storefront", "STOREFRONT"],
-              ["account", "ACCOUNT"],
-            ].map(([k, label]) => (
-              <button key={k} className={"tab" + (tab === k ? " cur" : "")} onClick={() => setTab(k)}>
-                {label}
-              </button>
-            ))}
+      {panel ? (
+        <GlassPane glass="lg-pf-panel" className="pf3panel" aria-live="polite">
+          <div className="pf3panelhead">
+            <button type="button" className="pf3back" onClick={() => setPanel(null)}>← PROFILE</button>
+            <span className="psub">{PANEL_TITLE[panel]}</span>
           </div>
-
-          <GlassPane glass="lg-pf-sheet" className="pfsheet" aria-live="polite">
-            {tab === "posts" && (
-              <>
-                {posts.length === 0 && (
-                  <div className="empty">no transmissions yet — the POST disc on the deck publishes one into <a className="wperma" href="/">THE FEED →</a></div>
-                )}
-                {/* the grid (Instagram): one square per transmission — the
-                    caption header, the text clamped, the time. A server post's
-                    square is its permalink; a device-only copy stays a still
-                    square, labeled, until the server holds it. */}
-                {posts.length > 0 && (
-                  <div className="pfgrid">
-                    {posts.map((p) => {
-                      const inner = (
-                        <>
-                          {p.title ? <div className="wposthead">{p.title}</div> : null}
-                          <TransmissionText text={p.text} />
-                          <span className="pftime">
-                            {timeAgo(p.at)}
-                            {p.serverId == null && " · on this device — pending or held"}
-                            {p.editedAt ? <i className="wedited">· edited {timeAgo(p.editedAt)}</i> : null}
-                          </span>
-                        </>
-                      );
-                      return p.serverId != null
-                        ? <a className="pftile" key={p.id} href={"/hotlist?post=" + encodeURIComponent(p.serverId)}>{inner}</a>
-                        : <div className="pftile" key={p.id}>{inner}</div>;
-                    })}
-                  </div>
-                )}
-              </>
-            )}
-
-            {tab === "brands" && <BrandsTab bagBrands={brands} />}
-            {tab === "wardrobe" && <WardrobeTab />}
-            {tab === "room" && <RoomEditor />}
-            {tab === "sizing" && <MeasurementsEditor />}
-            {tab === "storefront" && <StorefrontTab />}
-            {tab === "account" && (
-              <>
-                <ProfileAccess />
-                <BusinessAccountPanel />
-                <h3 className="statshead">FIND PEOPLE</h3>
-                <div style={{ maxWidth: 420 }}>
-                  <UserSearch placeholder="search users to follow…" />
+          {panel === "wardrobe" && <WardrobeTab />}
+          {panel === "stats" && (
+            <StatsPanel posts={posts} followers={followers} ownHandle={ownHandle} followingCount={followingCount}
+              brandFollows={brandFollows} boardFollows={boardFollows} friends={friends} sf={sf} />
+          )}
+          {panel === "bank" && <BankPanel sf={sf} onStorefront={() => { setPanel(null); setTab("storefront"); }} />}
+          {panel === "account" && (
+            <>
+              <ProfileAccess since={since} />
+              <BusinessAccountPanel />
+              <h3 className="statshead">FIND PEOPLE</h3>
+              <div style={{ maxWidth: 420 }}>
+                <UserSearch placeholder="search users to follow…" />
+              </div>
+            </>
+          )}
+          {panel === "room" && <RoomEditor />}
+          {panel === "sizing" && <MeasurementsEditor />}
+          {panel === "brands" && <BrandsTab bagBrands={brands} />}
+          {/* THE CLOSET (Grailed): the pieces from the bag's history as a
+              grid — the picture, the title, the house and source, the
+              colour / origin / fit lines, the price. */}
+          {panel === "closet" && (
+            <>
+              {bagHistory.length === 0 && <div className="empty">nothing in the closet yet — the bag's history lands here.</div>}
+              {bagHistory.length > 0 && (
+                <div className="pfcloset">
+                  {bagHistory.slice(0, 24).map((o, i) => (
+                    <a className="pfpiece" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
+                      <img src={o.img || thumbFor(o)} alt="" />
+                      <div className="hlttl">{o.title}</div>
+                      <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
+                      <ColorEvidenceLine item={o} />
+                      <OriginLine item={o} />
+                      <ProductFitLine item={o} fit={fit} />
+                      <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>
+                    </a>
+                  ))}
                 </div>
-              </>
+              )}
+              <a className="btn ghost" href="/orders" style={{ display: "inline-block", marginTop: 16 }}>
+                ALL ORDERS & TICKETS →
+              </a>
+            </>
+          )}
+        </GlassPane>
+      ) : (
+        <>
+          <ProfileTabs tabs={TABS} icons={TAB_ICONS} tab={tab} onTab={setTab} />
+          <div className="pf3sheet" aria-live="polite">
+            {tab === "posts" && (
+              <PostGrid posts={posts} emptyNode={
+                <div className="empty">no transmissions yet — the POST disc on the deck publishes one into <a className="wperma" href="/">THE FEED →</a></div>
+              } />
             )}
-
-            {/* THE CLOSET (Grailed): the pieces from the bag's history as a
-                grid — the picture, the title, the house and source, the
-                colour / origin / fit lines, the price. */}
-            {tab === "bag" && (
-              <>
-                {bagHistory.length === 0 && <div className="empty">nothing in the closet yet — the bag's history lands here.</div>}
-                {bagHistory.length > 0 && (
-                  <div className="pfcloset">
-                    {bagHistory.slice(0, 24).map((o, i) => (
-                      <a className="pfpiece" key={o.id + i} href={"/?item=" + encodeURIComponent(o.id)}>
-                        <img src={o.img || thumbFor(o)} alt="" />
-                        <div className="hlttl">{o.title}</div>
-                        <div className="hlbrand">{o.brand} — {sourceFor(o)}</div>
-                        <ColorEvidenceLine item={o} />
-                        <OriginLine item={o} />
-                        <ProductFitLine item={o} fit={fit} />
-                        <div className="hlstat">{o.price ? `USD ${o.price}` : "—"}</div>
-                      </a>
-                    ))}
-                  </div>
-                )}
-                <a className="btn ghost" href="/orders" style={{ display: "inline-block", marginTop: 16 }}>
-                  ALL ORDERS & TICKETS →
-                </a>
-              </>
+            {/* REPOSTS: the tab is drawn because the sketch draws it; no
+                repost exists anywhere in lib/ or app/api yet, so the sheet
+                says so rather than showing a grid of nothing (the no-faking
+                rule applies to absence too). */}
+            {tab === "reposts" && (
+              <div className="empty">reposting is not built yet — nothing here is a measurement. <span className="soon">NOT WIRED YET</span></div>
             )}
-          </GlassPane>
-        </main>
-      </div>
+            {tab === "featured" && <FeaturedTab room={room} onRoom={() => openPanel("room")} />}
+            {tab === "storefront" && <StorefrontTab />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-function ProfileAccess() {
+// FEATURED: the room's TOP PIECES and BRANDS ON RECORD (lib/profile/rooms.js
+// modules) — the same records the public room shows. Empty states say where
+// the record is made.
+function FeaturedTab({ room, onRoom }) {
+  if (room === null) return <div className="empty">rooms are off on this deployment — nothing is featured anywhere.</div>;
+  if (room.available === false) return <div className="empty">{room.reason || "a room belongs to an account — sign in to feature pieces."}</div>;
+  const mod = (id) => room.room?.modules?.find((m) => m.module === id);
+  const pieces = mod("top-pieces")?.content?.items || [];
+  const brands = mod("brands")?.content?.brands || [];
+  if (!pieces.length && !brands.length) {
+    return <div className="empty">nothing featured yet — pin TOP PIECES and BRANDS ON RECORD in <button type="button" className="wperma" onClick={onRoom}>YOUR ROOM →</button></div>;
+  }
+  return (
+    <>
+      {pieces.length > 0 && (
+        <div className="pf3grid">
+          {pieces.map((item) => (
+            <a className="pf3tile media" key={item.id} href={"/?item=" + encodeURIComponent(item.id)}>
+              <img src={item.img || thumbFor(item)} alt={item.title || ""} loading="lazy" />
+              <span className="pf3time">{item.title}</span>
+            </a>
+          ))}
+        </div>
+      )}
+      {brands.length > 0 && (
+        <>
+          <h3 className="statshead">BRANDS ON RECORD</h3>
+          <div className="tagfilter">
+            {brands.map((b) => <a className="chip" key={b.name || b} href={"/discover?q=" + encodeURIComponent(b.name || b)}>{b.name || b}</a>)}
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+// STATISTICS (the sketch's second key): "for brdcsts, follower information,
+// store front information". Three ledgers, each a read of a record the page
+// already holds — the BRDCST posts, the follow lists, the storefront
+// envelope — and a dash with its reason where there is no record.
+function StatsPanel({ posts, followers, ownHandle, followingCount, brandFollows, boardFollows, friends, sf }) {
+  const brdcsts = posts.filter((p) => postType(p) === "BRDCST");
+  const people = followedUsers();
+  const env = sf.envelope;
+  const live = env ? env.listings.filter((l) => (l.status || "active") === "active").length : null;
+  const money = (cents, cur) => formatMoney(cents, cur || env?.fee?.currency || "USD");
+  return (
+    <div className="ledgergrid pf3stats">
+      <section className="ledgercell">
+        <h2>BRDCSTS</h2>
+        <p>the events you have broadcast into the Feed.</p>
+        <ul className="pf3statlist">
+          <li><span>BRDCSTS POSTED</span><b>{brdcsts.length}</b></li>
+          {brdcsts.slice(0, 6).map((p) => (
+            <li key={p.id}><span>{p.title || p.text.slice(0, 48)}</span><b>{p.attachments?.event ? brdcstWhen(p.attachments.event) || timeAgo(p.at) : timeAgo(p.at)}</b></li>
+          ))}
+        </ul>
+        {brdcsts.length === 0 ? <span className="fine">none yet — a BRDCST is composed on the POST disc.</span> : null}
+      </section>
+      <section className="ledgercell">
+        <h2>FOLLOWERS</h2>
+        <p>who follows you, and who you follow.</p>
+        <ul className="pf3statlist">
+          <li><span>FOLLOWERS</span>{followers == null ? <b title={ownHandle ? "the follower count could not be read" : "claim a handle in your room to be followed"}>—</b> : <b>{followers}</b>}</li>
+          <li><span>FOLLOWING</span><b>{followingCount}</b></li>
+          <li><span>PEOPLE</span><b>{people.length}</b></li>
+          <li><span>BOARDS</span><b>{boardFollows}</b></li>
+          <li><span>BRANDS FOLLOWED</span><b>{brandFollows}</b></li>
+          <li><span>FRIENDS — MUTUAL</span>{friends ? <b>{friends.size}</b> : <b title="friends are read once signed in">—</b>}</li>
+        </ul>
+      </section>
+      <section className="ledgercell">
+        <h2>STOREFRONT</h2>
+        <p>your storefront, as the ledger returns it.</p>
+        {sf.state === "signedout" ? <span className="fine">sign in — a storefront belongs to an account.</span>
+          : sf.state === "error" ? <Notice tone="error">{sf.error}</Notice>
+          : !env.storefront ? <span className="fine">no storefront yet — open one on the STOREFRONT tab.</span>
+          : (
+            <ul className="pf3statlist">
+              <li><span>STORE</span><b>{env.storefront.name}</b></li>
+              <li><span>LIVE LISTINGS</span><b>{live}</b></li>
+              <li><span>ALL LISTINGS</span><b>{env.listings.length}</b></li>
+              <li><span>ORDERS RETURNED</span><b>{env.orders.length}</b></li>
+              <li><span>OPEN OFFERS</span><b>{(env.commerce?.offers || []).filter((o) => o.liveState === "open").length}</b></li>
+              <li><span>ORDER INTAKE</span><b>{env.capabilities.canReceiveOrders === true ? "ON" : "OFF"}</b></li>
+              {env.fee ? <li><span>FEE COLLECTED</span><b>{money(env.fee.collectedCents ?? env.fee.collected_cents)}</b></li> : null}
+            </ul>
+          )}
+      </section>
+    </div>
+  );
+}
+
+// BANKING (the sketch's third key): "earning and all of that". The fee
+// ledger exactly as the storefront's EARNINGS view draws it — every amount
+// the server's — and the state that decides whether money can arrive at
+// all. Nothing is recomputed here.
+function BankPanel({ sf, onStorefront }) {
+  if (sf.state === "signedout") return <div className="empty">sign in — earnings belong to an account's storefront.</div>;
+  if (sf.state === "error") return <Notice tone="error">{sf.error}</Notice>;
+  const env = sf.envelope;
+  if (!env.storefront) return <div className="empty">no storefront yet — open one on the <button type="button" className="wperma" onClick={onStorefront}>STOREFRONT tab →</button></div>;
+  const intake = env.capabilities.canReceiveOrders === true;
+  return (
+    <>
+      <div className="ledgergrid">
+        <section className="ledgercell">
+          <h2>ORDER INTAKE</h2>
+          <p>{intake ? "on — paid orders can reach this storefront." : "off — the checkout provider is not keyed for this store; nothing can be charged, so nothing is earned."}</p>
+          <span className={intake ? "fine" : "soon"}>{intake ? "ON" : "ORDER INTAKE OFF"}</span>
+        </section>
+        <section className="ledgercell">
+          <h2>WHERE MONEY SITS</h2>
+          <p>a native sale is a direct charge on your connected account — the funds are yours on settlement, and the hold is that account's payout schedule (lib/storefront/payouts.js).</p>
+          <button type="button" className="txtbtn" onClick={onStorefront}>THE STOREFRONT'S ORDERS →</button>
+        </section>
+      </div>
+      <EarningsPanel fee={env.fee} orders={env.orders} />
+      <a className="btn ghost" href="/orders" style={{ display: "inline-block", marginTop: 16 }}>YOUR OWN ORDERS & TICKETS →</a>
+    </>
+  );
+}
+
+function ProfileAccess({ since = "" }) {
   const [authUser, setAuthUser] = useState(null);
   const [email, setEmail] = useState("");
   const [notice, setNotice] = useState("");
@@ -579,6 +751,7 @@ function ProfileAccess() {
           <div className="psub">ACCOUNT</div>
           <h2>One identity<span className="red">.</span></h2>
           <p className="deck">sign in, connect sources, and manage who you follow — it all lives here.</p>
+          {since ? <div className="pmeta">MEMBER SINCE {since}</div> : null}
         </div>
         <a className="btn ghost" href="/settings">SETTINGS →</a>
       </div>

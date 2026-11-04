@@ -45,11 +45,6 @@ test("the ink eases when it flips (a later reading; the first lands as it is, 29
   assert.ok(!/@property --on-card/.test(css), "--on-card keeps its fallback (not registered)");
 });
 
-test("the console's ticker test follows the side button", () => {
-  const dc = read("app/components/DesignConsole.jsx");
-  assert.match(dc, /const heard = \(e\) => setTickerTest\(e && e\.detail && e\.detail\.mode \? e\.detail\.mode : null\);\s*window\.addEventListener\("asilum:ticker-test", heard\);/);
-});
-
 test("an off-screen card is skipped, its shadows and Figure 20 kept", () => {
   assert.match(css, /\.fcell > \.card:not\(\.f20post\) \{ content-visibility: auto; \}/);
   assert.ok(!/\.fcell \{[^}]*content-visibility/.test(css), "never on the cell: its overcast lies outside its box");

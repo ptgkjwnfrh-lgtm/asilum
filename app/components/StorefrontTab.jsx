@@ -74,7 +74,7 @@ const pick = (object, ...keys) => {
   return null;
 };
 
-function normalizeEnvelope(raw = {}) {
+export function normalizeEnvelope(raw = {}) {
   const storefront = raw.storefront || null;
   const feeEntries = Array.isArray(raw.feeEvents) ? raw.feeEvents : [];
   const fee = raw.fee || (raw.feeBalance
@@ -193,7 +193,7 @@ function reasonText(capabilities) {
   return reasons.map((reason) => typeof reason === "string" ? reason : reason?.message).filter(Boolean);
 }
 
-function formatMoney(cents, currency = "USD") {
+export function formatMoney(cents, currency = "USD") {
   if (cents === null || cents === undefined || cents === "") return "—";
   const value = Number(cents);
   if (!Number.isInteger(value)) return "—";
@@ -681,7 +681,8 @@ function OrdersPanel({ orders, capabilities, storefront }) {
   );
 }
 
-function EarningsPanel({ fee, orders }) {
+// (exported 4 Nov 2026: the account page's BANKING key shows the same ledger)
+export function EarningsPanel({ fee, orders }) {
   const currency = fee?.currency || "USD";
   const entries = Array.isArray(fee?.entries) ? fee.entries : Array.isArray(fee?.ledger) ? fee.ledger : [];
   return (

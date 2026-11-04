@@ -202,19 +202,34 @@ test("the engine's own doc comment names the range it actually produces", () => 
 
 // ---------------------------------------------------------------- the profile
 
-test("FOLLOWERS is a dash, because nothing anywhere counts followers", () => {
+test("FOLLOWERS is the public count by handle, and a dash where no handle can be followed", () => {
+  // (4 Nov 2026) the count exists now: lib/db/production/interpretation.js
+  // followerCount reads the follows table by TARGET, the one public
+  // aggregate from the followers' side, through /api/follow?followers=.
+  // The header's cell is a number only when that read answered; a device
+  // identity has no handle to be followed by, and prints — with the reason,
+  // never the 0 this test was written to forbid.
+  const head = read("app/components/ProfileHead.jsx");
+  assert.ok(/"\/api\/follow\?followers=" \+ encodeURIComponent\(h\)/.test(head),
+    "the header reads the follower count from the follow route");
+  assert.ok(/c\.value == null \? <b title=\{c\.title \|\| "not measured here"\}>—<\/b> : <b>\{c\.value\}<\/b>/.test(head),
+    "a null count prints — with its reason, never a bare 0");
   const src = read("app/profile/page.js");
-  // Bound to the counter cell.
-  assert.ok(/<b title="ASILUM does not track followers yet">—<\/b> FOLLOWERS/.test(src),
-    "FOLLOWERS must print — rather than a measurement of nothing");
-  assert.ok(!/\{followers\}<\/b> FOLLOWERS/.test(src));
+  assert.ok(/key: "followers", label: "FOLLOWERS", value: followers, title: ownHandle \? /.test(src),
+    "the account page's FOLLOWERS cell is the measured count, with the no-handle reason");
+  assert.ok(/const followers = useFollowers\(ownHandle\);/.test(src));
   assert.ok(!/^\s*const followers = 0;\s*$/m.test(src),
     "the hardcoded zero must be gone, not just hidden");
+  const db = read("lib/db/production/interpretation.js");
+  assert.ok(/export async function followerCount\(handle\)/.test(db));
+  assert.ok(/COUNT\(DISTINCT user_id\)/.test(db), "the count is of distinct followers, never the list");
 });
 
 test("BRANDS counts followed brands, which is what its label means", () => {
   const src = read("app/profile/page.js");
-  assert.ok(/<b>\{brandFollows\}<\/b> BRANDS/.test(src));
+  // (4 Nov 2026) the count moved from the header to the STATISTICS panel's
+  // follower ledger — the header is POSTS · LISTINGS · FOLLOWERS · FOLLOWING now
+  assert.ok(/<li><span>BRANDS FOLLOWED<\/span><b>\{brandFollows\}<\/b><\/li>/.test(src));
   assert.ok(!/<b>\{brands\.length\}<\/b> BRANDS/.test(src),
     "bag brands are candidates to follow, not brands followed");
   // The count must track the BRANDS tab, which keeps its own local copy — a

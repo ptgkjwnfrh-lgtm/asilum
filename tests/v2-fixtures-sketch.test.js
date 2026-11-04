@@ -52,7 +52,7 @@ test("the carvings are carved into the glass: cuts, the disc's ring and the gril
   assert.ok(g, "the grill is placed in sketch units");
   assert.equal(Number(g[1]) * 2, Number(g[2]), "the grill is centred on the disc");
   // (25 Oct 2026, last) the ad ticker is back on the deck as a bubble, beneath the keys and above the vent
-  assert.match(deck, /<div className="ccad">[\s\S]*?<AdStrip typing=\{inSearch\} onOpen=\{setAdOpen\} line=\{AD_LINE\} \/>\s*<\/div>/, "the ad bubble on the deck (its folded line beside it)");
+  assert.match(deck, /<div className="ccad">\s*<AdStrip typing=\{inSearch\} \/>\s*<\/div>/, "the ad bubble on the deck (4 Nov 2026: always on, no folded line beside it)");
   assert.ok(deck.indexOf('className="ccad"') > deck.indexOf('className="ccrow"'), "the bubble comes after the row of keys");
   // (28 Oct 2026) the ticker wraps the whole deck: the bubble has no side padding (tests/v2-ticker.test.js)
   const ad = rules.match(/\.ccad \{[^}]*padding: 0 0 calc\(var\(--u\) \* (\d+)\)/);
@@ -464,7 +464,8 @@ test("the new logo: type set from the owner's artwork, one glow — red on the a
   // (then: the ticker folded "turn[s] into a glowing white line that acts like the one on the mast head") its line too
   // (owner, 28 Oct 2026: "all the accent lines that arent directly on a card must glow so on the carousels the accent
   // line underneath the username must glow") and Figure 20's rule, the Masthead's line on the page
-  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".ccadline var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick's rim, the Masthead's line, the ticker's line and Figure 20's rule white, nothing else");
+  // (4 Nov 2026) and the account page's KEY BRICK (KeyBrick.jsx) — the logo's own brick, housing the keys
+  assert.deepEqual(wearing, [".card.wpostcard.p2.withmedia.f20post .p2rule var(--wm-glow)", ".kbart var(--wm-glow)", ".mhline var(--wm-glow)", ".wmglow var(--wm-glow)", ".wmlitstar var(--wm-glow-r)"].sort(), "the asterisk red, the brick's rim, the Masthead's line, Figure 20's rule and the key brick white, nothing else (the ticker's folded line is gone, 4 Nov 2026)");
   // (owner, 28 Oct 2026: "the red glow from a button being selected on the fixtures should glow red like the
   // asterisk", then "the glow is to intense lets lower it for the buttons") the selected keys wear the asterisk's
   // glow made softer: its red, its three layers, each no wider and each fainter

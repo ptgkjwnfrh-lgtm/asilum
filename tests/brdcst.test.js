@@ -247,9 +247,12 @@ test("delivery through the store: in reach, beyond the radius, cold, blocked-fre
   assert.deepEqual([a[0].attachments.brdcst.yours, a[0].attachments.brdcst.state, a[0].attachments.brdcst.footer], [true, "active", true]);
   const req = await B.deliverPosts([post], { viewerId: far, lat: EV.lat + 0.2, lng: EV.lng, now: T0 + D });
   assert.equal(req[0].attachments.brdcst.footer, true, "the request's area wins over the base record");
-  assert.deepEqual((await B.tickerFor({ viewerId: near, now: T0 + D })).map((r) => r.name), [EV.name]);
-  assert.equal((await B.tickerFor({ viewerId: far, now: T0 + D })).length, 0);
-  assert.equal((await B.tickerFor({ viewerId: near, now: T0 + 8 * D })).length, 0, "ended");
+  assert.deepEqual((await B.tickerFor({ viewerId: near, now: T0 + D })).map((r) => [r.name, r.reach]), [[EV.name, "in-reach"]]);
+  // (4 Nov 2026) the ticker is always on: with no BRDCST in reach it carries every live one, with none live the
+  // ones coming up, and only with nothing at all is it the house line alone
+  assert.deepEqual((await B.tickerFor({ viewerId: far, now: T0 + D })).map((r) => [r.name, r.reach]), [[EV.name, "live"]], "none in reach: every live BRDCST");
+  assert.deepEqual((await B.tickerFor({ viewerId: far, now: T0 - 1000 })).map((r) => [r.name, r.reach]), [[EV.name, "upcoming"]], "none live: the paid ones coming up");
+  assert.equal((await B.tickerFor({ viewerId: near, now: T0 + 8 * D })).length, 0, "ended, nothing coming up");
 });
 
 test("the routes: the quote is public and itemized; campaigns are the owner's; pay without a provider waits in Drafts; the feed strips an unpaid footer for a reader", async () => {
